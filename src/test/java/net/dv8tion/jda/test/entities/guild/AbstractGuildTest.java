@@ -35,8 +35,11 @@ import org.mockito.Mock;
 import java.util.EnumSet;
 
 public abstract class AbstractGuildTest extends IntegrationTest {
-    @Mock protected SelfUserImpl selfUser;
-    @Mock protected MemberImpl selfMember;
+    @Mock
+    protected SelfUserImpl selfUser;
+
+    @Mock
+    protected MemberImpl selfMember;
 
     protected GuildImpl guild;
 

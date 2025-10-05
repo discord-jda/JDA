@@ -80,10 +80,8 @@ public class CryptoAdapterTest {
         ByteBuffer buffer = ByteBuffer.allocate(512);
         buffer = original.asEncryptedPacket(adapter, buffer);
 
-        AudioPacket decrypted =
-                AudioPacket.decryptAudioPacket(
-                        adapter,
-                        new DatagramPacket(buffer.array(), buffer.position(), buffer.limit()));
+        AudioPacket decrypted = AudioPacket.decryptAudioPacket(
+                adapter, new DatagramPacket(buffer.array(), buffer.position(), buffer.limit()));
 
         byte[] payload = new byte[4];
         decrypted.getEncodedAudio().get(payload);

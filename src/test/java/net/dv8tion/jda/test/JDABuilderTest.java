@@ -82,10 +82,9 @@ public class JDABuilderTest extends AbstractSnapshotTest {
         if (cacheFlag.getRequiredIntent() != null) {
             assertThatIllegalArgumentException()
                     .isThrownBy(builder::checkIntents)
-                    .withMessage(
-                            String.format(
-                                    "Cannot use CacheFlag.%s without GatewayIntent.%s!",
-                                    cacheFlag, cacheFlag.getRequiredIntent()));
+                    .withMessage(String.format(
+                            "Cannot use CacheFlag.%s without GatewayIntent.%s!",
+                            cacheFlag, cacheFlag.getRequiredIntent()));
         } else {
             assertThatNoException().isThrownBy(builder::checkIntents);
         }

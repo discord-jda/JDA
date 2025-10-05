@@ -1772,15 +1772,14 @@ public class JDABuilder {
         threadingConfig.setRateLimitElastic(rateLimitElastic, shutdownRateLimitElastic);
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
-        SessionConfig sessionConfig =
-                new SessionConfig(
-                        controller,
-                        httpClient,
-                        wsFactory,
-                        voiceDispatchInterceptor,
-                        flags,
-                        maxReconnectDelay,
-                        largeThreshold);
+        SessionConfig sessionConfig = new SessionConfig(
+                controller,
+                httpClient,
+                wsFactory,
+                voiceDispatchInterceptor,
+                flags,
+                maxReconnectDelay,
+                largeThreshold);
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
         JDAImpl jda =
@@ -1830,13 +1829,8 @@ public class JDABuilder {
             JDAImpl.LOG.warn("Automatically disabled CacheFlags due to missing intents");
             // List each missing intent
             automaticallyDisabled.stream()
-                    .map(
-                            it ->
-                                    "Disabled CacheFlag."
-                                            + it
-                                            + " (missing GatewayIntent."
-                                            + it.getRequiredIntent()
-                                            + ")")
+                    .map(it -> "Disabled CacheFlag." + it + " (missing GatewayIntent."
+                            + it.getRequiredIntent() + ")")
                     .forEach(JDAImpl.LOG::warn);
 
             // Tell user how to disable this warning

@@ -148,9 +148,8 @@ public interface CacheView<T> extends Iterable<T> {
     default <R> R applyStream(@Nonnull Function<? super Stream<T>, ? extends R> action) {
         Checks.notNull(action, "Action");
         try (ClosableIterator<T> it = lockedIterator()) {
-            Spliterator<T> spliterator =
-                    Spliterators.spliterator(
-                            it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
+            Spliterator<T> spliterator = Spliterators.spliterator(
+                    it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
             Stream<T> stream = StreamSupport.stream(spliterator, false);
             return action.apply(stream);
         }
@@ -181,9 +180,8 @@ public interface CacheView<T> extends Iterable<T> {
     default void acceptStream(@Nonnull Consumer<? super Stream<T>> action) {
         Checks.notNull(action, "Action");
         try (ClosableIterator<T> it = lockedIterator()) {
-            Spliterator<T> spliterator =
-                    Spliterators.spliterator(
-                            it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
+            Spliterator<T> spliterator = Spliterators.spliterator(
+                    it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
             Stream<T> stream = StreamSupport.stream(spliterator, false);
             action.accept(stream);
         }

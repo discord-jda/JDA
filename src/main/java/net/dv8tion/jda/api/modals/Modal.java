@@ -131,10 +131,9 @@ public interface Modal extends SerializableData {
      */
     @Nonnull
     default Modal.Builder createCopy() {
-        List<ModalTopLevelComponent> c =
-                getComponents().stream()
-                        .map(c2 -> (ModalTopLevelComponent) c2)
-                        .collect(Collectors.toList());
+        List<ModalTopLevelComponent> c = getComponents().stream()
+                .map(c2 -> (ModalTopLevelComponent) c2)
+                .collect(Collectors.toList());
         return new Builder(getId(), getTitle()).addComponents(c);
     }
 

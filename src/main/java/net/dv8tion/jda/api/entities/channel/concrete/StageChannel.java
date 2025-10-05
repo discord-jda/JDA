@@ -96,19 +96,17 @@ public interface StageChannel
     default StageInstanceAction createStageInstance(@Nonnull String topic) {
         Checks.checkAttached(this);
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
-        EnumSet<Permission> required =
-                EnumSet.of(
-                        Permission.MANAGE_CHANNEL,
-                        Permission.VOICE_MUTE_OTHERS,
-                        Permission.VOICE_MOVE_OTHERS);
+        EnumSet<Permission> required = EnumSet.of(
+                Permission.MANAGE_CHANNEL,
+                Permission.VOICE_MUTE_OTHERS,
+                Permission.VOICE_MOVE_OTHERS);
         for (Permission perm : required) {
             if (!permissions.contains(perm))
                 throw new InsufficientPermissionException(
                         this,
                         perm,
                         "You must be a stage moderator to create a stage instance! Missing"
-                                + " Permission: "
-                                + perm);
+                                + " Permission: " + perm);
         }
 
         return new StageInstanceActionImpl(this).setTopic(topic);

@@ -32,7 +32,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 public class MessagePollHandlerTests extends AbstractSocketHandlerTest {
-    @Mock protected GuildMessageChannel channel;
+    @Mock
+    protected GuildMessageChannel channel;
 
     @BeforeEach
     final void setupMessageContext() {
@@ -51,18 +52,17 @@ public class MessagePollHandlerTests extends AbstractSocketHandlerTest {
                 .hasGetterWithValueEqualTo(MessagePollVoteAddEvent::getAnswerId, 1L)
                 .hasGetterWithValueEqualTo(
                         MessagePollVoteAddEvent::getUserIdLong, Constants.MINN_USER_ID)
-                .isFiredBy(
-                        () -> {
-                            handler.handle(
-                                    random.nextLong(),
-                                    event(
-                                            "MESSAGE_POLL_VOTE_ADD",
-                                            DataObject.empty()
-                                                    .put("answer_id", 1)
-                                                    .put("message_id", messageId)
-                                                    .put("channel_id", Constants.CHANNEL_ID)
-                                                    .put("user_id", Constants.MINN_USER_ID)));
-                        });
+                .isFiredBy(() -> {
+                    handler.handle(
+                            random.nextLong(),
+                            event(
+                                    "MESSAGE_POLL_VOTE_ADD",
+                                    DataObject.empty()
+                                            .put("answer_id", 1)
+                                            .put("message_id", messageId)
+                                            .put("channel_id", Constants.CHANNEL_ID)
+                                            .put("user_id", Constants.MINN_USER_ID)));
+                });
     }
 
     @Test
@@ -76,17 +76,16 @@ public class MessagePollHandlerTests extends AbstractSocketHandlerTest {
                 .hasGetterWithValueEqualTo(MessagePollVoteRemoveEvent::getAnswerId, 1L)
                 .hasGetterWithValueEqualTo(
                         MessagePollVoteRemoveEvent::getUserIdLong, Constants.MINN_USER_ID)
-                .isFiredBy(
-                        () -> {
-                            handler.handle(
-                                    random.nextLong(),
-                                    event(
-                                            "MESSAGE_POLL_VOTE_REMOVE",
-                                            DataObject.empty()
-                                                    .put("answer_id", 1)
-                                                    .put("message_id", messageId)
-                                                    .put("channel_id", Constants.CHANNEL_ID)
-                                                    .put("user_id", Constants.MINN_USER_ID)));
-                        });
+                .isFiredBy(() -> {
+                    handler.handle(
+                            random.nextLong(),
+                            event(
+                                    "MESSAGE_POLL_VOTE_REMOVE",
+                                    DataObject.empty()
+                                            .put("answer_id", 1)
+                                            .put("message_id", messageId)
+                                            .put("channel_id", Constants.CHANNEL_ID)
+                                            .put("user_id", Constants.MINN_USER_ID)));
+                });
     }
 }

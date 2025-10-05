@@ -221,15 +221,14 @@ public enum GatewayIntent {
      * You can further configure intents by using {@link net.dv8tion.jda.api.JDABuilder#enableIntents(GatewayIntent, GatewayIntent...) enableIntents(intents)}
      * and {@link net.dv8tion.jda.api.JDABuilder#disableIntents(GatewayIntent, GatewayIntent...) disableIntents(intents)}.
      */
-    public static final int DEFAULT =
-            ALL_INTENTS
-                    & ~getRaw(
-                            GUILD_MEMBERS,
-                            GUILD_PRESENCES,
-                            MESSAGE_CONTENT,
-                            GUILD_WEBHOOKS,
-                            GUILD_MESSAGE_TYPING,
-                            DIRECT_MESSAGE_TYPING);
+    public static final int DEFAULT = ALL_INTENTS
+            & ~getRaw(
+                    GUILD_MEMBERS,
+                    GUILD_PRESENCES,
+                    MESSAGE_CONTENT,
+                    GUILD_WEBHOOKS,
+                    GUILD_MESSAGE_TYPING,
+                    DIRECT_MESSAGE_TYPING);
 
     private final int rawValue;
     private final int offset;

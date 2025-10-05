@@ -126,10 +126,8 @@ public class ComponentDeserializer {
         Checks.noneNull(components, "Components");
         return components.stream()
                 .map(this::parseComponent)
-                .map(
-                        component ->
-                                ComponentsUtil.safeUnionCastWithUnknownType(
-                                        "component", component, type));
+                .map(component ->
+                        ComponentsUtil.safeUnionCastWithUnknownType("component", component, type));
     }
 
     /**
@@ -156,10 +154,8 @@ public class ComponentDeserializer {
         Checks.notNull(components, "Components");
         return components.stream(DataArray::getObject)
                 .map(this::parseComponent)
-                .map(
-                        component ->
-                                ComponentsUtil.safeUnionCastWithUnknownType(
-                                        "component", component, type));
+                .map(component ->
+                        ComponentsUtil.safeUnionCastWithUnknownType("component", component, type));
     }
 
     /**
@@ -237,20 +233,15 @@ public class ComponentDeserializer {
         Checks.notNull(components, "Components");
 
         if (MessageComponentTree.class.isAssignableFrom(treeType))
-            return (T)
-                    MessageComponentTree.of(
-                            deserializeAs(MessageTopLevelComponent.class, components)
-                                    .collect(Collectors.toList()));
+            return (T) MessageComponentTree.of(
+                    deserializeAs(MessageTopLevelComponent.class, components)
+                            .collect(Collectors.toList()));
         else if (ModalComponentTree.class.isAssignableFrom(treeType))
-            return (T)
-                    ModalComponentTree.of(
-                            deserializeAs(ModalTopLevelComponent.class, components)
-                                    .collect(Collectors.toList()));
+            return (T) ModalComponentTree.of(deserializeAs(ModalTopLevelComponent.class, components)
+                    .collect(Collectors.toList()));
         else if (ComponentTree.class.isAssignableFrom(treeType))
-            return (T)
-                    ComponentTree.of(
-                            deserializeAs(Component.class, components)
-                                    .collect(Collectors.toList()));
+            return (T) ComponentTree.of(
+                    deserializeAs(Component.class, components).collect(Collectors.toList()));
         else
             throw new UnsupportedOperationException(
                     "Cannot deserialize to tree of type " + treeType.getName());

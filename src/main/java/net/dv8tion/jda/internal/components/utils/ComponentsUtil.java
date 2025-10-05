@@ -53,11 +53,10 @@ public class ComponentsUtil {
         }
 
         String cleanedClassName = component.getClass().getSimpleName().replace("Impl", "");
-        throw new IllegalArgumentException(
-                Helpers.format(
-                        "Cannot convert " + componentCategory + " of type %s to %s!",
-                        cleanedClassName,
-                        toUnionClass.getSimpleName()));
+        throw new IllegalArgumentException(Helpers.format(
+                "Cannot convert " + componentCategory + " of type %s to %s!",
+                cleanedClassName,
+                toUnionClass.getSimpleName()));
     }
 
     /**
@@ -71,11 +70,10 @@ public class ComponentsUtil {
         if (toUnionClass.isInstance(component)) return toUnionClass.cast(component);
 
         String cleanedClassName = component.getClass().getSimpleName().replace("Impl", "");
-        throw new IllegalArgumentException(
-                Helpers.format(
-                        "Cannot convert " + componentCategory + " of type %s to %s!",
-                        cleanedClassName,
-                        toUnionClass.getSimpleName()));
+        throw new IllegalArgumentException(Helpers.format(
+                "Cannot convert " + componentCategory + " of type %s to %s!",
+                cleanedClassName,
+                toUnionClass.getSimpleName()));
     }
 
     /**
@@ -146,12 +144,11 @@ public class ComponentsUtil {
     public static long getComponentTreeTextContentLength(
             @Nonnull Collection<? extends Component> components) {
         return ComponentIterator.createStream(components)
-                .mapToInt(
-                        c -> {
-                            if (c instanceof TextDisplay)
-                                return ((TextDisplay) c).getContent().length();
-                            return 0;
-                        })
+                .mapToInt(c -> {
+                    if (c instanceof TextDisplay)
+                        return ((TextDisplay) c).getContent().length();
+                    return 0;
+                })
                 .sum();
     }
 

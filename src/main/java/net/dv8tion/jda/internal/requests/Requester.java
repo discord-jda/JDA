@@ -242,14 +242,12 @@ public class Requester {
                             (long) Math.ceil(DataObject.fromJson(body).getDouble("retry_after", 0));
                     long retryAfterHeader =
                             Long.parseLong(lastResponse.header(RestRateLimiter.RETRY_AFTER_HEADER));
-                    lastResponse =
-                            lastResponse
-                                    .newBuilder()
-                                    .header(
-                                            RestRateLimiter.RETRY_AFTER_HEADER,
-                                            Long.toString(
-                                                    Math.max(retryAfterHeader, retryAfterBody)))
-                                    .build();
+                    lastResponse = lastResponse
+                            .newBuilder()
+                            .header(
+                                    RestRateLimiter.RETRY_AFTER_HEADER,
+                                    Long.toString(Math.max(retryAfterHeader, retryAfterBody)))
+                            .build();
                 } catch (Exception e) {
                     LOG.warn("Failed to parse retry-after response body", e);
                 }

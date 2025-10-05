@@ -70,7 +70,9 @@ public class UnicodeEmojiImpl implements UnicodeEmoji, EmojiUnion {
 
     @Override
     public String toString() {
-        return new EntityString(this).addMetadata("codepoints", getAsCodepoints()).toString();
+        return new EntityString(this)
+                .addMetadata("codepoints", getAsCodepoints())
+                .toString();
     }
 
     @Nonnull

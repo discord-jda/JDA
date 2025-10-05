@@ -232,9 +232,8 @@ public class ScheduledEventImpl implements ScheduledEvent {
                 this.getGuild().equals(scheduledEvent.getGuild()),
                 "Cannot compare two Scheduled Events belonging to seperate guilds!");
 
-        int startTimeComparison =
-                OffsetDateTime.timeLineOrder()
-                        .compare(this.getStartTime(), scheduledEvent.getStartTime());
+        int startTimeComparison = OffsetDateTime.timeLineOrder()
+                .compare(this.getStartTime(), scheduledEvent.getStartTime());
         if (startTimeComparison == 0)
             return Long.compare(this.getIdLong(), scheduledEvent.getIdLong());
         else return startTimeComparison;

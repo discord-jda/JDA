@@ -51,25 +51,20 @@ public class MessageMentionsImpl extends AbstractMentions {
             DataArray roleMentions) {
         super(content, jda, guild, mentionsEveryone);
         this.userMentionMap = new TLongObjectHashMap<>(userMentions.length());
-        this.roleMentionMap =
-                new TLongHashSet(
-                        roleMentions.stream(DataArray::getUnsignedLong)
-                                .collect(Collectors.toList()));
+        this.roleMentionMap = new TLongHashSet(
+                roleMentions.stream(DataArray::getUnsignedLong).collect(Collectors.toList()));
 
-        userMentions.stream(DataArray::getObject)
-                .forEach(
-                        obj -> {
-                            if (obj.isNull("member")) {
-                                this.userMentionMap.put(
-                                        obj.getUnsignedLong("id"), obj.put("is_member", false));
-                                return;
-                            }
+        userMentions.stream(DataArray::getObject).forEach(obj -> {
+            if (obj.isNull("member")) {
+                this.userMentionMap.put(obj.getUnsignedLong("id"), obj.put("is_member", false));
+                return;
+            }
 
-                            DataObject member = obj.getObject("member");
-                            obj.remove("member");
-                            member.put("user", obj).put("is_member", true);
-                            this.userMentionMap.put(obj.getUnsignedLong("id"), member);
-                        });
+            DataObject member = obj.getObject("member");
+            obj.remove("member");
+            member.put("user", obj).put("is_member", true);
+            this.userMentionMap.put(obj.getUnsignedLong("id"), member);
+        });
 
         // Eager parsing member mentions for caching purposes
         getMembers();
@@ -84,16 +79,15 @@ public class MessageMentionsImpl extends AbstractMentions {
         // Parse members from mentions array in order of appearance
         EntityBuilder entityBuilder = jda.getEntityBuilder();
         TLongSet unseen = new TLongHashSet(userMentionMap.keySet());
-        List<Member> members =
-                processMentions(
-                        Message.MentionType.USER,
-                        false,
-                        (matcher) -> {
-                            if (unseen.remove(Long.parseUnsignedLong(matcher.group(1))))
-                                return matchMember(matcher);
-                            return null;
-                        },
-                        Collectors.toCollection(ArrayList::new));
+        List<Member> members = processMentions(
+                Message.MentionType.USER,
+                false,
+                (matcher) -> {
+                    if (unseen.remove(Long.parseUnsignedLong(matcher.group(1))))
+                        return matchMember(matcher);
+                    return null;
+                },
+                Collectors.toCollection(ArrayList::new));
 
         // Add reply mentions at beginning
         for (TLongIterator iter = unseen.iterator(); iter.hasNext(); ) {
@@ -116,16 +110,15 @@ public class MessageMentionsImpl extends AbstractMentions {
         // Parse members from mentions array in order of appearance
         EntityBuilder entityBuilder = jda.getEntityBuilder();
         TLongSet unseen = new TLongHashSet(userMentionMap.keySet());
-        List<User> users =
-                processMentions(
-                        Message.MentionType.USER,
-                        false,
-                        (matcher) -> {
-                            if (unseen.remove(Long.parseUnsignedLong(matcher.group(1))))
-                                return matchUser(matcher);
-                            return null;
-                        },
-                        Collectors.toCollection(ArrayList::new));
+        List<User> users = processMentions(
+                Message.MentionType.USER,
+                false,
+                (matcher) -> {
+                    if (unseen.remove(Long.parseUnsignedLong(matcher.group(1))))
+                        return matchUser(matcher);
+                    return null;
+                },
+                Collectors.toCollection(ArrayList::new));
 
         // Add reply mentions at beginning
         for (TLongIterator iter = unseen.iterator(); iter.hasNext(); ) {

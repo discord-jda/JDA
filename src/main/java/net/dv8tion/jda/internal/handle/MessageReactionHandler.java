@@ -86,11 +86,10 @@ public class MessageReactionHandler extends SocketHandler {
                 member = api.getEntityBuilder().createMember((GuildImpl) guild, json);
                 else // otherwise update the cache
                 {
-                    List<Role> roles =
-                            json.getArray("roles").stream(DataArray::getUnsignedLong)
-                                    .map(guild::getRoleById)
-                                    .filter(Objects::nonNull)
-                                    .collect(Collectors.toList());
+                    List<Role> roles = json.getArray("roles").stream(DataArray::getUnsignedLong)
+                            .map(guild::getRoleById)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
                     api.getEntityBuilder().updateMember((GuildImpl) guild, member, json, roles);
                 }
                 // update internal references
@@ -160,9 +159,8 @@ public class MessageReactionHandler extends SocketHandler {
             }
 
             // create a new private channel with minimal information for this event
-            channel =
-                    getJDA().getEntityBuilder()
-                            .createPrivateChannel(DataObject.empty().put("id", channelId));
+            channel = getJDA().getEntityBuilder()
+                    .createPrivateChannel(DataObject.empty().put("id", channelId));
         }
 
         // reaction remove has null name sometimes
@@ -184,19 +182,17 @@ public class MessageReactionHandler extends SocketHandler {
         }
 
         if (add) {
-            api.handleEvent(
-                    new MessageReactionAddEvent(
-                            api,
-                            responseNumber,
-                            user,
-                            member,
-                            reaction,
-                            userId,
-                            content.getUnsignedLong("message_author_id", 0L)));
+            api.handleEvent(new MessageReactionAddEvent(
+                    api,
+                    responseNumber,
+                    user,
+                    member,
+                    reaction,
+                    userId,
+                    content.getUnsignedLong("message_author_id", 0L)));
         } else {
-            api.handleEvent(
-                    new MessageReactionRemoveEvent(
-                            api, responseNumber, user, member, reaction, userId));
+            api.handleEvent(new MessageReactionRemoveEvent(
+                    api, responseNumber, user, member, reaction, userId));
         }
         return null;
     }

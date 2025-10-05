@@ -204,9 +204,8 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
             for (DiscordLocale locale : locales) {
                 Checks.check(locale != DiscordLocale.UNKNOWN, "Cannot use UNKNOWN DiscordLocale");
 
-                final ResourceBundle resourceBundle =
-                        ResourceBundle.getBundle(
-                                baseName, Locale.forLanguageTag(locale.getLocale()));
+                final ResourceBundle resourceBundle = ResourceBundle.getBundle(
+                        baseName, Locale.forLanguageTag(locale.getLocale()));
                 bundles.add(new Bundle(locale, resourceBundle));
             }
             return this;

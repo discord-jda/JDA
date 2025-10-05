@@ -39,10 +39,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 public class ThreadCreateActionTest extends IntegrationTest {
-    @Mock private Guild guild;
-    @Mock private IPostContainer forum;
-    @Mock private TextChannel textChannel;
-    @Mock private Member selfMember;
+    @Mock
+    private Guild guild;
+
+    @Mock
+    private IPostContainer forum;
+
+    @Mock
+    private TextChannel textChannel;
+
+    @Mock
+    private Member selfMember;
 
     @BeforeEach
     void setupMocks() {
@@ -61,9 +68,8 @@ public class ThreadCreateActionTest extends IntegrationTest {
 
     @Test
     void testMinimalForumPost() {
-        ForumPostActionImpl action =
-                new ForumPostActionImpl(
-                        forum, "post title", new MessageCreateBuilder().setContent("test content"));
+        ForumPostActionImpl action = new ForumPostActionImpl(
+                forum, "post title", new MessageCreateBuilder().setContent("test content"));
 
         assertThatRequestFrom(action)
                 .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")

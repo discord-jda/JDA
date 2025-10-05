@@ -126,12 +126,11 @@ public class TextInputImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        DataObject obj =
-                DataObject.empty()
-                        .put("type", getType().getKey())
-                        .put("custom_id", id)
-                        .put("style", style.getRaw())
-                        .put("required", required);
+        DataObject obj = DataObject.empty()
+                .put("type", getType().getKey())
+                .put("custom_id", id)
+                .put("style", style.getRaw())
+                .put("required", required);
         if (uniqueId >= 0) obj.put("id", uniqueId);
         if (minLength != -1) obj.put("min_length", minLength);
         if (maxLength != -1) obj.put("max_length", maxLength);

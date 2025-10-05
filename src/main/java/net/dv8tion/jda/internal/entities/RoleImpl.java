@@ -206,11 +206,9 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
         long channelPermissions = PermissionUtil.getExplicitPermission(targetChannel, this, false);
         // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
         // permission on the channel
-        boolean hasLocalAdmin =
-                ((rolePerms & Permission.ADMINISTRATOR.getRawValue())
-                                | (channelPermissions
-                                        & Permission.MANAGE_PERMISSIONS.getRawValue()))
-                        != 0;
+        boolean hasLocalAdmin = ((rolePerms & Permission.ADMINISTRATOR.getRawValue())
+                        | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
+                != 0;
         if (hasLocalAdmin) return true;
 
         TLongObjectMap<PermissionOverride> existingOverrides =

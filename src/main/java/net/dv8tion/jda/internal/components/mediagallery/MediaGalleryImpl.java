@@ -107,10 +107,9 @@ public class MediaGalleryImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        final DataObject json =
-                DataObject.empty()
-                        .put("type", getType().getKey())
-                        .put("items", DataArray.fromCollection(getItems()));
+        final DataObject json = DataObject.empty()
+                .put("type", getType().getKey())
+                .put("items", DataArray.fromCollection(getItems()));
         if (uniqueId >= 0) json.put("id", uniqueId);
         return json;
     }

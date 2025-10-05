@@ -177,19 +177,13 @@ public class ArchUnitComplianceTest {
             public void check(JavaMethod method, ConditionEvents events) {
                 method.getParameters().stream()
                         .filter(parameter -> !parameter.getRawType().isPrimitive())
-                        .filter(
-                                parameter ->
-                                        !parameter.isAnnotatedWith(Nonnull.class)
-                                                && !parameter.isAnnotatedWith(Nullable.class)
-                                                && !parameter.isAnnotatedWith(CheckForNull.class))
-                        .forEach(
-                                parameter ->
-                                        events.add(
-                                                SimpleConditionEvent.violated(
-                                                        method,
-                                                        parameter.getDescription()
-                                                                + " is not annotated with @Nonnull"
-                                                                + " or @Nullable")));
+                        .filter(parameter -> !parameter.isAnnotatedWith(Nonnull.class)
+                                && !parameter.isAnnotatedWith(Nullable.class)
+                                && !parameter.isAnnotatedWith(CheckForNull.class))
+                        .forEach(parameter -> events.add(SimpleConditionEvent.violated(
+                                method,
+                                parameter.getDescription() + " is not annotated with @Nonnull"
+                                        + " or @Nullable")));
             }
         };
     }

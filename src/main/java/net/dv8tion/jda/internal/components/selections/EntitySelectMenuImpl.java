@@ -41,24 +41,18 @@ public class EntitySelectMenuImpl extends SelectMenuImpl
     public EntitySelectMenuImpl(DataObject data) {
         super(data);
         this.type = Component.Type.fromKey(data.getInt("type"));
-        this.channelTypes =
-                Helpers.copyEnumSet(
-                        ChannelType.class,
-                        data.optArray("channel_types")
-                                .map(
-                                        arr ->
-                                                arr.stream(DataArray::getInt)
-                                                        .map(ChannelType::fromId)
-                                                        .collect(Collectors.toList()))
-                                .orElse(null));
-        this.defaultValues =
-                data.optArray("default_values")
-                        .map(
-                                array ->
-                                        array.stream(DataArray::getObject)
-                                                .map(DefaultValue::fromData)
-                                                .collect(Helpers.toUnmodifiableList()))
-                        .orElse(Collections.emptyList());
+        this.channelTypes = Helpers.copyEnumSet(
+                ChannelType.class,
+                data.optArray("channel_types")
+                        .map(arr -> arr.stream(DataArray::getInt)
+                                .map(ChannelType::fromId)
+                                .collect(Collectors.toList()))
+                        .orElse(null));
+        this.defaultValues = data.optArray("default_values")
+                .map(array -> array.stream(DataArray::getObject)
+                        .map(DefaultValue::fromData)
+                        .collect(Helpers.toUnmodifiableList()))
+                .orElse(Collections.emptyList());
     }
 
     public EntitySelectMenuImpl(
@@ -126,10 +120,9 @@ public class EntitySelectMenuImpl extends SelectMenuImpl
         if (type == Type.CHANNEL_SELECT && !channelTypes.isEmpty())
             json.put(
                     "channel_types",
-                    DataArray.fromCollection(
-                            channelTypes.stream()
-                                    .map(ChannelType::getId)
-                                    .collect(Collectors.toList())));
+                    DataArray.fromCollection(channelTypes.stream()
+                            .map(ChannelType::getId)
+                            .collect(Collectors.toList())));
         if (!defaultValues.isEmpty())
             json.put("default_values", DataArray.fromCollection(defaultValues));
         return json;

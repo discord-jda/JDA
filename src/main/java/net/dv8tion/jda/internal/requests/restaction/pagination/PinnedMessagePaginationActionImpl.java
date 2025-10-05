@@ -81,9 +81,8 @@ public class PinnedMessagePaginationActionImpl
         for (int i = 0; i < items.length(); i++) {
             try {
                 DataObject item = items.getObject(i);
-                ReceivedMessage message =
-                        entityBuilder.createMessageWithChannel(
-                                item.getObject("message"), channel, false);
+                ReceivedMessage message = entityBuilder.createMessageWithChannel(
+                        item.getObject("message"), channel, false);
                 OffsetDateTime pinnedAt = item.getOffsetDateTime("pinned_at");
                 PinnedMessage pinnedMessage = new PinnedMessage(pinnedAt, message);
 

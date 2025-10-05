@@ -37,7 +37,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 class EntityManagerTest extends IntegrationTest {
-    @Mock private GuildImpl guild;
+    @Mock
+    private GuildImpl guild;
 
     @Test
     void createTextChannelWhileInvalidatingCache() {
@@ -66,11 +67,11 @@ class EntityManagerTest extends IntegrationTest {
         when(newGuild.getTextChannelById(eq(Constants.CHANNEL_ID)))
                 .then(invocation -> newGuild.getChannelView().getElementById(Constants.CHANNEL_ID));
 
-        TextChannel createdChannel =
-                entityBuilder.createTextChannel(
-                        newGuild, TestData.CHANNEL_CREATE, Constants.GUILD_ID);
+        TextChannel createdChannel = entityBuilder.createTextChannel(
+                newGuild, TestData.CHANNEL_CREATE, Constants.GUILD_ID);
 
-        assertThat(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID)).isNotNull();
+        assertThat(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID))
+                .isNotNull();
         assertThat(createdChannel)
                 .isSameAs(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID));
 
@@ -83,11 +84,10 @@ class EntityManagerTest extends IntegrationTest {
     }
 
     static class TestData {
-        static final DataObject CHANNEL_CREATE =
-                DataObject.empty()
-                        .put("id", Constants.CHANNEL_ID)
-                        .put("name", "test-channel")
-                        .put("position", 1)
-                        .put("permission_overwrites", DataArray.empty());
+        static final DataObject CHANNEL_CREATE = DataObject.empty()
+                .put("id", Constants.CHANNEL_ID)
+                .put("name", "test-channel")
+                .put("position", 1)
+                .put("permission_overwrites", DataArray.empty());
     }
 }

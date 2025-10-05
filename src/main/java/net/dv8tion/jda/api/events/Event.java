@@ -50,10 +50,9 @@ public abstract class Event implements GenericEvent {
     public Event(@Nonnull JDA api, long responseNumber) {
         this.api = api;
         this.responseNumber = responseNumber;
-        this.rawData =
-                api instanceof JDAImpl && ((JDAImpl) api).isEventPassthrough()
-                        ? SocketHandler.CURRENT_EVENT.get()
-                        : null;
+        this.rawData = api instanceof JDAImpl && ((JDAImpl) api).isEventPassthrough()
+                ? SocketHandler.CURRENT_EVENT.get()
+                : null;
     }
 
     /**
@@ -83,9 +82,8 @@ public abstract class Event implements GenericEvent {
     public DataObject getRawData() {
         if (api instanceof JDAImpl) {
             if (!((JDAImpl) api).isEventPassthrough())
-                throw new IllegalStateException(
-                        "Event passthrough is not enabled, see"
-                                + " JDABuilder#setEventPassthrough(boolean)");
+                throw new IllegalStateException("Event passthrough is not enabled, see"
+                        + " JDABuilder#setEventPassthrough(boolean)");
         }
 
         return rawData;

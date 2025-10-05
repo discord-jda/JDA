@@ -36,10 +36,9 @@ import java.util.stream.Collectors;
 public class PermissionUtil {
     private static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
     private static final long ALL_CHANNEL_PERMISSIONS =
-            Permission.getRaw(
-                    Arrays.stream(Permission.values())
-                            .filter(Permission::isChannel)
-                            .collect(Collectors.toList()));
+            Permission.getRaw(Arrays.stream(Permission.values())
+                    .filter(Permission::isChannel)
+                    .collect(Collectors.toList()));
 
     /**
      * Checks if one given Member can interact with a 2nd given Member - in a permission sense (kick/ban/modify perms).
@@ -314,7 +313,7 @@ public class PermissionUtil {
         if (member.isDetached())
             throw new DetachedEntityException(
                     "Cannot get the effective permissions of a detached member without a channel."
-                        + " Instead, please use the Member methods while supplying a GuildChannel");
+                            + " Instead, please use the Member methods while supplying a GuildChannel");
 
         if (member.isOwner()) return ALL_PERMISSIONS;
         // Default to binary OR of all global permissions in this guild
@@ -327,9 +326,8 @@ public class PermissionUtil {
         // See
         // https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
         if (member.isTimedOut())
-            permission &=
-                    Permission.VIEW_CHANNEL.getRawValue()
-                            | Permission.MESSAGE_HISTORY.getRawValue();
+            permission &= Permission.VIEW_CHANNEL.getRawValue()
+                    | Permission.MESSAGE_HISTORY.getRawValue();
         return permission;
     }
 
@@ -471,7 +469,7 @@ public class PermissionUtil {
         if (member.isDetached())
             throw new DetachedEntityException(
                     "Cannot get the explicit permissions of a detached member without a channel."
-                        + " Instead, please use the Member methods while supplying a GuildChannel");
+                            + " Instead, please use the Member methods while supplying a GuildChannel");
 
         final Guild guild = member.getGuild();
         long permission = guild.getPublicRole().getPermissionsRaw();
@@ -632,10 +630,9 @@ public class PermissionUtil {
         final Guild guild = role.getGuild();
         checkGuild(channel.getGuild(), guild, "Role");
 
-        long permission =
-                includeRoles
-                        ? role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw()
-                        : 0;
+        long permission = includeRoles
+                ? role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw()
+                : 0;
         PermissionOverride override = permsChannel.getPermissionOverride(guild.getPublicRole());
         if (override != null)
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());

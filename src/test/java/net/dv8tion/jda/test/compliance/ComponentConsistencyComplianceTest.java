@@ -53,34 +53,30 @@ public class ComponentConsistencyComplianceTest {
                 "Overrides supertype methods which returns their declaring class") {
             @Override
             public void check(JavaClass item, ConditionEvents events) {
-                final List<JavaMethod> supertypeMethodsReturningDeclClass =
-                        getComponentSupertypes(item)
-                                // Methods declared by the supertypes
-                                .flatMap(c -> c.getMethods().stream())
-                                // Only keep root declarations
-                                .filter(this::isRootDeclaration)
-                                // Methods that return the class they are defined in
-                                .filter(
-                                        m ->
-                                                m.getRawReturnType()
-                                                        .getFullName()
-                                                        .equals(m.getOwner().getFullName()))
-                                .collect(Collectors.toList());
+                final List<JavaMethod> supertypeMethodsReturningDeclClass = getComponentSupertypes(
+                                item)
+                        // Methods declared by the supertypes
+                        .flatMap(c -> c.getMethods().stream())
+                        // Only keep root declarations
+                        .filter(this::isRootDeclaration)
+                        // Methods that return the class they are defined in
+                        .filter(m -> m.getRawReturnType()
+                                .getFullName()
+                                .equals(m.getOwner().getFullName()))
+                        .collect(Collectors.toList());
 
                 // The method may exist but have a diff return type, or it may not be overridden
                 for (JavaMethod supertypeMethodReturningDeclClass :
                         supertypeMethodsReturningDeclClass) {
-                    final Optional<JavaMethod> optDeclaredMethod =
-                            item.tryGetMethod(
-                                    supertypeMethodReturningDeclClass.getName(),
-                                    getParameterTypeNames(supertypeMethodReturningDeclClass));
+                    final Optional<JavaMethod> optDeclaredMethod = item.tryGetMethod(
+                            supertypeMethodReturningDeclClass.getName(),
+                            getParameterTypeNames(supertypeMethodReturningDeclClass));
                     if (!optDeclaredMethod.isPresent()) {
-                        events.add(
-                                SimpleConditionEvent.violated(
-                                        item,
-                                        item.getFullName()
-                                                + " does not override "
-                                                + supertypeMethodReturningDeclClass.getFullName()));
+                        events.add(SimpleConditionEvent.violated(
+                                item,
+                                item.getFullName()
+                                        + " does not override "
+                                        + supertypeMethodReturningDeclClass.getFullName()));
                         continue;
                     }
 
@@ -89,12 +85,11 @@ public class ComponentConsistencyComplianceTest {
                             .getRawReturnType()
                             .getFullName()
                             .equals(declaredMethod.getOwner().getFullName())) {
-                        events.add(
-                                SimpleConditionEvent.violated(
-                                        declaredMethod,
-                                        declaredMethod.getFullName()
-                                                + " must override return type with "
-                                                + declaredMethod.getOwner().getFullName()));
+                        events.add(SimpleConditionEvent.violated(
+                                declaredMethod,
+                                declaredMethod.getFullName()
+                                        + " must override return type with "
+                                        + declaredMethod.getOwner().getFullName()));
                         continue;
                     }
                 }
@@ -117,11 +112,8 @@ public class ComponentConsistencyComplianceTest {
                 // return true if no supertype has the same method
                 return getComponentSupertypes(method.getOwner())
                         .flatMap(c -> c.getMethods().stream())
-                        .noneMatch(
-                                m ->
-                                        m.getName().equals(method.getName())
-                                                && m.getRawParameterTypes()
-                                                        .equals(method.getRawParameterTypes()));
+                        .noneMatch(m -> m.getName().equals(method.getName())
+                                && m.getRawParameterTypes().equals(method.getRawParameterTypes()));
             }
         };
     }

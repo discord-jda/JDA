@@ -223,18 +223,17 @@ public interface Message extends ISnowflake, Formattable {
      *
      * @see #getInvites()
      */
-    Pattern INVITE_PATTERN =
-            Pattern.compile(
-                    "(?:https?://)?"
-                            + // Scheme
-                            "(?:\\w+\\.)?"
-                            + // Subdomain
-                            "discord(?:(?:app)?\\.com"
-                            + // Discord domain
-                            "/invite[/\\\\]|\\.gg/)(?<code>[a-z0-9-]+)"
-                            + // Path
-                            "(?:\\?\\S*)?(?:#\\S*)?", // Useless query or URN appendix
-                    Pattern.CASE_INSENSITIVE);
+    Pattern INVITE_PATTERN = Pattern.compile(
+            "(?:https?://)?"
+                    + // Scheme
+                    "(?:\\w+\\.)?"
+                    + // Subdomain
+                    "discord(?:(?:app)?\\.com"
+                    + // Discord domain
+                    "/invite[/\\\\]|\\.gg/)(?<code>[a-z0-9-]+)"
+                    + // Path
+                    "(?:\\?\\S*)?(?:#\\S*)?", // Useless query or URN appendix
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
@@ -273,18 +272,17 @@ public interface Message extends ISnowflake, Formattable {
      *
      * @see #getJumpUrl()
      */
-    Pattern JUMP_URL_PATTERN =
-            Pattern.compile(
-                    "(?:https?://)?"
-                            + // Scheme
-                            "(?:\\w+\\.)?"
-                            + // Subdomain
-                            "discord(?:app)?\\.com"
-                            + // Discord domain
-                            "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)"
-                            + // Path
-                            "(?:\\?\\S*)?(?:#\\S*)?", // Useless query or URN appendix
-                    Pattern.CASE_INSENSITIVE);
+    Pattern JUMP_URL_PATTERN = Pattern.compile(
+            "(?:https?://)?"
+                    + // Scheme
+                    "(?:\\w+\\.)?"
+                    + // Subdomain
+                    "discord(?:app)?\\.com"
+                    + // Discord domain
+                    "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)"
+                    + // Path
+                    "(?:\\?\\S*)?(?:#\\S*)?", // Useless query or URN appendix
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * Suppresses the warning for missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent and using one of the dependent getters.
@@ -2691,10 +2689,9 @@ public interface Message extends ISnowflake, Formattable {
          */
         @Nonnull
         public static EnumSet<MessageFlag> fromBitField(int bitfield) {
-            Set<MessageFlag> set =
-                    Arrays.stream(MessageFlag.values())
-                            .filter(e -> (e.value & bitfield) > 0)
-                            .collect(Collectors.toSet());
+            Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
+                    .filter(e -> (e.value & bitfield) > 0)
+                    .collect(Collectors.toSet());
             return set.isEmpty() ? EnumSet.noneOf(MessageFlag.class) : EnumSet.copyOf(set);
         }
 
@@ -2721,14 +2718,10 @@ public interface Message extends ISnowflake, Formattable {
      * Represents a {@link net.dv8tion.jda.api.entities.Message Message} file attachment.
      */
     class Attachment implements ISnowflake, AttachedFile {
-        private static final Set<String> IMAGE_EXTENSIONS =
-                new HashSet<>(
-                        Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
-        private static final Set<String> VIDEO_EXTENSIONS =
-                new HashSet<>(
-                        Arrays.asList(
-                                "webm", "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg",
-                                "mpeg", "gifv"));
+        private static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(
+                Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
+        private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(Arrays.asList(
+                "webm", "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg", "mpeg", "gifv"));
         private final long id;
         private final String url;
         private final String proxyUrl;

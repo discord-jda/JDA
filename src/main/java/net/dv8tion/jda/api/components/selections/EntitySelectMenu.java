@@ -473,8 +473,7 @@ public interface EntitySelectMenu extends SelectMenu {
                 else
                     throw new IllegalArgumentException(
                             "The provided combination of select targets is not supported. Provided:"
-                                    + " "
-                                    + set);
+                                    + " " + set);
             } else {
                 throw new IllegalArgumentException(
                         "The provided combination of select targets is not supported. Provided: "
@@ -625,10 +624,9 @@ public interface EntitySelectMenu extends SelectMenu {
         @Override
         public EntitySelectMenu build() {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
-            EnumSet<ChannelType> channelTypes =
-                    componentType == Type.CHANNEL_SELECT
-                            ? this.channelTypes
-                            : EnumSet.noneOf(ChannelType.class);
+            EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT
+                    ? this.channelTypes
+                    : EnumSet.noneOf(ChannelType.class);
             List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);
             return new EntitySelectMenuImpl(
                     customId,

@@ -115,19 +115,16 @@ public abstract class AbstractEntityBuilder {
                         threadMetadata.isNull("create_timestamp")
                                 ? 0
                                 : Helpers.toTimestamp(threadMetadata.getString("create_timestamp")))
-                .setAutoArchiveDuration(
-                        ThreadChannel.AutoArchiveDuration.fromKey(
-                                threadMetadata.getInt("auto_archive_duration")));
+                .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.fromKey(
+                        threadMetadata.getInt("auto_archive_duration")));
     }
 
     protected void configureForumChannel(DataObject json, ForumChannelMixin<?> channel) {
         if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS)) {
-            json.optArray("available_tags")
-                    .ifPresent(
-                            tags -> {
-                                for (int i = 0; i < tags.length(); i++)
-                                    createForumTag(channel, tags.getObject(i), i);
-                            });
+            json.optArray("available_tags").ifPresent(tags -> {
+                for (int i = 0; i < tags.length(); i++)
+                    createForumTag(channel, tags.getObject(i), i);
+            });
         }
 
         channel.setParentCategory(json.getLong("parent_id", 0))
@@ -145,12 +142,10 @@ public abstract class AbstractEntityBuilder {
 
     protected void configureMediaChannel(DataObject json, MediaChannelMixin<?> channel) {
         if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS)) {
-            json.optArray("available_tags")
-                    .ifPresent(
-                            tags -> {
-                                for (int i = 0; i < tags.length(); i++)
-                                    createForumTag(channel, tags.getObject(i), i);
-                            });
+            json.optArray("available_tags").ifPresent(tags -> {
+                for (int i = 0; i < tags.length(); i++)
+                    createForumTag(channel, tags.getObject(i), i);
+            });
         }
 
         channel.setParentCategory(json.getLong("parent_id", 0))
@@ -200,16 +195,14 @@ public abstract class AbstractEntityBuilder {
         member.setAvatarId(memberJson.getString("avatar", null));
         if (!memberJson.isNull("flags")) member.setFlags(memberJson.getInt("flags"));
 
-        long boostTimestamp =
-                memberJson.isNull("premium_since")
-                        ? 0
-                        : Helpers.toTimestamp(memberJson.getString("premium_since"));
+        long boostTimestamp = memberJson.isNull("premium_since")
+                ? 0
+                : Helpers.toTimestamp(memberJson.getString("premium_since"));
         member.setBoostDate(boostTimestamp);
 
-        long timeOutTimestamp =
-                memberJson.isNull("communication_disabled_until")
-                        ? 0
-                        : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
+        long timeOutTimestamp = memberJson.isNull("communication_disabled_until")
+                ? 0
+                : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
         member.setTimeOutEnd(timeOutTimestamp);
 
         if (!memberJson.isNull("pending")) member.setPending(memberJson.getBoolean("pending"));

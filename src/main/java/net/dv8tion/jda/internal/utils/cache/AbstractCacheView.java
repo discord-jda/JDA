@@ -153,12 +153,10 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
                     "The contained elements are not assigned with names.");
         if (isEmpty()) return Collections.emptyList();
         List<T> list = new ArrayList<>();
-        forEach(
-                elem -> {
-                    String elementName = nameMapper.apply(elem);
-                    if (elementName != null && equals(ignoreCase, elementName, name))
-                        list.add(elem);
-                });
+        forEach(elem -> {
+            String elementName = nameMapper.apply(elem);
+            if (elementName != null && equals(ignoreCase, elementName, name)) list.add(elem);
+        });
         return list; // must be modifiable because of SortedSnowflakeCacheView
     }
 

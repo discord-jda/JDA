@@ -149,11 +149,10 @@ public interface Emoji extends SerializableData, Formattable {
         Checks.notEmpty(code, "Formatting Code");
         Matcher matcher = Message.MentionType.EMOJI.getPattern().matcher(code);
         if (matcher.matches())
-            return (EmojiUnion)
-                    fromCustom(
-                            matcher.group(1),
-                            Long.parseUnsignedLong(matcher.group(2)),
-                            code.startsWith("<a"));
+            return (EmojiUnion) fromCustom(
+                    matcher.group(1),
+                    Long.parseUnsignedLong(matcher.group(2)),
+                    code.startsWith("<a"));
         else return (EmojiUnion) fromUnicode(code);
     }
 
@@ -172,11 +171,10 @@ public interface Emoji extends SerializableData, Formattable {
         Checks.notNull(emoji, "Emoji Data");
         if (emoji.isNull("id")) return (EmojiUnion) fromUnicode(emoji.getString("name"));
         else
-            return (EmojiUnion)
-                    fromCustom(
-                            emoji.getString("name"),
-                            emoji.getUnsignedLong("id"),
-                            emoji.getBoolean("animated"));
+            return (EmojiUnion) fromCustom(
+                    emoji.getString("name"),
+                    emoji.getUnsignedLong("id"),
+                    emoji.getBoolean("animated"));
     }
 
     /**

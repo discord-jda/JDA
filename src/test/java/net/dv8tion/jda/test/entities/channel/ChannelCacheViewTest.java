@@ -47,34 +47,33 @@ import java.util.stream.Stream;
 class ChannelCacheViewTest {
     private static long counter = 0;
 
-    private static final String VALID_SORT_ORDER =
-            String.join(
-                    "\n",
-                    "TEXT without parent",
-                    "NEWS without parent",
-                    "TEXT parent of GUILD_PRIVATE_THREAD",
-                    "GUILD_PRIVATE_THREAD",
-                    "NEWS parent of GUILD_NEWS_THREAD",
-                    "GUILD_NEWS_THREAD",
-                    "FORUM parent of GUILD_PUBLIC_THREAD",
-                    "GUILD_PUBLIC_THREAD",
-                    "FORUM without parent",
-                    "MEDIA without parent",
-                    "VOICE without parent",
-                    "STAGE without parent",
-                    "CATEGORY parent of TEXT",
-                    "TEXT with parent",
-                    "CATEGORY parent of VOICE",
-                    "VOICE with parent",
-                    "CATEGORY without parent",
-                    "CATEGORY parent of NEWS",
-                    "NEWS with parent",
-                    "CATEGORY parent of STAGE",
-                    "STAGE with parent",
-                    "CATEGORY parent of FORUM",
-                    "FORUM with parent",
-                    "CATEGORY parent of MEDIA",
-                    "MEDIA with parent");
+    private static final String VALID_SORT_ORDER = String.join(
+            "\n",
+            "TEXT without parent",
+            "NEWS without parent",
+            "TEXT parent of GUILD_PRIVATE_THREAD",
+            "GUILD_PRIVATE_THREAD",
+            "NEWS parent of GUILD_NEWS_THREAD",
+            "GUILD_NEWS_THREAD",
+            "FORUM parent of GUILD_PUBLIC_THREAD",
+            "GUILD_PUBLIC_THREAD",
+            "FORUM without parent",
+            "MEDIA without parent",
+            "VOICE without parent",
+            "STAGE without parent",
+            "CATEGORY parent of TEXT",
+            "TEXT with parent",
+            "CATEGORY parent of VOICE",
+            "VOICE with parent",
+            "CATEGORY without parent",
+            "CATEGORY parent of NEWS",
+            "NEWS with parent",
+            "CATEGORY parent of STAGE",
+            "STAGE with parent",
+            "CATEGORY parent of FORUM",
+            "FORUM with parent",
+            "CATEGORY parent of MEDIA",
+            "MEDIA with parent");
 
     @SuppressWarnings("unchecked")
     private static <T extends Channel> T mockChannel(ChannelType type, String name) {
@@ -87,10 +86,9 @@ class ChannelCacheViewTest {
             ChannelType type,
             String name,
             Class<? extends Channel>... extraInterfaces) {
-        T mock =
-                extraInterfaces.length > 0
-                        ? mock(clazz, withSettings().extraInterfaces(extraInterfaces))
-                        : mock(clazz);
+        T mock = extraInterfaces.length > 0
+                ? mock(clazz, withSettings().extraInterfaces(extraInterfaces))
+                : mock(clazz);
         when(mock.getType()).thenReturn(type);
         when(mock.toString()).thenReturn(name);
         when(mock.getName()).thenReturn(name);
@@ -102,10 +100,8 @@ class ChannelCacheViewTest {
         if (GuildChannel.class.isAssignableFrom(clazz)) {
             GuildChannel comparable = (GuildChannel) mock;
             when(comparable.compareTo(any()))
-                    .then(
-                            (args) ->
-                                    ChannelUtil.compare(
-                                            (GuildChannel) args.getMock(), args.getArgument(0)));
+                    .then((args) -> ChannelUtil.compare(
+                            (GuildChannel) args.getMock(), args.getArgument(0)));
         }
         return mock;
     }
@@ -210,11 +206,8 @@ class ChannelCacheViewTest {
 
         SortedChannelCacheView<VoiceChannel> voiceView = cache.ofType(VoiceChannel.class);
         List<VoiceChannel> fromOfType = voiceView.asList();
-        List<GuildChannel> voiceChannelFilter =
-                cache.applyStream(
-                        stream ->
-                                stream.filter(VoiceChannel.class::isInstance)
-                                        .collect(Collectors.toList()));
+        List<GuildChannel> voiceChannelFilter = cache.applyStream(stream ->
+                stream.filter(VoiceChannel.class::isInstance).collect(Collectors.toList()));
 
         assertThat(voiceChannelFilter).hasSameSizeAs(voiceView);
         assertThat(voiceChannelFilter).hasSameElementsAs(fromOfType);
@@ -229,11 +222,8 @@ class ChannelCacheViewTest {
 
         SortedChannelCacheView<VoiceChannel> voiceView = cache.ofType(VoiceChannel.class);
         Set<VoiceChannel> fromOfType = voiceView.asSet();
-        Set<GuildChannel> voiceChannelFilter =
-                cache.applyStream(
-                        stream ->
-                                stream.filter(VoiceChannel.class::isInstance)
-                                        .collect(Collectors.toSet()));
+        Set<GuildChannel> voiceChannelFilter = cache.applyStream(stream ->
+                stream.filter(VoiceChannel.class::isInstance).collect(Collectors.toSet()));
 
         assertThat(voiceChannelFilter).hasSize((int) voiceView.size());
         assertThat(voiceChannelFilter).hasSameElementsAs(fromOfType);
@@ -248,10 +238,9 @@ class ChannelCacheViewTest {
 
         SortedChannelCacheView<GuildMessageChannel> ofTypeMessage =
                 cache.ofType(GuildMessageChannel.class);
-        Set<GuildChannel> filterMessageType =
-                asSet.stream()
-                        .filter(GuildMessageChannel.class::isInstance)
-                        .collect(Collectors.toSet());
+        Set<GuildChannel> filterMessageType = asSet.stream()
+                .filter(GuildMessageChannel.class::isInstance)
+                .collect(Collectors.toSet());
 
         assertThat(ofTypeMessage).hasSameSizeAs(filterMessageType);
     }

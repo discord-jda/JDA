@@ -183,7 +183,8 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost>
 
         EntityBuilder entityBuilder = api.getEntityBuilder();
 
-        ThreadChannel thread = entityBuilder.createThreadChannel(json, getGuild().getIdLong());
+        ThreadChannel thread =
+                entityBuilder.createThreadChannel(json, getGuild().getIdLong());
         Message message =
                 entityBuilder.createMessageWithChannel(json.getObject("message"), thread, false);
 

@@ -80,49 +80,46 @@ public class MessageUpdateHandler extends SocketHandler {
                 throw new IllegalArgumentException(EntityBuilder.MISSING_CHANNEL);
         } catch (IllegalArgumentException e) {
             switch (e.getMessage()) {
-                case EntityBuilder.MISSING_CHANNEL:
-                    {
-                        final long channelId = content.getUnsignedLong("channel_id");
+                case EntityBuilder.MISSING_CHANNEL: {
+                    final long channelId = content.getUnsignedLong("channel_id");
 
-                        // If discord adds message support for unexpected types in the future, drop
-                        // the event instead of caching it
-                        if (guild != null) {
-                            GuildChannel actual = guild.getGuildChannelById(channelId);
-                            if (actual != null) {
-                                WebSocketClient.LOG.debug(
-                                        "Dropping MESSAGE_UPDATE for unexpected channel of type {}",
-                                        actual.getType());
-                                return null;
-                            }
+                    // If discord adds message support for unexpected types in the future, drop
+                    // the event instead of caching it
+                    if (guild != null) {
+                        GuildChannel actual = guild.getGuildChannelById(channelId);
+                        if (actual != null) {
+                            WebSocketClient.LOG.debug(
+                                    "Dropping MESSAGE_UPDATE for unexpected channel of type {}",
+                                    actual.getType());
+                            return null;
                         }
+                    }
 
-                        getJDA().getEventCache()
-                                .cache(
-                                        EventCache.Type.CHANNEL,
-                                        channelId,
-                                        responseNumber,
-                                        allContent,
-                                        this::handle);
-                        EventCache.LOG.debug(
-                                "Received a message update for a channel that JDA does not"
-                                        + " currently have cached");
-                        return null;
-                    }
-                case EntityBuilder.MISSING_USER:
-                    {
-                        final long authorId = content.getObject("author").getLong("id");
-                        getJDA().getEventCache()
-                                .cache(
-                                        EventCache.Type.USER,
-                                        authorId,
-                                        responseNumber,
-                                        allContent,
-                                        this::handle);
-                        EventCache.LOG.debug(
-                                "Received a message update for a user that JDA does not currently"
-                                        + " have cached");
-                        return null;
-                    }
+                    getJDA().getEventCache()
+                            .cache(
+                                    EventCache.Type.CHANNEL,
+                                    channelId,
+                                    responseNumber,
+                                    allContent,
+                                    this::handle);
+                    EventCache.LOG.debug("Received a message update for a channel that JDA does not"
+                            + " currently have cached");
+                    return null;
+                }
+                case EntityBuilder.MISSING_USER: {
+                    final long authorId = content.getObject("author").getLong("id");
+                    getJDA().getEventCache()
+                            .cache(
+                                    EventCache.Type.USER,
+                                    authorId,
+                                    responseNumber,
+                                    allContent,
+                                    this::handle);
+                    EventCache.LOG.debug(
+                            "Received a message update for a user that JDA does not currently"
+                                    + " have cached");
+                    return null;
+                }
                 default:
                     throw e;
             }

@@ -36,7 +36,8 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager>
     public StageInstanceManagerImpl(StageInstance instance) {
         super(
                 instance.getChannel().getJDA(),
-                Route.StageInstances.UPDATE_INSTANCE.compile(instance.getChannel().getId()));
+                Route.StageInstances.UPDATE_INSTANCE.compile(
+                        instance.getChannel().getId()));
         this.instance = instance;
     }
 

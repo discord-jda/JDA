@@ -129,12 +129,10 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if ((fields & APPLIED_TAGS) == APPLIED_TAGS) this.appliedTags = null;
         if ((fields & DEFAULT_REACTION) == DEFAULT_REACTION) this.defaultReactionEmoji = null;
         if ((fields & PERMISSION) == PERMISSION) {
-            withLock(
-                    lock,
-                    (lock) -> {
-                        this.overridesRem.clear();
-                        this.overridesAdd.clear();
-                    });
+            withLock(lock, (lock) -> {
+                this.overridesRem.clear();
+                this.overridesAdd.clear();
+            });
         }
 
         if ((fields & PINNED) == PINNED) {
@@ -180,36 +178,30 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         this.defaultReactionEmoji = null;
         this.flags.clear();
         this.flags.addAll(channel.getFlags());
-        withLock(
-                lock,
-                (lock) -> {
-                    this.overridesRem.clear();
-                    this.overridesAdd.clear();
-                });
+        withLock(lock, (lock) -> {
+            this.overridesRem.clear();
+            this.overridesAdd.clear();
+        });
         return (M) this;
     }
 
     @Nonnull
     @CheckReturnValue
     public M clearOverridesAdded() {
-        withLock(
-                lock,
-                (lock) -> {
-                    this.overridesAdd.clear();
-                    if (this.overridesRem.isEmpty()) set &= ~PERMISSION;
-                });
+        withLock(lock, (lock) -> {
+            this.overridesAdd.clear();
+            if (this.overridesRem.isEmpty()) set &= ~PERMISSION;
+        });
         return (M) this;
     }
 
     @Nonnull
     @CheckReturnValue
     public M clearOverridesRemoved() {
-        withLock(
-                lock,
-                (lock) -> {
-                    this.overridesRem.clear();
-                    if (this.overridesAdd.isEmpty()) set &= ~PERMISSION;
-                });
+        withLock(lock, (lock) -> {
+            this.overridesRem.clear();
+            if (this.overridesAdd.isEmpty()) set &= ~PERMISSION;
+        });
         return (M) this;
     }
 
@@ -225,10 +217,9 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
                 permHolder.getGuild().equals(getGuild()),
                 "PermissionHolder is not from the same Guild!");
         final long id = permHolder.getIdLong();
-        final int type =
-                permHolder instanceof Role
-                        ? PermOverrideData.ROLE_TYPE
-                        : PermOverrideData.MEMBER_TYPE;
+        final int type = permHolder instanceof Role
+                ? PermOverrideData.ROLE_TYPE
+                : PermOverrideData.MEMBER_TYPE;
         putPermissionOverride(new PermOverrideData(type, id, allow, deny));
         return (M) this;
     }
@@ -269,9 +260,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
                 // an override on the channel
                 // That is why we explicitly exclude it here!
                 // This is by far the most complex and weird permission logic in the entire API...
-                long botPerms =
-                        PermissionUtil.getEffectivePermission(channel, selfMember)
-                                & ~Permission.MANAGE_ROLES.getRawValue();
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember)
+                        & ~Permission.MANAGE_ROLES.getRawValue();
                 EnumSet<Permission> missing = Permission.getPermissions((allow | deny) & ~botPerms);
                 if (!missing.isEmpty())
                     throw new InsufficientPermissionException(
@@ -285,13 +275,11 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     private void putPermissionOverride(@Nonnull final PermOverrideData overrideData) {
         checkCanPutPermissions(overrideData.allow, overrideData.deny);
-        withLock(
-                lock,
-                (lock) -> {
-                    this.overridesRem.remove(overrideData.id);
-                    this.overridesAdd.put(overrideData.id, overrideData);
-                    set |= PERMISSION;
-                });
+        withLock(lock, (lock) -> {
+            this.overridesRem.remove(overrideData.id);
+            this.overridesAdd.put(overrideData.id, overrideData);
+            set |= PERMISSION;
+        });
     }
 
     @Nonnull
@@ -317,13 +305,11 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
                         .getSelfMember()
                         .hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
-        withLock(
-                lock,
-                (lock) -> {
-                    this.overridesRem.add(id);
-                    this.overridesAdd.remove(id);
-                    set |= PERMISSION;
-                });
+        withLock(lock, (lock) -> {
+            this.overridesRem.add(id);
+            this.overridesAdd.remove(id);
+            set |= PERMISSION;
+        });
         return (M) this;
     }
 
@@ -353,46 +339,37 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
                         getChannel(),
                         Permission.MANAGE_PERMISSIONS,
                         "Cannot sync channel with parent due to permission escalation issues. One"
-                            + " of the overrides would set MANAGE_PERMISSIONS or a permission that"
-                            + " the bot does not have. This is not possible without explicitly"
-                            + " having MANAGE_PERMISSIONS on this channel or ADMINISTRATOR on a"
-                            + " role.");
+                                + " of the overrides would set MANAGE_PERMISSIONS or a permission that"
+                                + " the bot does not have. This is not possible without explicitly"
+                                + " having MANAGE_PERMISSIONS on this channel or ADMINISTRATOR on a"
+                                + " role.");
         }
 
-        withLock(
-                lock,
-                (lock) -> {
-                    this.overridesRem.clear();
-                    this.overridesAdd.clear();
+        withLock(lock, (lock) -> {
+            this.overridesRem.clear();
+            this.overridesAdd.clear();
 
-                    // set all current overrides to-be-removed
-                    permChannel.getPermissionOverrides().stream()
-                            .mapToLong(PermissionOverride::getIdLong)
-                            .forEach(overridesRem::add);
+            // set all current overrides to-be-removed
+            permChannel.getPermissionOverrides().stream()
+                    .mapToLong(PermissionOverride::getIdLong)
+                    .forEach(overridesRem::add);
 
-                    // re-add all perm-overrides of syncSource
-                    syncSource
-                            .getPermissionOverrides()
-                            .forEach(
-                                    override -> {
-                                        int type =
-                                                override.isRoleOverride()
-                                                        ? PermOverrideData.ROLE_TYPE
-                                                        : PermOverrideData.MEMBER_TYPE;
-                                        long id = override.getIdLong();
+            // re-add all perm-overrides of syncSource
+            syncSource.getPermissionOverrides().forEach(override -> {
+                int type = override.isRoleOverride()
+                        ? PermOverrideData.ROLE_TYPE
+                        : PermOverrideData.MEMBER_TYPE;
+                long id = override.getIdLong();
 
-                                        this.overridesRem.remove(id);
-                                        this.overridesAdd.put(
-                                                id,
-                                                new PermOverrideData(
-                                                        type,
-                                                        id,
-                                                        override.getAllowedRaw(),
-                                                        override.getDeniedRaw()));
-                                    });
+                this.overridesRem.remove(id);
+                this.overridesAdd.put(
+                        id,
+                        new PermOverrideData(
+                                type, id, override.getAllowedRaw(), override.getDeniedRaw()));
+            });
 
-                    set |= PERMISSION;
-                });
+            set |= PERMISSION;
+        });
         return (M) this;
     }
 
@@ -753,12 +730,9 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (shouldUpdate(DEFAULT_LAYOUT)) frame.put("default_forum_layout", defaultLayout);
         if (shouldUpdate(DEFAULT_SORT_ORDER)) frame.put("default_sort_order", defaultSortOrder);
 
-        withLock(
-                lock,
-                (lock) -> {
-                    if (shouldUpdate(PERMISSION))
-                        frame.put("permission_overwrites", getOverrides());
-                });
+        withLock(lock, (lock) -> {
+            if (shouldUpdate(PERMISSION)) frame.put("permission_overwrites", getOverrides());
+        });
 
         reset();
         return getRequestBody(frame);
@@ -784,16 +758,14 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         TLongObjectHashMap<PermOverrideData> data = new TLongObjectHashMap<>(this.overridesAdd);
 
         IPermissionContainerMixin<?> impl = (IPermissionContainerMixin<?>) getChannel();
-        impl.getPermissionOverrideMap()
-                .forEachEntry(
-                        (id, override) -> {
-                            // removed by not adding them here, this data set overrides the existing
-                            // one
-                            // we can use remove because it will be reset afterwards either way
-                            if (!overridesRem.remove(id) && !data.containsKey(id))
-                                data.put(id, new PermOverrideData(override));
-                            return true;
-                        });
+        impl.getPermissionOverrideMap().forEachEntry((id, override) -> {
+            // removed by not adding them here, this data set overrides the existing
+            // one
+            // we can use remove because it will be reset afterwards either way
+            if (!overridesRem.remove(id) && !data.containsKey(id))
+                data.put(id, new PermOverrideData(override));
+            return true;
+        });
         return data.valueCollection();
     }
 }

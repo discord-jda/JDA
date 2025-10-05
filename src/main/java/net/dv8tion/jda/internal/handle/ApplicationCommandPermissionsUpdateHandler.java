@@ -54,26 +54,21 @@ public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler {
         long id = content.getUnsignedLong("id");
         long applicationId = content.getUnsignedLong("application_id");
 
-        List<IntegrationPrivilege> privileges =
-                content.getArray("permissions").stream(DataArray::getObject)
-                        .map(
-                                obj ->
-                                        new IntegrationPrivilege(
-                                                guild,
-                                                IntegrationPrivilege.Type.fromKey(
-                                                        obj.getInt("type")),
-                                                obj.getBoolean("permission"),
-                                                obj.getUnsignedLong("id")))
-                        .collect(Collectors.toList());
+        List<IntegrationPrivilege> privileges = content.getArray("permissions").stream(
+                        DataArray::getObject)
+                .map(obj -> new IntegrationPrivilege(
+                        guild,
+                        IntegrationPrivilege.Type.fromKey(obj.getInt("type")),
+                        obj.getBoolean("permission"),
+                        obj.getUnsignedLong("id")))
+                .collect(Collectors.toList());
 
         if (id != applicationId)
-            api.handleEvent(
-                    new ApplicationCommandUpdatePrivilegesEvent(
-                            api, responseNumber, guild, id, applicationId, privileges));
+            api.handleEvent(new ApplicationCommandUpdatePrivilegesEvent(
+                    api, responseNumber, guild, id, applicationId, privileges));
         else
-            api.handleEvent(
-                    new ApplicationUpdatePrivilegesEvent(
-                            api, responseNumber, guild, applicationId, privileges));
+            api.handleEvent(new ApplicationUpdatePrivilegesEvent(
+                    api, responseNumber, guild, applicationId, privileges));
         return null;
     }
 }

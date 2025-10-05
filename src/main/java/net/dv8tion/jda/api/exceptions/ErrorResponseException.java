@@ -59,16 +59,15 @@ public class ErrorResponseException extends RuntimeException {
             int code,
             String meaning,
             List<SchemaError> schemaErrors) {
-        super(
-                code
-                        + ": "
-                        + meaning
-                        + (schemaErrors.isEmpty()
-                                ? ""
-                                : "\n"
-                                        + schemaErrors.stream()
-                                                .map(SchemaError::toString)
-                                                .collect(Collectors.joining("\n"))));
+        super(code
+                + ": "
+                + meaning
+                + (schemaErrors.isEmpty()
+                        ? ""
+                        : "\n"
+                                + schemaErrors.stream()
+                                        .map(SchemaError::toString)
+                                        .collect(Collectors.joining("\n"))));
 
         this.response = response;
         if (response != null && response.getException() != null) initCause(response.getException());
@@ -219,9 +218,8 @@ public class ErrorResponseException extends RuntimeException {
                     DataObject properties = schemaError.getObject(index);
                     String location = String.format("%s%s[%s].", currentLocation, name, index);
                     if (properties.hasKey("_errors"))
-                        schemaErrors.add(
-                                parseSchemaError(
-                                        location.substring(0, location.length() - 1), properties));
+                        schemaErrors.add(parseSchemaError(
+                                location.substring(0, location.length() - 1), properties));
                     else parseSchema(schemaErrors, location, properties);
                 }
             } else {
@@ -233,13 +231,9 @@ public class ErrorResponseException extends RuntimeException {
     }
 
     private static SchemaError parseSchemaError(String location, DataObject obj) {
-        List<ErrorCode> codes =
-                obj.getArray("_errors").stream(DataArray::getObject)
-                        .map(
-                                json ->
-                                        new ErrorCode(
-                                                json.getString("code"), json.getString("message")))
-                        .collect(Collectors.toList());
+        List<ErrorCode> codes = obj.getArray("_errors").stream(DataArray::getObject)
+                .map(json -> new ErrorCode(json.getString("code"), json.getString("message")))
+                .collect(Collectors.toList());
         return new SchemaError(location, codes);
     }
 

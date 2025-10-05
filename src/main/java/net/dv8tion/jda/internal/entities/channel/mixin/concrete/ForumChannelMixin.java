@@ -40,13 +40,12 @@ public interface ForumChannelMixin<T extends ForumChannelMixin<T>>
     @Override
     default ChannelAction<ForumChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
-        ChannelAction<ForumChannel> action =
-                guild.createForumChannel(getName())
-                        .setNSFW(isNSFW())
-                        .setTopic(getTopic())
-                        .setSlowmode(getSlowmode())
-                        .setAvailableTags(getAvailableTags())
-                        .setDefaultLayout(getDefaultLayout());
+        ChannelAction<ForumChannel> action = guild.createForumChannel(getName())
+                .setNSFW(isNSFW())
+                .setTopic(getTopic())
+                .setSlowmode(getSlowmode())
+                .setAvailableTags(getAvailableTags())
+                .setDefaultLayout(getDefaultLayout());
         if (getRawSortOrder() != -1)
             action.setDefaultSortOrder(SortOrder.fromKey(getRawSortOrder()));
         if (getDefaultReaction() instanceof UnicodeEmoji)

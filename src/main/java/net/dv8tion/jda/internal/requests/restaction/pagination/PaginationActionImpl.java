@@ -227,13 +227,12 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     public CompletableFuture<List<T>> takeAsync(int amount) {
         return takeAsync0(
                 amount,
-                (task, list) ->
-                        forEachAsync(
-                                val -> {
-                                    list.add(val);
-                                    return list.size() < amount;
-                                },
-                                task::completeExceptionally));
+                (task, list) -> forEachAsync(
+                        val -> {
+                            list.add(val);
+                            return list.size() < amount;
+                        },
+                        task::completeExceptionally));
     }
 
     @Nonnull
@@ -241,13 +240,12 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     public CompletableFuture<List<T>> takeRemainingAsync(int amount) {
         return takeAsync0(
                 amount,
-                (task, list) ->
-                        forEachRemainingAsync(
-                                val -> {
-                                    list.add(val);
-                                    return list.size() < amount;
-                                },
-                                task::completeExceptionally));
+                (task, list) -> forEachRemainingAsync(
+                        val -> {
+                            list.add(val);
+                            return list.size() < amount;
+                        },
+                        task::completeExceptionally));
     }
 
     private CompletableFuture<List<T>> takeAsync0(
@@ -274,14 +272,10 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         Checks.notNull(failure, "Failure Consumer");
 
         final CompletableFuture<?> task = new CompletableFuture<>();
-        final Consumer<List<T>> acceptor =
-                new ChainedConsumer(
-                        task,
-                        action,
-                        (throwable) -> {
-                            task.completeExceptionally(throwable);
-                            failure.accept(throwable);
-                        });
+        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, (throwable) -> {
+            task.completeExceptionally(throwable);
+            failure.accept(throwable);
+        });
         try {
             acceptor.accept(cached);
         } catch (Exception ex) {
@@ -300,14 +294,10 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         Checks.notNull(failure, "Failure Consumer");
 
         final CompletableFuture<?> task = new CompletableFuture<>();
-        final Consumer<List<T>> acceptor =
-                new ChainedConsumer(
-                        task,
-                        action,
-                        (throwable) -> {
-                            task.completeExceptionally(throwable);
-                            failure.accept(throwable);
-                        });
+        final Consumer<List<T>> acceptor = new ChainedConsumer(task, action, (throwable) -> {
+            task.completeExceptionally(throwable);
+            failure.accept(throwable);
+        });
         try {
             acceptor.accept(getRemainingCache());
         } catch (Exception ex) {
@@ -366,9 +356,8 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         route = route.withQueryParams("limit", limit);
 
         if (localLastKey != 0)
-            route =
-                    route.withQueryParams(
-                            order.getKey(), getPaginationLastEvaluatedKey(localLastKey, this.last));
+            route = route.withQueryParams(
+                    order.getKey(), getPaginationLastEvaluatedKey(localLastKey, this.last));
         else if (order == PaginationOrder.FORWARD)
             route = route.withQueryParams("after", getPaginationLastEvaluatedKey(0, this.last));
 

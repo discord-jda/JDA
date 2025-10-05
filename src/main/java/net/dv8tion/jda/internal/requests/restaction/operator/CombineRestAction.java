@@ -79,10 +79,9 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
     public BooleanSupplier getCheck() {
         BooleanSupplier check1 = action1.getCheck();
         BooleanSupplier check2 = action2.getCheck();
-        return () ->
-                (check1 == null || check1.getAsBoolean())
-                        && (check2 == null || check2.getAsBoolean())
-                        && !failed;
+        return () -> (check1 == null || check1.getAsBoolean())
+                && (check2 == null || check2.getAsBoolean())
+                && !failed;
     }
 
     @Nonnull
@@ -99,12 +98,11 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
         AtomicInteger count = new AtomicInteger(0);
         AtomicReference<I1> result1 = new AtomicReference<>();
         AtomicReference<I2> result2 = new AtomicReference<>();
-        Consumer<Throwable> failureCallback =
-                (e) -> {
-                    if (failed) return;
-                    failed = true;
-                    RestActionOperator.doFailure(failure, e);
-                };
+        Consumer<Throwable> failureCallback = (e) -> {
+            if (failed) return;
+            failed = true;
+            RestActionOperator.doFailure(failure, e);
+        };
         action1.queue(
                 (s) -> {
                     try {

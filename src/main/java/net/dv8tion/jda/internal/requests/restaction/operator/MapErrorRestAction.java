@@ -91,21 +91,17 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
     @Nonnull
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue) {
-        return action.submit(shouldQueue)
-                .handle(
-                        (value, error) -> {
-                            T result = value;
-                            if (error != null) {
-                                error =
-                                        error instanceof CompletionException
-                                                        && error.getCause() != null
-                                                ? error.getCause()
-                                                : error;
-                                if (check.test(error)) result = map.apply(error);
-                                else fail(error);
-                            }
-                            return result;
-                        });
+        return action.submit(shouldQueue).handle((value, error) -> {
+            T result = value;
+            if (error != null) {
+                error = error instanceof CompletionException && error.getCause() != null
+                        ? error.getCause()
+                        : error;
+                if (check.test(error)) result = map.apply(error);
+                else fail(error);
+            }
+            return result;
+        });
     }
 
     @Contract("_ -> fail")

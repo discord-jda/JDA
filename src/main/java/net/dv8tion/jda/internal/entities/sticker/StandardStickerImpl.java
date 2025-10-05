@@ -58,7 +58,10 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
 
     @Override
     public String toString() {
-        return new EntityString(this).setName(name).addMetadata("pack", getPackId()).toString();
+        return new EntityString(this)
+                .setName(name)
+                .addMetadata("pack", getPackId())
+                .toString();
     }
 
     @Override

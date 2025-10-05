@@ -85,32 +85,23 @@ public class DefaultShardManagerBuilder {
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
     protected IntFunction<? extends IEventManager> eventManagerProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitSchedulerProvider =
-            ThreadPoolProvider.lazy(
-                    (total) ->
-                            Executors.newScheduledThreadPool(
-                                    Math.max(2, 2 * (int) Math.log(total)),
-                                    new CountingThreadFactory(
-                                            () -> "JDA", "RateLimit-Scheduler", true)));
+            ThreadPoolProvider.lazy((total) -> Executors.newScheduledThreadPool(
+                    Math.max(2, 2 * (int) Math.log(total)),
+                    new CountingThreadFactory(() -> "JDA", "RateLimit-Scheduler", true)));
     protected ThreadPoolProvider<? extends ExecutorService> rateLimitElasticProvider =
-            ThreadPoolProvider.lazy(
-                    (total) -> {
-                        ExecutorService pool =
-                                Executors.newCachedThreadPool(
-                                        new CountingThreadFactory(
-                                                () -> "JDA", "RateLimit-Elastic", true));
-                        if (pool instanceof ThreadPoolExecutor) {
-                            ((ThreadPoolExecutor) pool)
-                                    .setCorePoolSize(Math.max(1, (int) Math.log(total)));
-                            ((ThreadPoolExecutor) pool).setKeepAliveTime(2, TimeUnit.MINUTES);
-                        }
-                        return pool;
-                    });
+            ThreadPoolProvider.lazy((total) -> {
+                ExecutorService pool = Executors.newCachedThreadPool(
+                        new CountingThreadFactory(() -> "JDA", "RateLimit-Elastic", true));
+                if (pool instanceof ThreadPoolExecutor) {
+                    ((ThreadPoolExecutor) pool).setCorePoolSize(Math.max(1, (int) Math.log(total)));
+                    ((ThreadPoolExecutor) pool).setKeepAliveTime(2, TimeUnit.MINUTES);
+                }
+                return pool;
+            });
     protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider =
-            ThreadPoolProvider.lazy(
-                    (total) ->
-                            Executors.newScheduledThreadPool(
-                                    Math.max(1, (int) Math.log(total)),
-                                    new CountingThreadFactory(() -> "JDA", "Gateway")));
+            ThreadPoolProvider.lazy((total) -> Executors.newScheduledThreadPool(
+                    Math.max(1, (int) Math.log(total)),
+                    new CountingThreadFactory(() -> "JDA", "Gateway")));
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> eventPoolProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider = null;
@@ -2276,42 +2267,38 @@ public class DefaultShardManagerBuilder {
         presenceConfig.setActivityProvider(activityProvider);
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
-        final ThreadingProviderConfig threadingConfig =
-                new ThreadingProviderConfig(
-                        rateLimitSchedulerProvider,
-                        rateLimitElasticProvider,
-                        gatewayPoolProvider,
-                        callbackPoolProvider,
-                        eventPoolProvider,
-                        audioPoolProvider,
-                        threadFactory);
-        final ShardingSessionConfig sessionConfig =
-                new ShardingSessionConfig(
-                        sessionController,
-                        voiceDispatchInterceptor,
-                        httpClient,
-                        httpClientBuilder,
-                        wsFactory,
-                        audioSendFactory,
-                        flags,
-                        shardingFlags,
-                        maxReconnectDelay,
-                        largeThreshold);
-        final ShardingMetaConfig metaConfig =
-                new ShardingMetaConfig(
-                        maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
-        final DefaultShardManager manager =
-                new DefaultShardManager(
-                        this.token,
-                        this.shards,
-                        shardingConfig,
-                        eventConfig,
-                        presenceConfig,
-                        threadingConfig,
-                        sessionConfig,
-                        metaConfig,
-                        restConfigProvider,
-                        chunkingFilter);
+        final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(
+                rateLimitSchedulerProvider,
+                rateLimitElasticProvider,
+                gatewayPoolProvider,
+                callbackPoolProvider,
+                eventPoolProvider,
+                audioPoolProvider,
+                threadFactory);
+        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(
+                sessionController,
+                voiceDispatchInterceptor,
+                httpClient,
+                httpClientBuilder,
+                wsFactory,
+                audioSendFactory,
+                flags,
+                shardingFlags,
+                maxReconnectDelay,
+                largeThreshold);
+        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(
+                maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
+        final DefaultShardManager manager = new DefaultShardManager(
+                this.token,
+                this.shards,
+                shardingConfig,
+                eventConfig,
+                presenceConfig,
+                threadingConfig,
+                sessionConfig,
+                metaConfig,
+                restConfigProvider,
+                chunkingFilter);
 
         if (login) manager.login();
 
@@ -2344,13 +2331,8 @@ public class DefaultShardManagerBuilder {
             JDAImpl.LOG.warn("Automatically disabled CacheFlags due to missing intents");
             // List each missing intent
             automaticallyDisabled.stream()
-                    .map(
-                            it ->
-                                    "Disabled CacheFlag."
-                                            + it
-                                            + " (missing GatewayIntent."
-                                            + it.getRequiredIntent()
-                                            + ")")
+                    .map(it -> "Disabled CacheFlag." + it + " (missing GatewayIntent."
+                            + it.getRequiredIntent() + ")")
                     .forEach(JDAImpl.LOG::warn);
 
             // Tell user how to disable this warning

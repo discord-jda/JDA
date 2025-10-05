@@ -274,61 +274,33 @@ public class AutoModRuleImpl implements AutoModRule {
                 .ifPresent(array -> rule.setExemptChannels(parseList(array)));
 
         data.optArray("actions")
-                .ifPresent(
-                        array ->
-                                rule.setActions(
-                                        array.stream(DataArray::getObject)
-                                                .map(obj -> new AutoModResponseImpl(guild, obj))
-                                                .collect(Helpers.toUnmodifiableList())));
+                .ifPresent(array -> rule.setActions(array.stream(DataArray::getObject)
+                        .map(obj -> new AutoModResponseImpl(guild, obj))
+                        .collect(Helpers.toUnmodifiableList())));
 
-        data.optObject("trigger_metadata")
-                .ifPresent(
-                        metadata -> {
-                            // Only for KEYWORD type
-                            metadata.optArray("keyword_filter")
-                                    .ifPresent(
-                                            array ->
-                                                    rule.setFilteredKeywords(
-                                                            array.stream(DataArray::getString)
-                                                                    .collect(
-                                                                            Helpers
-                                                                                    .toUnmodifiableList())));
-                            metadata.optArray("regex_patterns")
-                                    .ifPresent(
-                                            array ->
-                                                    rule.setFilteredRegex(
-                                                            array.stream(DataArray::getString)
-                                                                    .collect(
-                                                                            Helpers
-                                                                                    .toUnmodifiableList())));
-                            // Both KEYWORD and KEYWORD_PRESET
-                            metadata.optArray("allow_list")
-                                    .ifPresent(
-                                            array ->
-                                                    rule.setAllowlist(
-                                                            array.stream(DataArray::getString)
-                                                                    .collect(
-                                                                            Helpers
-                                                                                    .toUnmodifiableList())));
-                            // Only KEYWORD_PRESET
-                            metadata.optArray("presets")
-                                    .ifPresent(
-                                            array ->
-                                                    rule.setFilteredPresets(
-                                                            array.stream(DataArray::getInt)
-                                                                    .map(KeywordPreset::fromKey)
-                                                                    .collect(
-                                                                            Collectors.toCollection(
-                                                                                    () ->
-                                                                                            EnumSet
-                                                                                                    .noneOf(
-                                                                                                            KeywordPreset
-                                                                                                                    .class)))));
-                            // Only for MENTION type
-                            rule.setMentionLimit(metadata.getInt("mention_total_limit", 0));
-                            rule.setMentionRaidProtectionEnabled(
-                                    metadata.getBoolean("mention_raid_protection_enabled"));
-                        });
+        data.optObject("trigger_metadata").ifPresent(metadata -> {
+            // Only for KEYWORD type
+            metadata.optArray("keyword_filter")
+                    .ifPresent(array -> rule.setFilteredKeywords(array.stream(DataArray::getString)
+                            .collect(Helpers.toUnmodifiableList())));
+            metadata.optArray("regex_patterns")
+                    .ifPresent(array -> rule.setFilteredRegex(array.stream(DataArray::getString)
+                            .collect(Helpers.toUnmodifiableList())));
+            // Both KEYWORD and KEYWORD_PRESET
+            metadata.optArray("allow_list")
+                    .ifPresent(array -> rule.setAllowlist(array.stream(DataArray::getString)
+                            .collect(Helpers.toUnmodifiableList())));
+            // Only KEYWORD_PRESET
+            metadata.optArray("presets")
+                    .ifPresent(array -> rule.setFilteredPresets(array.stream(DataArray::getInt)
+                            .map(KeywordPreset::fromKey)
+                            .collect(Collectors.toCollection(
+                                    () -> EnumSet.noneOf(KeywordPreset.class)))));
+            // Only for MENTION type
+            rule.setMentionLimit(metadata.getInt("mention_total_limit", 0));
+            rule.setMentionRaidProtectionEnabled(
+                    metadata.getBoolean("mention_raid_protection_enabled"));
+        });
 
         return rule;
     }

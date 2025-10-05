@@ -80,21 +80,16 @@ public class InteractionCreateHandler extends SocketHandler {
                 handleAction(content);
                 break;
             case COMMAND_AUTOCOMPLETE:
-                api.handleEvent(
-                        new CommandAutoCompleteInteractionEvent(
-                                api,
-                                responseNumber,
-                                new CommandAutoCompleteInteractionImpl(api, content)));
+                api.handleEvent(new CommandAutoCompleteInteractionEvent(
+                        api, responseNumber, new CommandAutoCompleteInteractionImpl(api, content)));
                 break;
             case MODAL_SUBMIT:
-                api.handleEvent(
-                        new ModalInteractionEvent(
-                                api, responseNumber, new ModalInteractionImpl(api, content)));
+                api.handleEvent(new ModalInteractionEvent(
+                        api, responseNumber, new ModalInteractionImpl(api, content)));
                 break;
             default:
-                api.handleEvent(
-                        new GenericInteractionCreateEvent(
-                                api, responseNumber, new InteractionImpl(api, content)));
+                api.handleEvent(new GenericInteractionCreateEvent(
+                        api, responseNumber, new InteractionImpl(api, content)));
         }
 
         return null;
@@ -103,23 +98,16 @@ public class InteractionCreateHandler extends SocketHandler {
     private void handleCommand(DataObject content) {
         switch (Command.Type.fromId(content.getObject("data").getInt("type"))) {
             case SLASH:
-                api.handleEvent(
-                        new SlashCommandInteractionEvent(
-                                api,
-                                responseNumber,
-                                new SlashCommandInteractionImpl(api, content)));
+                api.handleEvent(new SlashCommandInteractionEvent(
+                        api, responseNumber, new SlashCommandInteractionImpl(api, content)));
                 break;
             case MESSAGE:
-                api.handleEvent(
-                        new MessageContextInteractionEvent(
-                                api,
-                                responseNumber,
-                                new MessageContextInteractionImpl(api, content)));
+                api.handleEvent(new MessageContextInteractionEvent(
+                        api, responseNumber, new MessageContextInteractionImpl(api, content)));
                 break;
             case USER:
-                api.handleEvent(
-                        new UserContextInteractionEvent(
-                                api, responseNumber, new UserContextInteractionImpl(api, content)));
+                api.handleEvent(new UserContextInteractionEvent(
+                        api, responseNumber, new UserContextInteractionImpl(api, content)));
                 break;
         }
     }
@@ -127,26 +115,19 @@ public class InteractionCreateHandler extends SocketHandler {
     private void handleAction(DataObject content) {
         switch (Component.Type.fromKey(content.getObject("data").getInt("component_type"))) {
             case BUTTON:
-                api.handleEvent(
-                        new ButtonInteractionEvent(
-                                api, responseNumber, new ButtonInteractionImpl(api, content)));
+                api.handleEvent(new ButtonInteractionEvent(
+                        api, responseNumber, new ButtonInteractionImpl(api, content)));
                 break;
             case STRING_SELECT:
-                api.handleEvent(
-                        new StringSelectInteractionEvent(
-                                api,
-                                responseNumber,
-                                new StringSelectInteractionImpl(api, content)));
+                api.handleEvent(new StringSelectInteractionEvent(
+                        api, responseNumber, new StringSelectInteractionImpl(api, content)));
                 break;
             case USER_SELECT:
             case ROLE_SELECT:
             case MENTIONABLE_SELECT:
             case CHANNEL_SELECT:
-                api.handleEvent(
-                        new EntitySelectInteractionEvent(
-                                api,
-                                responseNumber,
-                                new EntitySelectInteractionImpl(api, content)));
+                api.handleEvent(new EntitySelectInteractionEvent(
+                        api, responseNumber, new EntitySelectInteractionImpl(api, content)));
                 break;
         }
     }

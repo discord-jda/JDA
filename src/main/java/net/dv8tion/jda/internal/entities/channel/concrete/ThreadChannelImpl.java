@@ -206,21 +206,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public CacheRestAction<ThreadMember> retrieveThreadMemberById(long id) {
         JDAImpl jda = (JDAImpl) getJDA();
         return new DeferredRestAction<>(
-                jda,
-                ThreadMember.class,
-                () -> getThreadMemberById(id),
-                () -> {
-                    Route.CompiledRoute route =
-                            Route.Channels.GET_THREAD_MEMBER
-                                    .compile(getId(), Long.toUnsignedString(id))
-                                    .withQueryParams("with_member", "true");
-                    return new RestActionImpl<>(
-                            jda,
-                            route,
-                            (resp, req) ->
-                                    jda.getEntityBuilder()
-                                            .createThreadMember(
-                                                    getGuild(), this, resp.getObject()));
+                jda, ThreadMember.class, () -> getThreadMemberById(id), () -> {
+                    Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER
+                            .compile(getId(), Long.toUnsignedString(id))
+                            .withQueryParams("with_member", "true");
+                    return new RestActionImpl<>(jda, route, (resp, req) -> jda.getEntityBuilder()
+                            .createThreadMember(getGuild(), this, resp.getObject()));
                 });
     }
 
@@ -309,9 +300,8 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public RestAction<Void> removeThreadMemberById(long id) {
         checkUnarchived();
 
-        boolean privateThreadOwner =
-                type == ChannelType.GUILD_PRIVATE_THREAD
-                        && ownerId == api.getSelfUser().getIdLong();
+        boolean privateThreadOwner = type == ChannelType.GUILD_PRIVATE_THREAD
+                && ownerId == api.getSelfUser().getIdLong();
         if (!privateThreadOwner) checkPermission(Permission.MANAGE_THREADS);
 
         Route.CompiledRoute route =

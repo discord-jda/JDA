@@ -94,59 +94,31 @@ public class MessageComponentTest {
                 Arguments.of(message(b -> b.setComponents(EXAMPLE_FILE_DISPLAY))),
                 Arguments.of(message(b -> b.setComponents(EXAMPLE_CONTAINER))),
                 // Attempt to use V1 content in V2 mode
-                Arguments.of(
-                        messageCreate(
-                                b ->
-                                        b.useComponentsV2()
-                                                .setVoiceMessage(true)
-                                                .setFiles(EXAMPLE_FILE_UPLOAD))),
+                Arguments.of(messageCreate(b ->
+                        b.useComponentsV2().setVoiceMessage(true).setFiles(EXAMPLE_FILE_UPLOAD))),
                 Arguments.of(message(b -> b.useComponentsV2().setContent("content"))),
-                Arguments.of(
-                        message(
-                                b ->
-                                        b.useComponentsV2()
-                                                .setEmbeds(
-                                                        new EmbedBuilder()
-                                                                .setDescription("description")
-                                                                .build()))),
-                Arguments.of(
-                        messageCreate(
-                                b ->
-                                        b.useComponentsV2()
-                                                .setPoll(
-                                                        new MessagePollBuilder("title")
-                                                                .addAnswer("answer")
-                                                                .build()))),
+                Arguments.of(message(b -> b.useComponentsV2()
+                        .setEmbeds(
+                                new EmbedBuilder().setDescription("description").build()))),
+                Arguments.of(messageCreate(b -> b.useComponentsV2()
+                        .setPoll(new MessagePollBuilder("title")
+                                .addAnswer("answer")
+                                .build()))),
                 // Attempt to send no components in V2 mode (use a file for it to be not empty)
                 Arguments.of(messageCreate(b -> b.useComponentsV2().setFiles(EXAMPLE_FILE_UPLOAD))),
                 // Attempt to edit with an entirely new message with no components in V2 mode (use a
                 // file for it to be not empty)
-                Arguments.of(
-                        messageEdit(
-                                b ->
-                                        b.useComponentsV2()
-                                                .setReplace(true)
-                                                .setFiles(EXAMPLE_FILE_UPLOAD))),
+                Arguments.of(messageEdit(
+                        b -> b.useComponentsV2().setReplace(true).setFiles(EXAMPLE_FILE_UPLOAD))),
                 // Attempt to use >MAX_COMPONENT_COUNT top-level
                 Arguments.of(
                         message(b -> b.setComponents(mergeItems(getMaxTopLevelV1(), EXAMPLE_ROW)))),
                 // Attempt to use >MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total
-                Arguments.of(
-                        message(
-                                b ->
-                                        b.useComponentsV2()
-                                                .setComponents(
-                                                        mergeItems(
-                                                                getMaxTotal(),
-                                                                EXAMPLE_FILE_DISPLAY)))),
+                Arguments.of(message(b -> b.useComponentsV2()
+                        .setComponents(mergeItems(getMaxTotal(), EXAMPLE_FILE_DISPLAY)))),
                 // Attempt to use >MAX_CONTENT_LENGTH_COMPONENT_V2
-                Arguments.of(
-                        message(
-                                b ->
-                                        b.useComponentsV2()
-                                                .setComponents(
-                                                        EXAMPLE_TEXT_DISPLAY,
-                                                        TextDisplay.of("1")))));
+                Arguments.of(message(b -> b.useComponentsV2()
+                        .setComponents(EXAMPLE_TEXT_DISPLAY, TextDisplay.of("1")))));
     }
 
     @MethodSource("buildValidMessage")
@@ -185,20 +157,10 @@ public class MessageComponentTest {
                 Arguments.of(
                         messageCreate(b -> b.setVoiceMessage(true).setFiles(EXAMPLE_FILE_UPLOAD))),
                 Arguments.of(message(b -> b.setContent("content"))),
-                Arguments.of(
-                        message(
-                                b ->
-                                        b.setEmbeds(
-                                                new EmbedBuilder()
-                                                        .setDescription("description")
-                                                        .build()))),
-                Arguments.of(
-                        messageCreate(
-                                b ->
-                                        b.setPoll(
-                                                new MessagePollBuilder("title")
-                                                        .addAnswer("answer")
-                                                        .build()))),
+                Arguments.of(message(b -> b.setEmbeds(
+                        new EmbedBuilder().setDescription("description").build()))),
+                Arguments.of(messageCreate(b -> b.setPoll(
+                        new MessagePollBuilder("title").addAnswer("answer").build()))),
                 // Send no components in V1 mode
                 Arguments.of(messageCreate(b -> b.setFiles(EXAMPLE_FILE_UPLOAD))),
                 // Edit with an entirely new message with no components in V1 mode

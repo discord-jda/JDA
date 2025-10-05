@@ -75,55 +75,51 @@ public class MessageCreateHandler extends SocketHandler {
                 throw new IllegalArgumentException(EntityBuilder.MISSING_CHANNEL);
         } catch (IllegalArgumentException e) {
             switch (e.getMessage()) {
-                case EntityBuilder.MISSING_CHANNEL:
-                    {
-                        final long channelId = content.getLong("channel_id");
+                case EntityBuilder.MISSING_CHANNEL: {
+                    final long channelId = content.getLong("channel_id");
 
-                        // If discord adds message support for unexpected types in the future, drop
-                        // the event instead of caching it
-                        if (guild != null) {
-                            GuildChannel actual = guild.getGuildChannelById(channelId);
-                            if (actual != null) {
-                                WebSocketClient.LOG.debug(
-                                        "Dropping MESSAGE_CREATE for unexpected channel of type {}",
-                                        actual.getType());
-                                return null;
-                            }
+                    // If discord adds message support for unexpected types in the future, drop
+                    // the event instead of caching it
+                    if (guild != null) {
+                        GuildChannel actual = guild.getGuildChannelById(channelId);
+                        if (actual != null) {
+                            WebSocketClient.LOG.debug(
+                                    "Dropping MESSAGE_CREATE for unexpected channel of type {}",
+                                    actual.getType());
+                            return null;
                         }
+                    }
 
-                        jda.getEventCache()
-                                .cache(
-                                        EventCache.Type.CHANNEL,
-                                        channelId,
-                                        responseNumber,
-                                        allContent,
-                                        this::handle);
-                        EventCache.LOG.debug(
-                                "Received a message for a channel that JDA does not currently have"
-                                        + " cached");
-                        return null;
-                    }
-                case EntityBuilder.MISSING_USER:
-                    {
-                        final long authorId = content.getObject("author").getLong("id");
-                        jda.getEventCache()
-                                .cache(
-                                        EventCache.Type.USER,
-                                        authorId,
-                                        responseNumber,
-                                        allContent,
-                                        this::handle);
-                        EventCache.LOG.debug(
-                                "Received a message for a user that JDA does not currently have"
-                                        + " cached");
-                        return null;
-                    }
-                case EntityBuilder.UNKNOWN_MESSAGE_TYPE:
-                    {
-                        WebSocketClient.LOG.debug(
-                                "Ignoring message with unknown type: {}", content);
-                        return null;
-                    }
+                    jda.getEventCache()
+                            .cache(
+                                    EventCache.Type.CHANNEL,
+                                    channelId,
+                                    responseNumber,
+                                    allContent,
+                                    this::handle);
+                    EventCache.LOG.debug(
+                            "Received a message for a channel that JDA does not currently have"
+                                    + " cached");
+                    return null;
+                }
+                case EntityBuilder.MISSING_USER: {
+                    final long authorId = content.getObject("author").getLong("id");
+                    jda.getEventCache()
+                            .cache(
+                                    EventCache.Type.USER,
+                                    authorId,
+                                    responseNumber,
+                                    allContent,
+                                    this::handle);
+                    EventCache.LOG.debug(
+                            "Received a message for a user that JDA does not currently have"
+                                    + " cached");
+                    return null;
+                }
+                case EntityBuilder.UNKNOWN_MESSAGE_TYPE: {
+                    WebSocketClient.LOG.debug("Ignoring message with unknown type: {}", content);
+                    return null;
+                }
                 default:
                     throw e;
             }

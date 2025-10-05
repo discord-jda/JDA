@@ -245,11 +245,10 @@ public interface MessageChannel extends Channel, Formattable {
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages) {
         if (messages == null || messages.isEmpty()) return Collections.emptyList();
-        return purgeMessagesById(
-                messages.stream()
-                        .filter(m -> m.getType().canDelete())
-                        .mapToLong(Message::getIdLong)
-                        .toArray());
+        return purgeMessagesById(messages.stream()
+                .filter(m -> m.getType().canDelete())
+                .mapToLong(Message::getIdLong)
+                .toArray());
     }
 
     /**
@@ -938,13 +937,8 @@ public interface MessageChannel extends Channel, Formattable {
 
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<>(
-                jda,
-                route,
-                (response, request) ->
-                        jda.getEntityBuilder()
-                                .createMessageWithChannel(
-                                        response.getObject(), MessageChannel.this, false));
+        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder()
+                .createMessageWithChannel(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -1965,9 +1959,8 @@ public interface MessageChannel extends Channel, Formattable {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        Route.CompiledRoute route =
-                Route.Messages.ADD_REACTION.compile(
-                        getId(), messageId, emoji.getAsReactionCode(), "@me");
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(
+                getId(), messageId, emoji.getAsReactionCode(), "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -2078,9 +2071,8 @@ public interface MessageChannel extends Channel, Formattable {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        Route.CompiledRoute route =
-                Route.Messages.REMOVE_REACTION.compile(
-                        getId(), messageId, emoji.getAsReactionCode(), "@me");
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
+                getId(), messageId, emoji.getAsReactionCode(), "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 

@@ -162,7 +162,8 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
         MemberPresenceImpl presence = getPresence();
         return presence == null
                 ? EnumSet.noneOf(ClientType.class)
-                : Helpers.copyEnumSet(ClientType.class, presence.getClientStatus().keySet());
+                : Helpers.copyEnumSet(
+                        ClientType.class, presence.getClientStatus().keySet());
     }
 
     @Override
@@ -274,11 +275,9 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
         long channelPermissions = PermissionUtil.getExplicitPermission(targetChannel, this, false);
         // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
         // permission on the channel
-        boolean hasLocalAdmin =
-                ((userPerms & Permission.ADMINISTRATOR.getRawValue())
-                                | (channelPermissions
-                                        & Permission.MANAGE_PERMISSIONS.getRawValue()))
-                        != 0;
+        boolean hasLocalAdmin = ((userPerms & Permission.ADMINISTRATOR.getRawValue())
+                        | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
+                != 0;
         if (hasLocalAdmin) return true;
 
         TLongObjectMap<PermissionOverride> existingOverrides =
@@ -354,13 +353,12 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Nullable
     @Override
     public DefaultGuildChannelUnion getDefaultChannel() {
-        return (DefaultGuildChannelUnion)
-                Stream.concat(
-                                getGuild().getTextChannelCache().stream(),
-                                getGuild().getNewsChannelCache().stream())
-                        .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
-                        .min(Comparator.naturalOrder())
-                        .orElse(null);
+        return (DefaultGuildChannelUnion) Stream.concat(
+                        getGuild().getTextChannelCache().stream(),
+                        getGuild().getNewsChannelCache().stream())
+                .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
+                .min(Comparator.naturalOrder())
+                .orElse(null);
     }
 
     @Nonnull

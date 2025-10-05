@@ -22,10 +22,9 @@ public class UnionUtil {
         if (toObjectClass.isInstance(instance)) return toObjectClass.cast(instance);
 
         String cleanedClassName = instance.getClass().getSimpleName().replace("Impl", "");
-        throw new IllegalStateException(
-                Helpers.format(
-                        "Cannot convert " + classCategory + " of type %s to %s!",
-                        cleanedClassName,
-                        toObjectClass.getSimpleName()));
+        throw new IllegalStateException(Helpers.format(
+                "Cannot convert " + classCategory + " of type %s to %s!",
+                cleanedClassName,
+                toObjectClass.getSimpleName()));
     }
 }

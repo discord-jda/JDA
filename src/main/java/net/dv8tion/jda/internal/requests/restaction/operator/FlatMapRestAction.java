@@ -49,16 +49,13 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O> {
     public void queue(
             @Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure) {
         Consumer<? super Throwable> catcher = contextWrap(failure);
-        handle(
-                action,
-                catcher,
-                (result) -> {
-                    if (condition != null && !condition.test(result)) return;
-                    RestAction<O> then = supply(result);
-                    if (then == null) // caught by handle try/catch abstraction
-                    throw new IllegalStateException("FlatMap operand is null");
-                    then.queue(success, catcher);
-                });
+        handle(action, catcher, (result) -> {
+            if (condition != null && !condition.test(result)) return;
+            RestAction<O> then = supply(result);
+            if (then == null) // caught by handle try/catch abstraction
+            throw new IllegalStateException("FlatMap operand is null");
+            then.queue(success, catcher);
+        });
     }
 
     @Override
@@ -74,16 +71,14 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O> {
     @Nonnull
     @Override
     public CompletableFuture<O> submit(boolean shouldQueue) {
-        return action.submit(shouldQueue)
-                .thenCompose(
-                        (result) -> {
-                            if (condition != null && !condition.test(result)) {
-                                CompletableFuture<O> future = new CompletableFuture<>();
-                                future.cancel(true);
+        return action.submit(shouldQueue).thenCompose((result) -> {
+            if (condition != null && !condition.test(result)) {
+                CompletableFuture<O> future = new CompletableFuture<>();
+                future.cancel(true);
 
-                                return future;
-                            }
-                            return supply(result).submit(shouldQueue);
-                        });
+                return future;
+            }
+            return supply(result).submit(shouldQueue);
+        });
     }
 }

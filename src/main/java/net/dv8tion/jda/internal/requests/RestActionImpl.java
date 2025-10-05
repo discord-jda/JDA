@@ -45,24 +45,23 @@ public class RestActionImpl<T> implements RestAction<T> {
     public static final Logger LOG = JDALogger.getLog(RestAction.class);
 
     private static Consumer<Object> DEFAULT_SUCCESS = o -> {};
-    private static Consumer<? super Throwable> DEFAULT_FAILURE =
-            t -> {
-                if (t instanceof CancellationException || t instanceof TimeoutException)
-                    LOG.debug(t.getMessage());
-                else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException))
-                    LOG.error("RestAction queue returned failure", t);
-                else if (t.getCause() != null)
-                    LOG.error(
-                            "RestAction queue returned failure: [{}] {}",
-                            t.getClass().getSimpleName(),
-                            t.getMessage(),
-                            t.getCause());
-                else
-                    LOG.error(
-                            "RestAction queue returned failure: [{}] {}",
-                            t.getClass().getSimpleName(),
-                            t.getMessage());
-            };
+    private static Consumer<? super Throwable> DEFAULT_FAILURE = t -> {
+        if (t instanceof CancellationException || t instanceof TimeoutException)
+            LOG.debug(t.getMessage());
+        else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException))
+            LOG.error("RestAction queue returned failure", t);
+        else if (t.getCause() != null)
+            LOG.error(
+                    "RestAction queue returned failure: [{}] {}",
+                    t.getClass().getSimpleName(),
+                    t.getMessage(),
+                    t.getCause());
+        else
+            LOG.error(
+                    "RestAction queue returned failure: [{}] {}",
+                    t.getClass().getSimpleName(),
+                    t.getMessage());
+    };
 
     protected static boolean passContext = true;
     protected static long defaultTimeout = 0;
@@ -200,19 +199,18 @@ public class RestActionImpl<T> implements RestAction<T> {
         if (success == null) success = DEFAULT_SUCCESS;
         if (failure == null) failure = DEFAULT_FAILURE;
         api.getRequester()
-                .request(
-                        new Request<>(
-                                this,
-                                success,
-                                failure,
-                                finisher,
-                                true,
-                                data,
-                                rawData,
-                                getDeadline(),
-                                priority,
-                                route,
-                                headers));
+                .request(new Request<>(
+                        this,
+                        success,
+                        failure,
+                        finisher,
+                        true,
+                        data,
+                        rawData,
+                        getDeadline(),
+                        priority,
+                        route,
+                        headers));
     }
 
     @Nonnull
@@ -312,10 +310,9 @@ public class RestActionImpl<T> implements RestAction<T> {
         else if (response.isRateLimit()) request.onRateLimited(response);
         else {
             final ErrorResponseException exception = request.createErrorResponseException(response);
-            final Throwable mappedThrowable =
-                    this.errorMapper != null
-                            ? this.errorMapper.apply(response, request, exception)
-                            : null;
+            final Throwable mappedThrowable = this.errorMapper != null
+                    ? this.errorMapper.apply(response, request, exception)
+                    : null;
 
             if (mappedThrowable != null) request.onFailure(mappedThrowable);
             else request.onFailure(exception);
@@ -344,12 +341,11 @@ public class RestActionImpl<T> implements RestAction<T> {
        }
     */
     protected static class CheckWrapper implements BooleanSupplier {
-        public static final CheckWrapper EMPTY =
-                new CheckWrapper(null, null) {
-                    public boolean getAsBoolean() {
-                        return true;
-                    }
-                };
+        public static final CheckWrapper EMPTY = new CheckWrapper(null, null) {
+            public boolean getAsBoolean() {
+                return true;
+            }
+        };
 
         protected final BooleanSupplier pre;
         protected final BooleanSupplier wrapped;

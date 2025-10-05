@@ -73,10 +73,9 @@ public interface Webhook extends ISnowflake, WebhookClient<Message> {
      * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
      * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
      */
-    Pattern WEBHOOK_URL =
-            Pattern.compile(
-                    "https?://(?:[^\\s.]+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(?<id>\\d+)/(?<token>[^\\s/]+)",
-                    Pattern.CASE_INSENSITIVE);
+    Pattern WEBHOOK_URL = Pattern.compile(
+            "https?://(?:[^\\s.]+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(?<id>\\d+)/(?<token>[^\\s/]+)",
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * The JDA instance of this Webhook.
@@ -355,13 +354,9 @@ public interface Webhook extends ISnowflake, WebhookClient<Message> {
         @CheckReturnValue
         public RestAction<Webhook> resolve() {
             Route.CompiledRoute route = Route.Webhooks.GET_WEBHOOK.compile(getId());
-            return new RestActionImpl<>(
-                    api,
-                    route,
-                    (response, request) ->
-                            request.getJDA()
-                                    .getEntityBuilder()
-                                    .createWebhook(response.getObject(), true));
+            return new RestActionImpl<>(api, route, (response, request) -> request.getJDA()
+                    .getEntityBuilder()
+                    .createWebhook(response.getObject(), true));
         }
     }
 

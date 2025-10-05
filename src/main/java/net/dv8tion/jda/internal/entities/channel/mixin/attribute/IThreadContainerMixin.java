@@ -46,12 +46,11 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>>
         if (isPrivate) checkPermission(Permission.CREATE_PRIVATE_THREADS);
         else checkPermission(Permission.CREATE_PUBLIC_THREADS);
 
-        ChannelType threadType =
-                isPrivate
-                        ? ChannelType.GUILD_PRIVATE_THREAD
-                        : getType() == ChannelType.TEXT
-                                ? ChannelType.GUILD_PUBLIC_THREAD
-                                : ChannelType.GUILD_NEWS_THREAD;
+        ChannelType threadType = isPrivate
+                ? ChannelType.GUILD_PRIVATE_THREAD
+                : getType() == ChannelType.TEXT
+                        ? ChannelType.GUILD_PUBLIC_THREAD
+                        : ChannelType.GUILD_NEWS_THREAD;
 
         return new ThreadChannelActionImpl(this, name, threadType);
     }

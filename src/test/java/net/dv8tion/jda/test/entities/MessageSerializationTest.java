@@ -56,42 +56,38 @@ public class MessageSerializationTest {
 
         assertThat(dataEmbed.toData())
                 .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(
-                        DataObject.empty()
-                                .put("title", TITLE_TEXT)
-                                .put("url", TITLE_URL)
-                                .put("description", DESCRIPTION_TEXT)
-                                .put("image", DataObject.empty().put("url", IMAGE_URL))
-                                .put("thumbnail", DataObject.empty().put("url", THUMBNAIL_URL))
-                                .put(
-                                        "footer",
-                                        DataObject.empty()
-                                                .put("icon_url", FOOTER_ICON)
-                                                .put("text", FOOTER_TEXT))
-                                .put(
-                                        "author",
-                                        DataObject.empty()
-                                                .put("icon_url", AUTHOR_ICON)
-                                                .put("name", AUTHOR_TEXT)
-                                                .put("url", AUTHOR_URL))
-                                .put(
-                                        "fields",
-                                        DataArray.empty()
-                                                .add(
-                                                        DataObject.empty()
-                                                                .put("inline", true)
-                                                                .put("name", FIELD_1_NAME)
-                                                                .put("value", FIELD_1_TEXT))
-                                                .add(
-                                                        DataObject.empty()
-                                                                .put("inline", false)
-                                                                .put("name", FIELD_2_NAME)
-                                                                .put("value", FIELD_2_TEXT))
-                                                .add(
-                                                        DataObject.empty()
-                                                                .put("inline", true)
-                                                                .put("name", FIELD_3_NAME)
-                                                                .put("value", FIELD_3_TEXT))));
+                .isEqualTo(DataObject.empty()
+                        .put("title", TITLE_TEXT)
+                        .put("url", TITLE_URL)
+                        .put("description", DESCRIPTION_TEXT)
+                        .put("image", DataObject.empty().put("url", IMAGE_URL))
+                        .put("thumbnail", DataObject.empty().put("url", THUMBNAIL_URL))
+                        .put(
+                                "footer",
+                                DataObject.empty()
+                                        .put("icon_url", FOOTER_ICON)
+                                        .put("text", FOOTER_TEXT))
+                        .put(
+                                "author",
+                                DataObject.empty()
+                                        .put("icon_url", AUTHOR_ICON)
+                                        .put("name", AUTHOR_TEXT)
+                                        .put("url", AUTHOR_URL))
+                        .put(
+                                "fields",
+                                DataArray.empty()
+                                        .add(DataObject.empty()
+                                                .put("inline", true)
+                                                .put("name", FIELD_1_NAME)
+                                                .put("value", FIELD_1_TEXT))
+                                        .add(DataObject.empty()
+                                                .put("inline", false)
+                                                .put("name", FIELD_2_NAME)
+                                                .put("value", FIELD_2_TEXT))
+                                        .add(DataObject.empty()
+                                                .put("inline", true)
+                                                .put("name", FIELD_3_NAME)
+                                                .put("value", FIELD_3_TEXT))));
     }
 
     @NotNull

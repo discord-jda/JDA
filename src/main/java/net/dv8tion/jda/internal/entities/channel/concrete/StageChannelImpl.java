@@ -106,19 +106,17 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     @Override
     public StageInstanceAction createStageInstance(@Nonnull String topic) {
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
-        EnumSet<Permission> required =
-                EnumSet.of(
-                        Permission.MANAGE_CHANNEL,
-                        Permission.VOICE_MUTE_OTHERS,
-                        Permission.VOICE_MOVE_OTHERS);
+        EnumSet<Permission> required = EnumSet.of(
+                Permission.MANAGE_CHANNEL,
+                Permission.VOICE_MUTE_OTHERS,
+                Permission.VOICE_MOVE_OTHERS);
         for (Permission perm : required) {
             if (!permissions.contains(perm))
                 throw new InsufficientPermissionException(
                         this,
                         perm,
                         "You must be a stage moderator to create a stage instance! Missing"
-                                + " Permission: "
-                                + perm);
+                                + " Permission: " + perm);
         }
 
         return new StageInstanceActionImpl(this).setTopic(topic);
@@ -173,11 +171,10 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     public RestAction<Void> cancelRequestToSpeak() {
         Guild guild = getGuild();
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
-        DataObject body =
-                DataObject.empty()
-                        .putNull("request_to_speak_timestamp")
-                        .put("suppress", true)
-                        .put("channel_id", getId());
+        DataObject body = DataObject.empty()
+                .putNull("request_to_speak_timestamp")
+                .put("suppress", true)
+                .put("channel_id", getId());
 
         if (!this.equals(guild.getSelfMember().getVoiceState().getChannel()))
             throw new IllegalStateException(

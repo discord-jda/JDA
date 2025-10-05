@@ -26,7 +26,9 @@ public interface LoadSampleTraits {
         String path = "/samples/" + self.getName().replace('.', '/') + "/" + name;
         InputStream resource = self.getResourceAsStream(path);
 
-        assertThat(resource).as("Resource " + name + " not found at path " + path).isNotNull();
+        assertThat(resource)
+                .as("Resource " + name + " not found at path " + path)
+                .isNotNull();
 
         return resource;
     }

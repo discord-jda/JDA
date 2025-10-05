@@ -158,10 +158,9 @@ public class ActionRowImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        final DataObject json =
-                DataObject.empty()
-                        .put("type", 1)
-                        .put("components", DataArray.fromCollection(components));
+        final DataObject json = DataObject.empty()
+                .put("type", 1)
+                .put("components", DataArray.fromCollection(components));
         if (uniqueId >= 0) json.put("id", uniqueId);
         return json;
     }

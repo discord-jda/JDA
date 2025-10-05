@@ -96,28 +96,20 @@ public class AnnotatedEventManager implements IEventManager {
         for (Class<?> eventClass : ClassWalker.walk(event.getClass())) {
             Map<Object, List<Method>> listeners = methods.get(eventClass);
             if (listeners != null) {
-                listeners.forEach(
-                        (key, value) ->
-                                value.forEach(
-                                        method -> {
-                                            try {
-                                                method.setAccessible(true);
-                                                method.invoke(key, event);
-                                            } catch (IllegalAccessException
-                                                    | InvocationTargetException e1) {
-                                                JDAImpl.LOG.error(
-                                                        "Couldn't access annotated EventListener"
-                                                                + " method",
-                                                        e1);
-                                            } catch (Throwable throwable) {
-                                                JDAImpl.LOG.error(
-                                                        "One of the EventListeners had an uncaught"
-                                                                + " exception",
-                                                        throwable);
-                                                if (throwable instanceof Error)
-                                                    throw (Error) throwable;
-                                            }
-                                        }));
+                listeners.forEach((key, value) -> value.forEach(method -> {
+                    try {
+                        method.setAccessible(true);
+                        method.invoke(key, event);
+                    } catch (IllegalAccessException | InvocationTargetException e1) {
+                        JDAImpl.LOG.error(
+                                "Couldn't access annotated EventListener" + " method", e1);
+                    } catch (Throwable throwable) {
+                        JDAImpl.LOG.error(
+                                "One of the EventListeners had an uncaught" + " exception",
+                                throwable);
+                        if (throwable instanceof Error) throw (Error) throwable;
+                    }
+                }));
             }
         }
     }

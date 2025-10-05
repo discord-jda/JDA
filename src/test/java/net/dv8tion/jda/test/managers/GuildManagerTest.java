@@ -46,10 +46,17 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GuildManagerTest extends IntegrationTest {
-    @Mock private Guild guild;
-    @Mock private Member selfMember;
-    @Mock private TextChannel textChannel;
-    @Mock private VoiceChannel voiceChannel;
+    @Mock
+    private Guild guild;
+
+    @Mock
+    private Member selfMember;
+
+    @Mock
+    private TextChannel textChannel;
+
+    @Mock
+    private VoiceChannel voiceChannel;
 
     @BeforeEach
     void setupMocks() {
@@ -84,34 +91,30 @@ public class GuildManagerTest extends IntegrationTest {
             if (ignoredSetters.contains(method.getName())) continue;
 
             if (method.getName().startsWith("set") && method.getParameterCount() == 1) {
-                assertThatNoException()
-                        .describedAs("call " + method.getName())
-                        .isThrownBy(
-                                () -> {
-                                    Object mocked = getParameterForSetter(method);
-                                    method.invoke(manager, mocked);
-                                    calledSetters.incrementAndGet();
-                                });
+                assertThatNoException().describedAs("call " + method.getName()).isThrownBy(() -> {
+                    Object mocked = getParameterForSetter(method);
+                    method.invoke(manager, mocked);
+                    calledSetters.incrementAndGet();
+                });
             }
         }
 
-        DataObject expectedBody =
-                DataObject.empty()
-                        .put("afk_channel_id", "125227483518861312")
-                        .put("afk_timeout", 0)
-                        .put("banner", null)
-                        .put("default_message_notifications", 0)
-                        .put("description", "test")
-                        .put("explicit_content_filter", 0)
-                        .put("icon", null)
-                        .put("name", "test")
-                        .put("premium_progress_bar_enabled", true)
-                        .put("public_updates_channel_id", "125227483518861312")
-                        .put("safety_alerts_channel_id", "125227483518861312")
-                        .put("rules_channel_id", "125227483518861312")
-                        .put("splash", null)
-                        .put("system_channel_id", "125227483518861312")
-                        .put("verification_level", 0);
+        DataObject expectedBody = DataObject.empty()
+                .put("afk_channel_id", "125227483518861312")
+                .put("afk_timeout", 0)
+                .put("banner", null)
+                .put("default_message_notifications", 0)
+                .put("description", "test")
+                .put("explicit_content_filter", 0)
+                .put("icon", null)
+                .put("name", "test")
+                .put("premium_progress_bar_enabled", true)
+                .put("public_updates_channel_id", "125227483518861312")
+                .put("safety_alerts_channel_id", "125227483518861312")
+                .put("rules_channel_id", "125227483518861312")
+                .put("splash", null)
+                .put("system_channel_id", "125227483518861312")
+                .put("verification_level", 0);
 
         assertThatRequestFrom(manager)
                 .hasMethod(PATCH)

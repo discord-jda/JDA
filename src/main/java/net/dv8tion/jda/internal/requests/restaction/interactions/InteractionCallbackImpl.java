@@ -51,10 +51,10 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T>
         if (exception.getErrorResponse() == ErrorResponse.INTERACTION_ALREADY_ACKNOWLEDGED)
             return ErrorResponseException.create(
                     "This interaction was acknowledged by another process running for the same"
-                        + " bot.\n"
-                        + "To resolve this, try stopping all current processes for the bot that"
-                        + " could be responsible, or resetting your bot token.\n"
-                        + "You can reset your token at https://discord.com/developers/applications/"
+                            + " bot.\n"
+                            + "To resolve this, try stopping all current processes for the bot that"
+                            + " could be responsible, or resetting your bot token.\n"
+                            + "You can reset your token at https://discord.com/developers/applications/"
                             + getJDA().getSelfUser().getApplicationId()
                             + "/bot",
                     exception);
@@ -66,16 +66,16 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T>
         if (exception.getErrorResponse() == ErrorResponse.UNKNOWN_INTERACTION)
             return ErrorResponseException.create(
                     "Failed to acknowledge this interaction, this can be due to 2 reasons:\n"
-                        + "1. This interaction took longer than 3 seconds to be acknowledged, see"
-                        + " https://jda.wiki/using-jda/troubleshooting/#the-interaction-took-longer-than-3-seconds-to-be-acknowledged\n"
-                        + "2. This interaction could have been acknowledged by another process"
-                        + " running for the same bot\n"
-                        + "You can confirm this by checking if your bot replied, or the three dots"
-                        + " in a button disappeared without saying 'This interaction failed', or"
-                        + " you see '[Bot] is thinking...' for more than 3 seconds.\n"
-                        + "To resolve this, try stopping all current processes for the bot that"
-                        + " could be responsible, or resetting your bot token.\n"
-                        + "You can reset your token at https://discord.com/developers/applications/"
+                            + "1. This interaction took longer than 3 seconds to be acknowledged, see"
+                            + " https://jda.wiki/using-jda/troubleshooting/#the-interaction-took-longer-than-3-seconds-to-be-acknowledged\n"
+                            + "2. This interaction could have been acknowledged by another process"
+                            + " running for the same bot\n"
+                            + "You can confirm this by checking if your bot replied, or the three dots"
+                            + " in a button disappeared without saying 'This interaction failed', or"
+                            + " you see '[Bot] is thinking...' for more than 3 seconds.\n"
+                            + "To resolve this, try stopping all current processes for the bot that"
+                            + " could be responsible, or resetting your bot token.\n"
+                            + "You can reset your token at https://discord.com/developers/applications/"
                             + getJDA().getSelfUser().getApplicationId()
                             + "/bot",
                     exception);

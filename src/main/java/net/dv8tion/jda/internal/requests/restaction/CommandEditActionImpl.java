@@ -94,14 +94,13 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction apply(@Nonnull CommandData commandData) {
         Checks.notNull(commandData, "Command Data");
-        this.mask =
-                NAME_SET
-                        | DESCRIPTION_SET
-                        | OPTIONS_SET
-                        | PERMISSIONS_SET
-                        | NSFW_SET
-                        | INTERACTION_CONTEXTS_SET
-                        | INTEGRATION_TYPES_SET;
+        this.mask = NAME_SET
+                | DESCRIPTION_SET
+                | OPTIONS_SET
+                | PERMISSIONS_SET
+                | NSFW_SET
+                | INTERACTION_CONTEXTS_SET
+                | INTEGRATION_TYPES_SET;
         this.data = (CommandDataImpl) commandData;
         return this;
     }

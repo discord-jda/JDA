@@ -69,10 +69,9 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
                         channel.getId(), parentMessageId));
         this.guild = channel.getGuild();
         this.channel = channel;
-        this.type =
-                channel.getType() == ChannelType.TEXT
-                        ? ChannelType.GUILD_PUBLIC_THREAD
-                        : ChannelType.GUILD_NEWS_THREAD;
+        this.type = channel.getType() == ChannelType.TEXT
+                ? ChannelType.GUILD_PUBLIC_THREAD
+                : ChannelType.GUILD_NEWS_THREAD;
         this.parentMessageId = parentMessageId;
 
         this.name = name;

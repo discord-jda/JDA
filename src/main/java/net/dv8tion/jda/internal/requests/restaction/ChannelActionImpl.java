@@ -306,33 +306,28 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         // override on the channel
         // That is why we explicitly exclude it here!
         // This is by far the most complex and weird permission logic in the entire API...
-        long botPerms =
-                PermissionUtil.getEffectivePermission(selfMember)
-                        & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+        long botPerms = PermissionUtil.getEffectivePermission(selfMember)
+                & ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
-        parent.getRolePermissionOverrides()
-                .forEach(
-                        override -> {
-                            long allow = override.getAllowedRaw();
-                            long deny = override.getDeniedRaw();
-                            if (!canSetRoles) {
-                                allow &= botPerms;
-                                deny &= botPerms;
-                            }
-                            addRolePermissionOverride(override.getIdLong(), allow, deny);
-                        });
+        parent.getRolePermissionOverrides().forEach(override -> {
+            long allow = override.getAllowedRaw();
+            long deny = override.getDeniedRaw();
+            if (!canSetRoles) {
+                allow &= botPerms;
+                deny &= botPerms;
+            }
+            addRolePermissionOverride(override.getIdLong(), allow, deny);
+        });
 
-        parent.getMemberPermissionOverrides()
-                .forEach(
-                        override -> {
-                            long allow = override.getAllowedRaw();
-                            long deny = override.getDeniedRaw();
-                            if (!canSetRoles) {
-                                allow &= botPerms;
-                                deny &= botPerms;
-                            }
-                            addMemberPermissionOverride(override.getIdLong(), allow, deny);
-                        });
+        parent.getMemberPermissionOverrides().forEach(override -> {
+            long allow = override.getAllowedRaw();
+            long deny = override.getDeniedRaw();
+            if (!canSetRoles) {
+                allow &= botPerms;
+                deny &= botPerms;
+            }
+            addMemberPermissionOverride(override.getIdLong(), allow, deny);
+        });
         return this;
     }
 
@@ -349,9 +344,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             // override on the channel
             // That is why we explicitly exclude it here!
             // This is by far the most complex and weird permission logic in the entire API...
-            long botPerms =
-                    PermissionUtil.getEffectivePermission(selfMember)
-                            & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+            long botPerms = PermissionUtil.getEffectivePermission(selfMember)
+                    & ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
             EnumSet<Permission> missingPerms =
                     Permission.getPermissions((allow | deny) & ~botPerms);

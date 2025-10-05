@@ -198,10 +198,9 @@ public interface AutoCompleteCallbackAction
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction addChoiceStrings(@Nonnull String... choices) {
-        return addChoices(
-                Arrays.stream(choices)
-                        .map(it -> new Command.Choice(it, it))
-                        .collect(Collectors.toList()));
+        return addChoices(Arrays.stream(choices)
+                .map(it -> new Command.Choice(it, it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -226,10 +225,9 @@ public interface AutoCompleteCallbackAction
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction addChoiceStrings(@Nonnull Collection<String> choices) {
-        return addChoices(
-                choices.stream()
-                        .map(it -> new Command.Choice(it, it))
-                        .collect(Collectors.toList()));
+        return addChoices(choices.stream()
+                .map(it -> new Command.Choice(it, it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -254,10 +252,9 @@ public interface AutoCompleteCallbackAction
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction addChoiceLongs(@Nonnull long... choices) {
-        return addChoices(
-                Arrays.stream(choices)
-                        .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
-                        .collect(Collectors.toList()));
+        return addChoices(Arrays.stream(choices)
+                .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -282,10 +279,9 @@ public interface AutoCompleteCallbackAction
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction addChoiceLongs(@Nonnull Collection<Long> choices) {
-        return addChoices(
-                choices.stream()
-                        .map(it -> new Command.Choice(String.valueOf(it), it))
-                        .collect(Collectors.toList()));
+        return addChoices(choices.stream()
+                .map(it -> new Command.Choice(String.valueOf(it), it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -310,10 +306,9 @@ public interface AutoCompleteCallbackAction
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction addChoiceDoubles(@Nonnull double... choices) {
-        return addChoices(
-                Arrays.stream(choices)
-                        .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
-                        .collect(Collectors.toList()));
+        return addChoices(Arrays.stream(choices)
+                .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -338,9 +333,8 @@ public interface AutoCompleteCallbackAction
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction addChoiceDoubles(@Nonnull Collection<Double> choices) {
-        return addChoices(
-                choices.stream()
-                        .map(it -> new Command.Choice(String.valueOf(it), it))
-                        .collect(Collectors.toList()));
+        return addChoices(choices.stream()
+                .map(it -> new Command.Choice(String.valueOf(it), it))
+                .collect(Collectors.toList()));
     }
 }

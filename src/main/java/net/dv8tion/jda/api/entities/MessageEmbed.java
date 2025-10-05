@@ -156,10 +156,9 @@ public class MessageEmbed implements SerializableData {
         this.videoInfo = videoInfo;
         this.footer = footer;
         this.image = image;
-        this.fields =
-                fields != null && !fields.isEmpty()
-                        ? Collections.unmodifiableList(fields)
-                        : Collections.emptyList();
+        this.fields = fields != null && !fields.isEmpty()
+                ? Collections.unmodifiableList(fields)
+                : Collections.emptyList();
     }
 
     /**
@@ -358,9 +357,8 @@ public class MessageEmbed implements SerializableData {
             if (footer != null) length += Helpers.codePointLength(footer.getText());
             if (fields != null) {
                 for (Field f : fields)
-                    length +=
-                            Helpers.codePointLength(f.getName())
-                                    + Helpers.codePointLength(f.getValue());
+                    length += Helpers.codePointLength(f.getName())
+                            + Helpers.codePointLength(f.getValue());
             }
 
             return length;
@@ -451,11 +449,10 @@ public class MessageEmbed implements SerializableData {
             if (!fields.isEmpty()) {
                 DataArray fieldsArray = DataArray.empty();
                 for (Field field : fields) {
-                    fieldsArray.add(
-                            DataObject.empty()
-                                    .put("name", field.getName())
-                                    .put("value", field.getValue())
-                                    .put("inline", field.isInline()));
+                    fieldsArray.add(DataObject.empty()
+                            .put("name", field.getName())
+                            .put("value", field.getValue())
+                            .put("inline", field.isInline()));
                 }
                 obj.put("fields", fieldsArray);
             }

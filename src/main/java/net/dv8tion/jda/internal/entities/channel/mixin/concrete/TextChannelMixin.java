@@ -33,11 +33,10 @@ public interface TextChannelMixin<T extends TextChannelMixin<T>>
     @Override
     default ChannelAction<TextChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
-        ChannelAction<TextChannel> action =
-                guild.createTextChannel(getName())
-                        .setNSFW(isNSFW())
-                        .setTopic(getTopic())
-                        .setSlowmode(getSlowmode());
+        ChannelAction<TextChannel> action = guild.createTextChannel(getName())
+                .setNSFW(isNSFW())
+                .setTopic(getTopic())
+                .setSlowmode(getSlowmode());
         if (guild.equals(getGuild())) {
             Category parent = getParentCategory();
             if (parent != null) action.setParent(parent);

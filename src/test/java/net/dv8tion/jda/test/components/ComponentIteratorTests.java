@@ -75,10 +75,9 @@ public class ComponentIteratorTests {
                     verify(container, times(1)).getComponents();
                     break;
                 default:
-                    fail(
-                            "Please update this test with the new component type, then update"
-                                    + " ComponentIterator if necessary "
-                                    + type.name());
+                    fail("Please update this test with the new component type, then update"
+                            + " ComponentIterator if necessary "
+                            + type.name());
             }
         }
     }

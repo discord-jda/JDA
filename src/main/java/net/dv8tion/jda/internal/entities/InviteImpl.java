@@ -99,10 +99,8 @@ public class InviteImpl implements Invite {
         if (withCounts) route = route.withQueryParams("with_counts", "true");
 
         JDAImpl jda = (JDAImpl) api;
-        return new RestActionImpl<>(
-                api,
-                route,
-                (response, request) -> jda.getEntityBuilder().createInvite(response.getObject()));
+        return new RestActionImpl<>(api, route, (response, request) -> jda.getEntityBuilder()
+                .createInvite(response.getObject()));
     }
 
     @Nonnull
@@ -150,21 +148,17 @@ public class InviteImpl implements Invite {
                     "You don't have the permission to view the full invite info");
         }
 
-        return new RestActionImpl<>(
-                this.api,
-                route,
-                (response, request) -> {
-                    final EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    final DataArray array = response.getArray();
-                    for (int i = 0; i < array.length(); i++) {
-                        final DataObject object = array.getObject(i);
-                        if (InviteImpl.this.code.equals(object.getString("code"))) {
-                            return entityBuilder.createInvite(object);
-                        }
-                    }
-                    throw new IllegalStateException(
-                            "Missing the invite in the channel/guild invite list");
-                });
+        return new RestActionImpl<>(this.api, route, (response, request) -> {
+            final EntityBuilder entityBuilder = this.api.getEntityBuilder();
+            final DataArray array = response.getArray();
+            for (int i = 0; i < array.length(); i++) {
+                final DataObject object = array.getObject(i);
+                if (InviteImpl.this.code.equals(object.getString("code"))) {
+                    return entityBuilder.createInvite(object);
+                }
+            }
+            throw new IllegalStateException("Missing the invite in the channel/guild invite list");
+        });
     }
 
     @Nonnull
@@ -383,10 +377,7 @@ public class InviteImpl implements Invite {
         public String getSplashUrl() {
             return this.splashId == null
                     ? null
-                    : "https://cdn.discordapp.com/splashes/"
-                            + this.id
-                            + "/"
-                            + this.splashId
+                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId
                             + ".png";
         }
 
@@ -446,10 +437,7 @@ public class InviteImpl implements Invite {
         public String getIconUrl() {
             return this.iconId == null
                     ? null
-                    : "https://cdn.discordapp.com/channel-icons/"
-                            + this.id
-                            + "/"
-                            + this.iconId
+                    : "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId
                             + ".png";
         }
 
@@ -585,10 +573,7 @@ public class InviteImpl implements Invite {
         public String getIconUrl() {
             return this.iconId == null
                     ? null
-                    : "https://cdn.discordapp.com/app-icons/"
-                            + this.id
-                            + '/'
-                            + this.iconId
+                    : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId
                             + ".png";
         }
 

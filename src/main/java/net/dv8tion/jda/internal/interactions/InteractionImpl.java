@@ -65,23 +65,18 @@ public class InteractionImpl implements Interaction {
     public InteractionImpl(JDAImpl jda, DataObject data) {
         DataObject userObj = data.optObject("member").orElse(data).getObject("user");
         this.api = jda;
-        this.interactionEntityBuilder =
-                new InteractionEntityBuilder(
-                        jda, data.getLong("channel_id"), userObj.getUnsignedLong("id"));
+        this.interactionEntityBuilder = new InteractionEntityBuilder(
+                jda, data.getLong("channel_id"), userObj.getUnsignedLong("id"));
         this.id = data.getUnsignedLong("id");
         this.token = data.getString("token");
         this.type = data.getInt("type");
-        this.guild =
-                data.optObject("guild")
-                        .map(
-                                guildJson -> {
-                                    if (!guildJson.hasKey("preferred_locale"))
-                                        guildJson.put(
-                                                "preferred_locale",
-                                                data.getString("guild_locale", "en-US"));
-                                    return interactionEntityBuilder.getOrCreateGuild(guildJson);
-                                })
-                        .orElse(null);
+        this.guild = data.optObject("guild")
+                .map(guildJson -> {
+                    if (!guildJson.hasKey("preferred_locale"))
+                        guildJson.put("preferred_locale", data.getString("guild_locale", "en-US"));
+                    return interactionEntityBuilder.getOrCreateGuild(guildJson);
+                })
+                .orElse(null);
         this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
         this.context = InteractionContextType.fromKey(data.getString("context"));
@@ -91,18 +86,16 @@ public class InteractionImpl implements Interaction {
         DataObject channelJson = data.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
         if (guild instanceof GuildImpl) {
-            member =
-                    jda.getEntityBuilder()
-                            .createMember((GuildImpl) guild, data.getObject("member"));
+            member = jda.getEntityBuilder()
+                    .createMember((GuildImpl) guild, data.getObject("member"));
             jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
             user = member.getUser();
 
             GuildChannel channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
             if (channel == null && channelType.isThread())
-                channel =
-                        api.getEntityBuilder()
-                                .createThreadChannel(
-                                        (GuildImpl) guild, channelJson, guild.getIdLong(), false);
+                channel = api.getEntityBuilder()
+                        .createThreadChannel(
+                                (GuildImpl) guild, channelJson, guild.getIdLong(), false);
             if (channel == null)
                 throw new IllegalStateException(
                         "Failed to create channel instance for interaction! Channel Type: "
@@ -133,17 +126,15 @@ public class InteractionImpl implements Interaction {
                     break;
                 default:
                     throw new IllegalArgumentException(
-                            "Received interaction in unexpected channel type! Type "
-                                    + type
+                            "Received interaction in unexpected channel type! Type " + type
                                     + " is not supported yet!");
             }
         }
 
-        this.entitlements =
-                data.optArray("entitlements").orElseGet(DataArray::empty).stream(
-                                DataArray::getObject)
-                        .map(jda.getEntityBuilder()::createEntitlement)
-                        .collect(Helpers.toUnmodifiableList());
+        this.entitlements = data.optArray("entitlements").orElseGet(DataArray::empty).stream(
+                        DataArray::getObject)
+                .map(jda.getEntityBuilder()::createEntitlement)
+                .collect(Helpers.toUnmodifiableList());
     }
 
     // Used to allow interaction hook to send messages after acknowledgements

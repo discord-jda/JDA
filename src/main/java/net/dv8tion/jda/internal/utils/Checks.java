@@ -249,7 +249,8 @@ public class Checks {
                 .forEach(c -> sb.append(" - ").append(c.getPath()).append("\n"));
 
         if (sb.length() > 0)
-            throw new IllegalArgumentException(errorMessage + "\n" + sb.toString().trim());
+            throw new IllegalArgumentException(
+                    errorMessage + "\n" + sb.toString().trim());
     }
 
     public static void checkComponents(
@@ -295,10 +296,8 @@ public class Checks {
                 supported.contains(type),
                 "Can only configure %s for channels of types %s",
                 what,
-                JDALogger.getLazyString(
-                        () ->
-                                supported.stream()
-                                        .map(ChannelType::name)
-                                        .collect(Collectors.joining(", "))));
+                JDALogger.getLazyString(() -> supported.stream()
+                        .map(ChannelType::name)
+                        .collect(Collectors.joining(", "))));
     }
 }

@@ -59,10 +59,8 @@ public abstract class DeferrableCallbackActionImpl
         if (mediaType != null && mediaType.toString().startsWith("application/json")) {
             response.optObject()
                     .flatMap(obj -> obj.optObject("resource"))
-                    .ifPresent(
-                            resource ->
-                                    hook.setCallbackResponse(
-                                            new InteractionCallbackResponseImpl(hook, resource)));
+                    .ifPresent(resource -> hook.setCallbackResponse(
+                            new InteractionCallbackResponseImpl(hook, resource)));
         }
     }
 }

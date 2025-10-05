@@ -41,11 +41,9 @@ public class EventConsistencyComplianceTest {
     static void setup() {
         Reflections events = new Reflections("net.dv8tion.jda.api.events");
         eventTypes = events.getSubTypesOf(GenericEvent.class);
-        excludedTypes =
-                new HashSet<>(
-                        Arrays.asList(
-                                // Special casing
-                                UpdateEvent.class, Event.class, GenericEvent.class));
+        excludedTypes = new HashSet<>(Arrays.asList(
+                // Special casing
+                UpdateEvent.class, Event.class, GenericEvent.class));
     }
 
     @Test

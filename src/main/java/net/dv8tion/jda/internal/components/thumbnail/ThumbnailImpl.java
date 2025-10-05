@@ -138,11 +138,10 @@ public class ThumbnailImpl extends AbstractComponentImpl
         outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
         else // External URL or user-managed attachment
         outputUrl = url;
-        final DataObject json =
-                DataObject.empty()
-                        .put("type", getType().getKey())
-                        .put("media", DataObject.empty().put("url", outputUrl))
-                        .put("spoiler", spoiler);
+        final DataObject json = DataObject.empty()
+                .put("type", getType().getKey())
+                .put("media", DataObject.empty().put("url", outputUrl))
+                .put("spoiler", spoiler);
         if (uniqueId >= 0) json.put("id", uniqueId);
         if (description != null) json.put("description", description);
         return json;

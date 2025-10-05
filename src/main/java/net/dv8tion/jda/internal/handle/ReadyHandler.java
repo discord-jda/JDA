@@ -59,11 +59,10 @@ public class ReadyHandler extends SocketHandler {
         builder.createSelfUser(selfJson);
 
         if (getJDA().getGuildSetupController().setIncompleteCount(distinctGuilds.size())) {
-            distinctGuilds.forEachEntry(
-                    (id, guild) -> {
-                        getJDA().getGuildSetupController().onReady(id, guild);
-                        return true;
-                    });
+            distinctGuilds.forEachEntry((id, guild) -> {
+                getJDA().getGuildSetupController().onReady(id, guild);
+                return true;
+            });
         }
 
         handleReady(content);

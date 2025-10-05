@@ -325,12 +325,11 @@ public class RoleConnectionMetadata implements SerializableData {
     @Nonnull
     public static RoleConnectionMetadata fromData(@Nonnull DataObject data) {
         Checks.notNull(data, "Data");
-        RoleConnectionMetadata metadata =
-                new RoleConnectionMetadata(
-                        MetadataType.fromValue(data.getInt("type")),
-                        data.getString("name", null),
-                        data.getString("key", null),
-                        data.getString("description", null));
+        RoleConnectionMetadata metadata = new RoleConnectionMetadata(
+                MetadataType.fromValue(data.getInt("type")),
+                data.getString("name", null),
+                data.getString("key", null),
+                data.getString("description", null));
         return metadata.setNameLocalizations(
                         LocalizationUtils.mapFromProperty(data, "name_localizations"))
                 .setDescriptionLocalizations(

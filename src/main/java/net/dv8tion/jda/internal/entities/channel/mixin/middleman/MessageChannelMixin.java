@@ -91,9 +91,8 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
         List<CompletableFuture<Void>> list = new LinkedList<>();
         TreeSet<Long> bulk = new TreeSet<>(Comparator.reverseOrder());
         TreeSet<Long> norm = new TreeSet<>(Comparator.reverseOrder());
-        long twoWeeksAgo =
-                TimeUtil.getDiscordTimestamp(
-                        System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
+        long twoWeeksAgo = TimeUtil.getDiscordTimestamp(
+                System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
         for (long messageId : messageIds) {
             if (messageId > twoWeeksAgo) // Bulk delete cannot delete messages older than 2 weeks.
             bulk.add(messageId);
@@ -111,8 +110,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
                 // If we only had 1 in the bulk collection then use the standard deleteMessageById
                 // request
                 // as you cannot bulk delete a single message
-                if (toDelete.size() == 1) list.add(deleteMessageById(toDelete.get(0)).submit());
-                else if (!toDelete.isEmpty()) list.add(bulkDeleteMessages(toDelete).submit());
+                if (toDelete.size() == 1)
+                    list.add(deleteMessageById(toDelete.get(0)).submit());
+                else if (!toDelete.isEmpty())
+                    list.add(bulkDeleteMessages(toDelete).submit());
             }
         }
 

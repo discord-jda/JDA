@@ -285,6 +285,9 @@ public enum ChannelField {
     @Nonnull
     @Override
     public String toString() {
-        return new EntityString(this).setType(this).addMetadata("fieldName", fieldName).toString();
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("fieldName", fieldName)
+                .toString();
     }
 }

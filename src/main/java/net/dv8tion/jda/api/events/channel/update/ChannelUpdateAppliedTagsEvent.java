@@ -88,12 +88,11 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      */
     @Nonnull
     public List<ForumTag> getNewTags() {
-        SortedSnowflakeCacheView<ForumTag> cache =
-                getChannel()
-                        .asThreadChannel()
-                        .getParentChannel()
-                        .asForumChannel()
-                        .getAvailableTagCache();
+        SortedSnowflakeCacheView<ForumTag> cache = getChannel()
+                .asThreadChannel()
+                .getParentChannel()
+                .asForumChannel()
+                .getAvailableTagCache();
         return getNewValue().stream()
                 .map(cache::getElementById)
                 .filter(Objects::nonNull)
@@ -110,12 +109,11 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      */
     @Nonnull
     public List<ForumTag> getOldTags() {
-        SortedSnowflakeCacheView<ForumTag> cache =
-                getChannel()
-                        .asThreadChannel()
-                        .getParentChannel()
-                        .asForumChannel()
-                        .getAvailableTagCache();
+        SortedSnowflakeCacheView<ForumTag> cache = getChannel()
+                .asThreadChannel()
+                .getParentChannel()
+                .asForumChannel()
+                .getAvailableTagCache();
         return getOldValue().stream()
                 .map(cache::getElementById)
                 .filter(Objects::nonNull)

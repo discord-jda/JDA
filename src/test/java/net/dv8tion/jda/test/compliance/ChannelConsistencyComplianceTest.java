@@ -48,16 +48,14 @@ public class ChannelConsistencyComplianceTest {
     void checkCreateChannelMethods() {
         Set<String> guildMethods = getMethodNames(Guild.class);
 
-        EnumSet<ChannelType> creatable =
-                EnumSet.complementOf(
-                        EnumSet.of(
-                                ChannelType.PRIVATE,
-                                ChannelType.GROUP,
-                                ChannelType.CATEGORY,
-                                ChannelType.GUILD_PUBLIC_THREAD,
-                                ChannelType.GUILD_PRIVATE_THREAD,
-                                ChannelType.GUILD_NEWS_THREAD,
-                                ChannelType.UNKNOWN));
+        EnumSet<ChannelType> creatable = EnumSet.complementOf(EnumSet.of(
+                ChannelType.PRIVATE,
+                ChannelType.GROUP,
+                ChannelType.CATEGORY,
+                ChannelType.GUILD_PUBLIC_THREAD,
+                ChannelType.GUILD_PRIVATE_THREAD,
+                ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.UNKNOWN));
 
         for (ChannelType type : creatable) {
             String channelName = getChannelName(type);
@@ -79,16 +77,14 @@ public class ChannelConsistencyComplianceTest {
         Set<String> jdaMethods = getMethodNames(IGuildChannelContainer.class);
         Set<String> categoryMethods = getMethodNames(Category.class);
 
-        EnumSet<ChannelType> cacheable =
-                EnumSet.complementOf(
-                        EnumSet.of(
-                                ChannelType.PRIVATE,
-                                ChannelType.GROUP,
-                                ChannelType.CATEGORY,
-                                ChannelType.GUILD_PUBLIC_THREAD,
-                                ChannelType.GUILD_PRIVATE_THREAD,
-                                ChannelType.GUILD_NEWS_THREAD,
-                                ChannelType.UNKNOWN));
+        EnumSet<ChannelType> cacheable = EnumSet.complementOf(EnumSet.of(
+                ChannelType.PRIVATE,
+                ChannelType.GROUP,
+                ChannelType.CATEGORY,
+                ChannelType.GUILD_PUBLIC_THREAD,
+                ChannelType.GUILD_PRIVATE_THREAD,
+                ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.UNKNOWN));
 
         for (ChannelType type : cacheable) {
             String channelName = getChannelName(type);
@@ -110,26 +106,20 @@ public class ChannelConsistencyComplianceTest {
 
     @Test
     void checkManagerExists() {
-        EnumSet<ChannelType> editable =
-                EnumSet.complementOf(
-                        EnumSet.of(
-                                ChannelType.PRIVATE,
-                                ChannelType.GROUP,
-                                ChannelType.CATEGORY,
-                                ChannelType.GUILD_PUBLIC_THREAD,
-                                ChannelType.GUILD_PRIVATE_THREAD,
-                                ChannelType.GUILD_NEWS_THREAD,
-                                ChannelType.UNKNOWN));
+        EnumSet<ChannelType> editable = EnumSet.complementOf(EnumSet.of(
+                ChannelType.PRIVATE,
+                ChannelType.GROUP,
+                ChannelType.CATEGORY,
+                ChannelType.GUILD_PUBLIC_THREAD,
+                ChannelType.GUILD_PRIVATE_THREAD,
+                ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.UNKNOWN));
 
         for (ChannelType type : editable) {
             String channelName = getChannelName(type);
 
-            assertThatCode(
-                            () ->
-                                    Class.forName(
-                                            "net.dv8tion.jda.api.managers.channel.concrete."
-                                                    + channelName
-                                                    + "ChannelManager"))
+            assertThatCode(() -> Class.forName("net.dv8tion.jda.api.managers.channel.concrete."
+                            + channelName + "ChannelManager"))
                     .as("Missing manager interface for ChannelType." + type)
                     .doesNotThrowAnyException();
         }

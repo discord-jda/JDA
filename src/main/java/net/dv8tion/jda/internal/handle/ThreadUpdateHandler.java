@@ -66,9 +66,8 @@ public class ThreadUpdateHandler extends SocketHandler {
             // provide an entirely accurate ChannelUpdateArchiveTimestampEvent. Not sure how much
             // that'll matter.
             try {
-                thread =
-                        (ThreadChannelImpl)
-                                api.getEntityBuilder().createThreadChannel(content, guildId);
+                thread = (ThreadChannelImpl)
+                        api.getEntityBuilder().createThreadChannel(content, guildId);
                 api.handleEvent(
                         new ChannelUpdateArchivedEvent(api, responseNumber, thread, true, false));
             } catch (IllegalArgumentException ex) {
@@ -125,29 +124,22 @@ public class ThreadUpdateHandler extends SocketHandler {
         }
         if (oldFlags != flags) {
             thread.setFlags(flags);
-            api.handleEvent(
-                    new ChannelUpdateFlagsEvent(
-                            getJDA(),
-                            responseNumber,
-                            thread,
-                            ChannelFlag.fromRaw(oldFlags),
-                            ChannelFlag.fromRaw(flags)));
+            api.handleEvent(new ChannelUpdateFlagsEvent(
+                    getJDA(),
+                    responseNumber,
+                    thread,
+                    ChannelFlag.fromRaw(oldFlags),
+                    ChannelFlag.fromRaw(flags)));
         }
         if (oldSlowmode != slowmode) {
             thread.setSlowmode(slowmode);
-            api.handleEvent(
-                    new ChannelUpdateSlowmodeEvent(
-                            api, responseNumber, thread, oldSlowmode, slowmode));
+            api.handleEvent(new ChannelUpdateSlowmodeEvent(
+                    api, responseNumber, thread, oldSlowmode, slowmode));
         }
         if (oldAutoArchiveDuration != autoArchiveDuration) {
             thread.setAutoArchiveDuration(autoArchiveDuration);
-            api.handleEvent(
-                    new ChannelUpdateAutoArchiveDurationEvent(
-                            api,
-                            responseNumber,
-                            thread,
-                            oldAutoArchiveDuration,
-                            autoArchiveDuration));
+            api.handleEvent(new ChannelUpdateAutoArchiveDurationEvent(
+                    api, responseNumber, thread, oldAutoArchiveDuration, autoArchiveDuration));
         }
         if (oldLocked != locked) {
             thread.setLocked(locked);
@@ -156,21 +148,18 @@ public class ThreadUpdateHandler extends SocketHandler {
         }
         if (oldArchived != archived) {
             thread.setArchived(archived);
-            api.handleEvent(
-                    new ChannelUpdateArchivedEvent(
-                            api, responseNumber, thread, oldArchived, archived));
+            api.handleEvent(new ChannelUpdateArchivedEvent(
+                    api, responseNumber, thread, oldArchived, archived));
         }
         if (oldArchiveTimestamp != archiveTimestamp) {
             thread.setArchiveTimestamp(archiveTimestamp);
-            api.handleEvent(
-                    new ChannelUpdateArchiveTimestampEvent(
-                            api, responseNumber, thread, oldArchiveTimestamp, archiveTimestamp));
+            api.handleEvent(new ChannelUpdateArchiveTimestampEvent(
+                    api, responseNumber, thread, oldArchiveTimestamp, archiveTimestamp));
         }
         if (oldInvitable != invitable) {
             thread.setInvitable(invitable);
-            api.handleEvent(
-                    new ChannelUpdateInvitableEvent(
-                            api, responseNumber, thread, oldInvitable, invitable));
+            api.handleEvent(new ChannelUpdateInvitableEvent(
+                    api, responseNumber, thread, oldInvitable, invitable));
         }
 
         if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS) && !content.isNull("applied_tags")) {
@@ -181,15 +170,13 @@ public class ThreadUpdateHandler extends SocketHandler {
             final TLongSet tags = thread.getAppliedTagsSet();
 
             if (!oldTags.equals(tags)) {
-                List<Long> oldTagList =
-                        LongStream.of(oldTags.toArray())
-                                .boxed()
-                                .collect(Helpers.toUnmodifiableList());
+                List<Long> oldTagList = LongStream.of(oldTags.toArray())
+                        .boxed()
+                        .collect(Helpers.toUnmodifiableList());
                 List<Long> newTagList =
                         LongStream.of(tags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
-                api.handleEvent(
-                        new ChannelUpdateAppliedTagsEvent(
-                                api, responseNumber, thread, oldTagList, newTagList));
+                api.handleEvent(new ChannelUpdateAppliedTagsEvent(
+                        api, responseNumber, thread, oldTagList, newTagList));
             }
         }
 

@@ -88,9 +88,8 @@ public class MessageEditActionImpl extends RestActionImpl<Message>
         if (webhook != null
                 && (!(webhook instanceof InteractionHook)
                         || !((InteractionHook) webhook).isExpired())) {
-            Route.CompiledRoute route =
-                    Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(
-                            webhook.getId(), webhook.getToken(), messageId);
+            Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(
+                    webhook.getId(), webhook.getToken(), messageId);
             if (this.threadId != null) route = route.withQueryParams("thread_id", threadId);
 
             return route;

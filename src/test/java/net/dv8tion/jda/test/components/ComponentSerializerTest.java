@@ -43,7 +43,9 @@ public class ComponentSerializerTest extends AbstractComponentTest {
         List<FileUpload> fileUploads = serializer.getFileUploads(component);
 
         assertSerialization(
-                serializer, Collections.singletonList(component), component.getType().name());
+                serializer,
+                Collections.singletonList(component),
+                component.getType().name());
 
         ComponentDeserializer deserializer = new ComponentDeserializer(fileUploads);
         Component deserialized = deserializer.deserializeAs(Component.class, dataObject);

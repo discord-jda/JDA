@@ -202,11 +202,7 @@ public class ModalMapping {
     }
 
     private void typeError(String targetType) {
-        throw new IllegalStateException(
-                "ModalMapping of type "
-                        + getType()
-                        + " can not be represented as "
-                        + targetType
-                        + "!");
+        throw new IllegalStateException("ModalMapping of type " + getType()
+                + " can not be represented as " + targetType + "!");
     }
 }

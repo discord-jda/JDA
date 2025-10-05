@@ -113,10 +113,8 @@ public class Template {
         Route.CompiledRoute route = Route.Templates.GET_TEMPLATE.compile(code);
 
         JDAImpl jda = (JDAImpl) api;
-        return new RestActionImpl<>(
-                api,
-                route,
-                (response, request) -> jda.getEntityBuilder().createTemplate(response.getObject()));
+        return new RestActionImpl<>(api, route, (response, request) -> jda.getEntityBuilder()
+                .createTemplate(response.getObject()));
     }
 
     /**
@@ -138,10 +136,8 @@ public class Template {
         checkInteraction();
         final Route.CompiledRoute route =
                 Route.Templates.SYNC_TEMPLATE.compile(guild.getId(), this.code);
-        return new RestActionImpl<>(
-                api,
-                route,
-                (response, request) -> api.getEntityBuilder().createTemplate(response.getObject()));
+        return new RestActionImpl<>(api, route, (response, request) -> api.getEntityBuilder()
+                .createTemplate(response.getObject()));
     }
 
     /**

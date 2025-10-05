@@ -48,11 +48,10 @@ public class MessagePinDeadlineTest {
             Set<Permission> expectedCheckedPermissions) {
         final GuildMessageChannelMixin<?> channel = mock(GuildMessageChannelMixin.class);
         doCallRealMethod().when(channel).checkCanControlMessagePins();
-        doAnswer(
-                        invocation -> {
-                            final Permission permission = invocation.getArgument(0);
-                            return grantedPermissions.contains(permission);
-                        })
+        doAnswer(invocation -> {
+                    final Permission permission = invocation.getArgument(0);
+                    return grantedPermissions.contains(permission);
+                })
                 .when(channel)
                 .hasPermission(any());
         doCallRealMethod().when(channel).checkPermission(any(), any());
@@ -97,10 +96,8 @@ public class MessagePinDeadlineTest {
         doCallRealMethod().when(channel).checkPermission(any(), any());
 
         assertThatException()
-                .isThrownBy(
-                        () ->
-                                ClockProvider.withFixedTime(
-                                        timeOfCheck, channel::checkCanControlMessagePins))
+                .isThrownBy(() -> ClockProvider.withFixedTime(
+                        timeOfCheck, channel::checkCanControlMessagePins))
                 .isInstanceOf(InsufficientPermissionException.class);
 
         // Make sure the permissions are checked in the given order

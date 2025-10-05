@@ -915,7 +915,8 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
         }
 
         DataObject body = DataObject.empty().put("flags", flags);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), getId());
+        Route.CompiledRoute route =
+                Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 

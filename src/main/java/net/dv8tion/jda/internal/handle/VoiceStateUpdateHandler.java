@@ -166,13 +166,8 @@ public class VoiceStateUpdateHandler extends SocketHandler {
         if (requestToSpeakTimestamp != vState.getRequestToSpeak()) {
             OffsetDateTime oldRequestToSpeak = vState.getRequestToSpeakTimestamp();
             vState.setRequestToSpeak(requestToSpeakTime);
-            getJDA().handleEvent(
-                            new GuildVoiceRequestToSpeakEvent(
-                                    getJDA(),
-                                    responseNumber,
-                                    member,
-                                    oldRequestToSpeak,
-                                    requestToSpeakTime));
+            getJDA().handleEvent(new GuildVoiceRequestToSpeakEvent(
+                    getJDA(), responseNumber, member, oldRequestToSpeak, requestToSpeakTime));
         }
 
         if (!Objects.equals(channel, vState.getChannel())) {
@@ -209,9 +204,8 @@ public class VoiceStateUpdateHandler extends SocketHandler {
                 getJDA().getEntityBuilder().updateMemberCache(member);
             }
 
-            getJDA().handleEvent(
-                            new GuildVoiceUpdateEvent(
-                                    getJDA(), responseNumber, member, oldChannel));
+            getJDA().handleEvent(new GuildVoiceUpdateEvent(
+                    getJDA(), responseNumber, member, oldChannel));
         }
 
         if (isSelf && voiceInterceptor != null) {

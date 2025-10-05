@@ -144,13 +144,11 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager>
         String targetId = override.getId();
         // setup missing values here
         setupValues();
-        RequestBody data =
-                getRequestBody(
-                        DataObject.empty()
-                                .put("id", targetId)
-                                .put("type", role ? "role" : "member")
-                                .put("allow", this.allowed)
-                                .put("deny", this.denied));
+        RequestBody data = getRequestBody(DataObject.empty()
+                .put("id", targetId)
+                .put("type", role ? "role" : "member")
+                .put("allow", this.allowed)
+                .put("deny", this.denied));
         reset();
         return data;
     }

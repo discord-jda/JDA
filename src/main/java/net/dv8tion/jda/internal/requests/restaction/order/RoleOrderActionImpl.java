@@ -109,12 +109,11 @@ public class RoleOrderActionImpl extends OrderActionImpl<Role, RoleOrderAction>
                         "Cannot change order: One of the roles could not be moved due to"
                                 + " hierarchical power!");
 
-            array.add(
-                    DataObject.empty()
-                            .put("id", role.getId())
-                            .put(
-                                    "position",
-                                    i + 1)); // plus 1 because position 0 is the @everyone position.
+            array.add(DataObject.empty()
+                    .put("id", role.getId())
+                    .put(
+                            "position",
+                            i + 1)); // plus 1 because position 0 is the @everyone position.
         }
 
         return getRequestBody(array);

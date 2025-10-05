@@ -69,19 +69,16 @@ public class MessagePollVoteHandler extends SocketHandler {
                 return null;
             }
 
-            channel =
-                    getJDA().getEntityBuilder()
-                            .createPrivateChannel(DataObject.empty().put("id", channelId));
+            channel = getJDA().getEntityBuilder()
+                    .createPrivateChannel(DataObject.empty().put("id", channelId));
         }
 
         if (add)
-            api.handleEvent(
-                    new MessagePollVoteAddEvent(
-                            channel, responseNumber, messageId, userId, answerId));
+            api.handleEvent(new MessagePollVoteAddEvent(
+                    channel, responseNumber, messageId, userId, answerId));
         else
-            api.handleEvent(
-                    new MessagePollVoteRemoveEvent(
-                            channel, responseNumber, messageId, userId, answerId));
+            api.handleEvent(new MessagePollVoteRemoveEvent(
+                    channel, responseNumber, messageId, userId, answerId));
 
         return null;
     }

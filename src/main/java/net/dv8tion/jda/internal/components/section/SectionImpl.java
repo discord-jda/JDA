@@ -95,9 +95,8 @@ public class SectionImpl extends AbstractComponentImpl
         // Don't allow unknown components in user-called methods
         Collection<SectionContentComponentUnion> componentUnions =
                 ComponentsUtil.membersToUnion(components, SectionContentComponentUnion.class);
-        SectionAccessoryComponentUnion accessoryUnion =
-                ComponentsUtil.safeUnionCast(
-                        "accessory", accessory, SectionAccessoryComponentUnion.class);
+        SectionAccessoryComponentUnion accessoryUnion = ComponentsUtil.safeUnionCast(
+                "accessory", accessory, SectionAccessoryComponentUnion.class);
 
         return new SectionImpl(uniqueId, componentUnions, accessoryUnion);
     }
@@ -142,19 +141,17 @@ public class SectionImpl extends AbstractComponentImpl
     public Section replace(@Nonnull ComponentReplacer replacer) {
         Checks.notNull(replacer, "ComponentReplacer");
 
-        final List<SectionContentComponentUnion> newContent =
-                ComponentsUtil.doReplace(
-                        SectionContentComponent.class,
-                        getContentComponents(),
-                        replacer,
-                        Function.identity());
+        final List<SectionContentComponentUnion> newContent = ComponentsUtil.doReplace(
+                SectionContentComponent.class,
+                getContentComponents(),
+                replacer,
+                Function.identity());
 
-        final SectionAccessoryComponentUnion newAccessory =
-                ComponentsUtil.doReplace(
-                        SectionAccessoryComponent.class,
-                        Collections.singletonList(accessory),
-                        replacer,
-                        newAccessories -> newAccessories.isEmpty() ? null : newAccessories.get(0));
+        final SectionAccessoryComponentUnion newAccessory = ComponentsUtil.doReplace(
+                SectionAccessoryComponent.class,
+                Collections.singletonList(accessory),
+                replacer,
+                newAccessories -> newAccessories.isEmpty() ? null : newAccessories.get(0));
 
         return validated(newAccessory, newContent, uniqueId);
     }

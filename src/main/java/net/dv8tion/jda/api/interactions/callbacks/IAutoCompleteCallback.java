@@ -187,10 +187,9 @@ public interface IAutoCompleteCallback extends Interaction {
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction replyChoiceStrings(@Nonnull String... choices) {
-        return replyChoices(
-                Arrays.stream(choices)
-                        .map(it -> new Command.Choice(it, it))
-                        .collect(Collectors.toList()));
+        return replyChoices(Arrays.stream(choices)
+                .map(it -> new Command.Choice(it, it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -215,10 +214,9 @@ public interface IAutoCompleteCallback extends Interaction {
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction replyChoiceStrings(@Nonnull Collection<String> choices) {
-        return replyChoices(
-                choices.stream()
-                        .map(it -> new Command.Choice(it, it))
-                        .collect(Collectors.toList()));
+        return replyChoices(choices.stream()
+                .map(it -> new Command.Choice(it, it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -243,10 +241,9 @@ public interface IAutoCompleteCallback extends Interaction {
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction replyChoiceLongs(@Nonnull long... choices) {
-        return replyChoices(
-                Arrays.stream(choices)
-                        .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
-                        .collect(Collectors.toList()));
+        return replyChoices(Arrays.stream(choices)
+                .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -271,10 +268,9 @@ public interface IAutoCompleteCallback extends Interaction {
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction replyChoiceLongs(@Nonnull Collection<Long> choices) {
-        return replyChoices(
-                choices.stream()
-                        .map(it -> new Command.Choice(String.valueOf(it), it))
-                        .collect(Collectors.toList()));
+        return replyChoices(choices.stream()
+                .map(it -> new Command.Choice(String.valueOf(it), it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -299,10 +295,9 @@ public interface IAutoCompleteCallback extends Interaction {
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction replyChoiceDoubles(@Nonnull double... choices) {
-        return replyChoices(
-                Arrays.stream(choices)
-                        .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
-                        .collect(Collectors.toList()));
+        return replyChoices(Arrays.stream(choices)
+                .mapToObj(it -> new Command.Choice(String.valueOf(it), it))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -327,9 +322,8 @@ public interface IAutoCompleteCallback extends Interaction {
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction replyChoiceDoubles(@Nonnull Collection<Double> choices) {
-        return replyChoices(
-                choices.stream()
-                        .map(it -> new Command.Choice(String.valueOf(it), it))
-                        .collect(Collectors.toList()));
+        return replyChoices(choices.stream()
+                .map(it -> new Command.Choice(String.valueOf(it), it))
+                .collect(Collectors.toList()));
     }
 }

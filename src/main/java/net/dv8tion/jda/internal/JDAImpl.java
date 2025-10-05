@@ -118,8 +118,8 @@ public class JDAImpl implements JDA {
             new ChannelCacheViewImpl<>(Channel.class);
     protected final ArrayDeque<Long> privateChannelLRU = new ArrayDeque<>();
 
-    protected final AbstractCacheView<AudioManager> audioManagers =
-            new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
+    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(
+            AudioManager.class, m -> m.getGuild().getName());
 
     protected final PresenceImpl presence;
     protected final Thread shutdownHook;
@@ -174,17 +174,15 @@ public class JDAImpl implements JDA {
         this.sessionConfig = sessionConfig == null ? SessionConfig.getDefault() : sessionConfig;
         this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
         this.restConfig = restConfig == null ? new RestConfig() : restConfig;
-        this.shutdownHook =
-                this.metaConfig.isUseShutdownHook()
-                        ? new Thread(this::shutdownNow, "JDA Shutdown Hook")
-                        : null;
+        this.shutdownHook = this.metaConfig.isUseShutdownHook()
+                ? new Thread(this::shutdownNow, "JDA Shutdown Hook")
+                : null;
         this.presence = new PresenceImpl(this);
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
-        this.eventManager =
-                new EventManagerProxy(
-                        new InterfacedEventManager(), this.threadConfig.getEventPool());
+        this.eventManager = new EventManagerProxy(
+                new InterfacedEventManager(), this.threadConfig.getEventPool());
     }
 
     public void handleEvent(@Nonnull GenericEvent event) {
@@ -271,16 +269,14 @@ public class JDAImpl implements JDA {
 
     public void initRequester() {
         if (this.requester != null) return;
-        RestRateLimiter rateLimiter =
-                this.restConfig
-                        .getRateLimiterFactory()
-                        .apply(
-                                new RestRateLimiter.RateLimitConfig(
-                                        this.threadConfig.getRateLimitScheduler(),
-                                        this.threadConfig.getRateLimitElastic(),
-                                        getSessionController().getRateLimitHandle(),
-                                        this.sessionConfig.isRelativeRateLimit()
-                                                && this.restConfig.isRelativeRateLimit()));
+        RestRateLimiter rateLimiter = this.restConfig
+                .getRateLimiterFactory()
+                .apply(new RestRateLimiter.RateLimitConfig(
+                        this.threadConfig.getRateLimitScheduler(),
+                        this.threadConfig.getRateLimitElastic(),
+                        getSessionController().getRateLimitHandle(),
+                        this.sessionConfig.isRelativeRateLimit()
+                                && this.restConfig.isRelativeRateLimit()));
         this.requester = new Requester(this, this.authConfig, this.restConfig, rateLimiter);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
     }
@@ -375,15 +371,12 @@ public class JDAImpl implements JDA {
     }
 
     public void setStatus(Status status) {
-        StatusChangeEvent event =
-                MiscUtil.locked(
-                        statusLock,
-                        () -> {
-                            Status oldStatus = this.status.getAndSet(status);
-                            this.statusCondition.signalAll();
+        StatusChangeEvent event = MiscUtil.locked(statusLock, () -> {
+            Status oldStatus = this.status.getAndSet(status);
+            this.statusCondition.signalAll();
 
-                            return new StatusChangeEvent(this, status, oldStatus);
-                        });
+            return new StatusChangeEvent(this, status, oldStatus);
+        });
 
         if (event.getOldStatus() != event.getNewStatus()) handleEvent(event);
     }
@@ -395,9 +388,8 @@ public class JDAImpl implements JDA {
                     public void handleResponse(Response response, Request<DataObject> request) {
                         if (response.isOk()) request.onSuccess(response.getObject());
                         else if (response.isRateLimit())
-                            request.onFailure(
-                                    new RateLimitedException(
-                                            request.getRoute(), response.retryAfter));
+                            request.onFailure(new RateLimitedException(
+                                    request.getRoute(), response.retryAfter));
                         else if (response.code == 401) request.onSuccess(null);
                         else request.onFailure(response);
                     }
@@ -475,10 +467,8 @@ public class JDAImpl implements JDA {
 
         // We avoid to lock both the guild cache and member cache to make a deadlock impossible
         return getGuildCache().stream()
-                        .filter(
-                                guild ->
-                                        guild.unloadMember(
-                                                userId)) // this also removes it from user cache
+                        .filter(guild ->
+                                guild.unloadMember(userId)) // this also removes it from user cache
                         .count()
                 > 0L; // we use count to make sure it iterates all guilds not just one
     }
@@ -599,21 +589,18 @@ public class JDAImpl implements JDA {
         return new DeferredRestAction<>(
                 this,
                 User.class,
-                () ->
-                        isIntent(GatewayIntent.GUILD_MEMBERS)
-                                        || isIntent(GatewayIntent.GUILD_PRESENCES)
-                                ? getUserById(id)
-                                : null,
+                () -> isIntent(GatewayIntent.GUILD_MEMBERS)
+                                || isIntent(GatewayIntent.GUILD_PRESENCES)
+                        ? getUserById(id)
+                        : null,
                 () -> {
                     if (id == getSelfUser().getIdLong())
                         return new CompletedRestAction<>(this, getSelfUser());
                     Route.CompiledRoute route =
                             Route.Users.GET_USER.compile(Long.toUnsignedString(id));
                     return new RestActionImpl<>(
-                            this,
-                            route,
-                            (response, request) ->
-                                    getEntityBuilder().createUser(response.getObject()));
+                            this, route, (response, request) -> getEntityBuilder()
+                                    .createUser(response.getObject()));
                 });
     }
 
@@ -667,18 +654,13 @@ public class JDAImpl implements JDA {
         body.put("name", name);
         body.put("image", icon.getEncoding());
 
-        final Route.CompiledRoute route =
-                Route.Applications.CREATE_APPLICATION_EMOJI.compile(
-                        getSelfUser().getApplicationId());
-        return new RestActionImpl<>(
-                this,
-                route,
-                body,
-                (response, request) -> {
-                    final DataObject obj = response.getObject();
-                    final User selfUser = getSelfUser();
-                    return entityBuilder.createApplicationEmoji(this, obj, selfUser);
-                });
+        final Route.CompiledRoute route = Route.Applications.CREATE_APPLICATION_EMOJI.compile(
+                getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, body, (response, request) -> {
+            final DataObject obj = response.getObject();
+            final User selfUser = getSelfUser();
+            return entityBuilder.createApplicationEmoji(this, obj, selfUser);
+        });
     }
 
     @Nonnull
@@ -686,50 +668,42 @@ public class JDAImpl implements JDA {
     public RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis() {
         Route.CompiledRoute route =
                 Route.Applications.GET_APPLICATION_EMOJIS.compile(getSelfUser().getApplicationId());
-        return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) -> {
-                    DataArray emojis = response.getObject().getArray("items");
-                    List<ApplicationEmoji> list = new ArrayList<>(emojis.length());
-                    for (int i = 0; i < emojis.length(); i++) {
-                        try {
-                            final DataObject emoji = emojis.getObject(i);
-                            final User owner =
-                                    emoji.optObject("user")
-                                            .map(entityBuilder::createUser)
-                                            .orElse(null);
+        return new RestActionImpl<>(this, route, (response, request) -> {
+            DataArray emojis = response.getObject().getArray("items");
+            List<ApplicationEmoji> list = new ArrayList<>(emojis.length());
+            for (int i = 0; i < emojis.length(); i++) {
+                try {
+                    final DataObject emoji = emojis.getObject(i);
+                    final User owner = emoji.optObject("user")
+                            .map(entityBuilder::createUser)
+                            .orElse(null);
 
-                            list.add(entityBuilder.createApplicationEmoji(this, emoji, owner));
-                        } catch (ParsingException e) {
-                            LOG.error(
-                                    "Failed to parse application emoji with JSON: {}",
-                                    emojis.getObject(i),
-                                    e);
-                        }
-                    }
+                    list.add(entityBuilder.createApplicationEmoji(this, emoji, owner));
+                } catch (ParsingException e) {
+                    LOG.error(
+                            "Failed to parse application emoji with JSON: {}",
+                            emojis.getObject(i),
+                            e);
+                }
+            }
 
-                    return Collections.unmodifiableList(list);
-                });
+            return Collections.unmodifiableList(list);
+        });
     }
 
     @Nonnull
     @Override
     public RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId) {
         Checks.isSnowflake(emojiId);
-        Route.CompiledRoute route =
-                Route.Applications.GET_APPLICATION_EMOJI.compile(
-                        getSelfUser().getApplicationId(), emojiId);
-        return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) -> {
-                    final DataObject emoji = response.getObject();
-                    final User owner =
-                            emoji.optObject("user").map(entityBuilder::createUser).orElse(null);
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(
+                getSelfUser().getApplicationId(), emojiId);
+        return new RestActionImpl<>(this, route, (response, request) -> {
+            final DataObject emoji = response.getObject();
+            final User owner =
+                    emoji.optObject("user").map(entityBuilder::createUser).orElse(null);
 
-                    return entityBuilder.createApplicationEmoji(this, emoji, owner);
-                });
+            return entityBuilder.createApplicationEmoji(this, emoji, owner);
+        });
     }
 
     @Nonnull
@@ -747,25 +721,21 @@ public class JDAImpl implements JDA {
     @Override
     public RestAction<List<StickerPack>> retrieveNitroStickerPacks() {
         Route.CompiledRoute route = Route.Stickers.LIST_PACKS.compile();
-        return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) -> {
-                    DataArray array = response.getObject().getArray("sticker_packs");
-                    List<StickerPack> packs = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++) {
-                        DataObject object = null;
-                        try {
-                            object = array.getObject(i);
-                            StickerPack pack = entityBuilder.createStickerPack(object);
-                            packs.add(pack);
-                        } catch (ParsingException ex) {
-                            EntityBuilder.LOG.error(
-                                    "Failed to parse sticker pack. JSON: {}", object);
-                        }
-                    }
-                    return Collections.unmodifiableList(packs);
-                });
+        return new RestActionImpl<>(this, route, (response, request) -> {
+            DataArray array = response.getObject().getArray("sticker_packs");
+            List<StickerPack> packs = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++) {
+                DataObject object = null;
+                try {
+                    object = array.getObject(i);
+                    StickerPack pack = entityBuilder.createStickerPack(object);
+                    packs.add(pack);
+                } catch (ParsingException ex) {
+                    EntityBuilder.LOG.error("Failed to parse sticker pack. JSON: {}", object);
+                }
+            }
+            return Collections.unmodifiableList(packs);
+        });
     }
 
     @Nonnull
@@ -880,11 +850,8 @@ public class JDAImpl implements JDA {
                     Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
                     DataObject body = DataObject.empty().put("recipient_id", userId);
                     return new RestActionImpl<>(
-                            this,
-                            route,
-                            body,
-                            (response, request) ->
-                                    getEntityBuilder().createPrivateChannel(response.getObject()));
+                            this, route, body, (response, request) -> getEntityBuilder()
+                                    .createPrivateChannel(response.getObject()));
                 });
     }
 
@@ -946,10 +913,9 @@ public class JDAImpl implements JDA {
         }
 
         // If the requester has been shutdown too, we can fire the shutdown event
-        boolean signal =
-                MiscUtil.locked(
-                        statusLock,
-                        () -> shutdownEvent.getAndSet(event) == null && requesterShutdown.get());
+        boolean signal = MiscUtil.locked(
+                statusLock,
+                () -> shutdownEvent.getAndSet(event) == null && requesterShutdown.get());
         if (signal) signalShutdown();
     }
 
@@ -958,10 +924,9 @@ public class JDAImpl implements JDA {
         threadConfig.shutdownRequester();
 
         // If the websocket has been shutdown too, we can fire the shutdown event
-        boolean signal =
-                MiscUtil.locked(
-                        statusLock,
-                        () -> !requesterShutdown.getAndSet(true) && shutdownEvent.get() != null);
+        boolean signal = MiscUtil.locked(
+                statusLock,
+                () -> !requesterShutdown.getAndSet(true) && shutdownEvent.get() != null);
         if (signal) signalShutdown();
     }
 
@@ -1038,18 +1003,14 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public RestAction<List<Command>> retrieveCommands(boolean withLocalizations) {
-        Route.CompiledRoute route =
-                Route.Interactions.GET_COMMANDS
-                        .compile(getSelfUser().getApplicationId())
-                        .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS
+                .compile(getSelfUser().getApplicationId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
 
         return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) ->
-                        response.getArray().stream(DataArray::getObject)
-                                .map(json -> new CommandImpl(this, null, json))
-                                .collect(Collectors.toList()));
+                this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
+                        .map(json -> new CommandImpl(this, null, json))
+                        .collect(Collectors.toList()));
     }
 
     @Nonnull
@@ -1092,25 +1053,20 @@ public class JDAImpl implements JDA {
     @Override
     public RestAction<Void> deleteCommandById(@Nonnull String commandId) {
         Checks.isSnowflake(commandId);
-        Route.CompiledRoute route =
-                Route.Interactions.DELETE_COMMAND.compile(
-                        getSelfUser().getApplicationId(), commandId);
+        Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(
+                getSelfUser().getApplicationId(), commandId);
         return new RestActionImpl<>(this, route);
     }
 
     @Nonnull
     @Override
     public RestAction<List<RoleConnectionMetadata>> retrieveRoleConnectionMetadata() {
-        Route.CompiledRoute route =
-                Route.Applications.GET_ROLE_CONNECTION_METADATA.compile(
-                        getSelfUser().getApplicationId());
+        Route.CompiledRoute route = Route.Applications.GET_ROLE_CONNECTION_METADATA.compile(
+                getSelfUser().getApplicationId());
         return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) ->
-                        response.getArray().stream(DataArray::getObject)
-                                .map(RoleConnectionMetadata::fromData)
-                                .collect(Helpers.toUnmodifiableList()));
+                this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
+                        .map(RoleConnectionMetadata::fromData)
+                        .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull
@@ -1123,21 +1079,17 @@ public class JDAImpl implements JDA {
                 "An application can have a maximum of %d metadata records",
                 RoleConnectionMetadata.MAX_RECORDS);
 
-        Route.CompiledRoute route =
-                Route.Applications.UPDATE_ROLE_CONNECTION_METADATA.compile(
-                        getSelfUser().getApplicationId());
+        Route.CompiledRoute route = Route.Applications.UPDATE_ROLE_CONNECTION_METADATA.compile(
+                getSelfUser().getApplicationId());
 
         DataArray array = DataArray.fromCollection(records);
         RequestBody body = RequestBody.create(array.toJson(), Requester.MEDIA_TYPE_JSON);
 
         return new RestActionImpl<>(
-                this,
-                route,
-                body,
-                (response, request) ->
-                        response.getArray().stream(DataArray::getObject)
-                                .map(RoleConnectionMetadata::fromData)
-                                .collect(Helpers.toUnmodifiableList()));
+                this, route, body, (response, request) -> response.getArray().stream(
+                                DataArray::getObject)
+                        .map(RoleConnectionMetadata::fromData)
+                        .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull
@@ -1147,14 +1099,11 @@ public class JDAImpl implements JDA {
 
         Route.CompiledRoute route = Route.Webhooks.GET_WEBHOOK.compile(webhookId);
 
-        return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) -> {
-                    DataObject object = response.getObject();
-                    EntityBuilder builder = getEntityBuilder();
-                    return builder.createWebhook(object, true);
-                });
+        return new RestActionImpl<>(this, route, (response, request) -> {
+            DataObject object = response.getObject();
+            EntityBuilder builder = getEntityBuilder();
+            return builder.createWebhook(object, true);
+        });
     }
 
     @Nonnull
@@ -1167,15 +1116,11 @@ public class JDAImpl implements JDA {
     @Override
     public RestAction<ApplicationInfo> retrieveApplicationInfo() {
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
-        return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) -> {
-                    ApplicationInfo info =
-                            getEntityBuilder().createApplicationInfo(response.getObject());
-                    this.clientId = info.getId();
-                    return info;
-                });
+        return new RestActionImpl<>(this, route, (response, request) -> {
+            ApplicationInfo info = getEntityBuilder().createApplicationInfo(response.getObject());
+            this.clientId = info.getId();
+            return info;
+        });
     }
 
     @Nonnull
@@ -1207,9 +1152,8 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public RestAction<Void> deleteTestEntitlement(long entitlementId) {
-        Route.CompiledRoute route =
-                Route.Applications.DELETE_TEST_ENTITLEMENT.compile(
-                        getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId));
+        Route.CompiledRoute route = Route.Applications.DELETE_TEST_ENTITLEMENT.compile(
+                getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId));
         return new RestActionImpl<>(this, route);
     }
 

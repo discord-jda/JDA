@@ -59,9 +59,8 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
             throw new IllegalArgumentException(
                     "Must provide at least 2 or at most 100 messages to be deleted.");
 
-        long twoWeeksAgo =
-                TimeUtil.getDiscordTimestamp(
-                        (System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
+        long twoWeeksAgo = TimeUtil.getDiscordTimestamp(
+                (System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
         for (String id : messageIds)
             Checks.check(
                     MiscUtil.parseSnowflake(id) > twoWeeksAgo,
@@ -85,9 +84,8 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         if (user.equals(getJDA().getSelfUser())) targetUser = "@me";
         else targetUser = user.getId();
 
-        final Route.CompiledRoute route =
-                Route.Messages.REMOVE_REACTION.compile(
-                        getId(), messageId, emoji.getAsReactionCode(), targetUser);
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
+                getId(), messageId, emoji.getAsReactionCode(), targetUser);
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -113,9 +111,8 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         checkCanAccess();
         checkPermission(Permission.MESSAGE_MANAGE);
 
-        Route.CompiledRoute route =
-                Route.Messages.CLEAR_EMOJI_REACTIONS.compile(
-                        getId(), messageId, emoji.getAsReactionCode());
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(
+                getId(), messageId, emoji.getAsReactionCode());
         return new RestActionImpl<>(getJDA(), route);
     }
 

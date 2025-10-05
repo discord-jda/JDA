@@ -51,10 +51,9 @@ public interface VoiceChannelMixin<T extends VoiceChannelMixin<T>>
     default ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
 
-        ChannelAction<VoiceChannel> action =
-                guild.createVoiceChannel(getName())
-                        .setBitrate(getBitrate())
-                        .setUserlimit(getUserLimit());
+        ChannelAction<VoiceChannel> action = guild.createVoiceChannel(getName())
+                .setBitrate(getBitrate())
+                .setUserlimit(getUserLimit());
 
         if (getRegionRaw() != null) action.setRegion(Region.fromKey(getRegionRaw()));
 

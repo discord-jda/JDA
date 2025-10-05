@@ -51,13 +51,11 @@ public class SerializationUtil {
             return out;
         } else if (n.isArray()) {
             ArrayNode out = objectMapper.createArrayNode();
-            n.values()
-                    .forEachRemaining(
-                            v -> {
-                                if (v.isValueNode()) out.add(v);
-                                else if (v.isArray()) out.add(TRUNCATED_ARRAY);
-                                else out.add(TRUNCATED_OBJECT);
-                            });
+            n.values().forEachRemaining(v -> {
+                if (v.isValueNode()) out.add(v);
+                else if (v.isArray()) out.add(TRUNCATED_ARRAY);
+                else out.add(TRUNCATED_OBJECT);
+            });
             return out;
         }
         return n;

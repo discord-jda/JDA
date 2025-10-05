@@ -122,12 +122,11 @@ public class FileDisplayImpl extends AbstractComponentImpl
         outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
         else // User-managed attachment
         outputUrl = url;
-        final DataObject json =
-                DataObject.empty()
-                        .put("type", getType().getKey())
-                        // File components only support attachment://
-                        .put("file", DataObject.empty().put("url", outputUrl))
-                        .put("spoiler", spoiler);
+        final DataObject json = DataObject.empty()
+                .put("type", getType().getKey())
+                // File components only support attachment://
+                .put("file", DataObject.empty().put("url", outputUrl))
+                .put("spoiler", spoiler);
         if (uniqueId >= 0) json.put("id", uniqueId);
         return json;
     }

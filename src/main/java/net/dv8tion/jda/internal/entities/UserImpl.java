@@ -84,25 +84,17 @@ public class UserImpl extends UserSnowflakeImpl implements User {
     @Nonnull
     @Override
     public CacheRestAction<Profile> retrieveProfile() {
-        return new DeferredRestAction<>(
-                getJDA(),
-                Profile.class,
-                this::getProfile,
-                () -> {
-                    Route.CompiledRoute route = Route.Users.GET_USER.compile(getId());
-                    return new RestActionImpl<>(
-                            getJDA(),
-                            route,
-                            (response, request) -> {
-                                DataObject json = response.getObject();
+        return new DeferredRestAction<>(getJDA(), Profile.class, this::getProfile, () -> {
+            Route.CompiledRoute route = Route.Users.GET_USER.compile(getId());
+            return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+                DataObject json = response.getObject();
 
-                                String bannerId = json.getString("banner", null);
-                                int accentColor =
-                                        json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
+                String bannerId = json.getString("banner", null);
+                int accentColor = json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
 
-                                return new Profile(getIdLong(), bannerId, accentColor);
-                            });
-                });
+                return new Profile(getIdLong(), bannerId, accentColor);
+            });
+        });
     }
 
     public Profile getProfile() {
@@ -131,23 +123,15 @@ public class UserImpl extends UserSnowflakeImpl implements User {
     @Override
     public CacheRestAction<PrivateChannel> openPrivateChannel() {
         return new DeferredRestAction<>(
-                getJDA(),
-                PrivateChannel.class,
-                this::getPrivateChannel,
-                () -> {
+                getJDA(), PrivateChannel.class, this::getPrivateChannel, () -> {
                     Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
                     DataObject body = DataObject.empty().put("recipient_id", getId());
-                    return new RestActionImpl<>(
-                            getJDA(),
-                            route,
-                            body,
-                            (response, request) -> {
-                                PrivateChannel priv =
-                                        api.getEntityBuilder()
-                                                .createPrivateChannel(response.getObject(), this);
-                                UserImpl.this.privateChannelId = priv.getIdLong();
-                                return priv;
-                            });
+                    return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
+                        PrivateChannel priv = api.getEntityBuilder()
+                                .createPrivateChannel(response.getObject(), this);
+                        UserImpl.this.privateChannelId = priv.getIdLong();
+                        return priv;
+                    });
                 });
     }
 

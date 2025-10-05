@@ -75,12 +75,11 @@ import javax.annotation.Nullable;
  */
 public class DefaultShardManager implements ShardManager {
     public static final Logger LOG = JDALogger.getLog(ShardManager.class);
-    public static final ThreadFactory DEFAULT_THREAD_FACTORY =
-            r -> {
-                final Thread t = new Thread(r, "DefaultShardManager");
-                t.setPriority(Thread.NORM_PRIORITY + 1);
-                return t;
-            };
+    public static final ThreadFactory DEFAULT_THREAD_FACTORY = r -> {
+        final Thread t = new Thread(r, "DefaultShardManager");
+        t.setPriority(Thread.NORM_PRIORITY + 1);
+        return t;
+    };
 
     /**
      * The executor that is used by the ShardManager internally to create new JDA instances.
@@ -192,10 +191,9 @@ public class DefaultShardManager implements ShardManager {
         this.restConfigProvider =
                 restConfigProvider == null ? (i) -> new RestConfig() : restConfigProvider;
         this.executor = createExecutor(this.threadingConfig.getThreadFactory());
-        this.shutdownHook =
-                this.metaConfig.isUseShutdownHook()
-                        ? new Thread(this::shutdown, "JDA Shutdown Hook")
-                        : null;
+        this.shutdownHook = this.metaConfig.isUseShutdownHook()
+                ? new Thread(this::shutdown, "JDA Shutdown Hook")
+                : null;
 
         synchronized (queue) {
             if (getShardsTotal() != -1) {
@@ -331,21 +329,18 @@ public class DefaultShardManager implements ShardManager {
         }
 
         if (this.shards != null) {
-            executor.execute(
-                    () -> {
-                        synchronized (
-                                queue) // this makes sure we also get shards that were starting when
-                        // shutdown is called
-                        {
-                            this.shards.forEach(
-                                    jda -> {
-                                        if (shardingConfig.isUseShutdownNow()) jda.shutdownNow();
-                                        else jda.shutdown();
-                                    });
-                            queue.clear();
-                        }
-                        this.executor.shutdown();
+            executor.execute(() -> {
+                synchronized (queue) // this makes sure we also get shards that were starting when
+                // shutdown is called
+                {
+                    this.shards.forEach(jda -> {
+                        if (shardingConfig.isUseShutdownNow()) jda.shutdownNow();
+                        else jda.shutdown();
                     });
+                    queue.clear();
+                }
+                this.executor.shutdown();
+            });
         } else {
             this.executor.shutdown();
         }
@@ -381,17 +376,14 @@ public class DefaultShardManager implements ShardManager {
         if (shutdown.get())
             throw new RejectedExecutionException("ShardManager is already shutdown!");
         if (worker != null) return;
-        worker =
-                executor.submit(
-                        () -> {
-                            while (!queue.isEmpty() && !Thread.currentThread().isInterrupted())
-                                processQueue();
-                            this.gatewayURL = null;
-                            synchronized (queue) {
-                                worker = null;
-                                if (!shutdown.get() && !queue.isEmpty()) runQueueWorker();
-                            }
-                        });
+        worker = executor.submit(() -> {
+            while (!queue.isEmpty() && !Thread.currentThread().isInterrupted()) processQueue();
+            this.gatewayURL = null;
+            synchronized (queue) {
+                worker = null;
+                if (!shutdown.get() && !queue.isEmpty()) runQueueWorker();
+            }
+        });
     }
 
     protected void processQueue() {
@@ -488,12 +480,11 @@ public class DefaultShardManager implements ShardManager {
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
-        MetaConfig metaConfig =
-                new MetaConfig(
-                        this.metaConfig.getMaxBufferSize(),
-                        this.metaConfig.getContextMap(shardId),
-                        this.metaConfig.getCacheFlags(),
-                        this.sessionConfig.getFlags());
+        MetaConfig metaConfig = new MetaConfig(
+                this.metaConfig.getMaxBufferSize(),
+                this.metaConfig.getContextMap(shardId),
+                this.metaConfig.getCacheFlags(),
+                this.sessionConfig.getFlags());
         RestConfig restConfig = this.restConfigProvider.apply(shardId);
         if (restConfig == null) restConfig = new RestConfig();
 
@@ -543,13 +534,10 @@ public class DefaultShardManager implements ShardManager {
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, getShardsTotal());
 
         // Initialize SelfUser instance before logging in
-        SelfUser selfUser =
-                getShardCache()
-                        .applyStream(
-                                s ->
-                                        s.map(JDA::getSelfUser) // this should never throw!
-                                                .findFirst()
-                                                .orElse(null));
+        SelfUser selfUser = getShardCache()
+                .applyStream(s -> s.map(JDA::getSelfUser) // this should never throw!
+                        .findFirst()
+                        .orElse(null));
 
         // Copy from other JDA instance or do initial fetch
         if (selfUser == null) selfUser = retrieveSelfUser(jda);
@@ -575,10 +563,8 @@ public class DefaultShardManager implements ShardManager {
     private SelfUser retrieveSelfUser(JDAImpl jda) {
         Route.CompiledRoute route = Route.Self.GET_SELF.compile();
         return new RestActionImpl<SelfUser>(
-                        jda,
-                        route,
-                        (response, request) ->
-                                jda.getEntityBuilder().createSelfUser(response.getObject()))
+                        jda, route, (response, request) -> jda.getEntityBuilder()
+                                .createSelfUser(response.getObject()))
                 .complete();
     }
 
@@ -615,19 +601,15 @@ public class DefaultShardManager implements ShardManager {
         LOG.debug("Fetching shard total using temporary rate-limiter");
 
         CompletableFuture<Integer> future = new CompletableFuture<>();
-        ScheduledExecutorService pool =
-                Executors.newSingleThreadScheduledExecutor(
-                        task -> {
-                            Thread thread =
-                                    new Thread(task, "DefaultShardManager retrieveShardTotal");
-                            thread.setDaemon(true);
-                            return thread;
-                        });
+        ScheduledExecutorService pool = Executors.newSingleThreadScheduledExecutor(task -> {
+            Thread thread = new Thread(task, "DefaultShardManager retrieveShardTotal");
+            thread.setDaemon(true);
+            return thread;
+        });
 
         try {
-            RestRateLimiter.RateLimitConfig rateLimitConfig =
-                    new RestRateLimiter.RateLimitConfig(
-                            pool, RestRateLimiter.GlobalRateLimit.create(), true);
+            RestRateLimiter.RateLimitConfig rateLimitConfig = new RestRateLimiter.RateLimitConfig(
+                    pool, RestRateLimiter.GlobalRateLimit.create(), true);
             SequentialRestRateLimiter rateLimiter = new SequentialRestRateLimiter(rateLimitConfig);
             rateLimiter.enqueue(new ShardTotalTask(future, httpClient));
 
@@ -711,13 +693,12 @@ public class DefaultShardManager implements ShardManager {
                 String url = config.getBaseUrl() + getRoute().getCompiledRoute();
                 LOG.debug("Requesting shard total with url {}", url);
 
-                okhttp3.Request.Builder builder =
-                        new okhttp3.Request.Builder()
-                                .get()
-                                .url(url)
-                                .header("authorization", "Bot " + token)
-                                .header("accept-encoding", "gzip")
-                                .header("user-agent", config.getUserAgent());
+                okhttp3.Request.Builder builder = new okhttp3.Request.Builder()
+                        .get()
+                        .url(url)
+                        .header("authorization", "Bot " + token)
+                        .header("accept-encoding", "gzip")
+                        .header("user-agent", config.getUserAgent());
 
                 Consumer<? super okhttp3.Request.Builder> customBuilder = config.getCustomBuilder();
                 if (customBuilder != null) customBuilder.accept(builder);
@@ -737,14 +718,12 @@ public class DefaultShardManager implements ShardManager {
                         future.completeExceptionally(new InvalidTokenException());
                     } else if (response.code() != 429 && response.code() < 500
                             || ++failedAttempts > 4) {
-                        future.completeExceptionally(
-                                new IllegalStateException(
-                                        "Failed to fetch recommended shard total! Code: "
-                                                + response.code()
-                                                + "\n"
-                                                + new String(
-                                                        IOUtil.readFully(body),
-                                                        StandardCharsets.UTF_8)));
+                        future.completeExceptionally(new IllegalStateException(
+                                "Failed to fetch recommended shard total! Code: "
+                                        + response.code()
+                                        + "\n"
+                                        + new String(
+                                                IOUtil.readFully(body), StandardCharsets.UTF_8)));
                     } else if (response.code() >= 500) {
                         int backoff = 1 << failedAttempts;
                         LOG.warn(
@@ -752,23 +731,17 @@ public class DefaultShardManager implements ShardManager {
                                         + " in {}s",
                                 response.code(),
                                 backoff);
-                        response =
-                                response.newBuilder()
-                                        .headers(
-                                                response.headers()
-                                                        .newBuilder()
-                                                        .set(
-                                                                RestRateLimiter.RESET_AFTER_HEADER,
-                                                                String.valueOf(backoff))
-                                                        .set(
-                                                                RestRateLimiter.REMAINING_HEADER,
-                                                                String.valueOf(0))
-                                                        .set(
-                                                                RestRateLimiter.LIMIT_HEADER,
-                                                                String.valueOf(1))
-                                                        .set(RestRateLimiter.SCOPE_HEADER, "custom")
-                                                        .build())
-                                        .build();
+                        response = response.newBuilder()
+                                .headers(response.headers()
+                                        .newBuilder()
+                                        .set(
+                                                RestRateLimiter.RESET_AFTER_HEADER,
+                                                String.valueOf(backoff))
+                                        .set(RestRateLimiter.REMAINING_HEADER, String.valueOf(0))
+                                        .set(RestRateLimiter.LIMIT_HEADER, String.valueOf(1))
+                                        .set(RestRateLimiter.SCOPE_HEADER, "custom")
+                                        .build())
+                                .build();
                     }
 
                     return response;

@@ -68,10 +68,10 @@ public class ThreadMembersUpdateHandler extends SocketHandler {
         }
 
         if (!content.isNull("removed_member_ids")) {
-            List<Long> removedMemberIds =
-                    content.getArray("removed_member_ids").stream(DataArray::getString)
-                            .map(MiscUtil::parseSnowflake)
-                            .collect(Collectors.toList());
+            List<Long> removedMemberIds = content.getArray("removed_member_ids").stream(
+                            DataArray::getString)
+                    .map(MiscUtil::parseSnowflake)
+                    .collect(Collectors.toList());
             handleRemovedThreadMembers(thread, removedMemberIds);
         }
 
@@ -103,10 +103,9 @@ public class ThreadMembersUpdateHandler extends SocketHandler {
 
         // Emit the events from outside the writeLock
         for (ThreadMember threadMember : addedThreadMembers) {
-            api.handleEvent(
-                    new ThreadMemberJoinEvent(
-                            api, responseNumber,
-                            thread, threadMember));
+            api.handleEvent(new ThreadMemberJoinEvent(
+                    api, responseNumber,
+                    thread, threadMember));
         }
     }
 
@@ -124,13 +123,12 @@ public class ThreadMembersUpdateHandler extends SocketHandler {
         }
 
         for (long threadMemberId : removedMemberIds) {
-            api.handleEvent(
-                    new ThreadMemberLeaveEvent(
-                            api,
-                            responseNumber,
-                            thread,
-                            threadMemberId,
-                            removedThreadMembers.remove(threadMemberId)));
+            api.handleEvent(new ThreadMemberLeaveEvent(
+                    api,
+                    responseNumber,
+                    thread,
+                    threadMemberId,
+                    removedThreadMembers.remove(threadMemberId)));
         }
     }
 }

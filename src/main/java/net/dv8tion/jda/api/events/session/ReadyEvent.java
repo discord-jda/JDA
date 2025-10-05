@@ -37,9 +37,10 @@ public class ReadyEvent extends GenericSessionEvent {
         super(api, SessionState.READY);
         this.availableGuilds = (int) getJDA().getGuildCache().size();
         GuildSetupController setupController = ((JDAImpl) getJDA()).getGuildSetupController();
-        this.unavailableGuilds =
-                setupController.getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size()
-                        + setupController.getUnavailableGuilds().size();
+        this.unavailableGuilds = setupController
+                        .getSetupNodes(GuildSetupController.Status.UNAVAILABLE)
+                        .size()
+                + setupController.getUnavailableGuilds().size();
     }
 
     /**

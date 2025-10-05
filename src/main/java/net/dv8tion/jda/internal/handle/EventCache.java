@@ -45,33 +45,29 @@ public class EventCache {
     public synchronized void timeout(final long responseTotal) {
         if (eventCache.isEmpty()) return;
         AtomicInteger count = new AtomicInteger();
-        eventCache.forEach(
-                (type, map) -> {
-                    if (map.isEmpty()) return;
-                    TLongObjectIterator<List<CacheNode>> iterator = map.iterator();
-                    while (iterator.hasNext()) {
-                        iterator.advance();
-                        long triggerId = iterator.key();
-                        List<CacheNode> cache = iterator.value();
-                        // Remove when this node is more than 100 events ago
-                        cache.removeIf(
-                                node -> {
-                                    boolean remove =
-                                            responseTotal - node.responseTotal > TIMEOUT_AMOUNT;
-                                    if (remove) {
-                                        count.incrementAndGet();
-                                        LOG.trace(
-                                                "Removing type {}/{} from event cache with payload"
-                                                        + " {}",
-                                                type,
-                                                triggerId,
-                                                node.event);
-                                    }
-                                    return remove;
-                                });
-                        if (cache.isEmpty()) iterator.remove();
+        eventCache.forEach((type, map) -> {
+            if (map.isEmpty()) return;
+            TLongObjectIterator<List<CacheNode>> iterator = map.iterator();
+            while (iterator.hasNext()) {
+                iterator.advance();
+                long triggerId = iterator.key();
+                List<CacheNode> cache = iterator.value();
+                // Remove when this node is more than 100 events ago
+                cache.removeIf(node -> {
+                    boolean remove = responseTotal - node.responseTotal > TIMEOUT_AMOUNT;
+                    if (remove) {
+                        count.incrementAndGet();
+                        LOG.trace(
+                                "Removing type {}/{} from event cache with payload" + " {}",
+                                type,
+                                triggerId,
+                                node.event);
                     }
+                    return remove;
                 });
+                if (cache.isEmpty()) iterator.remove();
+            }
+        });
         int amount = count.get();
         if (amount > 0)
             LOG.debug("Removed {} events from cache that were too old to be recycled", amount);
@@ -111,14 +107,10 @@ public class EventCache {
     }
 
     public synchronized int size() {
-        return (int)
-                eventCache.values().stream()
-                        .mapToLong(
-                                typeMap ->
-                                        typeMap.valueCollection().stream()
-                                                .mapToLong(List::size)
-                                                .sum())
-                        .sum();
+        return (int) eventCache.values().stream()
+                .mapToLong(typeMap ->
+                        typeMap.valueCollection().stream().mapToLong(List::size).sum())
+                .sum();
     }
 
     public synchronized void clear() {

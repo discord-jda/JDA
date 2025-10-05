@@ -127,15 +127,13 @@ public class GuildEmojisUpdateHandler extends SocketHandler {
         if (oldEmoji == null || newEmoji == null) return;
 
         if (!Objects.equals(oldEmoji.getName(), newEmoji.getName())) {
-            getJDA().handleEvent(
-                            new EmojiUpdateNameEvent(
-                                    getJDA(), responseNumber, newEmoji, oldEmoji.getName()));
+            getJDA().handleEvent(new EmojiUpdateNameEvent(
+                    getJDA(), responseNumber, newEmoji, oldEmoji.getName()));
         }
 
         if (!CollectionUtils.isEqualCollection(oldEmoji.getRoles(), newEmoji.getRoles())) {
-            getJDA().handleEvent(
-                            new EmojiUpdateRolesEvent(
-                                    getJDA(), responseNumber, newEmoji, oldEmoji.getRoles()));
+            getJDA().handleEvent(new EmojiUpdateRolesEvent(
+                    getJDA(), responseNumber, newEmoji, oldEmoji.getRoles()));
         }
     }
 }

@@ -125,9 +125,7 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
     @Nonnull
     @Override
     public String getUrl() {
-        return RestConfig.DEFAULT_BASE_URL
-                + "webhooks/"
-                + getId()
+        return RestConfig.DEFAULT_BASE_URL + "webhooks/" + getId()
                 + (getToken() == null ? "" : "/" + getToken());
     }
 

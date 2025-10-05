@@ -212,8 +212,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
 
     @Override
     protected void handleSuccess(Response response, Request<ScheduledEvent> request) {
-        request.onSuccess(
-                api.getEntityBuilder()
-                        .createScheduledEvent((GuildImpl) guild, response.getObject()));
+        request.onSuccess(api.getEntityBuilder()
+                .createScheduledEvent((GuildImpl) guild, response.getObject()));
     }
 }

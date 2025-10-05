@@ -107,29 +107,28 @@ public class CommandDataImpl implements SlashCommandData {
 
         if (localizationMapper != null) localizationMapper.localizeCommand(this, options);
 
-        DataObject json =
-                DataObject.empty()
-                        .put("type", type.getId())
-                        .put("name", name)
-                        .put("nsfw", nsfw)
-                        .put("options", options)
-                        .put(
-                                "contexts",
-                                contexts.stream()
-                                        .map(InteractionContextType::getType)
-                                        .collect(Collectors.toList()))
-                        .put(
-                                "integration_types",
-                                integrationTypes.stream()
-                                        .map(IntegrationType::getType)
-                                        .collect(Collectors.toList()))
-                        .put(
-                                "default_member_permissions",
-                                defaultMemberPermissions == DefaultMemberPermissions.ENABLED
-                                        ? null
-                                        : Long.toUnsignedString(
-                                                defaultMemberPermissions.getPermissionsRaw()))
-                        .put("name_localizations", nameLocalizations);
+        DataObject json = DataObject.empty()
+                .put("type", type.getId())
+                .put("name", name)
+                .put("nsfw", nsfw)
+                .put("options", options)
+                .put(
+                        "contexts",
+                        contexts.stream()
+                                .map(InteractionContextType::getType)
+                                .collect(Collectors.toList()))
+                .put(
+                        "integration_types",
+                        integrationTypes.stream()
+                                .map(IntegrationType::getType)
+                                .collect(Collectors.toList()))
+                .put(
+                        "default_member_permissions",
+                        defaultMemberPermissions == DefaultMemberPermissions.ENABLED
+                                ? null
+                                : Long.toUnsignedString(
+                                        defaultMemberPermissions.getPermissionsRaw()))
+                .put("name_localizations", nameLocalizations);
 
         if (type == Command.Type.SLASH) {
             json.put("description", description)
@@ -409,9 +408,8 @@ public class CommandDataImpl implements SlashCommandData {
     @Override
     public boolean removeSubcommands(@Nonnull Predicate<? super SubcommandData> condition) {
         Checks.notNull(condition, "Condition");
-        boolean modified =
-                options.removeIf(
-                        (o) -> o instanceof SubcommandData && condition.test((SubcommandData) o));
+        boolean modified = options.removeIf(
+                (o) -> o instanceof SubcommandData && condition.test((SubcommandData) o));
         if (modified) updateAllowedOptions();
         return modified;
     }
@@ -420,11 +418,8 @@ public class CommandDataImpl implements SlashCommandData {
     public boolean removeSubcommandGroups(
             @Nonnull Predicate<? super SubcommandGroupData> condition) {
         Checks.notNull(condition, "Condition");
-        boolean modified =
-                options.removeIf(
-                        (o) ->
-                                o instanceof SubcommandGroupData
-                                        && condition.test((SubcommandGroupData) o));
+        boolean modified = options.removeIf(
+                (o) -> o instanceof SubcommandGroupData && condition.test((SubcommandGroupData) o));
         if (modified) updateAllowedOptions();
         return modified;
     }

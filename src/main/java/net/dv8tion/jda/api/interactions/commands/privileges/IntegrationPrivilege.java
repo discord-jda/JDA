@@ -123,7 +123,10 @@ public class IntegrationPrivilege implements ISnowflake {
 
     @Override
     public String toString() {
-        return new EntityString(this).setType(getType()).addMetadata("enabled", enabled).toString();
+        return new EntityString(this)
+                .setType(getType())
+                .addMetadata("enabled", enabled)
+                .toString();
     }
 
     /**

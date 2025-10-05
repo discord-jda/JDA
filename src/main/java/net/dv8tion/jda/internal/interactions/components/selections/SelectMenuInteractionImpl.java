@@ -32,10 +32,9 @@ public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu>
     public SelectMenuInteractionImpl(JDAImpl jda, Class<S> type, DataObject data) {
         super(jda, data);
         if (message != null) {
-            menu =
-                    message.getComponentTree()
-                            .find(type, s -> customId.equals(s.getCustomId()))
-                            .orElse(null);
+            menu = message.getComponentTree()
+                    .find(type, s -> customId.equals(s.getCustomId()))
+                    .orElse(null);
         } else {
             menu = null;
         }

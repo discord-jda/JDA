@@ -62,14 +62,12 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence {
         this.sessionId = sessionId;
         this.syncId = syncId;
         this.flags = flags;
-        this.largeImage =
-                largeImageKey != null
-                        ? new Image(applicationId, largeImageKey, largeImageText)
-                        : null;
-        this.smallImage =
-                smallImageKey != null
-                        ? new Image(applicationId, smallImageKey, smallImageText)
-                        : null;
+        this.largeImage = largeImageKey != null
+                ? new Image(applicationId, largeImageKey, largeImageText)
+                : null;
+        this.smallImage = smallImageKey != null
+                ? new Image(applicationId, smallImageKey, smallImageText)
+                : null;
     }
 
     @Override

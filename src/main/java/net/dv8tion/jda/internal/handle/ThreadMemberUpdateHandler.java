@@ -61,10 +61,10 @@ public class ThreadMemberUpdateHandler extends SocketHandler {
         if (userId != getJDA().getSelfUser().getIdLong()) {
             JDAImpl.LOG.warn(
                     "Received a THREAD_MEMBER_UPDATE for a user that isn't the current bot user."
-                        + " This validates assumptions that THREAD_MEMBER_UPDATE would ONLY be for"
-                        + " the current bot user. Skipping this dispatch for now. This should be"
-                        + " reported as a bug.\n"
-                        + "Details: {}",
+                            + " This validates assumptions that THREAD_MEMBER_UPDATE would ONLY be for"
+                            + " the current bot user. Skipping this dispatch for now. This should be"
+                            + " reported as a bug.\n"
+                            + "Details: {}",
                     content);
             return null;
         }
@@ -75,10 +75,8 @@ public class ThreadMemberUpdateHandler extends SocketHandler {
             // exist. Do an existence check.
             ThreadMember threadMember = view.getMap().get(userId);
             if (threadMember == null) {
-                threadMember =
-                        api.getEntityBuilder()
-                                .createThreadMember(
-                                        thread, thread.getGuild().getSelfMember(), content);
+                threadMember = api.getEntityBuilder()
+                        .createThreadMember(thread, thread.getGuild().getSelfMember(), content);
                 view.getMap().put(threadMember.getIdLong(), threadMember);
             }
         }

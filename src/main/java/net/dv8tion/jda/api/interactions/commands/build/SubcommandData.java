@@ -358,10 +358,9 @@ public class SubcommandData implements SerializableData {
             @Nonnull String description,
             boolean required,
             boolean autoComplete) {
-        return addOptions(
-                new OptionData(type, name, description)
-                        .setRequired(required)
-                        .setAutoComplete(autoComplete));
+        return addOptions(new OptionData(type, name, description)
+                .setRequired(required)
+                .setAutoComplete(autoComplete));
     }
 
     /**
@@ -508,12 +507,9 @@ public class SubcommandData implements SerializableData {
         String name = json.getString("name");
         String description = json.getString("description");
         SubcommandData sub = new SubcommandData(name, description);
-        json.optArray("options")
-                .ifPresent(
-                        arr ->
-                                arr.stream(DataArray::getObject)
-                                        .map(OptionData::fromData)
-                                        .forEach(sub::addOptions));
+        json.optArray("options").ifPresent(arr -> arr.stream(DataArray::getObject)
+                .map(OptionData::fromData)
+                .forEach(sub::addOptions));
         sub.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
         sub.setDescriptionLocalizations(
                 LocalizationUtils.mapFromProperty(json, "description_localizations"));
@@ -537,7 +533,8 @@ public class SubcommandData implements SerializableData {
         Checks.notNull(subcommand, "Subcommand");
         SubcommandData data = new SubcommandData(subcommand.getName(), subcommand.getDescription());
         data.setNameLocalizations(subcommand.getNameLocalizations().toMap());
-        data.setDescriptionLocalizations(subcommand.getDescriptionLocalizations().toMap());
+        data.setDescriptionLocalizations(
+                subcommand.getDescriptionLocalizations().toMap());
         subcommand.getOptions().stream().map(OptionData::fromOption).forEach(data::addOptions);
         return data;
     }

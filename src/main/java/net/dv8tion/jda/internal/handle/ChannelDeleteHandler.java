@@ -73,13 +73,10 @@ public class ChannelDeleteHandler extends SocketHandler {
         // to keep the cache in sync.
         String location = Long.toUnsignedString(channelId);
         guild.getScheduledEventsView().stream()
-                .filter(
-                        scheduledEvent ->
-                                scheduledEvent.getType().isChannel()
-                                        && scheduledEvent.getLocation().equals(location))
-                .forEach(
-                        scheduledEvent ->
-                                guild.getScheduledEventsView().remove(scheduledEvent.getIdLong()));
+                .filter(scheduledEvent -> scheduledEvent.getType().isChannel()
+                        && scheduledEvent.getLocation().equals(location))
+                .forEach(scheduledEvent ->
+                        guild.getScheduledEventsView().remove(scheduledEvent.getIdLong()));
 
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
         return null;

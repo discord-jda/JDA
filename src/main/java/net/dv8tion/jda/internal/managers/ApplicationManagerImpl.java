@@ -189,11 +189,8 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
         if (shouldUpdate(INSTALL_PARAMS)) body.put("install_params", this.installParams);
         if (shouldUpdate(INTEGRATION_TYPES_CONFIG)) {
             DataObject config = DataObject.empty();
-            integrationTypeConfig.forEach(
-                    (key, value) ->
-                            config.put(
-                                    key.name(),
-                                    DataObject.empty().put("oauth2_install_params", value)));
+            integrationTypeConfig.forEach((key, value) ->
+                    config.put(key.name(), DataObject.empty().put("oauth2_install_params", value)));
             body.put("integration_type_config", config);
         }
 

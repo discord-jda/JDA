@@ -97,17 +97,12 @@ public class DataPathTest {
 
     @Test
     void testComplex() {
-        DataObject object =
-                DataObject.empty()
-                        .put(
-                                "array",
-                                DataArray.empty()
-                                        .add(
-                                                DataObject.empty()
-                                                        .put(
-                                                                "foo",
-                                                                DataObject.empty()
-                                                                        .put("bar", "hello"))));
+        DataObject object = DataObject.empty()
+                .put(
+                        "array",
+                        DataArray.empty()
+                                .add(DataObject.empty()
+                                        .put("foo", DataObject.empty().put("bar", "hello"))));
 
         assertThat(DataPath.getString(object, "array[0].foo.bar")).isEqualTo("hello");
         assertThat(DataPath.getString(object, "array[0].wrong?.bar", "world")).isEqualTo("world");

@@ -150,9 +150,8 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T> {
     @Override
     public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId) {
         if (!"@original".equals(messageId)) Checks.isSnowflake(messageId);
-        Route.CompiledRoute route =
-                Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(
-                        Long.toUnsignedString(id), token, messageId);
+        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(
+                Long.toUnsignedString(id), token, messageId);
         return new WebhookMessageDeleteActionImpl(api, route);
     }
 }

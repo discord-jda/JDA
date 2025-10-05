@@ -251,12 +251,10 @@ public class ImageProxy extends FileProxy {
     @Nonnull
     public FileUpload downloadAsFileUpload(@Nonnull String name, int size) {
         final String url = getUrl(size); // So the checks are also done outside the FileUpload
-        return FileUpload.fromStreamSupplier(
-                name,
-                () -> {
-                    // Blocking is fine on the elastic rate limit thread pool
-                    // [[JDABuilder#setRateLimitElastic]]
-                    return download(url).join();
-                });
+        return FileUpload.fromStreamSupplier(name, () -> {
+            // Blocking is fine on the elastic rate limit thread pool
+            // [[JDABuilder#setRateLimitElastic]]
+            return download(url).join();
+        });
     }
 }

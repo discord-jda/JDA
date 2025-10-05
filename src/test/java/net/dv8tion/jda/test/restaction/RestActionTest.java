@@ -33,51 +33,39 @@ import java.util.concurrent.TimeUnit;
 public class RestActionTest extends IntegrationTest {
     @Test
     void testMapOperator() {
-        assertThat(new CompletedRestAction<>(jda, "12345").map(Integer::parseInt).complete())
+        assertThat(new CompletedRestAction<>(jda, "12345")
+                        .map(Integer::parseInt)
+                        .complete())
                 .isEqualTo(12345);
     }
 
     @Test
     void testFlatMapOperator() {
-        assertThat(
-                        new CompletedRestAction<>(jda, "12345")
-                                .flatMap(
-                                        value ->
-                                                new CompletedRestAction<>(
-                                                        jda, Integer.parseInt(value)))
-                                .complete())
+        assertThat(new CompletedRestAction<>(jda, "12345")
+                        .flatMap(value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
+                        .complete())
                 .isEqualTo(12345);
 
-        assertThat(
-                        new CompletedRestAction<>(jda, "12345")
-                                .flatMap(
-                                        value -> value.startsWith("123"),
-                                        value ->
-                                                new CompletedRestAction<>(
-                                                        jda, Integer.parseInt(value)))
-                                .complete())
+        assertThat(new CompletedRestAction<>(jda, "12345")
+                        .flatMap(
+                                value -> value.startsWith("123"),
+                                value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
+                        .complete())
                 .isEqualTo(12345);
 
-        assertThatThrownBy(
-                        () ->
-                                new CompletedRestAction<>(jda, "12345")
-                                        .flatMap(
-                                                value -> value.startsWith("wrong"),
-                                                value ->
-                                                        new CompletedRestAction<>(
-                                                                jda, Integer.parseInt(value)))
-                                        .complete())
+        assertThatThrownBy(() -> new CompletedRestAction<>(jda, "12345")
+                        .flatMap(
+                                value -> value.startsWith("wrong"),
+                                value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
+                        .complete())
                 .isInstanceOf(CancellationException.class)
                 .hasMessage("FlatMap condition failed");
 
-        assertThat(
-                        new CompletedRestAction<>(jda, "12345")
-                                .flatMap(
-                                        value -> value.startsWith("wrong"),
-                                        value ->
-                                                new CompletedRestAction<>(
-                                                        jda, Integer.parseInt(value)))
-                                .submit())
+        assertThat(new CompletedRestAction<>(jda, "12345")
+                        .flatMap(
+                                value -> value.startsWith("wrong"),
+                                value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
+                        .submit())
                 .failsWithin(Duration.ZERO)
                 .withThrowableThat()
                 .havingRootCause()

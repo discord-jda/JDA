@@ -207,11 +207,9 @@ spotless {
     }
 
     java {
-        googleJavaFormat("1.29.0")
-            .aosp()
-            .reorderImports(true)
-            .reflowLongStrings()
-            .skipJavadocFormatting()
+        palantirJavaFormat("2.75.0")
+            .style("AOSP")
+            .formatJavadoc(false)
 
         licenseHeaderFile("spotless/licence.txt")
 

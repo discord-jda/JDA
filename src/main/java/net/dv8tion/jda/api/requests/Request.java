@@ -117,26 +117,22 @@ public class Request<T> {
                 "Scheduling success callback for request with route {}/{}",
                 route.getMethod(),
                 route.getCompiledRoute());
-        api.getCallbackPool()
-                .execute(
-                        () -> {
-                            try (ThreadLocalReason.Closable __ =
-                                            ThreadLocalReason.closable(localReason);
-                                    CallbackContext ___ = CallbackContext.getInstance()) {
-                                RestActionImpl.LOG.trace(
-                                        "Running success callback for request with route {}/{}",
-                                        route.getMethod(),
-                                        route.getCompiledRoute());
-                                onSuccess.accept(successObj);
-                            } catch (Throwable t) {
-                                RestActionImpl.LOG.error(
-                                        "Encountered error while processing success consumer", t);
-                                if (t instanceof Error) {
-                                    api.handleEvent(new ExceptionEvent(api, t, true));
-                                    throw (Error) t;
-                                }
-                            }
-                        });
+        api.getCallbackPool().execute(() -> {
+            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
+                    CallbackContext ___ = CallbackContext.getInstance()) {
+                RestActionImpl.LOG.trace(
+                        "Running success callback for request with route {}/{}",
+                        route.getMethod(),
+                        route.getCompiledRoute());
+                onSuccess.accept(successObj);
+            } catch (Throwable t) {
+                RestActionImpl.LOG.error("Encountered error while processing success consumer", t);
+                if (t instanceof Error) {
+                    api.handleEvent(new ExceptionEvent(api, t, true));
+                    throw (Error) t;
+                }
+            }
+        });
     }
 
     public void onFailure(@Nonnull Response response) {
@@ -165,28 +161,24 @@ public class Request<T> {
                 "Scheduling failure callback for request with route {}/{}",
                 route.getMethod(),
                 route.getCompiledRoute());
-        api.getCallbackPool()
-                .execute(
-                        () -> {
-                            try (ThreadLocalReason.Closable __ =
-                                            ThreadLocalReason.closable(localReason);
-                                    CallbackContext ___ = CallbackContext.getInstance()) {
-                                RestActionImpl.LOG.trace(
-                                        "Running failure callback for request with route {}/{}",
-                                        route.getMethod(),
-                                        route.getCompiledRoute());
-                                onFailure.accept(failException);
-                                if (failException instanceof Error)
-                                    api.handleEvent(new ExceptionEvent(api, failException, false));
-                            } catch (Throwable t) {
-                                RestActionImpl.LOG.error(
-                                        "Encountered error while processing failure consumer", t);
-                                if (t instanceof Error) {
-                                    api.handleEvent(new ExceptionEvent(api, t, true));
-                                    throw (Error) t;
-                                }
-                            }
-                        });
+        api.getCallbackPool().execute(() -> {
+            try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
+                    CallbackContext ___ = CallbackContext.getInstance()) {
+                RestActionImpl.LOG.trace(
+                        "Running failure callback for request with route {}/{}",
+                        route.getMethod(),
+                        route.getCompiledRoute());
+                onFailure.accept(failException);
+                if (failException instanceof Error)
+                    api.handleEvent(new ExceptionEvent(api, failException, false));
+            } catch (Throwable t) {
+                RestActionImpl.LOG.error("Encountered error while processing failure consumer", t);
+                if (t instanceof Error) {
+                    api.handleEvent(new ExceptionEvent(api, t, true));
+                    throw (Error) t;
+                }
+            }
+        });
     }
 
     public void onCancelled() {

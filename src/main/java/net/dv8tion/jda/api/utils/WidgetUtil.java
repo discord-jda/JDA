@@ -202,13 +202,12 @@ public class WidgetUtil {
 
         HttpURLConnection connection;
         OkHttpClient client = new OkHttpClient.Builder().build();
-        Request request =
-                new Request.Builder()
-                        .url(String.format(WIDGET_URL, guildId))
-                        .method("GET", null)
-                        .header("user-agent", RestConfig.USER_AGENT)
-                        .header("accept-encoding", "gzip")
-                        .build();
+        Request request = new Request.Builder()
+                .url(String.format(WIDGET_URL, guildId))
+                .method("GET", null)
+                .header("user-agent", RestConfig.USER_AGENT)
+                .header("accept-encoding", "gzip")
+                .build();
 
         try (Response response = client.newCall(request).execute()) {
             final int code = response.code();
@@ -216,28 +215,28 @@ public class WidgetUtil {
 
             switch (code) {
                 case 200: // ok
-                    {
-                        try (InputStream stream = data) {
-                            return new WidgetImpl(DataObject.fromJson(stream));
-                        } catch (IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
+                {
+                    try (InputStream stream = data) {
+                        return new WidgetImpl(DataObject.fromJson(stream));
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
                     }
+                }
                 case 400: // not valid snowflake
                 case 404: // guild not found
                     return null;
                 case 403: // widget disabled
                     return new WidgetImpl(guildId);
                 case 429: // ratelimited
-                    {
-                        long retryAfter;
-                        try (InputStream stream = data) {
-                            retryAfter = DataObject.fromJson(stream).getLong("retry_after");
-                        } catch (Exception e) {
-                            retryAfter = 0;
-                        }
-                        throw new RateLimitedException(WIDGET_URL, retryAfter);
+                {
+                    long retryAfter;
+                    try (InputStream stream = data) {
+                        retryAfter = DataObject.fromJson(stream).getLong("retry_after");
+                    } catch (Exception e) {
+                        retryAfter = 0;
                     }
+                    throw new RateLimitedException(WIDGET_URL, retryAfter);
+                }
                 default:
                     throw new IllegalStateException(
                             "An unknown status was returned: " + code + " " + response.message());

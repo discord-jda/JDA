@@ -46,9 +46,8 @@ public class VoiceChannelStatusUpdateHandler extends SocketHandler {
         if (!newStatus.equals(channel.getStatus())) {
             String oldStatus = channel.getStatus();
             channel.setStatus(newStatus);
-            api.handleEvent(
-                    new ChannelUpdateVoiceStatusEvent(
-                            api, responseNumber, channel, oldStatus, newStatus));
+            api.handleEvent(new ChannelUpdateVoiceStatusEvent(
+                    api, responseNumber, channel, oldStatus, newStatus));
         }
         return null;
     }

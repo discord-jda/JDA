@@ -26,11 +26,7 @@ import java.util.regex.Pattern;
 
 public class ChecksHelper {
     public static String tooLongError(String name, int maxLength, String value) {
-        return name
-                + " may not be longer than "
-                + maxLength
-                + " characters! Provided: \""
-                + value
+        return name + " may not be longer than " + maxLength + " characters! Provided: \"" + value
                 + "\"";
     }
 

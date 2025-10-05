@@ -611,23 +611,16 @@ public interface Command extends ISnowflake, ICommandReference {
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
             this.autoComplete = json.getBoolean("autocomplete");
-            this.channelTypes =
-                    Collections.unmodifiableSet(
-                            json.optArray("channel_types")
-                                    .map(
-                                            it ->
-                                                    it.stream(DataArray::getInt)
-                                                            .map(ChannelType::fromId)
-                                                            .collect(Collectors.toSet()))
-                                    .orElse(Collections.emptySet()));
-            this.choices =
-                    json.optArray("choices")
-                            .map(
-                                    it ->
-                                            it.stream(DataArray::getObject)
-                                                    .map(Choice::new)
-                                                    .collect(Collectors.toList()))
-                            .orElse(Collections.emptyList());
+            this.channelTypes = Collections.unmodifiableSet(json.optArray("channel_types")
+                    .map(it -> it.stream(DataArray::getInt)
+                            .map(ChannelType::fromId)
+                            .collect(Collectors.toSet()))
+                    .orElse(Collections.emptySet()));
+            this.choices = json.optArray("choices")
+                    .map(it -> it.stream(DataArray::getObject)
+                            .map(Choice::new)
+                            .collect(Collectors.toList()))
+                    .orElse(Collections.emptyList());
             if (!json.isNull("min_value")) this.minValue = json.getDouble("min_value");
             if (!json.isNull("max_value")) this.maxValue = json.getDouble("max_value");
             if (!json.isNull("min_length")) this.minLength = json.getInt("min_length");
@@ -819,7 +812,10 @@ public interface Command extends ISnowflake, ICommandReference {
 
         @Override
         public String toString() {
-            return new EntityString(this).setType(getType()).addMetadata("name", name).toString();
+            return new EntityString(this)
+                    .setType(getType())
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
@@ -950,11 +946,8 @@ public interface Command extends ISnowflake, ICommandReference {
             this.description = json.getString("description");
             this.descriptionLocalizations =
                     LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
-            this.subcommands =
-                    CommandImpl.parseOptions(
-                            json,
-                            CommandImpl.SUBCOMMAND_TEST,
-                            (DataObject o) -> new Subcommand(this, o));
+            this.subcommands = CommandImpl.parseOptions(
+                    json, CommandImpl.SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
         }
 
         /**

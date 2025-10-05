@@ -119,9 +119,8 @@ public class ChannelUpdateHandler extends SocketHandler {
         String name = content.getString("name", oldName);
         if (!Objects.equals(oldName, name)) {
             channel.setName(name);
-            getJDA().handleEvent(
-                            new ChannelUpdateNameEvent(
-                                    getJDA(), responseNumber, channel, oldName, name));
+            getJDA().handleEvent(new ChannelUpdateNameEvent(
+                    getJDA(), responseNumber, channel, oldName, name));
         }
 
         if (channel instanceof ITopicChannelMixin<?>)
@@ -157,21 +156,18 @@ public class ChannelUpdateHandler extends SocketHandler {
             case FORUM:
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
 
-                int layout =
-                        content.getInt(
-                                "default_forum_layout",
-                                ((ForumChannelImpl) channel).getRawLayout());
+                int layout = content.getInt(
+                        "default_forum_layout", ((ForumChannelImpl) channel).getRawLayout());
                 int oldLayout = forumChannel.getRawLayout();
 
                 if (oldLayout != layout) {
                     forumChannel.setDefaultLayout(layout);
-                    getJDA().handleEvent(
-                                    new ChannelUpdateDefaultLayoutEvent(
-                                            getJDA(),
-                                            responseNumber,
-                                            forumChannel,
-                                            ForumChannel.Layout.fromKey(oldLayout),
-                                            ForumChannel.Layout.fromKey(layout)));
+                    getJDA().handleEvent(new ChannelUpdateDefaultLayoutEvent(
+                            getJDA(),
+                            responseNumber,
+                            forumChannel,
+                            ForumChannel.Layout.fromKey(oldLayout),
+                            ForumChannel.Layout.fromKey(layout)));
                 }
                 break;
             case VOICE:
@@ -205,15 +201,13 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         ChannelType oldType = channel.getType();
 
-        EnumSet<ChannelType> expectedTypes =
-                EnumSet.complementOf(
-                        EnumSet.of(
-                                ChannelType.PRIVATE,
-                                ChannelType.GROUP,
-                                ChannelType.GUILD_NEWS_THREAD,
-                                ChannelType.GUILD_PRIVATE_THREAD,
-                                ChannelType.GUILD_PUBLIC_THREAD,
-                                ChannelType.UNKNOWN));
+        EnumSet<ChannelType> expectedTypes = EnumSet.complementOf(EnumSet.of(
+                ChannelType.PRIVATE,
+                ChannelType.GROUP,
+                ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.GUILD_PRIVATE_THREAD,
+                ChannelType.GUILD_PUBLIC_THREAD,
+                ChannelType.UNKNOWN));
 
         if (!expectedTypes.contains(oldType) || !expectedTypes.contains(newChannelType)) {
             WebSocketClient.LOG.warn(
@@ -246,9 +240,8 @@ public class ChannelUpdateHandler extends SocketHandler {
             ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(latestMessageIdLong);
         }
 
-        getJDA().handleEvent(
-                        new ChannelUpdateTypeEvent(
-                                getJDA(), responseNumber, newChannel, oldType, newChannelType));
+        getJDA().handleEvent(new ChannelUpdateTypeEvent(
+                getJDA(), responseNumber, newChannel, oldType, newChannelType));
 
         return channel;
     }
@@ -265,16 +258,14 @@ public class ChannelUpdateHandler extends SocketHandler {
                 addPermissionHolder(changed, guild, id);
         }
 
-        currentOverrides.forEachValue(
-                override -> {
-                    channel.getPermissionOverrideMap().remove(override.getIdLong());
-                    addPermissionHolder(changed, guild, override.getIdLong());
-                    api.handleEvent(
-                            new PermissionOverrideDeleteEvent(
-                                    api, responseNumber,
-                                    channel, override));
-                    return true;
-                });
+        currentOverrides.forEachValue(override -> {
+            channel.getPermissionOverrideMap().remove(override.getIdLong());
+            addPermissionHolder(changed, guild, override.getIdLong());
+            api.handleEvent(new PermissionOverrideDeleteEvent(
+                    api, responseNumber,
+                    channel, override));
+            return true;
+        });
     }
 
     private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id) {
@@ -317,18 +308,16 @@ public class ChannelUpdateHandler extends SocketHandler {
                 // We delete empty overrides for the @everyone role because that's what the client
                 // also does, otherwise our sync checks don't work!
                 channel.getPermissionOverrideMap().remove(overrideId);
-                api.handleEvent(
-                        new PermissionOverrideDeleteEvent(
-                                api, responseNumber,
-                                channel, currentOverride));
+                api.handleEvent(new PermissionOverrideDeleteEvent(
+                        api, responseNumber,
+                        channel, currentOverride));
                 return true;
             }
 
             impl.setAllow(allow);
             impl.setDeny(deny);
-            api.handleEvent(
-                    new PermissionOverrideUpdateEvent(
-                            api, responseNumber, channel, currentOverride, oldAllow, oldDeny));
+            api.handleEvent(new PermissionOverrideUpdateEvent(
+                    api, responseNumber, channel, currentOverride, oldAllow, oldDeny));
         } else // New override?
         {
             // Empty @everyone overrides should be treated as not existing at all
@@ -338,10 +327,9 @@ public class ChannelUpdateHandler extends SocketHandler {
             impl.setAllow(allow);
             impl.setDeny(deny);
             channel.getPermissionOverrideMap().put(overrideId, currentOverride);
-            api.handleEvent(
-                    new PermissionOverrideCreateEvent(
-                            api, responseNumber,
-                            channel, currentOverride));
+            api.handleEvent(new PermissionOverrideCreateEvent(
+                    api, responseNumber,
+                    channel, currentOverride));
         }
 
         return true;
@@ -398,21 +386,18 @@ public class ChannelUpdateHandler extends SocketHandler {
 
                     impl.setPosition(i);
                     if (!Objects.equals(oldEmoji, impl.getEmoji())) {
-                        api.handleEvent(
-                                new ForumTagUpdateEmojiEvent(
-                                        api, responseNumber, channel, impl, oldEmoji));
+                        api.handleEvent(new ForumTagUpdateEmojiEvent(
+                                api, responseNumber, channel, impl, oldEmoji));
                     }
                     if (!name.equals(oldName)) {
                         impl.setName(name);
-                        api.handleEvent(
-                                new ForumTagUpdateNameEvent(
-                                        api, responseNumber, channel, impl, oldName));
+                        api.handleEvent(new ForumTagUpdateNameEvent(
+                                api, responseNumber, channel, impl, oldName));
                     }
                     if (moderated != impl.isModerated()) {
                         impl.setModerated(moderated);
-                        api.handleEvent(
-                                new ForumTagUpdateModeratedEvent(
-                                        api, responseNumber, channel, impl, moderated));
+                        api.handleEvent(new ForumTagUpdateModeratedEvent(
+                                api, responseNumber, channel, impl, moderated));
                     }
                 } else {
                     ForumTag tag = builder.createForumTag(channel, tagJson, i);
@@ -421,14 +406,12 @@ public class ChannelUpdateHandler extends SocketHandler {
                 }
             }
 
-            removedTags.forEach(
-                    id -> {
-                        ForumTag tag = cache.remove(id);
-                        if (tag != null)
-                            api.handleEvent(
-                                    new ForumTagRemoveEvent(api, responseNumber, channel, tag));
-                        return true;
-                    });
+            removedTags.forEach(id -> {
+                ForumTag tag = cache.remove(id);
+                if (tag != null)
+                    api.handleEvent(new ForumTagRemoveEvent(api, responseNumber, channel, tag));
+                return true;
+            });
         }
     }
 
@@ -445,9 +428,8 @@ public class ChannelUpdateHandler extends SocketHandler {
         if (oldSlowmode == slowmode) return;
 
         channel.setSlowmode(slowmode);
-        api.handleEvent(
-                new ChannelUpdateSlowmodeEvent(
-                        api, responseNumber, channel, oldSlowmode, slowmode));
+        api.handleEvent(new ChannelUpdateSlowmodeEvent(
+                api, responseNumber, channel, oldSlowmode, slowmode));
     }
 
     private void handleNsfw(IAgeRestrictedChannelMixin<?> channel, boolean nsfw) {
@@ -475,9 +457,8 @@ public class ChannelUpdateHandler extends SocketHandler {
         if (oldPosition == position) return;
 
         channel.setPosition(position);
-        api.handleEvent(
-                new ChannelUpdatePositionEvent(
-                        api, responseNumber, channel, oldPosition, position));
+        api.handleEvent(new ChannelUpdatePositionEvent(
+                api, responseNumber, channel, oldPosition, position));
     }
 
     private void handleThreadContainer(IThreadContainerMixin<?> channel, DataObject content) {
@@ -485,13 +466,8 @@ public class ChannelUpdateHandler extends SocketHandler {
         int defaultThreadSlowmode = content.getInt("default_thread_rate_limit_per_user", 0);
         if (oldDefaultThreadSlowmode != defaultThreadSlowmode) {
             channel.setDefaultThreadSlowmode(defaultThreadSlowmode);
-            api.handleEvent(
-                    new ChannelUpdateDefaultThreadSlowmodeEvent(
-                            api,
-                            responseNumber,
-                            channel,
-                            oldDefaultThreadSlowmode,
-                            defaultThreadSlowmode));
+            api.handleEvent(new ChannelUpdateDefaultThreadSlowmodeEvent(
+                    api, responseNumber, channel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
         }
     }
 
@@ -501,9 +477,8 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         if (oldBitrate != bitrate) {
             channel.setBitrate(bitrate);
-            api.handleEvent(
-                    new ChannelUpdateBitrateEvent(
-                            api, responseNumber, channel, oldBitrate, bitrate));
+            api.handleEvent(new ChannelUpdateBitrateEvent(
+                    api, responseNumber, channel, oldBitrate, bitrate));
         }
 
         int userLimit = content.getInt("user_limit");
@@ -511,9 +486,8 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         if (oldLimit != userLimit) {
             channel.setUserLimit(userLimit);
-            getJDA().handleEvent(
-                            new ChannelUpdateUserLimitEvent(
-                                    getJDA(), responseNumber, channel, oldLimit, userLimit));
+            getJDA().handleEvent(new ChannelUpdateUserLimitEvent(
+                    getJDA(), responseNumber, channel, oldLimit, userLimit));
         }
 
         String oldRegion = channel.getRegionRaw();
@@ -521,34 +495,28 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         if (!Objects.equals(oldRegion, regionRaw)) {
             channel.setRegion(regionRaw);
-            api.handleEvent(
-                    new ChannelUpdateRegionEvent(
-                            api,
-                            responseNumber,
-                            channel,
-                            Region.fromKey(oldRegion),
-                            Region.fromKey(regionRaw)));
+            api.handleEvent(new ChannelUpdateRegionEvent(
+                    api,
+                    responseNumber,
+                    channel,
+                    Region.fromKey(oldRegion),
+                    Region.fromKey(regionRaw)));
         }
     }
 
     private void handlePostContainer(IPostContainerMixin<?> channel, DataObject content) {
         content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(channel, array));
 
-        EmojiUnion defaultReaction =
-                content.optObject("default_reaction_emoji")
-                        .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
-                        .orElse(null);
+        EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
+                .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
+                .orElse(null);
         EmojiUnion oldDefaultReaction = channel.getDefaultReaction();
 
         if (!Objects.equals(oldDefaultReaction, defaultReaction)) {
-            channel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
-            getJDA().handleEvent(
-                            new ChannelUpdateDefaultReactionEvent(
-                                    getJDA(),
-                                    responseNumber,
-                                    channel,
-                                    oldDefaultReaction,
-                                    defaultReaction));
+            channel.setDefaultReaction(
+                    content.optObject("default_reaction_emoji").orElse(null));
+            getJDA().handleEvent(new ChannelUpdateDefaultReactionEvent(
+                    getJDA(), responseNumber, channel, oldDefaultReaction, defaultReaction));
         }
 
         int sortOrder = content.getInt("default_sort_order", channel.getRawSortOrder());
@@ -556,12 +524,11 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         if (oldSortOrder != sortOrder) {
             channel.setDefaultSortOrder(sortOrder);
-            getJDA().handleEvent(
-                            new ChannelUpdateDefaultSortOrderEvent(
-                                    getJDA(),
-                                    responseNumber,
-                                    channel,
-                                    IPostContainer.SortOrder.fromKey(oldSortOrder)));
+            getJDA().handleEvent(new ChannelUpdateDefaultSortOrderEvent(
+                    getJDA(),
+                    responseNumber,
+                    channel,
+                    IPostContainer.SortOrder.fromKey(oldSortOrder)));
         }
 
         int newFlags = content.getInt("flags", 0);
@@ -569,13 +536,12 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         if (oldFlags != newFlags) {
             channel.setFlags(newFlags);
-            getJDA().handleEvent(
-                            new ChannelUpdateFlagsEvent(
-                                    getJDA(),
-                                    responseNumber,
-                                    channel,
-                                    ChannelFlag.fromRaw(oldFlags),
-                                    ChannelFlag.fromRaw(newFlags)));
+            getJDA().handleEvent(new ChannelUpdateFlagsEvent(
+                    getJDA(),
+                    responseNumber,
+                    channel,
+                    ChannelFlag.fromRaw(oldFlags),
+                    ChannelFlag.fromRaw(newFlags)));
         }
     }
 }

@@ -113,10 +113,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
 
         Route.CompiledRoute route =
                 Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), isSelf ? "@me" : getId());
-        DataObject body =
-                DataObject.empty()
-                        .put("channel_id", connectedChannel.getId())
-                        .put("suppress", suppress);
+        DataObject body = DataObject.empty()
+                .put("channel_id", connectedChannel.getId())
+                .put("suppress", suppress);
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
@@ -132,11 +131,10 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
                     connectedChannel, Permission.VOICE_MUTE_OTHERS);
 
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), getId());
-        DataObject body =
-                DataObject.empty()
-                        .put("channel_id", connectedChannel.getId())
-                        .put("suppress", false)
-                        .put("request_to_speak_timestamp", OffsetDateTime.now().toString());
+        DataObject body = DataObject.empty()
+                .put("channel_id", connectedChannel.getId())
+                .put("suppress", false)
+                .put("request_to_speak_timestamp", OffsetDateTime.now().toString());
         return new RestActionImpl<>(getJDA(), route, body);
     }
 

@@ -82,12 +82,11 @@ public class SelectMenuMentions implements Mentions {
         DataObject userMap = resolved.optObject("users").orElseGet(DataObject::empty);
         EntityBuilder builder = jda.getEntityBuilder();
 
-        return cachedUsers =
-                values.stream()
-                        .map(id -> userMap.optObject(id).orElse(null))
-                        .filter(Objects::nonNull)
-                        .map(builder::createUser)
-                        .collect(Helpers.toUnmodifiableList());
+        return cachedUsers = values.stream()
+                .map(id -> userMap.optObject(id).orElse(null))
+                .filter(Objects::nonNull)
+                .map(builder::createUser)
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -104,27 +103,22 @@ public class SelectMenuMentions implements Mentions {
 
         DataObject channelMap = resolved.optObject("channels").orElseGet(DataObject::empty);
 
-        return cachedChannels =
-                values.stream()
-                        .map(id -> channelMap.optObject(id).orElse(null))
-                        .filter(Objects::nonNull)
-                        .map(
-                                json -> {
-                                    final ChannelType channelType =
-                                            ChannelType.fromId(json.getInt("type", -1));
-                                    if (!guild.isDetached())
-                                        return guild.getGuildChannelById(
-                                                channelType, json.getUnsignedLong("id"));
+        return cachedChannels = values.stream()
+                .map(id -> channelMap.optObject(id).orElse(null))
+                .filter(Objects::nonNull)
+                .map(json -> {
+                    final ChannelType channelType = ChannelType.fromId(json.getInt("type", -1));
+                    if (!guild.isDetached())
+                        return guild.getGuildChannelById(channelType, json.getUnsignedLong("id"));
 
-                                    // Unknown guilds
-                                    if (channelType.isThread())
-                                        return interactionEntityBuilder.createThreadChannel(
-                                                guild, json);
-                                    // Will return null if the type isn't known
-                                    return interactionEntityBuilder.createGuildChannel(guild, json);
-                                })
-                        .filter(Objects::nonNull)
-                        .collect(Helpers.toUnmodifiableList());
+                    // Unknown guilds
+                    if (channelType.isThread())
+                        return interactionEntityBuilder.createThreadChannel(guild, json);
+                    // Will return null if the type isn't known
+                    return interactionEntityBuilder.createGuildChannel(guild, json);
+                })
+                .filter(Objects::nonNull)
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -156,18 +150,15 @@ public class SelectMenuMentions implements Mentions {
 
         DataObject roleMap = resolved.optObject("roles").orElseGet(DataObject::empty);
 
-        return cachedRoles =
-                values.stream()
-                        .filter(roleMap::hasKey)
-                        .map(roleMap::getObject)
-                        .map(
-                                json -> {
-                                    if (!guild.isDetached())
-                                        return guild.getRoleById(json.getUnsignedLong("id"));
-                                    return interactionEntityBuilder.createRole(guild, json);
-                                })
-                        .filter(Objects::nonNull)
-                        .collect(Helpers.toUnmodifiableList());
+        return cachedRoles = values.stream()
+                .filter(roleMap::hasKey)
+                .map(roleMap::getObject)
+                .map(json -> {
+                    if (!guild.isDetached()) return guild.getRoleById(json.getUnsignedLong("id"));
+                    return interactionEntityBuilder.createRole(guild, json);
+                })
+                .filter(Objects::nonNull)
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -209,21 +200,18 @@ public class SelectMenuMentions implements Mentions {
         DataObject memberMap = resolved.optObject("members").orElseGet(DataObject::empty);
         DataObject userMap = resolved.optObject("users").orElseGet(DataObject::empty);
 
-        return cachedMembers =
-                values.stream()
-                        .map(id -> memberMap.optObject(id).map(m -> m.put("id", id)).orElse(null))
-                        .filter(Objects::nonNull)
-                        .map(json -> json.put("user", userMap.getObject(json.getString("id"))))
-                        .map(json -> interactionEntityBuilder.createMember(guild, json))
-                        .filter(Objects::nonNull)
-                        .filter(
-                                member -> {
-                                    if (!member.isDetached())
-                                        jda.getEntityBuilder()
-                                                .updateMemberCache((MemberImpl) member);
-                                    return true;
-                                })
-                        .collect(Helpers.toUnmodifiableList());
+        return cachedMembers = values.stream()
+                .map(id -> memberMap.optObject(id).map(m -> m.put("id", id)).orElse(null))
+                .filter(Objects::nonNull)
+                .map(json -> json.put("user", userMap.getObject(json.getString("id"))))
+                .map(json -> interactionEntityBuilder.createMember(guild, json))
+                .filter(Objects::nonNull)
+                .filter(member -> {
+                    if (!member.isDetached())
+                        jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
+                    return true;
+                })
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -246,10 +234,8 @@ public class SelectMenuMentions implements Mentions {
                     List<User> users = getUsers();
                     mentions.addAll(members);
                     users.stream()
-                            .filter(
-                                    u ->
-                                            members.stream()
-                                                    .noneMatch(m -> m.getIdLong() == u.getIdLong()))
+                            .filter(u ->
+                                    members.stream().noneMatch(m -> m.getIdLong() == u.getIdLong()))
                             .forEach(mentions::add);
                     break;
                 case ROLE:
@@ -276,40 +262,30 @@ public class SelectMenuMentions implements Mentions {
             switch (type) {
                 case USER:
                     if (mentionable instanceof UserSnowflake) {
-                        boolean mentioned =
-                                resolved.optObject("users")
-                                        .map(obj -> obj.hasKey(id))
-                                        .orElse(false);
+                        boolean mentioned = resolved.optObject("users")
+                                .map(obj -> obj.hasKey(id))
+                                .orElse(false);
                         if (mentioned) return true;
                     }
                     break;
                 case ROLE:
                     if (mentionable instanceof Member) {
-                        boolean mentioned =
-                                ((Member) mentionable)
-                                        .getUnsortedRoles().stream()
-                                                .anyMatch(
-                                                        role ->
-                                                                isMentioned(
-                                                                        role,
-                                                                        Message.MentionType.ROLE));
+                        boolean mentioned = ((Member) mentionable)
+                                .getUnsortedRoles().stream()
+                                        .anyMatch(role ->
+                                                isMentioned(role, Message.MentionType.ROLE));
                         if (mentioned) return true;
                     } else if (mentionable instanceof User) {
-                        boolean mentioned =
-                                getMembers().stream()
-                                        .filter(it -> it.getIdLong() == mentionable.getIdLong())
-                                        .findFirst()
-                                        .map(
-                                                member ->
-                                                        isMentioned(
-                                                                member, Message.MentionType.ROLE))
-                                        .orElse(false);
+                        boolean mentioned = getMembers().stream()
+                                .filter(it -> it.getIdLong() == mentionable.getIdLong())
+                                .findFirst()
+                                .map(member -> isMentioned(member, Message.MentionType.ROLE))
+                                .orElse(false);
                         if (mentioned) return true;
                     } else if (mentionable instanceof Role) {
-                        boolean mentioned =
-                                resolved.optObject("roles")
-                                        .map(obj -> obj.hasKey(id))
-                                        .orElse(false);
+                        boolean mentioned = resolved.optObject("roles")
+                                .map(obj -> obj.hasKey(id))
+                                .orElse(false);
                         if (mentioned) return true;
                     }
                     break;

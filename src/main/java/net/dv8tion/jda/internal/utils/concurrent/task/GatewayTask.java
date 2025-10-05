@@ -56,19 +56,17 @@ public class GatewayTask<T> implements Task<T> {
     @Override
     public Task<T> onError(@Nonnull Consumer<? super Throwable> callback) {
         Checks.notNull(callback, "Callback");
-        Consumer<Throwable> failureHandler =
-                ContextException.here(
-                        (error) -> log.error("Task Failure callback threw error", error));
-        future.exceptionally(
-                error -> {
-                    try {
-                        callback.accept(error);
-                    } catch (Throwable e) {
-                        failureHandler.accept(e);
-                        if (e instanceof Error) throw e;
-                    }
-                    return null;
-                });
+        Consumer<Throwable> failureHandler = ContextException.here(
+                (error) -> log.error("Task Failure callback threw error", error));
+        future.exceptionally(error -> {
+            try {
+                callback.accept(error);
+            } catch (Throwable e) {
+                failureHandler.accept(e);
+                if (e instanceof Error) throw e;
+            }
+            return null;
+        });
         return this;
     }
 
@@ -76,18 +74,16 @@ public class GatewayTask<T> implements Task<T> {
     @Override
     public Task<T> onSuccess(@Nonnull Consumer<? super T> callback) {
         Checks.notNull(callback, "Callback");
-        Consumer<Throwable> failureHandler =
-                ContextException.here(
-                        (error) -> log.error("Task Success callback threw error", error));
-        future.thenAccept(
-                result -> {
-                    try {
-                        callback.accept(result);
-                    } catch (Throwable error) {
-                        failureHandler.accept(error);
-                        if (error instanceof Error) throw error;
-                    }
-                });
+        Consumer<Throwable> failureHandler = ContextException.here(
+                (error) -> log.error("Task Success callback threw error", error));
+        future.thenAccept(result -> {
+            try {
+                callback.accept(result);
+            } catch (Throwable error) {
+                failureHandler.accept(error);
+                if (error instanceof Error) throw error;
+            }
+        });
         return this;
     }
 

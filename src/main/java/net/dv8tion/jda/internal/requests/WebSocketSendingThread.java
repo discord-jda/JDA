@@ -119,9 +119,8 @@ class WebSocketSendingThread implements Runnable {
             else if (audioRequest != null) handleAudioRequest(audioRequest);
             else handleNormalRequest();
         } catch (InterruptedException ignored) {
-            LOG.debug(
-                    "Main WS send thread interrupted. Most likely JDA is disconnecting the"
-                            + " websocket.");
+            LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the"
+                    + " websocket.");
             return;
         } catch (Throwable ex) {
             // Log error
@@ -162,11 +161,9 @@ class WebSocketSendingThread implements Runnable {
 
     private void handleChunkSync(DataObject chunkOrSyncRequest) {
         LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
-        boolean success =
-                send(
-                        DataObject.empty()
-                                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-                                .put("d", chunkOrSyncRequest));
+        boolean success = send(DataObject.empty()
+                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+                .put("d", chunkOrSyncRequest));
 
         if (success) chunkQueue.remove();
     }

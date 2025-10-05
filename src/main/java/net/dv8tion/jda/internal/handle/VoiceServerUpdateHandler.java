@@ -62,9 +62,8 @@ public class VoiceServerUpdateHandler extends SocketHandler {
 
         VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
         if (voiceInterceptor != null) {
-            voiceInterceptor.onVoiceServerUpdate(
-                    new VoiceDispatchInterceptor.VoiceServerUpdate(
-                            guild, endpoint, token, sessionId, allContent));
+            voiceInterceptor.onVoiceServerUpdate(new VoiceDispatchInterceptor.VoiceServerUpdate(
+                    guild, endpoint, token, sessionId, allContent));
             return null;
         }
 
@@ -73,27 +72,24 @@ public class VoiceServerUpdateHandler extends SocketHandler {
         if (audioManager == null) {
             WebSocketClient.LOG.debug(
                     "Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor"
-                        + " attempted to connect to a VoiceChannel. Assuming that this is caused by"
-                        + " another client running on this account. Ignoring the event.");
+                            + " attempted to connect to a VoiceChannel. Assuming that this is caused by"
+                            + " another client running on this account. Ignoring the event.");
             return null;
         }
 
-        MiscUtil.locked(
-                audioManager.CONNECTION_LOCK,
-                () -> {
-                    // Synchronized to prevent attempts to close while setting up initial objects.
-                    AudioChannel target = guild.getSelfMember().getVoiceState().getChannel();
-                    if (target == null) {
-                        WebSocketClient.LOG.warn(
-                                "Ignoring VOICE_SERVER_UPDATE for unknown channel");
-                        return;
-                    }
+        MiscUtil.locked(audioManager.CONNECTION_LOCK, () -> {
+            // Synchronized to prevent attempts to close while setting up initial objects.
+            AudioChannel target = guild.getSelfMember().getVoiceState().getChannel();
+            if (target == null) {
+                WebSocketClient.LOG.warn("Ignoring VOICE_SERVER_UPDATE for unknown channel");
+                return;
+            }
 
-                    AudioConnection connection =
-                            new AudioConnection(audioManager, endpoint, sessionId, token, target);
-                    audioManager.setAudioConnection(connection);
-                    connection.startConnection();
-                });
+            AudioConnection connection =
+                    new AudioConnection(audioManager, endpoint, sessionId, token, target);
+            audioManager.setAudioConnection(connection);
+            connection.startConnection();
+        });
         return null;
     }
 }

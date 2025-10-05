@@ -360,24 +360,18 @@ public interface RestAction<T> {
 
         actions = new LinkedHashSet<>(actions);
         Iterator<? extends RestAction<? extends E>> iterator = actions.iterator();
-        RestAction<A> result =
-                iterator.next()
-                        .map(
-                                it -> {
-                                    A list = accumulator.get();
-                                    add.accept(list, it);
-                                    return list;
-                                });
+        RestAction<A> result = iterator.next().map(it -> {
+            A list = accumulator.get();
+            add.accept(list, it);
+            return list;
+        });
 
         while (iterator.hasNext()) {
             RestAction<? extends E> next = iterator.next();
-            result =
-                    result.and(
-                            next,
-                            (list, b) -> {
-                                add.accept(list, b);
-                                return list;
-                            });
+            result = result.and(next, (list, b) -> {
+                add.accept(list, b);
+                return list;
+            });
         }
 
         return result.map(output);
@@ -795,11 +789,10 @@ public interface RestAction<T> {
     @CheckReturnValue
     default RestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer) {
         Checks.notNull(consumer, "Consumer");
-        return map(
-                result -> {
-                    consumer.accept(result);
-                    return result;
-                });
+        return map(result -> {
+            consumer.accept(result);
+            return result;
+        });
     }
 
     /**
@@ -1320,17 +1313,12 @@ public interface RestAction<T> {
             long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor) {
         Checks.notNull(unit, "TimeUnit");
         if (executor == null) executor = getJDA().getRateLimitPool();
-        return DelayedCompletableFuture.make(
-                executor,
-                delay,
-                unit,
-                (task) -> {
-                    final Consumer<? super Throwable> onFailure;
-                    if (isPassContext())
-                        onFailure = ContextException.here(task::completeExceptionally);
-                    else onFailure = task::completeExceptionally;
-                    return new ContextRunnable<T>(() -> queue(task::complete, onFailure));
-                });
+        return DelayedCompletableFuture.make(executor, delay, unit, (task) -> {
+            final Consumer<? super Throwable> onFailure;
+            if (isPassContext()) onFailure = ContextException.here(task::completeExceptionally);
+            else onFailure = task::completeExceptionally;
+            return new ContextRunnable<T>(() -> queue(task::complete, onFailure));
+        });
     }
 
     /**

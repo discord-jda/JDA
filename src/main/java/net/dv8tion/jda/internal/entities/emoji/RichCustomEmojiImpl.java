@@ -133,27 +133,18 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
         GuildImpl guild = getGuild();
         if (!guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
             throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
-        return new DeferredRestAction<>(
-                api,
-                User.class,
-                this::getOwner,
-                () -> {
-                    Route.CompiledRoute route =
-                            Route.Emojis.GET_EMOJI.compile(guild.getId(), getId());
-                    return new RestActionImpl<>(
-                            api,
-                            route,
-                            (response, request) -> {
-                                DataObject data = response.getObject();
-                                if (data.isNull(
-                                        "user")) // user is not provided when permissions are
-                                    // missing
-                                    throw ErrorResponseException.create(
-                                            ErrorResponse.MISSING_PERMISSIONS, response);
-                                DataObject user = data.getObject("user");
-                                return this.owner = api.getEntityBuilder().createUser(user);
-                            });
-                });
+        return new DeferredRestAction<>(api, User.class, this::getOwner, () -> {
+            Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(guild.getId(), getId());
+            return new RestActionImpl<>(api, route, (response, request) -> {
+                DataObject data = response.getObject();
+                if (data.isNull("user")) // user is not provided when permissions are
+                    // missing
+                    throw ErrorResponseException.create(
+                            ErrorResponse.MISSING_PERMISSIONS, response);
+                DataObject user = data.getObject("user");
+                return this.owner = api.getEntityBuilder().createUser(user);
+            });
+        });
     }
 
     @Nonnull
@@ -234,12 +225,11 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
     }
 
     public RichCustomEmojiImpl copy() {
-        RichCustomEmojiImpl copy =
-                new RichCustomEmojiImpl(id, getGuild())
-                        .setOwner(owner)
-                        .setManaged(managed)
-                        .setAnimated(animated)
-                        .setName(name);
+        RichCustomEmojiImpl copy = new RichCustomEmojiImpl(id, getGuild())
+                .setOwner(owner)
+                .setManaged(managed)
+                .setAnimated(animated)
+                .setName(name);
         copy.roles.addAll(roles);
         return copy;
     }

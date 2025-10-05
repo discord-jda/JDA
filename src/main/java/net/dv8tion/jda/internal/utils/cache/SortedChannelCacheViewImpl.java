@@ -54,14 +54,8 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
     public NavigableSet<T> asSet() {
         NavigableSet<T> set = (NavigableSet<T>) getCachedSet();
         if (set == null)
-            set =
-                    cache(
-                            (NavigableSet<T>)
-                                    applyStream(
-                                            stream ->
-                                                    stream.collect(
-                                                            Collectors.toCollection(
-                                                                    TreeSet::new))));
+            set = cache((NavigableSet<T>)
+                    applyStream(stream -> stream.collect(Collectors.toCollection(TreeSet::new))));
         return set;
     }
 
@@ -126,12 +120,8 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
         @Nonnull
         @Override
         public NavigableSet<C> asSet() {
-            return applyStream(
-                    stream ->
-                            stream.collect(
-                                    Collectors.collectingAndThen(
-                                            Collectors.toCollection(TreeSet::new),
-                                            Collections::unmodifiableNavigableSet)));
+            return applyStream(stream -> stream.collect(Collectors.collectingAndThen(
+                    Collectors.toCollection(TreeSet::new), Collections::unmodifiableNavigableSet)));
         }
 
         @Nonnull
@@ -139,18 +129,16 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
         public List<C> getElementsByName(@Nonnull String name, boolean ignoreCase) {
             Checks.notEmpty(name, "Name");
             return applyStream(
-                    stream ->
-                            stream.filter(it -> Helpers.equals(name, it.getName(), ignoreCase))
-                                    .sorted()
-                                    .collect(Helpers.toUnmodifiableList()));
+                    stream -> stream.filter(it -> Helpers.equals(name, it.getName(), ignoreCase))
+                            .sorted()
+                            .collect(Helpers.toUnmodifiableList()));
         }
 
         @Nonnull
         @Override
         public Stream<C> streamUnordered() {
-            List<C> elements =
-                    applyStream(
-                            stream -> stream.filter(type::isInstance).collect(Collectors.toList()));
+            List<C> elements = applyStream(
+                    stream -> stream.filter(type::isInstance).collect(Collectors.toList()));
             return elements.stream();
         }
 

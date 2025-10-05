@@ -429,20 +429,16 @@ public class AutoModRuleData implements SerializableData {
             if (triggerType == AutoModTriggerType.KEYWORD)
                 triggerType = AutoModTriggerType.MEMBER_PROFILE_KEYWORD;
             else
-                throw new IllegalStateException(
-                        "Cannot create rule of trigger type "
-                                + triggerType
-                                + " with event type "
-                                + eventType);
+                throw new IllegalStateException("Cannot create rule of trigger type " + triggerType
+                        + " with event type " + eventType);
         }
 
         for (AutoModResponse response : actions.values()) {
             if (!response.getType().isSupportedTrigger(triggerType))
-                throw new IllegalStateException(
-                        "Cannot create a rule of trigger type "
-                                + triggerType
-                                + " with response type "
-                                + response.getType());
+                throw new IllegalStateException("Cannot create a rule of trigger type "
+                        + triggerType
+                        + " with response type "
+                        + response.getType());
         }
 
         if (actions.isEmpty())
@@ -450,11 +446,10 @@ public class AutoModRuleData implements SerializableData {
                     "Cannot create a rule with no responses. Add at least one response with"
                             + " putResponses(...)");
 
-        DataObject data =
-                DataObject.empty()
-                        .put("name", name)
-                        .put("enabled", enabled)
-                        .put("event_type", eventType.getKey());
+        DataObject data = DataObject.empty()
+                .put("name", name)
+                .put("enabled", enabled)
+                .put("event_type", eventType.getKey());
 
         data.put("actions", DataArray.fromCollection(actions.values()));
 

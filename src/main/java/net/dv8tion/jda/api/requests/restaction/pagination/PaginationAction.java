@@ -452,18 +452,15 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
         Checks.notNegative(limit, "Limit");
         List<T> result = new ArrayList<>();
         CompletableFuture<List<T>> future = new CompletableFuture<>();
-        CompletableFuture<?> handle =
-                forEachAsync(
-                        (element) -> {
-                            if (rule.test(element)) return false;
-                            result.add(element);
-                            return limit == 0 || limit > result.size();
-                        });
-        handle.whenComplete(
-                (r, t) -> {
-                    if (t != null) future.completeExceptionally(t);
-                    else future.complete(result);
-                });
+        CompletableFuture<?> handle = forEachAsync((element) -> {
+            if (rule.test(element)) return false;
+            result.add(element);
+            return limit == 0 || limit > result.size();
+        });
+        handle.whenComplete((r, t) -> {
+            if (t != null) future.completeExceptionally(t);
+            else future.complete(result);
+        });
         return future;
     }
 

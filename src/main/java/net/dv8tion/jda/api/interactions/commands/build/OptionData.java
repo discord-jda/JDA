@@ -1029,13 +1029,12 @@ public class OptionData implements SerializableData {
     @Nonnull
     @Override
     public DataObject toData() {
-        DataObject json =
-                DataObject.empty()
-                        .put("type", type.getKey())
-                        .put("name", name)
-                        .put("name_localizations", nameLocalizations)
-                        .put("description", description)
-                        .put("description_localizations", descriptionLocalizations);
+        DataObject json = DataObject.empty()
+                .put("type", type.getKey())
+                .put("name", name)
+                .put("name_localizations", nameLocalizations)
+                .put("description", description)
+                .put("description_localizations", descriptionLocalizations);
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP) {
             json.put("required", isRequired);
             json.put("autocomplete", isAutoComplete);
@@ -1043,10 +1042,9 @@ public class OptionData implements SerializableData {
         if (choices != null && !choices.isEmpty()) {
             json.put(
                     "choices",
-                    DataArray.fromCollection(
-                            choices.stream()
-                                    .map(choice -> choice.toData(type))
-                                    .collect(Collectors.toList())));
+                    DataArray.fromCollection(choices.stream()
+                            .map(choice -> choice.toData(type))
+                            .collect(Collectors.toList())));
         }
         if (type == OptionType.CHANNEL && !channelTypes.isEmpty())
             json.put(
@@ -1100,26 +1098,20 @@ public class OptionData implements SerializableData {
             }
         }
         if (type == OptionType.CHANNEL) {
-            option.setChannelTypes(
-                    json.optArray("channel_types")
-                            .map(
-                                    it ->
-                                            it.stream(DataArray::getInt)
-                                                    .map(ChannelType::fromId)
-                                                    .collect(Collectors.toSet()))
-                            .orElse(Collections.emptySet()));
+            option.setChannelTypes(json.optArray("channel_types")
+                    .map(it -> it.stream(DataArray::getInt)
+                            .map(ChannelType::fromId)
+                            .collect(Collectors.toSet()))
+                    .orElse(Collections.emptySet()));
         }
         if (type == OptionType.STRING) {
             if (!json.isNull("min_length")) option.setMinLength(json.getInt("min_length"));
             if (!json.isNull("max_length")) option.setMaxLength(json.getInt("max_length"));
         }
         json.optArray("choices")
-                .ifPresent(
-                        choices1 ->
-                                option.addChoices(
-                                        choices1.stream(DataArray::getObject)
-                                                .map(Command.Choice::new)
-                                                .collect(Collectors.toList())));
+                .ifPresent(choices1 -> option.addChoices(choices1.stream(DataArray::getObject)
+                        .map(Command.Choice::new)
+                        .collect(Collectors.toList())));
         option.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
         option.setDescriptionLocalizations(
                 LocalizationUtils.mapFromProperty(json, "description_localizations"));

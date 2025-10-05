@@ -45,17 +45,16 @@ public class ComponentTestData {
             Class<T> componentType, Component.Type type) {
         switch (type) {
             case UNKNOWN:
-                return componentType.cast(
-                        new UnknownComponentImpl(DataObject.empty().put("type", 42).put("id", 0)));
+                return componentType.cast(new UnknownComponentImpl(
+                        DataObject.empty().put("type", 42).put("id", 0)));
             case ACTION_ROW:
                 return componentType.cast(ActionRow.of(Button.primary("button", "Click me!")));
             case BUTTON:
                 return componentType.cast(Button.primary("button", "Click me!"));
             case STRING_SELECT:
-                return componentType.cast(
-                        StringSelectMenu.create("select-menu")
-                                .addOption("Option 1", "option-1")
-                                .build());
+                return componentType.cast(StringSelectMenu.create("select-menu")
+                        .addOption("Option 1", "option-1")
+                        .build());
             case TEXT_INPUT:
                 return componentType.cast(TextInput.of("text-input", TextInputStyle.SHORT));
             case USER_SELECT:
@@ -65,18 +64,17 @@ public class ComponentTestData {
                 return componentType.cast(
                         EntitySelectMenu.create("role-menu", SelectTarget.ROLE).build());
             case MENTIONABLE_SELECT:
-                return componentType.cast(
-                        EntitySelectMenu.create(
-                                        "mentionable-menu", SelectTarget.USER, SelectTarget.ROLE)
-                                .build());
+                return componentType.cast(EntitySelectMenu.create(
+                                "mentionable-menu", SelectTarget.USER, SelectTarget.ROLE)
+                        .build());
             case CHANNEL_SELECT:
                 return componentType.cast(
-                        EntitySelectMenu.create("channel-menu", SelectTarget.CHANNEL).build());
+                        EntitySelectMenu.create("channel-menu", SelectTarget.CHANNEL)
+                                .build());
             case SECTION:
-                return componentType.cast(
-                        Section.of(
-                                Thumbnail.fromFile(getImageFileUpload()),
-                                TextDisplay.of("Section with thumbnail")));
+                return componentType.cast(Section.of(
+                        Thumbnail.fromFile(getImageFileUpload()),
+                        TextDisplay.of("Section with thumbnail")));
             case TEXT_DISPLAY:
                 return componentType.cast(TextDisplay.of("TextDisplay"));
             case THUMBNAIL:
@@ -89,11 +87,10 @@ public class ComponentTestData {
             case SEPARATOR:
                 return componentType.cast(Separator.createInvisible(Separator.Spacing.LARGE));
             case CONTAINER:
-                return componentType.cast(
-                        Container.of(
-                                TextDisplay.of("First text"),
-                                Separator.createDivider(Separator.Spacing.SMALL),
-                                FileDisplay.fromFile(getImageFileUpload())));
+                return componentType.cast(Container.of(
+                        TextDisplay.of("First text"),
+                        Separator.createDivider(Separator.Spacing.SMALL),
+                        FileDisplay.fromFile(getImageFileUpload())));
             case LABEL:
                 return componentType.cast(
                         Label.of("Custom label", TextInput.of("input", TextInputStyle.SHORT)));

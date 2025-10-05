@@ -31,8 +31,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 public class AbstractSocketHandlerTest extends IntegrationTest {
-    @Mock protected GuildSetupController setupController;
-    @Mock protected Guild guild;
+    @Mock
+    protected GuildSetupController setupController;
+
+    @Mock
+    protected Guild guild;
 
     @BeforeEach
     final void setupHandlerContext() {

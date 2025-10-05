@@ -300,25 +300,20 @@ public class MessageCreateBuilder
 
         int length = Helpers.codePointLength(content);
         if (length > Message.MAX_CONTENT_LENGTH)
-            throw new IllegalStateException(
-                    "Message content is too long! Max length is "
-                            + Message.MAX_CONTENT_LENGTH
-                            + " characters, provided "
-                            + length);
+            throw new IllegalStateException("Message content is too long! Max length is "
+                    + Message.MAX_CONTENT_LENGTH
+                    + " characters, provided "
+                    + length);
 
         if (embeds.size() > Message.MAX_EMBED_COUNT)
-            throw new IllegalStateException(
-                    "Cannot build message with over "
-                            + Message.MAX_EMBED_COUNT
-                            + " embeds, provided "
-                            + embeds.size());
+            throw new IllegalStateException("Cannot build message with over "
+                    + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
 
         if (components.size() > Message.MAX_COMPONENT_COUNT)
-            throw new IllegalStateException(
-                    "Cannot build message with over "
-                            + Message.MAX_COMPONENT_COUNT
-                            + " top-level components, provided "
-                            + components.size());
+            throw new IllegalStateException("Cannot build message with over "
+                    + Message.MAX_COMPONENT_COUNT
+                    + " top-level components, provided "
+                    + components.size());
         final List<? extends Component> illegalV1Components =
                 ComponentsUtil.getIllegalV1Components(components);
         if (!illegalV1Components.isEmpty())
@@ -349,19 +344,17 @@ public class MessageCreateBuilder
                             + " them?");
         final long componentTreeSize = ComponentsUtil.getComponentTreeSize(components);
         if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
-            throw new IllegalStateException(
-                    "Cannot build message with over "
-                            + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE
-                            + " total components, provided "
-                            + componentTreeSize);
+            throw new IllegalStateException("Cannot build message with over "
+                    + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE
+                    + " total components, provided "
+                    + componentTreeSize);
         final long componentTreeLength =
                 ComponentsUtil.getComponentTreeTextContentLength(components);
         if (componentTreeLength > Message.MAX_CONTENT_LENGTH_COMPONENT_V2)
-            throw new IllegalStateException(
-                    "Cannot build message with over "
-                            + Message.MAX_CONTENT_LENGTH_COMPONENT_V2
-                            + " total characters, provided "
-                            + componentTreeLength);
+            throw new IllegalStateException("Cannot build message with over "
+                    + Message.MAX_CONTENT_LENGTH_COMPONENT_V2
+                    + " total characters, provided "
+                    + componentTreeLength);
 
         return new MessageCreateData(
                 "", Collections.emptyList(), files, components, mentions, poll, tts, messageFlags);

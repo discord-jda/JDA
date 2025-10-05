@@ -315,7 +315,8 @@ public interface CommandData extends SerializableData {
                     .setIntegrationTypes(command.getIntegrationTypes())
                     .setNSFW(command.isNSFW())
                     .setNameLocalizations(command.getNameLocalizations().toMap())
-                    .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
+                    .setDescriptionLocalizations(
+                            command.getDescriptionLocalizations().toMap());
         }
 
         return SlashCommandData.fromCommand(command);
@@ -354,16 +355,12 @@ public interface CommandData extends SerializableData {
             }
 
             if (!object.isNull("contexts")) {
-                data.setContexts(
-                        object.getArray("contexts").stream(DataArray::getString)
-                                .map(InteractionContextType::fromKey)
-                                .collect(
-                                        Helpers.toUnmodifiableEnumSet(
-                                                InteractionContextType.class)));
+                data.setContexts(object.getArray("contexts").stream(DataArray::getString)
+                        .map(InteractionContextType::fromKey)
+                        .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
             } else
-                data.setContexts(
-                        Helpers.unmodifiableEnumSet(
-                                InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+                data.setContexts(Helpers.unmodifiableEnumSet(
+                        InteractionContextType.GUILD, InteractionContextType.BOT_DM));
 
             if (!object.isNull("integration_types")) {
                 data.setIntegrationTypes(

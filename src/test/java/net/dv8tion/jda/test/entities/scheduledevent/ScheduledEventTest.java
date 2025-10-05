@@ -29,7 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 public class ScheduledEventTest extends IntegrationTest {
-    @Mock Guild guild;
+    @Mock
+    Guild guild;
 
     @Test
     void testGetJumpUrl() {

@@ -29,12 +29,11 @@ public class JDAInfo {
     public static final String VERSION_REVISION = "@versionRevision@";
     public static final String VERSION_CLASSIFIER = "!@versionClassifier@!";
     public static final String COMMIT_HASH = "@commitHash@";
-    public static final String VERSION =
-            String.format(
-                    "%s.%s.%s%s%s",
-                    VERSION_MAJOR,
-                    VERSION_MINOR,
-                    VERSION_REVISION,
-                    VERSION_CLASSIFIER == null ? "" : "-" + VERSION_CLASSIFIER,
-                    COMMIT_HASH == null ? "" : "_" + COMMIT_HASH);
+    public static final String VERSION = String.format(
+            "%s.%s.%s%s%s",
+            VERSION_MAJOR,
+            VERSION_MINOR,
+            VERSION_REVISION,
+            VERSION_CLASSIFIER == null ? "" : "-" + VERSION_CLASSIFIER,
+            COMMIT_HASH == null ? "" : "_" + COMMIT_HASH);
 }

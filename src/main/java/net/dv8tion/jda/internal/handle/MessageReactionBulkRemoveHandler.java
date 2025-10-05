@@ -87,10 +87,9 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler {
             return null;
         }
 
-        jda.handleEvent(
-                new MessageReactionRemoveAllEvent(
-                        jda, responseNumber,
-                        messageId, channel));
+        jda.handleEvent(new MessageReactionRemoveAllEvent(
+                jda, responseNumber,
+                messageId, channel));
         return null;
     }
 }

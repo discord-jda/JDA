@@ -120,43 +120,23 @@ public class GuildStickersUpdateHandler extends SocketHandler {
         if (oldSticker == null || newSticker == null) return;
 
         if (!Objects.equals(oldSticker.getName(), newSticker.getName())) {
-            getJDA().handleEvent(
-                            new GuildStickerUpdateNameEvent(
-                                    getJDA(),
-                                    responseNumber,
-                                    guild,
-                                    newSticker,
-                                    oldSticker.getName()));
+            getJDA().handleEvent(new GuildStickerUpdateNameEvent(
+                    getJDA(), responseNumber, guild, newSticker, oldSticker.getName()));
         }
 
         if (!Objects.equals(oldSticker.getDescription(), newSticker.getDescription())) {
-            getJDA().handleEvent(
-                            new GuildStickerUpdateDescriptionEvent(
-                                    getJDA(),
-                                    responseNumber,
-                                    guild,
-                                    newSticker,
-                                    oldSticker.getDescription()));
+            getJDA().handleEvent(new GuildStickerUpdateDescriptionEvent(
+                    getJDA(), responseNumber, guild, newSticker, oldSticker.getDescription()));
         }
 
         if (oldSticker.isAvailable() != newSticker.isAvailable()) {
-            getJDA().handleEvent(
-                            new GuildStickerUpdateAvailableEvent(
-                                    getJDA(),
-                                    responseNumber,
-                                    guild,
-                                    newSticker,
-                                    oldSticker.isAvailable()));
+            getJDA().handleEvent(new GuildStickerUpdateAvailableEvent(
+                    getJDA(), responseNumber, guild, newSticker, oldSticker.isAvailable()));
         }
 
         if (!CollectionUtils.isEqualCollection(oldSticker.getTags(), newSticker.getTags())) {
-            getJDA().handleEvent(
-                            new GuildStickerUpdateTagsEvent(
-                                    getJDA(),
-                                    responseNumber,
-                                    guild,
-                                    newSticker,
-                                    oldSticker.getTags()));
+            getJDA().handleEvent(new GuildStickerUpdateTagsEvent(
+                    getJDA(), responseNumber, guild, newSticker, oldSticker.getTags()));
         }
     }
 }

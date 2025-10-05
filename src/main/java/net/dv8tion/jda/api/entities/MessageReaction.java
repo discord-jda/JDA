@@ -463,9 +463,8 @@ public class MessageReaction {
 
         String code = emoji.getAsReactionCode();
         String target = self ? "@me" : user.getId();
-        Route.CompiledRoute route =
-                Route.Messages.REMOVE_REACTION.compile(
-                        getChannelId(), getMessageId(), code, target);
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
+                getChannelId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -500,9 +499,8 @@ public class MessageReaction {
     @CheckReturnValue
     public RestAction<Void> clearReactions() {
         if (channel == null) {
-            Route.CompiledRoute route =
-                    Route.Messages.CLEAR_EMOJI_REACTIONS.compile(
-                            getChannelId(), getMessageId(), emoji.getAsReactionCode());
+            Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(
+                    getChannelId(), getMessageId(), emoji.getAsReactionCode());
             return new RestActionImpl<>(jda, route);
         }
 

@@ -217,9 +217,8 @@ public class MessagePollBuilder {
                 "Poll cannot have more than %d answers",
                 MessagePoll.MAX_ANSWERS);
 
-        this.answers.add(
-                new MessagePoll.Answer(
-                        this.answers.size() + 1, title, (EmojiUnion) emoji, 0, false));
+        this.answers.add(new MessagePoll.Answer(
+                this.answers.size() + 1, title, (EmojiUnion) emoji, 0, false));
         return this;
     }
 

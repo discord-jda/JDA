@@ -47,7 +47,10 @@ import javax.annotation.Nullable;
 public abstract class AbstractMentions implements Mentions {
     protected final String content;
     protected final JDAImpl jda;
-    @Nullable protected final Guild guild;
+
+    @Nullable
+    protected final Guild guild;
+
     protected final boolean mentionsEveryone;
 
     protected List<User> mentionedUsers;
@@ -80,12 +83,8 @@ public abstract class AbstractMentions implements Mentions {
     @Override
     public synchronized List<User> getUsers() {
         if (mentionedUsers != null) return mentionedUsers;
-        return mentionedUsers =
-                processMentions(
-                        Message.MentionType.USER,
-                        true,
-                        this::matchUser,
-                        Helpers.toUnmodifiableList());
+        return mentionedUsers = processMentions(
+                Message.MentionType.USER, true, this::matchUser, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -105,12 +104,11 @@ public abstract class AbstractMentions implements Mentions {
     @Override
     public synchronized List<GuildChannel> getChannels() {
         if (mentionedChannels != null) return mentionedChannels;
-        return mentionedChannels =
-                processMentions(
-                        Message.MentionType.CHANNEL,
-                        true,
-                        this::matchChannel,
-                        Helpers.toUnmodifiableList());
+        return mentionedChannels = processMentions(
+                Message.MentionType.CHANNEL,
+                true,
+                this::matchChannel,
+                Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -133,11 +131,10 @@ public abstract class AbstractMentions implements Mentions {
     @Override
     public <T extends GuildChannel> Bag<T> getChannelsBag(@Nonnull Class<T> clazz) {
         Checks.notNull(clazz, "clazz");
-        Function<Matcher, T> matchTypedChannel =
-                matcher -> {
-                    GuildChannel channel = this.matchChannel(matcher);
-                    return clazz.isInstance(channel) ? clazz.cast(channel) : null;
-                };
+        Function<Matcher, T> matchTypedChannel = matcher -> {
+            GuildChannel channel = this.matchChannel(matcher);
+            return clazz.isInstance(channel) ? clazz.cast(channel) : null;
+        };
 
         return processMentions(Message.MentionType.CHANNEL, false, matchTypedChannel, toBag());
     }
@@ -147,12 +144,8 @@ public abstract class AbstractMentions implements Mentions {
     public synchronized List<Role> getRoles() {
         if (guild == null) return Collections.emptyList();
         if (mentionedRoles != null) return mentionedRoles;
-        return mentionedRoles =
-                processMentions(
-                        Message.MentionType.ROLE,
-                        true,
-                        this::matchRole,
-                        Helpers.toUnmodifiableList());
+        return mentionedRoles = processMentions(
+                Message.MentionType.ROLE, true, this::matchRole, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -166,12 +159,8 @@ public abstract class AbstractMentions implements Mentions {
     @Override
     public synchronized List<CustomEmoji> getCustomEmojis() {
         if (mentionedEmojis != null) return mentionedEmojis;
-        return mentionedEmojis =
-                processMentions(
-                        Message.MentionType.EMOJI,
-                        true,
-                        this::matchEmoji,
-                        Helpers.toUnmodifiableList());
+        return mentionedEmojis = processMentions(
+                Message.MentionType.EMOJI, true, this::matchEmoji, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -185,12 +174,8 @@ public abstract class AbstractMentions implements Mentions {
     public synchronized List<Member> getMembers() {
         if (guild == null) return Collections.emptyList();
         if (mentionedMembers != null) return mentionedMembers;
-        return mentionedMembers =
-                processMentions(
-                        Message.MentionType.USER,
-                        true,
-                        this::matchMember,
-                        Helpers.toUnmodifiableList());
+        return mentionedMembers = processMentions(
+                Message.MentionType.USER, true, this::matchMember, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -212,12 +197,11 @@ public abstract class AbstractMentions implements Mentions {
     @Override
     public synchronized List<SlashCommandReference> getSlashCommands() {
         if (mentionedSlashCommands != null) return mentionedSlashCommands;
-        return mentionedSlashCommands =
-                processMentions(
-                        Message.MentionType.SLASH_COMMAND,
-                        true,
-                        this::matchSlashCommand,
-                        Helpers.toUnmodifiableList());
+        return mentionedSlashCommands = processMentions(
+                Message.MentionType.SLASH_COMMAND,
+                true,
+                this::matchSlashCommand,
+                Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -254,9 +238,9 @@ public abstract class AbstractMentions implements Mentions {
                 case SLASH_COMMAND:
                     mentions.addAll(getSlashCommands());
                     break;
-                    //            case EVERYONE:
-                    //            case HERE:
-                    //            default: continue;
+                //            case EVERYONE:
+                //            case HERE:
+                //            default: continue;
             }
         }
 
@@ -295,7 +279,7 @@ public abstract class AbstractMentions implements Mentions {
                 case SLASH_COMMAND:
                     if (isSlashCommandMentioned(mentionable)) return true;
                     break;
-                    //           default: continue;
+                //           default: continue;
             }
         }
         return false;

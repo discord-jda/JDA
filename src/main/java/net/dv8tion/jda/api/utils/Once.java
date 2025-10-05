@@ -74,20 +74,16 @@ public class Once<E extends GenericEvent> implements EventListener {
 
     @Nonnull
     private GatewayTask<E> createTask() {
-        final GatewayTask<E> task =
-                new GatewayTask<>(
-                        future,
-                        () -> {
-                            // On cancellation, throw cancellation exception and cancel timeout
-                            jda.removeEventListener(this);
-                            future.completeExceptionally(new CancellationException());
-                            if (timeoutFuture != null) timeoutFuture.cancel(false);
-                        });
-        task.onSetTimeout(
-                e -> {
-                    throw new UnsupportedOperationException(
-                            "You must set the timeout on Once.Builder#timeout");
-                });
+        final GatewayTask<E> task = new GatewayTask<>(future, () -> {
+            // On cancellation, throw cancellation exception and cancel timeout
+            jda.removeEventListener(this);
+            future.completeExceptionally(new CancellationException());
+            if (timeoutFuture != null) timeoutFuture.cancel(false);
+        });
+        task.onSetTimeout(e -> {
+            throw new UnsupportedOperationException(
+                    "You must set the timeout on Once.Builder#timeout");
+        });
         return task;
     }
 

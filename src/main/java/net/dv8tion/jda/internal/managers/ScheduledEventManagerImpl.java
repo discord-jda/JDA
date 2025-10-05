@@ -191,10 +191,9 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
             case COMPLETED:
             case CANCELED:
                 // event is completed or canceled -> can't update status
-                throw new IllegalArgumentException(
-                        "Cannot perform status update! Event is "
-                                + currentStatus.name().toLowerCase()
-                                + ".");
+                throw new IllegalArgumentException("Cannot perform status update! Event is "
+                        + currentStatus.name().toLowerCase()
+                        + ".");
         }
 
         this.status = newStatus;

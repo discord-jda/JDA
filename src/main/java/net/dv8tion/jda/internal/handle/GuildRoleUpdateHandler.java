@@ -88,16 +88,14 @@ public class GuildRoleUpdateHandler extends SocketHandler {
             int oldPosition = role.getPosition();
             int oldPositionRaw = role.getPositionRaw();
             role.setRawPosition(position);
-            getJDA().handleEvent(
-                            new RoleUpdatePositionEvent(
-                                    getJDA(), responseNumber, role, oldPosition, oldPositionRaw));
+            getJDA().handleEvent(new RoleUpdatePositionEvent(
+                    getJDA(), responseNumber, role, oldPosition, oldPositionRaw));
         }
         if (!Objects.equals(permissions, role.getPermissionsRaw())) {
             long oldPermissionsRaw = role.getPermissionsRaw();
             role.setRawPermissions(permissions);
-            getJDA().handleEvent(
-                            new RoleUpdatePermissionsEvent(
-                                    getJDA(), responseNumber, role, oldPermissionsRaw));
+            getJDA().handleEvent(new RoleUpdatePermissionsEvent(
+                    getJDA(), responseNumber, role, oldPermissionsRaw));
         }
 
         if (hoisted != role.isHoisted()) {
@@ -109,9 +107,8 @@ public class GuildRoleUpdateHandler extends SocketHandler {
         if (mentionable != role.isMentionable()) {
             boolean wasMentionable = role.isMentionable();
             role.setMentionable(mentionable);
-            getJDA().handleEvent(
-                            new RoleUpdateMentionableEvent(
-                                    getJDA(), responseNumber, role, wasMentionable));
+            getJDA().handleEvent(new RoleUpdateMentionableEvent(
+                    getJDA(), responseNumber, role, wasMentionable));
         }
 
         RoleIcon oldIcon = role.getIcon();

@@ -817,11 +817,7 @@ public class DataObject implements SerializableData {
                     this, "Missing value for key '" + key + "' with expected type " + expectedType);
         return new DataObjectParsingException(
                 this,
-                "Unable to resolve value with key '"
-                        + key
-                        + "' to type "
-                        + expectedType
-                        + ": "
+                "Unable to resolve value with key '" + key + "' to type " + expectedType + ": "
                         + data.get(key));
     }
 
@@ -846,10 +842,9 @@ public class DataObject implements SerializableData {
         else if (value instanceof String && stringParse != null)
             return stringParse.apply((String) value);
 
-        throw new ParsingException(
-                Helpers.format(
-                        "Cannot parse value for %s into type %s: %s instance of %s",
-                        key, type.getSimpleName(), value, value.getClass().getSimpleName()));
+        throw new ParsingException(Helpers.format(
+                "Cannot parse value for %s into type %s: %s instance of %s",
+                key, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
 
     @Override

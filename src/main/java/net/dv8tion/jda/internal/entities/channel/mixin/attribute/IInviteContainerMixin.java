@@ -56,16 +56,13 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>>
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
         JDAImpl jda = (JDAImpl) getJDA();
-        return new RestActionImpl<>(
-                jda,
-                route,
-                (response, request) -> {
-                    EntityBuilder entityBuilder = jda.getEntityBuilder();
-                    DataArray array = response.getArray();
-                    List<Invite> invites = new ArrayList<>(array.length());
-                    for (int i = 0; i < array.length(); i++)
-                        invites.add(entityBuilder.createInvite(array.getObject(i)));
-                    return Collections.unmodifiableList(invites);
-                });
+        return new RestActionImpl<>(jda, route, (response, request) -> {
+            EntityBuilder entityBuilder = jda.getEntityBuilder();
+            DataArray array = response.getArray();
+            List<Invite> invites = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+                invites.add(entityBuilder.createInvite(array.getObject(i)));
+            return Collections.unmodifiableList(invites);
+        });
     }
 }

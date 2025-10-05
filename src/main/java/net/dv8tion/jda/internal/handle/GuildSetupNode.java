@@ -284,23 +284,21 @@ public class GuildSetupNode {
 
         Optional<DataArray> channels = partialGuild.optArray("channels");
         Optional<DataArray> roles = partialGuild.optArray("roles");
-        channels.ifPresent(
-                (arr) -> {
-                    for (int i = 0; i < arr.length(); i++) {
-                        DataObject json = arr.getObject(i);
-                        long id = json.getLong("id");
-                        eventCache.clear(EventCache.Type.CHANNEL, id);
-                    }
-                });
+        channels.ifPresent((arr) -> {
+            for (int i = 0; i < arr.length(); i++) {
+                DataObject json = arr.getObject(i);
+                long id = json.getLong("id");
+                eventCache.clear(EventCache.Type.CHANNEL, id);
+            }
+        });
 
-        roles.ifPresent(
-                (arr) -> {
-                    for (int i = 0; i < arr.length(); i++) {
-                        DataObject json = arr.getObject(i);
-                        long id = json.getLong("id");
-                        eventCache.clear(EventCache.Type.ROLE, id);
-                    }
-                });
+        roles.ifPresent((arr) -> {
+            for (int i = 0; i < arr.length(); i++) {
+                DataObject json = arr.getObject(i);
+                long id = json.getLong("id");
+                eventCache.clear(EventCache.Type.ROLE, id);
+            }
+        });
 
         if (members != null) {
             for (TLongObjectIterator<DataObject> it = members.iterator(); it.hasNext(); ) {

@@ -115,9 +115,8 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
 
     @Override
     protected void handleSuccess(Response response, Request<Message> request) {
-        request.onSuccess(
-                api.getEntityBuilder()
-                        .createMessageWithChannel(response.getObject(), channel, false));
+        request.onSuccess(api.getEntityBuilder()
+                .createMessageWithChannel(response.getObject(), channel, false));
     }
 
     @Nonnull
@@ -156,13 +155,10 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
 
         Checks.isSnowflake(messageId);
         String guildId = null;
-        if (channel instanceof GuildChannel) guildId = ((GuildChannel) channel).getGuild().getId();
-        this.messageReference =
-                new MessageReferenceData(
-                        MessageReference.MessageReferenceType.DEFAULT,
-                        guildId,
-                        channel.getId(),
-                        messageId);
+        if (channel instanceof GuildChannel)
+            guildId = ((GuildChannel) channel).getGuild().getId();
+        this.messageReference = new MessageReferenceData(
+                MessageReference.MessageReferenceType.DEFAULT, guildId, channel.getId(), messageId);
         return this;
     }
 
@@ -241,11 +237,10 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
         @Nonnull
         @Override
         public DataObject toData() {
-            DataObject data =
-                    DataObject.empty()
-                            .put("type", type.getId())
-                            .put("message_id", messageId)
-                            .put("channel_id", channelId);
+            DataObject data = DataObject.empty()
+                    .put("type", type.getId())
+                    .put("message_id", messageId)
+                    .put("channel_id", channelId);
             if (guildId != null) data.put("guild_id", guildId);
             return data;
         }

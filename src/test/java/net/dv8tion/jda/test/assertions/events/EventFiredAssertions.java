@@ -44,16 +44,11 @@ public class EventFiredAssertions<T> {
     }
 
     public void isFiredBy(Runnable runnable) {
-        doNothing()
-                .when(jda)
-                .handleEvent(
-                        assertArg(
-                                arg -> {
-                                    assertThat(arg).isInstanceOf(eventType);
-                                    T casted = eventType.cast(arg);
-                                    for (ThrowingConsumer<T> assertion : assertions)
-                                        assertion.accept(casted);
-                                }));
+        doNothing().when(jda).handleEvent(assertArg(arg -> {
+            assertThat(arg).isInstanceOf(eventType);
+            T casted = eventType.cast(arg);
+            for (ThrowingConsumer<T> assertion : assertions) assertion.accept(casted);
+        }));
 
         runnable.run();
 

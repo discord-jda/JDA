@@ -163,11 +163,10 @@ public class ContainerImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        final DataObject json =
-                DataObject.empty()
-                        .put("type", getType().getKey())
-                        .put("components", DataArray.fromCollection(getComponents()))
-                        .put("spoiler", spoiler);
+        final DataObject json = DataObject.empty()
+                .put("type", getType().getKey())
+                .put("components", DataArray.fromCollection(getComponents()))
+                .put("spoiler", spoiler);
         if (uniqueId >= 0) json.put("id", uniqueId);
         if (accentColor != null) json.put("accent_color", accentColor & 0xFFFFFF);
         return json;

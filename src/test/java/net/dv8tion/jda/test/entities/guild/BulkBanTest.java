@@ -88,15 +88,13 @@ public class BulkBanTest extends AbstractGuildTest {
                 .withMessage("Users may not be null");
 
         assertThatIllegalArgumentException()
-                .isThrownBy(
-                        () ->
-                                guild.ban(
-                                                LongStream.range(1, 300)
-                                                        .map(i -> random.nextLong())
-                                                        .mapToObj(User::fromId)
-                                                        .collect(Collectors.toList()),
-                                                null)
-                                        .queue())
+                .isThrownBy(() -> guild.ban(
+                                LongStream.range(1, 300)
+                                        .map(i -> random.nextLong())
+                                        .mapToObj(User::fromId)
+                                        .collect(Collectors.toList()),
+                                null)
+                        .queue())
                 .withMessage("Cannot ban more than 200 users at once");
     }
 
@@ -105,14 +103,11 @@ public class BulkBanTest extends AbstractGuildTest {
         hasPermission(true);
 
         Duration duration = Duration.ofSeconds(random.nextInt(10000));
-        String reason =
-                Helpers.format(
-                        "User %d was banned by %d for %s",
-                        Constants.BUTLER_USER_ID, Constants.MINN_USER_ID, duration);
-        List<UserSnowflake> users =
-                Arrays.asList(
-                        User.fromId(Constants.BUTLER_USER_ID),
-                        User.fromId(Constants.BUTLER_USER_ID));
+        String reason = Helpers.format(
+                "User %d was banned by %d for %s",
+                Constants.BUTLER_USER_ID, Constants.MINN_USER_ID, duration);
+        List<UserSnowflake> users = Arrays.asList(
+                User.fromId(Constants.BUTLER_USER_ID), User.fromId(Constants.BUTLER_USER_ID));
 
         assertThatRequestFrom(guild.ban(users, duration).reason(reason))
                 .hasMethod(Method.POST)

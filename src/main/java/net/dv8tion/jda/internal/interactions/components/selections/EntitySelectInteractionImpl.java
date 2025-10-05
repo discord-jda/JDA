@@ -37,13 +37,12 @@ public class EntitySelectInteractionImpl
     public EntitySelectInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, EntitySelectMenu.class, data);
         DataObject content = data.getObject("data");
-        this.mentions =
-                new SelectMenuMentions(
-                        jda,
-                        interactionEntityBuilder,
-                        getGuild(),
-                        content.optObject("resolved").orElseGet(DataObject::empty),
-                        content.optArray("values").orElseGet(DataArray::empty));
+        this.mentions = new SelectMenuMentions(
+                jda,
+                interactionEntityBuilder,
+                getGuild(),
+                content.optObject("resolved").orElseGet(DataObject::empty),
+                content.optArray("values").orElseGet(DataArray::empty));
     }
 
     @Nonnull

@@ -100,9 +100,8 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion {
     @Nonnull
     @Override
     public RestAction<Void> delete() {
-        Route.CompiledRoute route =
-                Route.Applications.DELETE_APPLICATION_EMOJI.compile(
-                        getJDA().getSelfUser().getApplicationId(), getId());
+        Route.CompiledRoute route = Route.Applications.DELETE_APPLICATION_EMOJI.compile(
+                getJDA().getSelfUser().getApplicationId(), getId());
         return new RestActionImpl<>(getJDA(), route);
     }
 

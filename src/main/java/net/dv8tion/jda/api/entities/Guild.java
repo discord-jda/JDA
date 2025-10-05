@@ -2001,12 +2001,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nullable
     default Role getRoleByBot(long userId) {
-        return getRoleCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(role -> role.getTags().getBotIdLong() == userId)
-                                        .findFirst()
-                                        .orElse(null));
+        return getRoleCache().applyStream(stream -> stream.filter(
+                        role -> role.getTags().getBotIdLong() == userId)
+                .findFirst()
+                .orElse(null));
     }
 
     /**
@@ -2097,11 +2095,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nullable
     default Role getBoostRole() {
         return getRoleCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(role -> role.getTags().isBoost())
-                                        .findFirst()
-                                        .orElse(null));
+                .applyStream(stream -> stream.filter(role -> role.getTags().isBoost())
+                        .findFirst()
+                        .orElse(null));
     }
 
     /**
@@ -3079,14 +3075,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         Checks.notNull(filter, "Filter");
         List<Member> list = new ArrayList<>();
         CompletableFuture<List<Member>> future = new CompletableFuture<>();
-        Task<Void> reference =
-                loadMembers(
-                        (member) -> {
-                            if (filter.test(member)) list.add(member);
-                        });
-        GatewayTask<List<Member>> task =
-                new GatewayTask<>(future, reference::cancel)
-                        .onSetTimeout(timeout -> reference.setTimeout(Duration.ofMillis(timeout)));
+        Task<Void> reference = loadMembers((member) -> {
+            if (filter.test(member)) list.add(member);
+        });
+        GatewayTask<List<Member>> task = new GatewayTask<>(future, reference::cancel)
+                .onSetTimeout(timeout -> reference.setTimeout(Duration.ofMillis(timeout)));
         reference.onSuccess(it -> future.complete(list)).onError(future::completeExceptionally);
         return task;
     }

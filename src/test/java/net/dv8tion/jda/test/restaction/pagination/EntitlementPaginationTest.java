@@ -41,7 +41,8 @@ import java.util.Set;
 public class EntitlementPaginationTest extends IntegrationTest {
     protected static final String routeTemplate = "applications/%d/entitlements%s";
 
-    @Spy protected SelfUser selfUser;
+    @Spy
+    protected SelfUser selfUser;
 
     protected EntitlementPaginationActionImpl action;
 
@@ -87,14 +88,10 @@ public class EntitlementPaginationTest extends IntegrationTest {
 
         DataArray array = DataArray.empty().add(fakeEntitlement("2")).add(fakeEntitlement("1"));
 
-        whenSuccess(
-                action,
-                array,
-                response ->
-                        assertThat(response)
-                                .hasSize(2)
-                                .map(Entitlement::getId)
-                                .containsExactly("2", "1"));
+        whenSuccess(action, array, response -> assertThat(response)
+                .hasSize(2)
+                .map(Entitlement::getId)
+                .containsExactly("2", "1"));
 
         assertThatRequestFrom(action)
                 .hasQueryParams("limit", "100", "before", "1")
@@ -114,14 +111,10 @@ public class EntitlementPaginationTest extends IntegrationTest {
 
         DataArray array = DataArray.empty().add(fakeEntitlement("1")).add(fakeEntitlement("2"));
 
-        whenSuccess(
-                action,
-                array,
-                response ->
-                        assertThat(response)
-                                .hasSize(2)
-                                .map(Entitlement::getId)
-                                .containsExactly("1", "2"));
+        whenSuccess(action, array, response -> assertThat(response)
+                .hasSize(2)
+                .map(Entitlement::getId)
+                .containsExactly("1", "2"));
 
         assertThatRequestFrom(action)
                 .hasQueryParams("limit", "100", "after", "2")

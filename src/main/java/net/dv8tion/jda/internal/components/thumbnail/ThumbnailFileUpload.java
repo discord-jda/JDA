@@ -116,11 +116,10 @@ public class ThumbnailFileUpload extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        final DataObject json =
-                DataObject.empty()
-                        .put("type", getType().getKey())
-                        .put("media", DataObject.empty().put("url", getUrl()))
-                        .put("spoiler", spoiler);
+        final DataObject json = DataObject.empty()
+                .put("type", getType().getKey())
+                .put("media", DataObject.empty().put("url", getUrl()))
+                .put("spoiler", spoiler);
         if (uniqueId >= 0) json.put("id", uniqueId);
         if (getDescription() != null) json.put("description", getDescription());
         return json;

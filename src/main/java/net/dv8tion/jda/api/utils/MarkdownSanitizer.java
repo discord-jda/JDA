@@ -222,9 +222,8 @@ public class MarkdownSanitizer {
         for (int i = 0; i < sequence.length(); i++) {
             char current = sequence.charAt(i);
             if (newline) {
-                newline =
-                        Character.isWhitespace(
-                                current); // might still be a quote if prefixed by whitespace
+                newline = Character.isWhitespace(
+                        current); // might still be a quote if prefixed by whitespace
                 if (current == '>') {
                     // Check for quote if line starts with angle bracket
                     if (i + 1 < sequence.length()
@@ -487,10 +486,8 @@ public class MarkdownSanitizer {
         }
         String token = tokens.get(region);
         if (token == null)
-            throw new IllegalStateException(
-                    "Found illegal region for strategy ESCAPE '"
-                            + region
-                            + "' with no known format token!");
+            throw new IllegalStateException("Found illegal region for strategy ESCAPE '" + region
+                    + "' with no known format token!");
         if (region == UNDERLINE)
             token = "_\\_"; // UNDERLINE needs special handling because the client thinks its
         // ITALICS_U if you only escape once

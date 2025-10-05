@@ -113,15 +113,13 @@ public class MessagePollData implements SerializableData {
         data.put(
                 "answers",
                 answers.stream()
-                        .map(
-                                answer ->
+                        .map(answer -> DataObject.empty()
+                                .put("answer_id", answer.getId())
+                                .put(
+                                        "poll_media",
                                         DataObject.empty()
-                                                .put("answer_id", answer.getId())
-                                                .put(
-                                                        "poll_media",
-                                                        DataObject.empty()
-                                                                .put("text", answer.getText())
-                                                                .put("emoji", answer.getEmoji())))
+                                                .put("text", answer.getText())
+                                                .put("emoji", answer.getEmoji())))
                         .collect(Helpers.toDataArray()));
 
         return data;

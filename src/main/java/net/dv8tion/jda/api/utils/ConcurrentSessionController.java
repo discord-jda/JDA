@@ -152,7 +152,9 @@ public class ConcurrentSessionController extends SessionControllerAdapter
                 } else if (Helpers.hasCause(e, UnknownHostException.class))
                     log.error("DNS resolution failed: {}", e.getMessage());
                 else if (e.getCause() != null
-                        && !JDA.Status.RECONNECT_QUEUED.name().equals(e.getCause().getMessage()))
+                        && !JDA.Status.RECONNECT_QUEUED
+                                .name()
+                                .equals(e.getCause().getMessage()))
                     log.error("Failed to establish connection for a node, appending to queue", e);
                 else log.error("Unexpected exception when running connect node", e);
                 if (node != null) queue.add(node);

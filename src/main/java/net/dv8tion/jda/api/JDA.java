@@ -281,16 +281,12 @@ public interface JDA extends IGuildChannelContainer<Channel> {
     default RestAction<Long> getRestPing() {
         AtomicLong time = new AtomicLong();
         Route.CompiledRoute route = Route.Self.GET_SELF.compile();
-        RestActionImpl<Long> action =
-                new RestActionImpl<>(
-                        this,
-                        route,
-                        (response, request) -> System.currentTimeMillis() - time.get());
-        action.setCheck(
-                () -> {
-                    time.set(System.currentTimeMillis());
-                    return true;
-                });
+        RestActionImpl<Long> action = new RestActionImpl<>(
+                this, route, (response, request) -> System.currentTimeMillis() - time.get());
+        action.setCheck(() -> {
+            time.set(System.currentTimeMillis());
+            return true;
+        });
         return action;
     }
 
@@ -1064,16 +1060,11 @@ public interface JDA extends IGuildChannelContainer<Channel> {
                 "Invalid format for discriminator! Provided: %s",
                 discriminator);
         String actualDiscriminator = discriminator == null ? "0000" : discriminator;
-        return getUserCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(
-                                                it ->
-                                                        it.getDiscriminator()
-                                                                .equals(actualDiscriminator))
-                                        .filter(it -> it.getName().equals(username))
-                                        .findFirst()
-                                        .orElse(null));
+        return getUserCache().applyStream(stream -> stream.filter(
+                        it -> it.getDiscriminator().equals(actualDiscriminator))
+                .filter(it -> it.getName().equals(username))
+                .findFirst()
+                .orElse(null));
     }
 
     /**

@@ -35,9 +35,14 @@ import org.mockito.Mock;
 import java.util.EnumSet;
 
 public class GuildLevelCacheTest extends IntegrationTest {
-    @Mock UserImpl user;
-    @Mock SelfUserImpl selfUser;
-    @Mock VoiceChannelImpl channel;
+    @Mock
+    UserImpl user;
+
+    @Mock
+    SelfUserImpl selfUser;
+
+    @Mock
+    VoiceChannelImpl channel;
 
     @BeforeEach
     void setupMocks() {

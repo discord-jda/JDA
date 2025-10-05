@@ -47,41 +47,30 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
     public void queue(
             @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
         Consumer<? super Throwable> contextFailure = contextWrap(failure);
-        action.queue(
-                success,
-                contextWrap(
-                        (error) -> {
-                            try {
-                                if (check.test(error)) {
-                                    // If check passed we can apply the fallback function and
-                                    // flatten it
-                                    RestAction<? extends T> then = map.apply(error);
-                                    if (then == null)
-                                        doFailure(
-                                                failure,
-                                                new IllegalStateException(
-                                                        "FlatMapError operand is null",
-                                                        error)); // No contextFailure because error
-                                    // already has context
-                                    else
-                                        then.queue(
-                                                success,
-                                                contextFailure); // Use contextFailure here to apply
-                                    // new context to new errors
-                                } else
-                                    doFailure(
-                                            failure,
-                                            error); // No contextFailure because error already has
-                                // context
-                            } catch (Throwable e) {
-                                doFailure(
-                                        failure,
-                                        Helpers.appendCause(
-                                                e,
-                                                error)); // No contextFailure because error already
-                                // has context
-                            }
-                        }));
+        action.queue(success, contextWrap((error) -> {
+            try {
+                if (check.test(error)) {
+                    // If check passed we can apply the fallback function and
+                    // flatten it
+                    RestAction<? extends T> then = map.apply(error);
+                    if (then == null)
+                        doFailure(
+                                failure,
+                                new IllegalStateException(
+                                        "FlatMapError operand is null",
+                                        error)); // No contextFailure because error
+                    // already has context
+                    else then.queue(success, contextFailure); // Use contextFailure here to apply
+                    // new context to new errors
+                } else doFailure(failure, error); // No contextFailure because error already has
+                // context
+            } catch (Throwable e) {
+                doFailure(
+                        failure,
+                        Helpers.appendCause(e, error)); // No contextFailure because error already
+                // has context
+            }
+        }));
     }
 
     @Override
@@ -112,12 +101,11 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue) {
         return action.submit(shouldQueue)
-                .handle(
-                        (result, error) -> {
-                            if (check.test(error))
-                                return map.apply(error).submit(shouldQueue).thenApply(x -> (T) x);
-                            else return CompletableFuture.completedFuture(result);
-                        })
+                .handle((result, error) -> {
+                    if (check.test(error))
+                        return map.apply(error).submit(shouldQueue).thenApply(x -> (T) x);
+                    else return CompletableFuture.completedFuture(result);
+                })
                 .thenCompose(Function.identity());
     }
 

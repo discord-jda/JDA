@@ -53,12 +53,8 @@ public interface PrivateChannelMixin<T extends PrivateChannelMixin<T>>
     @Nonnull
     default RestAction<PrivateChannel> retrievePrivateChannel() {
         Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(getId());
-        return new RestActionImpl<>(
-                getJDA(),
-                route,
-                (response, request) ->
-                        ((JDAImpl) getJDA())
-                                .getEntityBuilder()
-                                .createPrivateChannel(response.getObject()));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> ((JDAImpl) getJDA())
+                .getEntityBuilder()
+                .createPrivateChannel(response.getObject()));
     }
 }

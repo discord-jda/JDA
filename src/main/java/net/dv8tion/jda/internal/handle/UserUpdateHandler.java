@@ -49,9 +49,8 @@ public class UserUpdateHandler extends SocketHandler {
         if (!Objects.equals(discriminator, self.getDiscriminator())) {
             String oldDiscriminator = self.getDiscriminator();
             self.setDiscriminator(Short.parseShort(discriminator));
-            getJDA().handleEvent(
-                            new SelfUpdateDiscriminatorEvent(
-                                    getJDA(), responseNumber, oldDiscriminator));
+            getJDA().handleEvent(new SelfUpdateDiscriminatorEvent(
+                    getJDA(), responseNumber, oldDiscriminator));
         }
 
         if (!Objects.equals(globalName, self.getGlobalName())) {

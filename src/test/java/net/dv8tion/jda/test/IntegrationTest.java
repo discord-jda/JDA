@@ -51,9 +51,15 @@ import javax.annotation.Nonnull;
 
 public class IntegrationTest extends AbstractSnapshotTest {
     protected Random random = new Random();
-    @Mock protected JDAImpl jda;
-    @Mock protected Requester requester;
-    @Mock protected ScheduledExecutorService scheduledExecutorService;
+
+    @Mock
+    protected JDAImpl jda;
+
+    @Mock
+    protected Requester requester;
+
+    @Mock
+    protected ScheduledExecutorService scheduledExecutorService;
 
     private AutoCloseable closeable;
     private int expectedRequestCount;

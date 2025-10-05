@@ -72,36 +72,29 @@ public class LocalizationMapper {
 
     public void localizeCommand(CommandData commandData, DataArray optionArray) {
         final TranslationContext ctx = new TranslationContext();
-        ctx.withKey(
-                commandData.getName(),
-                () -> {
-                    ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
-                    if (commandData.getType() == Command.Type.SLASH) {
-                        final SlashCommandData slashCommandData = (SlashCommandData) commandData;
-                        ctx.trySetTranslation(
-                                slashCommandData.getDescriptionLocalizations(), "description");
-                        localizeOptionArray(optionArray, ctx);
-                    }
-                });
+        ctx.withKey(commandData.getName(), () -> {
+            ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
+            if (commandData.getType() == Command.Type.SLASH) {
+                final SlashCommandData slashCommandData = (SlashCommandData) commandData;
+                ctx.trySetTranslation(
+                        slashCommandData.getDescriptionLocalizations(), "description");
+                localizeOptionArray(optionArray, ctx);
+            }
+        });
     }
 
     private void localizeOptionArray(DataArray optionArray, TranslationContext ctx) {
-        ctx.forObjects(
-                optionArray,
-                o -> o.getString("name"),
-                obj -> {
-                    if (obj.hasKey("name_localizations"))
-                        ctx.trySetTranslation(obj.getObject("name_localizations"), "name");
-                    if (obj.hasKey("description_localizations"))
-                        ctx.trySetTranslation(
-                                obj.getObject("description_localizations"), "description");
-                    if (obj.hasKey("options")) localizeOptionArray(obj.getArray("options"), ctx);
-                    if (obj.hasKey("choices"))
-                        // Puts "choices" between the option name and the choice name
-                        // This makes it more distinguishable in tree structures
-                        ctx.withKey(
-                                "choices", () -> localizeOptionArray(obj.getArray("choices"), ctx));
-                });
+        ctx.forObjects(optionArray, o -> o.getString("name"), obj -> {
+            if (obj.hasKey("name_localizations"))
+                ctx.trySetTranslation(obj.getObject("name_localizations"), "name");
+            if (obj.hasKey("description_localizations"))
+                ctx.trySetTranslation(obj.getObject("description_localizations"), "description");
+            if (obj.hasKey("options")) localizeOptionArray(obj.getArray("options"), ctx);
+            if (obj.hasKey("choices"))
+                // Puts "choices" between the option name and the choice name
+                // This makes it more distinguishable in tree structures
+                ctx.withKey("choices", () -> localizeOptionArray(obj.getArray("choices"), ctx));
+        });
     }
 
     private class TranslationContext {
@@ -113,23 +106,20 @@ public class LocalizationMapper {
                 Consumer<DataObject> consumer) {
             for (int i = 0; i < source.length(); i++) {
                 final DataObject item = source.getObject(i);
-                final Runnable runnable =
-                        () -> {
-                            final String key = keyExtractor.apply(item);
-                            keyComponents.push(key);
-                            consumer.accept(item);
-                            keyComponents.pop();
-                        };
+                final Runnable runnable = () -> {
+                    final String key = keyExtractor.apply(item);
+                    keyComponents.push(key);
+                    consumer.accept(item);
+                    keyComponents.pop();
+                };
 
                 // We need to differentiate subcommands/groups from options before inserting the
                 // "options" separator
-                final OptionType type =
-                        OptionType.fromKey(
-                                item.getInt("type", -1)); // -1 when the object isn't an option
-                final boolean isOption =
-                        type != OptionType.SUB_COMMAND
-                                && type != OptionType.SUB_COMMAND_GROUP
-                                && type != OptionType.UNKNOWN;
+                final OptionType type = OptionType.fromKey(
+                        item.getInt("type", -1)); // -1 when the object isn't an option
+                final boolean isOption = type != OptionType.SUB_COMMAND
+                        && type != OptionType.SUB_COMMAND_GROUP
+                        && type != OptionType.UNKNOWN;
                 if (isOption) {
                     // At this point the key should look like "path.to.command",
                     // we can insert "options", and the keyExtractor would give option names
@@ -152,10 +142,8 @@ public class LocalizationMapper {
         private String getKey(String finalComponent) {
             final StringJoiner joiner = new StringJoiner(".");
             for (String keyComponent : keyComponents)
-                joiner.add(
-                        keyComponent.replace(
-                                " ",
-                                "_")); // Context commands can have spaces, we need to replace them
+                joiner.add(keyComponent.replace(
+                        " ", "_")); // Context commands can have spaces, we need to replace them
             joiner.add(finalComponent.replace(" ", "_"));
             return joiner.toString().toLowerCase();
         }
@@ -179,15 +167,14 @@ public class LocalizationMapper {
             final String key = getKey(finalComponent);
             try {
                 final Map<DiscordLocale, String> data = localizationFunction.apply(key);
-                data.forEach(
-                        (locale, localizedValue) -> {
-                            Checks.check(
-                                    locale != DiscordLocale.UNKNOWN,
-                                    "Localization function returned a map with an 'UNKNOWN'"
-                                            + " DiscordLocale");
+                data.forEach((locale, localizedValue) -> {
+                    Checks.check(
+                            locale != DiscordLocale.UNKNOWN,
+                            "Localization function returned a map with an 'UNKNOWN'"
+                                    + " DiscordLocale");
 
-                            localizationMap.put(locale.getLocale(), localizedValue);
-                        });
+                    localizationMap.put(locale.getLocale(), localizedValue);
+                });
             } catch (Exception e) {
                 throw new RuntimeException(
                         "An uncaught exception occurred while using a LocalizationFunction,"

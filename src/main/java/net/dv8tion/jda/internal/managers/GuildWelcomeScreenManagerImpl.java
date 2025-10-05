@@ -127,12 +127,10 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
                 channels.size() <= GuildWelcomeScreen.MAX_WELCOME_CHANNELS,
                 "Cannot have more than %d welcome channels",
                 GuildWelcomeScreen.MAX_WELCOME_CHANNELS);
-        withLock(
-                this.channels,
-                c -> {
-                    c.clear();
-                    c.addAll(channels);
-                });
+        withLock(this.channels, c -> {
+            c.clear();
+            c.addAll(channels);
+        });
         set |= CHANNELS;
         return this;
     }
@@ -142,12 +140,10 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
         DataObject object = DataObject.empty();
         if (shouldUpdate(ENABLED)) object.put("enabled", enabled);
         if (shouldUpdate(DESCRIPTION)) object.put("description", description);
-        withLock(
-                this.channels,
-                (list) -> {
-                    if (shouldUpdate(CHANNELS))
-                        object.put("welcome_channels", DataArray.fromCollection(list));
-                });
+        withLock(this.channels, (list) -> {
+            if (shouldUpdate(CHANNELS))
+                object.put("welcome_channels", DataArray.fromCollection(list));
+        });
         reset();
         return getRequestBody(object);
     }

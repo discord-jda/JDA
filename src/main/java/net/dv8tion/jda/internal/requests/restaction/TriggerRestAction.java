@@ -76,30 +76,24 @@ public class TriggerRestAction<T> extends RestActionImpl<T> {
     }
 
     public void run() {
-        MiscUtil.locked(
-                mutex,
-                () -> {
-                    isReady = true;
-                    callbacks.forEach(Runnable::run);
-                });
+        MiscUtil.locked(mutex, () -> {
+            isReady = true;
+            callbacks.forEach(Runnable::run);
+        });
     }
 
     public void fail(Throwable throwable) {
-        MiscUtil.locked(
-                mutex,
-                () -> {
-                    exception = throwable;
-                    callbacks.forEach(Runnable::run);
-                });
+        MiscUtil.locked(mutex, () -> {
+            exception = throwable;
+            callbacks.forEach(Runnable::run);
+        });
     }
 
     public void onReady(Runnable callback) {
-        MiscUtil.locked(
-                mutex,
-                () -> {
-                    if (isReady || exception != null) callback.run();
-                    else callbacks.add(callback);
-                });
+        MiscUtil.locked(mutex, () -> {
+            if (isReady || exception != null) callback.run();
+            else callbacks.add(callback);
+        });
     }
 
     @Override
@@ -110,11 +104,10 @@ public class TriggerRestAction<T> extends RestActionImpl<T> {
         }
 
         Consumer<? super Throwable> onFailure = wrapContext(failure);
-        onReady(
-                () -> {
-                    if (this.exception != null) onFailure.accept(exception);
-                    else super.queue(success, onFailure);
-                });
+        onReady(() -> {
+            if (this.exception != null) onFailure.accept(exception);
+            else super.queue(success, onFailure);
+        });
     }
 
     @Nonnull
@@ -124,26 +117,23 @@ public class TriggerRestAction<T> extends RestActionImpl<T> {
         CompletableFuture<T> future = new CompletableFuture<>();
         Consumer<? super Throwable> onFailure = wrapContext(future::completeExceptionally);
 
-        onReady(
-                () -> {
-                    if (exception != null) {
-                        onFailure.accept(exception);
-                        return;
-                    }
+        onReady(() -> {
+            if (exception != null) {
+                onFailure.accept(exception);
+                return;
+            }
 
-                    CompletableFuture<T> handle = super.submit(shouldQueue);
-                    handle.whenComplete(
-                            (success, error) -> {
-                                if (error != null) onFailure.accept(error);
-                                else future.complete(success);
-                            });
+            CompletableFuture<T> handle = super.submit(shouldQueue);
+            handle.whenComplete((success, error) -> {
+                if (error != null) onFailure.accept(error);
+                else future.complete(success);
+            });
 
-                    // Handle cancel forwarding
-                    future.whenComplete(
-                            (r, e) -> {
-                                if (future.isCancelled()) handle.cancel(false);
-                            });
-                });
+            // Handle cancel forwarding
+            future.whenComplete((r, e) -> {
+                if (future.isCancelled()) handle.cancel(false);
+            });
+        });
         return future;
     }
 

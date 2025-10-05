@@ -30,7 +30,8 @@ import net.dv8tion.jda.test.ChecksHelper;
 import org.junit.jupiter.api.Test;
 
 public class ContainerTest {
-    private static final TextDisplay EXAMPLE_TEXT = TextDisplay.of("Test display").withUniqueId(1);
+    private static final TextDisplay EXAMPLE_TEXT =
+            TextDisplay.of("Test display").withUniqueId(1);
 
     @Test
     void testEmptyContainerThrows() {
@@ -57,9 +58,7 @@ public class ContainerTest {
         Container container = Container.of(EXAMPLE_TEXT);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(
-                        () ->
-                                container.replace(
-                                        byUniqueId(EXAMPLE_TEXT.getUniqueId(), (Component) null)));
+                .isThrownBy(() -> container.replace(
+                        byUniqueId(EXAMPLE_TEXT.getUniqueId(), (Component) null)));
     }
 }

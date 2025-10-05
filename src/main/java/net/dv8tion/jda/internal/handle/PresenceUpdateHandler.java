@@ -123,9 +123,8 @@ public class PresenceUpdateHandler extends SocketHandler {
             presence.setOnlineStatus(status);
             if (member != null) {
                 getJDA().getEntityBuilder().updateMemberCache(member);
-                getJDA().handleEvent(
-                                new UserUpdateOnlineStatusEvent(
-                                        getJDA(), responseNumber, member, oldStatus));
+                getJDA().handleEvent(new UserUpdateOnlineStatusEvent(
+                        getJDA(), responseNumber, member, oldStatus));
             }
         }
         return null;
@@ -168,9 +167,8 @@ public class PresenceUpdateHandler extends SocketHandler {
         if (unorderedEquals) {
             boolean deepEquals = Helpers.deepEquals(oldActivities, newActivities);
             if (!deepEquals) {
-                getJDA().handleEvent(
-                                new UserUpdateActivityOrderEvent(
-                                        getJDA(), responseNumber, oldActivities, member));
+                getJDA().handleEvent(new UserUpdateActivityOrderEvent(
+                        getJDA(), responseNumber, oldActivities, member));
             }
         } else {
             getJDA().getEntityBuilder().updateMemberCache(member);
@@ -182,20 +180,17 @@ public class PresenceUpdateHandler extends SocketHandler {
             }
 
             for (Activity activity : startedActivities) {
-                getJDA().handleEvent(
-                                new UserActivityStartEvent(
-                                        getJDA(), responseNumber, member, activity));
+                getJDA().handleEvent(new UserActivityStartEvent(
+                        getJDA(), responseNumber, member, activity));
             }
 
             for (Activity activity : stoppedActivities) {
-                getJDA().handleEvent(
-                                new UserActivityEndEvent(
-                                        getJDA(), responseNumber, member, activity));
+                getJDA().handleEvent(new UserActivityEndEvent(
+                        getJDA(), responseNumber, member, activity));
             }
 
-            getJDA().handleEvent(
-                            new UserUpdateActivitiesEvent(
-                                    getJDA(), responseNumber, member, oldActivities));
+            getJDA().handleEvent(new UserUpdateActivitiesEvent(
+                    getJDA(), responseNumber, member, oldActivities));
         }
     }
 

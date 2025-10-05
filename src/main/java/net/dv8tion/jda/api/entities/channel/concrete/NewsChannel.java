@@ -202,13 +202,9 @@ public interface NewsChannel extends StandardGuildMessageChannel {
         Checks.checkAccess(getGuild().getSelfMember(), this);
         Checks.checkAttached(this);
         Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<>(
-                getJDA(),
-                route,
-                (response, request) ->
-                        request.getJDA()
-                                .getEntityBuilder()
-                                .createMessageWithChannel(response.getObject(), this, false));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> request.getJDA()
+                .getEntityBuilder()
+                .createMessageWithChannel(response.getObject(), this, false));
     }
 
     /**

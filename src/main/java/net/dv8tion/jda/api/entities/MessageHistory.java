@@ -185,36 +185,31 @@ public class MessageHistory {
                             + " provided: "
                             + amount);
 
-        Route.CompiledRoute route =
-                Route.Messages.GET_MESSAGE_HISTORY
-                        .compile(channel.getId())
-                        .withQueryParams("limit", Integer.toString(amount));
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
+                .compile(channel.getId())
+                .withQueryParams("limit", Integer.toString(amount));
 
         if (!history.isEmpty())
             route = route.withQueryParams("before", String.valueOf(history.lastKey()));
 
         JDAImpl jda = (JDAImpl) getJDA();
-        return new RestActionImpl<>(
-                jda,
-                route,
-                (response, request) -> {
-                    EntityBuilder builder = jda.getEntityBuilder();
-                    LinkedList<Message> messages = new LinkedList<>();
-                    DataArray historyJson = response.getArray();
+        return new RestActionImpl<>(jda, route, (response, request) -> {
+            EntityBuilder builder = jda.getEntityBuilder();
+            LinkedList<Message> messages = new LinkedList<>();
+            DataArray historyJson = response.getArray();
 
-                    for (int i = 0; i < historyJson.length(); i++) {
-                        try {
-                            messages.add(
-                                    builder.createMessageWithChannel(
-                                            historyJson.getObject(i), channel, false));
-                        } catch (Exception e) {
-                            LOG.warn("Encountered exception when retrieving messages ", e);
-                        }
-                    }
+            for (int i = 0; i < historyJson.length(); i++) {
+                try {
+                    messages.add(builder.createMessageWithChannel(
+                            historyJson.getObject(i), channel, false));
+                } catch (Exception e) {
+                    LOG.warn("Encountered exception when retrieving messages ", e);
+                }
+            }
 
-                    messages.forEach(msg -> history.put(msg.getIdLong(), msg));
-                    return messages;
-                });
+            messages.forEach(msg -> history.put(msg.getIdLong(), msg));
+            return messages;
+        });
     }
 
     /**
@@ -273,40 +268,35 @@ public class MessageHistory {
                     "No messages have been retrieved yet, so there is no message to act as a marker"
                             + " to retrieve more recent messages based on.");
 
-        Route.CompiledRoute route =
-                Route.Messages.GET_MESSAGE_HISTORY
-                        .compile(channel.getId())
-                        .withQueryParams(
-                                "limit",
-                                Integer.toString(amount),
-                                "after",
-                                String.valueOf(history.firstKey()));
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
+                .compile(channel.getId())
+                .withQueryParams(
+                        "limit",
+                        Integer.toString(amount),
+                        "after",
+                        String.valueOf(history.firstKey()));
         JDAImpl jda = (JDAImpl) getJDA();
-        return new RestActionImpl<>(
-                jda,
-                route,
-                (response, request) -> {
-                    EntityBuilder builder = jda.getEntityBuilder();
-                    LinkedList<Message> messages = new LinkedList<>();
-                    DataArray historyJson = response.getArray();
+        return new RestActionImpl<>(jda, route, (response, request) -> {
+            EntityBuilder builder = jda.getEntityBuilder();
+            LinkedList<Message> messages = new LinkedList<>();
+            DataArray historyJson = response.getArray();
 
-                    for (int i = 0; i < historyJson.length(); i++) {
-                        try {
-                            messages.add(
-                                    builder.createMessageWithChannel(
-                                            historyJson.getObject(i), channel, false));
-                        } catch (Exception e) {
-                            LOG.warn("Encountered exception when retrieving messages ", e);
-                        }
-                    }
+            for (int i = 0; i < historyJson.length(); i++) {
+                try {
+                    messages.add(builder.createMessageWithChannel(
+                            historyJson.getObject(i), channel, false));
+                } catch (Exception e) {
+                    LOG.warn("Encountered exception when retrieving messages ", e);
+                }
+            }
 
-                    for (Iterator<Message> it = messages.descendingIterator(); it.hasNext(); ) {
-                        Message m = it.next();
-                        history.put(0, m.getIdLong(), m);
-                    }
+            for (Iterator<Message> it = messages.descendingIterator(); it.hasNext(); ) {
+                Message m = it.next();
+                history.put(0, m.getIdLong(), m);
+            }
 
-                    return messages;
-                });
+            return messages;
+        });
     }
 
     /**
@@ -410,10 +400,9 @@ public class MessageHistory {
     public static MessageRetrieveAction getHistoryAfter(
             @Nonnull MessageChannel channel, @Nonnull String messageId) {
         checkArguments(channel, messageId);
-        Route.CompiledRoute route =
-                Route.Messages.GET_MESSAGE_HISTORY
-                        .compile(channel.getId())
-                        .withQueryParams("after", messageId);
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
+                .compile(channel.getId())
+                .withQueryParams("after", messageId);
         return new MessageRetrieveAction(route, channel);
     }
 
@@ -458,10 +447,9 @@ public class MessageHistory {
     public static MessageRetrieveAction getHistoryBefore(
             @Nonnull MessageChannel channel, @Nonnull String messageId) {
         checkArguments(channel, messageId);
-        Route.CompiledRoute route =
-                Route.Messages.GET_MESSAGE_HISTORY
-                        .compile(channel.getId())
-                        .withQueryParams("before", messageId);
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
+                .compile(channel.getId())
+                .withQueryParams("before", messageId);
         return new MessageRetrieveAction(route, channel);
     }
 
@@ -506,10 +494,9 @@ public class MessageHistory {
     public static MessageRetrieveAction getHistoryAround(
             @Nonnull MessageChannel channel, @Nonnull String messageId) {
         checkArguments(channel, messageId);
-        Route.CompiledRoute route =
-                Route.Messages.GET_MESSAGE_HISTORY
-                        .compile(channel.getId())
-                        .withQueryParams("around", messageId);
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
+                .compile(channel.getId())
+                .withQueryParams("around", messageId);
         return new MessageRetrieveAction(route, channel);
     }
 

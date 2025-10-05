@@ -60,9 +60,8 @@ public class GuildSetupController {
 
     private Future<?> timeoutHandle;
 
-    protected StatusListener listener =
-            (id, oldStatus, newStatus) ->
-                    log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
+    protected StatusListener listener = (id, oldStatus, newStatus) ->
+            log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
 
     public GuildSetupController(JDAImpl api) {
         this.api = api;
@@ -323,11 +322,10 @@ public class GuildSetupController {
     }
 
     private void tryChunking() {
-        chunkingGuilds.forEach(
-                (id) -> {
-                    sendChunkRequest(id);
-                    return true;
-                });
+        chunkingGuilds.forEach((id) -> {
+            sendChunkRequest(id);
+            return true;
+        });
         chunkingGuilds.clear();
     }
 
@@ -337,9 +335,8 @@ public class GuildSetupController {
         return;
 
         log.debug("Starting {} second timeout for {} guilds", timeoutDuration, incompleteCount);
-        timeoutHandle =
-                getJDA().getGatewayPool()
-                        .schedule(this::onTimeout, timeoutDuration, TimeUnit.SECONDS);
+        timeoutHandle = getJDA().getGatewayPool()
+                .schedule(this::onTimeout, timeoutDuration, TimeUnit.SECONDS);
     }
 
     public void onUnavailable(long id) {

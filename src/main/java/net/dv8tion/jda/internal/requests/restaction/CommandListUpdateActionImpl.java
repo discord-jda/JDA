@@ -137,10 +137,9 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>>
 
     @Override
     protected void handleSuccess(Response response, Request<List<Command>> request) {
-        List<Command> commands =
-                response.getArray().stream(DataArray::getObject)
-                        .map(obj -> new CommandImpl(api, guild, obj))
-                        .collect(Collectors.toList());
+        List<Command> commands = response.getArray().stream(DataArray::getObject)
+                .map(obj -> new CommandImpl(api, guild, obj))
+                .collect(Collectors.toList());
         request.onSuccess(commands);
     }
 }

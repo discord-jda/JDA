@@ -43,11 +43,9 @@ class AllowedMentionsData implements SerializableData {
 
     public static void setDefaultMentions(
             @Nullable Collection<Message.MentionType> allowedMentions) {
-        defaultParse =
-                allowedMentions == null
-                        ? EnumSet.allOf(
-                                Message.MentionType.class) // Default to all mentions enabled
-                        : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
+        defaultParse = allowedMentions == null
+                ? EnumSet.allOf(Message.MentionType.class) // Default to all mentions enabled
+                : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
     }
 
     @Nonnull
@@ -85,10 +83,9 @@ class AllowedMentionsData implements SerializableData {
     }
 
     public void setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
-        this.mentionParse =
-                allowedMentions == null
-                        ? EnumSet.allOf(Message.MentionType.class)
-                        : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
+        this.mentionParse = allowedMentions == null
+                ? EnumSet.allOf(Message.MentionType.class)
+                : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
     }
 
     public void mention(@Nonnull Collection<? extends IMentionable> mentions) {

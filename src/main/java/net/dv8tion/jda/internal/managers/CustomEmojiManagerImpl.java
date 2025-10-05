@@ -105,19 +105,16 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
             withLock(this.roles, List::clear);
         } else {
             Checks.notNull(roles, "Roles");
-            roles.forEach(
-                    (role) -> {
-                        Checks.notNull(role, "Roles");
-                        Checks.check(
-                                role.getGuild().equals(getGuild()),
-                                "Roles must all be from the same guild");
-                    });
-            withLock(
-                    this.roles,
-                    (list) -> {
-                        list.clear();
-                        roles.stream().map(Role::getId).forEach(list::add);
-                    });
+            roles.forEach((role) -> {
+                Checks.notNull(role, "Roles");
+                Checks.check(
+                        role.getGuild().equals(getGuild()),
+                        "Roles must all be from the same guild");
+            });
+            withLock(this.roles, (list) -> {
+                list.clear();
+                roles.stream().map(Role::getId).forEach(list::add);
+            });
         }
         set |= ROLES;
         return this;
@@ -127,11 +124,9 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
         if (shouldUpdate(NAME)) object.put("name", name);
-        withLock(
-                this.roles,
-                (list) -> {
-                    if (shouldUpdate(ROLES)) object.put("roles", DataArray.fromCollection(list));
-                });
+        withLock(this.roles, (list) -> {
+            if (shouldUpdate(ROLES)) object.put("roles", DataArray.fromCollection(list));
+        });
         reset();
         return getRequestBody(object);
     }

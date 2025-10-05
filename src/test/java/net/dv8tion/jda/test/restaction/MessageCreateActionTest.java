@@ -62,7 +62,8 @@ public class MessageCreateActionTest extends IntegrationTest {
     private static final String FIXED_NONCE = "123456";
     private static final String ENDPOINT_URL = "channels/" + FIXED_CHANNEL_ID + "/messages";
 
-    @Mock protected MessageChannel channel;
+    @Mock
+    protected MessageChannel channel;
 
     @BeforeEach
     void setupChannel() {
@@ -119,9 +120,8 @@ public class MessageCreateActionTest extends IntegrationTest {
     void testSendVoiceMessage() {
         MessageCreateActionImpl action = new MessageCreateActionImpl(channel);
 
-        FileUpload file =
-                Data.getVoiceMessageFileUpload(
-                        voiceMessageAudio, voiceMessageFilename, voiceMessageMediaType);
+        FileUpload file = Data.getVoiceMessageFileUpload(
+                voiceMessageAudio, voiceMessageFilename, voiceMessageMediaType);
 
         assertThat(file.isVoiceMessage()).isTrue();
 
@@ -137,9 +137,8 @@ public class MessageCreateActionTest extends IntegrationTest {
     void testSuppressVoiceMessage() {
         MessageCreateActionImpl action = new MessageCreateActionImpl(channel);
 
-        FileUpload file =
-                Data.getVoiceMessageFileUpload(
-                        voiceMessageAudio, voiceMessageFilename, voiceMessageMediaType);
+        FileUpload file = Data.getVoiceMessageFileUpload(
+                voiceMessageAudio, voiceMessageFilename, voiceMessageMediaType);
 
         assertThat(file.isVoiceMessage()).isTrue();
 
@@ -182,17 +181,16 @@ public class MessageCreateActionTest extends IntegrationTest {
 
     @Test
     void testFullFromBuilder() {
-        MessageCreateData data =
-                new MessageCreateBuilder()
-                        .setTTS(true)
-                        .setSuppressedNotifications(true)
-                        .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
-                        .setContent("test content")
-                        .setEmbeds(Data.getTestEmbed())
-                        .setFiles(FileUpload.fromData(new byte[0], "test.png"))
-                        .setComponents(ActionRow.of(Button.primary("test", "Test Button")))
-                        .setPoll(Data.getTestPoll())
-                        .build();
+        MessageCreateData data = new MessageCreateBuilder()
+                .setTTS(true)
+                .setSuppressedNotifications(true)
+                .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
+                .setContent("test content")
+                .setEmbeds(Data.getTestEmbed())
+                .setFiles(FileUpload.fromData(new byte[0], "test.png"))
+                .setComponents(ActionRow.of(Button.primary("test", "Test Button")))
+                .setPoll(Data.getTestPoll())
+                .build();
 
         assertThatRequestFrom(new MessageCreateActionImpl(channel).applyData(data))
                 .hasBodyMatchingSnapshot()

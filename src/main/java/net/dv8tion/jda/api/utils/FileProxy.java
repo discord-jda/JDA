@@ -161,25 +161,19 @@ public class FileProxy {
         final OkHttpClient httpClient = getHttpClient();
         final Call newCall = httpClient.newCall(req);
 
-        newCall.enqueue(
-                FunctionalCallback.onFailure(
-                                (call, e) ->
-                                        future.completeExceptionally(new UncheckedIOException(e)))
-                        .onSuccess(
-                                (call, response) -> {
-                                    if (response.isSuccessful()) {
-                                        InputStream body = IOUtil.getBody(response);
-                                        if (!future.complete(body)) IOUtil.silentClose(response);
-                                    } else {
-                                        future.completeExceptionally(
-                                                new HttpException(
-                                                        response.code()
-                                                                + ": "
-                                                                + response.message()));
-                                        IOUtil.silentClose(response);
-                                    }
-                                })
-                        .build());
+        newCall.enqueue(FunctionalCallback.onFailure(
+                        (call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
+                .onSuccess((call, response) -> {
+                    if (response.isSuccessful()) {
+                        InputStream body = IOUtil.getBody(response);
+                        if (!future.complete(body)) IOUtil.silentClose(response);
+                    } else {
+                        future.completeExceptionally(
+                                new HttpException(response.code() + ": " + response.message()));
+                        IOUtil.silentClose(response);
+                    }
+                })
+                .build());
 
         return new DownloadTask(newCall, future);
     }
@@ -188,15 +182,13 @@ public class FileProxy {
     @CheckReturnValue
     protected CompletableFuture<Icon> downloadAsIcon(String url) {
         final CompletableFuture<InputStream> downloadFuture = download(url);
-        return FutureUtil.thenApplyCancellable(
-                downloadFuture,
-                stream -> {
-                    try (final InputStream ignored = stream) {
-                        return Icon.from(stream);
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                });
+        return FutureUtil.thenApplyCancellable(downloadFuture, stream -> {
+            try (final InputStream ignored = stream) {
+                return Icon.from(stream);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     @Nonnull
@@ -358,13 +350,11 @@ public class FileProxy {
      */
     @Nonnull
     public FileUpload downloadAsFileUpload(@Nonnull String name) {
-        return FileUpload.fromStreamSupplier(
-                name,
-                () -> {
-                    // Blocking is fine on the elastic rate limit thread pool
-                    // [[JDABuilder#setRateLimitElastic]]
-                    return download().join();
-                });
+        return FileUpload.fromStreamSupplier(name, () -> {
+            // Blocking is fine on the elastic rate limit thread pool
+            // [[JDABuilder#setRateLimitElastic]]
+            return download().join();
+        });
     }
 
     protected static class DownloadTask {

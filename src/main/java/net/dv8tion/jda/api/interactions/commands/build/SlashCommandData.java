@@ -376,10 +376,9 @@ public interface SlashCommandData extends CommandData {
             @Nonnull String description,
             boolean required,
             boolean autoComplete) {
-        return addOptions(
-                new OptionData(type, name, description)
-                        .setRequired(required)
-                        .setAutoComplete(autoComplete));
+        return addOptions(new OptionData(type, name, description)
+                .setRequired(required)
+                .setAutoComplete(autoComplete));
     }
 
     /**
@@ -617,10 +616,8 @@ public interface SlashCommandData extends CommandData {
     static SlashCommandData fromCommand(@Nonnull Command command) {
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH)
-            throw new IllegalArgumentException(
-                    "Cannot convert command of type "
-                            + command.getType()
-                            + " to SlashCommandData!");
+            throw new IllegalArgumentException("Cannot convert command of type " + command.getType()
+                    + " to SlashCommandData!");
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
         data.setContexts(command.getContexts());
@@ -670,14 +667,12 @@ public interface SlashCommandData extends CommandData {
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
         if (!object.isNull("contexts")) {
-            command.setContexts(
-                    object.getArray("contexts").stream(DataArray::getString)
-                            .map(InteractionContextType::fromKey)
-                            .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
+            command.setContexts(object.getArray("contexts").stream(DataArray::getString)
+                    .map(InteractionContextType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
         } else
-            command.setContexts(
-                    Helpers.unmodifiableEnumSet(
-                            InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+            command.setContexts(Helpers.unmodifiableEnumSet(
+                    InteractionContextType.GUILD, InteractionContextType.BOT_DM));
 
         if (!object.isNull("integration_types")) {
             command.setIntegrationTypes(
@@ -699,21 +694,19 @@ public interface SlashCommandData extends CommandData {
                 LocalizationUtils.mapFromProperty(object, "name_localizations"));
         command.setDescriptionLocalizations(
                 LocalizationUtils.mapFromProperty(object, "description_localizations"));
-        options.stream(DataArray::getObject)
-                .forEach(
-                        opt -> {
-                            OptionType type = OptionType.fromKey(opt.getInt("type"));
-                            switch (type) {
-                                case SUB_COMMAND:
-                                    command.addSubcommands(SubcommandData.fromData(opt));
-                                    break;
-                                case SUB_COMMAND_GROUP:
-                                    command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
-                                    break;
-                                default:
-                                    command.addOptions(OptionData.fromData(opt));
-                            }
-                        });
+        options.stream(DataArray::getObject).forEach(opt -> {
+            OptionType type = OptionType.fromKey(opt.getInt("type"));
+            switch (type) {
+                case SUB_COMMAND:
+                    command.addSubcommands(SubcommandData.fromData(opt));
+                    break;
+                case SUB_COMMAND_GROUP:
+                    command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
+                    break;
+                default:
+                    command.addOptions(OptionData.fromData(opt));
+            }
+        });
         return command;
     }
 }

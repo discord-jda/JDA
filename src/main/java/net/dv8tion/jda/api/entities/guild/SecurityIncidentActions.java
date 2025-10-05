@@ -94,7 +94,9 @@ public class SecurityIncidentActions {
             @Nullable OffsetDateTime invitesDisabledUntil,
             @Nullable OffsetDateTime directMessagesDisabledUntil) {
         return new SecurityIncidentActions(
-                invitesDisabledUntil == null ? 0 : invitesDisabledUntil.toInstant().toEpochMilli(),
+                invitesDisabledUntil == null
+                        ? 0
+                        : invitesDisabledUntil.toInstant().toEpochMilli(),
                 directMessagesDisabledUntil == null
                         ? 0
                         : directMessagesDisabledUntil.toInstant().toEpochMilli());

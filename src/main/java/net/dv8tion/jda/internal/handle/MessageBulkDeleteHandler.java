@@ -60,22 +60,17 @@ public class MessageBulkDeleteHandler extends SocketHandler {
 
         if (getJDA().isBulkDeleteSplittingEnabled()) {
             SocketHandler handler = getJDA().getClient().getHandlers().get("MESSAGE_DELETE");
-            content.getArray("ids")
-                    .forEach(
-                            id -> {
-                                handler.handle(
-                                        responseNumber,
+            content.getArray("ids").forEach(id -> {
+                handler.handle(
+                        responseNumber,
+                        DataObject.empty()
+                                .put("t", "MESSAGE_DELETE")
+                                .put(
+                                        "d",
                                         DataObject.empty()
-                                                .put("t", "MESSAGE_DELETE")
-                                                .put(
-                                                        "d",
-                                                        DataObject.empty()
-                                                                .put(
-                                                                        "channel_id",
-                                                                        Long.toUnsignedString(
-                                                                                channelId))
-                                                                .put("id", id)));
-                            });
+                                                .put("channel_id", Long.toUnsignedString(channelId))
+                                                .put("id", id)));
+            });
         } else {
             GuildMessageChannel channel =
                     getJDA().getChannelById(GuildMessageChannel.class, channelId);
@@ -109,9 +104,8 @@ public class MessageBulkDeleteHandler extends SocketHandler {
 
             DataArray array = content.getArray("ids");
             List<String> messages = array.stream(DataArray::getString).collect(Collectors.toList());
-            getJDA().handleEvent(
-                            new MessageBulkDeleteEvent(
-                                    getJDA(), responseNumber, channel, messages));
+            getJDA().handleEvent(new MessageBulkDeleteEvent(
+                    getJDA(), responseNumber, channel, messages));
         }
         return null;
     }

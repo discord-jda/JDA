@@ -27,25 +27,23 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import java.util.EnumSet;
 
 public class ChannelUtil {
-    public static final EnumSet<ChannelType> SLOWMODE_SUPPORTED =
-            EnumSet.of(
-                    ChannelType.TEXT,
-                    ChannelType.FORUM,
-                    ChannelType.MEDIA,
-                    ChannelType.GUILD_PUBLIC_THREAD,
-                    ChannelType.GUILD_NEWS_THREAD,
-                    ChannelType.GUILD_PRIVATE_THREAD,
-                    ChannelType.STAGE,
-                    ChannelType.VOICE);
+    public static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(
+            ChannelType.TEXT,
+            ChannelType.FORUM,
+            ChannelType.MEDIA,
+            ChannelType.GUILD_PUBLIC_THREAD,
+            ChannelType.GUILD_NEWS_THREAD,
+            ChannelType.GUILD_PRIVATE_THREAD,
+            ChannelType.STAGE,
+            ChannelType.VOICE);
 
-    public static final EnumSet<ChannelType> NSFW_SUPPORTED =
-            EnumSet.of(
-                    ChannelType.TEXT,
-                    ChannelType.VOICE,
-                    ChannelType.FORUM,
-                    ChannelType.MEDIA,
-                    ChannelType.NEWS,
-                    ChannelType.STAGE);
+    public static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(
+            ChannelType.TEXT,
+            ChannelType.VOICE,
+            ChannelType.FORUM,
+            ChannelType.MEDIA,
+            ChannelType.NEWS,
+            ChannelType.STAGE);
 
     public static final EnumSet<ChannelType> TOPIC_SUPPORTED =
             EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
@@ -90,14 +88,12 @@ public class ChannelUtil {
         }
 
         // Check category positions
-        Category thisParent =
-                a instanceof ICategorizableChannel
-                        ? ((ICategorizableChannel) a).getParentCategory()
-                        : null;
-        Category otherParent =
-                b instanceof ICategorizableChannel
-                        ? ((ICategorizableChannel) b).getParentCategory()
-                        : null;
+        Category thisParent = a instanceof ICategorizableChannel
+                ? ((ICategorizableChannel) a).getParentCategory()
+                : null;
+        Category otherParent = b instanceof ICategorizableChannel
+                ? ((ICategorizableChannel) b).getParentCategory()
+                : null;
 
         if (thisParent != null && otherParent == null) {
             if (b instanceof Category) {

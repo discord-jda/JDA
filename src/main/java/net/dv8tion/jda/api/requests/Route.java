@@ -50,10 +50,8 @@ public class Route {
                 new Route(GET, "applications/{application_id}/entitlements");
         public static final Route GET_ENTITLEMENT =
                 new Route(GET, "applications/{application_id}/entitlements/{entitlement_id}");
-        public static final Route CONSUME_ENTITLEMENT =
-                new Route(
-                        POST,
-                        "applications/{application_id}/entitlements/{entitlement_id}/consume");
+        public static final Route CONSUME_ENTITLEMENT = new Route(
+                POST, "applications/{application_id}/entitlements/{entitlement_id}/consume");
         public static final Route CREATE_TEST_ENTITLEMENT =
                 new Route(POST, "applications/{application_id}/entitlements");
         public static final Route DELETE_TEST_ENTITLEMENT =
@@ -86,59 +84,40 @@ public class Route {
 
         public static final Route GET_GUILD_COMMANDS =
                 new Route(GET, "applications/{application_id}/guilds/{guild_id}/commands");
-        public static final Route GET_GUILD_COMMAND =
-                new Route(
-                        GET,
-                        "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
+        public static final Route GET_GUILD_COMMAND = new Route(
+                GET, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
         public static final Route CREATE_GUILD_COMMAND =
                 new Route(POST, "applications/{application_id}/guilds/{guild_id}/commands");
         public static final Route UPDATE_GUILD_COMMANDS =
                 new Route(PUT, "applications/{application_id}/guilds/{guild_id}/commands");
-        public static final Route EDIT_GUILD_COMMAND =
-                new Route(
-                        PATCH,
-                        "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
-        public static final Route DELETE_GUILD_COMMAND =
-                new Route(
-                        DELETE,
-                        "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
+        public static final Route EDIT_GUILD_COMMAND = new Route(
+                PATCH, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
+        public static final Route DELETE_GUILD_COMMAND = new Route(
+                DELETE, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
 
-        public static final Route GET_ALL_COMMAND_PERMISSIONS =
-                new Route(
-                        GET,
-                        "applications/{application_id}/guilds/{guild_id}/commands/permissions");
-        public static final Route EDIT_ALL_COMMAND_PERMISSIONS =
-                new Route(
-                        PUT,
-                        "applications/{application_id}/guilds/{guild_id}/commands/permissions");
-        public static final Route GET_COMMAND_PERMISSIONS =
-                new Route(
-                        GET,
-                        "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
-        public static final Route EDIT_COMMAND_PERMISSIONS =
-                new Route(
-                        PUT,
-                        "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
+        public static final Route GET_ALL_COMMAND_PERMISSIONS = new Route(
+                GET, "applications/{application_id}/guilds/{guild_id}/commands/permissions");
+        public static final Route EDIT_ALL_COMMAND_PERMISSIONS = new Route(
+                PUT, "applications/{application_id}/guilds/{guild_id}/commands/permissions");
+        public static final Route GET_COMMAND_PERMISSIONS = new Route(
+                GET,
+                "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
+        public static final Route EDIT_COMMAND_PERMISSIONS = new Route(
+                PUT,
+                "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
 
         public static final Route CALLBACK =
                 new Route(POST, "interactions/{interaction_id}/{interaction_token}/callback", true);
         public static final Route CREATE_FOLLOWUP =
                 new Route(POST, "webhooks/{application_id}/{interaction_token}", true);
-        public static final Route EDIT_FOLLOWUP =
-                new Route(
-                        PATCH,
-                        "webhooks/{application_id}/{interaction_token}/messages/{message_id}",
-                        true);
-        public static final Route DELETE_FOLLOWUP =
-                new Route(
-                        DELETE,
-                        "webhooks/{application_id}/{interaction_token}/messages/{message_id}",
-                        true);
-        public static final Route GET_MESSAGE =
-                new Route(
-                        GET,
-                        "webhooks/{application_id}/{interaction_token}/messages/{message_id}",
-                        true);
+        public static final Route EDIT_FOLLOWUP = new Route(
+                PATCH, "webhooks/{application_id}/{interaction_token}/messages/{message_id}", true);
+        public static final Route DELETE_FOLLOWUP = new Route(
+                DELETE,
+                "webhooks/{application_id}/{interaction_token}/messages/{message_id}",
+                true);
+        public static final Route GET_MESSAGE = new Route(
+                GET, "webhooks/{application_id}/{interaction_token}/messages/{message_id}", true);
     }
 
     public static class Self {
@@ -373,24 +352,18 @@ public class Route {
         public static final Route UNPIN_MESSAGE =
                 new Route(DELETE, "channels/{channel_id}/messages/pins/{message_id}");
 
-        public static final Route ADD_REACTION =
-                new Route(
-                        PUT,
-                        "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
-        public static final Route REMOVE_REACTION =
-                new Route(
-                        DELETE,
-                        "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
+        public static final Route ADD_REACTION = new Route(
+                PUT,
+                "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
+        public static final Route REMOVE_REACTION = new Route(
+                DELETE,
+                "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
         public static final Route REMOVE_ALL_REACTIONS =
                 new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions");
-        public static final Route GET_REACTION_USERS =
-                new Route(
-                        GET,
-                        "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
-        public static final Route CLEAR_EMOJI_REACTIONS =
-                new Route(
-                        DELETE,
-                        "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
+        public static final Route GET_REACTION_USERS = new Route(
+                GET, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
+        public static final Route CLEAR_EMOJI_REACTIONS = new Route(
+                DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
 
         public static final Route DELETE_MESSAGE =
                 new Route(DELETE, "channels/{channel_id}/messages/{message_id}");

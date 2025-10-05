@@ -90,12 +90,7 @@ public abstract class GenericScheduledEventUpdateEvent<T> extends GenericSchedul
 
     @Override
     public String toString() {
-        return "ScheduledEventUpdate["
-                + getPropertyIdentifier()
-                + "]("
-                + getOldValue()
-                + "->"
-                + getNewValue()
-                + ')';
+        return "ScheduledEventUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->"
+                + getNewValue() + ')';
     }
 }

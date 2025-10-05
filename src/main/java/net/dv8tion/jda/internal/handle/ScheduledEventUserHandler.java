@@ -58,13 +58,11 @@ public class ScheduledEventUserHandler extends SocketHandler {
         if (event == null) return null;
 
         if (add)
-            getJDA().handleEvent(
-                            new ScheduledEventUserAddEvent(
-                                    getJDA(), responseNumber, event, userId));
+            getJDA().handleEvent(new ScheduledEventUserAddEvent(
+                    getJDA(), responseNumber, event, userId));
         else
-            getJDA().handleEvent(
-                            new ScheduledEventUserRemoveEvent(
-                                    getJDA(), responseNumber, event, userId));
+            getJDA().handleEvent(new ScheduledEventUserRemoveEvent(
+                    getJDA(), responseNumber, event, userId));
 
         return null;
     }

@@ -86,16 +86,15 @@ public class WidgetImpl implements Widget {
             if (!memberJson.isNull("channel_id")) // voice state
             {
                 VoiceChannelImpl channel = channels.get(memberJson.getLong("channel_id"));
-                member.setVoiceState(
-                        new VoiceStateImpl(
-                                channel,
-                                memberJson.getBoolean("mute"),
-                                memberJson.getBoolean("deaf"),
-                                memberJson.getBoolean("suppress"),
-                                memberJson.getBoolean("self_mute"),
-                                memberJson.getBoolean("self_deaf"),
-                                member,
-                                this));
+                member.setVoiceState(new VoiceStateImpl(
+                        channel,
+                        memberJson.getBoolean("mute"),
+                        memberJson.getBoolean("deaf"),
+                        memberJson.getBoolean("suppress"),
+                        memberJson.getBoolean("self_mute"),
+                        memberJson.getBoolean("self_deaf"),
+                        member,
+                        this));
                 channel.addMember(member);
             }
             members.put(member.getIdLong(), member);
@@ -221,10 +220,9 @@ public class WidgetImpl implements Widget {
             this.avatar = json.getString("avatar", null);
             this.nickname = json.getString("nick", null);
             this.status = OnlineStatus.fromKey(json.getString("status"));
-            this.game =
-                    json.isNull("game")
-                            ? null
-                            : EntityBuilder.createActivity(json.getObject("game"));
+            this.game = json.isNull("game")
+                    ? null
+                    : EntityBuilder.createActivity(json.getObject("game"));
         }
 
         private void setVoiceState(VoiceState voiceState) {

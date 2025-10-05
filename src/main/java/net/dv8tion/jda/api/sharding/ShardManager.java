@@ -111,13 +111,10 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      */
     default void addEventListeners(@Nonnull final IntFunction<Object> eventListenerProvider) {
         Checks.notNull(eventListenerProvider, "event listener provider");
-        this.getShardCache()
-                .forEach(
-                        jda -> {
-                            Object listener =
-                                    eventListenerProvider.apply(jda.getShardInfo().getShardId());
-                            if (listener != null) jda.addEventListener(listener);
-                        });
+        this.getShardCache().forEach(jda -> {
+            Object listener = eventListenerProvider.apply(jda.getShardInfo().getShardId());
+            if (listener != null) jda.addEventListener(listener);
+        });
     }
 
     /**
@@ -136,11 +133,8 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
             @Nonnull final IntFunction<Collection<Object>> eventListenerProvider) {
         Checks.notNull(eventListenerProvider, "event listener provider");
         this.getShardCache()
-                .forEach(
-                        jda ->
-                                jda.removeEventListener(
-                                        eventListenerProvider.apply(
-                                                jda.getShardInfo().getShardId())));
+                .forEach(jda -> jda.removeEventListener(
+                        eventListenerProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**
@@ -192,12 +186,9 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
     @Nonnull
     default EnumSet<GatewayIntent> getGatewayIntents() {
         //noinspection ConstantConditions
-        return getShardCache()
-                .applyStream(
-                        (stream) ->
-                                stream.map(JDA::getGatewayIntents)
-                                        .findAny()
-                                        .orElse(EnumSet.noneOf(GatewayIntent.class)));
+        return getShardCache().applyStream((stream) -> stream.map(JDA::getGatewayIntents)
+                .findAny()
+                .orElse(EnumSet.noneOf(GatewayIntent.class)));
     }
 
     /**
@@ -502,9 +493,8 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
             api = shard;
             EnumSet<GatewayIntent> intents = shard.getGatewayIntents();
             User user = shard.getUserById(id);
-            boolean isUpdated =
-                    intents.contains(GatewayIntent.GUILD_PRESENCES)
-                            || intents.contains(GatewayIntent.GUILD_MEMBERS);
+            boolean isUpdated = intents.contains(GatewayIntent.GUILD_PRESENCES)
+                    || intents.contains(GatewayIntent.GUILD_MEMBERS);
             if (user != null && isUpdated) return new CompletedRestAction<>(shard, user);
         }
 
@@ -512,10 +502,8 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
 
         JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestActionImpl<>(
-                jda,
-                route,
-                (response, request) -> jda.getEntityBuilder().createUser(response.getObject()));
+        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder()
+                .createUser(response.getObject()));
     }
 
     /**
@@ -540,13 +528,10 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      */
     @Nullable
     default User getUserByTag(@Nonnull String tag) {
-        return getShardCache()
-                .applyStream(
-                        stream ->
-                                stream.map(jda -> jda.getUserByTag(tag))
-                                        .filter(Objects::nonNull)
-                                        .findFirst()
-                                        .orElse(null));
+        return getShardCache().applyStream(stream -> stream.map(jda -> jda.getUserByTag(tag))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null));
     }
 
     /**
@@ -574,12 +559,10 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
     @Nullable
     default User getUserByTag(@Nonnull String username, @Nonnull String discriminator) {
         return getShardCache()
-                .applyStream(
-                        stream ->
-                                stream.map(jda -> jda.getUserByTag(username, discriminator))
-                                        .filter(Objects::nonNull)
-                                        .findFirst()
-                                        .orElse(null));
+                .applyStream(stream -> stream.map(jda -> jda.getUserByTag(username, discriminator))
+                        .filter(Objects::nonNull)
+                        .findFirst()
+                        .orElse(null));
     }
 
     /**
@@ -879,9 +862,8 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
     @Nonnull
     @Unmodifiable
     default Map<JDA, Status> getStatuses() {
-        return Collections.unmodifiableMap(
-                this.getShardCache().stream()
-                        .collect(Collectors.toMap(Function.identity(), JDA::getStatus)));
+        return Collections.unmodifiableMap(this.getShardCache().stream()
+                .collect(Collectors.toMap(Function.identity(), JDA::getStatus)));
     }
 
     /**
@@ -1002,15 +984,11 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      */
     default void setActivityProvider(
             @Nullable final IntFunction<? extends Activity> activityProvider) {
-        this.getShardCache()
-                .forEach(
-                        jda ->
-                                jda.getPresence()
-                                        .setActivity(
-                                                activityProvider == null
-                                                        ? null
-                                                        : activityProvider.apply(
-                                                                jda.getShardInfo().getShardId())));
+        this.getShardCache().forEach(jda -> jda.getPresence()
+                .setActivity(
+                        activityProvider == null
+                                ? null
+                                : activityProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**
@@ -1037,13 +1015,8 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      *        Provider for a boolean
      */
     default void setIdleProvider(@Nonnull final IntFunction<Boolean> idleProvider) {
-        this.getShardCache()
-                .forEach(
-                        jda ->
-                                jda.getPresence()
-                                        .setIdle(
-                                                idleProvider.apply(
-                                                        jda.getShardInfo().getShardId())));
+        this.getShardCache().forEach(jda -> jda.getPresence()
+                .setIdle(idleProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**
@@ -1089,19 +1062,14 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
     default void setPresenceProvider(
             @Nullable final IntFunction<OnlineStatus> statusProvider,
             @Nullable final IntFunction<? extends Activity> activityProvider) {
-        this.getShardCache()
-                .forEach(
-                        jda ->
-                                jda.getPresence()
-                                        .setPresence(
-                                                statusProvider == null
-                                                        ? null
-                                                        : statusProvider.apply(
-                                                                jda.getShardInfo().getShardId()),
-                                                activityProvider == null
-                                                        ? null
-                                                        : activityProvider.apply(
-                                                                jda.getShardInfo().getShardId())));
+        this.getShardCache().forEach(jda -> jda.getPresence()
+                .setPresence(
+                        statusProvider == null
+                                ? null
+                                : statusProvider.apply(jda.getShardInfo().getShardId()),
+                        activityProvider == null
+                                ? null
+                                : activityProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**
@@ -1133,15 +1101,11 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      *         If the provided OnlineStatus is {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}
      */
     default void setStatusProvider(@Nullable final IntFunction<OnlineStatus> statusProvider) {
-        this.getShardCache()
-                .forEach(
-                        jda ->
-                                jda.getPresence()
-                                        .setStatus(
-                                                statusProvider == null
-                                                        ? null
-                                                        : statusProvider.apply(
-                                                                jda.getShardInfo().getShardId())));
+        this.getShardCache().forEach(jda -> jda.getPresence()
+                .setStatus(
+                        statusProvider == null
+                                ? null
+                                : statusProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**

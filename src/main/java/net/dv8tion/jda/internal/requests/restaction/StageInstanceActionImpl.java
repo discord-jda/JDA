@@ -81,9 +81,8 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance>
 
     @Override
     protected void handleSuccess(Response response, Request<StageInstance> request) {
-        StageInstance instance =
-                api.getEntityBuilder()
-                        .createStageInstance((GuildImpl) channel.getGuild(), response.getObject());
+        StageInstance instance = api.getEntityBuilder()
+                .createStageInstance((GuildImpl) channel.getGuild(), response.getObject());
         request.onSuccess(instance);
     }
 }

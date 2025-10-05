@@ -165,14 +165,13 @@ public class ErrorHandler implements Consumer<Throwable> {
     public ErrorHandler ignore(@Nonnull Class<?> clazz, @Nonnull Class<?>... classes) {
         Checks.notNull(clazz, "Classes");
         Checks.noneNull(classes, "Classes");
-        return ignore(
-                it -> {
-                    if (clazz.isInstance(it)) return true;
-                    for (Class<?> e : classes) {
-                        if (e.isInstance(it)) return true;
-                    }
-                    return false;
-                });
+        return ignore(it -> {
+            if (clazz.isInstance(it)) return true;
+            for (Class<?> e : classes) {
+                if (e.isInstance(it)) return true;
+            }
+            return false;
+        });
     }
 
     /**
@@ -371,9 +370,8 @@ public class ErrorHandler implements Consumer<Throwable> {
         Checks.notNull(handler, "Handler");
         List<Class<?>> classes = new ArrayList<>(clazz);
         Predicate<? super Throwable> check =
-                (it) ->
-                        classes.stream().anyMatch(c -> c.isInstance(it))
-                                && (condition == null || condition.test(it));
+                (it) -> classes.stream().anyMatch(c -> c.isInstance(it))
+                        && (condition == null || condition.test(it));
         return handle(check, handler);
     }
 

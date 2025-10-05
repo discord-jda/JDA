@@ -60,9 +60,8 @@ public class CommandInteractionPayloadImpl extends InteractionImpl
         this.commandId = commandData.getUnsignedLong("id");
         this.name = commandData.getString("name");
         this.type = Command.Type.fromId(commandData.getInt("type", 1));
-        this.isGuildCommand =
-                !commandData.isNull(
-                        "guild_id"); // guild_id is always either null or the owner guild (same as
+        this.isGuildCommand = !commandData.isNull(
+                "guild_id"); // guild_id is always either null or the owner guild (same as
         // interaction guild_id)
 
         DataArray options = commandData.optArray("options").orElseGet(DataArray::empty);
@@ -77,9 +76,8 @@ public class CommandInteractionPayloadImpl extends InteractionImpl
                     option = options.getObject(0);
                 case SUB_COMMAND:
                     subcommand = option.getString("name");
-                    options =
-                            option.optArray("options")
-                                    .orElseGet(DataArray::empty); // Flatten options
+                    options = option.optArray("options")
+                            .orElseGet(DataArray::empty); // Flatten options
                     break;
             }
         }
@@ -97,110 +95,61 @@ public class CommandInteractionPayloadImpl extends InteractionImpl
     private void parseResolved(JDAImpl jda, DataObject resolveJson) {
         EntityBuilder entityBuilder = jda.getEntityBuilder();
 
-        resolveJson
-                .optObject("users")
-                .ifPresent(
-                        users ->
-                                users.keys()
-                                        .forEach(
-                                                userId -> {
-                                                    DataObject userJson = users.getObject(userId);
-                                                    UserImpl userArg =
-                                                            entityBuilder.createUser(userJson);
-                                                    resolved.put(userArg.getIdLong(), userArg);
-                                                }));
+        resolveJson.optObject("users").ifPresent(users -> users.keys().forEach(userId -> {
+            DataObject userJson = users.getObject(userId);
+            UserImpl userArg = entityBuilder.createUser(userJson);
+            resolved.put(userArg.getIdLong(), userArg);
+        }));
 
         resolveJson
                 .optObject("attachments")
-                .ifPresent(
-                        attachments ->
-                                attachments
-                                        .keys()
-                                        .forEach(
-                                                id -> {
-                                                    DataObject json = attachments.getObject(id);
-                                                    Message.Attachment file =
-                                                            entityBuilder.createMessageAttachment(
-                                                                    json);
-                                                    resolved.put(file.getIdLong(), file);
-                                                }));
+                .ifPresent(attachments -> attachments.keys().forEach(id -> {
+                    DataObject json = attachments.getObject(id);
+                    Message.Attachment file = entityBuilder.createMessageAttachment(json);
+                    resolved.put(file.getIdLong(), file);
+                }));
 
         if (this.guild != null) {
-            resolveJson
-                    .optObject("members")
-                    .ifPresent(
-                            members -> {
-                                DataObject users = resolveJson.getObject("users");
-                                members.keys()
-                                        .forEach(
-                                                memberId -> {
-                                                    DataObject memberJson =
-                                                            members.getObject(memberId);
-                                                    memberJson.put(
-                                                            "user",
-                                                            users.getObject(
-                                                                    memberId)); // Add user json as
-                                                    // well for parsing
-                                                    Member optionMember =
-                                                            interactionEntityBuilder.createMember(
-                                                                    guild, memberJson);
-                                                    if (member instanceof MemberImpl)
-                                                        entityBuilder.updateMemberCache(
-                                                                (MemberImpl) optionMember);
-                                                    resolved.put(
-                                                            optionMember.getIdLong(),
-                                                            optionMember); // This basically
-                                                    // upgrades user to
-                                                    // member
-                                                });
-                            });
-            resolveJson
-                    .optObject("roles")
-                    .ifPresent(
-                            roles -> {
-                                roles.keys().stream()
-                                        .map(
-                                                roleId -> {
-                                                    if (!guild.isDetached())
-                                                        return guild.getRoleById(roleId);
-                                                    return interactionEntityBuilder.createRole(
-                                                            guild, roles.getObject(roleId));
-                                                })
-                                        .filter(Objects::nonNull)
-                                        .forEach(role -> resolved.put(role.getIdLong(), role));
-                            });
-            resolveJson
-                    .optObject("channels")
-                    .ifPresent(
-                            channels ->
-                                    channels.keys()
-                                            .forEach(
-                                                    id -> {
-                                                        ISnowflake channelObj =
-                                                                jda.getGuildChannelById(id);
-                                                        DataObject channelJson =
-                                                                channels.getObject(id);
-                                                        if (channelObj != null)
-                                                            resolved.put(
-                                                                    channelObj.getIdLong(),
-                                                                    channelObj);
-                                                        else if (ChannelType.fromId(
-                                                                        channelJson.getInt("type"))
-                                                                .isThread())
-                                                            resolved.put(
-                                                                    Long.parseUnsignedLong(id),
-                                                                    interactionEntityBuilder
-                                                                            .createThreadChannel(
-                                                                                    guild,
-                                                                                    channelJson));
-                                                        else
-                                                            resolved.put(
-                                                                    Long.parseUnsignedLong(id),
-                                                                    interactionEntityBuilder
-                                                                            .createGuildChannel(
-                                                                                    guild,
-                                                                                    channelJson));
-                                                    }));
+            resolveJson.optObject("members").ifPresent(members -> {
+                DataObject users = resolveJson.getObject("users");
+                members.keys().forEach(memberId -> {
+                    DataObject memberJson = members.getObject(memberId);
+                    memberJson.put("user", users.getObject(memberId)); // Add user json as
+                    // well for parsing
+                    Member optionMember = interactionEntityBuilder.createMember(guild, memberJson);
+                    if (member instanceof MemberImpl)
+                        entityBuilder.updateMemberCache((MemberImpl) optionMember);
+                    resolved.put(optionMember.getIdLong(), optionMember); // This basically
+                    // upgrades user to
+                    // member
+                });
+            });
+            resolveJson.optObject("roles").ifPresent(roles -> {
+                roles.keys().stream()
+                        .map(roleId -> {
+                            if (!guild.isDetached()) return guild.getRoleById(roleId);
+                            return interactionEntityBuilder.createRole(
+                                    guild, roles.getObject(roleId));
+                        })
+                        .filter(Objects::nonNull)
+                        .forEach(role -> resolved.put(role.getIdLong(), role));
+            });
+            resolveJson.optObject("channels").ifPresent(channels -> channels.keys()
+                    .forEach(id -> {
+                        ISnowflake channelObj = jda.getGuildChannelById(id);
+                        DataObject channelJson = channels.getObject(id);
+                        if (channelObj != null) resolved.put(channelObj.getIdLong(), channelObj);
+                        else if (ChannelType.fromId(channelJson.getInt("type")).isThread())
+                            resolved.put(
+                                    Long.parseUnsignedLong(id),
+                                    interactionEntityBuilder.createThreadChannel(
+                                            guild, channelJson));
+                        else
+                            resolved.put(
+                                    Long.parseUnsignedLong(id),
+                                    interactionEntityBuilder.createGuildChannel(
+                                            guild, channelJson));
+                    }));
         }
     }
 

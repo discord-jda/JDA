@@ -28,17 +28,15 @@ import org.junit.jupiter.api.Test;
 public class DataArrayTest extends AbstractSnapshotTest {
     @Test
     void testUnexpectedNullException() {
-        DataArray data =
-                DataArray.empty()
-                        .add(1)
-                        .add(DataObject.empty().put("test", "test value"))
-                        .add(DataArray.empty().add("test value"))
-                        .add(null);
+        DataArray data = DataArray.empty()
+                .add(1)
+                .add(DataObject.empty().put("test", "test value"))
+                .add(DataArray.empty().add("test value"))
+                .add(null);
 
         assertThatExceptionOfType(DataArrayParsingException.class)
                 .isThrownBy(() -> data.getInt(3))
-                .satisfies(
-                        exception ->
-                                snapshotHandler.compareWithSnapshot(exception.toString(), null));
+                .satisfies(exception ->
+                        snapshotHandler.compareWithSnapshot(exception.toString(), null));
     }
 }

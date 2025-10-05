@@ -41,62 +41,46 @@ public class LocalizationTest {
 
     @BeforeAll
     static void setup() {
-        LocalizationFunction localizationFunction =
-                ResourceBundleLocalizationFunction.fromBundles("MyCommands", DiscordLocale.FRENCH)
-                        .build();
+        LocalizationFunction localizationFunction = ResourceBundleLocalizationFunction.fromBundles(
+                        "MyCommands", DiscordLocale.FRENCH)
+                .build();
 
-        slashCommandData =
-                Commands.slash("ban", "Bans someone")
-                        .addSubcommandGroups(
-                                new SubcommandGroupData("user", "Bans a member")
-                                        .addSubcommands(
-                                                new SubcommandData(
-                                                                "perm", "Bans a user permanently")
-                                                        .addOptions(
-                                                                new OptionData(
-                                                                        OptionType.STRING,
-                                                                        "user",
-                                                                        "The user to ban"),
-                                                                new OptionData(
-                                                                                OptionType.INTEGER,
-                                                                                "del_days",
-                                                                                "The amount of days"
-                                                                                    + " to delete"
-                                                                                    + " messages")
-                                                                        .addChoices(
-                                                                                new Command.Choice(
-                                                                                        "1 Day",
-                                                                                        "1"),
-                                                                                new Command.Choice(
-                                                                                        "7 Days",
-                                                                                        "7"),
-                                                                                new Command.Choice(
-                                                                                        "14 Days",
-                                                                                        "14"))),
-                                                new SubcommandData(
-                                                                "temp", "Bans a user temporarily")
-                                                        .addOptions(
-                                                                new OptionData(
-                                                                        OptionType.STRING,
-                                                                        "user",
-                                                                        "The user to ban"),
-                                                                new OptionData(
-                                                                                OptionType.INTEGER,
-                                                                                "del_days",
-                                                                                "The amount of days"
-                                                                                    + " to delete"
-                                                                                    + " messages")
-                                                                        .addChoices(
-                                                                                new Command.Choice(
-                                                                                        "1 Day",
-                                                                                        "1"),
-                                                                                new Command.Choice(
-                                                                                        "7 Days",
-                                                                                        "7"),
-                                                                                new Command.Choice(
-                                                                                        "14 Days",
-                                                                                        "14")))))
-                        .setLocalizationFunction(localizationFunction);
+        slashCommandData = Commands.slash("ban", "Bans someone")
+                .addSubcommandGroups(new SubcommandGroupData("user", "Bans a member")
+                        .addSubcommands(
+                                new SubcommandData("perm", "Bans a user permanently")
+                                        .addOptions(
+                                                new OptionData(
+                                                        OptionType.STRING,
+                                                        "user",
+                                                        "The user to ban"),
+                                                new OptionData(
+                                                                OptionType.INTEGER,
+                                                                "del_days",
+                                                                "The amount of days" + " to delete"
+                                                                        + " messages")
+                                                        .addChoices(
+                                                                new Command.Choice("1 Day", "1"),
+                                                                new Command.Choice("7 Days", "7"),
+                                                                new Command.Choice(
+                                                                        "14 Days", "14"))),
+                                new SubcommandData("temp", "Bans a user temporarily")
+                                        .addOptions(
+                                                new OptionData(
+                                                        OptionType.STRING,
+                                                        "user",
+                                                        "The user to ban"),
+                                                new OptionData(
+                                                                OptionType.INTEGER,
+                                                                "del_days",
+                                                                "The amount of days" + " to delete"
+                                                                        + " messages")
+                                                        .addChoices(
+                                                                new Command.Choice("1 Day", "1"),
+                                                                new Command.Choice("7 Days", "7"),
+                                                                new Command.Choice(
+                                                                        "14 Days", "14")))))
+                .setLocalizationFunction(localizationFunction);
 
         data = slashCommandData.toData();
     }
@@ -207,16 +191,14 @@ public class LocalizationTest {
     }
 
     private static DataObject getOption(DataObject root, String name) {
-        Stream<DataObject> options =
-                root.getArray("options").stream(DataArray::getObject)
-                        .filter(option -> option.getString("name").equals(name));
+        Stream<DataObject> options = root.getArray("options").stream(DataArray::getObject)
+                .filter(option -> option.getString("name").equals(name));
         return assertExactlyOne(options);
     }
 
     private static DataObject getChoice(DataObject root, String name) {
-        Stream<DataObject> choices =
-                root.getArray("choices").stream(DataArray::getObject)
-                        .filter(choice -> choice.getString("name").equals(name));
+        Stream<DataObject> choices = root.getArray("choices").stream(DataArray::getObject)
+                .filter(choice -> choice.getString("name").equals(name));
         return assertExactlyOne(choices);
     }
 

@@ -63,12 +63,9 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer {
     @Nonnull
     @Unmodifiable
     default List<ThreadChannel> getThreadChannels() {
-        return getGuild()
-                .getThreadChannelCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(thread -> thread.getParentChannel() == this)
-                                        .collect(Helpers.toUnmodifiableList()));
+        return getGuild().getThreadChannelCache().applyStream(stream -> stream.filter(
+                        thread -> thread.getParentChannel() == this)
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     /**

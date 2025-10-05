@@ -213,17 +213,16 @@ public class ReceivedMessage implements Message {
                     && isFromGuild()
                     && !isBotOwnedWebhookMessage) {
                 didContentIntentWarning = true;
-                JDAImpl.LOG.warn(
-                        "Attempting to access message content without"
-                            + " GatewayIntent.MESSAGE_CONTENT.\n"
-                            + "Discord now requires to explicitly enable access to this using the"
-                            + " MESSAGE_CONTENT intent.\n"
-                            + "Useful resources to learn more:\n"
-                            + "\t- https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ\n"
-                            + "\t- https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/\n"
-                            + "\t- https://jda.wiki/using-jda/troubleshooting/#cannot-get-message-content-attempting-to-access-message-content-without-gatewayintent\n"
-                            + "Or suppress this warning if this is intentional with"
-                            + " Message.suppressContentIntentWarning()");
+                JDAImpl.LOG.warn("Attempting to access message content without"
+                        + " GatewayIntent.MESSAGE_CONTENT.\n"
+                        + "Discord now requires to explicitly enable access to this using the"
+                        + " MESSAGE_CONTENT intent.\n"
+                        + "Useful resources to learn more:\n"
+                        + "\t- https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ\n"
+                        + "\t- https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/\n"
+                        + "\t- https://jda.wiki/using-jda/troubleshooting/#cannot-get-message-content-attempting-to-access-message-content-without-gatewayintent\n"
+                        + "Or suppress this warning if this is intentional with"
+                        + " Message.suppressContentIntentWarning()");
             }
         }
     }
@@ -283,11 +282,9 @@ public class ReceivedMessage implements Message {
         Checks.notNull(emoji, "Emoji");
 
         if (hasChannel()) {
-            boolean missingReaction =
-                    reactions.stream()
-                            .map(MessageReaction::getEmoji)
-                            .noneMatch(
-                                    r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
+            boolean missingReaction = reactions.stream()
+                    .map(MessageReaction::getEmoji)
+                    .noneMatch(r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
 
             if (missingReaction && emoji instanceof RichCustomEmoji) {
                 Checks.check(
@@ -374,9 +371,8 @@ public class ReceivedMessage implements Message {
             return ((GuildMessageChannel) channel).removeReactionById(getIdLong(), emoji, user);
 
         String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
-        Route.CompiledRoute route =
-                Route.Messages.REMOVE_REACTION.compile(
-                        getChannelId(), getId(), encoded, user.getId());
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
+                getChannelId(), getId(), encoded, user.getId());
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -489,18 +485,16 @@ public class ReceivedMessage implements Message {
                 if (hasGuild() && getGuild().isMember(user))
                     name = getGuild().getMember(user).getEffectiveName();
                 else name = user.getName();
-                tmp =
-                        tmp.replaceAll(
-                                "<@!?" + Pattern.quote(user.getId()) + '>',
-                                '@' + Matcher.quoteReplacement(name));
+                tmp = tmp.replaceAll(
+                        "<@!?" + Pattern.quote(user.getId()) + '>',
+                        '@' + Matcher.quoteReplacement(name));
             }
             for (CustomEmoji emoji : mentions.getCustomEmojis()) {
                 tmp = tmp.replace(emoji.getAsMention(), ":" + emoji.getName() + ":");
             }
             for (GuildChannel mentionedChannel : mentions.getChannels()) {
-                tmp =
-                        tmp.replace(
-                                mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
+                tmp = tmp.replace(
+                        mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
             }
             for (Role mentionedRole : mentions.getRoles()) {
                 tmp = tmp.replace(mentionedRole.getAsMention(), '@' + mentionedRole.getName());
@@ -800,9 +794,8 @@ public class ReceivedMessage implements Message {
             throw new IllegalStateException("Cannot delete messages of type " + type);
 
         if (isWebhookRequest()) {
-            Route.CompiledRoute route =
-                    Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(
-                            webhook.getId(), webhook.getToken(), getId());
+            Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(
+                    webhook.getId(), webhook.getToken(), getId());
             route = withThreadContext(route);
 
             final AuditableRestActionImpl<Void> action =
@@ -839,9 +832,8 @@ public class ReceivedMessage implements Message {
 
         Route.CompiledRoute route;
         if (isWebhookRequest()) {
-            route =
-                    Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(
-                            webhook.getId(), webhook.getToken(), getId());
+            route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(
+                    webhook.getId(), webhook.getToken(), getId());
             route = withThreadContext(route);
         } else {
             if (isEphemeral())
@@ -885,12 +877,8 @@ public class ReceivedMessage implements Message {
         if (!hasChannel()) {
             Route.CompiledRoute route =
                     Route.Messages.CROSSPOST_MESSAGE.compile(getChannelId(), getId());
-            return new RestActionImpl<>(
-                    api,
-                    route,
-                    (response, request) ->
-                            api.getEntityBuilder()
-                                    .createMessageFromWebhook(response.getObject(), guild));
+            return new RestActionImpl<>(api, route, (response, request) -> api.getEntityBuilder()
+                    .createMessageFromWebhook(response.getObject(), guild));
         }
 
         MessageChannelUnion channel = getChannel();
@@ -1007,11 +995,10 @@ public class ReceivedMessage implements Message {
 
     @Nonnull
     private MessageEditActionImpl editRequest() {
-        final MessageEditActionImpl messageEditAction =
-                hasChannel()
-                        ? new MessageEditActionImpl(getChannel(), getId())
-                        : new MessageEditActionImpl(
-                                getJDA(), hasGuild() ? getGuild() : null, getChannelId(), getId());
+        final MessageEditActionImpl messageEditAction = hasChannel()
+                ? new MessageEditActionImpl(getChannel(), getId())
+                : new MessageEditActionImpl(
+                        getJDA(), hasGuild() ? getGuild() : null, getChannelId(), getId());
 
         messageEditAction.setErrorMapper(getUnknownWebhookErrorMapper());
         return messageEditAction;

@@ -98,11 +98,10 @@ public class SeparatorImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        final DataObject json =
-                DataObject.empty()
-                        .put("type", getType().getKey())
-                        .put("divider", isDivider)
-                        .put("spacing", spacing.getKey());
+        final DataObject json = DataObject.empty()
+                .put("type", getType().getKey())
+                .put("divider", isDivider)
+                .put("spacing", spacing.getKey());
         if (uniqueId >= 0) json.put("id", uniqueId);
         return json;
     }

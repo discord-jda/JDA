@@ -94,17 +94,14 @@ public class CommandImpl implements Command {
                 parseOptions(json, SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
         this.version = json.getUnsignedLong("version", id);
 
-        this.defaultMemberPermissions =
-                json.isNull("default_member_permissions")
-                        ? DefaultMemberPermissions.ENABLED
-                        : DefaultMemberPermissions.enabledFor(
-                                json.getLong("default_member_permissions"));
+        this.defaultMemberPermissions = json.isNull("default_member_permissions")
+                ? DefaultMemberPermissions.ENABLED
+                : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
         if (!json.isNull("contexts")) {
-            this.contexts =
-                    json.getArray("contexts").stream(DataArray::getString)
-                            .map(InteractionContextType::fromKey)
-                            .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class));
+            this.contexts = json.getArray("contexts").stream(DataArray::getString)
+                    .map(InteractionContextType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class));
         }
         // If the command is in a guild, it can only be guild, otherwise up to the dm_permission
         // flag
@@ -112,18 +109,16 @@ public class CommandImpl implements Command {
             this.contexts = Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
         else {
             final boolean dmPermission = json.getBoolean("dm_permission", true);
-            this.contexts =
-                    dmPermission
-                            ? Helpers.unmodifiableEnumSet(
-                                    InteractionContextType.GUILD, InteractionContextType.BOT_DM)
-                            : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
+            this.contexts = dmPermission
+                    ? Helpers.unmodifiableEnumSet(
+                            InteractionContextType.GUILD, InteractionContextType.BOT_DM)
+                    : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
         }
 
         if (!json.isNull("integration_types")) {
-            this.integrationTypes =
-                    json.getArray("integration_types").stream(DataArray::getString)
-                            .map(IntegrationType::fromKey)
-                            .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class));
+            this.integrationTypes = json.getArray("integration_types").stream(DataArray::getString)
+                    .map(IntegrationType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class));
         } else this.integrationTypes = Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL);
 
         this.nsfw = json.getBoolean("nsfw");
@@ -132,12 +127,10 @@ public class CommandImpl implements Command {
     public static <T> List<T> parseOptions(
             DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform) {
         return json.optArray("options")
-                .map(
-                        arr ->
-                                arr.stream(DataArray::getObject)
-                                        .filter(test)
-                                        .map(transform)
-                                        .collect(Collectors.toList()))
+                .map(arr -> arr.stream(DataArray::getObject)
+                        .filter(test)
+                        .map(transform)
+                        .collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
     }
 
@@ -148,9 +141,8 @@ public class CommandImpl implements Command {
         Route.CompiledRoute route;
         String appId = getJDA().getSelfUser().getApplicationId();
         if (guildId != 0L)
-            route =
-                    Route.Interactions.DELETE_GUILD_COMMAND.compile(
-                            appId, Long.toUnsignedString(guildId), getId());
+            route = Route.Interactions.DELETE_GUILD_COMMAND.compile(
+                    appId, Long.toUnsignedString(guildId), getId());
         else route = Route.Interactions.DELETE_COMMAND.compile(appId, getId());
         return new RestActionImpl<>(api, route);
     }

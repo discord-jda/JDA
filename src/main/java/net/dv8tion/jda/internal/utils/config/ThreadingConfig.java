@@ -87,9 +87,8 @@ public class ThreadingConfig {
             this.rateLimitScheduler = newScheduler(2, identifier, "RateLimit-Scheduler", false);
         if (this.gatewayPool == null) this.gatewayPool = newScheduler(1, identifier, "Gateway");
         if (this.rateLimitElastic == null) {
-            this.rateLimitElastic =
-                    Executors.newCachedThreadPool(
-                            new CountingThreadFactory(identifier, "RateLimit-Elastic", false));
+            this.rateLimitElastic = Executors.newCachedThreadPool(
+                    new CountingThreadFactory(identifier, "RateLimit-Elastic", false));
             if (this.rateLimitElastic instanceof ThreadPoolExecutor) {
                 ((ThreadPoolExecutor) this.rateLimitElastic).setCorePoolSize(1);
                 ((ThreadPoolExecutor) this.rateLimitElastic).setKeepAliveTime(2, TimeUnit.MINUTES);
@@ -150,9 +149,8 @@ public class ThreadingConfig {
             synchronized (audioLock) {
                 pool = audioPool;
                 if (pool == null)
-                    pool =
-                            audioPool =
-                                    ThreadingConfig.newScheduler(1, identifier, "AudioLifeCycle");
+                    pool = audioPool =
+                            ThreadingConfig.newScheduler(1, identifier, "AudioLifeCycle");
             }
         }
         return pool;

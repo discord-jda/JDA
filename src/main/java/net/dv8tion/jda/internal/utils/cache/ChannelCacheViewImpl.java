@@ -137,10 +137,9 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
         MiscUtil.tryLock(readLock);
         try {
-            Iterator<? extends T> directIterator =
-                    caches.values().stream()
-                            .flatMap(map -> map.valueCollection().stream())
-                            .iterator();
+            Iterator<? extends T> directIterator = caches.values().stream()
+                    .flatMap(map -> map.valueCollection().stream())
+                    .iterator();
             return new LockIterator<>(directIterator, readLock);
         } catch (Throwable t) {
             readLock.unlock();
@@ -166,12 +165,9 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     @Override
     public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase) {
         Checks.notEmpty(name, "Name");
-        return applyStream(
-                stream ->
-                        stream.filter(
-                                        (channel) ->
-                                                Helpers.equals(channel.getName(), name, ignoreCase))
-                                .collect(Helpers.toUnmodifiableList()));
+        return applyStream(stream -> stream.filter(
+                        (channel) -> Helpers.equals(channel.getName(), name, ignoreCase))
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull
@@ -221,15 +217,11 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             Checks.notNull(type, "Type");
             this.type = type;
 
-            this.filteredMaps =
-                    caches.entrySet().stream()
-                            .filter(
-                                    entry ->
-                                            entry.getKey() != null
-                                                    && type.isAssignableFrom(
-                                                            entry.getKey().getInterface()))
-                            .map(entry -> (TLongObjectMap<C>) entry.getValue())
-                            .collect(Collectors.toList());
+            this.filteredMaps = caches.entrySet().stream()
+                    .filter(entry -> entry.getKey() != null
+                            && type.isAssignableFrom(entry.getKey().getInterface()))
+                    .map(entry -> (TLongObjectMap<C>) entry.getValue())
+                    .collect(Collectors.toList());
         }
 
         protected void removeIf(Predicate<? super C> filter) {
@@ -245,11 +237,8 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         @Nonnull
         @Override
         public Set<C> asSet() {
-            return applyStream(
-                    stream ->
-                            stream.collect(
-                                    Collectors.collectingAndThen(
-                                            Collectors.toSet(), Collections::unmodifiableSet)));
+            return applyStream(stream -> stream.collect(Collectors.collectingAndThen(
+                    Collectors.toSet(), Collections::unmodifiableSet)));
         }
 
         @Nonnull
@@ -259,10 +248,9 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
             MiscUtil.tryLock(readLock);
             try {
-                Iterator<? extends C> directIterator =
-                        filteredMaps.stream()
-                                .flatMap(map -> map.valueCollection().stream())
-                                .iterator();
+                Iterator<? extends C> directIterator = filteredMaps.stream()
+                        .flatMap(map -> map.valueCollection().stream())
+                        .iterator();
                 return new LockIterator<>(directIterator, readLock);
             } catch (Throwable t) {
                 readLock.unlock();
@@ -288,13 +276,9 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         @Override
         public List<C> getElementsByName(@Nonnull String name, boolean ignoreCase) {
             Checks.notEmpty(name, "Name");
-            return applyStream(
-                    stream ->
-                            stream.filter(
-                                            channel ->
-                                                    Helpers.equals(
-                                                            channel.getName(), name, ignoreCase))
-                                    .collect(Helpers.toUnmodifiableList()));
+            return applyStream(stream -> stream.filter(
+                            channel -> Helpers.equals(channel.getName(), name, ignoreCase))
+                    .collect(Helpers.toUnmodifiableList()));
         }
 
         @Nonnull

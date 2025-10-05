@@ -71,16 +71,13 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
         final DetachedGuildImpl detachedGuild = new DetachedGuildImpl(api, guildId);
         detachedGuild.setLocale(DiscordLocale.from(locale));
-        detachedGuild.setFeatures(
-                featuresArray
-                        .map(
-                                array ->
-                                        array.stream(DataArray::getString)
-                                                .map(String::intern) // Prevent allocating the
-                                                // same feature string
-                                                // over and over
-                                                .collect(Collectors.toSet()))
-                        .orElse(Collections.emptySet()));
+        detachedGuild.setFeatures(featuresArray
+                .map(array -> array.stream(DataArray::getString)
+                        .map(String::intern) // Prevent allocating the
+                        // same feature string
+                        // over and over
+                        .collect(Collectors.toSet()))
+                .orElse(Collections.emptySet()));
 
         return detachedGuild;
     }
@@ -224,9 +221,8 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
         // Absent outside interactions and in message mentions
         if (memberJson.hasKey("permissions"))
-            member.setInteractionPermissions(
-                    new MemberInteractionPermissions(
-                            interactionChannelId, memberJson.getLong("permissions")));
+            member.setInteractionPermissions(new MemberInteractionPermissions(
+                    interactionChannelId, memberJson.getLong("permissions")));
 
         return member;
     }
@@ -242,11 +238,10 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
     public PrivateChannel createPrivateChannel(DataObject json, User interactionUser) {
         final long channelId = json.getUnsignedLong("id");
-        final DataObject recipientObj =
-                json.optArray("recipients")
-                        .filter(d -> !d.isEmpty())
-                        .map(d -> d.getObject(0))
-                        .orElse(null);
+        final DataObject recipientObj = json.optArray("recipients")
+                .filter(d -> !d.isEmpty())
+                .map(d -> d.getObject(0))
+                .orElse(null);
 
         final PrivateChannelMixin<?> channel;
         if (recipientObj != null) {
@@ -256,15 +251,14 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
             else {
                 // This still needs to be detached, as there is no open channel between the bot and
                 // the friend,
-                channel =
-                        new DetachedPrivateChannelImpl(
-                                getJDA(), channelId, entityBuilder.createUser(recipientObj));
+                channel = new DetachedPrivateChannelImpl(
+                        getJDA(), channelId, entityBuilder.createUser(recipientObj));
             }
         } else {
             LOG.warn(
                     "Private channel has no recipient and will fallback to a detached"
-                        + " PrivateChannel with no user, please report to the devs, channel JSON:"
-                        + " {}",
+                            + " PrivateChannel with no user, please report to the devs, channel JSON:"
+                            + " {}",
                     json.toPrettyString());
             channel = new DetachedPrivateChannelImpl(getJDA(), channelId, null);
         }

@@ -478,12 +478,11 @@ public class FileUpload implements Closeable, AttachedFile {
     @Nonnull
     @Override
     public DataObject toAttachmentData(int index) {
-        DataObject attachment =
-                DataObject.empty()
-                        .put("id", index)
-                        .put("description", description == null ? "" : description)
-                        .put("content_type", mediaType.toString())
-                        .put("filename", name);
+        DataObject attachment = DataObject.empty()
+                .put("id", index)
+                .put("description", description == null ? "" : description)
+                .put("content_type", mediaType.toString())
+                .put("filename", name);
         if (waveform != null && durationSeconds > 0) {
             attachment.put(
                     "waveform",

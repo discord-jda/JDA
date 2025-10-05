@@ -51,24 +51,21 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>>
 
         Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
         JDAImpl jda = (JDAImpl) getJDA();
-        return new RestActionImpl<>(
-                jda,
-                route,
-                (response, request) -> {
-                    DataArray array = response.getArray();
-                    List<Webhook> webhooks = new ArrayList<>(array.length());
-                    EntityBuilder builder = jda.getEntityBuilder();
+        return new RestActionImpl<>(jda, route, (response, request) -> {
+            DataArray array = response.getArray();
+            List<Webhook> webhooks = new ArrayList<>(array.length());
+            EntityBuilder builder = jda.getEntityBuilder();
 
-                    for (int i = 0; i < array.length(); i++) {
-                        try {
-                            webhooks.add(builder.createWebhook(array.getObject(i)));
-                        } catch (UncheckedIOException | NullPointerException e) {
-                            JDAImpl.LOG.error("Error while creating websocket from json", e);
-                        }
-                    }
+            for (int i = 0; i < array.length(); i++) {
+                try {
+                    webhooks.add(builder.createWebhook(array.getObject(i)));
+                } catch (UncheckedIOException | NullPointerException e) {
+                    JDAImpl.LOG.error("Error while creating websocket from json", e);
+                }
+            }
 
-                    return Collections.unmodifiableList(webhooks);
-                });
+            return Collections.unmodifiableList(webhooks);
+        });
     }
 
     @Nonnull

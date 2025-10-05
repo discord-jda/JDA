@@ -30,20 +30,17 @@ public class FutureUtil {
             @Nullable Runnable onCancel) {
         final CompletableFuture<U> cf = new CompletableFuture<>();
 
-        future.thenAccept(t -> cf.complete(applyFunction.apply(t)))
-                .exceptionally(
-                        throwable -> {
-                            cf.completeExceptionally(throwable);
-                            return null;
-                        });
+        future.thenAccept(t -> cf.complete(applyFunction.apply(t))).exceptionally(throwable -> {
+            cf.completeExceptionally(throwable);
+            return null;
+        });
 
-        cf.whenComplete(
-                (u, throwable) -> {
-                    if (cf.isCancelled()) {
-                        future.cancel(true);
-                        if (onCancel != null) onCancel.run();
-                    }
-                });
+        cf.whenComplete((u, throwable) -> {
+            if (cf.isCancelled()) {
+                future.cancel(true);
+                if (onCancel != null) onCancel.run();
+            }
+        });
 
         return cf;
     }

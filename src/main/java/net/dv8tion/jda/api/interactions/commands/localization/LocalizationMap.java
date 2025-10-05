@@ -100,11 +100,10 @@ public class LocalizationMap implements SerializableData {
     public void setTranslations(@Nonnull Map<DiscordLocale, String> map) {
         Checks.notNull(map, "Map");
 
-        map.forEach(
-                (discordLocale, localizedString) -> {
-                    checkConsumer.accept(localizedString);
-                    putTranslation(discordLocale, localizedString);
-                });
+        map.forEach((discordLocale, localizedString) -> {
+            checkConsumer.accept(localizedString);
+            putTranslation(discordLocale, localizedString);
+        });
     }
 
     /**

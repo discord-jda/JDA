@@ -82,11 +82,10 @@ class ComponentDeserializerTest extends AbstractComponentTest {
             case MODAL:
                 return ModalComponentTree.class;
             default:
-                return fail(
-                        "Please update this test with the new component tree type ("
-                                + type.name()
-                                + "), then update ComponentDeserializer#deserializeAsTree if"
-                                + " necessary");
+                return fail("Please update this test with the new component tree type ("
+                        + type.name()
+                        + "), then update ComponentDeserializer#deserializeAsTree if"
+                        + " necessary");
         }
     }
 }

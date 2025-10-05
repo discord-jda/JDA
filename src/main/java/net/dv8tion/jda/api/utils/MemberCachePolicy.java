@@ -91,20 +91,17 @@ public interface MemberCachePolicy {
      * <p>Not recommended without {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent enabled.
      * The api will only send the guild member leave events when this intent is enabled. Without those events the members will stay in cache indefinitely.
      */
-    MemberCachePolicy ONLINE =
-            (member) ->
-                    member.getOnlineStatus() != OnlineStatus.OFFLINE
-                            && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
+    MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE
+            && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
 
     /**
      * Cache members who are connected to a voice channel.
      * <br>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GatewayIntent.GUILD_VOICE_STATES} and {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE} to be enabled.
      */
-    MemberCachePolicy VOICE =
-            (member) -> {
-                GuildVoiceState voiceState = member.getVoiceState();
-                return voiceState != null && voiceState.getChannel() != null;
-            };
+    MemberCachePolicy VOICE = (member) -> {
+        GuildVoiceState voiceState = member.getVoiceState();
+        return voiceState != null && voiceState.getChannel() != null;
+    };
 
     /**
      * Cache members who are boosting the guild. This checks {@link Member#isBoosting()}
@@ -120,7 +117,8 @@ public interface MemberCachePolicy {
      *
      * @incubating Discord is still trying to figure this out
      */
-    @Incubating MemberCachePolicy PENDING = Member::isPending;
+    @Incubating
+    MemberCachePolicy PENDING = Member::isPending;
 
     /**
      * The default policy to use with {@link net.dv8tion.jda.api.JDABuilder#createDefault(String)}.

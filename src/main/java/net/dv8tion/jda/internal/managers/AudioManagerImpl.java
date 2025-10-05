@@ -90,10 +90,8 @@ public class AudioManagerImpl implements AudioManager {
     }
 
     private void checkChannel(AudioChannel channel, Member self) {
-        EnumSet<Permission> perms =
-                Permission.getPermissions(
-                        PermissionUtil.getEffectivePermission(
-                                channel.getPermissionContainer(), self));
+        EnumSet<Permission> perms = Permission.getPermissions(
+                PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), self));
         if (!perms.contains(Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
 
@@ -120,23 +118,19 @@ public class AudioManagerImpl implements AudioManager {
 
     @Override
     public void closeAudioConnection() {
-        getJDA().getAudioLifeCyclePool()
-                .execute(
-                        () -> {
-                            getJDA().setContext();
-                            closeAudioConnection(ConnectionStatus.NOT_CONNECTED);
-                        });
+        getJDA().getAudioLifeCyclePool().execute(() -> {
+            getJDA().setContext();
+            closeAudioConnection(ConnectionStatus.NOT_CONNECTED);
+        });
     }
 
     public void closeAudioConnection(ConnectionStatus reason) {
-        MiscUtil.locked(
-                CONNECTION_LOCK,
-                () -> {
-                    if (audioConnection != null) this.audioConnection.close(reason);
-                    else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
-                        getJDA().getDirectAudioController().disconnect(getGuild());
-                    this.audioConnection = null;
-                });
+        MiscUtil.locked(CONNECTION_LOCK, () -> {
+            if (audioConnection != null) this.audioConnection.close(reason);
+            else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
+                getJDA().getDirectAudioController().disconnect(getGuild());
+            this.audioConnection = null;
+        });
     }
 
     @Override

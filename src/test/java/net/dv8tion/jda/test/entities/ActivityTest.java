@@ -86,9 +86,8 @@ public class ActivityTest {
                 PresenceImpl.getGameJson(Activity.customStatus("custom status test")));
         assertEquals(
                 formatActivity(4, "Custom Status", "custom status test"),
-                PresenceImpl.getGameJson(
-                        Activity.customStatus("custom status test")
-                                .withState("should be ignored")));
+                PresenceImpl.getGameJson(Activity.customStatus("custom status test")
+                        .withState("should be ignored")));
 
         assertEquals(
                 formatActivity(5, "competing test", null),
@@ -101,11 +100,9 @@ public class ActivityTest {
 
     @Test
     void activityBasicDeserializationTest() {
-        Activity activity =
-                EntityBuilder.createActivity(
-                        DataObject.empty()
-                                .put("type", 0) // playing
-                                .put("name", "Games"));
+        Activity activity = EntityBuilder.createActivity(DataObject.empty()
+                .put("type", 0) // playing
+                .put("name", "Games"));
 
         assertThat(activity.isRich()).isFalse();
         assertThat(activity.getType()).isEqualTo(Activity.ActivityType.PLAYING);
@@ -116,12 +113,10 @@ public class ActivityTest {
 
     @Test
     void activityRichDeserializationTest() {
-        Activity activity =
-                EntityBuilder.createActivity(
-                        DataObject.empty()
-                                .put("type", 0) // playing
-                                .put("name", "Games")
-                                .put("state", "Active"));
+        Activity activity = EntityBuilder.createActivity(DataObject.empty()
+                .put("type", 0) // playing
+                .put("name", "Games")
+                .put("state", "Active"));
 
         assertThat(activity.isRich()).isFalse();
         assertThat(activity.getType()).isEqualTo(Activity.ActivityType.PLAYING);
@@ -130,35 +125,28 @@ public class ActivityTest {
         assertThat(activity.getState()).isEqualTo("Active");
         assertThat(activity.getUrl()).isNull();
 
-        activity =
-                EntityBuilder.createActivity(
+        activity = EntityBuilder.createActivity(DataObject.empty()
+                .put("type", 0) // playing
+                .put("name", "The Best Game Ever")
+                .put("state", "In a Group")
+                .put("details", "Playing 3v3 Control Point")
+                .put(
+                        "party",
                         DataObject.empty()
-                                .put("type", 0) // playing
-                                .put("name", "The Best Game Ever")
-                                .put("state", "In a Group")
-                                .put("details", "Playing 3v3 Control Point")
-                                .put(
-                                        "party",
-                                        DataObject.empty()
-                                                .put("id", "1234")
-                                                .put(
-                                                        "size",
-                                                        DataArray.fromCollection(
-                                                                Arrays.asList(3, 6))))
-                                .put(
-                                        "timestamps",
-                                        DataObject.empty()
-                                                .put("start", 1507665886)
-                                                .put("end", 1507666000))
-                                .put(
-                                        "assets",
-                                        DataObject.empty()
-                                                .put("large_image", "canary-large")
-                                                .put("small_text", "Small icon")
-                                                .put("small_image", "ptb-large"))
-                                .put("instance", true)
-                                .put("session_id", "4b2fdce12f639de8bfa7e3591b71a0d679d7c93f")
-                                .put("sync_id", "e7eb30d2ee025ed05c71ea495f770b76454ee4e0"));
+                                .put("id", "1234")
+                                .put("size", DataArray.fromCollection(Arrays.asList(3, 6))))
+                .put(
+                        "timestamps",
+                        DataObject.empty().put("start", 1507665886).put("end", 1507666000))
+                .put(
+                        "assets",
+                        DataObject.empty()
+                                .put("large_image", "canary-large")
+                                .put("small_text", "Small icon")
+                                .put("small_image", "ptb-large"))
+                .put("instance", true)
+                .put("session_id", "4b2fdce12f639de8bfa7e3591b71a0d679d7c93f")
+                .put("sync_id", "e7eb30d2ee025ed05c71ea495f770b76454ee4e0"));
 
         RichPresence rich = activity.asRichPresence();
         assertThat(rich).isNotNull();

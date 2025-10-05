@@ -31,7 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 public class CommandEditActionTest extends IntegrationTest {
-    @Mock private SelfUser selfUser;
+    @Mock
+    private SelfUser selfUser;
 
     @BeforeEach
     void setupMocks() {
@@ -45,13 +46,11 @@ public class CommandEditActionTest extends IntegrationTest {
         String id = randomSnowflake();
         CommandEditActionImpl action = new CommandEditActionImpl(jda, Command.Type.SLASH, id);
 
-        assertThatNoException()
-                .isThrownBy(
-                        () -> {
-                            action.setName("updated-name");
-                            action.setDescription("Updated description");
-                            action.setNSFW(true);
-                        });
+        assertThatNoException().isThrownBy(() -> {
+            action.setName("updated-name");
+            action.setDescription("Updated description");
+            action.setNSFW(true);
+        });
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> action.setName("updated name with space"));

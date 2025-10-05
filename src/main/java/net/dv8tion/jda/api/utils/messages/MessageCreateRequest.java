@@ -354,10 +354,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     default R applyMessage(@Nonnull Message message) {
         Checks.notNull(message, "Message");
         Checks.check(!message.getType().isSystem(), "Cannot copy a system message");
-        List<MessageEmbed> embeds =
-                message.getEmbeds().stream()
-                        .filter(e -> e.getType() == EmbedType.RICH)
-                        .collect(Collectors.toList());
+        List<MessageEmbed> embeds = message.getEmbeds().stream()
+                .filter(e -> e.getType() == EmbedType.RICH)
+                .collect(Collectors.toList());
         return setContent(message.getContentRaw())
                 .setEmbeds(embeds)
                 .setComponents(message.getComponents())

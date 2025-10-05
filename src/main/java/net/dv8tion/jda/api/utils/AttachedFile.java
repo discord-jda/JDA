@@ -289,10 +289,9 @@ public interface AttachedFile extends Closeable {
     @Nonnull
     static MultipartBody.Builder createMultipartBody(
             @Nonnull Collection<? extends AttachedFile> files, @Nullable DataObject payloadJson) {
-        RequestBody body =
-                payloadJson != null
-                        ? RequestBody.create(payloadJson.toJson(), Requester.MEDIA_TYPE_JSON)
-                        : null;
+        RequestBody body = payloadJson != null
+                ? RequestBody.create(payloadJson.toJson(), Requester.MEDIA_TYPE_JSON)
+                : null;
         return createMultipartBody(files, body);
     }
 

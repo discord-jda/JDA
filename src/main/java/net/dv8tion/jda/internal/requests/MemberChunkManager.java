@@ -54,16 +54,12 @@ public class MemberChunkManager {
     }
 
     private void init() {
-        MiscUtil.locked(
-                lock,
-                () -> {
-                    if (timeoutHandle == null)
-                        timeoutHandle =
-                                client.getJDA()
-                                        .getGatewayPool()
-                                        .scheduleAtFixedRate(
-                                                new TimeoutHandler(), 5, 5, TimeUnit.SECONDS);
-                });
+        MiscUtil.locked(lock, () -> {
+            if (timeoutHandle == null)
+                timeoutHandle = client.getJDA()
+                        .getGatewayPool()
+                        .scheduleAtFixedRate(new TimeoutHandler(), 5, 5, TimeUnit.SECONDS);
+        });
     }
 
     public void shutdown() {
@@ -73,12 +69,11 @@ public class MemberChunkManager {
     public ChunkRequest chunkGuild(
             GuildImpl guild, boolean presence, BiConsumer<Boolean, List<Member>> handler) {
         init();
-        DataObject request =
-                DataObject.empty()
-                        .put("guild_id", guild.getId())
-                        .put("presences", presence)
-                        .put("limit", 0)
-                        .put("query", "");
+        DataObject request = DataObject.empty()
+                .put("guild_id", guild.getId())
+                .put("presences", presence)
+                .put("limit", 0)
+                .put("query", "");
 
         ChunkRequest chunkRequest = new ChunkRequest(handler, guild, request);
         makeRequest(chunkRequest);
@@ -88,11 +83,10 @@ public class MemberChunkManager {
     public ChunkRequest chunkGuild(
             GuildImpl guild, String query, int limit, BiConsumer<Boolean, List<Member>> handler) {
         init();
-        DataObject request =
-                DataObject.empty()
-                        .put("guild_id", guild.getId())
-                        .put("limit", Math.min(100, Math.max(1, limit)))
-                        .put("query", query);
+        DataObject request = DataObject.empty()
+                .put("guild_id", guild.getId())
+                .put("limit", Math.min(100, Math.max(1, limit)))
+                .put("query", query);
 
         ChunkRequest chunkRequest = new ChunkRequest(handler, guild, request);
         makeRequest(chunkRequest);
@@ -105,11 +99,10 @@ public class MemberChunkManager {
             long[] userIds,
             BiConsumer<Boolean, List<Member>> handler) {
         init();
-        DataObject request =
-                DataObject.empty()
-                        .put("guild_id", guild.getId())
-                        .put("presences", presence)
-                        .put("user_ids", userIds);
+        DataObject request = DataObject.empty()
+                .put("guild_id", guild.getId())
+                .put("presences", presence)
+                .put("user_ids", userIds);
 
         ChunkRequest chunkRequest = new ChunkRequest(handler, guild, request);
         makeRequest(chunkRequest);
@@ -117,40 +110,34 @@ public class MemberChunkManager {
     }
 
     public boolean handleChunk(long guildId, DataObject response) {
-        return MiscUtil.locked(
-                lock,
-                () -> {
-                    String nonce = response.getString("nonce", null);
-                    if (nonce == null || nonce.isEmpty()) return false;
-                    long key = Long.parseLong(nonce);
-                    ChunkRequest request = requests.get(key);
-                    if (request == null) return false;
+        return MiscUtil.locked(lock, () -> {
+            String nonce = response.getString("nonce", null);
+            if (nonce == null || nonce.isEmpty()) return false;
+            long key = Long.parseLong(nonce);
+            ChunkRequest request = requests.get(key);
+            if (request == null) return false;
 
-                    boolean lastChunk = isLastChunk(response);
-                    request.handleChunk(lastChunk, response);
-                    if (lastChunk || request.isCancelled()) {
-                        requests.remove(key);
-                        request.complete(null);
-                    }
-                    return true;
-                });
+            boolean lastChunk = isLastChunk(response);
+            request.handleChunk(lastChunk, response);
+            if (lastChunk || request.isCancelled()) {
+                requests.remove(key);
+                request.complete(null);
+            }
+            return true;
+        });
     }
 
     public void cancelRequest(ChunkRequest request) {
-        MiscUtil.locked(
-                lock,
-                () -> {
-                    requests.remove(request.nonce);
-                });
+        MiscUtil.locked(lock, () -> {
+            requests.remove(request.nonce);
+        });
     }
 
     private void makeRequest(ChunkRequest request) {
-        MiscUtil.locked(
-                lock,
-                () -> {
-                    requests.put(request.nonce, request);
-                    sendChunkRequest(request.getRequest());
-                });
+        MiscUtil.locked(lock, () -> {
+            requests.put(request.nonce, request);
+            sendChunkRequest(request.getRequest());
+        });
     }
 
     private void sendChunkRequest(DataObject request) {
@@ -202,14 +189,10 @@ public class MemberChunkManager {
         private List<Member> toMembers(DataObject chunk) {
             EntityBuilder builder = guild.getJDA().getEntityBuilder();
             DataArray memberArray = chunk.getArray("members");
-            TLongObjectMap<DataObject> presences =
-                    chunk.optArray("presences")
-                            .map(
-                                    it ->
-                                            Helpers.convertToMap(
-                                                    o -> o.getObject("user").getUnsignedLong("id"),
-                                                    it))
-                            .orElseGet(TLongObjectHashMap::new);
+            TLongObjectMap<DataObject> presences = chunk.optArray("presences")
+                    .map(it -> Helpers.convertToMap(
+                            o -> o.getObject("user").getUnsignedLong("id"), it))
+                    .orElseGet(TLongObjectHashMap::new);
             List<Member> collect = new ArrayList<>(memberArray.length());
             for (int i = 0; i < memberArray.length(); i++) {
                 DataObject json = memberArray.getObject(i);
@@ -242,17 +225,13 @@ public class MemberChunkManager {
     private class TimeoutHandler implements Runnable {
         @Override
         public void run() {
-            MiscUtil.locked(
-                    lock,
-                    () -> {
-                        requests.forEachValue(
-                                request -> {
-                                    if (request.isExpired())
-                                        request.completeExceptionally(new TimeoutException());
-                                    return true;
-                                });
-                        requests.valueCollection().removeIf(ChunkRequest::isDone);
-                    });
+            MiscUtil.locked(lock, () -> {
+                requests.forEachValue(request -> {
+                    if (request.isExpired()) request.completeExceptionally(new TimeoutException());
+                    return true;
+                });
+                requests.valueCollection().removeIf(ChunkRequest::isDone);
+            });
         }
     }
 }

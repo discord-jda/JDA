@@ -376,12 +376,9 @@ public class SubcommandGroupData implements SerializableData {
         String name = json.getString("name");
         String description = json.getString("description");
         SubcommandGroupData group = new SubcommandGroupData(name, description);
-        json.optArray("options")
-                .ifPresent(
-                        arr ->
-                                arr.stream(DataArray::getObject)
-                                        .map(SubcommandData::fromData)
-                                        .forEach(group::addSubcommands));
+        json.optArray("options").ifPresent(arr -> arr.stream(DataArray::getObject)
+                .map(SubcommandData::fromData)
+                .forEach(group::addSubcommands));
         group.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
         group.setDescriptionLocalizations(
                 LocalizationUtils.mapFromProperty(json, "description_localizations"));

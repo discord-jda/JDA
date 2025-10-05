@@ -153,10 +153,9 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager>
         if (shouldUpdate(EXEMPT_CHANNELS))
             body.put(
                     "exempt_channels",
-                    DataArray.fromCollection(
-                            exemptChannels.stream()
-                                    .map(GuildChannel::getId)
-                                    .collect(Collectors.toList())));
+                    DataArray.fromCollection(exemptChannels.stream()
+                            .map(GuildChannel::getId)
+                            .collect(Collectors.toList())));
         if (shouldUpdate(TRIGGER_METADATA)) {
             body.put("trigger_type", triggerConfig.getType().getKey());
             body.put("trigger_metadata", triggerConfig.toData());

@@ -40,15 +40,11 @@ public class ModalImpl implements Modal {
     public ModalImpl(DataObject object) {
         this.id = object.getString("custom_id");
         this.title = object.getString("title");
-        this.components =
-                object.optArray("components")
-                        .map(
-                                arr ->
-                                        DEFAULT_COMPONENT_DESERIALIZER
-                                                .deserializeAs(
-                                                        ModalTopLevelComponentUnion.class, arr)
-                                                .collect(Helpers.toUnmodifiableList()))
-                        .orElseGet(Collections::emptyList);
+        this.components = object.optArray("components")
+                .map(arr -> DEFAULT_COMPONENT_DESERIALIZER
+                        .deserializeAs(ModalTopLevelComponentUnion.class, arr)
+                        .collect(Helpers.toUnmodifiableList()))
+                .orElseGet(Collections::emptyList);
     }
 
     public ModalImpl(String id, String title, List<ModalTopLevelComponentUnion> components) {
@@ -82,16 +78,18 @@ public class ModalImpl implements Modal {
 
         object.put(
                 "components",
-                DataArray.fromCollection(
-                        components.stream()
-                                .map(AbstractComponentImpl.class::cast)
-                                .map(AbstractComponentImpl::toData)
-                                .collect(Collectors.toList())));
+                DataArray.fromCollection(components.stream()
+                        .map(AbstractComponentImpl.class::cast)
+                        .map(AbstractComponentImpl::toData)
+                        .collect(Collectors.toList())));
         return object;
     }
 
     @Override
     public String toString() {
-        return new EntityString(this).addMetadata("id", id).addMetadata("title", title).toString();
+        return new EntityString(this)
+                .addMetadata("id", id)
+                .addMetadata("title", title)
+                .toString();
     }
 }

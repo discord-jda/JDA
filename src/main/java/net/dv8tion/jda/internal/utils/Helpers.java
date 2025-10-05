@@ -249,11 +249,10 @@ public final class Helpers {
     public static <I, O> Stream<O> mapGracefully(
             Stream<I> stream, Function<I, O> mapper, String errorDescription) {
         return stream.map(tryMap(mapper))
-                .peek(
-                        result -> {
-                            if (result.isFailure())
-                                JDAImpl.LOG.error(errorDescription, result.getFailure());
-                        })
+                .peek(result -> {
+                    if (result.isFailure())
+                        JDAImpl.LOG.error(errorDescription, result.getFailure());
+                })
                 .filter(Result::isSuccess)
                 .map(Result::get);
     }
@@ -320,11 +319,10 @@ public final class Helpers {
         long days = duration.toDays();
         long hours = duration.toHours() % 24;
         long minutes = duration.toMinutes() % 60;
-        long seconds =
-                duration.getSeconds()
-                        - TimeUnit.DAYS.toSeconds(days)
-                        - TimeUnit.HOURS.toSeconds(hours)
-                        - TimeUnit.MINUTES.toSeconds(minutes);
+        long seconds = duration.getSeconds()
+                - TimeUnit.DAYS.toSeconds(days)
+                - TimeUnit.HOURS.toSeconds(hours)
+                - TimeUnit.MINUTES.toSeconds(minutes);
 
         StringJoiner joiner = new StringJoiner(" ");
         if (days > 0) joiner.add(days + " days");

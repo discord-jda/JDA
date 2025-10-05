@@ -72,11 +72,9 @@ public interface Category
         return getGuild()
                 .getChannelCache()
                 .ofType(ICategorizableChannel.class)
-                .applyStream(
-                        stream ->
-                                stream.filter(it -> this.equals(it.getParentCategory()))
-                                        .sorted()
-                                        .collect(Helpers.toUnmodifiableList()));
+                .applyStream(stream -> stream.filter(it -> this.equals(it.getParentCategory()))
+                        .sorted()
+                        .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -91,13 +89,10 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<TextChannel> getTextChannels() {
-        return getGuild()
-                .getTextChannelCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(channel -> equals(channel.getParentCategory()))
-                                        .sorted()
-                                        .collect(Helpers.toUnmodifiableList()));
+        return getGuild().getTextChannelCache().applyStream(stream -> stream.filter(
+                        channel -> equals(channel.getParentCategory()))
+                .sorted()
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -112,13 +107,10 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<NewsChannel> getNewsChannels() {
-        return getGuild()
-                .getNewsChannelCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(channel -> equals(channel.getParentCategory()))
-                                        .sorted()
-                                        .collect(Helpers.toUnmodifiableList()));
+        return getGuild().getNewsChannelCache().applyStream(stream -> stream.filter(
+                        channel -> equals(channel.getParentCategory()))
+                .sorted()
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -132,13 +124,10 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<ForumChannel> getForumChannels() {
-        return getGuild()
-                .getForumChannelCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(channel -> equals(channel.getParentCategory()))
-                                        .sorted()
-                                        .collect(Helpers.toUnmodifiableList()));
+        return getGuild().getForumChannelCache().applyStream(stream -> stream.filter(
+                        channel -> equals(channel.getParentCategory()))
+                .sorted()
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -152,13 +141,10 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<MediaChannel> getMediaChannels() {
-        return getGuild()
-                .getMediaChannelCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(channel -> equals(channel.getParentCategory()))
-                                        .sorted()
-                                        .collect(Helpers.toUnmodifiableList()));
+        return getGuild().getMediaChannelCache().applyStream(stream -> stream.filter(
+                        channel -> equals(channel.getParentCategory()))
+                .sorted()
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -173,13 +159,10 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<VoiceChannel> getVoiceChannels() {
-        return getGuild()
-                .getVoiceChannelCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(channel -> equals(channel.getParentCategory()))
-                                        .sorted()
-                                        .collect(Helpers.toUnmodifiableList()));
+        return getGuild().getVoiceChannelCache().applyStream(stream -> stream.filter(
+                        channel -> equals(channel.getParentCategory()))
+                .sorted()
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -194,13 +177,10 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<StageChannel> getStageChannels() {
-        return getGuild()
-                .getStageChannelCache()
-                .applyStream(
-                        stream ->
-                                stream.filter(channel -> equals(channel.getParentCategory()))
-                                        .sorted()
-                                        .collect(Helpers.toUnmodifiableList()));
+        return getGuild().getStageChannelCache().applyStream(stream -> stream.filter(
+                        channel -> equals(channel.getParentCategory()))
+                .sorted()
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     /**

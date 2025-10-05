@@ -89,7 +89,9 @@ public class SnapshotHandler {
         String filePath = getFilePath(suffix, extension);
 
         try (InputStream stream = currentClass.getResourceAsStream(filePath)) {
-            assertThat(stream).as("Loading sample from resource file '%s'", filePath).isNotNull();
+            assertThat(stream)
+                    .as("Loading sample from resource file '%s'", filePath)
+                    .isNotNull();
             assertThat(reader.apply(stream)).isEqualToNormalizingWhitespace(actual);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -113,10 +115,9 @@ public class SnapshotHandler {
         String workingDirectory = System.getProperty("user.dir");
         String path = currentClass.getPackage().getName().replace(".", "/") + "/" + filePath;
 
-        Path fileLocation =
-                Path.get(workingDirectory, true)
-                        .resolve("src/test/resources", true)
-                        .resolve(path, true);
+        Path fileLocation = Path.get(workingDirectory, true)
+                .resolve("src/test/resources", true)
+                .resolve(path, true);
 
         File file = fileLocation.toFile();
         if (!file.exists()) {

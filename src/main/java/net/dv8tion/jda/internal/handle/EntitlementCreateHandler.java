@@ -27,11 +27,8 @@ public class EntitlementCreateHandler extends SocketHandler {
 
     @Override
     protected Long handleInternally(DataObject content) {
-        getJDA().handleEvent(
-                        new EntitlementCreateEvent(
-                                getJDA(),
-                                responseNumber,
-                                getJDA().getEntityBuilder().createEntitlement(content)));
+        getJDA().handleEvent(new EntitlementCreateEvent(
+                getJDA(), responseNumber, getJDA().getEntityBuilder().createEntitlement(content)));
         return null;
     }
 }

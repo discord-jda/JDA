@@ -743,11 +743,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
     private ParsingException valueError(int index, String expectedType) {
         return new DataArrayParsingException(
                 this,
-                "Unable to resolve value at "
-                        + index
-                        + " to type "
-                        + expectedType
-                        + ": "
+                "Unable to resolve value at " + index + " to type " + expectedType + ": "
                         + data.get(index));
     }
 
@@ -773,10 +769,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
         else if (numberMapper != null && value instanceof Number)
             return numberMapper.apply((Number) value);
 
-        throw new ParsingException(
-                Helpers.format(
-                        "Cannot parse value for index %d into type %s: %s instance of %s",
-                        index, type.getSimpleName(), value, value.getClass().getSimpleName()));
+        throw new ParsingException(Helpers.format(
+                "Cannot parse value for index %d into type %s: %s instance of %s",
+                index, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
 
     @Nonnull

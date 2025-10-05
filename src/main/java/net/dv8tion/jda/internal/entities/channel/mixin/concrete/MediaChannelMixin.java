@@ -40,12 +40,11 @@ public interface MediaChannelMixin<T extends MediaChannelMixin<T>>
     @Override
     default ChannelAction<MediaChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
-        ChannelAction<MediaChannel> action =
-                guild.createMediaChannel(getName())
-                        .setNSFW(isNSFW())
-                        .setTopic(getTopic())
-                        .setSlowmode(getSlowmode())
-                        .setAvailableTags(getAvailableTags());
+        ChannelAction<MediaChannel> action = guild.createMediaChannel(getName())
+                .setNSFW(isNSFW())
+                .setTopic(getTopic())
+                .setSlowmode(getSlowmode())
+                .setAvailableTags(getAvailableTags());
         if (getRawSortOrder() != -1)
             action.setDefaultSortOrder(SortOrder.fromKey(getRawSortOrder()));
         if (getDefaultReaction() instanceof UnicodeEmoji)

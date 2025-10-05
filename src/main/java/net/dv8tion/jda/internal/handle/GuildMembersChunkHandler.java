@@ -49,14 +49,10 @@ public class GuildMembersChunkHandler extends SocketHandler {
                     content.getInt("chunk_count"));
             // Chunk handling
             EntityBuilder builder = getJDA().getEntityBuilder();
-            TLongObjectMap<DataObject> presences =
-                    content.optArray("presences")
-                            .map(
-                                    it ->
-                                            Helpers.convertToMap(
-                                                    o -> o.getObject("user").getUnsignedLong("id"),
-                                                    it))
-                            .orElseGet(TLongObjectHashMap::new);
+            TLongObjectMap<DataObject> presences = content.optArray("presences")
+                    .map(it -> Helpers.convertToMap(
+                            o -> o.getObject("user").getUnsignedLong("id"), it))
+                    .orElseGet(TLongObjectHashMap::new);
             for (int i = 0; i < members.length(); i++) {
                 DataObject object = members.getObject(i);
                 long userId = object.getObject("user").getUnsignedLong("id");

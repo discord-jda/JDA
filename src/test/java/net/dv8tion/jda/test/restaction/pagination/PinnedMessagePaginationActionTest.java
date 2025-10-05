@@ -39,8 +39,11 @@ import org.mockito.Mock;
 import java.time.OffsetDateTime;
 
 public class PinnedMessagePaginationActionTest extends IntegrationTest {
-    @Mock private GuildMessageChannel channel;
-    @Mock private GuildImpl guild;
+    @Mock
+    private GuildMessageChannel channel;
+
+    @Mock
+    private GuildImpl guild;
 
     @BeforeEach
     void setupMocks() {
@@ -59,11 +62,10 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest {
                 .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/messages/pins?limit=50")
                 .whenQueueCalled();
 
-        assertThat(
-                        captureListCallback(
-                                PinnedMessage.class,
-                                action,
-                                DataObject.empty().put("items", DataArray.empty())))
+        assertThat(captureListCallback(
+                        PinnedMessage.class,
+                        action,
+                        DataObject.empty().put("items", DataArray.empty())))
                 .isEmpty();
 
         assertThatRequestFrom(action)
@@ -81,19 +83,15 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest {
 
         for (int i = 0; i < 50; i++) {
             timeStamp = timeStamp.plusSeconds(1);
-            items.add(
-                    DataObject.empty()
-                            .put("pinned_at", timeStamp)
-                            .put("message", getTestMessage()));
+            items.add(DataObject.empty()
+                    .put("pinned_at", timeStamp)
+                    .put("message", getTestMessage()));
         }
 
         OffsetDateTime lastTimestamp = timeStamp;
 
-        assertThat(
-                        captureListCallback(
-                                PinnedMessage.class,
-                                action,
-                                DataObject.empty().put("items", items)))
+        assertThat(captureListCallback(
+                        PinnedMessage.class, action, DataObject.empty().put("items", items)))
                 .hasSize(50)
                 .last()
                 .matches(pinned -> pinned.getTimePinned().equals(lastTimestamp));
