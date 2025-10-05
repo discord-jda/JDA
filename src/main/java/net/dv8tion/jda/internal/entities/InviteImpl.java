@@ -84,7 +84,7 @@ public class InviteImpl implements Invite
         Checks.notNull(api, "api");
 
         Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
-        
+
         if (withCounts)
             route = route.withQueryParams("with_counts", "true");
 
@@ -408,13 +408,13 @@ public class InviteImpl implements Invite
         {
             return verificationLevel;
         }
-        
+
         @Override
         public int getOnlineCount()
         {
             return presenceCount;
         }
-        
+
         @Override
         public int getMemberCount()
         {

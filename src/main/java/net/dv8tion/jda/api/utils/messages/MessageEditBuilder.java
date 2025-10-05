@@ -63,15 +63,15 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     /**
      * Factory method to start a builder from an existing instance of {@link MessageEditData}.
      * <br>Equivalent to {@code new MessageEditBuilder().applyData(data)}.
-     * 
+     *
      * @param  data
      *         The message edit data to apply
      *
      * @throws IllegalArgumentException
      *         If null is provided
-     * 
+     *
      * @return A new MessageEditBuilder instance with the applied data
-     * 
+     *
      * @see    #applyData(MessageEditData)
      */
     @Nonnull
@@ -93,8 +93,8 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
      *         If null is provided
      *
      * @return A new MessageEditBuilder instance with the applied data
-     * 
-     * @see    #applyCreateData(MessageCreateData) 
+     *
+     * @see    #applyCreateData(MessageCreateData)
      */
     @Nonnull
     public static MessageEditBuilder fromCreateData(@Nonnull MessageCreateData data)

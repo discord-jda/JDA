@@ -37,7 +37,7 @@ public interface IPermissionHolder extends ISnowflake
 {
     /**
      * The Guild to which this PermissionHolder is related
-     * 
+     *
      * @return A never-null Guild to which this PermissionHolder is linked
      */
     @Nonnull

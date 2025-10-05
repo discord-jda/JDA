@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -252,13 +253,13 @@ public interface Activity
     /**
      * Creates a new Activity instance with the specified name.
      * <br>This will display as {@code Competing in name} in the official client
-     * 
+     *
      * @param  name
      *         The not-null name of the newly created game
-     * 
+     *
      * @throws IllegalArgumentException
      *         If the specified name is null, empty, blank or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters
-     * 
+     *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#COMPETING}
      *
      * @since  4.2.1

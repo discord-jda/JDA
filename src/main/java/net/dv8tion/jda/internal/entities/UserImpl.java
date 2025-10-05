@@ -185,13 +185,13 @@ public class UserImpl extends UserSnowflakeImpl implements User
     {
         return UserFlag.getFlags(flags);
     }
-    
+
     @Override
     public int getFlagsRaw()
     {
         return flags;
     }
-    
+
     @Nullable
     @Override
     public PrimaryGuild getPrimaryGuild()
@@ -263,7 +263,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
         this.flags = flags;
         return this;
     }
-    
+
     public UserImpl setPrimaryGuild(PrimaryGuild primaryGuild)
     {
         this.primaryGuild = primaryGuild;

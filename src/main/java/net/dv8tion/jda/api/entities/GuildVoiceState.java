@@ -31,7 +31,7 @@ import java.time.OffsetDateTime;
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.api.entities.Member Member} in a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
- * 
+ *
  * <p>Voice states are only cached while the member is connected to a channel.
  *
  * @see Member#getVoiceState()

@@ -63,7 +63,7 @@ import java.util.Map;
  *   }
  * }
  * </code></pre>
- * 
+ *
  * Also, since this is a functional interface, the following is also possible
  * <pre><code>
  * LocalizationFunction myfunc = s -&gt; {

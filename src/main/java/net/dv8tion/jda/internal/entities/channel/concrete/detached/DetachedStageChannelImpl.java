@@ -60,7 +60,7 @@ public class DetachedStageChannelImpl extends AbstractStandardGuildChannelImpl<D
     {
         return true;
     }
-    
+
     @Nonnull
     @Override
     public ChannelType getType()

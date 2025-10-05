@@ -310,7 +310,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         this.video = video;
         return this;
     }
-    
+
     public GuildVoiceStateImpl setRequestToSpeak(OffsetDateTime timestamp)
     {
         this.requestToSpeak = timestamp == null ? 0L : timestamp.toInstant().toEpochMilli();

@@ -294,7 +294,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     {
         private final InstallParameters installParameters;
 
-        IntegrationTypeConfigurationImpl(InstallParameters installParameters) 
+        IntegrationTypeConfigurationImpl(InstallParameters installParameters)
         {
             this.installParameters = installParameters;
         }

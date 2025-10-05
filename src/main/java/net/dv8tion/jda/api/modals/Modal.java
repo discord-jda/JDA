@@ -141,7 +141,7 @@ public interface Modal extends SerializableData
     /**
      * Creates a new Modal. You must add at least one component to a modal before building it.
      *
-     * @param  customId 
+     * @param  customId
      *         The custom id for this modal
      * @param  title
      *         The title for this modal
@@ -200,7 +200,7 @@ public interface Modal extends SerializableData
         /**
          * Sets the title for this modal.
          *
-         * @param  title 
+         * @param  title
          *         The title
          *
          * @throws IllegalArgumentException

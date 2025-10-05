@@ -41,7 +41,7 @@ public class GuildUpdateCommunityUpdatesChannelEvent extends GenericGuildUpdateE
 
     /**
      * The previous community updates channel.
-     * 
+     *
      * @return The previous community updates channel
      */
     @Nullable

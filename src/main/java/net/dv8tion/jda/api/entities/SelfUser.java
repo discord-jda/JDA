@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
@@ -69,9 +70,9 @@ public interface SelfUser extends User
     /**
      * Returns the maximum size for files that can be uploaded with this account.
      * <br>Returns {@value net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE} for bots.
-     * 
+     *
      * @return The maximum size for files that can be uploaded with this account
-     * 
+     *
      * @see net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE
      */
     long getAllowedFileSize();

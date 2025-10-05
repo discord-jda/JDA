@@ -29,10 +29,10 @@ import java.util.*;
 
 /**
  * Represents a Discord Application from its bot's point of view.
- * 
+ *
  * @since  3.0
  * @author Aljoscha Grebe
- * 
+ *
  * @see    net.dv8tion.jda.api.JDA#retrieveApplicationInfo()
  */
 public interface ApplicationInfo extends ISnowflake
@@ -47,19 +47,19 @@ public interface ApplicationInfo extends ISnowflake
     int MAX_TAG_LENGTH = 20;
 
     /**
-     * Whether the bot requires code grant to invite or not. 
-     * 
-     * <p>This means that additional OAuth2 steps are required to authorize the application to make a bot join a guild 
-     * like {@code &response_type=code} together with a valid {@code &redirect_uri}. 
+     * Whether the bot requires code grant to invite or not.
+     *
+     * <p>This means that additional OAuth2 steps are required to authorize the application to make a bot join a guild
+     * like {@code &response_type=code} together with a valid {@code &redirect_uri}.
      * <br>For more information look at the <a href="https://discord.com/developers/docs/topics/oauth2">Discord OAuth2 documentation</a>.
-     * 
+     *
      * @return Whether the bot requires code grant
      */
     boolean doesBotRequireCodeGrant();
 
     /**
      * The description of the bot's application.
-     * 
+     *
      * @return The description of the bot's application or an empty {@link String} if no description is defined
      */
     @Nonnull
@@ -84,7 +84,7 @@ public interface ApplicationInfo extends ISnowflake
     /**
      * The icon id of the bot's application.
      * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
-     * 
+     *
      * @return The icon id of the bot's application or null if no icon is defined
      */
     @Nullable
@@ -93,7 +93,7 @@ public interface ApplicationInfo extends ISnowflake
     /**
      * The icon-url of the bot's application.
      * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
-     * 
+     *
      * @return The icon-url of the bot's application or null if no icon is defined
      */
     @Nullable
@@ -157,7 +157,7 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
-     * 
+     *
      * <p>The link is provided in the following format:
      * <br>{@code https://discord.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS}
      * <br>Unnecessary query parameters are stripped.
@@ -165,7 +165,7 @@ public interface ApplicationInfo extends ISnowflake
      * @param  permissions
      *         Possibly empty {@link java.util.Collection Collection} of {@link net.dv8tion.jda.api.Permission Permissions}
      *         that should be requested via invite.
-     * 
+     *
      * @return The link used to invite the bot
      */
     @Nonnull
@@ -176,14 +176,14 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
-     * 
+     *
      * <p>The link is provided in the following format:
      * <br>{@code https://discord.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS}
      * <br>Unnecessary query parameters are stripped.
-     * 
+     *
      * @param  permissions
      *         {@link net.dv8tion.jda.api.Permission Permissions} that should be requested via invite.
-     * 
+     *
      * @return The link used to invite the bot
      */
     @Nonnull
@@ -194,11 +194,11 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
-     * 
+     *
      * <p>The link is provided in the following format:
      * <br>{@code https://discord.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS&guild_id=GUILD_ID}
      * <br>Unnecessary query parameters are stripped.
-     * 
+     *
      * @param  guildId
      *         The id of the pre-selected guild.
      * @param  permissions
@@ -207,7 +207,7 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     * 
+     *
      * @return The link used to invite the bot
      */
     @Nonnull
@@ -236,20 +236,20 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
-     * 
+     *
      * <p>The link is provided in the following format:
      * <br>{@code https://discord.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS&guild_id=GUILD_ID}
      * <br>Unnecessary query parameters are stripped.
-     * 
-     * @param  guildId 
+     *
+     * @param  guildId
      *         The id of the pre-selected guild.
-     * @param  permissions 
+     * @param  permissions
      *         Possibly empty array of {@link net.dv8tion.jda.api.Permission Permissions}
      *         that should be requested via invite.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
-     * 
+     *
      * @return The link used to invite the bot
      */
     @Nonnull
@@ -282,7 +282,7 @@ public interface ApplicationInfo extends ISnowflake
     /**
      * The {@link net.dv8tion.jda.api.JDA JDA} instance of this ApplicationInfo
      * (the one logged into this application's bot account).
-     * 
+     *
      * @return The JDA instance of this ApplicationInfo
      */
     @Nonnull
@@ -291,7 +291,7 @@ public interface ApplicationInfo extends ISnowflake
     /**
      * The name of the bot's application.
      * <br>The application name is <b>not</b> necessarily the same as the bot's name!
-     * 
+     *
      * @return The name of the bot's application.
      */
     @Nonnull
@@ -299,16 +299,16 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * The owner of the bot's application.
-     * 
+     *
      * @return The owner of the bot's application
      */
     @Nonnull
     User getOwner();
 
     /**
-     * Whether the bot is public or not. 
+     * Whether the bot is public or not.
      * Public bots can be added by anyone. When false only the owner can invite the bot to guilds.
-     * 
+     *
      * @return Whether the bot is public
      */
     boolean isBotPublic();

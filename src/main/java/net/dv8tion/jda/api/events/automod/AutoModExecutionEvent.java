@@ -46,14 +46,14 @@ public class AutoModExecutionEvent extends Event implements AutoModExecution
         super(api, responseNumber);
         this.execution = execution;
     }
-    
+
     @Nonnull
     @Override
     public Guild getGuild()
     {
         return execution.getGuild();
     }
-    
+
     @Nullable
     @Override
     public GuildMessageChannelUnion getChannel()

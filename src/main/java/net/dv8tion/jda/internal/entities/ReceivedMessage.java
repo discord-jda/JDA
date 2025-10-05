@@ -262,7 +262,7 @@ public class ReceivedMessage implements Message
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
-        
+
         Checks.notNull(emoji, "Emoji");
 
         if (hasChannel())
@@ -917,7 +917,7 @@ public class ReceivedMessage implements Message
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot crosspost ephemeral messages.");
-        
+
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
 

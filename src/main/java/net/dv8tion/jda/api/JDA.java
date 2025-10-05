@@ -1398,7 +1398,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     SnowflakeCacheView<ScheduledEvent> getScheduledEventCache();
-    
+
     /**
      * An unmodifiable list of all {@link ScheduledEvent ScheduledEvents} of all connected
      * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
@@ -1418,7 +1418,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
     {
         return getScheduledEventCache().asList();
     }
-    
+
     /**
      * This returns the {@link ScheduledEvent} which has the same id as the one provided.
      * <br>If there is no known {@link ScheduledEvent} with an id that matches the provided
@@ -1439,7 +1439,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
     {
         return getScheduledEventCache().getElementById(id);
     }
-    
+
     /**
      * This returns the {@link ScheduledEvent} which has the same id as the one provided.
      * <br>If there is no known {@link ScheduledEvent} with an id that matches the provided
@@ -1457,7 +1457,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
     {
         return getScheduledEventCache().getElementById(id);
     }
-    
+
     /**
      * An unmodifiable list of all {@link ScheduledEvent ScheduledEvents} that have the same name as the one provided.
      * <br>If there are no {@link ScheduledEvent ScheduledEvents} with the provided name, then this returns an empty list.

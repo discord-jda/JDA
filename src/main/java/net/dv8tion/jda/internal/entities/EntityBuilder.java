@@ -457,12 +457,12 @@ public class EntityBuilder extends AbstractEntityBuilder
             return null;
         }
     }
-    
+
     public User.PrimaryGuild createPrimaryGuild(DataObject obj)
     {
         if (obj.isNull("identity_guild_id"))
             return null;
-        
+
         return new User.PrimaryGuild(obj.getUnsignedLong("identity_guild_id"), obj.getBoolean("identity_enabled"), obj.getString("tag", null), obj.getString("badge", null));
     }
 
@@ -492,7 +492,7 @@ public class EntityBuilder extends AbstractEntityBuilder
             User.PrimaryGuild primaryGuild = user.optObject("primary_guild")
                    .map(this::createPrimaryGuild)
                    .orElse(null);
-            
+
             // Initial creation
             userObj.setName(user.getString("username"))
                    .setGlobalName(user.getString("global_name", null))
@@ -577,7 +577,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                         jda, responseNumber,
                         userObj, User.UserFlag.getFlags(oldFlags)));
         }
-        
+
         if (!Objects.equals(oldPrimaryGuild, newPrimaryGuild))
         {
             userObj.setPrimaryGuild(newPrimaryGuild);

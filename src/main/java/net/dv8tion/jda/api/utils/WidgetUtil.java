@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -42,17 +43,17 @@ import java.net.HttpURLConnection;
  * @since  3.0
  * @author John A. Grosh
  */
-public class WidgetUtil 
+public class WidgetUtil
 {
     public static final String WIDGET_PNG = RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.png?style=%s";
     public static final String WIDGET_URL = RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.json";
     public static final String WIDGET_HTML = "<iframe src=\"https://discord.com/widget?id=%s&theme=%s\" width=\"%d\" height=\"%d\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";
-    
+
     /**
      * Gets the banner image for the specified guild of the specified type.
      * <br>This banner will only be available if the guild in question has the
      * Widget enabled.
-     * 
+     *
      * @param  guild
      *         The guild
      * @param  type
@@ -66,13 +67,13 @@ public class WidgetUtil
         Checks.notNull(guild, "Guild");
         return getWidgetBanner(guild.getId(), type);
     }
-    
+
     /**
      * Gets the banner image for the specified guild of the specified type.
      * <br>This banner will only be available if the guild in question has the
      * Widget enabled. Additionally, this method can be used independently of
      * being on the guild in question.
-     * 
+     *
      * @param  guildId
      *         the guild ID
      * @param  type
@@ -87,12 +88,12 @@ public class WidgetUtil
         Checks.notNull(type, "BannerType");
         return String.format(WIDGET_PNG, guildId, type.name().toLowerCase());
     }
-    
+
     /**
      * Gets the pre-made HTML Widget for the specified guild using the specified
      * settings. The widget will only display correctly if the guild in question
      * has the Widget enabled.
-     * 
+     *
      * @param  guild
      *         the guild
      * @param  theme
@@ -110,13 +111,13 @@ public class WidgetUtil
         Checks.notNull(guild, "Guild");
         return getPremadeWidgetHtml(guild.getId(), theme, width, height);
     }
-    
+
     /**
      * Gets the pre-made HTML Widget for the specified guild using the specified
      * settings. The widget will only display correctly if the guild in question
      * has the Widget enabled. Additionally, this method can be used independently
      * of being on the guild in question.
-     * 
+     *
      * @param  guildId
      *         the guild ID
      * @param  theme
@@ -137,7 +138,7 @@ public class WidgetUtil
         Checks.notNegative(height, "Height");
         return Helpers.format(WIDGET_HTML, guildId, theme.name().toLowerCase(), width, height);
     }
-    
+
     /**
      * Makes a GET request to get the information for a Guild's widget. This
      * widget (if available) contains information about the guild, including the
@@ -147,7 +148,7 @@ public class WidgetUtil
      *
      * <p>This Widget can be obtained from any valid guild ID that has
      * it enabled; no accounts need to be on the server to access this information.
-     * 
+     *
      * @param  guildId
      *         The id of the Guild
      *

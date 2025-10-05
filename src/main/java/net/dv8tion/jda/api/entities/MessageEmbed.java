@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -104,8 +105,8 @@ public class MessageEmbed implements SerializableData
 
     /**
      * The maximum amount of total embed fields the embed can hold
-     * 
-     * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean) 
+     *
+     * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean)
      */
     public static final int MAX_FIELD_AMOUNT = 25;
 

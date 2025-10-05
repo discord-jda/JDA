@@ -207,13 +207,7 @@ spotless {
     }
 
     java {
-        ratchetFrom("origin/master")
-
-        googleJavaFormat("1.29.0")
-            .aosp()
-            .reorderImports(true)
-            .reflowLongStrings()
-            .skipJavadocFormatting()
+        licenseHeaderFile("spotless/licence.txt")
 
         target("src/main/**/*.java", "src/test/**/*.java")
 

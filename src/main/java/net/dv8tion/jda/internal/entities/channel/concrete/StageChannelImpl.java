@@ -71,7 +71,7 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     {
         return (GuildImpl) super.getGuild();
     }
-    
+
     @Nonnull
     @Override
     public ChannelType getType()

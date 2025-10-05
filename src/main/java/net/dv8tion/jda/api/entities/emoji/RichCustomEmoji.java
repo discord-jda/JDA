@@ -83,14 +83,14 @@ public interface RichCustomEmoji extends CustomEmoji
      * Whether this emoji is available. When an emoji becomes unavailable, it cannot be used in messages. An emoji becomes
      * unavailable when the {@link net.dv8tion.jda.api.entities.Guild.BoostTier BoostTier} of the guild drops such that
      * the maximum allowed emojis is lower than the total amount of emojis added to the guild.
-     * 
+     *
      * <p>If an emoji is added to the guild when the boost tier allows for more than 50 normal and 50 animated emojis
      * (BoostTier is at least {@link net.dv8tion.jda.api.entities.Guild.BoostTier#TIER_1 TIER_1}) and the emoji is at least
      * the 51st one added, then the emoji becomes unavailable when the BoostTier drops below a level that allows those emojis
      * to be used.
      * <br>emojis that where added as part of a lower BoostTier (i.e. the 51st emoji on BoostTier 2) will remain available,
      * as long as the BoostTier stays above the required level.
-     * 
+     *
      * @return True, if this emoji is available
      */
     boolean isAvailable();

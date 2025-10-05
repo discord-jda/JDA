@@ -41,7 +41,7 @@ public class GuildUpdateRulesChannelEvent extends GenericGuildUpdateEvent<TextCh
 
     /**
      * The previous rules channel.
-     * 
+     *
      * @return The previous rules channel
      */
     @Nullable

@@ -135,7 +135,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     {
         return new MessageCreateBuilder().applyMessage(message);
     }
-    
+
     @Nonnull
     @Override
     public MessageCreateBuilder addContent(@Nonnull String content)

@@ -53,7 +53,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback, 
      * Returns the custom id of the Modal in question
      *
      * @return Custom id
-     * 
+     *
      * @see    Modal.Builder#setId(String)
      */
     @Nonnull

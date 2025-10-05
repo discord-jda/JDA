@@ -270,7 +270,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * for example, you can have an optional text input with the range set to {@code [2 ; 5]},
          * meaning you accept either no input, or, at least 2 characters but at most 5.
          *
-         * @param  required 
+         * @param  required
          *         If this TextInput should be required
          *
          * @return The same builder instance for chaining
@@ -313,7 +313,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          *
          * <p><b>This has to be between 1 and {@value #MAX_VALUE_LENGTH}, or -1 for no maximum length</b>
          *
-         * @param  maxLength 
+         * @param  maxLength
          *         The maximum amount of characters that need to be written, or -1
          *
          * @throws IllegalArgumentException
@@ -337,9 +337,9 @@ public interface TextInput extends ICustomId, LabelChildComponent
         /**
          * Sets the minimum and maximum required length on this TextInput component
          *
-         * @param  min 
+         * @param  min
          *         Minimum length of the text input, or -1 for none
-         * @param  max 
+         * @param  max
          *         Maximum length of the text input, or -1 for none
 
          * @throws IllegalArgumentException
@@ -365,7 +365,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * Sets a pre-populated text for this TextInput field.
          * <br>If this is not null, sending a Modal with this component will pre-populate the TextInput field with the specified String.
          *
-         * @param  value 
+         * @param  value
          *         Pre-Populated text
          *
          * @return The same builder instance for chaining
@@ -387,7 +387,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * Sets a placeholder for this TextInput field.
          * <br>This is a short hint that describes the expected value of the input field.
          *
-         * @param  placeholder 
+         * @param  placeholder
          *         The placeholder
          *
          * @throws IllegalArgumentException
@@ -491,7 +491,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * meaning you accept either no input, or, at least 2 characters but at most 5.
          *
          * @return True if this TextInput is required
-         * 
+         *
          * @see    TextInput#isRequired()
          */
         public boolean isRequired()

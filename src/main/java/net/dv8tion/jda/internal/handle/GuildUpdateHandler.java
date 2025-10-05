@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -267,7 +268,7 @@ public class GuildUpdateHandler extends SocketHandler
         }
         if (!Objects.equals(locale, guild.getLocale()))
         {
-        	DiscordLocale oldLocale = guild.getLocale();
+            DiscordLocale oldLocale = guild.getLocale();
             guild.setLocale(locale);
             getJDA().handleEvent(
                 new GuildUpdateLocaleEvent(

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -65,7 +66,7 @@ import java.time.temporal.TemporalAccessor;
  * </ol>
  *
  * @see    net.dv8tion.jda.api.entities.Guild
- * @see    Guild#createScheduledEvent(String, String, OffsetDateTime, OffsetDateTime) 
+ * @see    Guild#createScheduledEvent(String, String, OffsetDateTime, OffsetDateTime)
  * @see    Guild#createScheduledEvent(String, net.dv8tion.jda.api.entities.channel.middleman.GuildChannel, OffsetDateTime)
  */
 public interface ScheduledEventAction extends FluentAuditableRestAction<ScheduledEvent, ScheduledEventAction>

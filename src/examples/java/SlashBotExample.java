@@ -131,7 +131,7 @@ public class SlashBotExample extends ListenerAdapter
         if (!authorId.equals(event.getUser().getId()))
             return;
         event.deferEdit().queue(); // acknowledge the button was clicked, otherwise the interaction will fail
- 
+
         MessageChannel channel = event.getChannel();
         switch (type)
         {

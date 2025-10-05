@@ -71,7 +71,7 @@ public interface InteractionHook extends WebhookClient<Message>
 {
     /**
      * The interaction attached to this hook.
-     * 
+     *
      * @throws IllegalStateException
      *         If this instance was created through {@link #from(JDA, String)}
      *

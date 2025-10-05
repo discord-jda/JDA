@@ -33,7 +33,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     protected final JDAImpl api;
 
     protected String name;
-    
+
     public AbstractChannelImpl(long id, JDA api)
     {
         this.id = id;

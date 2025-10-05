@@ -33,7 +33,7 @@ public class ThreadMemberImpl implements ThreadMember
 {
     private final JDA api;
     private final ThreadChannelImpl thread;
-    
+
     private Member member;
     private long joinedTimestamp;
 
@@ -50,14 +50,14 @@ public class ThreadMemberImpl implements ThreadMember
     {
         return api;
     }
-    
+
     @Nonnull
     @Override
     public Guild getGuild()
     {
         return thread.getGuild();
     }
-    
+
     @Nonnull
     @Override
     public ThreadChannel getThread()

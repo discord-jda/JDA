@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.utils;
 
 import net.dv8tion.jda.api.Permission;
@@ -38,7 +39,7 @@ public class PermissionUtil
         Arrays.stream(Permission.values())
             .filter(Permission::isChannel)
             .collect(Collectors.toList()));
-    
+
     /**
      * Checks if one given Member can interact with a 2nd given Member - in a permission sense (kick/ban/modify perms).
      * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)

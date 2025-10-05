@@ -42,7 +42,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
 
     /**
      * The previous system channel.
-     * 
+     *
      * @return The previous system channel
      */
     @Nullable

@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 
 /**
  * Indicates that a user removed the reaction on a message
- * 
+ *
  * <p>Can be used to detect when a reaction is removed from a message
  *
  * <p><b>Requirements</b><br>

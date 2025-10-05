@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.Incubating;
@@ -1714,7 +1715,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     @CheckReturnValue
     RestAction<List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount);
-    
+
     /**
      * Gets a list of all {@link ScheduledEvent ScheduledEvents} in this Guild that have the same
      * name as the one provided.
@@ -1741,7 +1742,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
     }
-    
+
     /**
      * Gets a {@link ScheduledEvent} from this guild that has the same id as the
      * one provided. This method is similar to {@link JDA#getScheduledEventById(String)}, but it only
@@ -1766,7 +1767,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     {
         return getScheduledEventCache().getElementById(id);
     }
-    
+
     /**
      * Gets a {@link ScheduledEvent} from this guild that has the same id as the
      * one provided. This method is similar to {@link JDA#getScheduledEventById(long)}, but it only
@@ -1789,7 +1790,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     {
         return getScheduledEventCache().getElementById(id);
     }
-    
+
     /**
      * Gets all {@link ScheduledEvent ScheduledEvents} in this guild.
      * <br>Scheduled events are sorted by their start time, and events that start at the same time

@@ -34,7 +34,7 @@ import java.util.Set;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.requests.RestAction RestAction} has been executed.
- * 
+ *
  * <p>Depending on the request and its result not all values have to be populated.
  */
 public class HttpRequestEvent extends Event

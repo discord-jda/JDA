@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
@@ -23,9 +24,9 @@ import java.util.EnumSet;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of a {@link net.dv8tion.jda.api.entities.User User} changed.
- * 
+ *
  * <p>Can be used to retrieve the User who got their flags changed and their previous flags.
- * 
+ *
  * <p>Identifier: {@code public_flags}
  *
  * <p><b>Requirements</b><br>
@@ -42,7 +43,7 @@ import java.util.EnumSet;
 public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.UserFlag>>
 {
     public static final String IDENTIFIER = "public_flags";
-    
+
     public UserUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull EnumSet<User.UserFlag> oldFlags)
     {
         super(api, responseNumber, user, oldFlags, user.getFlags(), IDENTIFIER);
@@ -50,7 +51,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
 
     /**
      * Gets the old {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of the User as {@link EnumSet}.
-     * 
+     *
      * @return {@link EnumSet} of the old {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
      */
     @Nonnull
@@ -61,7 +62,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
 
     /**
      * Gets the old {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of the user and returns it as bitmask representation.
-     * 
+     *
      * @return The old bitmask representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     public int getOldFlagsRaw()

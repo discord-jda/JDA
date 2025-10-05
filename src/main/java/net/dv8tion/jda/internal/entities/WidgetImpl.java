@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
@@ -89,11 +90,11 @@ public class WidgetImpl implements Widget
             if (!memberJson.isNull("channel_id")) // voice state
             {
                 VoiceChannelImpl channel = channels.get(memberJson.getLong("channel_id"));
-                member.setVoiceState(new VoiceStateImpl(channel, 
-                        memberJson.getBoolean("mute"), 
-                        memberJson.getBoolean("deaf"), 
-                        memberJson.getBoolean("suppress"), 
-                        memberJson.getBoolean("self_mute"), 
+                member.setVoiceState(new VoiceStateImpl(channel,
+                        memberJson.getBoolean("mute"),
+                        memberJson.getBoolean("deaf"),
+                        memberJson.getBoolean("suppress"),
+                        memberJson.getBoolean("self_mute"),
                         memberJson.getBoolean("self_deaf"),
                         member,
                         this));
@@ -358,7 +359,7 @@ public class WidgetImpl implements Widget
         {
             return status;
         }
-        
+
         @Override
         @Nullable
         public Activity getActivity()
@@ -506,7 +507,7 @@ public class WidgetImpl implements Widget
             this.member = member;
             this.widget = widget;
         }
-        
+
         @Override
         @Nullable
         public VoiceChannel getChannel()

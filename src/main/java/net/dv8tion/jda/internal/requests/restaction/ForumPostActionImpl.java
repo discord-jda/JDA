@@ -137,7 +137,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
     }
-    
+
     @Nonnull
     @Override
     public ForumPostAction setSlowmode(int slowmode)

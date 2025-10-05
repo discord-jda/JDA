@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 
@@ -356,7 +357,7 @@ public interface User extends UserSnowflake
      * @return bitmask representation of the user's flags.
      */
     int getFlagsRaw();
-    
+
     /**
      * Returns the {@link PrimaryGuild} of this user.
      *
@@ -636,7 +637,7 @@ public interface User extends UserSnowflake
             return getRaw(flags.toArray(EMPTY_FLAGS));
         }
     }
-    
+
     /**
      * Represents the information about {@link User User}'s primary guild
      */
@@ -646,7 +647,7 @@ public interface User extends UserSnowflake
         private final boolean identityEnabled;
         private final String tag;
         private final String badge;
-        
+
         public PrimaryGuild(long guildId, boolean identityEnabled, String tag, String badge)
         {
             this.guildId = guildId;
@@ -654,13 +655,13 @@ public interface User extends UserSnowflake
             this.tag = tag;
             this.badge = badge;
         }
-        
+
         @Override
         public long getIdLong()
         {
             return guildId;
         }
-        
+
         /**
          * Indicates whether the user is displaying the primary guild's server tag.
          *
@@ -670,7 +671,7 @@ public interface User extends UserSnowflake
         {
             return identityEnabled;
         }
-        
+
         /**
          * The user's server tag
          *
@@ -681,7 +682,7 @@ public interface User extends UserSnowflake
         {
             return tag;
         }
-        
+
         /**
          * The user's server tag badge hash
          *
@@ -692,7 +693,7 @@ public interface User extends UserSnowflake
         {
             return badge;
         }
-        
+
         /**
          * The URL for the user's server tag badge image.
          *
@@ -719,26 +720,26 @@ public interface User extends UserSnowflake
             final String badgeUrl = getBadgeUrl();
             return badgeUrl == null ? null : new ImageProxy(badgeUrl);
         }
-        
+
         @Override
         public boolean equals(Object obj)
         {
             if (obj == this)
                 return true;
-            
+
             if (!(obj instanceof PrimaryGuild))
                 return false;
-            
+
             PrimaryGuild other = (PrimaryGuild) obj;
             return guildId == other.guildId && identityEnabled == other.identityEnabled && Objects.equals(tag, other.tag) && Objects.equals(badge, other.badge);
         }
-        
+
         @Override
         public int hashCode()
         {
             return Objects.hash(guildId, identityEnabled, tag, badge);
         }
-        
+
         @Override
         public String toString()
         {

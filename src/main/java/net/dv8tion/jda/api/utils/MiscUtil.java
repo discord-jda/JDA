@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.utils;
 
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
@@ -48,7 +49,7 @@ public class MiscUtil
      *        The guild id.
      * @param shards
      *        The amount of shards.
-     * 
+     *
      * @return The shard id for the guild.
      */
     public static int getShardForGuild(long guildId, int shards)

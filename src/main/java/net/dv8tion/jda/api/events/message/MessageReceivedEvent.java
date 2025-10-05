@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
 /**
  * Indicates that a Message was received in a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
  * <br>This includes {@link TextChannel TextChannel} and {@link PrivateChannel PrivateChannel}!
- * 
+ *
  * <p>Can be used to detect that a Message is received in either a guild- or private channel. Providing a MessageChannel and Message.
  *
  * <p><b>Requirements</b><br>

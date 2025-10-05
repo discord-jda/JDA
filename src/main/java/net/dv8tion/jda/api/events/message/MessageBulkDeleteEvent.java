@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
@@ -28,7 +29,7 @@ import java.util.List;
 /**
  * Indicates that a bulk deletion is executed in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel GuildMessageChannel}.
  * <br>Set {@link net.dv8tion.jda.api.JDABuilder#setBulkDeleteSplittingEnabled(boolean)} to false in order to enable this event.
- * 
+ *
  * <p>Can be used to detect that a large chunk of Messages is deleted in a GuildMessageChannel. Providing a list of Message IDs and the specific GuildMessageChannel.
  *
  * <p><b>Requirements</b><br>
@@ -72,7 +73,7 @@ public class MessageBulkDeleteEvent extends Event
     {
         return channel.getGuild();
     }
-    
+
     /**
      * List of messages that have been deleted.
      *

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
@@ -532,7 +533,7 @@ public interface Message extends ISnowflake, Formattable
      * If this message is from an application-owned {@link net.dv8tion.jda.api.entities.Webhook Webhook} or
      * is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}, this will return
      * the application's id.
-     * 
+     *
      * @return The application's id or {@code null} if this message was not sent by an application
      */
     @Nullable
@@ -545,7 +546,7 @@ public interface Message extends ISnowflake, Formattable
      * If this message is from an application-owned {@link net.dv8tion.jda.api.entities.Webhook Webhook} or
      * is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}, this will return
      * the application's id.
-     * 
+     *
      * @return The application's id or 0 if this message was not sent by an application
      */
     long getApplicationIdLong();
