@@ -97,7 +97,9 @@ public class ModalMapping {
      */
     @Nonnull
     public String getAsString() {
-        if (type != Component.Type.TEXT_INPUT) typeError("String");
+        if (type != Component.Type.TEXT_INPUT) {
+            typeError("String");
+        }
 
         return value.getString("value");
     }
@@ -126,8 +128,9 @@ public class ModalMapping {
      */
     @Nonnull
     public List<String> getAsStringList() {
-        if (type != Component.Type.STRING_SELECT && !type.isEntitySelectMenu())
+        if (type != Component.Type.STRING_SELECT && !type.isEntitySelectMenu()) {
             typeError("List<String>");
+        }
 
         return value.getArray("values").stream(DataArray::getString)
                 .collect(Helpers.toUnmodifiableList());
@@ -147,7 +150,9 @@ public class ModalMapping {
      */
     @Nonnull
     public List<Long> getAsLongList() {
-        if (!type.isEntitySelectMenu()) typeError("List<Long>");
+        if (!type.isEntitySelectMenu()) {
+            typeError("List<Long>");
+        }
 
         return value.getArray("values").stream(DataArray::getLong)
                 .collect(Helpers.toUnmodifiableList());
@@ -167,7 +172,9 @@ public class ModalMapping {
      */
     @Nonnull
     public Mentions getAsMentions() {
-        if (!type.isEntitySelectMenu()) typeError("Mentions");
+        if (!type.isEntitySelectMenu()) {
+            typeError("Mentions");
+        }
 
         return new SelectMenuMentions(
                 interaction.getJDA(),
@@ -187,8 +194,12 @@ public class ModalMapping {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ModalMapping)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ModalMapping)) {
+            return false;
+        }
         ModalMapping that = (ModalMapping) o;
         return type == that.type
                 && Objects.equals(customId, that.customId)

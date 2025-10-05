@@ -65,16 +65,23 @@ public final class AudioNatives {
      * @return True, if the library could be loaded.
      */
     public static synchronized boolean ensureOpus() {
-        if (initialized) return audioSupported;
+        if (initialized) {
+            return audioSupported;
+        }
         initialized = true;
         try {
-            if (OpusLibrary.isInitialized()) return audioSupported = true;
+            if (OpusLibrary.isInitialized()) {
+                return audioSupported = true;
+            }
             audioSupported = OpusLibrary.loadFromJar();
         } catch (Throwable e) {
             handleException(e);
         } finally {
-            if (audioSupported) LOG.info("Audio System successfully setup!");
-            else LOG.info("Audio System encountered problems while loading, thus, is disabled.");
+            if (audioSupported) {
+                LOG.info("Audio System successfully setup!");
+            } else {
+                LOG.info("Audio System encountered problems while loading, thus, is disabled.");
+            }
         }
         return audioSupported;
     }

@@ -108,7 +108,9 @@ public interface TeamMember {
         @Nonnull
         public static MembershipState fromKey(int key) {
             for (MembershipState state : values()) {
-                if (state.key == key) return state;
+                if (state.key == key) {
+                    return state;
+                }
             }
             return UNKNOWN;
         }
@@ -176,10 +178,14 @@ public interface TeamMember {
         @Nonnull
         public static RoleType fromKey(@Nonnull String key) {
             Checks.notNull(key, "Key");
-            if (key.isEmpty()) return UNKNOWN;
+            if (key.isEmpty()) {
+                return UNKNOWN;
+            }
 
             for (RoleType state : values()) {
-                if (state.key.equals(key)) return state;
+                if (state.key.equals(key)) {
+                    return state;
+                }
             }
             return UNKNOWN;
         }

@@ -61,10 +61,14 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
     @Nonnull
     @Override
     public List<T> asList() {
-        if (isEmpty()) return Collections.emptyList();
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
         try (UnlockHook hook = readLock()) {
             List<T> list = getCachedList();
-            if (list != null) return list;
+            if (list != null) {
+                return list;
+            }
             list = new ArrayList<>(elements.size());
             elements.forEachValue(list::add);
             list.sort(comparator);
@@ -75,10 +79,14 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
     @Nonnull
     @Override
     public NavigableSet<T> asSet() {
-        if (isEmpty()) return Collections.emptyNavigableSet();
+        if (isEmpty()) {
+            return Collections.emptyNavigableSet();
+        }
         try (UnlockHook hook = readLock()) {
             NavigableSet<T> set = (NavigableSet<T>) getCachedSet();
-            if (set != null) return set;
+            if (set != null) {
+                return set;
+            }
             set = new TreeSet<>(comparator);
             elements.forEachValue(set::add);
             return cache(set);

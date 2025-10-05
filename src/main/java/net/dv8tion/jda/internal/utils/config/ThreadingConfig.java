@@ -83,9 +83,12 @@ public class ThreadingConfig {
     }
 
     public void init(@Nonnull Supplier<String> identifier) {
-        if (this.rateLimitScheduler == null)
+        if (this.rateLimitScheduler == null) {
             this.rateLimitScheduler = newScheduler(2, identifier, "RateLimit-Scheduler", false);
-        if (this.gatewayPool == null) this.gatewayPool = newScheduler(1, identifier, "Gateway");
+        }
+        if (this.gatewayPool == null) {
+            this.gatewayPool = newScheduler(1, identifier, "Gateway");
+        }
         if (this.rateLimitElastic == null) {
             this.rateLimitElastic = Executors.newCachedThreadPool(
                     new CountingThreadFactory(identifier, "RateLimit-Elastic", false));
@@ -97,24 +100,48 @@ public class ThreadingConfig {
     }
 
     public void shutdown() {
-        if (shutdownCallbackPool) callbackPool.shutdown();
-        if (shutdownGatewayPool) gatewayPool.shutdown();
-        if (shutdownEventPool && eventPool != null) eventPool.shutdown();
-        if (shutdownAudioPool && audioPool != null) audioPool.shutdown();
+        if (shutdownCallbackPool) {
+            callbackPool.shutdown();
+        }
+        if (shutdownGatewayPool) {
+            gatewayPool.shutdown();
+        }
+        if (shutdownEventPool && eventPool != null) {
+            eventPool.shutdown();
+        }
+        if (shutdownAudioPool && audioPool != null) {
+            audioPool.shutdown();
+        }
     }
 
     public void shutdownRequester() {
-        if (shutdownRateLimitScheduler) rateLimitScheduler.shutdown();
-        if (shutdownRateLimitElastic) rateLimitElastic.shutdown();
+        if (shutdownRateLimitScheduler) {
+            rateLimitScheduler.shutdown();
+        }
+        if (shutdownRateLimitElastic) {
+            rateLimitElastic.shutdown();
+        }
     }
 
     public void shutdownNow() {
-        if (shutdownCallbackPool) callbackPool.shutdownNow();
-        if (shutdownGatewayPool) gatewayPool.shutdownNow();
-        if (shutdownRateLimitScheduler) rateLimitScheduler.shutdownNow();
-        if (shutdownRateLimitElastic) rateLimitElastic.shutdownNow();
-        if (shutdownEventPool && eventPool != null) eventPool.shutdownNow();
-        if (shutdownAudioPool && audioPool != null) audioPool.shutdownNow();
+        if (shutdownCallbackPool) {
+            callbackPool.shutdownNow();
+        }
+        if (shutdownGatewayPool) {
+            gatewayPool.shutdownNow();
+        }
+        if (shutdownRateLimitScheduler) {
+            rateLimitScheduler.shutdownNow();
+        }
+        if (shutdownRateLimitElastic) {
+            rateLimitElastic.shutdownNow();
+        }
+        if (shutdownEventPool && eventPool != null) {
+            eventPool.shutdownNow();
+        }
+        if (shutdownAudioPool && audioPool != null) {
+            audioPool.shutdownNow();
+        }
     }
 
     @Nonnull
@@ -148,9 +175,10 @@ public class ThreadingConfig {
         if (pool == null) {
             synchronized (audioLock) {
                 pool = audioPool;
-                if (pool == null)
+                if (pool == null) {
                     pool = audioPool =
                             ThreadingConfig.newScheduler(1, identifier, "AudioLifeCycle");
+                }
             }
         }
         return pool;

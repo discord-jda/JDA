@@ -903,14 +903,18 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     @CheckReturnValue
     default AuditableRestAction<Void> modifyFlags(@Nonnull Collection<MemberFlag> newFlags) {
         Checks.noneNull(newFlags, "Flags");
-        if (!getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS))
+        if (!getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
             throw new InsufficientPermissionException(getGuild(), Permission.MODERATE_MEMBERS);
+        }
         int flags = getFlagsRaw();
         EnumSet<MemberFlag> updated = Helpers.copyEnumSet(MemberFlag.class, newFlags);
         for (MemberFlag flag : MemberFlag.values()) {
             if (flag.modifiable) {
-                if (updated.contains(flag)) flags |= flag.raw;
-                else flags &= ~flag.raw;
+                if (updated.contains(flag)) {
+                    flags |= flag.raw;
+                } else {
+                    flags &= ~flag.raw;
+                }
             }
         }
 
@@ -981,7 +985,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
         public static EnumSet<MemberFlag> fromRaw(int raw) {
             EnumSet<MemberFlag> flags = EnumSet.noneOf(MemberFlag.class);
             for (MemberFlag flag : values()) {
-                if ((raw & flag.raw) == flag.raw) flags.add(flag);
+                if ((raw & flag.raw) == flag.raw) {
+                    flags.add(flag);
+                }
             }
             return flags;
         }

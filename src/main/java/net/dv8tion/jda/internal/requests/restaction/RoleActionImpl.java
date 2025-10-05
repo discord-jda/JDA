@@ -150,13 +150,27 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
-        if (name != null) object.put("name", name);
-        if (color != null) object.put("color", color & 0xFFFFFF);
-        if (permissions != null) object.put("permissions", permissions);
-        if (hoisted != null) object.put("hoist", hoisted);
-        if (mentionable != null) object.put("mentionable", mentionable);
-        if (icon != null) object.put("icon", icon.getEncoding());
-        if (emoji != null) object.put("unicode_emoji", emoji);
+        if (name != null) {
+            object.put("name", name);
+        }
+        if (color != null) {
+            object.put("color", color & 0xFFFFFF);
+        }
+        if (permissions != null) {
+            object.put("permissions", permissions);
+        }
+        if (hoisted != null) {
+            object.put("hoist", hoisted);
+        }
+        if (mentionable != null) {
+            object.put("mentionable", mentionable);
+        }
+        if (icon != null) {
+            object.put("icon", icon.getEncoding());
+        }
+        if (emoji != null) {
+            object.put("unicode_emoji", emoji);
+        }
 
         return getRequestBody(object);
     }
@@ -168,7 +182,8 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     }
 
     private void checkPermission(Permission permission) {
-        if (!guild.getSelfMember().hasPermission(permission))
+        if (!guild.getSelfMember().hasPermission(permission)) {
             throw new InsufficientPermissionException(guild, permission);
+        }
     }
 }

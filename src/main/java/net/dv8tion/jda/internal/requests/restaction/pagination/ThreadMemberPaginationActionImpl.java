@@ -77,7 +77,9 @@ public class ThreadMemberPaginationActionImpl
         for (int i = 0; i < array.length(); i++) {
             try {
                 DataObject object = array.getObject(i);
-                if (object.isNull("member")) continue;
+                if (object.isNull("member")) {
+                    continue;
+                }
                 ThreadMember threadMember =
                         builder.createThreadMember(channel.getGuild(), channel, object);
                 members.add(threadMember);
@@ -88,7 +90,9 @@ public class ThreadMemberPaginationActionImpl
 
         //        if (order == PaginationOrder.BACKWARD)
         //            Collections.reverse(members);
-        if (useCache) cached.addAll(members);
+        if (useCache) {
+            cached.addAll(members);
+        }
 
         if (!members.isEmpty()) {
             last = members.get(members.size() - 1);

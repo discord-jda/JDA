@@ -63,7 +63,9 @@ public class RoleOrderActionImpl extends OrderActionImpl<Role, RoleOrderAction>
         if (useAscendingOrder) {
             // Add roles to orderList in reverse due to role position ordering being descending
             // Top role starts at roles.size() - 1, bottom is 0.
-            for (int i = roles.size() - 1; i >= 0; i--) this.orderList.add(roles.get(i));
+            for (int i = roles.size() - 1; i >= 0; i--) {
+                this.orderList.add(roles.get(i));
+            }
         } else {
             // If not using discord ordering, we are ascending, so we add from first to last.
             // We add first to last because the roles provided from getRoles() are in ascending
@@ -85,11 +87,13 @@ public class RoleOrderActionImpl extends OrderActionImpl<Role, RoleOrderAction>
         final boolean isOwner = self.isOwner();
 
         if (!isOwner) {
-            if (self.getRoles().isEmpty())
+            if (self.getRoles().isEmpty()) {
                 throw new IllegalStateException(
                         "Cannot move roles above your highest role unless you are the guild owner");
-            if (!self.hasPermission(Permission.MANAGE_ROLES))
+            }
+            if (!self.hasPermission(Permission.MANAGE_ROLES)) {
                 throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
+            }
         }
 
         DataArray array = DataArray.empty();
@@ -97,17 +101,20 @@ public class RoleOrderActionImpl extends OrderActionImpl<Role, RoleOrderAction>
 
         // If not in normal discord order, reverse.
         // Normal order is descending, not ascending.
-        if (ascendingOrder) Collections.reverse(ordering);
+        if (ascendingOrder) {
+            Collections.reverse(ordering);
+        }
 
         for (int i = 0; i < ordering.size(); i++) {
             Role role = ordering.get(i);
             final int initialPos = role.getPosition();
-            if (initialPos != i && !isOwner && !self.canInteract(role))
+            if (initialPos != i && !isOwner && !self.canInteract(role)) {
                 // If the current role was moved, we are not owner and we can't interact with the
                 // role then throw a PermissionException
                 throw new IllegalStateException(
                         "Cannot change order: One of the roles could not be moved due to"
                                 + " hierarchical power!");
+            }
 
             array.add(DataObject.empty()
                     .put("id", role.getId())

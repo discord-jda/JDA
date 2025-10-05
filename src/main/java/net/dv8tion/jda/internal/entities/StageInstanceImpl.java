@@ -59,7 +59,9 @@ public class StageInstanceImpl implements StageInstance {
     @Override
     public StageChannel getChannel() {
         StageChannel real = channel.getJDA().getStageChannelById(channel.getIdLong());
-        if (real != null) channel = real;
+        if (real != null) {
+            channel = real;
+        }
         return channel;
     }
 
@@ -112,12 +114,13 @@ public class StageInstanceImpl implements StageInstance {
                 Permission.VOICE_MUTE_OTHERS,
                 Permission.VOICE_MOVE_OTHERS);
         for (Permission perm : required) {
-            if (!permissions.contains(perm))
+            if (!permissions.contains(perm)) {
                 throw new InsufficientPermissionException(
                         getChannel(),
                         perm,
                         "You must be a stage moderator to manage a stage instance! Missing"
                                 + " Permission: " + perm);
+            }
         }
     }
 }

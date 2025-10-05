@@ -30,9 +30,13 @@ public class ScheduledEventCreateHandler extends SocketHandler {
 
     @Override
     protected Long handleInternally(DataObject content) {
-        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) return null;
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) {
+            return null;
+        }
         long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {

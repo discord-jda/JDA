@@ -67,8 +67,12 @@ public class TeamMemberImpl implements TeamMember {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof TeamMemberImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof TeamMemberImpl)) {
+            return false;
+        }
         TeamMemberImpl member = (TeamMemberImpl) obj;
         return member.teamId == this.teamId && member.user.equals(this.user);
     }

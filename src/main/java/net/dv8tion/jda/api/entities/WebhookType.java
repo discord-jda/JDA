@@ -55,7 +55,9 @@ public enum WebhookType {
     @Nonnull
     public static WebhookType fromKey(int key) {
         for (WebhookType type : values()) {
-            if (type.key == key) return type;
+            if (type.key == key) {
+                return type;
+            }
         }
         return UNKNOWN;
     }

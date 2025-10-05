@@ -68,8 +68,12 @@ public class StickerItemImpl implements StickerItem {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof StickerItemImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof StickerItemImpl)) {
+            return false;
+        }
         StickerItemImpl other = (StickerItemImpl) obj;
         return id == other.id && format == other.format && Objects.equals(name, other.name);
     }

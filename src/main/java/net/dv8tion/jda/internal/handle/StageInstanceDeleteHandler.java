@@ -31,7 +31,9 @@ public class StageInstanceDeleteHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id", 0L);
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
@@ -49,11 +51,14 @@ public class StageInstanceDeleteHandler extends SocketHandler {
 
         long channelId = content.getUnsignedLong("channel_id", 0L);
         StageChannelImpl channel = (StageChannelImpl) guild.getStageChannelById(channelId);
-        if (channel == null) return null;
+        if (channel == null) {
+            return null;
+        }
         StageInstance instance = channel.getStageInstance();
         channel.setStageInstance(null);
-        if (instance != null)
+        if (instance != null) {
             getJDA().handleEvent(new StageInstanceDeleteEvent(getJDA(), responseNumber, instance));
+        }
         return null;
     }
 }

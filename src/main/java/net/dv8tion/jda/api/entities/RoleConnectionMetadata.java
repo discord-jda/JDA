@@ -282,8 +282,12 @@ public class RoleConnectionMetadata implements SerializableData {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof RoleConnectionMetadata)) return false;
-        if (this == obj) return true;
+        if (!(obj instanceof RoleConnectionMetadata)) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
         RoleConnectionMetadata o = (RoleConnectionMetadata) obj;
         return this.type == o.type
                 && this.key.equals(o.key)
@@ -380,7 +384,9 @@ public class RoleConnectionMetadata implements SerializableData {
         @Nonnull
         public static MetadataType fromValue(int value) {
             for (MetadataType type : values()) {
-                if (type.value == value) return type;
+                if (type.value == value) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

@@ -68,8 +68,12 @@ public class VanityInvite {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof VanityInvite)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof VanityInvite)) {
+            return false;
+        }
         VanityInvite other = (VanityInvite) obj;
         return uses == other.uses && code.equals(other.code);
     }

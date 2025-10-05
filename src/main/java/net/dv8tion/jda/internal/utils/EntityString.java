@@ -51,7 +51,9 @@ public class EntityString {
     }
 
     public EntityString addMetadata(@Nullable String key, @Nullable Object value) {
-        if (this.metadata == null) this.metadata = new ArrayList<>();
+        if (this.metadata == null) {
+            this.metadata = new ArrayList<>();
+        }
 
         this.metadata.add(key == null ? String.valueOf(value) : key + "=" + value);
 
@@ -62,19 +64,28 @@ public class EntityString {
     @Override
     public String toString() {
         final String entityName;
-        if (this.entity instanceof String) entityName = (String) this.entity;
-        else if (this.entity instanceof Class<?>)
+        if (this.entity instanceof String) {
+            entityName = (String) this.entity;
+        } else if (this.entity instanceof Class<?>) {
             entityName = getCleanedClassName((Class<?>) this.entity);
-        else entityName = getCleanedClassName(this.entity.getClass());
+        } else {
+            entityName = getCleanedClassName(this.entity.getClass());
+        }
 
         final StringBuilder sb = new StringBuilder(entityName);
-        if (this.type != null) sb.append('[').append(this.type).append(']');
-        if (this.name != null) sb.append(':').append(this.name);
+        if (this.type != null) {
+            sb.append('[').append(this.type).append(']');
+        }
+        if (this.name != null) {
+            sb.append(':').append(this.name);
+        }
 
         final boolean isSnowflake = entity instanceof ISnowflake;
         if (isSnowflake || this.metadata != null) {
             final StringJoiner metadataJoiner = new StringJoiner(", ", "(", ")");
-            if (isSnowflake) metadataJoiner.add("id=" + ((ISnowflake) entity).getId());
+            if (isSnowflake) {
+                metadataJoiner.add("id=" + ((ISnowflake) entity).getId());
+            }
             if (this.metadata != null) {
                 for (Object metadataItem : this.metadata)
                     metadataJoiner.add(metadataItem.toString());

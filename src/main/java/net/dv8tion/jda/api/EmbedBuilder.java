@@ -159,19 +159,24 @@ public class EmbedBuilder {
      */
     @Nonnull
     public MessageEmbed build() {
-        if (isEmpty()) throw new IllegalStateException("Cannot build an empty embed!");
-        if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH)
+        if (isEmpty()) {
+            throw new IllegalStateException("Cannot build an empty embed!");
+        }
+        if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH) {
             throw new IllegalStateException(Helpers.format(
                     "Description is longer than %d! Please limit your input!",
                     MessageEmbed.DESCRIPTION_MAX_LENGTH));
-        if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
+        }
+        if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT) {
             throw new IllegalStateException(Helpers.format(
                     "Cannot build an embed with more than %d characters!",
                     MessageEmbed.EMBED_MAX_LENGTH_BOT));
-        if (fields.size() > MessageEmbed.MAX_FIELD_AMOUNT)
+        }
+        if (fields.size() > MessageEmbed.MAX_FIELD_AMOUNT) {
             throw new IllegalStateException(Helpers.format(
                     "Cannot build an embed with more than %d embed fields set!",
                     MessageEmbed.MAX_FIELD_AMOUNT));
+        }
         final String description =
                 this.description.length() < 1 ? null : this.description.toString();
 
@@ -286,9 +291,15 @@ public class EmbedBuilder {
                     .map(f -> f.getName().length() + f.getValue().length())
                     .reduce(length, Integer::sum);
         }
-        if (title != null) length += title.length();
-        if (author != null) length += author.getName().length();
-        if (footer != null) length += footer.getText().length();
+        if (title != null) {
+            length += title.length();
+        }
+        if (author != null) {
+            length += author.getName().length();
+        }
+        if (footer != null) {
+            length += footer.getText().length();
+        }
         return length;
     }
 
@@ -363,7 +374,9 @@ public class EmbedBuilder {
                     title.length() <= MessageEmbed.TITLE_MAX_LENGTH,
                     "Title cannot be longer than %d characters.",
                     MessageEmbed.TITLE_MAX_LENGTH);
-            if (Helpers.isBlank(url)) url = null;
+            if (Helpers.isBlank(url)) {
+                url = null;
+            }
             urlCheck(url);
 
             this.title = title;
@@ -391,7 +404,9 @@ public class EmbedBuilder {
      */
     @Nonnull
     public EmbedBuilder setUrl(@Nullable String url) {
-        if (Helpers.isBlank(url)) url = null;
+        if (Helpers.isBlank(url)) {
+            url = null;
+        }
         urlCheck(url);
         this.url = url;
 
@@ -427,7 +442,9 @@ public class EmbedBuilder {
     @Nonnull
     public final EmbedBuilder setDescription(@Nullable CharSequence description) {
         this.description.setLength(0);
-        if (description != null && description.length() >= 1) appendDescription(description);
+        if (description != null && description.length() >= 1) {
+            appendDescription(description);
+        }
         return this;
     }
 

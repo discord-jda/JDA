@@ -167,15 +167,23 @@ public class ContainerImpl extends AbstractComponentImpl
                 .put("type", getType().getKey())
                 .put("components", DataArray.fromCollection(getComponents()))
                 .put("spoiler", spoiler);
-        if (uniqueId >= 0) json.put("id", uniqueId);
-        if (accentColor != null) json.put("accent_color", accentColor & 0xFFFFFF);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
+        if (accentColor != null) {
+            json.put("accent_color", accentColor & 0xFFFFFF);
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof ContainerImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ContainerImpl)) {
+            return false;
+        }
         ContainerImpl that = (ContainerImpl) o;
         return uniqueId == that.uniqueId
                 && spoiler == that.spoiler

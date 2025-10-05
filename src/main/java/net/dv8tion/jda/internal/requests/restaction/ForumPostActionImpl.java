@@ -145,12 +145,13 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost>
                 slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0,
                 "Slowmode per user must be between 0 and %d (seconds)!",
                 ISlowmodeChannel.MAX_SLOWMODE);
-        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_THREADS))
+        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_THREADS)) {
             throw new InsufficientPermissionException(
                     channel,
                     Permission.MANAGE_THREADS,
                     "You must have Permission.MANAGE_THREADS on the parent forum channel to set a"
                             + " slowmode!");
+        }
         this.slowmode = slowmode;
         return this;
     }
@@ -166,13 +167,18 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost>
             DataObject json = DataObject.empty();
             json.put("message", message);
             json.put("name", name);
-            if (autoArchiveDuration != null)
+            if (autoArchiveDuration != null) {
                 json.put("auto_archive_duration", autoArchiveDuration.getMinutes());
-            if (slowmode != null) json.put("rate_limit_per_user", slowmode);
-            if (!appliedTags.isEmpty()) json.put("applied_tags", appliedTags.toArray());
-            else if (getChannel().isTagRequired())
+            }
+            if (slowmode != null) {
+                json.put("rate_limit_per_user", slowmode);
+            }
+            if (!appliedTags.isEmpty()) {
+                json.put("applied_tags", appliedTags.toArray());
+            } else if (getChannel().isTagRequired()) {
                 throw new IllegalStateException(
                         "Cannot create posts without a tag in this forum. Apply at least one tag!");
+            }
             return getMultipartBody(message.getAllDistinctFiles(), json);
         }
     }

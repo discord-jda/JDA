@@ -34,11 +34,14 @@ public class VoiceServerUpdateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
         Guild guild = getJDA().getGuildById(guildId);
-        if (guild == null)
+        if (guild == null) {
             throw new IllegalArgumentException(
                     "Attempted to start audio connection with Guild that doesn't exist!");
+        }
 
         getJDA().getDirectAudioController()
                 .update(guild, guild.getSelfMember().getVoiceState().getChannel());
@@ -55,10 +58,11 @@ public class VoiceServerUpdateHandler extends SocketHandler {
         String endpoint = content.getString("endpoint");
         String token = content.getString("token");
         String sessionId = guild.getSelfMember().getVoiceState().getSessionId();
-        if (sessionId == null)
+        if (sessionId == null) {
             throw new IllegalArgumentException(
                     "Attempted to create audio connection without having a session ID. Did"
                             + " VOICE_STATE_UPDATED fail?");
+        }
 
         VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
         if (voiceInterceptor != null) {

@@ -551,7 +551,9 @@ public interface User extends UserSnowflake {
         @Nonnull
         public static UserFlag getFromOffset(int offset) {
             for (UserFlag flag : values()) {
-                if (flag.offset == offset) return flag;
+                if (flag.offset == offset) {
+                    return flag;
+                }
             }
             return UNKNOWN;
         }
@@ -569,10 +571,13 @@ public interface User extends UserSnowflake {
         public static EnumSet<UserFlag> getFlags(int flags) {
             final EnumSet<UserFlag> foundFlags = EnumSet.noneOf(UserFlag.class);
 
-            if (flags == 0) return foundFlags; // empty
-
+            if (flags == 0) {
+                return foundFlags; // empty
+            }
             for (UserFlag flag : values()) {
-                if (flag != UNKNOWN && (flags & flag.raw) == flag.raw) foundFlags.add(flag);
+                if (flag != UNKNOWN && (flags & flag.raw) == flag.raw) {
+                    foundFlags.add(flag);
+                }
             }
 
             return foundFlags;
@@ -595,7 +600,9 @@ public interface User extends UserSnowflake {
 
             int raw = 0;
             for (UserFlag flag : flags) {
-                if (flag != null && flag != UNKNOWN) raw |= flag.raw;
+                if (flag != null && flag != UNKNOWN) {
+                    raw |= flag.raw;
+                }
             }
 
             return raw;
@@ -700,9 +707,13 @@ public interface User extends UserSnowflake {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this) return true;
+            if (obj == this) {
+                return true;
+            }
 
-            if (!(obj instanceof PrimaryGuild)) return false;
+            if (!(obj instanceof PrimaryGuild)) {
+                return false;
+            }
 
             PrimaryGuild other = (PrimaryGuild) obj;
             return guildId == other.guildId

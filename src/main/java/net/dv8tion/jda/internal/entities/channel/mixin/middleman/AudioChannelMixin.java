@@ -34,9 +34,11 @@ public interface AudioChannelMixin<T extends AudioChannelMixin<T>>
     @Override
     default void checkCanAccess() {
         checkAttached();
-        if (!hasPermission(Permission.VIEW_CHANNEL))
+        if (!hasPermission(Permission.VIEW_CHANNEL)) {
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
-        if (!hasPermission(Permission.VOICE_CONNECT))
+        }
+        if (!hasPermission(Permission.VOICE_CONNECT)) {
             throw new MissingAccessException(this, Permission.VOICE_CONNECT);
+        }
     }
 }

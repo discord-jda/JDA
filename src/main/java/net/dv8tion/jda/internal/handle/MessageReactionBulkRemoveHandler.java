@@ -38,7 +38,9 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler {
         Guild guild = null;
         if (!content.isNull("guild_id")) {
             long guildId = content.getUnsignedLong("guild_id");
-            if (api.getGuildSetupController().isLocked(guildId)) return guildId;
+            if (api.getGuildSetupController().isLocked(guildId)) {
+                return guildId;
+            }
 
             guild = getJDA().getGuildById(guildId);
             if (guild == null) {

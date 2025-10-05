@@ -91,7 +91,9 @@ public interface ThreadPoolProvider<T extends ExecutorService> {
          *        The shard total
          */
         public synchronized void init(int shardTotal) {
-            if (pool == null) pool = initializer.apply(shardTotal);
+            if (pool == null) {
+                pool = initializer.apply(shardTotal);
+            }
         }
 
         /**

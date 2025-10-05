@@ -178,8 +178,11 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     @Override
     public R useComponentsV2(boolean use) {
         final int flag = Message.MessageFlag.IS_COMPONENTS_V2.getValue();
-        if (use) this.messageFlags |= flag;
-        else this.messageFlags &= ~flag;
+        if (use) {
+            this.messageFlags |= flag;
+        } else {
+            this.messageFlags &= ~flag;
+        }
         return (R) this;
     }
 
@@ -198,8 +201,11 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     @Override
     public R setSuppressEmbeds(boolean suppress) {
         int flag = Message.MessageFlag.EMBEDS_SUPPRESSED.getValue();
-        if (suppress) this.messageFlags |= flag;
-        else this.messageFlags &= ~flag;
+        if (suppress) {
+            this.messageFlags |= flag;
+        } else {
+            this.messageFlags &= ~flag;
+        }
         return (R) this;
     }
 

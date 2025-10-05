@@ -129,7 +129,9 @@ public enum OptionType {
     @Nonnull
     public static OptionType fromKey(int key) {
         for (OptionType type : values()) {
-            if (type.raw == key) return type;
+            if (type.raw == key) {
+                return type;
+            }
         }
         return UNKNOWN;
     }

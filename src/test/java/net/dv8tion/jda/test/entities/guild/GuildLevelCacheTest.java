@@ -70,16 +70,18 @@ public class GuildLevelCacheTest extends IntegrationTest {
         assertThat(voiceState).isNotNull();
         assertThat(guild.getVoiceStateView().get(member.getIdLong())).isSameAs(voiceState);
 
-        if (voiceState.getChannel() != null)
+        if (voiceState.getChannel() != null) {
             assertThat(guild.getConnectedMembers(channel)).contains(member);
+        }
     }
 
     private void assertThatVoiceStateIsNotCached(GuildImpl guild, MemberImpl member) {
         GuildVoiceStateImpl voiceState = member.getVoiceState();
         assertThat(guild.getVoiceStateView().get(member.getIdLong())).isNull();
 
-        if (voiceState != null && voiceState.getChannel() != null)
+        if (voiceState != null && voiceState.getChannel() != null) {
             assertThat(guild.getConnectedMembers(channel)).isEmpty();
+        }
     }
 
     @Nested

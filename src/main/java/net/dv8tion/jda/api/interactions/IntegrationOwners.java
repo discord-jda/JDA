@@ -61,7 +61,9 @@ public interface IntegrationOwners {
      */
     @Nullable
     default String getAuthorizingUserId() {
-        if (getAuthorizingUserIdLong() == 0) return null;
+        if (getAuthorizingUserIdLong() == 0) {
+            return null;
+        }
         return Long.toUnsignedString(getAuthorizingUserIdLong());
     }
 
@@ -100,7 +102,9 @@ public interface IntegrationOwners {
      */
     @Nullable
     default String getAuthorizingGuildId() {
-        if (getAuthorizingGuildIdLong() == null) return null;
+        if (getAuthorizingGuildIdLong() == null) {
+            return null;
+        }
         return Long.toUnsignedString(getAuthorizingGuildIdLong());
     }
 }

@@ -71,8 +71,12 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof StandardStickerImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof StandardStickerImpl)) {
+            return false;
+        }
         StandardStickerImpl other = (StandardStickerImpl) obj;
         return id == other.id; // Standard stickers shouldn't change, so we can just compare id
     }

@@ -30,7 +30,9 @@ public class EncodingUtil {
     }
 
     public static String encodeCodepointsUTF8(String input) {
-        if (!input.startsWith("U+")) throw new IllegalArgumentException("Invalid format");
+        if (!input.startsWith("U+")) {
+            throw new IllegalArgumentException("Invalid format");
+        }
         String[] codePoints = input.substring(2).split("\\s*U\\+\\s*");
         StringBuilder encoded = new StringBuilder();
         for (String part : codePoints) {
@@ -42,7 +44,9 @@ public class EncodingUtil {
     }
 
     public static String decodeCodepoint(String codepoint) {
-        if (!codepoint.startsWith("U+")) throw new IllegalArgumentException("Invalid format");
+        if (!codepoint.startsWith("U+")) {
+            throw new IllegalArgumentException("Invalid format");
+        }
         return decodeCodepoint(codepoint.substring(2), 16);
     }
 
@@ -63,8 +67,10 @@ public class EncodingUtil {
      * @return Never-null String containing the encoded unicode
      */
     public static String encodeReaction(String unicode) {
-        if (unicode.startsWith("U+") || unicode.startsWith("u+"))
+        if (unicode.startsWith("U+") || unicode.startsWith("u+")) {
             return encodeCodepointsUTF8(unicode);
-        else return encodeUTF8(unicode);
+        } else {
+            return encodeUTF8(unicode);
+        }
     }
 }

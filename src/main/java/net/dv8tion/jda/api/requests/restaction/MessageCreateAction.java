@@ -364,7 +364,9 @@ public interface MessageCreateAction
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction setStickers(@Nullable StickerSnowflake... stickers) {
-        if (stickers != null) Checks.noneNull(stickers, "Sticker");
+        if (stickers != null) {
+            Checks.noneNull(stickers, "Sticker");
+        }
         return setStickers(stickers == null ? null : Arrays.asList(stickers));
     }
 }

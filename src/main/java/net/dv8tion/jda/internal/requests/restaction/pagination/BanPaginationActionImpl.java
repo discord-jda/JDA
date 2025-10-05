@@ -45,8 +45,11 @@ public class BanPaginationActionImpl extends PaginationActionImpl<Guild.Ban, Ban
     @Nonnull
     @Override
     public BanPaginationAction order(@Nonnull PaginationAction.PaginationOrder order) {
-        if (order == PaginationOrder.BACKWARD && lastKey == 0) lastKey = Long.MAX_VALUE;
-        else if (order == PaginationOrder.FORWARD && lastKey == Long.MAX_VALUE) lastKey = 0;
+        if (order == PaginationOrder.BACKWARD && lastKey == 0) {
+            lastKey = Long.MAX_VALUE;
+        } else if (order == PaginationOrder.FORWARD && lastKey == Long.MAX_VALUE) {
+            lastKey = 0;
+        }
         return super.order(order);
     }
 
@@ -81,8 +84,12 @@ public class BanPaginationActionImpl extends PaginationActionImpl<Guild.Ban, Ban
             }
         }
 
-        if (order == PaginationOrder.BACKWARD) Collections.reverse(bans);
-        if (useCache) cached.addAll(bans);
+        if (order == PaginationOrder.BACKWARD) {
+            Collections.reverse(bans);
+        }
+        if (useCache) {
+            cached.addAll(bans);
+        }
 
         if (!bans.isEmpty()) {
             last = bans.get(bans.size() - 1);

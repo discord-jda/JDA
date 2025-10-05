@@ -74,7 +74,9 @@ public class PollVotersPaginationActionImpl
         }
 
         if (!users.isEmpty()) {
-            if (useCache) cached.addAll(users);
+            if (useCache) {
+                cached.addAll(users);
+            }
             last = users.get(users.size() - 1);
             lastKey = last.getIdLong();
         }

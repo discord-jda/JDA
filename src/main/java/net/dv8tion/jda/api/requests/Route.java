@@ -745,10 +745,12 @@ public class Route {
                 String value = params[paramIndex++];
                 if (MAJOR_PARAMETER_NAMES.contains(name)) {
                     if (value.length()
-                            > 30) // probably a long interaction_token, hash it to keep logs clean
+                            > 30) { // probably a long interaction_token, hash it to keep logs clean
                         // (not useful anyway)
                         major.add(name + "=" + Integer.toUnsignedString(value.hashCode()));
-                    else major.add(name + "=" + value);
+                    } else {
+                        major.add(name + "=" + value);
+                    }
                 }
                 compiledRoute.add(EncodingUtil.encodeUTF8(value));
             } else {
@@ -766,7 +768,9 @@ public class Route {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Route)) return false;
+        if (!(o instanceof Route)) {
+            return false;
+        }
 
         Route oRoute = (Route) o;
         return method.equals(oRoute.method) && Arrays.equals(template, oRoute.template);
@@ -879,7 +883,9 @@ public class Route {
          */
         @Nonnull
         public String getCompiledRoute() {
-            if (query == null) return compiledRoute;
+            if (query == null) {
+                return compiledRoute;
+            }
             // Append query to url
             return compiledRoute + '?' + String.join("&", query);
         }
@@ -911,7 +917,9 @@ public class Route {
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof CompiledRoute)) return false;
+            if (!(o instanceof CompiledRoute)) {
+                return false;
+            }
 
             CompiledRoute oCompiled = (CompiledRoute) o;
 

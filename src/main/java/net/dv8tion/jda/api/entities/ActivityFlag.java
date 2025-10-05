@@ -71,9 +71,13 @@ public enum ActivityFlag {
     @Nonnull
     public static EnumSet<ActivityFlag> getFlags(int raw) {
         EnumSet<ActivityFlag> set = EnumSet.noneOf(ActivityFlag.class);
-        if (raw == 0) return set;
+        if (raw == 0) {
+            return set;
+        }
         for (ActivityFlag flag : values()) {
-            if ((flag.getRaw() & raw) == flag.getRaw()) set.add(flag);
+            if ((flag.getRaw() & raw) == flag.getRaw()) {
+                set.add(flag);
+            }
         }
         return set;
     }

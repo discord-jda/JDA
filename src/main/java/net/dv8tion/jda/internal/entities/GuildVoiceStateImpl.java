@@ -102,14 +102,16 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
     }
 
     private RestAction<Void> update(boolean suppress) {
-        if (!(connectedChannel instanceof StageChannel) || suppress == isSuppressed())
+        if (!(connectedChannel instanceof StageChannel) || suppress == isSuppressed()) {
             return new CompletedRestAction<>(api, null);
+        }
 
         Member selfMember = getGuild().getSelfMember();
         boolean isSelf = selfMember.equals(member);
-        if (!isSelf && !selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
+        if (!isSelf && !selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS)) {
             throw new InsufficientPermissionException(
                     connectedChannel, Permission.VOICE_MUTE_OTHERS);
+        }
 
         Route.CompiledRoute route =
                 Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), isSelf ? "@me" : getId());
@@ -122,13 +124,15 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
     @Nonnull
     @Override
     public RestAction<Void> inviteSpeaker() {
-        if (!(connectedChannel instanceof StageChannel))
+        if (!(connectedChannel instanceof StageChannel)) {
             return new CompletedRestAction<>(api, null);
+        }
         if (!getGuild()
                 .getSelfMember()
-                .hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
+                .hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS)) {
             throw new InsufficientPermissionException(
                     connectedChannel, Permission.VOICE_MUTE_OTHERS);
+        }
 
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), getId());
         DataObject body = DataObject.empty()
@@ -182,7 +186,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
     @Override
     public Guild getGuild() {
         Guild realGuild = api.getGuildById(guild.getIdLong());
-        if (realGuild != null) guild = realGuild;
+        if (realGuild != null) {
+            guild = realGuild;
+        }
         return guild;
     }
 
@@ -190,7 +196,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
     @Override
     public Member getMember() {
         Member realMember = getGuild().getMemberById(member.getIdLong());
-        if (realMember != null) member = realMember;
+        if (realMember != null) {
+            member = realMember;
+        }
         return member;
     }
 
@@ -211,8 +219,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof GuildVoiceState)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof GuildVoiceState)) {
+            return false;
+        }
         GuildVoiceState oStatus = (GuildVoiceState) obj;
         return member.equals(oStatus.getMember());
     }

@@ -35,7 +35,9 @@ public class MessageReactionClearEmojiHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
         Guild guild = getJDA().getGuildById(guildId);
         if (guild == null) {
             EventCache.LOG.debug(

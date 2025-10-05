@@ -122,8 +122,9 @@ public abstract class AbstractEntityBuilder {
     protected void configureForumChannel(DataObject json, ForumChannelMixin<?> channel) {
         if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS)) {
             json.optArray("available_tags").ifPresent(tags -> {
-                for (int i = 0; i < tags.length(); i++)
+                for (int i = 0; i < tags.length(); i++) {
                     createForumTag(channel, tags.getObject(i), i);
+                }
             });
         }
 
@@ -143,8 +144,9 @@ public abstract class AbstractEntityBuilder {
     protected void configureMediaChannel(DataObject json, MediaChannelMixin<?> channel) {
         if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS)) {
             json.optArray("available_tags").ifPresent(tags -> {
-                for (int i = 0; i < tags.length(); i++)
+                for (int i = 0; i < tags.length(); i++) {
                     createForumTag(channel, tags.getObject(i), i);
+                }
             });
         }
 
@@ -193,7 +195,9 @@ public abstract class AbstractEntityBuilder {
     protected void configureMember(DataObject memberJson, MemberMixin<?> member) {
         member.setNickname(memberJson.getString("nick", null));
         member.setAvatarId(memberJson.getString("avatar", null));
-        if (!memberJson.isNull("flags")) member.setFlags(memberJson.getInt("flags"));
+        if (!memberJson.isNull("flags")) {
+            member.setFlags(memberJson.getInt("flags"));
+        }
 
         long boostTimestamp = memberJson.isNull("premium_since")
                 ? 0
@@ -205,10 +209,13 @@ public abstract class AbstractEntityBuilder {
                 : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
         member.setTimeOutEnd(timeOutTimestamp);
 
-        if (!memberJson.isNull("pending")) member.setPending(memberJson.getBoolean("pending"));
+        if (!memberJson.isNull("pending")) {
+            member.setPending(memberJson.getBoolean("pending"));
+        }
 
-        if (!memberJson.isNull("joined_at") && !member.hasTimeJoined())
+        if (!memberJson.isNull("joined_at") && !member.hasTimeJoined()) {
             member.setJoinDate(Helpers.toTimestamp(memberJson.getString("joined_at")));
+        }
     }
 
     protected void configureRole(DataObject roleJson, RoleMixin<?> role, long id) {
@@ -224,7 +231,10 @@ public abstract class AbstractEntityBuilder {
 
         final String iconId = roleJson.getString("icon", null);
         final String emoji = roleJson.getString("unicode_emoji", null);
-        if (iconId == null && emoji == null) role.setIcon(null);
-        else role.setIcon(new RoleIcon(iconId, emoji, id));
+        if (iconId == null && emoji == null) {
+            role.setIcon(null);
+        } else {
+            role.setIcon(new RoleIcon(iconId, emoji, id));
+        }
     }
 }

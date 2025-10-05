@@ -82,8 +82,12 @@ public class AutoCompleteQuery {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof AutoCompleteQuery)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof AutoCompleteQuery)) {
+            return false;
+        }
         AutoCompleteQuery query = (AutoCompleteQuery) obj;
         return type == query.type && name.equals(query.name) && value.equals(query.value);
     }

@@ -23,7 +23,9 @@ import javax.annotation.Nonnull;
 
 public interface IDetachableEntityMixin extends IDetachableEntity {
     default void checkAttached() {
-        if (isDetached()) throw detachedException();
+        if (isDetached()) {
+            throw detachedException();
+        }
     }
 
     @Nonnull

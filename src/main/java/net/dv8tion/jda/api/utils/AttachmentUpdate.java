@@ -110,7 +110,9 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake {
     @Override
     public DataObject toAttachmentData(int index) {
         DataObject object = DataObject.empty().put("id", getId());
-        if (name != null) object.put("filename", name);
+        if (name != null) {
+            object.put("filename", name);
+        }
         return object;
     }
 
@@ -122,7 +124,9 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof AttachmentUpdate)) return false;
+        if (!(o instanceof AttachmentUpdate)) {
+            return false;
+        }
         AttachmentUpdate that = (AttachmentUpdate) o;
         return id == that.id && Objects.equals(name, that.name);
     }
@@ -135,7 +139,9 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake {
     @Override
     public String toString() {
         final EntityString entityString = new EntityString("AttachedFile").setType("Attachment");
-        if (name != null) entityString.setName(name);
+        if (name != null) {
+            entityString.setName(name);
+        }
         return entityString.toString();
     }
 }

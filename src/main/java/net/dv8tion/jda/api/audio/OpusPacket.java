@@ -144,10 +144,15 @@ public final class OpusPacket implements Comparable<OpusPacket> {
      */
     @Nullable
     public synchronized short[] decode() {
-        if (triedDecode) return decoded;
-        if (decoder == null) throw new IllegalStateException("No decoder available");
-        if (!decoder.isInOrder(getSequence()))
+        if (triedDecode) {
+            return decoded;
+        }
+        if (decoder == null) {
+            throw new IllegalStateException("No decoder available");
+        }
+        if (!decoder.isInOrder(getSequence())) {
             throw new IllegalStateException("Packet is not in order");
+        }
         triedDecode = true;
         return decoded = decoder.decodeFromOpus(rawPacket); // null if failed to decode
     }
@@ -189,11 +194,15 @@ public final class OpusPacket implements Comparable<OpusPacket> {
     @Nonnull
     @SuppressWarnings("ConstantConditions") // the null case is handled with an exception
     public static byte[] getAudioData(@Nonnull short[] decoded, double volume) {
-        if (decoded == null) throw new IllegalArgumentException("Cannot get audio data from null");
+        if (decoded == null) {
+            throw new IllegalArgumentException("Cannot get audio data from null");
+        }
         int byteIndex = 0;
         byte[] audio = new byte[decoded.length * 2];
         for (short s : decoded) {
-            if (volume != 1.0) s = (short) (s * volume);
+            if (volume != 1.0) {
+                s = (short) (s * volume);
+            }
 
             byte leftByte = (byte) ((s >>> 8) & 0xFF);
             byte rightByte = (byte) (s & 0xFF);
@@ -216,8 +225,12 @@ public final class OpusPacket implements Comparable<OpusPacket> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof OpusPacket)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof OpusPacket)) {
+            return false;
+        }
         OpusPacket other = (OpusPacket) obj;
         return getSequence() == other.getSequence()
                 && getTimestamp() == other.getTimestamp()

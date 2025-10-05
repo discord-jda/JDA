@@ -79,7 +79,9 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
     @Nonnull
     @Override
     public ComponentWithPath next() {
-        if (!hasNext()) throw new NoSuchElementException();
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         Iterator<ComponentWithPath> iterator = stack.peek();
         ComponentWithPath componentWithPath = iterator.next();
         Component component = componentWithPath.component;
@@ -109,7 +111,9 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
     }
 
     private void ensureNestedIteratorHasNext() {
-        while (!stack.isEmpty() && !stack.peek().hasNext()) stack.pop();
+        while (!stack.isEmpty() && !stack.peek().hasNext()) {
+            stack.pop();
+        }
     }
 
     public static class ComponentWithPath {

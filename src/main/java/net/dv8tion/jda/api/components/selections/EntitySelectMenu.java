@@ -144,7 +144,9 @@ public interface EntitySelectMenu extends SelectMenu {
         //noinspection ConstantConditions
         Builder builder = create(getCustomId(), getEntityTypes());
         EnumSet<ChannelType> channelTypes = getChannelTypes();
-        if (!channelTypes.isEmpty()) builder.setChannelTypes(channelTypes);
+        if (!channelTypes.isEmpty()) {
+            builder.setChannelTypes(channelTypes);
+        }
         builder.setRequiredRange(getMinValues(), getMaxValues());
         builder.setPlaceholder(getPlaceholder());
         builder.setDisabled(isDisabled());
@@ -419,8 +421,12 @@ public interface EntitySelectMenu extends SelectMenu {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (!(obj instanceof DefaultValue)) return false;
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof DefaultValue)) {
+                return false;
+            }
             DefaultValue other = (DefaultValue) obj;
             return id == other.id && type == other.type;
         }
@@ -461,19 +467,21 @@ public interface EntitySelectMenu extends SelectMenu {
 
             EnumSet<SelectTarget> set = Helpers.copyEnumSet(SelectTarget.class, types);
             if (set.size() == 1) {
-                if (set.contains(SelectTarget.CHANNEL))
+                if (set.contains(SelectTarget.CHANNEL)) {
                     this.componentType = Component.Type.CHANNEL_SELECT;
-                else if (set.contains(SelectTarget.ROLE))
+                } else if (set.contains(SelectTarget.ROLE)) {
                     this.componentType = Component.Type.ROLE_SELECT;
-                else if (set.contains(SelectTarget.USER))
+                } else if (set.contains(SelectTarget.USER)) {
                     this.componentType = Component.Type.USER_SELECT;
+                }
             } else if (set.size() == 2) {
-                if (set.contains(SelectTarget.USER) && set.contains(SelectTarget.ROLE))
+                if (set.contains(SelectTarget.USER) && set.contains(SelectTarget.ROLE)) {
                     this.componentType = Type.MENTIONABLE_SELECT;
-                else
+                } else {
                     throw new IllegalArgumentException(
                             "The provided combination of select targets is not supported. Provided:"
                                     + " " + set);
+                }
             } else {
                 throw new IllegalArgumentException(
                         "The provided combination of select targets is not supported. Provided: "

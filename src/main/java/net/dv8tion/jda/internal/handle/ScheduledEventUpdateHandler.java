@@ -37,9 +37,13 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
 
     @Override
     protected Long handleInternally(DataObject content) {
-        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) return null;
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) {
+            return null;
+        }
         long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
@@ -73,11 +77,13 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
         GuildChannel channel = null;
         String oldLocation = event.getLocation();
 
-        if (location != null) channel = guild.getGuildChannelById(location);
-        else // null in some cases due to discord validation bugs
-        location = content.optObject("entity_metadata")
-                .map(o -> o.getString("location", ""))
-                .orElse("");
+        if (location != null) {
+            channel = guild.getGuildChannelById(location);
+        } else { // null in some cases due to discord validation bugs
+            location = content.optObject("entity_metadata")
+                    .map(o -> o.getString("location", ""))
+                    .orElse("");
+        }
 
         if (!Objects.equals(name, event.getName())) {
             String oldName = event.getName();

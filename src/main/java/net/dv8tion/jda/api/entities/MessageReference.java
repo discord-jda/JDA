@@ -62,8 +62,11 @@ public class MessageReference {
         this.guildId = guildId;
         this.referencedMessage = referencedMessage;
 
-        if (guildId == 0L) this.channel = api.getPrivateChannelById(channelId);
-        else this.channel = api.getChannelById(MessageChannel.class, channelId);
+        if (guildId == 0L) {
+            this.channel = api.getPrivateChannelById(channelId);
+        } else {
+            this.channel = api.getChannelById(MessageChannel.class, channelId);
+        }
 
         this.guild = api.getGuildById(guildId); // is null if guildId = 0 anyway
 
@@ -155,13 +158,16 @@ public class MessageReference {
         checkPermission(Permission.VIEW_CHANNEL);
         checkPermission(Permission.MESSAGE_HISTORY);
 
-        if (channel == null)
+        if (channel == null) {
             throw new IllegalStateException("Cannot resolve a message without a channel present.");
+        }
 
         JDAImpl jda = (JDAImpl) getJDA();
         Message referenced = getMessage();
 
-        if (referenced != null && !update) return new CompletedRestAction<>(jda, referenced);
+        if (referenced != null && !update) {
+            return new CompletedRestAction<>(jda, referenced);
+        }
 
         Route.CompiledRoute route =
                 Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
@@ -304,14 +310,17 @@ public class MessageReference {
     }
 
     private void checkPermission(Permission permission) {
-        if (guild == null || !(channel instanceof GuildChannel)) return;
+        if (guild == null || !(channel instanceof GuildChannel)) {
+            return;
+        }
 
         Member selfMember = guild.getSelfMember();
         GuildChannel guildChannel = (GuildChannel) channel;
 
         Checks.checkAccess(selfMember, guildChannel);
-        if (!selfMember.hasPermission(guildChannel, permission))
+        if (!selfMember.hasPermission(guildChannel, permission)) {
             throw new InsufficientPermissionException(guildChannel, permission);
+        }
     }
 
     /**
@@ -342,7 +351,9 @@ public class MessageReference {
         @Nonnull
         public static MessageReferenceType fromId(int id) {
             for (MessageReferenceType type : values()) {
-                if (type.id == id) return type;
+                if (type.id == id) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

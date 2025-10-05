@@ -134,23 +134,32 @@ public class ThumbnailImpl extends AbstractComponentImpl
     @Override
     public DataObject toData() {
         final String outputUrl;
-        if (media != null) // Retain or reupload the entire file, both cases uses attachment://
-        outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
-        else // External URL or user-managed attachment
-        outputUrl = url;
+        if (media != null) { // Retain or reupload the entire file, both cases uses attachment://
+            outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
+        } else { // External URL or user-managed attachment
+            outputUrl = url;
+        }
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("media", DataObject.empty().put("url", outputUrl))
                 .put("spoiler", spoiler);
-        if (uniqueId >= 0) json.put("id", uniqueId);
-        if (description != null) json.put("description", description);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
+        if (description != null) {
+            json.put("description", description);
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof ThumbnailImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ThumbnailImpl)) {
+            return false;
+        }
         ThumbnailImpl thumbnail = (ThumbnailImpl) o;
         return uniqueId == thumbnail.uniqueId
                 && spoiler == thumbnail.spoiler

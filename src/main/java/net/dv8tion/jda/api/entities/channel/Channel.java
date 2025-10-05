@@ -105,8 +105,11 @@ public interface Channel extends IMentionable, IDetachableEntity {
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         String out;
 
-        if (alt) out = "#" + (upper ? getName().toUpperCase(formatter.locale()) : getName());
-        else out = getAsMention();
+        if (alt) {
+            out = "#" + (upper ? getName().toUpperCase(formatter.locale()) : getName());
+        } else {
+            out = getAsMention();
+        }
 
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }

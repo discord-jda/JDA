@@ -64,7 +64,9 @@ public class WidgetImpl implements Widget {
      */
     public WidgetImpl(@Nonnull DataObject json) {
         String inviteCode = json.getString("instant_invite", null);
-        if (inviteCode != null) inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
+        if (inviteCode != null) {
+            inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
+        }
 
         isAvailable = true;
         id = json.getLong("id");
@@ -182,7 +184,9 @@ public class WidgetImpl implements Widget {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof WidgetImpl)) return false;
+        if (!(obj instanceof WidgetImpl)) {
+            return false;
+        }
         WidgetImpl oWidget = (WidgetImpl) obj;
         return this == oWidget || this.id == oWidget.getIdLong();
     }
@@ -190,13 +194,16 @@ public class WidgetImpl implements Widget {
     @Override
     public String toString() {
         final EntityString entityString = new EntityString(this);
-        if (isAvailable()) entityString.setName(getName());
+        if (isAvailable()) {
+            entityString.setName(getName());
+        }
         return entityString.toString();
     }
 
     private void checkAvailable() {
-        if (!isAvailable)
+        if (!isAvailable) {
             throw new IllegalStateException("The widget for this Guild is unavailable!");
+        }
     }
 
     public class MemberImpl implements Member {
@@ -357,7 +364,9 @@ public class WidgetImpl implements Widget {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Member)) return false;
+            if (!(obj instanceof Member)) {
+                return false;
+            }
             Member oMember = (Member) obj;
             return this == oMember
                     || (this.id == oMember.getIdLong()
@@ -424,7 +433,9 @@ public class WidgetImpl implements Widget {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof VoiceChannel)) return false;
+            if (!(obj instanceof VoiceChannel)) {
+                return false;
+            }
             VoiceChannel oVChannel = (VoiceChannel) obj;
             return this == oVChannel || this.id == oVChannel.getIdLong();
         }
@@ -533,7 +544,9 @@ public class WidgetImpl implements Widget {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof VoiceState)) return false;
+            if (!(obj instanceof VoiceState)) {
+                return false;
+            }
             VoiceState oState = (VoiceState) obj;
             return this == oState
                     || (this.member.equals(oState.getMember())

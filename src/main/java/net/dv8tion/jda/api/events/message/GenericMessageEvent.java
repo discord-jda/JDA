@@ -81,8 +81,9 @@ public abstract class GenericMessageEvent extends Event {
      */
     @Nonnull
     public GuildMessageChannelUnion getGuildChannel() {
-        if (!isFromGuild())
+        if (!isFromGuild()) {
             throw new IllegalStateException("This message event did not happen in a guild");
+        }
         return (GuildMessageChannelUnion) channel;
     }
 
@@ -153,8 +154,9 @@ public abstract class GenericMessageEvent extends Event {
      */
     @Nonnull
     public Guild getGuild() {
-        if (!isFromGuild())
+        if (!isFromGuild()) {
             throw new IllegalStateException("This message event did not happen in a guild");
+        }
 
         return ((GuildChannel) channel).getGuild();
     }

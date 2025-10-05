@@ -34,9 +34,13 @@ public class ScheduledEventUserHandler extends SocketHandler {
 
     @Override
     protected Long handleInternally(DataObject content) {
-        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) return null;
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) {
+            return null;
+        }
         long guildId = content.getUnsignedLong("guild_id", 0L);
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
@@ -55,14 +59,17 @@ public class ScheduledEventUserHandler extends SocketHandler {
         ScheduledEvent event =
                 guild.getScheduledEventById(content.getUnsignedLong("guild_scheduled_event_id"));
         long userId = content.getUnsignedLong("user_id");
-        if (event == null) return null;
+        if (event == null) {
+            return null;
+        }
 
-        if (add)
+        if (add) {
             getJDA().handleEvent(new ScheduledEventUserAddEvent(
                     getJDA(), responseNumber, event, userId));
-        else
+        } else {
             getJDA().handleEvent(new ScheduledEventUserRemoveEvent(
                     getJDA(), responseNumber, event, userId));
+        }
 
         return null;
     }

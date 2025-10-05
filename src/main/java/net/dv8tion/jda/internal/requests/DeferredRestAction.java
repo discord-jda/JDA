@@ -112,13 +112,19 @@ public class DeferredRestAction<T, R extends RestAction<T>>
     @Override
     public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure) {
         Consumer<? super T> finalSuccess;
-        if (success != null) finalSuccess = success;
-        else finalSuccess = RestAction.getDefaultSuccess();
+        if (success != null) {
+            finalSuccess = success;
+        } else {
+            finalSuccess = RestAction.getDefaultSuccess();
+        }
 
         if (type == null) {
             BooleanSupplier checks = this.isAction;
-            if (checks != null && checks.getAsBoolean()) getAction().queue(success, failure);
-            else finalSuccess.accept(null);
+            if (checks != null && checks.getAsBoolean()) {
+                getAction().queue(success, failure);
+            } else {
+                finalSuccess.accept(null);
+            }
             return;
         }
 
@@ -135,11 +141,15 @@ public class DeferredRestAction<T, R extends RestAction<T>>
     public CompletableFuture<T> submit(boolean shouldQueue) {
         if (type == null) {
             BooleanSupplier checks = this.isAction;
-            if (checks != null && checks.getAsBoolean()) return getAction().submit(shouldQueue);
+            if (checks != null && checks.getAsBoolean()) {
+                return getAction().submit(shouldQueue);
+            }
             return CompletableFuture.completedFuture(null);
         }
         T value = valueSupplier.get();
-        if (useCache && value != null) return CompletableFuture.completedFuture(value);
+        if (useCache && value != null) {
+            return CompletableFuture.completedFuture(value);
+        }
         return getAction().submit(shouldQueue);
     }
 
@@ -147,20 +157,27 @@ public class DeferredRestAction<T, R extends RestAction<T>>
     public T complete(boolean shouldQueue) throws RateLimitedException {
         if (type == null) {
             BooleanSupplier checks = this.isAction;
-            if (checks != null && checks.getAsBoolean()) return getAction().complete(shouldQueue);
+            if (checks != null && checks.getAsBoolean()) {
+                return getAction().complete(shouldQueue);
+            }
             return null;
         }
         T value = valueSupplier.get();
-        if (useCache && value != null) return value;
+        if (useCache && value != null) {
+            return value;
+        }
         return getAction().complete(shouldQueue);
     }
 
     private R getAction() {
         R action = actionSupplier.get();
         action.setCheck(transitiveChecks);
-        if (deadline >= 0) action.deadline(deadline);
-        if (action instanceof AuditableRestAction && reason != null)
+        if (deadline >= 0) {
+            action.deadline(deadline);
+        }
+        if (action instanceof AuditableRestAction && reason != null) {
             ((AuditableRestAction<?>) action).reason(reason);
+        }
         return action;
     }
 }

@@ -52,7 +52,9 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
                         template.getGuild().getId(), template.getCode()));
         this.template = template;
         this.api = template.getJDA();
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     @Nonnull
@@ -60,8 +62,12 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @CheckReturnValue
     public TemplateManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & NAME) == NAME) this.name = null;
-        if ((fields & DESCRIPTION) == DESCRIPTION) this.description = null;
+        if ((fields & NAME) == NAME) {
+            this.name = null;
+        }
+        if ((fields & DESCRIPTION) == DESCRIPTION) {
+            this.description = null;
+        }
         return this;
     }
 
@@ -98,7 +104,9 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Override
     @CheckReturnValue
     public TemplateManagerImpl setDescription(@Nullable String description) {
-        if (description != null) Checks.notLonger(name, 120, "Description");
+        if (description != null) {
+            Checks.notLonger(name, 120, "Description");
+        }
         this.description = description;
         set |= DESCRIPTION;
         return this;
@@ -107,8 +115,12 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Override
     protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
-        if (shouldUpdate(NAME)) body.put("name", name);
-        if (shouldUpdate(DESCRIPTION)) body.put("description", name);
+        if (shouldUpdate(NAME)) {
+            body.put("name", name);
+        }
+        if (shouldUpdate(DESCRIPTION)) {
+            body.put("description", name);
+        }
 
         reset(); // now that we've built our JSON object, reset the manager back to the non-modified
         // state
@@ -119,9 +131,12 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     protected boolean checkPermissions() {
         final Guild guild = api.getGuildById(template.getGuild().getIdLong());
 
-        if (guild == null) return true;
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (guild == null) {
+            return true;
+        }
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_SERVER);
+        }
         return super.checkPermissions();
     }
 }

@@ -133,8 +133,9 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
     @Nonnull
     @Override
     public T getSelectedEntity() {
-        if (selectedPosition == -1)
+        if (selectedPosition == -1) {
             throw new IllegalStateException("No position has been selected yet");
+        }
 
         return orderList.get(selectedPosition);
     }
@@ -143,9 +144,10 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
     @Override
     public M moveUp(int amount) {
         Checks.notNegative(amount, "Provided amount");
-        if (selectedPosition == -1)
+        if (selectedPosition == -1) {
             throw new IllegalStateException(
                     "Cannot move until an item has been selected. Use #selectPosition first.");
+        }
         if (ascendingOrder) {
             Checks.check(
                     selectedPosition - amount >= 0,
@@ -168,17 +170,21 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
                             + orderList.size());
         }
 
-        if (ascendingOrder) return moveTo(selectedPosition - amount);
-        else return moveTo(selectedPosition + amount);
+        if (ascendingOrder) {
+            return moveTo(selectedPosition - amount);
+        } else {
+            return moveTo(selectedPosition + amount);
+        }
     }
 
     @Nonnull
     @Override
     public M moveDown(int amount) {
         Checks.notNegative(amount, "Provided amount");
-        if (selectedPosition == -1)
+        if (selectedPosition == -1) {
             throw new IllegalStateException(
                     "Cannot move until an item has been selected. Use #selectPosition first.");
+        }
 
         if (ascendingOrder) {
             Checks.check(
@@ -202,8 +208,11 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
                             + orderList.size());
         }
 
-        if (ascendingOrder) return moveTo(selectedPosition + amount);
-        else return moveTo(selectedPosition - amount);
+        if (ascendingOrder) {
+            return moveTo(selectedPosition + amount);
+        } else {
+            return moveTo(selectedPosition - amount);
+        }
     }
 
     @Nonnull
@@ -213,9 +222,10 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
         Checks.notNegative(position, "Provided position");
         Checks.check(
                 position < orderList.size(), "Provided position is too big and is out of bounds.");
-        if (selectedPosition == -1)
+        if (selectedPosition == -1) {
             throw new IllegalStateException(
                     "Cannot move until an item has been selected. Use #selectPosition first.");
+        }
 
         T selectedItem = orderList.remove(selectedPosition);
         orderList.add(position, selectedItem);
@@ -231,7 +241,9 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
         validateInput(other);
         int index = getCurrentOrder().indexOf(other);
         moveTo(index);
-        if (isAscendingOrder()) return moveDown(1);
+        if (isAscendingOrder()) {
+            return moveDown(1);
+        }
         return (M) this;
     }
 
@@ -242,7 +254,9 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
         validateInput(other);
         int index = getCurrentOrder().indexOf(other);
         moveTo(index);
-        if (!isAscendingOrder()) return moveUp(1);
+        if (!isAscendingOrder()) {
+            return moveUp(1);
+        }
         return (M) this;
     }
 
@@ -255,9 +269,10 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
                 swapPosition < orderList.size(),
                 "Provided swapPosition is too big and is out of bounds. swapPosition: "
                         + swapPosition);
-        if (selectedPosition == -1)
+        if (selectedPosition == -1) {
             throw new IllegalStateException(
                     "Cannot move until an item has been selected. Use #selectPosition first.");
+        }
 
         T selectedItem = orderList.get(selectedPosition);
         T swapItem = orderList.get(swapPosition);

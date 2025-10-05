@@ -232,8 +232,9 @@ public class MessagePollBuilder {
      */
     @Nonnull
     public MessagePollData build() {
-        if (answers.isEmpty())
+        if (answers.isEmpty()) {
             throw new IllegalStateException("Cannot build a poll without answers");
+        }
         return new MessagePollData(
                 layout,
                 new MessagePoll.Question(title, null),

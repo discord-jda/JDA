@@ -951,8 +951,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof DetachedGuildImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof DetachedGuildImpl)) {
+            return false;
+        }
         DetachedGuildImpl oGuild = (DetachedGuildImpl) o;
         return this.id == oGuild.id;
     }

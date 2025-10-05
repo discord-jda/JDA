@@ -55,12 +55,18 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager>
         this.role = override.isRoleOverride();
         this.allowed = override.getAllowedRaw();
         this.denied = override.getDeniedRaw();
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     private void setupValues() {
-        if (!shouldUpdate(ALLOWED)) this.allowed = getPermissionOverride().getAllowedRaw();
-        if (!shouldUpdate(DENIED)) this.denied = getPermissionOverride().getDeniedRaw();
+        if (!shouldUpdate(ALLOWED)) {
+            this.allowed = getPermissionOverride().getAllowedRaw();
+        }
+        if (!shouldUpdate(DENIED)) {
+            this.denied = getPermissionOverride().getDeniedRaw();
+        }
     }
 
     @Nonnull
@@ -69,7 +75,9 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager>
         IPermissionContainerMixin<?> channel = (IPermissionContainerMixin<?>) override.getChannel();
         PermissionOverride realOverride =
                 channel.getPermissionOverrideMap().get(override.getIdLong());
-        if (realOverride != null) override = realOverride;
+        if (realOverride != null) {
+            override = realOverride;
+        }
         return override;
     }
 
@@ -101,7 +109,9 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager>
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl grant(long permissions) {
-        if (permissions == 0) return this;
+        if (permissions == 0) {
+            return this;
+        }
         setupValues();
         this.allowed |= permissions;
         this.denied &= ~permissions;
@@ -113,7 +123,9 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager>
     @Override
     @CheckReturnValue
     public PermOverrideManagerImpl deny(long permissions) {
-        if (permissions == 0) return this;
+        if (permissions == 0) {
+            return this;
+        }
         setupValues();
         this.denied |= permissions;
         this.allowed &= ~permissions;
@@ -158,8 +170,9 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager>
         Member selfMember = getGuild().getSelfMember();
         IPermissionContainer channel = getChannel();
         Checks.checkAccess(selfMember, channel);
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS)) {
             throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
+        }
         return super.checkPermissions();
     }
 }

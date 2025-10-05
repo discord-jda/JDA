@@ -144,12 +144,18 @@ public class MessageSnapshot {
     @Nonnull
     @Unmodifiable
     public List<String> getInvites() {
-        if (invites != null) return invites;
+        if (invites != null) {
+            return invites;
+        }
         synchronized (mutex) {
-            if (invites != null) return invites;
+            if (invites != null) {
+                return invites;
+            }
             invites = new ArrayList<>();
             Matcher m = INVITE_PATTERN.matcher(getContentRaw());
-            while (m.find()) invites.add(m.group(1));
+            while (m.find()) {
+                invites.add(m.group(1));
+            }
             return invites = Collections.unmodifiableList(invites);
         }
     }

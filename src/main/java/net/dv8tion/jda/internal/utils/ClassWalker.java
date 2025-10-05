@@ -63,11 +63,15 @@ public class ClassWalker implements Iterable<Class<?>> {
                 Class<?> current = work.removeFirst();
                 done.add(current);
                 for (Class<?> parent : current.getInterfaces()) {
-                    if (!done.contains(parent)) work.addLast(parent);
+                    if (!done.contains(parent)) {
+                        work.addLast(parent);
+                    }
                 }
 
                 Class<?> parent = current.getSuperclass();
-                if (parent != null && !done.contains(parent)) work.addLast(parent);
+                if (parent != null && !done.contains(parent)) {
+                    work.addLast(parent);
+                }
                 return current;
             }
         };

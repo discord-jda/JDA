@@ -278,10 +278,12 @@ public class Template {
         final net.dv8tion.jda.api.entities.Guild guild =
                 this.api.getGuildById(this.guild.getIdLong());
 
-        if (guild == null)
+        if (guild == null) {
             throw new IllegalStateException("Cannot interact with a template without shared guild");
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        }
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_SERVER);
+        }
     }
 
     /**
@@ -301,8 +303,12 @@ public class Template {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof Template)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Template)) {
+            return false;
+        }
         Template impl = (Template) obj;
         return impl.code.equals(this.code);
     }

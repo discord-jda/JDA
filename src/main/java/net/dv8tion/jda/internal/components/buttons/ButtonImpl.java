@@ -195,14 +195,24 @@ public class ButtonImpl extends AbstractComponentImpl
     public DataObject toData() {
         DataObject json = DataObject.empty();
         json.put("type", 2);
-        if (!label.isEmpty()) json.put("label", label);
+        if (!label.isEmpty()) {
+            json.put("label", label);
+        }
         json.put("style", style.getKey());
         json.put("disabled", disabled);
-        if (emoji != null) json.put("emoji", emoji);
-        if (url != null) json.put("url", url);
-        else if (customId != null) json.put("custom_id", customId);
-        else json.put("sku_id", sku.getId());
-        if (uniqueId >= 0) json.put("id", uniqueId);
+        if (emoji != null) {
+            json.put("emoji", emoji);
+        }
+        if (url != null) {
+            json.put("url", url);
+        } else if (customId != null) {
+            json.put("custom_id", customId);
+        } else {
+            json.put("sku_id", sku.getId());
+        }
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
         return json;
     }
 
@@ -213,8 +223,12 @@ public class ButtonImpl extends AbstractComponentImpl
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof ButtonImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ButtonImpl)) {
+            return false;
+        }
         ButtonImpl other = (ButtonImpl) obj;
         return Objects.equals(other.customId, customId)
                 && Objects.equals(other.label, label)
@@ -229,9 +243,15 @@ public class ButtonImpl extends AbstractComponentImpl
     public String toString() {
         final EntityString entityString =
                 new EntityString(this).setName(label).addMetadata("id", uniqueId);
-        if (customId != null) entityString.addMetadata("custom id", customId);
-        if (url != null) entityString.addMetadata("url", url);
-        if (sku != null) entityString.addMetadata("sku", sku.getId());
+        if (customId != null) {
+            entityString.addMetadata("custom id", customId);
+        }
+        if (url != null) {
+            entityString.addMetadata("url", url);
+        }
+        if (sku != null) {
+            entityString.addMetadata("sku", sku.getId());
+        }
 
         return entityString.toString();
     }

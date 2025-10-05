@@ -74,7 +74,7 @@ public class Response implements Closeable {
 
         if (response == null) {
             this.body = null;
-        } else // weird compatibility issue, thinks some final isn't initialized if we return
+        } else { // weird compatibility issue, thinks some final isn't initialized if we return
             // pre-maturely
             try {
                 this.body = IOUtil.getBody(response);
@@ -82,6 +82,7 @@ public class Response implements Closeable {
                 throw new IllegalStateException(
                         "An error occurred while parsing the response for a RestAction", e);
             }
+        }
     }
 
     public Response(final long retryAfter, @Nonnull final Set<String> cfRays) {
@@ -159,7 +160,9 @@ public class Response implements Closeable {
                 new EntityString(exception == null ? "HTTPResponse" : "HTTPException");
         if (exception == null) {
             entityString.addMetadata("code", code);
-            if (object != null) entityString.addMetadata("object", object.toString());
+            if (object != null) {
+                entityString.addMetadata("object", object.toString());
+            }
         } else {
             entityString.addMetadata("exceptionMessage", exception.getMessage());
         }
@@ -169,7 +172,9 @@ public class Response implements Closeable {
 
     @Override
     public void close() {
-        if (rawResponse != null) rawResponse.close();
+        if (rawResponse != null) {
+            rawResponse.close();
+        }
     }
 
     private String readString(BufferedReader reader) {
@@ -184,14 +189,16 @@ public class Response implements Closeable {
     private <T> Optional<T> parseBody(
             boolean opt, Class<T> clazz, IOFunction<BufferedReader, T> parser) {
         if (attemptedParsing) {
-            if (object != null && clazz.isAssignableFrom(object.getClass()))
+            if (object != null && clazz.isAssignableFrom(object.getClass())) {
                 return Optional.of(clazz.cast(object));
+            }
             return Optional.empty();
         }
 
         attemptedParsing = true;
-        if (body == null || rawResponse == null || rawResponse.body().contentLength() == 0)
+        if (body == null || rawResponse == null || rawResponse.body().contentLength() == 0) {
             return Optional.empty();
+        }
 
         BufferedReader reader = null;
         try {
@@ -211,10 +218,12 @@ public class Response implements Closeable {
                 reader.close();
             } catch (NullPointerException | IOException ignored) {
             }
-            if (opt && e instanceof ParsingException) return Optional.empty();
-            else
+            if (opt && e instanceof ParsingException) {
+                return Optional.empty();
+            } else {
                 throw new IllegalStateException(
                         "An error occurred while parsing the response for a RestAction", e);
+            }
         }
     }
 }

@@ -276,7 +276,9 @@ public interface Command extends ISnowflake, ICommandReference {
         @Nonnull
         public static Type fromId(int id) {
             for (Type type : values()) {
-                if (type.id == id) return type;
+                if (type.id == id) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }
@@ -527,8 +529,12 @@ public interface Command extends ISnowflake, ICommandReference {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (!(obj instanceof Choice)) return false;
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Choice)) {
+                return false;
+            }
             Choice other = (Choice) obj;
             return Objects.equals(other.name, name)
                     && Objects.equals(other.stringValue, stringValue);
@@ -572,12 +578,16 @@ public interface Command extends ISnowflake, ICommandReference {
         @Nonnull
         public DataObject toData(@Nonnull OptionType optionType) {
             final Object value;
-            if (optionType == OptionType.INTEGER) value = getAsLong();
-            else if (optionType == OptionType.STRING) value = getAsString();
-            else if (optionType == OptionType.NUMBER) value = getAsDouble();
-            else
+            if (optionType == OptionType.INTEGER) {
+                value = getAsLong();
+            } else if (optionType == OptionType.STRING) {
+                value = getAsString();
+            } else if (optionType == OptionType.NUMBER) {
+                value = getAsDouble();
+            } else {
                 throw new IllegalArgumentException(
                         "Cannot transform choice into data for type " + optionType);
+            }
 
             return DataObject.empty()
                     .put("name", name)
@@ -621,10 +631,18 @@ public interface Command extends ISnowflake, ICommandReference {
                             .map(Choice::new)
                             .collect(Collectors.toList()))
                     .orElse(Collections.emptyList());
-            if (!json.isNull("min_value")) this.minValue = json.getDouble("min_value");
-            if (!json.isNull("max_value")) this.maxValue = json.getDouble("max_value");
-            if (!json.isNull("min_length")) this.minLength = json.getInt("min_length");
-            if (!json.isNull("max_length")) this.maxLength = json.getInt("max_length");
+            if (!json.isNull("min_value")) {
+                this.minValue = json.getDouble("min_value");
+            }
+            if (!json.isNull("max_value")) {
+                this.maxValue = json.getDouble("max_value");
+            }
+            if (!json.isNull("min_length")) {
+                this.minLength = json.getInt("min_length");
+            }
+            if (!json.isNull("max_length")) {
+                this.maxLength = json.getInt("max_length");
+            }
         }
 
         /**
@@ -794,8 +812,12 @@ public interface Command extends ISnowflake, ICommandReference {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (!(obj instanceof Option)) return false;
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Option)) {
+                return false;
+            }
             Option other = (Option) obj;
             return Objects.equals(other.name, name)
                     && Objects.equals(other.description, description)
@@ -914,8 +936,12 @@ public interface Command extends ISnowflake, ICommandReference {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (!(obj instanceof Subcommand)) return false;
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Subcommand)) {
+                return false;
+            }
             Subcommand other = (Subcommand) obj;
             return Objects.equals(other.name, name)
                     && Objects.equals(other.description, description)
@@ -1024,8 +1050,12 @@ public interface Command extends ISnowflake, ICommandReference {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (!(obj instanceof SubcommandGroup)) return false;
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof SubcommandGroup)) {
+                return false;
+            }
             SubcommandGroup other = (SubcommandGroup) obj;
             return Objects.equals(other.name, name)
                     && Objects.equals(other.description, description)

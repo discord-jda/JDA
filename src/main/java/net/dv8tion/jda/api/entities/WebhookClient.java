@@ -1352,7 +1352,9 @@ public interface WebhookClient<T> extends ISnowflake {
     static IncomingWebhookClient createClient(@Nonnull JDA api, @Nonnull String url) {
         Checks.notNull(url, "URL");
         Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
-        if (!matcher.matches()) throw new IllegalArgumentException("Provided invalid webhook URL");
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Provided invalid webhook URL");
+        }
         String id = matcher.group(1);
         String token = matcher.group(2);
         return createClient(api, id, token);

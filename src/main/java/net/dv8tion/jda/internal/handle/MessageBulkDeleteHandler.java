@@ -38,7 +38,9 @@ public class MessageBulkDeleteHandler extends SocketHandler {
         Guild guild = null;
         if (!content.isNull("guild_id")) {
             long guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+            if (getJDA().getGuildSetupController().isLocked(guildId)) {
+                return guildId;
+            }
 
             guild = api.getGuildById(guildId);
             if (guild == null) {
@@ -99,8 +101,9 @@ public class MessageBulkDeleteHandler extends SocketHandler {
                 return null;
             }
 
-            if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
+            if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong())) {
                 return channel.getGuild().getIdLong();
+            }
 
             DataArray array = content.getArray("ids");
             List<String> messages = array.stream(DataArray::getString).collect(Collectors.toList());

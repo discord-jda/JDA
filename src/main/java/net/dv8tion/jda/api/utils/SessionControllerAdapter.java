@@ -146,7 +146,9 @@ public class SessionControllerAdapter implements SessionController {
             try {
                 if (this.delay > 0) {
                     final long interval = System.currentTimeMillis() - lastConnect;
-                    if (interval < this.delay) Thread.sleep(this.delay - interval);
+                    if (interval < this.delay) {
+                        Thread.sleep(this.delay - interval);
+                    }
                 }
             } catch (InterruptedException ex) {
                 log.error("Unable to backoff", ex);
@@ -154,7 +156,9 @@ public class SessionControllerAdapter implements SessionController {
             processQueue();
             synchronized (lock) {
                 workerHandle = null;
-                if (!connectQueue.isEmpty()) runWorker();
+                if (!connectQueue.isEmpty()) {
+                    runWorker();
+                }
             }
         }
 
@@ -166,19 +170,25 @@ public class SessionControllerAdapter implements SessionController {
                     node.run(isMultiple && connectQueue.isEmpty());
                     isMultiple = true;
                     lastConnect = System.currentTimeMillis();
-                    if (connectQueue.isEmpty()) break;
-                    if (this.delay > 0) Thread.sleep(this.delay);
+                    if (connectQueue.isEmpty()) {
+                        break;
+                    }
+                    if (this.delay > 0) {
+                        Thread.sleep(this.delay);
+                    }
                 } catch (IllegalStateException e) {
                     Throwable t = e.getCause();
-                    if (t instanceof OpeningHandshakeException)
+                    if (t instanceof OpeningHandshakeException) {
                         log.error(
                                 "Failed opening handshake, appending to queue. Message: {}",
                                 e.getMessage());
-                    else if (t != null
-                            && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
+                    } else if (t != null
+                            && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage())) {
                         log.error(
                                 "Failed to establish connection for a node, appending to queue", e);
-                    else log.error("Unexpected exception when running connect node", e);
+                    } else {
+                        log.error("Unexpected exception when running connect node", e);
+                    }
                     appendSession(node);
                 } catch (InterruptedException e) {
                     log.error("Failed to run node", e);

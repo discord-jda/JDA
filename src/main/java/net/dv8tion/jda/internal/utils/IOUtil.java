@@ -61,8 +61,11 @@ public class IOUtil {
         try {
             StringBuilder builder = new StringBuilder(base);
             // Start a new query or append to existing one
-            if (new URI(base).getQuery() == null) builder.append('?');
-            else builder.append('&');
+            if (new URI(base).getQuery() == null) {
+                builder.append('?');
+            } else {
+                builder.append('&');
+            }
 
             for (int i = 0; i < params.length; i += 2) {
                 builder.append(params[i])
@@ -87,7 +90,9 @@ public class IOUtil {
     public static void setServerName(WebSocketFactory factory, String url) {
         String host = getHost(url);
         // null if the host is undefined, unlikely but we should handle it
-        if (host != null) factory.setServerName(host);
+        if (host != null) {
+            factory.setServerName(host);
+        }
     }
 
     public static OkHttpClient.Builder newHttpClientBuilder() {
@@ -248,9 +253,11 @@ public class IOUtil {
         InputStream data = new BufferedInputStream(response.body().byteStream());
         data.mark(256);
         try {
-            if (encoding.equalsIgnoreCase("gzip")) return new GZIPInputStream(data);
-            else if (encoding.equalsIgnoreCase("deflate"))
+            if (encoding.equalsIgnoreCase("gzip")) {
+                return new GZIPInputStream(data);
+            } else if (encoding.equalsIgnoreCase("deflate")) {
                 return new InflaterInputStream(data, new Inflater(true));
+            }
         } catch (ZipException | EOFException ex) {
             data.reset(); // reset to get full content
             log.error(

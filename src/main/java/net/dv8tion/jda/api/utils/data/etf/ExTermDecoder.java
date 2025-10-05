@@ -63,7 +63,9 @@ public class ExTermDecoder {
      */
     @Nonnull
     public static Object unpack(@Nonnull ByteBuffer buffer) {
-        if (buffer.get() != -125) throw new IllegalArgumentException("Failed header check");
+        if (buffer.get() != -125) {
+            throw new IllegalArgumentException("Failed header check");
+        }
 
         return unpack0(buffer);
     }
@@ -94,7 +96,9 @@ public class ExTermDecoder {
     @SuppressWarnings("unchecked")
     public static Map<String, Object> unpackMap(@Nonnull ByteBuffer buffer) {
         byte tag = buffer.get(1);
-        if (tag != MAP) throw new IllegalArgumentException("Cannot unpack map from tag " + tag);
+        if (tag != MAP) {
+            throw new IllegalArgumentException("Cannot unpack map from tag " + tag);
+        }
         return (Map<String, Object>) unpack(buffer);
     }
 
@@ -124,7 +128,9 @@ public class ExTermDecoder {
     @SuppressWarnings("unchecked")
     public static List<Object> unpackList(@Nonnull ByteBuffer buffer) {
         byte tag = buffer.get(1);
-        if (tag != LIST) throw new IllegalArgumentException("Cannot unpack list from tag " + tag);
+        if (tag != LIST) {
+            throw new IllegalArgumentException("Cannot unpack list from tag " + tag);
+        }
 
         return (List<Object>) unpack(buffer);
     }
@@ -217,7 +223,9 @@ public class ExTermDecoder {
     private static List<Object> unpackString(@Nonnull ByteBuffer buffer) {
         int length = Short.toUnsignedInt(buffer.getShort());
         List<Object> bytes = new ArrayList<>(length);
-        while (length-- > 0) bytes.add(buffer.get());
+        while (length-- > 0) {
+            bytes.add(buffer.get());
+        }
         return bytes;
     }
 
@@ -265,8 +273,9 @@ public class ExTermDecoder {
             list.add(unpack0(buffer));
         }
         Object tail = unpack0(buffer);
-        if (tail != Collections.emptyList())
+        if (tail != Collections.emptyList()) {
             throw new IllegalArgumentException("Unexpected tail " + tail);
+        }
         return list;
     }
 

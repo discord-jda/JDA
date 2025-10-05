@@ -47,7 +47,9 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager>
                         Long.toUnsignedString(guildId), sticker.getId()));
         this.guild = guild;
         this.guildId = guildId;
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     @Nullable
@@ -65,9 +67,15 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager>
     @Override
     public GuildStickerManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & NAME) == NAME) this.name = null;
-        if ((fields & DESCRIPTION) == DESCRIPTION) this.description = null;
-        if ((fields & TAGS) == TAGS) this.tags = null;
+        if ((fields & NAME) == NAME) {
+            this.name = null;
+        }
+        if ((fields & DESCRIPTION) == DESCRIPTION) {
+            this.description = null;
+        }
+        if ((fields & TAGS) == TAGS) {
+            this.tags = null;
+        }
         return this;
     }
 
@@ -121,9 +129,15 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager>
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
-        if (shouldUpdate(NAME)) object.put("name", name);
-        if (shouldUpdate(DESCRIPTION)) object.put("description", description);
-        if (shouldUpdate(TAGS)) object.put("tags", tags);
+        if (shouldUpdate(NAME)) {
+            object.put("name", name);
+        }
+        if (shouldUpdate(DESCRIPTION)) {
+            object.put("description", description);
+        }
+        if (shouldUpdate(TAGS)) {
+            object.put("tags", tags);
+        }
         reset();
         return getRequestBody(object);
     }
@@ -131,8 +145,9 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager>
     @Override
     protected boolean checkPermissions() {
         if (guild != null
-                && !guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+                && !guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
+        }
         return super.checkPermissions();
     }
 }

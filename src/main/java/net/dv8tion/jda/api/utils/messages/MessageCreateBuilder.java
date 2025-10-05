@@ -180,7 +180,9 @@ public class MessageCreateBuilder
     @Nonnull
     @Override
     public MessageCreateBuilder setFiles(@Nullable Collection<? extends FileUpload> files) {
-        if (files != null) Checks.noneNull(files, "Files");
+        if (files != null) {
+            Checks.noneNull(files, "Files");
+        }
         this.files.clear();
         if (files != null) {
             this.files.addAll(files);
@@ -227,16 +229,22 @@ public class MessageCreateBuilder
     @Nonnull
     @Override
     public MessageCreateBuilder setSuppressedNotifications(boolean suppressed) {
-        if (suppressed) messageFlags |= Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
-        else messageFlags &= ~Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
+        if (suppressed) {
+            messageFlags |= Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
+        } else {
+            messageFlags &= ~Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
+        }
         return this;
     }
 
     @Nonnull
     @Override
     public MessageCreateBuilder setVoiceMessage(boolean voiceMessage) {
-        if (voiceMessage) messageFlags |= Message.MessageFlag.IS_VOICE_MESSAGE.getValue();
-        else messageFlags &= ~Message.MessageFlag.IS_VOICE_MESSAGE.getValue();
+        if (voiceMessage) {
+            messageFlags |= Message.MessageFlag.IS_VOICE_MESSAGE.getValue();
+        } else {
+            messageFlags &= ~Message.MessageFlag.IS_VOICE_MESSAGE.getValue();
+        }
         return this;
     }
 
@@ -251,8 +259,11 @@ public class MessageCreateBuilder
 
     @Override
     public boolean isValid() {
-        if (isUsingComponentsV2()) return isV2Valid();
-        else return isV1Valid();
+        if (isUsingComponentsV2()) {
+            return isV2Valid();
+        } else {
+            return isV1Valid();
+        }
     }
 
     private boolean isV1Valid() {
@@ -276,8 +287,11 @@ public class MessageCreateBuilder
 
     @Nonnull
     public MessageCreateData build() {
-        if (isUsingComponentsV2()) return buildV2();
-        else return buildV1();
+        if (isUsingComponentsV2()) {
+            return buildV2();
+        } else {
+            return buildV1();
+        }
     }
 
     @Nonnull
@@ -293,34 +307,39 @@ public class MessageCreateBuilder
                 && embeds.isEmpty()
                 && files.isEmpty()
                 && components.isEmpty()
-                && poll == null)
+                && poll == null) {
             throw new IllegalStateException(
                     "Cannot build an empty message. You need at least one of content, embeds,"
                             + " components, poll, or files");
+        }
 
         int length = Helpers.codePointLength(content);
-        if (length > Message.MAX_CONTENT_LENGTH)
+        if (length > Message.MAX_CONTENT_LENGTH) {
             throw new IllegalStateException("Message content is too long! Max length is "
                     + Message.MAX_CONTENT_LENGTH
                     + " characters, provided "
                     + length);
+        }
 
-        if (embeds.size() > Message.MAX_EMBED_COUNT)
+        if (embeds.size() > Message.MAX_EMBED_COUNT) {
             throw new IllegalStateException("Cannot build message with over "
                     + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
+        }
 
-        if (components.size() > Message.MAX_COMPONENT_COUNT)
+        if (components.size() > Message.MAX_COMPONENT_COUNT) {
             throw new IllegalStateException("Cannot build message with over "
                     + Message.MAX_COMPONENT_COUNT
                     + " top-level components, provided "
                     + components.size());
+        }
         final List<? extends Component> illegalV1Components =
                 ComponentsUtil.getIllegalV1Components(components);
-        if (!illegalV1Components.isEmpty())
+        if (!illegalV1Components.isEmpty()) {
             throw new IllegalStateException(
                     "Cannot build message with components other than ActionRow while using"
                             + " components V1, see #useComponentsV2, provided: "
                             + illegalV1Components);
+        }
 
         return new MessageCreateData(
                 content, embeds, files, components, mentions, poll, tts, messageFlags);
@@ -333,28 +352,32 @@ public class MessageCreateBuilder
         List<MessageTopLevelComponentUnion> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
-        if (content.length() > 0 || !embeds.isEmpty() || poll != null)
+        if (content.length() > 0 || !embeds.isEmpty() || poll != null) {
             throw new IllegalStateException(
                     "Cannot build a message with components V2 enabled while having content,"
                             + " embeds, or poll");
+        }
 
-        if (components.isEmpty())
+        if (components.isEmpty()) {
             throw new IllegalStateException(
                     "Cannot build message with no V2 components, or did you forget to disable"
                             + " them?");
+        }
         final long componentTreeSize = ComponentsUtil.getComponentTreeSize(components);
-        if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
+        if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE) {
             throw new IllegalStateException("Cannot build message with over "
                     + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE
                     + " total components, provided "
                     + componentTreeSize);
+        }
         final long componentTreeLength =
                 ComponentsUtil.getComponentTreeTextContentLength(components);
-        if (componentTreeLength > Message.MAX_CONTENT_LENGTH_COMPONENT_V2)
+        if (componentTreeLength > Message.MAX_CONTENT_LENGTH_COMPONENT_V2) {
             throw new IllegalStateException("Cannot build message with over "
                     + Message.MAX_CONTENT_LENGTH_COMPONENT_V2
                     + " total characters, provided "
                     + componentTreeLength);
+        }
 
         return new MessageCreateData(
                 "", Collections.emptyList(), files, components, mentions, poll, tts, messageFlags);
@@ -377,6 +400,8 @@ public class MessageCreateBuilder
     }
 
     private void setVoiceMessageIfApplicable(@NotNull Collection<? extends FileUpload> files) {
-        if (files.stream().anyMatch(FileUpload::isVoiceMessage)) this.setVoiceMessage(true);
+        if (files.stream().anyMatch(FileUpload::isVoiceMessage)) {
+            this.setVoiceMessage(true);
+        }
     }
 }

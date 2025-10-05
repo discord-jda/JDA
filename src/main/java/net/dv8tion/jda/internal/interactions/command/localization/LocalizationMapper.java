@@ -85,15 +85,20 @@ public class LocalizationMapper {
 
     private void localizeOptionArray(DataArray optionArray, TranslationContext ctx) {
         ctx.forObjects(optionArray, o -> o.getString("name"), obj -> {
-            if (obj.hasKey("name_localizations"))
+            if (obj.hasKey("name_localizations")) {
                 ctx.trySetTranslation(obj.getObject("name_localizations"), "name");
-            if (obj.hasKey("description_localizations"))
+            }
+            if (obj.hasKey("description_localizations")) {
                 ctx.trySetTranslation(obj.getObject("description_localizations"), "description");
-            if (obj.hasKey("options")) localizeOptionArray(obj.getArray("options"), ctx);
-            if (obj.hasKey("choices"))
+            }
+            if (obj.hasKey("options")) {
+                localizeOptionArray(obj.getArray("options"), ctx);
+            }
+            if (obj.hasKey("choices")) {
                 // Puts "choices" between the option name and the choice name
                 // This makes it more distinguishable in tree structures
                 ctx.withKey("choices", () -> localizeOptionArray(obj.getArray("choices"), ctx));
+            }
         });
     }
 

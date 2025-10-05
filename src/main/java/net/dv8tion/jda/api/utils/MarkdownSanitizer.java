@@ -214,7 +214,9 @@ public class MarkdownSanitizer {
     @Nonnull
     public static String escape(@Nonnull String sequence, boolean single) {
         Checks.notNull(sequence, "Input");
-        if (!single) return escape(sequence);
+        if (!single) {
+            return escape(sequence);
+        }
 
         StringBuilder builder = new StringBuilder();
         boolean escaped = false;
@@ -258,7 +260,9 @@ public class MarkdownSanitizer {
                     if (i + 1 < sequence.length() && sequence.charAt(i + 1) == current) {
                         builder.append('\\').append(current).append('\\').append(current);
                         i++;
-                    } else builder.append(current);
+                    } else {
+                        builder.append(current);
+                    }
                     break;
                 case '\\': // escape character
                     builder.append(current);
@@ -348,12 +352,16 @@ public class MarkdownSanitizer {
     }
 
     private boolean hasCollision(int index, @Nonnull String sequence, char c) {
-        if (index < 0) return false;
+        if (index < 0) {
+            return false;
+        }
         return index < sequence.length() - 1 && sequence.charAt(index + 1) == c;
     }
 
     private int findEndIndex(int afterIndex, int region, @Nonnull String sequence) {
-        if (isEscape(region)) return -1;
+        if (isEscape(region)) {
+            return -1;
+        }
         int lastMatch = afterIndex + getDelta(region) + 1;
         while (lastMatch != -1) {
             switch (region) {
@@ -377,8 +385,11 @@ public class MarkdownSanitizer {
                     if (lastMatch != -1
                             && hasCollision(lastMatch, sequence, '*')) // did we find a bold tag?
                     {
-                        if (hasCollision(lastMatch + 1, sequence, '*')) lastMatch += 3;
-                        else lastMatch += 2;
+                        if (hasCollision(lastMatch + 1, sequence, '*')) {
+                            lastMatch += 3;
+                        } else {
+                            lastMatch += 2;
+                        }
                         continue;
                     }
                     break;
@@ -416,8 +427,11 @@ public class MarkdownSanitizer {
                     if (lastMatch != -1
                             && hasCollision(lastMatch, sequence, '`')) // did we find a codeblock?
                     {
-                        if (hasCollision(lastMatch + 1, sequence, '`')) lastMatch += 3;
-                        else lastMatch += 2;
+                        if (hasCollision(lastMatch + 1, sequence, '`')) {
+                            lastMatch += 3;
+                        } else {
+                            lastMatch += 2;
+                        }
                         continue;
                     }
                     break;
@@ -427,7 +441,9 @@ public class MarkdownSanitizer {
                 default:
                     return -1;
             }
-            if (lastMatch == -1 || !doesEscape(lastMatch, sequence)) return lastMatch;
+            if (lastMatch == -1 || !doesEscape(lastMatch, sequence)) {
+                return lastMatch;
+            }
             lastMatch++;
         }
         return -1;
@@ -479,31 +495,37 @@ public class MarkdownSanitizer {
 
     private void applyStrategy(int region, @Nonnull String seq, @Nonnull StringBuilder builder) {
         if (strategy == SanitizationStrategy.REMOVE) {
-            if (codeLanguage.matcher(seq).matches())
+            if (codeLanguage.matcher(seq).matches()) {
                 builder.append(seq.substring(seq.indexOf("\n") + 1));
-            else builder.append(seq);
+            } else {
+                builder.append(seq);
+            }
             return;
         }
         String token = tokens.get(region);
-        if (token == null)
+        if (token == null) {
             throw new IllegalStateException("Found illegal region for strategy ESCAPE '" + region
                     + "' with no known format token!");
-        if (region == UNDERLINE)
+        }
+        if (region == UNDERLINE) {
             token = "_\\_"; // UNDERLINE needs special handling because the client thinks its
-        // ITALICS_U if you only escape once
-        else if (region == BOLD)
+            // ITALICS_U if you only escape once
+        } else if (region == BOLD) {
             token = "*\\*"; // BOLD needs special handling because the client thinks its ITALICS_A
-        // if you only escape once
-        else if (region == (BOLD | ITALICS_A))
+            // if you only escape once
+        } else if (region == (BOLD | ITALICS_A)) {
             token = "*\\*\\*"; // BOLD | ITALICS_A needs special handling because the client thinks
-        // its BOLD if you only escape once
+            // its BOLD if you only escape once
+        }
         builder.append("\\").append(token).append(seq).append("\\").append(token);
     }
 
     private boolean doesEscape(int index, @Nonnull String seq) {
         int backslashes = 0;
         for (int i = index - 1; i > -1; i--) {
-            if (seq.charAt(i) != '\\') break;
+            if (seq.charAt(i) != '\\') {
+                break;
+            }
             backslashes++;
         }
         return backslashes % 2 != 0;
@@ -535,7 +557,9 @@ public class MarkdownSanitizer {
         Checks.notNull(sequence, "Input");
         StringBuilder builder = new StringBuilder();
         String end = handleQuote(sequence);
-        if (end != null) return end;
+        if (end != null) {
+            return end;
+        }
 
         boolean onlySpacesSinceNewLine = true;
         for (int i = 0; i < sequence.length(); ) {
@@ -549,7 +573,9 @@ public class MarkdownSanitizer {
                 builder.append(sequence.charAt(i++));
                 if ((isNewLine || (isSpace && onlySpacesSinceNewLine)) && i < sequence.length()) {
                     String result = handleQuote(sequence.substring(i));
-                    if (result != null) return builder.append(result).toString();
+                    if (result != null) {
+                        return builder.append(result).toString();
+                    }
                 }
                 continue;
             }
@@ -557,7 +583,9 @@ public class MarkdownSanitizer {
             int endRegion = findEndIndex(i, nextRegion, sequence);
             if (isIgnored(nextRegion) || endRegion == -1) {
                 int delta = getDelta(nextRegion);
-                for (int j = 0; j < delta; j++) builder.append(sequence.charAt(i++));
+                for (int j = 0; j < delta; j++) {
+                    builder.append(sequence.charAt(i++));
+                }
                 continue;
             }
             int delta = getDelta(nextRegion);
@@ -572,13 +600,19 @@ public class MarkdownSanitizer {
         // Special handling for quote
         if (!isIgnored(QUOTE) && quote.matcher(sequence).matches()) {
             int start = sequence.indexOf('>');
-            if (start < 0) start = 0;
+            if (start < 0) {
+                start = 0;
+            }
             StringBuilder builder = new StringBuilder(compute(sequence.substring(start + 2)));
-            if (strategy == SanitizationStrategy.ESCAPE) builder.insert(0, "\\> ");
+            if (strategy == SanitizationStrategy.ESCAPE) {
+                builder.insert(0, "\\> ");
+            }
             return builder.toString();
 
         } else if (!isIgnored(QUOTE_BLOCK) && quoteBlock.matcher(sequence).matches()) {
-            if (strategy == SanitizationStrategy.ESCAPE) return compute("\\".concat(sequence));
+            if (strategy == SanitizationStrategy.ESCAPE) {
+                return compute("\\".concat(sequence));
+            }
             return compute(sequence.substring(4));
         }
         return null;

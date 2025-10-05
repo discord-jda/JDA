@@ -346,15 +346,27 @@ public class MessageEmbed implements SerializableData {
      * @return A never-negative sum of all displayed text characters.
      */
     public int getLength() {
-        if (length > -1) return length;
+        if (length > -1) {
+            return length;
+        }
         synchronized (mutex) {
-            if (length > -1) return length;
+            if (length > -1) {
+                return length;
+            }
             length = 0;
 
-            if (title != null) length += Helpers.codePointLength(title);
-            if (description != null) length += Helpers.codePointLength(description.trim());
-            if (author != null) length += Helpers.codePointLength(author.getName());
-            if (footer != null) length += Helpers.codePointLength(footer.getText());
+            if (title != null) {
+                length += Helpers.codePointLength(title);
+            }
+            if (description != null) {
+                length += Helpers.codePointLength(description.trim());
+            }
+            if (author != null) {
+                length += Helpers.codePointLength(author.getName());
+            }
+            if (footer != null) {
+                length += Helpers.codePointLength(footer.getText());
+            }
             if (fields != null) {
                 for (Field f : fields)
                     length += Helpers.codePointLength(f.getName())
@@ -375,7 +387,9 @@ public class MessageEmbed implements SerializableData {
      * @see    #getLength()
      */
     public boolean isSendable() {
-        if (isEmpty()) return false;
+        if (isEmpty()) {
+            return false;
+        }
 
         final int length = getLength();
         return length <= EMBED_MAX_LENGTH_BOT;
@@ -383,8 +397,12 @@ public class MessageEmbed implements SerializableData {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof MessageEmbed)) return false;
-        if (obj == this) return true;
+        if (!(obj instanceof MessageEmbed)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
         MessageEmbed other = (MessageEmbed) obj;
         return Objects.equals(url, other.url)
                 && Objects.equals(title, other.title)
@@ -410,42 +428,71 @@ public class MessageEmbed implements SerializableData {
     @Nonnull
     @Override
     public DataObject toData() {
-        if (json != null) return json;
+        if (json != null) {
+            return json;
+        }
         synchronized (mutex) {
-            if (json != null) return json;
+            if (json != null) {
+                return json;
+            }
             DataObject obj = DataObject.empty();
-            if (url != null) obj.put("url", url);
-            if (title != null) obj.put("title", title);
-            if (description != null) obj.put("description", description);
-            if (timestamp != null)
+            if (url != null) {
+                obj.put("url", url);
+            }
+            if (title != null) {
+                obj.put("title", title);
+            }
+            if (description != null) {
+                obj.put("description", description);
+            }
+            if (timestamp != null) {
                 obj.put("timestamp", timestamp.format(DateTimeFormatter.ISO_INSTANT));
-            if (color != Role.DEFAULT_COLOR_RAW) obj.put("color", color & 0xFFFFFF);
-            if (thumbnail != null)
+            }
+            if (color != Role.DEFAULT_COLOR_RAW) {
+                obj.put("color", color & 0xFFFFFF);
+            }
+            if (thumbnail != null) {
                 obj.put("thumbnail", DataObject.empty().put("url", thumbnail.getUrl()));
+            }
             if (siteProvider != null) {
                 DataObject siteProviderObj = DataObject.empty();
-                if (siteProvider.getName() != null)
+                if (siteProvider.getName() != null) {
                     siteProviderObj.put("name", siteProvider.getName());
-                if (siteProvider.getUrl() != null)
+                }
+                if (siteProvider.getUrl() != null) {
                     siteProviderObj.put("url", siteProvider.getUrl());
+                }
                 obj.put("provider", siteProviderObj);
             }
             if (author != null) {
                 DataObject authorObj = DataObject.empty();
-                if (author.getName() != null) authorObj.put("name", author.getName());
-                if (author.getUrl() != null) authorObj.put("url", author.getUrl());
-                if (author.getIconUrl() != null) authorObj.put("icon_url", author.getIconUrl());
+                if (author.getName() != null) {
+                    authorObj.put("name", author.getName());
+                }
+                if (author.getUrl() != null) {
+                    authorObj.put("url", author.getUrl());
+                }
+                if (author.getIconUrl() != null) {
+                    authorObj.put("icon_url", author.getIconUrl());
+                }
                 obj.put("author", authorObj);
             }
-            if (videoInfo != null)
+            if (videoInfo != null) {
                 obj.put("video", DataObject.empty().put("url", videoInfo.getUrl()));
+            }
             if (footer != null) {
                 DataObject footerObj = DataObject.empty();
-                if (footer.getText() != null) footerObj.put("text", footer.getText());
-                if (footer.getIconUrl() != null) footerObj.put("icon_url", footer.getIconUrl());
+                if (footer.getText() != null) {
+                    footerObj.put("text", footer.getText());
+                }
+                if (footer.getIconUrl() != null) {
+                    footerObj.put("icon_url", footer.getIconUrl());
+                }
                 obj.put("footer", footerObj);
             }
-            if (image != null) obj.put("image", DataObject.empty().put("url", image.getUrl()));
+            if (image != null) {
+                obj.put("image", DataObject.empty().put("url", image.getUrl()));
+            }
             if (!fields.isEmpty()) {
                 DataArray fieldsArray = DataArray.empty();
                 for (Field field : fields) {
@@ -531,7 +578,9 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Thumbnail)) return false;
+            if (!(obj instanceof Thumbnail)) {
+                return false;
+            }
             Thumbnail thumbnail = (Thumbnail) obj;
             return thumbnail == this
                     || (Objects.equals(thumbnail.url, url)
@@ -578,7 +627,9 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Provider)) return false;
+            if (!(obj instanceof Provider)) {
+                return false;
+            }
             Provider provider = (Provider) obj;
             return provider == this
                     || (Objects.equals(provider.name, name) && Objects.equals(provider.url, url));
@@ -664,7 +715,9 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof VideoInfo)) return false;
+            if (!(obj instanceof VideoInfo)) {
+                return false;
+            }
             VideoInfo video = (VideoInfo) obj;
             return video == this
                     || (Objects.equals(video.url, url)
@@ -743,7 +796,9 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof ImageInfo)) return false;
+            if (!(obj instanceof ImageInfo)) {
+                return false;
+            }
             ImageInfo image = (ImageInfo) obj;
             return image == this
                     || (Objects.equals(image.url, url)
@@ -826,7 +881,9 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof AuthorInfo)) return false;
+            if (!(obj instanceof AuthorInfo)) {
+                return false;
+            }
             AuthorInfo author = (AuthorInfo) obj;
             return author == this
                     || (Objects.equals(author.name, name)
@@ -895,7 +952,9 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Footer)) return false;
+            if (!(obj instanceof Footer)) {
+                return false;
+            }
             Footer footer = (Footer) obj;
             return footer == this
                     || (Objects.equals(footer.text, text)
@@ -920,20 +979,27 @@ public class MessageEmbed implements SerializableData {
 
         public Field(String name, String value, boolean inline, boolean checked) {
             if (checked) {
-                if (name == null || value == null)
+                if (name == null || value == null) {
                     throw new IllegalArgumentException("Both Name and Value must be set!");
-                else if (name.length() > TITLE_MAX_LENGTH)
+                } else if (name.length() > TITLE_MAX_LENGTH) {
                     throw new IllegalArgumentException(
                             "Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
-                else if (value.length() > VALUE_MAX_LENGTH)
+                } else if (value.length() > VALUE_MAX_LENGTH) {
                     throw new IllegalArgumentException(
                             "Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
+                }
                 name = name.trim();
                 value = value.trim();
-                if (name.isEmpty()) this.name = EmbedBuilder.ZERO_WIDTH_SPACE;
-                else this.name = name;
-                if (value.isEmpty()) this.value = EmbedBuilder.ZERO_WIDTH_SPACE;
-                else this.value = value;
+                if (name.isEmpty()) {
+                    this.name = EmbedBuilder.ZERO_WIDTH_SPACE;
+                } else {
+                    this.name = name;
+                }
+                if (value.isEmpty()) {
+                    this.value = EmbedBuilder.ZERO_WIDTH_SPACE;
+                } else {
+                    this.value = value;
+                }
             } else {
                 this.name = name;
                 this.value = value;
@@ -976,7 +1042,9 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Field)) return false;
+            if (!(obj instanceof Field)) {
+                return false;
+            }
             final Field field = (Field) obj;
             return field == this
                     || (field.inline == inline

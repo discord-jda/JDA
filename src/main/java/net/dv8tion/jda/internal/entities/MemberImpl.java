@@ -80,7 +80,9 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
         // Load user from cache if one exists, ideally two members with the same id should wrap the
         // same user object
         User realUser = getJDA().getUserById(user.getIdLong());
-        if (realUser != null) this.user = realUser;
+        if (realUser != null) {
+            this.user = realUser;
+        }
         return user;
     }
 
@@ -88,7 +90,9 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Override
     public GuildImpl getGuild() {
         GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
-        if (realGuild != null) guild = realGuild;
+        if (realGuild != null) {
+            guild = realGuild;
+        }
         return guild;
     }
 
@@ -101,7 +105,9 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Nonnull
     @Override
     public OffsetDateTime getTimeJoined() {
-        if (hasTimeJoined()) return Helpers.toOffset(joinDate);
+        if (hasTimeJoined()) {
+            return Helpers.toOffset(joinDate);
+        }
         return getGuild().getTimeCreated();
     }
 
@@ -151,7 +157,9 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     public OnlineStatus getOnlineStatus(@Nonnull ClientType type) {
         Checks.notNull(type, "Type");
         MemberPresenceImpl presence = getPresence();
-        if (presence == null) return OnlineStatus.OFFLINE;
+        if (presence == null) {
+            return OnlineStatus.OFFLINE;
+        }
         OnlineStatus status = presence.getClientStatus().get(type);
         return status == null ? OnlineStatus.OFFLINE : status;
     }
@@ -206,7 +214,9 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     public int getColorRaw() {
         for (Role r : getRoles()) {
             final int colorRaw = r.getColorRaw();
-            if (colorRaw != Role.DEFAULT_COLOR_RAW) return colorRaw;
+            if (colorRaw != Role.DEFAULT_COLOR_RAW) {
+                return colorRaw;
+            }
         }
         return Role.DEFAULT_COLOR_RAW;
     }
@@ -226,9 +236,10 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Override
     public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel) {
         Checks.notNull(channel, "Channel");
-        if (!getGuild().equals(channel.getGuild()))
+        if (!getGuild().equals(channel.getGuild())) {
             throw new IllegalArgumentException(
                     "Provided channel is not in the same guild as this member!");
+        }
 
         return Permission.getPermissions(
                 PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
@@ -269,16 +280,18 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
         Checks.check(
                 syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long userPerms = PermissionUtil.getEffectivePermission(targetChannel, this);
-        if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+        if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // We can't manage permissions at all!
-
+        }
         long channelPermissions = PermissionUtil.getExplicitPermission(targetChannel, this, false);
         // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
         // permission on the channel
         boolean hasLocalAdmin = ((userPerms & Permission.ADMINISTRATOR.getRawValue())
                         | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
                 != 0;
-        if (hasLocalAdmin) return true;
+        if (hasLocalAdmin) {
+            return true;
+        }
 
         TLongObjectMap<PermissionOverride> existingOverrides =
                 ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
@@ -292,7 +305,9 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
             }
             // If any permissions changed that the user doesn't have in the channel, they can't sync
             // it :(
-            if (((allow | deny) & ~userPerms) != 0) return false;
+            if (((allow | deny) & ~userPerms) != 0) {
+                return false;
+            }
         }
         return true;
     }
@@ -303,9 +318,9 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
         Checks.check(
                 channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long userPerms = PermissionUtil.getEffectivePermission(channel, this);
-        if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+        if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // We can't manage permissions at all!
-
+        }
         long channelPermissions = PermissionUtil.getExplicitPermission(channel, this, false);
         // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
         // permission on the channel
@@ -423,8 +438,12 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof MemberImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MemberImpl)) {
+            return false;
+        }
 
         MemberImpl oMember = (MemberImpl) o;
         return oMember.user.getIdLong() == user.getIdLong()

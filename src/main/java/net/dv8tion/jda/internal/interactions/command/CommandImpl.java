@@ -105,9 +105,9 @@ public class CommandImpl implements Command {
         }
         // If the command is in a guild, it can only be guild, otherwise up to the dm_permission
         // flag
-        else if (guildId != 0L)
+        else if (guildId != 0L) {
             this.contexts = Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
-        else {
+        } else {
             final boolean dmPermission = json.getBoolean("dm_permission", true);
             this.contexts = dmPermission
                     ? Helpers.unmodifiableEnumSet(
@@ -119,7 +119,9 @@ public class CommandImpl implements Command {
             this.integrationTypes = json.getArray("integration_types").stream(DataArray::getString)
                     .map(IntegrationType::fromKey)
                     .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class));
-        } else this.integrationTypes = Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL);
+        } else {
+            this.integrationTypes = Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL);
+        }
 
         this.nsfw = json.getBoolean("nsfw");
     }
@@ -140,10 +142,12 @@ public class CommandImpl implements Command {
         checkSelfUser("Cannot delete a command from another bot!");
         Route.CompiledRoute route;
         String appId = getJDA().getSelfUser().getApplicationId();
-        if (guildId != 0L)
+        if (guildId != 0L) {
             route = Route.Interactions.DELETE_GUILD_COMMAND.compile(
                     appId, Long.toUnsignedString(guildId), getId());
-        else route = Route.Interactions.DELETE_COMMAND.compile(appId, getId());
+        } else {
+            route = Route.Interactions.DELETE_COMMAND.compile(appId, getId());
+        }
         return new RestActionImpl<>(api, route);
     }
 
@@ -265,8 +269,9 @@ public class CommandImpl implements Command {
     @Nonnull
     @Override
     public String getAsMention() {
-        if (getType() != Type.SLASH)
+        if (getType() != Type.SLASH) {
             throw new IllegalStateException("Only slash commands can be mentioned");
+        }
         return Command.super.getAsMention();
     }
 
@@ -277,8 +282,12 @@ public class CommandImpl implements Command {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof Command)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Command)) {
+            return false;
+        }
         return id == ((Command) obj).getIdLong();
     }
 
@@ -288,7 +297,8 @@ public class CommandImpl implements Command {
     }
 
     private void checkSelfUser(String s) {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
+        if (applicationId != api.getSelfUser().getApplicationIdLong()) {
             throw new IllegalStateException(s);
+        }
     }
 }

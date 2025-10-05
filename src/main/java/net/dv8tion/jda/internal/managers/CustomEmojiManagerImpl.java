@@ -48,7 +48,9 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
                 emoji.getJDA(),
                 Route.Emojis.MODIFY_EMOJI.compile(emoji.getGuild().getId(), emoji.getId()));
         this.emoji = emoji;
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     @Nonnull
@@ -62,8 +64,12 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
     @CheckReturnValue
     public CustomEmojiManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & ROLES) == ROLES) withLock(this.roles, List::clear);
-        if ((fields & NAME) == NAME) this.name = null;
+        if ((fields & ROLES) == ROLES) {
+            withLock(this.roles, List::clear);
+        }
+        if ((fields & NAME) == NAME) {
+            this.name = null;
+        }
         return this;
     }
 
@@ -123,9 +129,13 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
-        if (shouldUpdate(NAME)) object.put("name", name);
+        if (shouldUpdate(NAME)) {
+            object.put("name", name);
+        }
         withLock(this.roles, (list) -> {
-            if (shouldUpdate(ROLES)) object.put("roles", DataArray.fromCollection(list));
+            if (shouldUpdate(ROLES)) {
+                object.put("roles", DataArray.fromCollection(list));
+            }
         });
         reset();
         return getRequestBody(object);
@@ -133,9 +143,10 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
 
     @Override
     protected boolean checkPermissions() {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
             throw new InsufficientPermissionException(
                     getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
+        }
         return super.checkPermissions();
     }
 }

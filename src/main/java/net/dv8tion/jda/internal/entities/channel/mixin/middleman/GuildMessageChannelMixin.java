@@ -55,9 +55,10 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
                 "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel"
                         + " regardless of author.");
 
-        if (messageIds.size() < 2 || messageIds.size() > 100)
+        if (messageIds.size() < 2 || messageIds.size() > 100) {
             throw new IllegalArgumentException(
                     "Must provide at least 2 or at most 100 messages to be deleted.");
+        }
 
         long twoWeeksAgo = TimeUtil.getDiscordTimestamp(
                 (System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
@@ -78,11 +79,16 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         Checks.notNull(user, "User");
 
         checkCanAccess();
-        if (!getJDA().getSelfUser().equals(user)) checkPermission(Permission.MESSAGE_MANAGE);
+        if (!getJDA().getSelfUser().equals(user)) {
+            checkPermission(Permission.MESSAGE_MANAGE);
+        }
 
         String targetUser;
-        if (user.equals(getJDA().getSelfUser())) targetUser = "@me";
-        else targetUser = user.getId();
+        if (user.equals(getJDA().getSelfUser())) {
+            targetUser = "@me";
+        } else {
+            targetUser = user.getId();
+        }
 
         final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
                 getId(), messageId, emoji.getAsReactionCode(), targetUser);
@@ -130,8 +136,11 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
     default void checkCanSendMessage() {
         checkCanAccess();
-        if (getType().isThread()) checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
-        else checkPermission(Permission.MESSAGE_SEND);
+        if (getType().isThread()) {
+            checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
+        } else {
+            checkPermission(Permission.MESSAGE_SEND);
+        }
     }
 
     default void checkCanSendMessageEmbeds() {
@@ -167,7 +176,9 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     default void checkCanControlMessagePins() {
         checkCanAccess();
         if (ClockProvider.getClock().instant().isBefore(PIN_PERMISSION_DEADLINE)
-                && hasPermission(Permission.MESSAGE_MANAGE)) return;
+                && hasPermission(Permission.MESSAGE_MANAGE)) {
+            return;
+        }
 
         checkPermission(Permission.PIN_MESSAGES, "You need PIN_MESSAGES to pin or unpin messages.");
     }

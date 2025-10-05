@@ -107,12 +107,18 @@ public abstract class SelectMenuImpl extends AbstractComponentImpl
     public DataObject toData() {
         DataObject data = DataObject.empty();
         data.put("custom_id", id);
-        if (uniqueId >= 0) data.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            data.put("id", uniqueId);
+        }
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
         data.put("disabled", disabled);
-        if (placeholder != null) data.put("placeholder", placeholder);
-        if (required != null) data.put("required", required);
+        if (placeholder != null) {
+            data.put("placeholder", placeholder);
+        }
+        if (required != null) {
+            data.put("required", required);
+        }
         return data;
     }
 

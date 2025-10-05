@@ -62,7 +62,9 @@ public final class VoiceCode {
 
         public static Close from(int code) {
             for (Close c : values()) {
-                if (c.code == code) return c;
+                if (c.code == code) {
+                    return c;
+                }
             }
             return UNKNOWN;
         }

@@ -45,7 +45,9 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
     @Override
     public List<T> asList() {
         List<T> list = getCachedList();
-        if (list == null) list = cache(new ArrayList<>(asSet()));
+        if (list == null) {
+            list = cache(new ArrayList<>(asSet()));
+        }
         return list;
     }
 
@@ -53,9 +55,10 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
     @Override
     public NavigableSet<T> asSet() {
         NavigableSet<T> set = (NavigableSet<T>) getCachedSet();
-        if (set == null)
+        if (set == null) {
             set = cache((NavigableSet<T>)
                     applyStream(stream -> stream.collect(Collectors.toCollection(TreeSet::new))));
+        }
         return set;
     }
 

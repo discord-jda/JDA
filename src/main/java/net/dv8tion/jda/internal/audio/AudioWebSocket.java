@@ -99,15 +99,20 @@ class AudioWebSocket extends WebSocketAdapter {
         // Add the version query parameter
         String url = IOUtil.addQuery(endpoint, "v", JDAInfo.AUDIO_GATEWAY_VERSION);
         // Append the Secure Websocket scheme so that our websocket library knows how to connect
-        if (url.startsWith("wss://")) wssEndpoint = url;
-        else wssEndpoint = "wss://" + url;
+        if (url.startsWith("wss://")) {
+            wssEndpoint = url;
+        } else {
+            wssEndpoint = "wss://" + url;
+        }
 
-        if (sessionId == null || sessionId.isEmpty())
+        if (sessionId == null || sessionId.isEmpty()) {
             throw new IllegalArgumentException(
                     "Cannot create a audio websocket connection using a null/empty sessionId!");
-        if (token == null || token.isEmpty())
+        }
+        if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException(
                     "Cannot create a audio websocket connection using a null/empty token!");
+        }
     }
 
     /* Used by AudioConnection */
@@ -122,17 +127,20 @@ class AudioWebSocket extends WebSocketAdapter {
     }
 
     protected void startConnection() {
-        if (!reconnecting && socket != null)
+        if (!reconnecting && socket != null) {
             throw new IllegalStateException(
                     "Somehow, someway, this AudioWebSocket has already attempted to start a"
                             + " connection!");
+        }
 
         try {
             WebSocketFactory socketFactory = new WebSocketFactory(getJDA().getWebSocketFactory());
             IOUtil.setServerName(socketFactory, wssEndpoint);
-            if (socketFactory.getSocketTimeout() > 0)
+            if (socketFactory.getSocketTimeout() > 0) {
                 socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
-            else socketFactory.setSocketTimeout(10000);
+            } else {
+                socketFactory.setSocketTimeout(10000);
+            }
             socket = socketFactory.createSocket(wssEndpoint);
             socket.setDirectTextMessage(true);
             socket.addListener(this);
@@ -151,16 +159,24 @@ class AudioWebSocket extends WebSocketAdapter {
     protected void close(final ConnectionStatus closeStatus) {
         // Makes sure we don't run this method again after the socket.close(1000) call fires
         // onDisconnect
-        if (shutdown) return;
+        if (shutdown) {
+            return;
+        }
         locked((manager) -> {
-            if (shutdown) return;
+            if (shutdown) {
+                return;
+            }
             ConnectionStatus status = closeStatus;
             ready = false;
             shutdown = true;
             stopKeepAlive();
 
-            if (audioConnection.udpSocket != null) audioConnection.udpSocket.close();
-            if (socket != null) socket.sendClose();
+            if (audioConnection.udpSocket != null) {
+                audioConnection.udpSocket.close();
+            }
+            if (socket != null) {
+                socket.sendClose();
+            }
 
             audioConnection.shutdown();
 
@@ -184,7 +200,9 @@ class AudioWebSocket extends WebSocketAdapter {
                 if (connGuild != null) {
                     AudioChannel channel = (AudioChannel) connGuild.getGuildChannelById(
                             audioConnection.getChannel().getIdLong());
-                    if (channel == null) status = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
+                    if (channel == null) {
+                        status = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
+                    }
                 }
             }
 
@@ -256,8 +274,11 @@ class AudioWebSocket extends WebSocketAdapter {
             return;
         }
 
-        if (reconnecting) resume();
-        else identify();
+        if (reconnecting) {
+            resume();
+        } else {
+            identify();
+        }
         changeStatus(ConnectionStatus.CONNECTING_AWAITING_AUTHENTICATION);
         audioConnection.prepareReady();
         reconnecting = false;
@@ -283,7 +304,9 @@ class AudioWebSocket extends WebSocketAdapter {
             WebSocketFrame serverCloseFrame,
             WebSocketFrame clientCloseFrame,
             boolean closedByServer) {
-        if (shutdown) return;
+        if (shutdown) {
+            return;
+        }
         LOG.debug("The Audio connection was closed!\nBy remote? {}", closedByServer);
         if (serverCloseFrame != null) {
             LOG.debug(
@@ -446,8 +469,9 @@ class AudioWebSocket extends WebSocketAdapter {
                 DataArray keyArray = contentAll.getObject("d").getArray("secret_key");
 
                 secretKey = new byte[DISCORD_SECRET_KEY_LENGTH];
-                for (int i = 0; i < keyArray.length(); i++)
+                for (int i = 0; i < keyArray.length(); i++) {
                     secretKey[i] = (byte) keyArray.getInt(i);
+                }
 
                 crypto = CryptoAdapter.getAdapter(encryption, secretKey);
 
@@ -542,9 +566,13 @@ class AudioWebSocket extends WebSocketAdapter {
     }
 
     private void reconnect() {
-        if (shutdown) return;
+        if (shutdown) {
+            return;
+        }
         locked((unused) -> {
-            if (shutdown) return;
+            if (shutdown) {
+                return;
+            }
             ready = false;
             reconnecting = true;
             changeStatus(ConnectionStatus.ERROR_LOST_CONNECTION);
@@ -557,7 +585,9 @@ class AudioWebSocket extends WebSocketAdapter {
         // This is called UDP hole punching.
         try {
             // First close existing socket from possible previous attempts
-            if (audioConnection.udpSocket != null) audioConnection.udpSocket.close();
+            if (audioConnection.udpSocket != null) {
+                audioConnection.udpSocket.close();
+            }
             // Create new UDP socket for communication
             audioConnection.udpSocket = new DatagramSocket();
 
@@ -621,19 +651,24 @@ class AudioWebSocket extends WebSocketAdapter {
     }
 
     private void stopKeepAlive() {
-        if (keepAliveHandle != null) keepAliveHandle.cancel(true);
+        if (keepAliveHandle != null) {
+            keepAliveHandle.cancel(true);
+        }
         keepAliveHandle = null;
     }
 
     private void setupKeepAlive(final int keepAliveInterval) {
-        if (keepAliveHandle != null)
+        if (keepAliveHandle != null) {
             LOG.error("Setting up a KeepAlive runnable while the previous one seems to still be"
                     + " active!!");
+        }
 
         try {
             if (socket != null) {
                 Socket rawSocket = this.socket.getSocket();
-                if (rawSocket != null) rawSocket.setSoTimeout(keepAliveInterval + 10000);
+                if (rawSocket != null) {
+                    rawSocket.setSoTimeout(keepAliveInterval + 10000);
+                }
             }
         } catch (SocketException ex) {
             LOG.warn("Failed to setup timeout for socket", ex);
@@ -644,7 +679,9 @@ class AudioWebSocket extends WebSocketAdapter {
             if (socket != null && socket.isOpen()) // TCP keep-alive
             {
                 DataObject packet = DataObject.empty().put("t", System.currentTimeMillis());
-                if (sequence > 0) packet.put("seq_ack", sequence);
+                if (sequence > 0) {
+                    packet.put("seq_ack", sequence);
+                }
                 send(VoiceCode.HEARTBEAT, packet);
             }
             if (audioConnection.udpSocket != null

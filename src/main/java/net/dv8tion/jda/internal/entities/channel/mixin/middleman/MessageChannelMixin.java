@@ -57,20 +57,25 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages) {
         checkCanAccess();
-        if (messages == null || messages.isEmpty()) return Collections.emptyList();
+        if (messages == null || messages.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         if (!canDeleteOtherUsersMessages()) {
             for (Message m : messages) {
-                if (m.getAuthor().equals(getJDA().getSelfUser())) continue;
+                if (m.getAuthor().equals(getJDA().getSelfUser())) {
+                    continue;
+                }
 
-                if (getType() == ChannelType.PRIVATE)
+                if (getType() == ChannelType.PRIVATE) {
                     throw new IllegalStateException(
                             "Cannot delete messages of other users in a private channel");
-                else
+                } else {
                     throw new InsufficientPermissionException(
                             (GuildChannel) this,
                             Permission.MESSAGE_MANAGE,
                             "Cannot delete messages of other users");
+                }
             }
         }
 
@@ -80,12 +85,15 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds) {
         checkCanAccess();
-        if (messageIds == null || messageIds.length == 0) return Collections.emptyList();
+        if (messageIds == null || messageIds.length == 0) {
+            return Collections.emptyList();
+        }
 
         // If we can't use the bulk delete system, then use the standard purge defined in
         // MessageChannel
-        if (!canDeleteOtherUsersMessages())
+        if (!canDeleteOtherUsersMessages()) {
             return MessageChannelUnion.super.purgeMessagesById(messageIds);
+        }
 
         // remove duplicates and sort messages
         List<CompletableFuture<Void>> list = new LinkedList<>();
@@ -94,9 +102,11 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
         long twoWeeksAgo = TimeUtil.getDiscordTimestamp(
                 System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
         for (long messageId : messageIds) {
-            if (messageId > twoWeeksAgo) // Bulk delete cannot delete messages older than 2 weeks.
-            bulk.add(messageId);
-            else norm.add(messageId);
+            if (messageId > twoWeeksAgo) { // Bulk delete cannot delete messages older than 2 weeks.
+                bulk.add(messageId);
+            } else {
+                norm.add(messageId);
+            }
         }
 
         // delete chunks of 100 messages each
@@ -104,16 +114,18 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
             List<String> toDelete = new ArrayList<>(100);
             while (!bulk.isEmpty()) {
                 toDelete.clear();
-                for (int i = 0; i < 100 && !bulk.isEmpty(); i++)
+                for (int i = 0; i < 100 && !bulk.isEmpty(); i++) {
                     toDelete.add(Long.toUnsignedString(bulk.pollLast()));
+                }
 
                 // If we only had 1 in the bulk collection then use the standard deleteMessageById
                 // request
                 // as you cannot bulk delete a single message
-                if (toDelete.size() == 1)
+                if (toDelete.size() == 1) {
                     list.add(deleteMessageById(toDelete.get(0)).submit());
-                else if (!toDelete.isEmpty())
+                } else if (!toDelete.isEmpty()) {
                     list.add(bulkDeleteMessages(toDelete).submit());
+                }
             }
         }
 

@@ -69,10 +69,14 @@ public enum ChannelFlag {
     @Nonnull
     public static EnumSet<ChannelFlag> fromRaw(int bitset) {
         EnumSet<ChannelFlag> set = EnumSet.noneOf(ChannelFlag.class);
-        if (bitset == 0) return set;
+        if (bitset == 0) {
+            return set;
+        }
 
         for (ChannelFlag flag : values()) {
-            if (flag.value == bitset) set.add(flag);
+            if (flag.value == bitset) {
+                set.add(flag);
+            }
         }
 
         return set;

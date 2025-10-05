@@ -163,8 +163,12 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof RichPresenceImpl)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RichPresenceImpl)) {
+            return false;
+        }
         RichPresenceImpl p = (RichPresenceImpl) o;
         return applicationId == p.applicationId
                 && Objects.equals(name, p.name)

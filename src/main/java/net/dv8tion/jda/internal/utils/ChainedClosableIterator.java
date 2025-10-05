@@ -45,20 +45,26 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T> {
 
     @Override
     public void close() {
-        if (currentIterator != null) currentIterator.close();
+        if (currentIterator != null) {
+            currentIterator.close();
+        }
         currentIterator = null;
     }
 
     @Override
     public boolean hasNext() {
-        if (item != null) return true;
+        if (item != null) {
+            return true;
+        }
         // get next item from current iterator if exists
         if (currentIterator != null) {
             if (!currentIterator.hasNext()) {
                 currentIterator.close();
                 currentIterator = null;
             } else {
-                if (findNext()) return true;
+                if (findNext()) {
+                    return true;
+                }
                 currentIterator.close();
                 currentIterator = null;
             }
@@ -72,14 +78,20 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T> {
             CacheView<T> view = null;
             while (generator.hasNext()) {
                 view = generator.next();
-                if (!view.isEmpty()) break;
+                if (!view.isEmpty()) {
+                    break;
+                }
                 view = null;
             }
-            if (view == null) return false;
+            if (view == null) {
+                return false;
+            }
 
             // find next item in this iterator
             currentIterator = view.lockedIterator();
-            if (findNext()) break;
+            if (findNext()) {
+                break;
+            }
         }
         return true;
     }
@@ -87,7 +99,9 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T> {
     private boolean findNext() {
         while (currentIterator.hasNext()) {
             T next = currentIterator.next();
-            if (items.contains(next)) continue;
+            if (items.contains(next)) {
+                continue;
+            }
             item = next;
             items.add(item); // avoid duplicates
             return true;
@@ -97,7 +111,9 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T> {
 
     @Override
     public T next() {
-        if (!hasNext()) throw new NoSuchElementException();
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         T tmp = item;
         item = null;
         return tmp;

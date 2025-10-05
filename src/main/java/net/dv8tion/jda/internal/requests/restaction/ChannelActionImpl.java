@@ -157,9 +157,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setParent(Category category) {
         if (category != null) {
             Checks.check(category.getGuild().equals(guild), "Category is not from same guild!");
-            if (type == ChannelType.CATEGORY)
+            if (type == ChannelType.CATEGORY) {
                 throw new UnsupportedOperationException(
                         "Cannot set a parent Category on a Category");
+            }
         }
 
         this.parent = category;
@@ -181,9 +182,11 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setTopic(String topic) {
         Checks.checkSupportedChannelTypes(ChannelUtil.TOPIC_SUPPORTED, type, "Topic");
         if (topic != null) {
-            if (ChannelUtil.POST_CONTAINERS.contains(type))
+            if (ChannelUtil.POST_CONTAINERS.contains(type)) {
                 Checks.notLonger(topic, IPostContainer.MAX_POST_CONTAINER_TOPIC_LENGTH, "Topic");
-            else Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
+            } else {
+                Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
+            }
         }
         this.topic = topic;
         return this;
@@ -295,10 +298,11 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public ChannelAction<T> syncPermissionOverrides() {
-        if (parent == null)
+        if (parent == null) {
             throw new IllegalStateException(
                     "Cannot sync overrides without parent category! Use setParent(category)"
                             + " first!");
+        }
         clearPermissionOverrides();
         Member selfMember = getGuild().getSelfMember();
         boolean canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
@@ -335,9 +339,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Member selfMember = getGuild().getSelfMember();
         boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR);
         if (!canSetRoles
-                && parent != null) // You can also set MANAGE_ROLES if you have it on the category
+                && parent != null) { // You can also set MANAGE_ROLES if you have it on the category
             // (apparently?)
             canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
+        }
         if (!canSetRoles) {
             // Prevent permission escalation
             // You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an
@@ -349,12 +354,13 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
             EnumSet<Permission> missingPerms =
                     Permission.getPermissions((allow | deny) & ~botPerms);
-            if (!missingPerms.isEmpty())
+            if (!missingPerms.isEmpty()) {
                 throw new InsufficientPermissionException(
                         guild,
                         Permission.MANAGE_PERMISSIONS,
                         "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in"
                                 + " order to set permissions you don't already have!");
+            }
         }
 
         overrides.put(targetId, new PermOverrideData(type, targetId, allow, deny));
@@ -365,15 +371,17 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setBitrate(Integer bitrate) {
-        if (!type.isAudio())
+        if (!type.isAudio()) {
             throw new UnsupportedOperationException(
                     "Can only set the bitrate for an Audio Channel!");
+        }
         if (bitrate != null) {
             int maxBitrate = getGuild().getMaxBitrate();
-            if (bitrate < 8000)
+            if (bitrate < 8000) {
                 throw new IllegalArgumentException("Bitrate must be greater than 8000.");
-            else if (bitrate > maxBitrate)
+            } else if (bitrate > maxBitrate) {
                 throw new IllegalArgumentException("Bitrate must be less than " + maxBitrate);
+            }
         }
 
         this.bitrate = bitrate;
@@ -386,17 +394,19 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setUserlimit(Integer userlimit) {
         if (userlimit != null) {
             Checks.notNegative(userlimit, "Userlimit");
-            if (type == ChannelType.VOICE)
+            if (type == ChannelType.VOICE) {
                 Checks.check(
                         userlimit <= VoiceChannel.MAX_USERLIMIT,
                         "Userlimit may not be greater than %d for voice channels",
                         VoiceChannel.MAX_USERLIMIT);
-            else if (type == ChannelType.STAGE)
+            } else if (type == ChannelType.STAGE) {
                 Checks.check(
                         userlimit <= StageChannel.MAX_USERLIMIT,
                         "Userlimit may not be greater than %d for stage channels",
                         StageChannel.MAX_USERLIMIT);
-            else throw new IllegalStateException("Can only set userlimit on audio channels");
+            } else {
+                throw new IllegalStateException("Can only set userlimit on audio channels");
+            }
         }
         this.userlimit = userlimit;
         return this;
@@ -406,8 +416,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setRegion(@Nullable Region region) {
-        if (!type.isAudio())
+        if (!type.isAudio()) {
             throw new UnsupportedOperationException("Can only set the region for AudioChannels!");
+        }
         this.region = region;
         return this;
     }
@@ -420,41 +431,64 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         object.put("name", name);
         object.put("type", type.getId());
         object.put("permission_overwrites", DataArray.fromCollection(overrides.valueCollection()));
-        if (position != null) object.put("position", position);
-        if (parent != null) object.put("parent_id", parent.getId());
+        if (position != null) {
+            object.put("position", position);
+        }
+        if (parent != null) {
+            object.put("parent_id", parent.getId());
+        }
 
         // Text and Forum
-        if (slowmode != null) object.put("rate_limit_per_user", slowmode);
-        if (defaultThreadSlowmode != null)
+        if (slowmode != null) {
+            object.put("rate_limit_per_user", slowmode);
+        }
+        if (defaultThreadSlowmode != null) {
             object.put("default_thread_rate_limit_per_user", defaultThreadSlowmode);
+        }
 
         // Text, Forum, and News
-        if (topic != null && !topic.isEmpty()) object.put("topic", topic);
-        if (nsfw != null) object.put("nsfw", nsfw);
+        if (topic != null && !topic.isEmpty()) {
+            object.put("topic", topic);
+        }
+        if (nsfw != null) {
+            object.put("nsfw", nsfw);
+        }
 
         // Forum/Media only
-        if (defaultReactionEmoji instanceof CustomEmoji)
+        if (defaultReactionEmoji instanceof CustomEmoji) {
             object.put(
                     "default_reaction_emoji",
                     DataObject.empty()
                             .put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
-        else if (defaultReactionEmoji instanceof UnicodeEmoji)
+        } else if (defaultReactionEmoji instanceof UnicodeEmoji) {
             object.put(
                     "default_reaction_emoji",
                     DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
-        if (availableTags != null)
+        }
+        if (availableTags != null) {
             object.put("available_tags", DataArray.fromCollection(availableTags));
-        if (defaultSortOrder != null) object.put("default_sort_order", defaultSortOrder);
+        }
+        if (defaultSortOrder != null) {
+            object.put("default_sort_order", defaultSortOrder);
+        }
 
         // Forum only
-        if (defaultLayout != null) object.put("default_forum_layout", defaultLayout);
+        if (defaultLayout != null) {
+            object.put("default_forum_layout", defaultLayout);
+        }
 
         // Voice only
-        if (userlimit != null) object.put("user_limit", userlimit);
+        if (userlimit != null) {
+            object.put("user_limit", userlimit);
+        }
 
         // Voice and Stage
-        if (bitrate != null) object.put("bitrate", bitrate);
-        if (region != null) object.put("rtc_region", region.getKey());
+        if (bitrate != null) {
+            object.put("bitrate", bitrate);
+        }
+        if (region != null) {
+            object.put("rtc_region", region.getKey());
+        }
 
         return getRequestBody(object);
     }
@@ -463,8 +497,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected void handleSuccess(Response response, Request<T> request) {
         EntityBuilder builder = api.getEntityBuilder();
         GuildChannel channel = builder.createGuildChannel((GuildImpl) guild, response.getObject());
-        if (channel == null)
+        if (channel == null) {
             request.onFailure(new IllegalStateException("Created channel of unknown type!"));
-        else request.onSuccess(clazz.cast(channel));
+        } else {
+            request.onSuccess(clazz.cast(channel));
+        }
     }
 }

@@ -388,13 +388,19 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
     default R applyEditData(@Nonnull MessageEditData data) {
         Checks.notNull(data, "MessageEditData");
-        if (data.isSet(MessageEditBuilder.CONTENT)) setContent(data.getContent());
-        if (data.isSet(MessageEditBuilder.EMBEDS)) setEmbeds(data.getEmbeds());
+        if (data.isSet(MessageEditBuilder.CONTENT)) {
+            setContent(data.getContent());
+        }
+        if (data.isSet(MessageEditBuilder.EMBEDS)) {
+            setEmbeds(data.getEmbeds());
+        }
         if (data.isSet(MessageEditBuilder.COMPONENTS)) {
             setComponents(data.getComponents());
             useComponentsV2(data.isUsingComponentsV2());
         }
-        if (data.isSet(MessageEditBuilder.ATTACHMENTS)) setFiles(data.getFiles());
+        if (data.isSet(MessageEditBuilder.ATTACHMENTS)) {
+            setFiles(data.getFiles());
+        }
         if (data.isSet(MessageEditBuilder.MENTIONS)) {
             setAllowedMentions(data.getAllowedMentions());
             mentionUsers(data.getMentionedUsers());

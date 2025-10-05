@@ -71,7 +71,9 @@ public interface ICategorizableChannel
     @Nullable
     default String getParentCategoryId() {
         long parentID = getParentCategoryIdLong();
-        if (parentID == 0L) return null;
+        if (parentID == 0L) {
+            return null;
+        }
         return Long.toUnsignedString(parentID);
     }
 

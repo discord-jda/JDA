@@ -56,7 +56,9 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     public void forEach(Consumer<? super T> action) {
         Objects.requireNonNull(action);
         try (ClosableIterator<T> it = lockedIterator()) {
-            while (it.hasNext()) action.accept(it.next());
+            while (it.hasNext()) {
+                action.accept(it.next());
+            }
         }
     }
 
@@ -74,7 +76,9 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         try (ChainedClosableIterator<T> it = lockedIterator()) {
             // because the iterator needs to retain elements to avoid duplicates,
             // we can use the resulting HashSet as our return value!
-            while (it.hasNext()) it.next();
+            while (it.hasNext()) {
+                it.next();
+            }
             return Collections.unmodifiableSet(it.getItems());
         }
     }

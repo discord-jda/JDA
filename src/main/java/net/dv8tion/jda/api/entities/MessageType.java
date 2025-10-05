@@ -318,7 +318,9 @@ public enum MessageType {
     @Nonnull
     public static MessageType fromId(int id) {
         for (MessageType type : values()) {
-            if (type.id == id) return type;
+            if (type.id == id) {
+                return type;
+            }
         }
         return UNKNOWN;
     }

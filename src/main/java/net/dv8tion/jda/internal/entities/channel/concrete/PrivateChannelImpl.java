@@ -128,18 +128,26 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl>
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof PrivateChannelImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof PrivateChannelImpl)) {
+            return false;
+        }
         PrivateChannelImpl impl = (PrivateChannelImpl) obj;
         return impl.id == this.id;
     }
 
     private void updateUser() {
         // if the user is null then we don't even know their ID, and so we have to check that first
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
         // Load user from cache if one exists, otherwise we might have an outdated user instance
         User realUser = getJDA().getUserById(user.getIdLong());
-        if (realUser != null) this.user = realUser;
+        if (realUser != null) {
+            this.user = realUser;
+        }
     }
 
     private void checkBot() {
@@ -153,7 +161,8 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl>
         // user, a null user is a valid channel state.
         // Events cannot happen between a bot and another bot, so the user would never be null in
         // that case.
-        if (getUser() != null && getUser().isBot())
+        if (getUser() != null && getUser().isBot()) {
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
+        }
     }
 }

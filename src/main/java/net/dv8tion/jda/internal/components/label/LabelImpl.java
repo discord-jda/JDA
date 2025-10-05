@@ -143,7 +143,9 @@ public class LabelImpl extends AbstractComponentImpl implements Label, ModalTopL
                 .put("label", label)
                 .put("description", description)
                 .put("component", child);
-        if (uniqueId >= 0) obj.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            obj.put("id", uniqueId);
+        }
 
         return obj;
     }
@@ -158,8 +160,12 @@ public class LabelImpl extends AbstractComponentImpl implements Label, ModalTopL
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof LabelImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof LabelImpl)) {
+            return false;
+        }
         LabelImpl that = (LabelImpl) o;
         return uniqueId == that.uniqueId
                 && Objects.equals(label, that.label)

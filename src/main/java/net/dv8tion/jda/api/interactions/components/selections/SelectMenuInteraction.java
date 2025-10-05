@@ -86,14 +86,15 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
         final MessageComponentTree newTree = message.getComponentTree()
                 .replace(ComponentReplacer.byUniqueId(getSelectMenu(), newMenu));
 
-        if (isAcknowledged())
+        if (isAcknowledged()) {
             return getHook()
                     .editMessageComponentsById(message.getId(), newTree.getComponents())
                     .useComponentsV2(message.isUsingComponentsV2())
                     .map(it -> null);
-        else
+        } else {
             return editComponents(newTree.getComponents())
                     .useComponentsV2(message.isUsingComponentsV2())
                     .map(it -> null);
+        }
     }
 }

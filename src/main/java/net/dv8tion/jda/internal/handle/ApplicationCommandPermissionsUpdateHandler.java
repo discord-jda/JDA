@@ -39,8 +39,9 @@ public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler {
         if (!content.isNull("guild_id")) {
             long guildId = content.getUnsignedLong("guild_id");
             guild = getJDA().getGuildById(guildId);
-            if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
-            else if (guild == null) {
+            if (getJDA().getGuildSetupController().isLocked(guildId)) {
+                return guildId;
+            } else if (guild == null) {
                 WebSocketClient.LOG.debug(
                         "Received APPLICATION_COMMAND_PERMISSIONS_UPDATE for a guild that is not"
                                 + " cached: GuildID: {}",
@@ -63,12 +64,13 @@ public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler {
                         obj.getUnsignedLong("id")))
                 .collect(Collectors.toList());
 
-        if (id != applicationId)
+        if (id != applicationId) {
             api.handleEvent(new ApplicationCommandUpdatePrivilegesEvent(
                     api, responseNumber, guild, id, applicationId, privileges));
-        else
+        } else {
             api.handleEvent(new ApplicationUpdatePrivilegesEvent(
                     api, responseNumber, guild, applicationId, privileges));
+        }
         return null;
     }
 }

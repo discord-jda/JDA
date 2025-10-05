@@ -165,7 +165,9 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
         @Nonnull
         public static Spacing fromKey(int type) {
             for (Spacing t : values()) {
-                if (t.key == type) return t;
+                if (t.key == type) {
+                    return t;
+                }
             }
             return UNKNOWN;
         }

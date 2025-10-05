@@ -107,8 +107,11 @@ public class MiscUtil {
     }
 
     public static long parseLong(@Nonnull String input) {
-        if (input.startsWith("-")) return Long.parseLong(input);
-        else return Long.parseUnsignedLong(input);
+        if (input.startsWith("-")) {
+            return Long.parseLong(input);
+        } else {
+            return Long.parseUnsignedLong(input);
+        }
     }
 
     public static long parseSnowflake(@Nonnull String input) {
@@ -153,9 +156,10 @@ public class MiscUtil {
      */
     public static void tryLock(@Nonnull Lock lock) {
         try {
-            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS))
+            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS)) {
                 throw new IllegalStateException(
                         "Could not acquire lock in a reasonable timeframe! (10 seconds)");
+            }
         } catch (InterruptedException e) {
             throw new IllegalStateException("Unable to acquire lock while thread is interrupted!");
         }
@@ -188,8 +192,11 @@ public class MiscUtil {
                 return;
             }
 
-            if (leftJustified) appendable.append(Helpers.rightPad(out, width));
-            else appendable.append(Helpers.leftPad(out, width));
+            if (leftJustified) {
+                appendable.append(Helpers.rightPad(out, width));
+            } else {
+                appendable.append(Helpers.leftPad(out, width));
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

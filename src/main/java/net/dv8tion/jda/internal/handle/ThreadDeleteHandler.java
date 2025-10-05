@@ -33,7 +33,9 @@ public class ThreadDeleteHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         final long threadId = content.getLong("id");

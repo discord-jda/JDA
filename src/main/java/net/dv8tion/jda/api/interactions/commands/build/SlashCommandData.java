@@ -615,9 +615,10 @@ public interface SlashCommandData extends CommandData {
     @Nonnull
     static SlashCommandData fromCommand(@Nonnull Command command) {
         Checks.notNull(command, "Command");
-        if (command.getType() != Command.Type.SLASH)
+        if (command.getType() != Command.Type.SLASH) {
             throw new IllegalArgumentException("Cannot convert command of type " + command.getType()
                     + " to SlashCommandData!");
+        }
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
         data.setContexts(command.getContexts());
@@ -659,9 +660,10 @@ public interface SlashCommandData extends CommandData {
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
-        if (commandType != Command.Type.SLASH)
+        if (commandType != Command.Type.SLASH) {
             throw new IllegalArgumentException(
                     "Cannot convert command of type " + commandType + " to SlashCommandData!");
+        }
 
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
@@ -670,17 +672,19 @@ public interface SlashCommandData extends CommandData {
             command.setContexts(object.getArray("contexts").stream(DataArray::getString)
                     .map(InteractionContextType::fromKey)
                     .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
-        } else
+        } else {
             command.setContexts(Helpers.unmodifiableEnumSet(
                     InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+        }
 
         if (!object.isNull("integration_types")) {
             command.setIntegrationTypes(
                     object.getArray("integration_types").stream(DataArray::getString)
                             .map(IntegrationType::fromKey)
                             .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
-        } else
+        } else {
             command.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
+        }
 
         command.setNSFW(object.getBoolean("nsfw"));
 

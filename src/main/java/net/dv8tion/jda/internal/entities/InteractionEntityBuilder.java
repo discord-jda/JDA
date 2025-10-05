@@ -64,7 +64,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     public Guild getOrCreateGuild(DataObject guildJson) {
         final long guildId = guildJson.getUnsignedLong("id");
         final Guild guild = api.getGuildById(guildId);
-        if (guild != null) return guild;
+        if (guild != null) {
+            return guild;
+        }
 
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final String locale = guildJson.getString("preferred_locale", "en-US");
@@ -113,7 +115,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     }
 
     public Category createCategory(@Nonnull Guild guild, DataObject json) {
-        if (!guild.isDetached()) return guild.getCategoryById(json.getLong("id"));
+        if (!guild.isDetached()) {
+            return guild.getCategoryById(json.getLong("id"));
+        }
 
         final long id = json.getLong("id");
         final DetachedCategoryImpl channel =
@@ -124,7 +128,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     }
 
     public TextChannel createTextChannel(@Nonnull Guild guild, DataObject json) {
-        if (!guild.isDetached()) return guild.getTextChannelById(json.getLong("id"));
+        if (!guild.isDetached()) {
+            return guild.getTextChannelById(json.getLong("id"));
+        }
 
         final long id = json.getLong("id");
         DetachedTextChannelImpl channel =
@@ -135,7 +141,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     }
 
     public NewsChannel createNewsChannel(@Nonnull Guild guild, DataObject json) {
-        if (!guild.isDetached()) return guild.getNewsChannelById(json.getLong("id"));
+        if (!guild.isDetached()) {
+            return guild.getNewsChannelById(json.getLong("id"));
+        }
 
         final long id = json.getLong("id");
         DetachedNewsChannelImpl channel =
@@ -146,7 +154,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     }
 
     public VoiceChannel createVoiceChannel(@Nonnull Guild guild, DataObject json) {
-        if (!guild.isDetached()) return guild.getVoiceChannelById(json.getLong("id"));
+        if (!guild.isDetached()) {
+            return guild.getVoiceChannelById(json.getLong("id"));
+        }
 
         final long id = json.getLong("id");
         DetachedVoiceChannelImpl channel =
@@ -157,7 +167,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     }
 
     public StageChannel createStageChannel(@Nonnull Guild guild, DataObject json) {
-        if (!guild.isDetached()) return guild.getStageChannelById(json.getLong("id"));
+        if (!guild.isDetached()) {
+            return guild.getStageChannelById(json.getLong("id"));
+        }
         final long id = json.getLong("id");
         final DetachedStageChannelImpl channel =
                 new DetachedStageChannelImpl(id, (DetachedGuildImpl) guild);
@@ -167,7 +179,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     }
 
     public MediaChannel createMediaChannel(@Nonnull Guild guild, DataObject json) {
-        if (!guild.isDetached()) return guild.getMediaChannelById(json.getLong("id"));
+        if (!guild.isDetached()) {
+            return guild.getMediaChannelById(json.getLong("id"));
+        }
 
         final long id = json.getLong("id");
         final DetachedMediaChannelImpl channel =
@@ -180,10 +194,12 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     public ThreadChannel createThreadChannel(@Nonnull Guild guild, DataObject json) {
         if (!guild.isDetached()) {
             final ThreadChannel threadChannel = guild.getThreadChannelById(json.getLong("id"));
-            if (threadChannel != null) return threadChannel;
-            else
+            if (threadChannel != null) {
+                return threadChannel;
+            } else {
                 return entityBuilder.createThreadChannel(
                         (GuildImpl) guild, json, guild.getIdLong(), false);
+            }
         }
 
         final long id = json.getUnsignedLong("id");
@@ -196,7 +212,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     }
 
     public ForumChannel createForumChannel(@Nonnull Guild guild, DataObject json) {
-        if (!guild.isDetached()) return guild.getForumChannelById(json.getLong("id"));
+        if (!guild.isDetached()) {
+            return guild.getForumChannelById(json.getLong("id"));
+        }
 
         final long id = json.getLong("id");
         final DetachedForumChannelImpl channel =
@@ -213,22 +231,27 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
     }
 
     public Member createMember(@Nonnull Guild guild, DataObject memberJson) {
-        if (!guild.isDetached()) return entityBuilder.createMember((GuildImpl) guild, memberJson);
+        if (!guild.isDetached()) {
+            return entityBuilder.createMember((GuildImpl) guild, memberJson);
+        }
 
         User user = entityBuilder.createUser(memberJson.getObject("user"));
         DetachedMemberImpl member = new DetachedMemberImpl((DetachedGuildImpl) guild, user);
         configureMember(memberJson, member);
 
         // Absent outside interactions and in message mentions
-        if (memberJson.hasKey("permissions"))
+        if (memberJson.hasKey("permissions")) {
             member.setInteractionPermissions(new MemberInteractionPermissions(
                     interactionChannelId, memberJson.getLong("permissions")));
+        }
 
         return member;
     }
 
     public Role createRole(@Nonnull Guild guild, DataObject roleJson) {
-        if (!guild.isDetached()) return guild.getRoleById(roleJson.getLong("id"));
+        if (!guild.isDetached()) {
+            return guild.getRoleById(roleJson.getLong("id"));
+        }
 
         final long id = roleJson.getLong("id");
         DetachedRoleImpl role = new DetachedRoleImpl(id, (DetachedGuildImpl) guild);
@@ -246,9 +269,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
         final PrivateChannelMixin<?> channel;
         if (recipientObj != null) {
             // Let's try not to DM ourselves
-            if (api.getSelfUser().getIdLong() == recipientObj.getLong("id"))
+            if (api.getSelfUser().getIdLong() == recipientObj.getLong("id")) {
                 channel = new PrivateChannelImpl(getJDA(), channelId, interactionUser);
-            else {
+            } else {
                 // This still needs to be detached, as there is no open channel between the bot and
                 // the friend,
                 channel = new DetachedPrivateChannelImpl(

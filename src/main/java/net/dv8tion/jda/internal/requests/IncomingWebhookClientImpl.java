@@ -59,7 +59,9 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message>
 
     @Override
     public WebhookMessageEditActionImpl<Message> editRequest(@Nonnull String messageId) {
-        if (!"@original".equals(messageId)) Checks.isSnowflake(messageId);
+        if (!"@original".equals(messageId)) {
+            Checks.isSnowflake(messageId);
+        }
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(
                 Long.toUnsignedString(id), token, messageId);
         route = route.withQueryParams("wait", "true");
@@ -73,7 +75,9 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message>
     @Nonnull
     @Override
     public WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId) {
-        if (!"@original".equals(messageId)) Checks.isSnowflake(messageId);
+        if (!"@original".equals(messageId)) {
+            Checks.isSnowflake(messageId);
+        }
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_FETCH.compile(
                 Long.toUnsignedString(id), token, messageId);
         WebhookMessageRetrieveActionImpl action = new WebhookMessageRetrieveActionImpl(

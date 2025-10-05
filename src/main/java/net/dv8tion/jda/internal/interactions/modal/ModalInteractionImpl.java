@@ -62,8 +62,9 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
     private ModalMapping getMapping(DataObject component, DataObject resolved) {
         Component.Type type = Component.Type.fromKey(component.getInt("type"));
 
-        if (type == Component.Type.LABEL)
+        if (type == Component.Type.LABEL) {
             return new ModalMapping(this, resolved, component.getObject("component"));
+        }
 
         return null;
     }

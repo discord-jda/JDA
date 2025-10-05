@@ -80,14 +80,20 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
 
     @Override
     public int getPosition() {
-        if (frozenPosition > Integer.MIN_VALUE) return frozenPosition;
+        if (frozenPosition > Integer.MIN_VALUE) {
+            return frozenPosition;
+        }
         Guild guild = getGuild();
-        if (equals(guild.getPublicRole())) return -1;
+        if (equals(guild.getPublicRole())) {
+            return -1;
+        }
 
         // Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
         int i = guild.getRoles().size() - 2;
         for (Role r : guild.getRoles()) {
-            if (equals(r)) return i;
+            if (equals(r)) {
+                return i;
+            }
             i--;
         }
         throw new IllegalStateException(
@@ -172,7 +178,9 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
         long effectivePerms = rawPermissions | getGuild().getPublicRole().getPermissionsRaw();
         for (Permission perm : permissions) {
             final long rawValue = perm.getRawValue();
-            if ((effectivePerms & rawValue) != rawValue) return false;
+            if ((effectivePerms & rawValue) != rawValue) {
+                return false;
+            }
         }
         return true;
     }
@@ -184,7 +192,9 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
                 PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
         for (Permission perm : permissions) {
             final long rawValue = perm.getRawValue();
-            if ((effectivePerms & rawValue) != rawValue) return false;
+            if ((effectivePerms & rawValue) != rawValue) {
+                return false;
+            }
         }
         return true;
     }
@@ -200,16 +210,18 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
         Checks.check(
                 syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long rolePerms = PermissionUtil.getEffectivePermission(targetChannel, this);
-        if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+        if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // Role can't manage permissions at all!
-
+        }
         long channelPermissions = PermissionUtil.getExplicitPermission(targetChannel, this, false);
         // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
         // permission on the channel
         boolean hasLocalAdmin = ((rolePerms & Permission.ADMINISTRATOR.getRawValue())
                         | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
                 != 0;
-        if (hasLocalAdmin) return true;
+        if (hasLocalAdmin) {
+            return true;
+        }
 
         TLongObjectMap<PermissionOverride> existingOverrides =
                 ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
@@ -223,7 +235,9 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
             }
             // If any permissions changed that the role doesn't have in the channel, the role can't
             // sync it :(
-            if (((allow | deny) & ~rolePerms) != 0) return false;
+            if (((allow | deny) & ~rolePerms) != 0) {
+                return false;
+            }
         }
         return true;
     }
@@ -234,9 +248,9 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
         Checks.check(
                 channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long rolePerms = PermissionUtil.getEffectivePermission(channel, this);
-        if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+        if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // Role can't manage permissions at all!
-
+        }
         long channelPermissions = PermissionUtil.getExplicitPermission(channel, this, false);
         // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
         // permission on the channel
@@ -254,7 +268,9 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     @Override
     public Guild getGuild() {
         Guild realGuild = api.getGuildById(guild.getIdLong());
-        if (realGuild != null) guild = realGuild;
+        if (realGuild != null) {
+            guild = realGuild;
+        }
         return guild;
     }
 
@@ -268,12 +284,15 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     @Override
     public AuditableRestAction<Void> delete() {
         Guild guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
-        if (!PermissionUtil.canInteract(guild.getSelfMember(), this))
+        }
+        if (!PermissionUtil.canInteract(guild.getSelfMember(), this)) {
             throw new HierarchyException("Can't delete role >= highest self-role");
-        if (managed)
+        }
+        if (managed) {
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
+        }
 
         Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -310,8 +329,12 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof RoleImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof RoleImpl)) {
+            return false;
+        }
         RoleImpl oRole = (RoleImpl) o;
         return this.getIdLong() == oRole.getIdLong();
     }
@@ -375,7 +398,9 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
 
     @Override
     public RoleImpl setTags(DataObject tags) {
-        if (this.tags == null) return this;
+        if (this.tags == null) {
+            return this;
+        }
         this.tags = new RoleTagsImpl(tags);
         return this;
     }
@@ -470,8 +495,12 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (!(obj instanceof RoleTagsImpl)) return false;
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof RoleTagsImpl)) {
+                return false;
+            }
             RoleTagsImpl other = (RoleTagsImpl) obj;
             return botId == other.botId
                     && integrationId == other.integrationId

@@ -59,12 +59,16 @@ public class PresenceUpdateHandler extends SocketHandler {
             log.debug("Received PRESENCE_UPDATE without guild_id. Ignoring event.");
             return null;
         }
-        if (api.getCacheFlags().stream().noneMatch(CacheFlag::isPresence)) return null;
+        if (api.getCacheFlags().stream().noneMatch(CacheFlag::isPresence)) {
+            return null;
+        }
 
         // Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently
         // locked or not cached.
         final long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
             getJDA().getEventCache()
@@ -83,13 +87,17 @@ public class PresenceUpdateHandler extends SocketHandler {
         }
 
         CacheView.SimpleCacheView<MemberPresenceImpl> presences = guild.getPresenceView();
-        if (presences == null) return null; // technically this should be impossible
+        if (presences == null) {
+            return null; // technically this should be impossible
+        }
         DataObject jsonUser = content.getObject("user");
         final long userId = jsonUser.getUnsignedLong("id");
         MemberImpl member = (MemberImpl) guild.getMemberById(userId);
         MemberPresenceImpl presence = presences.get(userId);
         OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
-        if (status == OnlineStatus.OFFLINE) presences.remove(userId);
+        if (status == OnlineStatus.OFFLINE) {
+            presences.remove(userId);
+        }
         if (presence == null) {
             presence = new MemberPresenceImpl();
             if (status != OnlineStatus.OFFLINE) {
@@ -110,11 +118,14 @@ public class PresenceUpdateHandler extends SocketHandler {
         List<Activity> newActivities = new ArrayList<>();
         boolean parsedActivity = parseActivities(userId, activityArray, newActivities);
 
-        if (getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS) && !content.isNull("client_status"))
+        if (getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS) && !content.isNull("client_status")) {
             handleClientStatus(content, presence);
+        }
 
         // Check if activities changed
-        if (parsedActivity) handleActivities(newActivities, member, presence);
+        if (parsedActivity) {
+            handleActivities(newActivities, member, presence);
+        }
 
         // The member is already cached, so modify the presence values and fire events as needed.
 
@@ -135,23 +146,25 @@ public class PresenceUpdateHandler extends SocketHandler {
         boolean parsedActivity = false;
         try {
             if (activityArray != null) {
-                for (int i = 0; i < activityArray.length(); i++)
+                for (int i = 0; i < activityArray.length(); i++) {
                     newActivities.add(EntityBuilder.createActivity(activityArray.getObject(i)));
+                }
                 parsedActivity = true;
             }
         } catch (Exception ex) {
-            if (EntityBuilder.LOG.isDebugEnabled())
+            if (EntityBuilder.LOG.isDebugEnabled()) {
                 EntityBuilder.LOG.warn(
                         "Encountered exception trying to parse a presence! UserID: {} JSON: {}",
                         userId,
                         activityArray,
                         ex);
-            else
+            } else {
                 EntityBuilder.LOG.warn(
                         "Encountered exception trying to parse a presence! UserID: {} Message: {}"
                                 + " Enable debug for details",
                         userId,
                         ex.getMessage());
+            }
         }
         return parsedActivity;
     }
@@ -162,7 +175,9 @@ public class PresenceUpdateHandler extends SocketHandler {
             MemberPresenceImpl presence) {
         List<Activity> oldActivities = presence.getActivities();
         presence.setActivities(newActivities);
-        if (member == null) return;
+        if (member == null) {
+            return;
+        }
         boolean unorderedEquals = Helpers.deepEqualsUnordered(oldActivities, newActivities);
         if (unorderedEquals) {
             boolean deepEquals = Helpers.deepEquals(oldActivities, newActivities);
@@ -176,7 +191,9 @@ public class PresenceUpdateHandler extends SocketHandler {
                     new ArrayList<>(oldActivities); // create modifiable copy
             List<Activity> startedActivities = new ArrayList<>();
             for (Activity activity : newActivities) {
-                if (!stoppedActivities.remove(activity)) startedActivities.add(activity);
+                if (!stoppedActivities.remove(activity)) {
+                    startedActivities.add(activity);
+                }
             }
 
             for (Activity activity : startedActivities) {

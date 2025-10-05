@@ -61,7 +61,9 @@ public enum ClientType {
     @Nonnull
     public static ClientType fromKey(@Nonnull String key) {
         for (ClientType type : values()) {
-            if (type.key.equals(key)) return type;
+            if (type.key.equals(key)) {
+                return type;
+            }
         }
         return UNKNOWN;
     }

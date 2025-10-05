@@ -121,9 +121,11 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     public AuditableRestAction<Void> modifyStatus(@Nonnull String status) {
         Checks.notLonger(status, MAX_STATUS_LENGTH, "Voice Status");
         checkCanAccess();
-        if (this.equals(getGuild().getSelfMember().getVoiceState().getChannel()))
+        if (this.equals(getGuild().getSelfMember().getVoiceState().getChannel())) {
             checkPermission(Permission.VOICE_SET_STATUS);
-        else checkCanManage();
+        } else {
+            checkCanManage();
+        }
 
         Route.CompiledRoute route = Route.Channels.SET_STATUS.compile(getId());
         DataObject body = DataObject.empty().put("status", status);

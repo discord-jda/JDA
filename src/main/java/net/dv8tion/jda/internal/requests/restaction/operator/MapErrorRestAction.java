@@ -53,15 +53,15 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
                         (error) -> // Use contextWrap so error has a context cause
                         {
                             try {
-                                if (check.test(error)) // Check condition
-                                doSuccess(
-                                            success,
-                                            map.apply(error)); // Then apply fallback function
-                                else // Fallback downstream
-                                doFailure(
+                                if (check.test(error)) { // Check condition
+                                    doSuccess(success, map.apply(error));
+                                    // Then apply fallback function
+                                } else { // Fallback downstream
+                                    doFailure(
                                             failure,
                                             error); // error already has context so no contextWrap
-                                // needed
+                                    // needed
+                                }
                             } catch (Throwable e) {
                                 doFailure(
                                         failure,
@@ -78,12 +78,17 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
             return action.complete(shouldQueue);
         } catch (Throwable error) {
             try {
-                if (check.test(error)) return map.apply(error);
+                if (check.test(error)) {
+                    return map.apply(error);
+                }
             } catch (Throwable e) {
                 fail(Helpers.appendCause(e, error));
             }
-            if (error instanceof RateLimitedException) throw (RateLimitedException) error;
-            else fail(error);
+            if (error instanceof RateLimitedException) {
+                throw (RateLimitedException) error;
+            } else {
+                fail(error);
+            }
         }
         throw new AssertionError("Unreachable");
     }
@@ -97,8 +102,11 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
                 error = error instanceof CompletionException && error.getCause() != null
                         ? error.getCause()
                         : error;
-                if (check.test(error)) result = map.apply(error);
-                else fail(error);
+                if (check.test(error)) {
+                    result = map.apply(error);
+                } else {
+                    fail(error);
+                }
             }
             return result;
         });
@@ -106,8 +114,12 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
 
     @Contract("_ -> fail")
     private void fail(Throwable error) {
-        if (error instanceof RuntimeException) throw (RuntimeException) error;
-        else if (error instanceof Error) throw (Error) error;
-        else throw new RuntimeException(error);
+        if (error instanceof RuntimeException) {
+            throw (RuntimeException) error;
+        } else if (error instanceof Error) {
+            throw (Error) error;
+        } else {
+            throw new RuntimeException(error);
+        }
     }
 }

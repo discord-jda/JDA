@@ -34,7 +34,9 @@ public class GuildRoleDeleteHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {

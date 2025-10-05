@@ -367,14 +367,18 @@ public enum ErrorResponse {
     @Nonnull
     public static ErrorResponse fromCode(int code) {
         for (ErrorResponse error : values()) {
-            if (code == error.getCode()) return error;
+            if (code == error.getCode()) {
+                return error;
+            }
         }
         return SERVER_ERROR;
     }
 
     @Nonnull
     public static ErrorResponse fromJSON(@Nullable DataObject obj) {
-        if (obj == null || obj.isNull("code")) return SERVER_ERROR;
+        if (obj == null || obj.isNull("code")) {
+            return SERVER_ERROR;
+        }
         return ErrorResponse.fromCode(obj.getInt("code"));
     }
 }

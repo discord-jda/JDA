@@ -32,9 +32,10 @@ public abstract class ReadWriteLockCache<T> {
     protected WeakReference<Set<T>> cachedSet;
 
     public UnlockHook writeLock() {
-        if (lock.getReadHoldCount() > 0)
+        if (lock.getReadHoldCount() > 0) {
             throw new IllegalStateException(
                     "Unable to acquire write-lock while holding read-lock!");
+        }
         ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         MiscUtil.tryLock(writeLock);
         onAcquireWriteLock();

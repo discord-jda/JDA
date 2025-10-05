@@ -349,17 +349,21 @@ public interface Button
     default Button withStyle(@Nonnull ButtonStyle style) {
         Checks.notNull(style, "Style");
         Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
-        if (getStyle() == ButtonStyle.LINK && style != ButtonStyle.LINK)
+        if (getStyle() == ButtonStyle.LINK && style != ButtonStyle.LINK) {
             throw new IllegalArgumentException("You cannot change a link button to another style!");
-        if (getStyle() != ButtonStyle.LINK && style == ButtonStyle.LINK)
+        }
+        if (getStyle() != ButtonStyle.LINK && style == ButtonStyle.LINK) {
             throw new IllegalArgumentException(
                     "You cannot change a styled button to a link button!");
-        if (getStyle() == ButtonStyle.PREMIUM && style != ButtonStyle.PREMIUM)
+        }
+        if (getStyle() == ButtonStyle.PREMIUM && style != ButtonStyle.PREMIUM) {
             throw new IllegalArgumentException(
                     "You cannot change a premium button to another style!");
-        if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM)
+        }
+        if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM) {
             throw new IllegalArgumentException(
                     "You cannot change a styled button to a premium button!");
+        }
         return new ButtonImpl(
                         getCustomId(),
                         getUniqueId(),
@@ -690,7 +694,9 @@ public interface Button
     @Nonnull
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label) {
         Checks.check(style != ButtonStyle.PREMIUM, "Premium buttons don't support labels");
-        if (style == ButtonStyle.LINK) return link(idOrUrl, label);
+        if (style == ButtonStyle.LINK) {
+            return link(idOrUrl, label);
+        }
         return new ButtonImpl(idOrUrl, label, style, false, null).checkValid();
     }
 
@@ -723,7 +729,9 @@ public interface Button
     @Nonnull
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull Emoji emoji) {
         Checks.check(style != ButtonStyle.PREMIUM, "Premium buttons don't support emojis");
-        if (style == ButtonStyle.LINK) return link(idOrUrl, emoji);
+        if (style == ButtonStyle.LINK) {
+            return link(idOrUrl, emoji);
+        }
         return new ButtonImpl(idOrUrl, null, style, false, emoji).checkValid();
     }
 

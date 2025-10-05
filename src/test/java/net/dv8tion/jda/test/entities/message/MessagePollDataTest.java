@@ -68,7 +68,9 @@ public class MessagePollDataTest {
                 .isThrownBy(builder::build)
                 .withMessage("Cannot build a poll without answers");
 
-        for (int i = 0; i < 10; i++) builder.addAnswer("Answer " + i);
+        for (int i = 0; i < 10; i++) {
+            builder.addAnswer("Answer " + i);
+        }
 
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> builder.addAnswer("Answer " + 10))

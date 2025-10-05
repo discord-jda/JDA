@@ -118,23 +118,30 @@ public class FileDisplayImpl extends AbstractComponentImpl
     @Override
     public DataObject toData() {
         final String outputUrl;
-        if (media != null) // Retain or reupload the entire file, both cases uses attachment://
-        outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
-        else // User-managed attachment
-        outputUrl = url;
+        if (media != null) { // Retain or reupload the entire file, both cases uses attachment://
+            outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
+        } else { // User-managed attachment
+            outputUrl = url;
+        }
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 // File components only support attachment://
                 .put("file", DataObject.empty().put("url", outputUrl))
                 .put("spoiler", spoiler);
-        if (uniqueId >= 0) json.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof FileDisplayImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof FileDisplayImpl)) {
+            return false;
+        }
         FileDisplayImpl fileDisplay = (FileDisplayImpl) o;
         return uniqueId == fileDisplay.uniqueId
                 && spoiler == fileDisplay.spoiler

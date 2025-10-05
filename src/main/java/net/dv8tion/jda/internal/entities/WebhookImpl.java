@@ -81,27 +81,30 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
     @Nonnull
     @Override
     public Guild getGuild() {
-        if (channel == null)
+        if (channel == null) {
             throw new IllegalStateException(
                     "Cannot provide guild for this Webhook instance because it does not belong to"
                             + " this shard");
+        }
         return getChannel().getGuild();
     }
 
     @Nonnull
     @Override
     public IWebhookContainerUnion getChannel() {
-        if (channel == null)
+        if (channel == null) {
             throw new IllegalStateException(
                     "Cannot provide channel for this Webhook instance because it does not belong to"
                             + " this shard");
+        }
         return (IWebhookContainerUnion) channel;
     }
 
     @Override
     public Member getOwner() {
-        if (owner == null && channel != null && ownerUser != null)
+        if (owner == null && channel != null && ownerUser != null) {
             return getGuild().getMember(ownerUser); // maybe it exists later?
+        }
         return owner;
     }
 
@@ -142,10 +145,13 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
     @Nonnull
     @Override
     public AuditableRestAction<Void> delete() {
-        if (token != null) return delete(token);
+        if (token != null) {
+            return delete(token);
+        }
 
-        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS)) {
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_WEBHOOKS);
+        }
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -198,8 +204,9 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
     }
 
     private void checkToken() {
-        if (token == null)
+        if (token == null) {
             throw new UnsupportedOperationException("Cannot execute webhook without a token!");
+        }
     }
 
     /* -- Impl Setters -- */
@@ -239,8 +246,12 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof WebhookImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof WebhookImpl)) {
+            return false;
+        }
         WebhookImpl impl = (WebhookImpl) obj;
         return impl.id == id;
     }

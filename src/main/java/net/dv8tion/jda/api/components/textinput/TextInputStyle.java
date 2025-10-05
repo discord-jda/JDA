@@ -65,7 +65,9 @@ public enum TextInputStyle {
     @Nonnull
     public static TextInputStyle fromKey(int key) {
         for (TextInputStyle style : values()) {
-            if (style.key == key) return style;
+            if (style.key == key) {
+                return style;
+            }
         }
         return UNKNOWN;
     }

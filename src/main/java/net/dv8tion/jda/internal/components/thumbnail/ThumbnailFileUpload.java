@@ -104,7 +104,9 @@ public class ThumbnailFileUpload extends AbstractComponentImpl
     @Nullable
     @Override
     public String getDescription() {
-        if (description != null) return description;
+        if (description != null) {
+            return description;
+        }
         return file.getDescription(); // FileUpload is mutable
     }
 
@@ -120,15 +122,23 @@ public class ThumbnailFileUpload extends AbstractComponentImpl
                 .put("type", getType().getKey())
                 .put("media", DataObject.empty().put("url", getUrl()))
                 .put("spoiler", spoiler);
-        if (uniqueId >= 0) json.put("id", uniqueId);
-        if (getDescription() != null) json.put("description", getDescription());
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
+        if (getDescription() != null) {
+            json.put("description", getDescription());
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof ThumbnailFileUpload)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ThumbnailFileUpload)) {
+            return false;
+        }
         ThumbnailFileUpload thumbnail = (ThumbnailFileUpload) o;
         return uniqueId == thumbnail.uniqueId
                 && spoiler == thumbnail.spoiler

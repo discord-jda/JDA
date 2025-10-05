@@ -505,7 +505,9 @@ public interface GuildManager extends Manager<GuildManager> {
     @Nonnull
     @CheckReturnValue
     default GuildManager setInvitesDisabled(boolean disabled) {
-        if (disabled) return addFeatures("INVITES_DISABLED");
+        if (disabled) {
+            return addFeatures("INVITES_DISABLED");
+        }
         return removeFeatures("INVITES_DISABLED");
     }
 }

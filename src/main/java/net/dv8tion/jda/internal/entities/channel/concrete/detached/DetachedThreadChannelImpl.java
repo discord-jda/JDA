@@ -189,9 +189,10 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
 
     @Override
     public boolean isInvitable() {
-        if (type != ChannelType.GUILD_PRIVATE_THREAD)
+        if (type != ChannelType.GUILD_PRIVATE_THREAD) {
             throw new UnsupportedOperationException(
                     "Only private threads support the concept of invitable.");
+        }
 
         return invitable;
     }

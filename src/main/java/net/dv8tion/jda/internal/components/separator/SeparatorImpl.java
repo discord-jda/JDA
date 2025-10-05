@@ -102,14 +102,20 @@ public class SeparatorImpl extends AbstractComponentImpl
                 .put("type", getType().getKey())
                 .put("divider", isDivider)
                 .put("spacing", spacing.getKey());
-        if (uniqueId >= 0) json.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof SeparatorImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof SeparatorImpl)) {
+            return false;
+        }
         SeparatorImpl separator = (SeparatorImpl) o;
         return uniqueId == separator.uniqueId
                 && isDivider == separator.isDivider

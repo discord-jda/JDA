@@ -106,8 +106,11 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T>
 
         if (reason == null || reason.isEmpty()) {
             String localReason = ThreadLocalReason.getCurrent();
-            if (localReason == null || localReason.isEmpty()) return headers;
-            else return generateHeaders(headers, localReason);
+            if (localReason == null || localReason.isEmpty()) {
+                return headers;
+            } else {
+                return generateHeaders(headers, localReason);
+            }
         }
 
         return generateHeaders(headers, reason);
@@ -116,7 +119,9 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T>
     @Nonnull
     private CaseInsensitiveMap<String, String> generateHeaders(
             CaseInsensitiveMap<String, String> headers, String reason) {
-        if (headers == null) headers = new CaseInsensitiveMap<>();
+        if (headers == null) {
+            headers = new CaseInsensitiveMap<>();
+        }
 
         headers.put("X-Audit-Log-Reason", uriEncode(reason));
         return headers;

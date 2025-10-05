@@ -72,28 +72,34 @@ public class AudioManagerImpl implements AudioManager {
     public void openAudioConnection(@Nonnull AudioChannel channel) {
         Checks.notNull(channel, "Provided AudioChannel");
 
-        if (!getGuild().equals(channel.getGuild()))
+        if (!getGuild().equals(channel.getGuild())) {
             throw new IllegalArgumentException(
                     "The provided AudioChannel is not a part of the Guild that this AudioManager"
                             + " handles.Please provide a AudioChannel from the proper Guild");
+        }
         final Member self = getGuild().getSelfMember();
         // if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
         //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
         // If we are already connected to this AudioChannel, then do nothing.
-        if (audioConnection != null && channel.equals(audioConnection.getChannel())) return;
+        if (audioConnection != null && channel.equals(audioConnection.getChannel())) {
+            return;
+        }
 
         checkChannel(channel, self);
 
         getJDA().getDirectAudioController().connect(channel);
-        if (audioConnection != null) audioConnection.setChannel(channel);
+        if (audioConnection != null) {
+            audioConnection.setChannel(channel);
+        }
     }
 
     private void checkChannel(AudioChannel channel, Member self) {
         EnumSet<Permission> perms = Permission.getPermissions(
                 PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), self));
-        if (!perms.contains(Permission.VOICE_CONNECT))
+        if (!perms.contains(Permission.VOICE_CONNECT)) {
             throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
+        }
 
         // if userLimit is 0 if no limit is set!
         final int userLimit =
@@ -126,9 +132,11 @@ public class AudioManagerImpl implements AudioManager {
 
     public void closeAudioConnection(ConnectionStatus reason) {
         MiscUtil.locked(CONNECTION_LOCK, () -> {
-            if (audioConnection != null) this.audioConnection.close(reason);
-            else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
+            if (audioConnection != null) {
+                this.audioConnection.close(reason);
+            } else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD) {
                 getJDA().getDirectAudioController().disconnect(getGuild());
+            }
             this.audioConnection = null;
         });
     }
@@ -137,7 +145,9 @@ public class AudioManagerImpl implements AudioManager {
     public void setSpeakingMode(@Nonnull Collection<SpeakingMode> mode) {
         Checks.notEmpty(mode, "Speaking Mode");
         this.speakingModes = EnumSet.copyOf(mode);
-        if (audioConnection != null) audioConnection.setSpeakingMode(this.speakingModes);
+        if (audioConnection != null) {
+            audioConnection.setSpeakingMode(this.speakingModes);
+        }
     }
 
     @Nonnull
@@ -181,7 +191,9 @@ public class AudioManagerImpl implements AudioManager {
     @Override
     public void setSendingHandler(AudioSendHandler handler) {
         sendHandler = handler;
-        if (audioConnection != null) audioConnection.setSendingHandler(handler);
+        if (audioConnection != null) {
+            audioConnection.setSendingHandler(handler);
+        }
     }
 
     @Override
@@ -192,7 +204,9 @@ public class AudioManagerImpl implements AudioManager {
     @Override
     public void setReceivingHandler(AudioReceiveHandler handler) {
         receiveHandler = handler;
-        if (audioConnection != null) audioConnection.setReceivingHandler(handler);
+        if (audioConnection != null) {
+            audioConnection.setReceivingHandler(handler);
+        }
     }
 
     @Override
@@ -213,14 +227,19 @@ public class AudioManagerImpl implements AudioManager {
     @Nonnull
     @Override
     public ConnectionStatus getConnectionStatus() {
-        if (audioConnection != null) return audioConnection.getConnectionStatus();
-        else return ConnectionStatus.NOT_CONNECTED;
+        if (audioConnection != null) {
+            return audioConnection.getConnectionStatus();
+        } else {
+            return ConnectionStatus.NOT_CONNECTED;
+        }
     }
 
     @Override
     public void setAutoReconnect(boolean shouldReconnect) {
         this.shouldReconnect = shouldReconnect;
-        if (audioConnection != null) audioConnection.setAutoReconnect(shouldReconnect);
+        if (audioConnection != null) {
+            audioConnection.setAutoReconnect(shouldReconnect);
+        }
     }
 
     @Override
@@ -266,8 +285,9 @@ public class AudioManagerImpl implements AudioManager {
 
         // This will set the audioConnection to null, which we then immediately override with the
         // new connection
-        if (this.audioConnection != null)
+        if (this.audioConnection != null) {
             closeAudioConnection(ConnectionStatus.AUDIO_REGION_CHANGE);
+        }
         this.audioConnection = audioConnection;
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
@@ -276,12 +296,16 @@ public class AudioManagerImpl implements AudioManager {
     }
 
     public void setConnectedChannel(AudioChannel channel) {
-        if (audioConnection != null) audioConnection.setChannel(channel);
+        if (audioConnection != null) {
+            audioConnection.setChannel(channel);
+        }
     }
 
     public void setQueueTimeout(long queueTimeout) {
         this.queueTimeout = queueTimeout;
-        if (audioConnection != null) audioConnection.setQueueTimeout(queueTimeout);
+        if (audioConnection != null) {
+            audioConnection.setQueueTimeout(queueTimeout);
+        }
     }
 
     protected void updateVoiceState() {

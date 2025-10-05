@@ -44,7 +44,9 @@ public class GuildUpdateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         final long id = content.getLong("id");
-        if (getJDA().getGuildSetupController().isLocked(id)) return id;
+        if (getJDA().getGuildSetupController().isLocked(id)) {
+            return id;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null) {
@@ -119,12 +121,13 @@ public class GuildUpdateHandler extends SocketHandler {
             long oldOwnerId = guild.getOwnerIdLong();
             Member oldOwner = guild.getOwner();
             Member newOwner = guild.getMembersView().get(ownerId);
-            if (newOwner == null)
+            if (newOwner == null) {
                 WebSocketClient.LOG.debug(
                         "Received {} with owner not in cache. UserId: {} GuildId: {}",
                         allContent.get("t"),
                         ownerId,
                         id);
+            }
             guild.setOwner(newOwner);
             guild.setOwnerId(ownerId);
             getJDA().handleEvent(new GuildUpdateOwnerEvent(

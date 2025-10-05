@@ -273,7 +273,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     @CheckReturnValue
     default PermissionOverrideAction setAllowed(@Nullable Collection<Permission> permissions) {
-        if (permissions == null || permissions.isEmpty()) return setAllowed(0);
+        if (permissions == null || permissions.isEmpty()) {
+            return setAllowed(0);
+        }
         Checks.noneNull(permissions, "Permissions");
         return setAllowed(Permission.getRaw(permissions));
     }
@@ -299,7 +301,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     @CheckReturnValue
     default PermissionOverrideAction setAllowed(@Nullable Permission... permissions) {
-        if (permissions == null || permissions.length == 0) return setAllowed(0);
+        if (permissions == null || permissions.length == 0) {
+            return setAllowed(0);
+        }
         Checks.noneNull(permissions, "Permissions");
         return setAllowed(Permission.getRaw(permissions));
     }
@@ -415,7 +419,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     @CheckReturnValue
     default PermissionOverrideAction setDenied(@Nullable Collection<Permission> permissions) {
-        if (permissions == null || permissions.isEmpty()) return setDenied(0);
+        if (permissions == null || permissions.isEmpty()) {
+            return setDenied(0);
+        }
         Checks.noneNull(permissions, "Permissions");
         return setDenied(Permission.getRaw(permissions));
     }
@@ -441,7 +447,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     @CheckReturnValue
     default PermissionOverrideAction setDenied(@Nullable Permission... permissions) {
-        if (permissions == null || permissions.length == 0) return setDenied(0);
+        if (permissions == null || permissions.length == 0) {
+            return setDenied(0);
+        }
         Checks.noneNull(permissions, "Permissions");
         return setDenied(Permission.getRaw(permissions));
     }

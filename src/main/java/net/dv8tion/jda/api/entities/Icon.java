@@ -80,7 +80,9 @@ public class Icon {
         Checks.notNull(file, "Provided File");
         Checks.check(file.exists(), "Provided file does not exist!");
         int index = file.getName().lastIndexOf('.');
-        if (index < 0) return from(file, IconType.JPEG);
+        if (index < 0) {
+            return from(file, IconType.JPEG);
+        }
         String ext = file.getName().substring(index + 1);
         IconType type = IconType.fromExtension(ext);
         return from(file, type);
@@ -257,7 +259,9 @@ public class Icon {
         public static IconType fromMIME(@Nonnull String mime) {
             Checks.notNull(mime, "MIME Type");
             for (IconType type : values()) {
-                if (type.mime.equalsIgnoreCase(mime)) return type;
+                if (type.mime.equalsIgnoreCase(mime)) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

@@ -156,7 +156,9 @@ public interface RoleAction extends AuditableRestAction<Role> {
     @Nonnull
     @CheckReturnValue
     default RoleAction setPermissions(@Nullable Permission... permissions) {
-        if (permissions != null) Checks.noneNull(permissions, "Permissions");
+        if (permissions != null) {
+            Checks.noneNull(permissions, "Permissions");
+        }
 
         return setPermissions(permissions == null ? null : Permission.getRaw(permissions));
     }
@@ -182,7 +184,9 @@ public interface RoleAction extends AuditableRestAction<Role> {
     @Nonnull
     @CheckReturnValue
     default RoleAction setPermissions(@Nullable Collection<Permission> permissions) {
-        if (permissions != null) Checks.noneNull(permissions, "Permissions");
+        if (permissions != null) {
+            Checks.noneNull(permissions, "Permissions");
+        }
 
         return setPermissions(permissions == null ? null : Permission.getRaw(permissions));
     }

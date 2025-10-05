@@ -212,7 +212,9 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
     @Nonnull
     @CheckReturnValue
     default M reverse() {
-        if (getOrder() == PaginationOrder.BACKWARD) return order(PaginationOrder.FORWARD);
+        if (getOrder() == PaginationOrder.BACKWARD) {
+            return order(PaginationOrder.FORWARD);
+        }
         return order(PaginationOrder.BACKWARD);
     }
 
@@ -453,13 +455,18 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
         List<T> result = new ArrayList<>();
         CompletableFuture<List<T>> future = new CompletableFuture<>();
         CompletableFuture<?> handle = forEachAsync((element) -> {
-            if (rule.test(element)) return false;
+            if (rule.test(element)) {
+                return false;
+            }
             result.add(element);
             return limit == 0 || limit > result.size();
         });
         handle.whenComplete((r, t) -> {
-            if (t != null) future.completeExceptionally(t);
-            else future.complete(result);
+            if (t != null) {
+                future.completeExceptionally(t);
+            } else {
+                future.complete(result);
+            }
         });
         return future;
     }
@@ -765,10 +772,16 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
 
         @Override
         public boolean hasNext() {
-            if (items == null) return false;
-            if (!hitEnd()) return true;
+            if (items == null) {
+                return false;
+            }
+            if (!hitEnd()) {
+                return true;
+            }
 
-            if (items.addAll(supply.get())) return true;
+            if (items.addAll(supply.get())) {
+                return true;
+            }
 
             // null indicates that the real end has been reached
             items = null;
@@ -779,7 +792,9 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
         @Override
         @SuppressWarnings("DataFlowIssue")
         public E next() {
-            if (!hasNext()) throw new NoSuchElementException("Reached End of pagination task!");
+            if (!hasNext()) {
+                throw new NoSuchElementException("Reached End of pagination task!");
+            }
             return items.poll();
         }
 

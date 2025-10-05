@@ -92,8 +92,9 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
         return () -> {
             Member selfMember = getGuild().getSelfMember();
             Checks.checkAccess(selfMember, channel);
-            if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS)) {
                 throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
+            }
             return true;
         };
     }
@@ -223,12 +224,13 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
                 // This implies we can only set permissions the bot also has in the channel
                 long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember);
                 EnumSet<Permission> missing = Permission.getPermissions(changed & ~botPerms);
-                if (!missing.isEmpty())
+                if (!missing.isEmpty()) {
                     throw new InsufficientPermissionException(
                             channel,
                             Permission.MANAGE_PERMISSIONS,
                             "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly"
                                     + " in order to set permissions you don't already have!");
+                }
             }
         }
     }
@@ -241,12 +243,16 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
     }
 
     private long getCurrentAllow() {
-        if (allowSet) return allow;
+        if (allowSet) {
+            return allow;
+        }
         return isOverride ? 0 : getOriginalAllow();
     }
 
     private long getCurrentDeny() {
-        if (denySet) return deny;
+        if (denySet) {
+            return deny;
+        }
         return isOverride ? 0 : getOriginalDeny();
     }
 

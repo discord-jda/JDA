@@ -55,15 +55,18 @@ public class MemberChunkManager {
 
     private void init() {
         MiscUtil.locked(lock, () -> {
-            if (timeoutHandle == null)
+            if (timeoutHandle == null) {
                 timeoutHandle = client.getJDA()
                         .getGatewayPool()
                         .scheduleAtFixedRate(new TimeoutHandler(), 5, 5, TimeUnit.SECONDS);
+            }
         });
     }
 
     public void shutdown() {
-        if (timeoutHandle != null) timeoutHandle.cancel(false);
+        if (timeoutHandle != null) {
+            timeoutHandle.cancel(false);
+        }
     }
 
     public ChunkRequest chunkGuild(
@@ -112,10 +115,14 @@ public class MemberChunkManager {
     public boolean handleChunk(long guildId, DataObject response) {
         return MiscUtil.locked(lock, () -> {
             String nonce = response.getString("nonce", null);
-            if (nonce == null || nonce.isEmpty()) return false;
+            if (nonce == null || nonce.isEmpty()) {
+                return false;
+            }
             long key = Long.parseLong(nonce);
             ChunkRequest request = requests.get(key);
-            if (request == null) return false;
+            if (request == null) {
+                return false;
+            }
 
             boolean lastChunk = isLastChunk(response);
             request.handleChunk(lastChunk, response);
@@ -207,10 +214,14 @@ public class MemberChunkManager {
 
         public void handleChunk(boolean last, DataObject chunk) {
             try {
-                if (!isDone()) handler.accept(last, toMembers(chunk));
+                if (!isDone()) {
+                    handler.accept(last, toMembers(chunk));
+                }
             } catch (Throwable ex) {
                 completeExceptionally(ex);
-                if (ex instanceof Error) throw (Error) ex;
+                if (ex instanceof Error) {
+                    throw (Error) ex;
+                }
             }
         }
 
@@ -227,7 +238,9 @@ public class MemberChunkManager {
         public void run() {
             MiscUtil.locked(lock, () -> {
                 requests.forEachValue(request -> {
-                    if (request.isExpired()) request.completeExceptionally(new TimeoutException());
+                    if (request.isExpired()) {
+                        request.completeExceptionally(new TimeoutException());
+                    }
                     return true;
                 });
                 requests.valueCollection().removeIf(ChunkRequest::isDone);

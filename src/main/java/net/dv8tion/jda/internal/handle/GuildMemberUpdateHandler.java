@@ -36,7 +36,9 @@ public class GuildMemberUpdateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         final long id = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(id)) return id;
+        if (getJDA().getGuildSetupController().isLocked(id)) {
+            return id;
+        }
 
         DataObject userJson = content.getObject("user");
         final long userId = userJson.getLong("id");

@@ -80,8 +80,12 @@ public class SlashCommandReference implements ICommandReference {
     public String getFullCommandName() {
         final StringJoiner joiner = new StringJoiner(" ");
         joiner.add(name);
-        if (subcommandGroup != null) joiner.add(subcommandGroup);
-        if (subcommand != null) joiner.add(subcommand);
+        if (subcommandGroup != null) {
+            joiner.add(subcommandGroup);
+        }
+        if (subcommand != null) {
+            joiner.add(subcommand);
+        }
 
         return joiner.toString();
     }
@@ -93,8 +97,12 @@ public class SlashCommandReference implements ICommandReference {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SlashCommandReference)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SlashCommandReference)) {
+            return false;
+        }
 
         SlashCommandReference that = (SlashCommandReference) o;
 

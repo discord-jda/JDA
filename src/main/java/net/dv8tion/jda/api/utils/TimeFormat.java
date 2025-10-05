@@ -127,7 +127,9 @@ public enum TimeFormat {
         Checks.notEmpty(style, "Style");
         Checks.notLonger(style, 1, "Style");
         for (TimeFormat format : values()) {
-            if (format.style.equals(style)) return format;
+            if (format.style.equals(style)) {
+                return format;
+            }
         }
         return DEFAULT;
     }
@@ -148,8 +150,9 @@ public enum TimeFormat {
     public static Timestamp parse(@Nonnull String markdown) {
         Checks.notNull(markdown, "Markdown");
         Matcher matcher = MARKDOWN.matcher(markdown.trim());
-        if (!matcher.find())
+        if (!matcher.find()) {
             throw new IllegalArgumentException("Invalid markdown format! Provided: " + markdown);
+        }
         String format = matcher.group("style");
         return new Timestamp(
                 format == null ? DEFAULT : fromStyle(format),

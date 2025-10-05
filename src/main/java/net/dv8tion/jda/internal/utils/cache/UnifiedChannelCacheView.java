@@ -44,7 +44,9 @@ public class UnifiedChannelCacheView<C extends Channel> implements ChannelCacheV
     public void forEach(Consumer<? super C> action) {
         Objects.requireNonNull(action, "Consumer");
         try (ClosableIterator<C> iterator = lockedIterator()) {
-            while (iterator.hasNext()) action.accept(iterator.next());
+            while (iterator.hasNext()) {
+                action.accept(iterator.next());
+            }
         }
     }
 

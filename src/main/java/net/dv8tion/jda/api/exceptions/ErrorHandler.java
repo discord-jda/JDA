@@ -166,9 +166,13 @@ public class ErrorHandler implements Consumer<Throwable> {
         Checks.notNull(clazz, "Classes");
         Checks.noneNull(classes, "Classes");
         return ignore(it -> {
-            if (clazz.isInstance(it)) return true;
+            if (clazz.isInstance(it)) {
+                return true;
+            }
             for (Class<?> e : classes) {
-                if (e.isInstance(it)) return true;
+                if (e.isInstance(it)) {
+                    return true;
+                }
             }
             return false;
         });

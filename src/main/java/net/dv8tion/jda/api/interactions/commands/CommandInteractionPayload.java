@@ -119,8 +119,12 @@ public interface CommandInteractionPayload extends Interaction {
     @Nonnull
     default String getFullCommandName() {
         StringBuilder builder = new StringBuilder(getName());
-        if (getSubcommandGroup() != null) builder.append(' ').append(getSubcommandGroup());
-        if (getSubcommandName() != null) builder.append(' ').append(getSubcommandName());
+        if (getSubcommandGroup() != null) {
+            builder.append(' ').append(getSubcommandGroup());
+        }
+        if (getSubcommandName() != null) {
+            builder.append(' ').append(getSubcommandName());
+        }
         return builder.toString();
     }
 
@@ -136,12 +140,18 @@ public interface CommandInteractionPayload extends Interaction {
     @Nonnull
     default String getCommandString() {
         // Get text like the text that appears when you hover over the interaction in discord
-        if (getCommandType() != Command.Type.SLASH) return getName();
+        if (getCommandType() != Command.Type.SLASH) {
+            return getName();
+        }
 
         StringBuilder builder = new StringBuilder();
         builder.append("/").append(getName());
-        if (getSubcommandGroup() != null) builder.append(" ").append(getSubcommandGroup());
-        if (getSubcommandName() != null) builder.append(" ").append(getSubcommandName());
+        if (getSubcommandGroup() != null) {
+            builder.append(" ").append(getSubcommandGroup());
+        }
+        if (getSubcommandName() != null) {
+            builder.append(" ").append(getSubcommandName());
+        }
         for (OptionMapping o : getOptions()) {
             builder.append(" ").append(o.getName()).append(": ");
             // Discord doesn't send the resolved entities on autocomplete interactions
@@ -167,13 +177,15 @@ public interface CommandInteractionPayload extends Interaction {
                     builder.append("@").append(o.getAsRole().getName());
                     break;
                 case MENTIONABLE: // client only allows user or role mentionable as of Aug 4, 2021
-                    if (o.getAsMentionable() instanceof Role)
+                    if (o.getAsMentionable() instanceof Role) {
                         builder.append("@").append(o.getAsRole().getName());
-                    else if (o.getAsMentionable() instanceof Member)
+                    } else if (o.getAsMentionable() instanceof Member) {
                         builder.append("@").append(o.getAsUser().getName());
-                    else if (o.getAsMentionable() instanceof User)
+                    } else if (o.getAsMentionable() instanceof User) {
                         builder.append("@").append(o.getAsUser().getName());
-                    else builder.append("@").append(o.getAsMentionable().getIdLong());
+                    } else {
+                        builder.append("@").append(o.getAsMentionable().getIdLong());
+                    }
                     break;
                 default:
                     builder.append(o.getAsString());
@@ -403,7 +415,9 @@ public interface CommandInteractionPayload extends Interaction {
             @Nonnull Function<? super OptionMapping, ? extends T> resolver) {
         Checks.notNull(resolver, "Resolver");
         OptionMapping mapping = getOption(name);
-        if (mapping != null) return resolver.apply(mapping);
+        if (mapping != null) {
+            return resolver.apply(mapping);
+        }
         return fallback;
     }
 
@@ -452,7 +466,9 @@ public interface CommandInteractionPayload extends Interaction {
             @Nonnull Function<? super OptionMapping, ? extends T> resolver) {
         Checks.notNull(resolver, "Resolver");
         OptionMapping mapping = getOption(name);
-        if (mapping != null) return resolver.apply(mapping);
+        if (mapping != null) {
+            return resolver.apply(mapping);
+        }
         return fallback == null ? null : fallback.get();
     }
 }

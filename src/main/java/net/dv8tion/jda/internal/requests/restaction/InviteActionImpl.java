@@ -68,7 +68,9 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Override
     @CheckReturnValue
     public InviteActionImpl setMaxAge(final Integer maxAge) {
-        if (maxAge != null) Checks.notNegative(maxAge, "maxAge");
+        if (maxAge != null) {
+            Checks.notNegative(maxAge, "maxAge");
+        }
 
         this.maxAge = maxAge;
         return this;
@@ -78,7 +80,9 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Override
     @CheckReturnValue
     public InviteActionImpl setMaxAge(final Long maxAge, @Nonnull final TimeUnit timeUnit) {
-        if (maxAge == null) return this.setMaxAge(null);
+        if (maxAge == null) {
+            return this.setMaxAge(null);
+        }
 
         Checks.notNegative(maxAge, "maxAge");
         Checks.notNull(timeUnit, "timeUnit");
@@ -90,7 +94,9 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Override
     @CheckReturnValue
     public InviteActionImpl setMaxUses(final Integer maxUses) {
-        if (maxUses != null) Checks.notNegative(maxUses, "maxUses");
+        if (maxUses != null) {
+            Checks.notNegative(maxUses, "maxUses");
+        }
 
         this.maxUses = maxUses;
         return this;
@@ -144,13 +150,27 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
 
-        if (this.maxAge != null) object.put("max_age", this.maxAge);
-        if (this.maxUses != null) object.put("max_uses", this.maxUses);
-        if (this.temporary != null) object.put("temporary", this.temporary);
-        if (this.unique != null) object.put("unique", this.unique);
-        if (this.targetType != null) object.put("target_type", targetType.getId());
-        if (this.targetUser != null) object.put("target_user_id", targetUser);
-        if (this.targetApplication != null) object.put("target_application_id", targetApplication);
+        if (this.maxAge != null) {
+            object.put("max_age", this.maxAge);
+        }
+        if (this.maxUses != null) {
+            object.put("max_uses", this.maxUses);
+        }
+        if (this.temporary != null) {
+            object.put("temporary", this.temporary);
+        }
+        if (this.unique != null) {
+            object.put("unique", this.unique);
+        }
+        if (this.targetType != null) {
+            object.put("target_type", targetType.getId());
+        }
+        if (this.targetUser != null) {
+            object.put("target_user_id", targetUser);
+        }
+        if (this.targetApplication != null) {
+            object.put("target_application_id", targetApplication);
+        }
 
         return getRequestBody(object);
     }

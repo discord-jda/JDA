@@ -73,8 +73,12 @@ public class MessageMentionsImpl extends AbstractMentions {
     @Nonnull
     @Override
     public synchronized List<Member> getMembers() {
-        if (guild == null) return Collections.emptyList();
-        if (mentionedMembers != null) return mentionedMembers;
+        if (guild == null) {
+            return Collections.emptyList();
+        }
+        if (mentionedMembers != null) {
+            return mentionedMembers;
+        }
 
         // Parse members from mentions array in order of appearance
         EntityBuilder entityBuilder = jda.getEntityBuilder();
@@ -83,8 +87,9 @@ public class MessageMentionsImpl extends AbstractMentions {
                 Message.MentionType.USER,
                 false,
                 (matcher) -> {
-                    if (unseen.remove(Long.parseUnsignedLong(matcher.group(1))))
+                    if (unseen.remove(Long.parseUnsignedLong(matcher.group(1)))) {
                         return matchMember(matcher);
+                    }
                     return null;
                 },
                 Collectors.toCollection(ArrayList::new));
@@ -92,8 +97,9 @@ public class MessageMentionsImpl extends AbstractMentions {
         // Add reply mentions at beginning
         for (TLongIterator iter = unseen.iterator(); iter.hasNext(); ) {
             DataObject mention = userMentionMap.get(iter.next());
-            if (mention.getBoolean("is_member"))
+            if (mention.getBoolean("is_member")) {
                 members.add(0, entityBuilder.createMember((GuildImpl) guild, mention));
+            }
         }
 
         // Update member cache
@@ -105,7 +111,9 @@ public class MessageMentionsImpl extends AbstractMentions {
     @Nonnull
     @Override
     public synchronized List<User> getUsers() {
-        if (mentionedUsers != null) return mentionedUsers;
+        if (mentionedUsers != null) {
+            return mentionedUsers;
+        }
 
         // Parse members from mentions array in order of appearance
         EntityBuilder entityBuilder = jda.getEntityBuilder();
@@ -114,8 +122,9 @@ public class MessageMentionsImpl extends AbstractMentions {
                 Message.MentionType.USER,
                 false,
                 (matcher) -> {
-                    if (unseen.remove(Long.parseUnsignedLong(matcher.group(1))))
+                    if (unseen.remove(Long.parseUnsignedLong(matcher.group(1)))) {
                         return matchUser(matcher);
+                    }
                     return null;
                 },
                 Collectors.toCollection(ArrayList::new));
@@ -123,9 +132,11 @@ public class MessageMentionsImpl extends AbstractMentions {
         // Add reply mentions at beginning
         for (TLongIterator iter = unseen.iterator(); iter.hasNext(); ) {
             DataObject mention = userMentionMap.get(iter.next());
-            if (mention.getBoolean("is_member"))
+            if (mention.getBoolean("is_member")) {
                 users.add(0, entityBuilder.createUser(mention.getObject("user")));
-            else users.add(0, entityBuilder.createUser(mention));
+            } else {
+                users.add(0, entityBuilder.createUser(mention));
+            }
         }
 
         return mentionedUsers = Collections.unmodifiableList(users);
@@ -135,8 +146,12 @@ public class MessageMentionsImpl extends AbstractMentions {
     protected User matchUser(Matcher matcher) {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
         DataObject mention = userMentionMap.get(userId);
-        if (mention == null) return null;
-        if (!mention.getBoolean("is_member")) return jda.getEntityBuilder().createUser(mention);
+        if (mention == null) {
+            return null;
+        }
+        if (!mention.getBoolean("is_member")) {
+            return jda.getEntityBuilder().createUser(mention);
+        }
         Member member = matchMember(matcher);
         return member == null ? null : member.getUser();
     }
@@ -159,9 +174,14 @@ public class MessageMentionsImpl extends AbstractMentions {
     @Override
     protected Role matchRole(Matcher matcher) {
         long roleId = MiscUtil.parseSnowflake(matcher.group(1));
-        if (!roleMentionMap.contains(roleId)) return null;
-        if (guild != null) return guild.getRoleById(roleId);
-        else return getJDA().getRoleById(roleId);
+        if (!roleMentionMap.contains(roleId)) {
+            return null;
+        }
+        if (guild != null) {
+            return guild.getRoleById(roleId);
+        } else {
+            return getJDA().getRoleById(roleId);
+        }
     }
 
     @Override

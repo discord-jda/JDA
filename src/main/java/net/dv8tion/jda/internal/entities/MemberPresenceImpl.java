@@ -46,7 +46,9 @@ public class MemberPresenceImpl {
     }
 
     public EnumMap<ClientType, OnlineStatus> getClientStatus() {
-        if (clientStatus == null) return new EnumMap<>(ClientType.class);
+        if (clientStatus == null) {
+            return new EnumMap<>(ClientType.class);
+        }
         return clientStatus;
     }
 
@@ -56,10 +58,15 @@ public class MemberPresenceImpl {
 
     public void setOnlineStatus(ClientType type, OnlineStatus clientStatus) {
         if (this.clientStatus == null) {
-            if (clientStatus == null || clientStatus == OnlineStatus.OFFLINE) return;
+            if (clientStatus == null || clientStatus == OnlineStatus.OFFLINE) {
+                return;
+            }
             this.clientStatus = new EnumMap<>(ClientType.class);
         }
-        if (clientStatus == OnlineStatus.OFFLINE) this.clientStatus.remove(type);
-        else this.clientStatus.put(type, clientStatus);
+        if (clientStatus == OnlineStatus.OFFLINE) {
+            this.clientStatus.remove(type);
+        } else {
+            this.clientStatus.put(type, clientStatus);
+        }
     }
 }

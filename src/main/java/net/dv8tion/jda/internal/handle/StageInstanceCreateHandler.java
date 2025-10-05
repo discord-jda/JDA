@@ -30,7 +30,9 @@ public class StageInstanceCreateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id", 0L);
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {

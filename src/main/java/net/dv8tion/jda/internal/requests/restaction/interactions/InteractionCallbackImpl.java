@@ -48,7 +48,7 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T>
         // Discord does not always report this error correctly and instead sends a
         // 'UNKNOWN_INTERACTION'.
         // That's why we also have a similar exception at the end of this method.
-        if (exception.getErrorResponse() == ErrorResponse.INTERACTION_ALREADY_ACKNOWLEDGED)
+        if (exception.getErrorResponse() == ErrorResponse.INTERACTION_ALREADY_ACKNOWLEDGED) {
             return ErrorResponseException.create(
                     "This interaction was acknowledged by another process running for the same"
                             + " bot.\n"
@@ -58,12 +58,13 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T>
                             + getJDA().getSelfUser().getApplicationId()
                             + "/bot",
                     exception);
+        }
 
         // Time synchronization issues prevent us from checking the exact nature of the issue,
         // and storing a local Instant would be invalid in case the WS thread is blocked,
         // as it will be created when the thread is released.
         // Send a message for both issues instead.
-        if (exception.getErrorResponse() == ErrorResponse.UNKNOWN_INTERACTION)
+        if (exception.getErrorResponse() == ErrorResponse.UNKNOWN_INTERACTION) {
             return ErrorResponseException.create(
                     "Failed to acknowledge this interaction, this can be due to 2 reasons:\n"
                             + "1. This interaction took longer than 3 seconds to be acknowledged, see"
@@ -79,6 +80,7 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T>
                             + getJDA().getSelfUser().getApplicationId()
                             + "/bot",
                     exception);
+        }
 
         return null;
     }
@@ -112,11 +114,13 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T>
     public final void queue(Consumer<? super T> success, Consumer<? super Throwable> failure) {
         IllegalStateException exception = tryAck();
         if (exception != null) {
-            if (failure != null)
-                failure.accept(
-                        exception); // if the failure callback throws that will just bubble up,
-            // which is acceptable
-            else RestAction.getDefaultFailure().accept(exception);
+            if (failure != null) {
+                failure.accept(exception);
+                // if the failure callback throws that will just bubble up,
+                // which is acceptable
+            } else {
+                RestAction.getDefaultFailure().accept(exception);
+            }
             return;
         }
 
@@ -149,8 +153,9 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T>
 
     @Override
     public void handleResponse(Response response, Request<T> request) {
-        if (!response.isOk())
+        if (!response.isOk()) {
             interaction.releaseHook(false); // cancels followup messages with an exception
+        }
         super.handleResponse(response, request);
     }
 }

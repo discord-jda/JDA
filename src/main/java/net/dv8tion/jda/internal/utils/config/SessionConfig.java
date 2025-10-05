@@ -62,8 +62,11 @@ public class SessionConfig {
     }
 
     public void setAutoReconnect(boolean autoReconnect) {
-        if (autoReconnect) flags.add(ConfigFlag.AUTO_RECONNECT);
-        else flags.remove(ConfigFlag.AUTO_RECONNECT);
+        if (autoReconnect) {
+            flags.add(ConfigFlag.AUTO_RECONNECT);
+        } else {
+            flags.remove(ConfigFlag.AUTO_RECONNECT);
+        }
     }
 
     @Nonnull

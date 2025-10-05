@@ -77,7 +77,9 @@ public class SelectMenuMentions implements Mentions {
     @Nonnull
     @Override
     public List<User> getUsers() {
-        if (cachedUsers != null) return cachedUsers;
+        if (cachedUsers != null) {
+            return cachedUsers;
+        }
 
         DataObject userMap = resolved.optObject("users").orElseGet(DataObject::empty);
         EntityBuilder builder = jda.getEntityBuilder();
@@ -98,8 +100,12 @@ public class SelectMenuMentions implements Mentions {
     @Nonnull
     @Override
     public List<GuildChannel> getChannels() {
-        if (guild == null) return Collections.emptyList();
-        if (cachedChannels != null) return cachedChannels;
+        if (guild == null) {
+            return Collections.emptyList();
+        }
+        if (cachedChannels != null) {
+            return cachedChannels;
+        }
 
         DataObject channelMap = resolved.optObject("channels").orElseGet(DataObject::empty);
 
@@ -108,12 +114,14 @@ public class SelectMenuMentions implements Mentions {
                 .filter(Objects::nonNull)
                 .map(json -> {
                     final ChannelType channelType = ChannelType.fromId(json.getInt("type", -1));
-                    if (!guild.isDetached())
+                    if (!guild.isDetached()) {
                         return guild.getGuildChannelById(channelType, json.getUnsignedLong("id"));
+                    }
 
                     // Unknown guilds
-                    if (channelType.isThread())
+                    if (channelType.isThread()) {
                         return interactionEntityBuilder.createThreadChannel(guild, json);
+                    }
                     // Will return null if the type isn't known
                     return interactionEntityBuilder.createGuildChannel(guild, json);
                 })
@@ -145,8 +153,12 @@ public class SelectMenuMentions implements Mentions {
     @Nonnull
     @Override
     public List<Role> getRoles() {
-        if (guild == null) return Collections.emptyList();
-        if (cachedRoles != null) return cachedRoles;
+        if (guild == null) {
+            return Collections.emptyList();
+        }
+        if (cachedRoles != null) {
+            return cachedRoles;
+        }
 
         DataObject roleMap = resolved.optObject("roles").orElseGet(DataObject::empty);
 
@@ -154,7 +166,9 @@ public class SelectMenuMentions implements Mentions {
                 .filter(roleMap::hasKey)
                 .map(roleMap::getObject)
                 .map(json -> {
-                    if (!guild.isDetached()) return guild.getRoleById(json.getUnsignedLong("id"));
+                    if (!guild.isDetached()) {
+                        return guild.getRoleById(json.getUnsignedLong("id"));
+                    }
                     return interactionEntityBuilder.createRole(guild, json);
                 })
                 .filter(Objects::nonNull)
@@ -194,8 +208,12 @@ public class SelectMenuMentions implements Mentions {
     @Nonnull
     @Override
     public List<Member> getMembers() {
-        if (guild == null) return Collections.emptyList();
-        if (cachedMembers != null) return cachedMembers;
+        if (guild == null) {
+            return Collections.emptyList();
+        }
+        if (cachedMembers != null) {
+            return cachedMembers;
+        }
 
         DataObject memberMap = resolved.optObject("members").orElseGet(DataObject::empty);
         DataObject userMap = resolved.optObject("users").orElseGet(DataObject::empty);
@@ -207,8 +225,9 @@ public class SelectMenuMentions implements Mentions {
                 .map(json -> interactionEntityBuilder.createMember(guild, json))
                 .filter(Objects::nonNull)
                 .filter(member -> {
-                    if (!member.isDetached())
+                    if (!member.isDetached()) {
                         jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
+                    }
                     return true;
                 })
                 .collect(Helpers.toUnmodifiableList());
@@ -223,7 +242,9 @@ public class SelectMenuMentions implements Mentions {
     @Nonnull
     @Override
     public List<IMentionable> getMentions(@Nonnull Message.MentionType... types) {
-        if (types.length == 0) return getMentions(Message.MentionType.values());
+        if (types.length == 0) {
+            return getMentions(Message.MentionType.values());
+        }
         List<IMentionable> mentions = new ArrayList<>();
         // Convert to set to avoid duplicates
         EnumSet<Message.MentionType> set = EnumSet.of(types[0], types);
@@ -255,7 +276,9 @@ public class SelectMenuMentions implements Mentions {
     public boolean isMentioned(
             @Nonnull IMentionable mentionable, @Nonnull Message.MentionType... types) {
         Checks.notNull(types, "Mention Types");
-        if (types.length == 0) return isMentioned(mentionable, Message.MentionType.values());
+        if (types.length == 0) {
+            return isMentioned(mentionable, Message.MentionType.values());
+        }
 
         String id = mentionable.getId();
         for (Message.MentionType type : types) {
@@ -265,7 +288,9 @@ public class SelectMenuMentions implements Mentions {
                         boolean mentioned = resolved.optObject("users")
                                 .map(obj -> obj.hasKey(id))
                                 .orElse(false);
-                        if (mentioned) return true;
+                        if (mentioned) {
+                            return true;
+                        }
                     }
                     break;
                 case ROLE:
@@ -274,24 +299,32 @@ public class SelectMenuMentions implements Mentions {
                                 .getUnsortedRoles().stream()
                                         .anyMatch(role ->
                                                 isMentioned(role, Message.MentionType.ROLE));
-                        if (mentioned) return true;
+                        if (mentioned) {
+                            return true;
+                        }
                     } else if (mentionable instanceof User) {
                         boolean mentioned = getMembers().stream()
                                 .filter(it -> it.getIdLong() == mentionable.getIdLong())
                                 .findFirst()
                                 .map(member -> isMentioned(member, Message.MentionType.ROLE))
                                 .orElse(false);
-                        if (mentioned) return true;
+                        if (mentioned) {
+                            return true;
+                        }
                     } else if (mentionable instanceof Role) {
                         boolean mentioned = resolved.optObject("roles")
                                 .map(obj -> obj.hasKey(id))
                                 .orElse(false);
-                        if (mentioned) return true;
+                        if (mentioned) {
+                            return true;
+                        }
                     }
                     break;
                 case CHANNEL:
-                    if (mentionable instanceof GuildChannel && getChannels().contains(mentionable))
+                    if (mentionable instanceof GuildChannel
+                            && getChannels().contains(mentionable)) {
                         return true;
+                    }
                     break;
             }
         }

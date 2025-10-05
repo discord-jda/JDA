@@ -96,7 +96,9 @@ public class Requester {
             AuthorizationConfig authConfig,
             RestConfig config,
             RestRateLimiter rateLimiter) {
-        if (authConfig == null) throw new NullPointerException("Provided config was null!");
+        if (authConfig == null) {
+            throw new NullPointerException("Provided config was null!");
+        }
 
         this.authConfig = authConfig;
         this.api = (JDAImpl) api;
@@ -112,8 +114,12 @@ public class Requester {
     }
 
     public void setContext() {
-        if (!isContextReady) return;
-        if (contextMap == null) contextMap = api.getContextMap();
+        if (!isContextReady) {
+            return;
+        }
+        if (contextMap == null) {
+            contextMap = api.getContextMap();
+        }
         contextMap.forEach(MDC::put);
     }
 
@@ -122,12 +128,16 @@ public class Requester {
     }
 
     public <T> void request(Request<T> apiRequest) {
-        if (rateLimiter.isStopped())
+        if (rateLimiter.isStopped()) {
             throw new RejectedExecutionException(
                     "The Requester has been stopped! No new requests can be requested!");
+        }
 
-        if (apiRequest.shouldQueue()) rateLimiter.enqueue(new WorkTask(apiRequest));
-        else execute(new WorkTask(apiRequest), true);
+        if (apiRequest.shouldQueue()) {
+            rateLimiter.enqueue(new WorkTask(apiRequest));
+        } else {
+            execute(new WorkTask(apiRequest), true);
+        }
     }
 
     private static boolean isRetry(Throwable e) {
@@ -187,17 +197,23 @@ public class Requester {
             LOG.trace("Executing request {} {}", task.getRoute().getMethod(), url);
             int code = 0;
             for (int attempt = 0; attempt < responses.length; attempt++) {
-                if (apiRequest.isSkipped()) return null;
+                if (apiRequest.isSkipped()) {
+                    return null;
+                }
 
                 Call call = httpClient.newCall(request);
                 lastResponse = call.execute();
                 code = lastResponse.code();
                 responses[attempt] = lastResponse;
                 String cfRay = lastResponse.header("CF-RAY");
-                if (cfRay != null) rays.add(cfRay);
+                if (cfRay != null) {
+                    rays.add(cfRay);
+                }
 
                 // Retry a few specific server errors that are related to server issues
-                if (!shouldRetry(code)) break;
+                if (!shouldRetry(code)) {
+                    break;
+                }
 
                 LOG.debug(
                         "Requesting {} -> {} returned status {}... retrying (attempt {})",
@@ -224,7 +240,9 @@ public class Requester {
                 return null;
             }
 
-            if (!rays.isEmpty()) LOG.debug("Received response with following cf-rays: {}", rays);
+            if (!rays.isEmpty()) {
+                LOG.debug("Received response with following cf-rays: {}", rays);
+            }
 
             if (handleOnRatelimit && code == 429) {
                 long retryAfter = parseRetry(lastResponse);
@@ -259,8 +277,9 @@ public class Requester {
             task.handleResponse(e, rays);
             return null;
         } catch (IOException e) {
-            if (retryOnTimeout && !retried && isRetry(e))
+            if (retryOnTimeout && !retried && isRetry(e)) {
                 return execute(task, true, handleOnRatelimit);
+            }
             LOG.error("There was an I/O error while executing a REST request: {}", e.getMessage());
             task.handleResponse(e, rays);
             return null;
@@ -270,7 +289,9 @@ public class Requester {
             return null;
         } finally {
             for (okhttp3.Response r : responses) {
-                if (r == null) break;
+                if (r == null) {
+                    break;
+                }
                 r.close();
             }
         }
@@ -280,7 +301,9 @@ public class Requester {
         String method = apiRequest.getRoute().getMethod().toString();
         RequestBody body = apiRequest.getBody();
 
-        if (body == null && HttpMethod.requiresRequestBody(method)) body = EMPTY_BODY;
+        if (body == null && HttpMethod.requiresRequestBody(method)) {
+            body = EMPTY_BODY;
+        }
 
         builder.method(method, body);
 
@@ -326,10 +349,13 @@ public class Requester {
     }
 
     private static boolean shouldRetry(int code) {
-        if (code < RETRY_ERROR_CODES[0] || code > RETRY_ERROR_CODES[RETRY_ERROR_CODES.length - 1])
+        if (code < RETRY_ERROR_CODES[0] || code > RETRY_ERROR_CODES[RETRY_ERROR_CODES.length - 1]) {
             return false;
+        }
         for (int retryCode : RETRY_ERROR_CODES) {
-            if (retryCode == code) return true;
+            if (retryCode == code) {
+                return true;
+            }
         }
         return false;
     }

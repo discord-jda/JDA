@@ -32,7 +32,9 @@ public class GuildMemberAddHandler extends SocketHandler {
     protected Long handleInternally(DataObject content) {
         final long id = content.getLong("guild_id");
         boolean setup = getJDA().getGuildSetupController().onAddMember(id, content);
-        if (setup) return null;
+        if (setup) {
+            return null;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null) {

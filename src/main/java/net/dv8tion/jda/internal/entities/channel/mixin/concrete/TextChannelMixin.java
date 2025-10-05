@@ -39,14 +39,17 @@ public interface TextChannelMixin<T extends TextChannelMixin<T>>
                 .setSlowmode(getSlowmode());
         if (guild.equals(getGuild())) {
             Category parent = getParentCategory();
-            if (parent != null) action.setParent(parent);
+            if (parent != null) {
+                action.setParent(parent);
+            }
             for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
-                if (o.isMemberOverride())
+                if (o.isMemberOverride()) {
                     action.addMemberPermissionOverride(
                             o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
+                } else {
                     action.addRolePermissionOverride(
                             o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

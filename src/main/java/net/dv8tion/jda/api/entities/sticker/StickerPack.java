@@ -87,7 +87,9 @@ public interface StickerPack extends ISnowflake {
     @Nullable
     default StandardSticker getCoverSticker() {
         long id = getCoverIdLong();
-        if (id == 0L) return null;
+        if (id == 0L) {
+            return null;
+        }
         return getStickers().stream()
                 .filter(s -> s.getIdLong() == id)
                 .findFirst()

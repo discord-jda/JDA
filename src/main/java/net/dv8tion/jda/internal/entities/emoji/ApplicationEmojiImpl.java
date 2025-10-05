@@ -121,8 +121,12 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof ApplicationEmojiImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ApplicationEmojiImpl)) {
+            return false;
+        }
 
         ApplicationEmojiImpl other = (ApplicationEmojiImpl) obj;
         return this.id == other.getIdLong();

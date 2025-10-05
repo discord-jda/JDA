@@ -77,7 +77,9 @@ public class DefaultMemberPermissions {
     @Nonnull
     public static DefaultMemberPermissions enabledFor(@Nonnull Collection<Permission> permissions) {
         Checks.noneNull(permissions, "Permissions");
-        if (permissions.isEmpty()) return ENABLED;
+        if (permissions.isEmpty()) {
+            return ENABLED;
+        }
 
         return enabledFor(Permission.getRaw(permissions));
     }

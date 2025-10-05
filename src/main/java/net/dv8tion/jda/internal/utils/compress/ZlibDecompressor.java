@@ -47,23 +47,30 @@ public class ZlibDecompressor implements Decompressor {
 
     private ByteArrayOutputStream getDecompressBuffer() {
         // If no buffer has been allocated yet we do that here (lazy init)
-        if (decompressBuffer == null) decompressBuffer = newDecompressBuffer();
+        if (decompressBuffer == null) {
+            decompressBuffer = newDecompressBuffer();
+        }
         // Check if the buffer has been collected by the GC or not
         ByteArrayOutputStream buffer = decompressBuffer.get();
-        if (buffer == null) // create a ne buffer because the GC got it
-        decompressBuffer = new SoftReference<>(
-                buffer = new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
+        if (buffer == null) { // create a ne buffer because the GC got it
+            decompressBuffer = new SoftReference<>(
+                    buffer = new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
+        }
         return buffer;
     }
 
     private boolean isFlush(byte[] data) {
-        if (data.length < 4) return false;
+        if (data.length < 4) {
+            return false;
+        }
         int suffix = IOUtil.getIntBigEndian(data, data.length - 4);
         return suffix == Z_SYNC_FLUSH;
     }
 
     private void buffer(byte[] data) {
-        if (flushBuffer == null) flushBuffer = ByteBuffer.allocate(data.length * 2);
+        if (flushBuffer == null) {
+            flushBuffer = ByteBuffer.allocate(data.length * 2);
+        }
 
         // Ensure the capacity can hold the new data, ByteBuffer doesn't grow automatically
         if (flushBuffer.capacity() < data.length + flushBuffer.position()) {
@@ -130,8 +137,11 @@ public class ZlibDecompressor implements Decompressor {
         } finally {
             // When done with decompression we want to reset the buffer so it can be used again
             // later
-            if (buffer.size() > maxBufferSize) decompressBuffer = newDecompressBuffer();
-            else buffer.reset();
+            if (buffer.size() > maxBufferSize) {
+                decompressBuffer = newDecompressBuffer();
+            } else {
+                buffer.reset();
+            }
         }
     }
 }

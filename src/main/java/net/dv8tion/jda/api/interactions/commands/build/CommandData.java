@@ -358,18 +358,20 @@ public interface CommandData extends SerializableData {
                 data.setContexts(object.getArray("contexts").stream(DataArray::getString)
                         .map(InteractionContextType::fromKey)
                         .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
-            } else
+            } else {
                 data.setContexts(Helpers.unmodifiableEnumSet(
                         InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+            }
 
             if (!object.isNull("integration_types")) {
                 data.setIntegrationTypes(
                         object.getArray("integration_types").stream(DataArray::getString)
                                 .map(IntegrationType::fromKey)
                                 .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
-            } else
+            } else {
                 data.setIntegrationTypes(
                         Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
+            }
 
             data.setNSFW(object.getBoolean("nsfw"));
             data.setNameLocalizations(

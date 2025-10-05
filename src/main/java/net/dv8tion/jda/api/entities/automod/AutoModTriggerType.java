@@ -63,9 +63,11 @@ public enum AutoModTriggerType {
     AutoModTriggerType(int key, int maxPerGuild, AutoModEventType... supportedEvents) {
         this.key = key;
         this.maxPerGuild = maxPerGuild;
-        if (supportedEvents.length > 0)
+        if (supportedEvents.length > 0) {
             this.eventTypes = EnumSet.of(supportedEvents[0], supportedEvents);
-        else this.eventTypes = EnumSet.noneOf(AutoModEventType.class);
+        } else {
+            this.eventTypes = EnumSet.noneOf(AutoModEventType.class);
+        }
     }
 
     /**
@@ -119,7 +121,9 @@ public enum AutoModTriggerType {
     @Nonnull
     public static AutoModTriggerType fromKey(int key) {
         for (AutoModTriggerType trigger : values()) {
-            if (trigger.key == key) return trigger;
+            if (trigger.key == key) {
+                return trigger;
+            }
         }
         return UNKNOWN;
     }

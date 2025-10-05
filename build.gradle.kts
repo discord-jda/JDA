@@ -39,6 +39,7 @@ plugins {
     alias(libs.plugins.jreleaser)
     alias(libs.plugins.download)
     alias(libs.plugins.spotless)
+    alias(libs.plugins.openrewrite)
 }
 
 
@@ -167,6 +168,9 @@ dependencies {
 
     // For authoring tests for any kind of Recipe
     testImplementation("org.openrewrite:rewrite-test")
+
+    // Needed for rewrite gradle tasks
+    rewrite(libs.openrewrite.staticanalysis)
 }
 
 fun isNonStable(version: String): Boolean {
@@ -195,6 +199,11 @@ versionCatalogUpdate {
 //                                //
 ////////////////////////////////////
 
+rewrite {
+    failOnDryRunResults = true
+    activeRecipe("org.openrewrite.staticanalysis.NeedBraces")
+}
+
 spotless {
     encoding("UTF-8")
     lineEndings = LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME
@@ -219,6 +228,19 @@ spotless {
         trimTrailingWhitespace()
         leadingTabsToSpaces()
     }
+}
+
+tasks.named("spotlessJavaCheck").configure {
+    dependsOn(tasks.named("rewriteDryRun"))
+}
+
+tasks.named("spotlessJavaApply").configure {
+    dependsOn(tasks.named("rewriteRun"))
+}
+
+tasks.named("check").configure {
+    dependsOn(tasks.named("spotlessCheck"))
+    dependsOn(tasks.named("rewriteDryRun"))
 }
 
 

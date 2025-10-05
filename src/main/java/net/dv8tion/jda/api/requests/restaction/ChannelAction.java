@@ -381,10 +381,11 @@ public interface ChannelAction<T extends GuildChannel>
     default ChannelAction<T> addPermissionOverride(
             @Nonnull IPermissionHolder target, long allow, long deny) {
         Checks.notNull(target, "Override Role/Member");
-        if (target instanceof Role)
+        if (target instanceof Role) {
             return addRolePermissionOverride(target.getIdLong(), allow, deny);
-        else if (target instanceof Member)
+        } else if (target instanceof Member) {
             return addMemberPermissionOverride(target.getIdLong(), allow, deny);
+        }
         throw new IllegalArgumentException(
                 "Cannot add override for " + target.getClass().getSimpleName());
     }

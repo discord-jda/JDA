@@ -45,7 +45,9 @@ public abstract class AbstractWebhookMessageActionImpl<
     @Nonnull
     @SuppressWarnings("unchecked")
     public R setThreadId(@Nullable String threadId) {
-        if (threadId != null) Checks.isSnowflake(threadId, "Thread ID");
+        if (threadId != null) {
+            Checks.isSnowflake(threadId, "Thread ID");
+        }
         this.threadId = threadId;
         return (R) this;
     }

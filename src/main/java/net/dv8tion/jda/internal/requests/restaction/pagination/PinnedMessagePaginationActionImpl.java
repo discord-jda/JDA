@@ -67,7 +67,9 @@ public class PinnedMessagePaginationActionImpl
     @Nonnull
     @Override
     protected String getPaginationLastEvaluatedKey(long lastId, PinnedMessage last) {
-        if (last == null) return OffsetDateTime.now(ZoneOffset.UTC).toString();
+        if (last == null) {
+            return OffsetDateTime.now(ZoneOffset.UTC).toString();
+        }
         return last.getTimePinned().toString();
     }
 
@@ -89,7 +91,9 @@ public class PinnedMessagePaginationActionImpl
                 messages.add(pinnedMessage);
                 this.last = pinnedMessage;
                 this.lastKey = getKey(last);
-                if (useCache) this.cached.add(pinnedMessage);
+                if (useCache) {
+                    this.cached.add(pinnedMessage);
+                }
             } catch (Exception e) {
                 EntityBuilder.LOG.error("Failed to parse pinned message", e);
             }

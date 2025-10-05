@@ -42,9 +42,10 @@ public class CommandAutoCompleteInteractionImpl extends InteractionImpl
         DataArray options = data.getObject("data").getArray("options");
         findFocused(options);
 
-        if (focused == null)
+        if (focused == null) {
             throw new IllegalStateException(
                     "Failed to get focused option for auto complete interaction");
+        }
     }
 
     private void findFocused(DataArray options) {

@@ -62,8 +62,12 @@ public class PermOverrideData implements SerializableData {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof PermOverrideData)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof PermOverrideData)) {
+            return false;
+        }
 
         PermOverrideData other = (PermOverrideData) obj;
         return other.id == this.id;

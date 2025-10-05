@@ -244,7 +244,9 @@ public class AuditLogEntry implements ISnowflake {
         List<AuditLogChange> changes = new ArrayList<>(keys.length);
         for (AuditLogKey key : keys) {
             AuditLogChange change = getChangeByKey(key);
-            if (change != null) changes.add(change);
+            if (change != null) {
+                changes.add(change);
+            }
         }
         return Collections.unmodifiableList(changes);
     }
@@ -328,7 +330,9 @@ public class AuditLogEntry implements ISnowflake {
         List<Object> items = new ArrayList<>(options.length);
         for (AuditLogOption option : options) {
             Object obj = getOption(option);
-            if (obj != null) items.add(obj);
+            if (obj != null) {
+                items.add(obj);
+            }
         }
         return Collections.unmodifiableList(items);
     }
@@ -373,7 +377,9 @@ public class AuditLogEntry implements ISnowflake {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof AuditLogEntry)) return false;
+        if (!(obj instanceof AuditLogEntry)) {
+            return false;
+        }
         AuditLogEntry other = (AuditLogEntry) obj;
         return other.id == id && other.targetId == targetId;
     }

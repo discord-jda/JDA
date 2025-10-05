@@ -39,7 +39,9 @@ public interface CryptoAdapter {
 
     static AudioEncryption negotiate(EnumSet<AudioEncryption> supportedModes) {
         for (AudioEncryption mode : AudioEncryption.values()) {
-            if (supportedModes.contains(mode) && isModeSupported(mode)) return mode;
+            if (supportedModes.contains(mode) && isModeSupported(mode)) {
+                return mode;
+            }
         }
 
         return null;

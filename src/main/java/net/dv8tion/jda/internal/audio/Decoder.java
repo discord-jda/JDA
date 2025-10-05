@@ -43,9 +43,10 @@ public class Decoder {
         IntBuffer error = IntBuffer.allocate(1);
         opusDecoder = Opus.INSTANCE.opus_decoder_create(
                 OpusPacket.OPUS_SAMPLE_RATE, OpusPacket.OPUS_CHANNEL_COUNT, error);
-        if (error.get() != Opus.OPUS_OK && opusDecoder == null)
+        if (error.get() != Opus.OPUS_OK && opusDecoder == null) {
             throw new IllegalStateException(
                     "Received error code from opus_decoder_create(...): " + error.get());
+        }
     }
 
     public boolean isInOrder(char newSeq) {

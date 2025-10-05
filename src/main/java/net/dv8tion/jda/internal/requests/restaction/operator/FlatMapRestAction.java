@@ -50,10 +50,13 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O> {
             @Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure) {
         Consumer<? super Throwable> catcher = contextWrap(failure);
         handle(action, catcher, (result) -> {
-            if (condition != null && !condition.test(result)) return;
+            if (condition != null && !condition.test(result)) {
+                return;
+            }
             RestAction<O> then = supply(result);
-            if (then == null) // caught by handle try/catch abstraction
-            throw new IllegalStateException("FlatMap operand is null");
+            if (then == null) { // caught by handle try/catch abstraction
+                throw new IllegalStateException("FlatMap operand is null");
+            }
             then.queue(success, catcher);
         });
     }

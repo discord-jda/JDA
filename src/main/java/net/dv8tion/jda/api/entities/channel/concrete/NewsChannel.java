@@ -147,8 +147,9 @@ public interface NewsChannel extends StandardGuildMessageChannel {
         Checks.notNull(targetChannel, "Target Channel");
         Member selfMember = targetChannel.getGuild().getSelfMember();
         Checks.checkAccess(selfMember, targetChannel);
-        if (!selfMember.hasPermission(targetChannel, Permission.MANAGE_WEBHOOKS))
+        if (!selfMember.hasPermission(targetChannel, Permission.MANAGE_WEBHOOKS)) {
             throw new InsufficientPermissionException(targetChannel, Permission.MANAGE_WEBHOOKS);
+        }
         return follow(targetChannel.getId());
     }
 

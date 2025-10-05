@@ -750,7 +750,9 @@ public interface Invite {
         @Nonnull
         public static TargetType fromId(int id) {
             for (TargetType type : values()) {
-                if (type.id == id) return type;
+                if (type.id == id) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

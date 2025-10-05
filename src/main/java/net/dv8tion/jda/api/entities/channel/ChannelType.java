@@ -201,7 +201,9 @@ public enum ChannelType {
     @Nonnull
     public static ChannelType fromId(int id) {
         for (ChannelType type : values()) {
-            if (type.id == id) return type;
+            if (type.id == id) {
+                return type;
+            }
         }
         return UNKNOWN;
     }
@@ -218,7 +220,9 @@ public enum ChannelType {
     public static EnumSet<ChannelType> fromSortBucket(int bucket) {
         EnumSet<ChannelType> types = EnumSet.noneOf(ChannelType.class);
         for (ChannelType type : values()) {
-            if (type.getSortBucket() == bucket) types.add(type);
+            if (type.getSortBucket() == bucket) {
+                types.add(type);
+            }
         }
         return types;
     }

@@ -249,7 +249,9 @@ public interface AutoModResponse extends SerializableData {
         @Nonnull
         public static Type fromKey(int key) {
             for (Type type : values()) {
-                if (type.key == key) return type;
+                if (type.key == key) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

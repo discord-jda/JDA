@@ -111,10 +111,11 @@ public class MediaGalleryItemImpl
     @Override
     public DataObject toData() {
         final String outputUrl;
-        if (media != null) // Retain or reupload the entire file, both cases uses attachment://
-        outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
-        else // External URL or user-managed attachment
-        outputUrl = url;
+        if (media != null) { // Retain or reupload the entire file, both cases uses attachment://
+            outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
+        } else { // External URL or user-managed attachment
+            outputUrl = url;
+        }
         return DataObject.empty()
                 .put("media", DataObject.empty().put("url", outputUrl))
                 .put("description", description)
@@ -123,8 +124,12 @@ public class MediaGalleryItemImpl
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof MediaGalleryItemImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MediaGalleryItemImpl)) {
+            return false;
+        }
         MediaGalleryItemImpl that = (MediaGalleryItemImpl) o;
         return spoiler == that.spoiler
                 && Objects.equals(url, that.url)

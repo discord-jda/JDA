@@ -84,7 +84,9 @@ public enum InteractionContextType {
     @Nonnull
     public static InteractionContextType fromKey(@Nonnull String key) {
         for (InteractionContextType value : values()) {
-            if (value.key.equals(key)) return value;
+            if (value.key.equals(key)) {
+                return value;
+            }
         }
         return UNKNOWN;
     }

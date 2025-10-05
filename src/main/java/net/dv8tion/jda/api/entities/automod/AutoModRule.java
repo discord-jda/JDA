@@ -300,7 +300,9 @@ public interface AutoModRule extends ISnowflake {
         @Nonnull
         public static KeywordPreset fromKey(int key) {
             for (KeywordPreset preset : values()) {
-                if (preset.key == key) return preset;
+                if (preset.key == key) {
+                    return preset;
+                }
             }
             return UNKNOWN;
         }

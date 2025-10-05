@@ -177,8 +177,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     default GuildMessageChannelUnion getParentMessageChannel() {
-        if (getParentChannel() instanceof GuildMessageChannel)
+        if (getParentChannel() instanceof GuildMessageChannel) {
             return (GuildMessageChannelUnion) getParentChannel();
+        }
 
         throw new UnsupportedOperationException(
                 "Parent of this thread is not a MessageChannel. Parent: " + getParentChannel());
@@ -1060,8 +1061,11 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         String out;
 
-        if (alt) out = "#" + (upper ? getName().toUpperCase(formatter.locale()) : getName());
-        else out = getAsMention();
+        if (alt) {
+            out = "#" + (upper ? getName().toUpperCase(formatter.locale()) : getName());
+        } else {
+            out = getAsMention();
+        }
 
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
@@ -1110,7 +1114,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
         @Nonnull
         public static AutoArchiveDuration fromKey(int minutes) {
             for (AutoArchiveDuration duration : values()) {
-                if (duration.getMinutes() == minutes) return duration;
+                if (duration.getMinutes() == minutes) {
+                    return duration;
+                }
             }
             throw new IllegalArgumentException(
                     "Provided key was not recognized. Minutes: " + minutes);

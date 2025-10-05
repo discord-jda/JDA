@@ -111,7 +111,9 @@ public class PermissionOverrideImpl implements PermissionOverride {
     public IPermissionContainerUnion getChannel() {
         IPermissionContainer realChannel =
                 api.getChannelById(IPermissionContainer.class, channel.getIdLong());
-        if (realChannel != null) channel = realChannel;
+        if (realChannel != null) {
+            channel = realChannel;
+        }
 
         return (IPermissionContainerUnion) channel;
     }
@@ -166,8 +168,12 @@ public class PermissionOverrideImpl implements PermissionOverride {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof PermissionOverrideImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof PermissionOverrideImpl)) {
+            return false;
+        }
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
         return id == oPerm.id && this.channel.getIdLong() == oPerm.channel.getIdLong();
     }
@@ -189,7 +195,8 @@ public class PermissionOverrideImpl implements PermissionOverride {
         Member selfMember = getGuild().getSelfMember();
         IPermissionContainer channel = getChannel();
         Checks.checkAccess(selfMember, channel);
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS)) {
             throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
+        }
     }
 }

@@ -38,8 +38,12 @@ public class StickerSnowflakeImpl implements StickerSnowflake {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof StickerSnowflakeImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof StickerSnowflakeImpl)) {
+            return false;
+        }
         return ((StickerSnowflakeImpl) obj).id == id;
     }
 

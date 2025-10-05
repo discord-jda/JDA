@@ -189,7 +189,9 @@ public class LRUMemberCachePolicy implements MemberCachePolicy {
                     || oldestActive != null && oldestActive.getValue() < removed.insertionTime) {
                 activeMemberIterator.remove();
                 unloadable = oldestActive.getKey();
-                if (removed != null) this.queue.addFirst(removed);
+                if (removed != null) {
+                    this.queue.addFirst(removed);
+                }
             } else {
                 if (this.counters.get(removed.member) <= 1) {
                     this.counters.remove(removed.member);

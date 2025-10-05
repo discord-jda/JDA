@@ -268,7 +268,9 @@ public class JDAImpl implements JDA {
     }
 
     public void initRequester() {
-        if (this.requester != null) return;
+        if (this.requester != null) {
+            return;
+        }
         RestRateLimiter rateLimiter = this.restConfig
                 .getRateLimiterFactory()
                 .apply(new RestRateLimiter.RateLimitConfig(
@@ -339,9 +341,13 @@ public class JDAImpl implements JDA {
 
         client = new WebSocketClient(this, compression, intents, encoding);
         // remove our MDC metadata when we exit our code
-        if (previousContext != null) previousContext.forEach(MDC::put);
+        if (previousContext != null) {
+            previousContext.forEach(MDC::put);
+        }
 
-        if (shutdownHook != null) Runtime.getRuntime().addShutdownHook(shutdownHook);
+        if (shutdownHook != null) {
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
+        }
 
         return shardInfo == null ? -1 : shardInfo.getShardTotal();
     }
@@ -363,7 +369,9 @@ public class JDAImpl implements JDA {
     }
 
     public void setContext() {
-        if (metaConfig.getMdcContextMap() != null) metaConfig.getMdcContextMap().forEach(MDC::put);
+        if (metaConfig.getMdcContextMap() != null) {
+            metaConfig.getMdcContextMap().forEach(MDC::put);
+        }
     }
 
     public void setToken(String token) {
@@ -378,7 +386,9 @@ public class JDAImpl implements JDA {
             return new StatusChangeEvent(this, status, oldStatus);
         });
 
-        if (event.getOldStatus() != event.getNewStatus()) handleEvent(event);
+        if (event.getOldStatus() != event.getNewStatus()) {
+            handleEvent(event);
+        }
     }
 
     public void verifyToken() {
@@ -386,12 +396,16 @@ public class JDAImpl implements JDA {
                 new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile()) {
                     @Override
                     public void handleResponse(Response response, Request<DataObject> request) {
-                        if (response.isOk()) request.onSuccess(response.getObject());
-                        else if (response.isRateLimit())
+                        if (response.isOk()) {
+                            request.onSuccess(response.getObject());
+                        } else if (response.isRateLimit()) {
                             request.onFailure(new RateLimitedException(
                                     request.getRoute(), response.retryAfter));
-                        else if (response.code == 401) request.onSuccess(null);
-                        else request.onFailure(response);
+                        } else if (response.code == 401) {
+                            request.onSuccess(null);
+                        } else {
+                            request.onFailure(response);
+                        }
                     }
                 }.priority();
 
@@ -428,7 +442,9 @@ public class JDAImpl implements JDA {
     public void setAutoReconnect(boolean autoReconnect) {
         sessionConfig.setAutoReconnect(autoReconnect);
         WebSocketClient client = getClient();
-        if (client != null) client.setAutoReconnect(autoReconnect);
+        if (client != null) {
+            client.setAutoReconnect(autoReconnect);
+        }
     }
 
     @Override
@@ -461,9 +477,13 @@ public class JDAImpl implements JDA {
 
     @Override
     public boolean unloadUser(long userId) {
-        if (userId == selfUser.getIdLong()) return false;
+        if (userId == selfUser.getIdLong()) {
+            return false;
+        }
         User user = getUserById(userId);
-        if (user == null) return false;
+        if (user == null) {
+            return false;
+        }
 
         // We avoid to lock both the guild cache and member cache to make a deadlock impossible
         return getGuildCache().stream()
@@ -483,7 +503,9 @@ public class JDAImpl implements JDA {
     public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn)
             throws InterruptedException {
         Checks.notNull(status, "Status");
-        if (getStatus() == Status.CONNECTED) return this;
+        if (getStatus() == Status.CONNECTED) {
+            return this;
+        }
 
         MiscUtil.tryLock(statusLock);
         try {
@@ -494,10 +516,13 @@ public class JDAImpl implements JDA {
                             < status.ordinal()) // If we missed the status (e.g. LOGGING_IN ->
             // CONNECTED happened while waiting for lock)
             {
-                if (current == Status.SHUTDOWN)
+                if (current == Status.SHUTDOWN) {
                     throw new IllegalStateException(
                             "Was shutdown trying to await status.\nReason: " + shutdownReason);
-                if (endCondition.contains(current)) return this;
+                }
+                if (endCondition.contains(current)) {
+                    return this;
+                }
 
                 statusCondition.await();
                 current = getStatus();
@@ -518,7 +543,9 @@ public class JDAImpl implements JDA {
             Status current = getStatus();
             while (current != Status.SHUTDOWN) {
                 if (!statusCondition.await(
-                        deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) return false;
+                        deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
+                    return false;
+                }
                 current = getStatus();
             }
             return true;
@@ -560,9 +587,10 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public DirectAudioControllerImpl getDirectAudioController() {
-        if (!isIntent(GatewayIntent.GUILD_VOICE_STATES))
+        if (!isIntent(GatewayIntent.GUILD_VOICE_STATES)) {
             throw new IllegalStateException(
                     "Cannot use audio features with disabled GUILD_VOICE_STATES intent!");
+        }
         return this.audioController;
     }
 
@@ -594,8 +622,9 @@ public class JDAImpl implements JDA {
                         ? getUserById(id)
                         : null,
                 () -> {
-                    if (id == getSelfUser().getIdLong())
+                    if (id == getSelfUser().getIdLong()) {
                         return new CompletedRestAction<>(this, getSelfUser());
+                    }
                     Route.CompiledRoute route =
                             Route.Users.GET_USER.compile(Long.toUnsignedString(id));
                     return new RestActionImpl<>(
@@ -813,7 +842,9 @@ public class JDAImpl implements JDA {
     @Override
     public PrivateChannel getPrivateChannelById(long id) {
         PrivateChannel channel = JDA.super.getPrivateChannelById(id);
-        if (channel != null) usedPrivateChannel(id);
+        if (channel != null) {
+            usedPrivateChannel(id);
+        }
         return channel;
     }
 
@@ -836,14 +867,17 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public CacheRestAction<PrivateChannel> openPrivateChannelById(long userId) {
-        if (selfUser != null && userId == selfUser.getIdLong())
+        if (selfUser != null && userId == selfUser.getIdLong()) {
             throw new UnsupportedOperationException("Cannot open private channel with yourself!");
+        }
         return new DeferredRestAction<>(
                 this,
                 PrivateChannel.class,
                 () -> {
                     User user = getUserById(userId);
-                    if (user instanceof UserImpl) return ((UserImpl) user).getPrivateChannel();
+                    if (user instanceof UserImpl) {
+                        return ((UserImpl) user).getPrivateChannel();
+                    }
                     return null;
                 },
                 () -> {
@@ -868,7 +902,9 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public SelfUser getSelfUser() {
-        if (selfUser == null) throw new IllegalStateException("Session is not yet ready!");
+        if (selfUser == null) {
+            throw new IllegalStateException("Session is not yet ready!");
+        }
         return selfUser;
     }
 
@@ -882,7 +918,9 @@ public class JDAImpl implements JDA {
     @Override
     public synchronized void shutdown() {
         Status status = getStatus();
-        if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN) return;
+        if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN) {
+            return;
+        }
 
         setStatus(Status.SHUTTING_DOWN);
 
@@ -896,7 +934,9 @@ public class JDAImpl implements JDA {
     }
 
     public void shutdownInternals(ShutdownEvent event) {
-        if (getStatus() == Status.SHUTDOWN) return;
+        if (getStatus() == Status.SHUTDOWN) {
+            return;
+        }
         // so we can shutdown from WebSocketClient properly
         closeAudioConnections();
         guildSetupController.close();
@@ -916,7 +956,9 @@ public class JDAImpl implements JDA {
         boolean signal = MiscUtil.locked(
                 statusLock,
                 () -> shutdownEvent.getAndSet(event) == null && requesterShutdown.get());
-        if (signal) signalShutdown();
+        if (signal) {
+            signalShutdown();
+        }
     }
 
     public void shutdownRequester() {
@@ -927,7 +969,9 @@ public class JDAImpl implements JDA {
         boolean signal = MiscUtil.locked(
                 statusLock,
                 () -> !requesterShutdown.getAndSet(true) && shutdownEvent.get() != null);
-        if (signal) signalShutdown();
+        if (signal) {
+            signalShutdown();
+        }
     }
 
     private void signalShutdown() {
@@ -1163,8 +1207,11 @@ public class JDAImpl implements JDA {
         Checks.noneNull(scopes, "Scopes");
         this.requiredScopes = String.join("+", scopes);
         if (!requiredScopes.contains("bot")) {
-            if (requiredScopes.isEmpty()) requiredScopes = "bot";
-            else requiredScopes += "+bot";
+            if (requiredScopes.isEmpty()) {
+                requiredScopes = "bot";
+            } else {
+                requiredScopes += "+bot";
+            }
         }
         return this;
     }
@@ -1173,8 +1220,9 @@ public class JDAImpl implements JDA {
     @Override
     public String getInviteUrl(Permission... permissions) {
         StringBuilder builder = buildBaseInviteUrl();
-        if (permissions != null && permissions.length > 0)
+        if (permissions != null && permissions.length > 0) {
             builder.append("&permissions=").append(Permission.getRaw(permissions));
+        }
         return builder.toString();
     }
 
@@ -1182,16 +1230,20 @@ public class JDAImpl implements JDA {
     @Override
     public String getInviteUrl(Collection<Permission> permissions) {
         StringBuilder builder = buildBaseInviteUrl();
-        if (permissions != null && !permissions.isEmpty())
+        if (permissions != null && !permissions.isEmpty()) {
             builder.append("&permissions=").append(Permission.getRaw(permissions));
+        }
         return builder.toString();
     }
 
     private StringBuilder buildBaseInviteUrl() {
         if (clientId == null) {
-            if (selfUser != null)
-                clientId = selfUser.getApplicationId(); // populated by READY event
-            else retrieveApplicationInfo().complete();
+            if (selfUser != null) {
+                clientId = selfUser.getApplicationId();
+                // populated by READY event
+            } else {
+                retrieveApplicationInfo().complete();
+            }
         }
         StringBuilder builder =
                 new StringBuilder("https://discord.com/oauth2/authorize?client_id=");
@@ -1268,8 +1320,11 @@ public class JDAImpl implements JDA {
     }
 
     public String getIdentifierString() {
-        if (shardInfo != null) return "JDA " + shardInfo.getShardString();
-        else return "JDA";
+        if (shardInfo != null) {
+            return "JDA " + shardInfo.getShardString();
+        } else {
+            return "JDA";
+        }
     }
 
     public EventCache getEventCache() {
@@ -1277,7 +1332,9 @@ public class JDAImpl implements JDA {
     }
 
     public String getGatewayUrl() {
-        if (gatewayUrl == null) return gatewayUrl = getGateway();
+        if (gatewayUrl == null) {
+            return gatewayUrl = getGateway();
+        }
         return gatewayUrl;
     }
 

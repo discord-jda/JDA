@@ -99,9 +99,11 @@ public class ButtonTests {
     @MethodSource
     @ParameterizedTest
     void testWithId(Button button, boolean shouldThrow) {
-        if (shouldThrow)
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withCustomId("valid-id"));
-        else assertDoesNotThrow(() -> button.withCustomId("valid-id"));
+        } else {
+            assertDoesNotThrow(() -> button.withCustomId("valid-id"));
+        }
     }
 
     static Stream<Arguments> testWithId() {
@@ -114,9 +116,11 @@ public class ButtonTests {
     @MethodSource
     @ParameterizedTest
     void testWithUrl(Button button, boolean shouldThrow) {
-        if (shouldThrow)
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withUrl(EXAMPLE_URL));
-        else assertDoesNotThrow(() -> button.withUrl(EXAMPLE_URL));
+        } else {
+            assertDoesNotThrow(() -> button.withUrl(EXAMPLE_URL));
+        }
     }
 
     static Stream<Arguments> testWithUrl() {
@@ -129,9 +133,11 @@ public class ButtonTests {
     @MethodSource
     @ParameterizedTest
     void testWithSku(Button button, boolean shouldThrow) {
-        if (shouldThrow)
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withSku(EXAMPLE_SKU));
-        else assertDoesNotThrow(() -> button.withSku(EXAMPLE_SKU));
+        } else {
+            assertDoesNotThrow(() -> button.withSku(EXAMPLE_SKU));
+        }
     }
 
     static Stream<Arguments> testWithSku() {
@@ -144,9 +150,11 @@ public class ButtonTests {
     @MethodSource
     @ParameterizedTest
     void testWithLabel(Button button, boolean shouldThrow) {
-        if (shouldThrow)
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withLabel(EXAMPLE_LABEL));
-        else assertDoesNotThrow(() -> button.withLabel(EXAMPLE_LABEL));
+        } else {
+            assertDoesNotThrow(() -> button.withLabel(EXAMPLE_LABEL));
+        }
     }
 
     static Stream<Arguments> testWithLabel() {
@@ -159,9 +167,11 @@ public class ButtonTests {
     @MethodSource
     @ParameterizedTest
     void testWithEmoji(Button button, boolean shouldThrow) {
-        if (shouldThrow)
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withEmoji(EXAMPLE_EMOJI));
-        else assertDoesNotThrow(() -> button.withEmoji(EXAMPLE_EMOJI));
+        } else {
+            assertDoesNotThrow(() -> button.withEmoji(EXAMPLE_EMOJI));
+        }
     }
 
     static Stream<Arguments> testWithEmoji() {
@@ -175,25 +185,33 @@ public class ButtonTests {
     @ParameterizedTest
     void testWithStyleLinkToOther(ButtonStyle style) {
         Button button = Button.link(EXAMPLE_URL, "Label");
-        if (style == LINK) assertDoesNotThrow(() -> button.withStyle(style));
-        else assertThatIllegalArgumentException().isThrownBy(() -> button.withStyle(style));
+        if (style == LINK) {
+            assertDoesNotThrow(() -> button.withStyle(style));
+        } else {
+            assertThatIllegalArgumentException().isThrownBy(() -> button.withStyle(style));
+        }
     }
 
     @EnumSource
     @ParameterizedTest
     void testWithStylePremiumToOther(ButtonStyle style) {
         Button button = Button.premium(EXAMPLE_SKU);
-        if (style == PREMIUM) assertDoesNotThrow(() -> button.withStyle(style));
-        else assertThatIllegalArgumentException().isThrownBy(() -> button.withStyle(style));
+        if (style == PREMIUM) {
+            assertDoesNotThrow(() -> button.withStyle(style));
+        } else {
+            assertThatIllegalArgumentException().isThrownBy(() -> button.withStyle(style));
+        }
     }
 
     @EnumSource
     @ParameterizedTest
     void testWithStyleColorToOther(ButtonStyle style) {
         Button button = Button.primary(EXAMPLE_ID, EXAMPLE_LABEL);
-        if (style == PREMIUM || style == LINK || style == UNKNOWN)
+        if (style == PREMIUM || style == LINK || style == UNKNOWN) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withStyle(style));
-        else assertDoesNotThrow(() -> button.withStyle(style));
+        } else {
+            assertDoesNotThrow(() -> button.withStyle(style));
+        }
     }
 
     @MethodSource("validButtons")

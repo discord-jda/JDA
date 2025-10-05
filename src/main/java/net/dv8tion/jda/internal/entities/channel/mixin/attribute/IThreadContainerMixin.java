@@ -43,8 +43,11 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>>
 
         checkAttached();
         Checks.checkAccess(getGuild().getSelfMember(), this);
-        if (isPrivate) checkPermission(Permission.CREATE_PRIVATE_THREADS);
-        else checkPermission(Permission.CREATE_PUBLIC_THREADS);
+        if (isPrivate) {
+            checkPermission(Permission.CREATE_PRIVATE_THREADS);
+        } else {
+            checkPermission(Permission.CREATE_PUBLIC_THREADS);
+        }
 
         ChannelType threadType = isPrivate
                 ? ChannelType.GUILD_PRIVATE_THREAD

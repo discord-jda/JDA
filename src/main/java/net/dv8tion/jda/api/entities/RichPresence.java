@@ -161,12 +161,14 @@ public interface RichPresence extends Activity {
          */
         @Nonnull
         public String getUrl() {
-            if (key.startsWith("spotify:"))
+            if (key.startsWith("spotify:")) {
                 return "https://i.scdn.co/image/" + key.substring("spotify:".length());
-            if (key.startsWith("twitch:"))
+            }
+            if (key.startsWith("twitch:")) {
                 return String.format(
                         "https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-1920x1080.png",
                         key.substring("twitch:".length()));
+            }
             return "https://cdn.discordapp.com/app-assets/" + applicationId + "/" + key + ".png";
         }
 
@@ -180,7 +182,9 @@ public interface RichPresence extends Activity {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Image)) return false;
+            if (!(obj instanceof Image)) {
+                return false;
+            }
             Image i = (Image) obj;
             return Objects.equals(key, i.key) && Objects.equals(text, i.text);
         }
@@ -244,7 +248,9 @@ public interface RichPresence extends Activity {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Party)) return false;
+            if (!(obj instanceof Party)) {
+                return false;
+            }
             Party p = (Party) obj;
             return size == p.size && max == p.max && Objects.equals(id, p.id);
         }

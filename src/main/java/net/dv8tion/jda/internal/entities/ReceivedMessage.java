@@ -190,15 +190,17 @@ public class ReceivedMessage implements Message {
     }
 
     private void checkSystem(String comment) {
-        if (type.isSystem())
+        if (type.isSystem()) {
             throw new IllegalStateException("Cannot " + comment + " a system message!");
+        }
     }
 
     private void checkUser() {
-        if (!getJDA().getSelfUser().equals(getAuthor()))
+        if (!getJDA().getSelfUser().equals(getAuthor())) {
             throw new IllegalStateException(
                     "Attempted to update message that was not sent by this account. You cannot"
                             + " modify other User's messages!");
+        }
     }
 
     private void checkIntent() {
@@ -253,9 +255,13 @@ public class ReceivedMessage implements Message {
     @Override
     public AuditableRestAction<Void> pin() {
         checkSystem("pin");
-        if (isEphemeral()) throw new IllegalStateException("Cannot pin ephemeral messages.");
+        if (isEphemeral()) {
+            throw new IllegalStateException("Cannot pin ephemeral messages.");
+        }
 
-        if (hasChannel()) return getChannel().pinMessageById(getIdLong());
+        if (hasChannel()) {
+            return getChannel().pinMessageById(getIdLong());
+        }
 
         Route.CompiledRoute route = Route.Messages.PIN_MESSAGE.compile(getChannelId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -265,9 +271,13 @@ public class ReceivedMessage implements Message {
     @Override
     public AuditableRestAction<Void> unpin() {
         checkSystem("unpin");
-        if (isEphemeral()) throw new IllegalStateException("Cannot unpin ephemeral messages.");
+        if (isEphemeral()) {
+            throw new IllegalStateException("Cannot unpin ephemeral messages.");
+        }
 
-        if (hasChannel()) return getChannel().unpinMessageById(getIdLong());
+        if (hasChannel()) {
+            return getChannel().unpinMessageById(getIdLong());
+        }
 
         Route.CompiledRoute route = Route.Messages.UNPIN_MESSAGE.compile(getChannelId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -276,8 +286,9 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public RestAction<Void> addReaction(@Nonnull Emoji emoji) {
-        if (isEphemeral())
+        if (isEphemeral()) {
             throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
+        }
 
         Checks.notNull(emoji, "Emoji");
 
@@ -305,14 +316,17 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public RestAction<Void> clearReactions() {
-        if (isEphemeral())
+        if (isEphemeral()) {
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
-        if (!isFromGuild())
+        }
+        if (!isFromGuild()) {
             throw new IllegalStateException(
                     "Cannot clear reactions from a message in a Group or PrivateChannel.");
+        }
 
-        if (channel instanceof GuildMessageChannel)
+        if (channel instanceof GuildMessageChannel) {
             return ((GuildMessageChannel) channel).clearReactionsById(getId());
+        }
 
         Route.CompiledRoute route =
                 Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannelId(), getId());
@@ -322,14 +336,17 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public RestAction<Void> clearReactions(@Nonnull Emoji emoji) {
-        if (isEphemeral())
+        if (isEphemeral()) {
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
-        if (!isFromGuild())
+        }
+        if (!isFromGuild()) {
             throw new IllegalStateException(
                     "Cannot clear reactions from a message in a Group or PrivateChannel.");
+        }
 
-        if (channel instanceof GuildMessageChannel)
+        if (channel instanceof GuildMessageChannel) {
             return ((GuildMessageChannel) channel).clearReactionsById(getId(), emoji);
+        }
 
         String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
         Route.CompiledRoute route =
@@ -340,10 +357,13 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public RestAction<Void> removeReaction(@Nonnull Emoji emoji) {
-        if (isEphemeral())
+        if (isEphemeral()) {
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
+        }
 
-        if (hasChannel()) return getChannel().removeReactionById(getId(), emoji);
+        if (hasChannel()) {
+            return getChannel().removeReactionById(getId(), emoji);
+        }
 
         String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
         Route.CompiledRoute route =
@@ -355,20 +375,25 @@ public class ReceivedMessage implements Message {
     @Override
     public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user) {
         Checks.notNull(user, "User");
-        if (isEphemeral())
+        if (isEphemeral()) {
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
+        }
 
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
-        if (user.equals(getJDA().getSelfUser())) return removeReaction(emoji);
+        if (user.equals(getJDA().getSelfUser())) {
+            return removeReaction(emoji);
+        }
 
-        if (!isFromGuild())
+        if (!isFromGuild()) {
             throw new IllegalStateException(
                     "Cannot remove reactions of others from a message in a Group or"
                             + " PrivateChannel.");
+        }
 
-        if (channel instanceof GuildMessageChannel)
+        if (channel instanceof GuildMessageChannel) {
             return ((GuildMessageChannel) channel).removeReactionById(getIdLong(), emoji, user);
+        }
 
         String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
@@ -380,10 +405,13 @@ public class ReceivedMessage implements Message {
     @Override
     public ReactionPaginationAction retrieveReactionUsers(
             @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type) {
-        if (isEphemeral())
+        if (isEphemeral()) {
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
+        }
 
-        if (hasChannel()) return getChannel().retrieveReactionUsersById(id, emoji, type);
+        if (hasChannel()) {
+            return getChannel().retrieveReactionUsersById(id, emoji, type);
+        }
 
         Checks.notNull(type, "ReactionType");
         Checks.notNull(emoji, "Emoji");
@@ -456,8 +484,9 @@ public class ReceivedMessage implements Message {
 
     @Override
     public int getApproximatePosition() {
-        if (!getChannelType().isThread())
+        if (!getChannelType().isThread()) {
             throw new IllegalStateException("This message was not sent in a thread.");
+        }
 
         return position;
     }
@@ -465,9 +494,13 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public String getContentStripped() {
-        if (strippedContent != null) return strippedContent;
+        if (strippedContent != null) {
+            return strippedContent;
+        }
         synchronized (mutex) {
-            if (strippedContent != null) return strippedContent;
+            if (strippedContent != null) {
+                return strippedContent;
+            }
             return strippedContent = MarkdownSanitizer.sanitize(getContentDisplay());
         }
     }
@@ -475,16 +508,22 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public String getContentDisplay() {
-        if (altContent != null) return altContent;
+        if (altContent != null) {
+            return altContent;
+        }
 
         synchronized (mutex) {
-            if (altContent != null) return altContent;
+            if (altContent != null) {
+                return altContent;
+            }
             String tmp = getContentRaw();
             for (User user : mentions.getUsers()) {
                 String name;
-                if (hasGuild() && getGuild().isMember(user))
+                if (hasGuild() && getGuild().isMember(user)) {
                     name = getGuild().getMember(user).getEffectiveName();
-                else name = user.getName();
+                } else {
+                    name = user.getName();
+                }
                 tmp = tmp.replaceAll(
                         "<@!?" + Pattern.quote(user.getId()) + '>',
                         '@' + Matcher.quoteReplacement(name));
@@ -513,12 +552,18 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public List<String> getInvites() {
-        if (invites != null) return invites;
+        if (invites != null) {
+            return invites;
+        }
         synchronized (mutex) {
-            if (invites != null) return invites;
+            if (invites != null) {
+                return invites;
+            }
             invites = new ArrayList<>();
             Matcher m = INVITE_PATTERN.matcher(getContentRaw());
-            while (m.find()) invites.add(m.group(1));
+            while (m.find()) {
+                invites.add(m.group(1));
+            }
             return invites = Collections.unmodifiableList(invites);
         }
     }
@@ -547,7 +592,9 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public MessageChannelUnion getChannel() {
-        if (channel != null) return (MessageChannelUnion) channel;
+        if (channel != null) {
+            return (MessageChannelUnion) channel;
+        }
         throw new IllegalStateException(
                 "Channel is unavailable in this context. Use getChannelIdLong() instead!");
     }
@@ -555,16 +602,18 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public GuildMessageChannelUnion getGuildChannel() {
-        if (channel == null || channel instanceof GuildMessageChannelUnion)
+        if (channel == null || channel instanceof GuildMessageChannelUnion) {
             return (GuildMessageChannelUnion) getChannel();
+        }
         throw new IllegalStateException("This message was not sent in a guild.");
     }
 
     @Override
     public Category getCategory() {
         Channel channel = this.channel;
-        if (channel instanceof ThreadChannel)
+        if (channel instanceof ThreadChannel) {
             channel = ((ThreadChannel) channel).getParentChannel();
+        }
 
         return channel instanceof ICategorizableChannel
                 ? ((ICategorizableChannel) channel).getParentCategory()
@@ -586,11 +635,13 @@ public class ReceivedMessage implements Message {
     public Guild getGuild() {
         if (guild == null) {
             ChannelType channelType = getChannelType();
-            if (channelType == ChannelType.UNKNOWN || channelType.isGuild())
+            if (channelType == ChannelType.UNKNOWN || channelType.isGuild()) {
                 throw new IllegalStateException(
                         "This message instance does not provide a guild instance! Use getGuildId()"
                                 + " instead.");
-            else throw new IllegalStateException("This message was not sent in a guild");
+            } else {
+                throw new IllegalStateException("This message was not sent in a guild");
+            }
         }
         return guild;
     }
@@ -631,16 +682,19 @@ public class ReceivedMessage implements Message {
     @Override
     public AuditableRestAction<Message> endPoll() {
         checkUser();
-        if (poll == null) throw new IllegalStateException("This message does not contain a poll");
+        if (poll == null) {
+            throw new IllegalStateException("This message does not contain a poll");
+        }
         return new AuditableRestActionImpl<>(
                 getJDA(),
                 Route.Messages.END_POLL.compile(getChannelId(), getId()),
                 (response, request) -> {
                     JDAImpl jda = (JDAImpl) getJDA();
                     EntityBuilder entityBuilder = jda.getEntityBuilder();
-                    if (hasChannel())
+                    if (hasChannel()) {
                         return entityBuilder.createMessageWithChannel(
                                 response.getObject(), channel, false);
+                    }
                     return entityBuilder.createMessageFromWebhook(
                             response.getObject(), hasGuild() ? getGuild() : null);
                 });
@@ -707,7 +761,9 @@ public class ReceivedMessage implements Message {
         MessageEditActionImpl action = editRequest();
         action.setContent(newContent.toString());
 
-        if (isWebhookRequest()) return action.withHook(webhook, getChannelType(), channelId);
+        if (isWebhookRequest()) {
+            return action.withHook(webhook, getChannelType(), channelId);
+        }
 
         checkSystem("edit");
         checkUser();
@@ -721,7 +777,9 @@ public class ReceivedMessage implements Message {
         MessageEditActionImpl action = editRequest();
         action.setEmbeds(embeds);
 
-        if (isWebhookRequest()) return action.withHook(webhook, getChannelType(), channelId);
+        if (isWebhookRequest()) {
+            return action.withHook(webhook, getChannelType(), channelId);
+        }
 
         checkSystem("edit");
         checkUser();
@@ -736,7 +794,9 @@ public class ReceivedMessage implements Message {
         MessageEditActionImpl action = editRequest();
         action.setComponents(components);
 
-        if (isWebhookRequest()) return action.withHook(webhook, getChannelType(), channelId);
+        if (isWebhookRequest()) {
+            return action.withHook(webhook, getChannelType(), channelId);
+        }
 
         checkSystem("edit");
         checkUser();
@@ -750,7 +810,9 @@ public class ReceivedMessage implements Message {
         MessageEditActionImpl action = editRequest();
         action.setContent(String.format(format, args));
 
-        if (isWebhookRequest()) return action.withHook(webhook, getChannelType(), channelId);
+        if (isWebhookRequest()) {
+            return action.withHook(webhook, getChannelType(), channelId);
+        }
 
         checkSystem("edit");
         checkUser();
@@ -765,7 +827,9 @@ public class ReceivedMessage implements Message {
         MessageEditActionImpl action = editRequest();
         action.setAttachments(attachments);
 
-        if (isWebhookRequest()) return action.withHook(webhook, getChannelType(), channelId);
+        if (isWebhookRequest()) {
+            return action.withHook(webhook, getChannelType(), channelId);
+        }
 
         checkSystem("edit");
         checkUser();
@@ -779,7 +843,9 @@ public class ReceivedMessage implements Message {
         MessageEditActionImpl action = editRequest();
         action.applyData(newContent);
 
-        if (isWebhookRequest()) return action.withHook(webhook, getChannelType(), channelId);
+        if (isWebhookRequest()) {
+            return action.withHook(webhook, getChannelType(), channelId);
+        }
 
         checkSystem("edit");
         checkUser();
@@ -790,8 +856,9 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public AuditableRestAction<Void> delete() {
-        if (!type.canDelete())
+        if (!type.canDelete()) {
             throw new IllegalStateException("Cannot delete messages of type " + type);
+        }
 
         if (isWebhookRequest()) {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(
@@ -807,18 +874,22 @@ public class ReceivedMessage implements Message {
         SelfUser self = getJDA().getSelfUser();
         boolean isSelfAuthored = self.equals(getAuthor());
 
-        if (!isSelfAuthored && !isFromGuild())
+        if (!isSelfAuthored && !isFromGuild()) {
             throw new IllegalStateException(
                     "Cannot delete another User's messages in a PrivateChannel.");
+        }
 
-        if (isEphemeral()) throw new IllegalStateException("Cannot delete ephemeral messages.");
+        if (isEphemeral()) {
+            throw new IllegalStateException("Cannot delete ephemeral messages.");
+        }
 
         if (channel instanceof GuildMessageChannel && !isSelfAuthored) {
             GuildMessageChannel gChan = (GuildMessageChannel) channel;
             Member sMember = getGuild().getSelfMember();
             Checks.checkAccess(sMember, gChan);
-            if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
+            if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE)) {
                 throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
+            }
         }
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getChannelId(), getId());
@@ -836,18 +907,23 @@ public class ReceivedMessage implements Message {
                     webhook.getId(), webhook.getToken(), getId());
             route = withThreadContext(route);
         } else {
-            if (isEphemeral())
+            if (isEphemeral()) {
                 throw new IllegalStateException("Cannot suppress embeds on ephemeral messages.");
+            }
 
             if (!self.equals(getAuthor())) {
-                if (!isFromGuild())
+                if (!isFromGuild()) {
                     throw new PermissionException(
                             "Cannot suppress embeds of others in a PrivateChannel.");
+                }
 
                 if (hasChannel()) {
                     GuildMessageChannel gChan = getGuildChannel();
-                    if (!getGuild().getSelfMember().hasPermission(gChan, Permission.MESSAGE_MANAGE))
+                    if (!getGuild()
+                            .getSelfMember()
+                            .hasPermission(gChan, Permission.MESSAGE_MANAGE)) {
                         throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
+                    }
                 }
             }
 
@@ -856,8 +932,11 @@ public class ReceivedMessage implements Message {
 
         int newFlags = flags;
         int suppressionValue = MessageFlag.EMBEDS_SUPPRESSED.getValue();
-        if (suppressed) newFlags |= suppressionValue;
-        else newFlags &= ~suppressionValue;
+        if (suppressed) {
+            newFlags |= suppressionValue;
+        } else {
+            newFlags &= ~suppressionValue;
+        }
         DataObject body = DataObject.empty().put("flags", newFlags);
 
         final AuditableRestActionImpl<Void> action =
@@ -869,10 +948,13 @@ public class ReceivedMessage implements Message {
     @Nonnull
     @Override
     public RestAction<Message> crosspost() {
-        if (isEphemeral()) throw new IllegalStateException("Cannot crosspost ephemeral messages.");
+        if (isEphemeral()) {
+            throw new IllegalStateException("Cannot crosspost ephemeral messages.");
+        }
 
-        if (getFlags().contains(MessageFlag.CROSSPOSTED))
+        if (getFlags().contains(MessageFlag.CROSSPOSTED)) {
             return new CompletedRestAction<>(getJDA(), this);
+        }
 
         if (!hasChannel()) {
             Route.CompiledRoute route =
@@ -882,15 +964,17 @@ public class ReceivedMessage implements Message {
         }
 
         MessageChannelUnion channel = getChannel();
-        if (!(channel instanceof NewsChannel))
+        if (!(channel instanceof NewsChannel)) {
             throw new IllegalStateException("This message was not sent in a news channel");
+        }
         NewsChannel newsChannel = (NewsChannel) channel;
         Checks.checkAccess(getGuild().getSelfMember(), newsChannel);
         if (!getAuthor().equals(getJDA().getSelfUser())
                 && !getGuild()
                         .getSelfMember()
-                        .hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
+                        .hasPermission(newsChannel, Permission.MESSAGE_MANAGE)) {
             throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
+        }
         return newsChannel.crosspostMessageById(getId());
     }
 
@@ -938,8 +1022,12 @@ public class ReceivedMessage implements Message {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof ReceivedMessage)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ReceivedMessage)) {
+            return false;
+        }
         ReceivedMessage oMsg = (ReceivedMessage) o;
         return this.id == oMsg.id;
     }
@@ -971,7 +1059,9 @@ public class ReceivedMessage implements Message {
 
         String out = alt ? getContentRaw() : getContentDisplay();
 
-        if (upper) out = out.toUpperCase(formatter.locale());
+        if (upper) {
+            out = out.toUpperCase(formatter.locale());
+        }
 
         try {
             Appendable appendable = formatter.out();
@@ -980,8 +1070,11 @@ public class ReceivedMessage implements Message {
                 return;
             }
 
-            if (leftJustified) appendable.append(Helpers.rightPad(out, width));
-            else appendable.append(Helpers.leftPad(out, width));
+            if (leftJustified) {
+                appendable.append(Helpers.rightPad(out, width));
+            } else {
+                appendable.append(Helpers.leftPad(out, width));
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -1005,23 +1098,28 @@ public class ReceivedMessage implements Message {
     }
 
     private Route.CompiledRoute withThreadContext(Route.CompiledRoute route) {
-        if (getChannelType().isThread() && !(webhook instanceof InteractionHook))
+        if (getChannelType().isThread() && !(webhook instanceof InteractionHook)) {
             return route.withQueryParams("thread_id", getChannelId());
+        }
         return route;
     }
 
     private ErrorMapper getUnknownWebhookErrorMapper() {
-        if (!isWebhookRequest()) return null;
+        if (!isWebhookRequest()) {
+            return null;
+        }
 
         return (response, request, exception) -> {
             if (webhook instanceof InteractionHookImpl
                     && !((InteractionHookImpl) webhook).isAck()
-                    && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+                    && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK) {
                 return new IllegalStateException(
                         "Sending a webhook request requires the interaction to be acknowledged"
                                 + " before expiration",
                         exception);
-            else return null;
+            } else {
+                return null;
+            }
         };
     }
 }

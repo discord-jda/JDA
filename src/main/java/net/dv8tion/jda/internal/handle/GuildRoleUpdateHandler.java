@@ -34,7 +34,9 @@ public class GuildRoleUpdateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         DataObject rolejson = content.getObject("role");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
@@ -63,7 +65,9 @@ public class GuildRoleUpdateHandler extends SocketHandler {
 
         String name = rolejson.getString("name");
         int color = rolejson.getInt("color");
-        if (color == 0) color = Role.DEFAULT_COLOR_RAW;
+        if (color == 0) {
+            color = Role.DEFAULT_COLOR_RAW;
+        }
         int position = rolejson.getInt("position");
         long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");

@@ -55,8 +55,9 @@ public class MessagePaginationActionImpl
             GuildChannel guildChannel = (GuildChannel) channel;
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
-            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
+            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY)) {
                 throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_HISTORY);
+            }
         }
 
         this.channel = channel;
@@ -80,14 +81,20 @@ public class MessagePaginationActionImpl
             } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered an exception in MessagePagination", e);
             } catch (IllegalArgumentException e) {
-                if (EntityBuilder.UNKNOWN_MESSAGE_TYPE.equals(e.getMessage()))
+                if (EntityBuilder.UNKNOWN_MESSAGE_TYPE.equals(e.getMessage())) {
                     LOG.warn("Skipping unknown message type during pagination", e);
-                else LOG.warn("Unexpected issue trying to parse message during pagination", e);
+                } else {
+                    LOG.warn("Unexpected issue trying to parse message during pagination", e);
+                }
             }
         }
 
-        if (order == PaginationOrder.FORWARD) Collections.reverse(messages);
-        if (useCache) cached.addAll(messages);
+        if (order == PaginationOrder.FORWARD) {
+            Collections.reverse(messages);
+        }
+        if (useCache) {
+            cached.addAll(messages);
+        }
 
         if (!messages.isEmpty()) {
             last = messages.get(messages.size() - 1);

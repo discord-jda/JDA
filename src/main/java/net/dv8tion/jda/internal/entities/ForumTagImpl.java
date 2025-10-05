@@ -73,10 +73,13 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag {
 
     public ForumTagImpl setEmoji(DataObject json) {
         long id = json.getUnsignedLong("emoji_id", 0);
-        if (id != 0) this.emoji = new CustomEmojiImpl(json.getString("emoji_name", ""), id, false);
-        else if (!json.isNull("emoji_name"))
+        if (id != 0) {
+            this.emoji = new CustomEmojiImpl(json.getString("emoji_name", ""), id, false);
+        } else if (!json.isNull("emoji_name")) {
             this.emoji = Emoji.fromUnicode(json.getString("emoji_name"));
-        else this.emoji = null;
+        } else {
+            this.emoji = null;
+        }
         return this;
     }
 

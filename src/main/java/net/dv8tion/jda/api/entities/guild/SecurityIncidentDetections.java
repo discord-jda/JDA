@@ -66,8 +66,12 @@ public class SecurityIncidentDetections {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SecurityIncidentDetections)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SecurityIncidentDetections)) {
+            return false;
+        }
         SecurityIncidentDetections that = (SecurityIncidentDetections) o;
         return this.dmSpamDetectedAt == that.dmSpamDetectedAt
                 && this.raidDetectedAt == that.raidDetectedAt;

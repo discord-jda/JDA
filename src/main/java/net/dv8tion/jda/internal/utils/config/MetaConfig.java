@@ -43,9 +43,11 @@ public class MetaConfig {
         this.maxBufferSize = maxBufferSize;
         this.cacheFlags = cacheFlags == null ? EnumSet.allOf(CacheFlag.class) : cacheFlags;
         this.enableMDC = flags.contains(ConfigFlag.MDC_CONTEXT);
-        if (enableMDC)
+        if (enableMDC) {
             this.mdcContextMap = mdcContextMap == null ? new ConcurrentHashMap<>() : mdcContextMap;
-        else this.mdcContextMap = null;
+        } else {
+            this.mdcContextMap = null;
+        }
         this.useShutdownHook = flags.contains(ConfigFlag.SHUTDOWN_HOOK);
     }
 

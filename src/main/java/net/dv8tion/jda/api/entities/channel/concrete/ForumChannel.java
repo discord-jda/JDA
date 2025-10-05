@@ -138,7 +138,9 @@ public interface ForumChannel
         @Nonnull
         public static Layout fromKey(int key) {
             for (Layout layout : values()) {
-                if (layout.key == key) return layout;
+                if (layout.key == key) {
+                    return layout;
+                }
             }
 
             return UNKNOWN;

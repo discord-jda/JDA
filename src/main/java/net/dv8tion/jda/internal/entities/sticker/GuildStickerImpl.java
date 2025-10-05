@@ -89,7 +89,9 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
     @Override
     public Guild getGuild() {
         Guild realGuild = jda.getGuildById(guildId);
-        if (realGuild != null) guild = realGuild;
+        if (realGuild != null) {
+            guild = realGuild;
+        }
         return guild;
     }
 
@@ -98,7 +100,9 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
     public User getOwner() {
         if (owner != null) {
             User realOwner = jda.getUserById(owner.getIdLong());
-            if (realOwner != null) owner = realOwner;
+            if (realOwner != null) {
+                owner = realOwner;
+            }
         }
         return owner;
     }
@@ -107,8 +111,9 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
     @Override
     public CacheRestAction<User> retrieveOwner() {
         Guild g = getGuild();
-        if (g != null && !g.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+        if (g != null && !g.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
             throw new InsufficientPermissionException(g, Permission.MANAGE_GUILD_EXPRESSIONS);
+        }
         return new DeferredRestAction<>(jda, User.class, this::getOwner, () -> {
             Route.CompiledRoute route =
                     Route.Stickers.GET_GUILD_STICKER.compile(getGuildId(), getId());
@@ -127,7 +132,9 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
     @Nonnull
     @Override
     public AuditableRestAction<Void> delete() {
-        if (guild != null) return guild.deleteSticker(this);
+        if (guild != null) {
+            return guild.deleteSticker(this);
+        }
         Route.CompiledRoute route =
                 Route.Stickers.DELETE_GUILD_STICKER.compile(getGuildId(), getId());
         return new AuditableRestActionImpl<>(jda, route);
@@ -164,8 +171,12 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof GuildStickerImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof GuildStickerImpl)) {
+            return false;
+        }
         GuildStickerImpl other = (GuildStickerImpl) obj;
         return id == other.id
                 && format == other.format

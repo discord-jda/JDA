@@ -96,7 +96,9 @@ public class InviteImpl implements Invite {
 
         Route.CompiledRoute route = Route.Invites.GET_INVITE.compile(code);
 
-        if (withCounts) route = route.withQueryParams("with_counts", "true");
+        if (withCounts) {
+            route = route.withQueryParams("with_counts", "true");
+        }
 
         JDAImpl jda = (JDAImpl) api;
         return new RestActionImpl<>(api, route, (response, request) -> jda.getEntityBuilder()
@@ -114,17 +116,21 @@ public class InviteImpl implements Invite {
     @Nonnull
     @Override
     public RestAction<Invite> expand() {
-        if (this.expanded) return new CompletedRestAction<>(getJDA(), this);
+        if (this.expanded) {
+            return new CompletedRestAction<>(getJDA(), this);
+        }
 
-        if (this.type != Invite.InviteType.GUILD)
+        if (this.type != Invite.InviteType.GUILD) {
             throw new IllegalStateException("Only guild invites can be expanded");
+        }
 
         final net.dv8tion.jda.api.entities.Guild guild =
                 this.api.getGuildById(this.guild.getIdLong());
 
-        if (guild == null)
+        if (guild == null) {
             throw new UnsupportedOperationException(
                     "You're not in the guild this invite points to");
+        }
 
         final Member member = guild.getSelfMember();
 
@@ -132,10 +138,11 @@ public class InviteImpl implements Invite {
 
         final GuildChannel channel =
                 guild.getChannelById(GuildChannel.class, this.channel.getIdLong());
-        if (channel == null)
+        if (channel == null) {
             throw new UnsupportedOperationException(
                     "Cannot expand invite without known channel. Channel ID: "
                             + this.channel.getId());
+        }
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL)) {
             route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
@@ -213,26 +220,34 @@ public class InviteImpl implements Invite {
 
     @Override
     public int getMaxAge() {
-        if (!this.expanded) throw new IllegalStateException("Only valid for expanded invites");
+        if (!this.expanded) {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.maxAge;
     }
 
     @Override
     public int getMaxUses() {
-        if (!this.expanded) throw new IllegalStateException("Only valid for expanded invites");
+        if (!this.expanded) {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.maxUses;
     }
 
     @Nonnull
     @Override
     public OffsetDateTime getTimeCreated() {
-        if (!this.expanded) throw new IllegalStateException("Only valid for expanded invites");
+        if (!this.expanded) {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.timeCreated;
     }
 
     @Override
     public int getUses() {
-        if (!this.expanded) throw new IllegalStateException("Only valid for expanded invites");
+        if (!this.expanded) {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.uses;
     }
 
@@ -243,7 +258,9 @@ public class InviteImpl implements Invite {
 
     @Override
     public boolean isTemporary() {
-        if (!this.expanded) throw new IllegalStateException("Only valid for expanded invites");
+        if (!this.expanded) {
+            throw new IllegalStateException("Only valid for expanded invites");
+        }
         return this.temporary;
     }
 
@@ -254,8 +271,12 @@ public class InviteImpl implements Invite {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof InviteImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof InviteImpl)) {
+            return false;
+        }
         InviteImpl impl = (InviteImpl) obj;
         return impl.code.equals(this.code);
     }
@@ -513,8 +534,12 @@ public class InviteImpl implements Invite {
 
         @Nonnull
         private ISnowflake getTargetEntity() {
-            if (targetUser != null) return targetUser;
-            if (targetApplication != null) return targetApplication;
+            if (targetUser != null) {
+                return targetUser;
+            }
+            if (targetApplication != null) {
+                return targetApplication;
+            }
             throw new IllegalStateException("No target entity");
         }
     }

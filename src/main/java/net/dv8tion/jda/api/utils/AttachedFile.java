@@ -316,7 +316,9 @@ public interface AttachedFile extends Closeable {
         int i = 0;
         for (AttachedFile file : files) file.addPart(builder, i++);
 
-        if (payloadJson != null) builder.addFormDataPart("payload_json", null, payloadJson);
+        if (payloadJson != null) {
+            builder.addFormDataPart("payload_json", null, payloadJson);
+        }
         return builder;
     }
 

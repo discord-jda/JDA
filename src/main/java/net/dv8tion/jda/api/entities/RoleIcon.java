@@ -109,8 +109,12 @@ public class RoleIcon {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof RoleIcon)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof RoleIcon)) {
+            return false;
+        }
         RoleIcon icon = (RoleIcon) obj;
         return Objects.equals(icon.iconId, iconId) && Objects.equals(icon.emoji, emoji);
     }

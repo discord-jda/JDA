@@ -47,12 +47,16 @@ public class FunctionalCallback implements Callback {
 
     @Override
     public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
-        if (failure != null) failure.accept(call, e);
+        if (failure != null) {
+            failure.accept(call, e);
+        }
     }
 
     @Override
     public void onResponse(@Nonnull Call call, @Nonnull Response response) throws IOException {
-        if (success != null) success.accept(call, response);
+        if (success != null) {
+            success.accept(call, response);
+        }
     }
 
     public static class Builder {

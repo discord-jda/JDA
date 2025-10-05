@@ -34,8 +34,11 @@ public class DeferrableInteractionImpl extends InteractionImpl implements IDefer
 
     @Override
     public synchronized void releaseHook(boolean success) {
-        if (success) hook.ready();
-        else hook.fail(new InteractionFailureException());
+        if (success) {
+            hook.ready();
+        } else {
+            hook.fail(new InteractionFailureException());
+        }
     }
 
     @Nonnull

@@ -57,9 +57,11 @@ public class EventManagerProxy implements IEventManager {
     @Override
     public void handle(@Nonnull GenericEvent event) {
         try {
-            if (executor != null && !executor.isShutdown())
+            if (executor != null && !executor.isShutdown()) {
                 executor.execute(() -> handleInternally(event));
-            else handleInternally(event);
+            } else {
+                handleInternally(event);
+            }
         } catch (RejectedExecutionException ex) {
             JDAImpl.LOG.warn(
                     "Event-Pool rejected event execution! Running on handling thread instead...");

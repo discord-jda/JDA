@@ -31,7 +31,9 @@ public class ThreadListSyncHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getLong("guild_id");
-        if (api.getGuildSetupController().isLocked(guildId)) return guildId;
+        if (api.getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         EntityBuilder entityBuilder = api.getEntityBuilder();
         DataArray threadsArrayJson = content.getArray("threads");
@@ -41,7 +43,9 @@ public class ThreadListSyncHandler extends SocketHandler {
                 ThreadChannel thread = entityBuilder.createThreadChannel(threadJson, guildId);
                 api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
             } catch (IllegalArgumentException ex) {
-                if (!EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage())) throw ex;
+                if (!EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage())) {
+                    throw ex;
+                }
                 EntityBuilder.LOG.debug(
                         "Discarding thread on sync because of missing parent channel cache. JSON:"
                                 + " {}",

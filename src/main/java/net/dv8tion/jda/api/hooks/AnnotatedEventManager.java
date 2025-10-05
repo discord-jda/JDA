@@ -107,7 +107,9 @@ public class AnnotatedEventManager implements IEventManager {
                         JDAImpl.LOG.error(
                                 "One of the EventListeners had an uncaught" + " exception",
                                 throwable);
-                        if (throwable instanceof Error) throw (Error) throwable;
+                        if (throwable instanceof Error) {
+                            throw (Error) throwable;
+                        }
                     }
                 }));
             }
@@ -126,9 +128,13 @@ public class AnnotatedEventManager implements IEventManager {
         Class<?> c = isClass ? (Class<?>) listener : listener.getClass();
         Method[] allMethods = c.getDeclaredMethods();
         for (Method m : allMethods) {
-            if (!m.isAnnotationPresent(SubscribeEvent.class)) continue;
+            if (!m.isAnnotationPresent(SubscribeEvent.class)) {
+                continue;
+            }
             // Skip member methods if listener is a Class
-            if (isClass && !Modifier.isStatic(m.getModifiers())) continue;
+            if (isClass && !Modifier.isStatic(m.getModifiers())) {
+                continue;
+            }
 
             final Class<?>[] parameterTypes = m.getParameterTypes();
             if (parameterTypes.length != 1

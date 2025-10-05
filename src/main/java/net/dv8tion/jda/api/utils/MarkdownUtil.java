@@ -119,7 +119,9 @@ public final class MarkdownUtil {
     @Nonnull
     public static String codeblock(@Nullable String language, @Nonnull String input) {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.BLOCK);
-        if (language != null) return "```" + language.trim() + "\n" + sanitized + "```";
+        if (language != null) {
+            return "```" + language.trim() + "\n" + sanitized + "```";
+        }
         return "```" + sanitized + "```";
     }
 

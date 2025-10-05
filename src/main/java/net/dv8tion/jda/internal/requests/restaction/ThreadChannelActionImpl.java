@@ -140,12 +140,13 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
                 slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0,
                 "Slowmode per user must be between 0 and %d (seconds)!",
                 ISlowmodeChannel.MAX_SLOWMODE);
-        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_THREADS))
+        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_THREADS)) {
             throw new InsufficientPermissionException(
                     channel,
                     Permission.MANAGE_THREADS,
                     "You must have Permission.MANAGE_THREADS on the parent channel to set a"
                             + " slowmode!");
+        }
         this.slowmode = slowmode;
         return this;
     }
@@ -153,8 +154,9 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
     @Nonnull
     @Override
     public ThreadChannelAction setInvitable(boolean invitable) {
-        if (type != ChannelType.GUILD_PRIVATE_THREAD)
+        if (type != ChannelType.GUILD_PRIVATE_THREAD) {
             throw new UnsupportedOperationException("Can only set invitable on private threads");
+        }
 
         this.invitable = invitable;
         return this;
@@ -168,12 +170,19 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
         // The type is selected by discord itself if we are using a parent message, so don't send
         // it.
-        if (parentMessageId == null) object.put("type", type.getId());
+        if (parentMessageId == null) {
+            object.put("type", type.getId());
+        }
 
-        if (autoArchiveDuration != null)
+        if (autoArchiveDuration != null) {
             object.put("auto_archive_duration", autoArchiveDuration.getMinutes());
-        if (slowmode != null) object.put("rate_limit_per_user", slowmode);
-        if (invitable != null) object.put("invitable", invitable);
+        }
+        if (slowmode != null) {
+            object.put("rate_limit_per_user", slowmode);
+        }
+        if (invitable != null) {
+            object.put("invitable", invitable);
+        }
 
         return getRequestBody(object);
     }

@@ -96,7 +96,9 @@ public interface Entitlement extends ISnowflake {
      */
     @Nullable
     default String getGuildId() {
-        if (getGuildIdLong() == 0) return null;
+        if (getGuildIdLong() == 0) {
+            return null;
+        }
 
         return Long.toUnsignedString(getGuildIdLong());
     }
@@ -220,7 +222,9 @@ public interface Entitlement extends ISnowflake {
         @Nonnull
         public static EntitlementType fromKey(int key) {
             for (EntitlementType type : values()) {
-                if (type.getKey() == key) return type;
+                if (type.getKey() == key) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

@@ -216,14 +216,18 @@ public interface ActionRow
 
     @Override
     default boolean isMessageCompatible() {
-        if (!getType().isMessageCompatible()) return false;
+        if (!getType().isMessageCompatible()) {
+            return false;
+        }
 
         return getComponents().stream().allMatch(Component::isMessageCompatible);
     }
 
     @Override
     default boolean isModalCompatible() {
-        if (!getType().isModalCompatible()) return false;
+        if (!getType().isModalCompatible()) {
+            return false;
+        }
 
         return getComponents().stream().allMatch(Component::isModalCompatible);
     }

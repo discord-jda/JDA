@@ -30,11 +30,13 @@ public class ButtonInteractionImpl extends ComponentInteractionImpl implements B
 
     public ButtonInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
-        if (message != null)
+        if (message != null) {
             button = message.getComponentTree()
                     .find(Button.class, b -> customId.equals(b.getCustomId()))
                     .orElse(null);
-        else button = null;
+        } else {
+            button = null;
+        }
     }
 
     @Nonnull

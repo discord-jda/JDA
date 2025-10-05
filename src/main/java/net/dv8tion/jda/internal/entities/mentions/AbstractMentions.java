@@ -82,7 +82,9 @@ public abstract class AbstractMentions implements Mentions {
     @Nonnull
     @Override
     public synchronized List<User> getUsers() {
-        if (mentionedUsers != null) return mentionedUsers;
+        if (mentionedUsers != null) {
+            return mentionedUsers;
+        }
         return mentionedUsers = processMentions(
                 Message.MentionType.USER, true, this::matchUser, Helpers.toUnmodifiableList());
     }
@@ -94,7 +96,9 @@ public abstract class AbstractMentions implements Mentions {
 
         // Handle reply mentions
         for (User user : getUsers()) {
-            if (!bag.contains(user)) bag.add(user, 1);
+            if (!bag.contains(user)) {
+                bag.add(user, 1);
+            }
         }
 
         return bag;
@@ -103,7 +107,9 @@ public abstract class AbstractMentions implements Mentions {
     @Nonnull
     @Override
     public synchronized List<GuildChannel> getChannels() {
-        if (mentionedChannels != null) return mentionedChannels;
+        if (mentionedChannels != null) {
+            return mentionedChannels;
+        }
         return mentionedChannels = processMentions(
                 Message.MentionType.CHANNEL,
                 true,
@@ -142,8 +148,12 @@ public abstract class AbstractMentions implements Mentions {
     @Nonnull
     @Override
     public synchronized List<Role> getRoles() {
-        if (guild == null) return Collections.emptyList();
-        if (mentionedRoles != null) return mentionedRoles;
+        if (guild == null) {
+            return Collections.emptyList();
+        }
+        if (mentionedRoles != null) {
+            return mentionedRoles;
+        }
         return mentionedRoles = processMentions(
                 Message.MentionType.ROLE, true, this::matchRole, Helpers.toUnmodifiableList());
     }
@@ -151,14 +161,18 @@ public abstract class AbstractMentions implements Mentions {
     @Nonnull
     @Override
     public Bag<Role> getRolesBag() {
-        if (guild == null) return new HashBag<>();
+        if (guild == null) {
+            return new HashBag<>();
+        }
         return processMentions(Message.MentionType.ROLE, false, this::matchRole, toBag());
     }
 
     @Nonnull
     @Override
     public synchronized List<CustomEmoji> getCustomEmojis() {
-        if (mentionedEmojis != null) return mentionedEmojis;
+        if (mentionedEmojis != null) {
+            return mentionedEmojis;
+        }
         return mentionedEmojis = processMentions(
                 Message.MentionType.EMOJI, true, this::matchEmoji, Helpers.toUnmodifiableList());
     }
@@ -172,8 +186,12 @@ public abstract class AbstractMentions implements Mentions {
     @Nonnull
     @Override
     public synchronized List<Member> getMembers() {
-        if (guild == null) return Collections.emptyList();
-        if (mentionedMembers != null) return mentionedMembers;
+        if (guild == null) {
+            return Collections.emptyList();
+        }
+        if (mentionedMembers != null) {
+            return mentionedMembers;
+        }
         return mentionedMembers = processMentions(
                 Message.MentionType.USER, true, this::matchMember, Helpers.toUnmodifiableList());
     }
@@ -181,13 +199,17 @@ public abstract class AbstractMentions implements Mentions {
     @Nonnull
     @Override
     public Bag<Member> getMembersBag() {
-        if (guild == null) return new HashBag<>();
+        if (guild == null) {
+            return new HashBag<>();
+        }
         Bag<Member> bag =
                 processMentions(Message.MentionType.USER, false, this::matchMember, toBag());
 
         // Handle reply mentions
         for (Member member : getMembers()) {
-            if (!bag.contains(member)) bag.add(member, 1);
+            if (!bag.contains(member)) {
+                bag.add(member, 1);
+            }
         }
 
         return bag;
@@ -196,7 +218,9 @@ public abstract class AbstractMentions implements Mentions {
     @Nonnull
     @Override
     public synchronized List<SlashCommandReference> getSlashCommands() {
-        if (mentionedSlashCommands != null) return mentionedSlashCommands;
+        if (mentionedSlashCommands != null) {
+            return mentionedSlashCommands;
+        }
         return mentionedSlashCommands = processMentions(
                 Message.MentionType.SLASH_COMMAND,
                 true,
@@ -215,7 +239,9 @@ public abstract class AbstractMentions implements Mentions {
     @Override
     @SuppressWarnings("ConstantConditions")
     public List<IMentionable> getMentions(@Nonnull Message.MentionType... types) {
-        if (types == null || types.length == 0) return getMentions(Message.MentionType.values());
+        if (types == null || types.length == 0) {
+            return getMentions(Message.MentionType.values());
+        }
         List<IMentionable> mentions = new ArrayList<>();
         // Conversion to set to prevent duplication of types
         for (Message.MentionType type : EnumSet.of(types[0], types)) {
@@ -253,31 +279,47 @@ public abstract class AbstractMentions implements Mentions {
     public boolean isMentioned(
             @Nonnull IMentionable mentionable, @Nonnull Message.MentionType... types) {
         Checks.notNull(types, "Mention Types");
-        if (types.length == 0) return isMentioned(mentionable, Message.MentionType.values());
+        if (types.length == 0) {
+            return isMentioned(mentionable, Message.MentionType.values());
+        }
         for (Message.MentionType type : types) {
             switch (type) {
                 case HERE:
-                    if (isMass("@here") && mentionable instanceof UserSnowflake) return true;
+                    if (isMass("@here") && mentionable instanceof UserSnowflake) {
+                        return true;
+                    }
                     break;
                 case EVERYONE:
-                    if (isMass("@everyone") && mentionable instanceof UserSnowflake) return true;
+                    if (isMass("@everyone") && mentionable instanceof UserSnowflake) {
+                        return true;
+                    }
                     break;
                 case USER:
-                    if (isUserMentioned(mentionable)) return true;
+                    if (isUserMentioned(mentionable)) {
+                        return true;
+                    }
                     break;
                 case ROLE:
-                    if (isRoleMentioned(mentionable)) return true;
+                    if (isRoleMentioned(mentionable)) {
+                        return true;
+                    }
                     break;
                 case CHANNEL:
-                    if (mentionable instanceof GuildChannel && getChannels().contains(mentionable))
+                    if (mentionable instanceof GuildChannel
+                            && getChannels().contains(mentionable)) {
                         return true;
+                    }
                     break;
                 case EMOJI:
                     if (mentionable instanceof CustomEmoji
-                            && getCustomEmojis().contains(mentionable)) return true;
+                            && getCustomEmojis().contains(mentionable)) {
+                        return true;
+                    }
                     break;
                 case SLASH_COMMAND:
-                    if (isSlashCommandMentioned(mentionable)) return true;
+                    if (isSlashCommandMentioned(mentionable)) {
+                        return true;
+                    }
                     break;
                 //           default: continue;
             }
@@ -298,8 +340,9 @@ public abstract class AbstractMentions implements Mentions {
         while (matcher.find()) {
             try {
                 T elem = mapping.apply(matcher);
-                if (elem != null && (unique == null || unique.add(elem)))
+                if (elem != null && (unique == null || unique.add(elem))) {
                     collector.accumulator().accept(accumulator, elem);
+                }
             } catch (NumberFormatException ignored) {
             }
         }
@@ -323,7 +366,9 @@ public abstract class AbstractMentions implements Mentions {
         String name = m.group(1);
         boolean animated = m.group(0).startsWith("<a:");
         CustomEmoji emoji = getJDA().getEmojiById(emojiId);
-        if (emoji == null) emoji = Emoji.fromCustom(name, emojiId, animated);
+        if (emoji == null) {
+            emoji = Emoji.fromCustom(name, emojiId, animated);
+        }
         return emoji;
     }
 
@@ -338,11 +383,15 @@ public abstract class AbstractMentions implements Mentions {
     protected abstract boolean isUserMentioned(IMentionable mentionable);
 
     protected boolean isRoleMentioned(IMentionable mentionable) {
-        if (mentionable instanceof Role) return getRoles().contains(mentionable);
+        if (mentionable instanceof Role) {
+            return getRoles().contains(mentionable);
+        }
         Member member = null;
-        if (mentionable instanceof Member) member = (Member) mentionable;
-        else if (guild != null && mentionable instanceof User)
+        if (mentionable instanceof Member) {
+            member = (Member) mentionable;
+        } else if (guild != null && mentionable instanceof User) {
             member = guild.getMember((User) mentionable);
+        }
         return member != null && CollectionUtils.containsAny(getRoles(), member.getUnsortedRoles());
     }
 
@@ -351,7 +400,9 @@ public abstract class AbstractMentions implements Mentions {
             final ICommandReference reference = (ICommandReference) mentionable;
             for (SlashCommandReference r : getSlashCommands())
                 if (r.getFullCommandName().equals(reference.getFullCommandName())
-                        && r.getIdLong() == reference.getIdLong()) return true;
+                        && r.getIdLong() == reference.getIdLong()) {
+                    return true;
+                }
         }
         return false;
     }

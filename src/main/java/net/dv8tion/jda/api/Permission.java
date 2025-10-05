@@ -178,7 +178,9 @@ public enum Permission {
     @Nonnull
     public static Permission getFromOffset(int offset) {
         for (Permission perm : values()) {
-            if (perm.offset == offset) return perm;
+            if (perm.offset == offset) {
+                return perm;
+            }
         }
         return UNKNOWN;
     }
@@ -198,10 +200,14 @@ public enum Permission {
      */
     @Nonnull
     public static EnumSet<Permission> getPermissions(long permissions) {
-        if (permissions == 0) return EnumSet.noneOf(Permission.class);
+        if (permissions == 0) {
+            return EnumSet.noneOf(Permission.class);
+        }
         EnumSet<Permission> perms = EnumSet.noneOf(Permission.class);
         for (Permission perm : Permission.values()) {
-            if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw) perms.add(perm);
+            if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw) {
+                perms.add(perm);
+            }
         }
         return perms;
     }
@@ -218,7 +224,9 @@ public enum Permission {
     public static long getRaw(@Nonnull Permission... permissions) {
         long raw = 0;
         for (Permission perm : permissions) {
-            if (perm != null && perm != UNKNOWN) raw |= perm.raw;
+            if (perm != null && perm != UNKNOWN) {
+                raw |= perm.raw;
+            }
         }
 
         return raw;

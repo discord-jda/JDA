@@ -153,16 +153,19 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>> {
 
         Map<String, String> expectedQuery = new LinkedHashMap<>();
 
-        for (int i = 0; i < params.length; i += 2)
+        for (int i = 0; i < params.length; i += 2) {
             expectedQuery.put(
                     String.valueOf(params[i]),
                     EncodingUtil.encodeUTF8(String.valueOf(params[i + 1])));
+        }
 
         return checkAssertions(request -> {
             Map<String, String> actualQuery = new LinkedHashMap<>();
             String[] query = request.getRoute().getCompiledRoute().split("[?&=]");
 
-            for (int i = 1; i < query.length; i += 2) actualQuery.put(query[i], query[i + 1]);
+            for (int i = 1; i < query.length; i += 2) {
+                actualQuery.put(query[i], query[i + 1]);
+            }
 
             assertThat(actualQuery).containsExactlyEntriesOf(expectedQuery);
         });

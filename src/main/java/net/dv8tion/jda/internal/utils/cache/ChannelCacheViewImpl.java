@@ -48,8 +48,9 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         for (ChannelType channelType : ChannelType.values()) {
             channelType = normalizeKey(channelType);
             Class<? extends Channel> clazz = channelType.getInterface();
-            if (channelType != ChannelType.UNKNOWN && type.isAssignableFrom(clazz))
+            if (channelType != ChannelType.UNKNOWN && type.isAssignableFrom(clazz)) {
                 caches.put(channelType, new TLongObjectHashMap<>());
+            }
         }
     }
 
@@ -117,8 +118,9 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     @Override
     public List<T> asList() {
         List<T> list = getCachedList();
-        if (list == null)
+        if (list == null) {
             list = cache((List<T>) applyStream(stream -> stream.collect(Collectors.toList())));
+        }
         return list;
     }
 
@@ -126,8 +128,9 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     @Override
     public Set<T> asSet() {
         Set<T> set = getCachedSet();
-        if (set == null)
+        if (set == null) {
             set = cache((Set<T>) applyStream(stream -> stream.collect(Collectors.toSet())));
+        }
         return set;
     }
 
@@ -188,7 +191,9 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         try (UnlockHook hook = readLock()) {
             for (TLongObjectMap<? extends T> cache : caches.values()) {
                 T element = cache.get(id);
-                if (element != null) return element;
+                if (element != null) {
+                    return element;
+                }
             }
             return null;
         }

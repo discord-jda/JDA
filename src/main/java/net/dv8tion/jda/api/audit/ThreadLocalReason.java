@@ -75,7 +75,9 @@ public final class ThreadLocalReason {
      */
     public static void setCurrent(@Nullable String reason) {
         if (reason != null) {
-            if (currentReason == null) currentReason = new ThreadLocal<>();
+            if (currentReason == null) {
+                currentReason = new ThreadLocal<>();
+            }
             currentReason.set(reason);
         } else if (currentReason != null) {
             currentReason.remove();
@@ -86,7 +88,9 @@ public final class ThreadLocalReason {
      * Resets the currently set thread-local reason, if present.
      */
     public static void resetCurrent() {
-        if (currentReason != null) currentReason.remove();
+        if (currentReason != null) {
+            currentReason.remove();
+        }
     }
 
     /**

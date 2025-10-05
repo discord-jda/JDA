@@ -82,20 +82,32 @@ public class CompletedRestAction<T> implements AuditableRestAction<T> {
     public void queue(
             @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
         if (error == null) {
-            if (success == null) RestAction.getDefaultSuccess().accept(value);
-            else success.accept(value);
+            if (success == null) {
+                RestAction.getDefaultSuccess().accept(value);
+            } else {
+                success.accept(value);
+            }
         } else {
-            if (failure == null) RestAction.getDefaultFailure().accept(error);
-            else failure.accept(error);
+            if (failure == null) {
+                RestAction.getDefaultFailure().accept(error);
+            } else {
+                failure.accept(error);
+            }
         }
     }
 
     @Override
     public T complete(boolean shouldQueue) throws RateLimitedException {
         if (error != null) {
-            if (error instanceof RateLimitedException) throw (RateLimitedException) error;
-            if (error instanceof RuntimeException) throw (RuntimeException) error;
-            if (error instanceof Error) throw (Error) error;
+            if (error instanceof RateLimitedException) {
+                throw (RateLimitedException) error;
+            }
+            if (error instanceof RuntimeException) {
+                throw (RuntimeException) error;
+            }
+            if (error instanceof Error) {
+                throw (Error) error;
+            }
             throw new IllegalStateException(error);
         }
         return value;
@@ -105,8 +117,11 @@ public class CompletedRestAction<T> implements AuditableRestAction<T> {
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue) {
         CompletableFuture<T> future = new CompletableFuture<>();
-        if (error != null) future.completeExceptionally(error);
-        else future.complete(value);
+        if (error != null) {
+            future.completeExceptionally(error);
+        } else {
+            future.complete(value);
+        }
         return future;
     }
 }

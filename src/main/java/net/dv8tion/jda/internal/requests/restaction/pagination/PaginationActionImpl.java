@@ -91,11 +91,14 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     public M skipTo(long id) {
         if (!cached.isEmpty()) {
             int cmp = Long.compareUnsigned(this.lastKey, id);
-            if (cmp < 0) // old - new < 0 => old < new
-            throw new IllegalArgumentException(
+            if (cmp < 0) { // old - new < 0 => old < new
+                throw new IllegalArgumentException(
                         "Cannot jump to that id, it is newer than the current oldest element.");
+            }
         }
-        if (this.lastKey != id) this.last = null;
+        if (this.lastKey != id) {
+            this.last = null;
+        }
         this.iteratorIndex = id;
         this.lastKey = id;
         return (M) this;
@@ -118,11 +121,13 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     public M order(@Nonnull PaginationAction.PaginationOrder order) {
         Checks.notNull(order, "PaginationOrder");
         if (order != this.order) {
-            if (!isEmpty())
+            if (!isEmpty()) {
                 throw new IllegalStateException("Cannot change pagination order after retrieving.");
-            if (!getSupportedOrders().contains(order))
+            }
+            if (!getSupportedOrders().contains(order)) {
                 throw new IllegalArgumentException(
                         "Cannot use PaginationOrder." + order + " for this pagination endpoint.");
+            }
         }
         this.order = order;
         return (M) this;
@@ -169,15 +174,18 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     @Override
     public T getLast() {
         final T last = this.last;
-        if (last == null) throw new NoSuchElementException("No entities have been retrieved yet.");
+        if (last == null) {
+            throw new NoSuchElementException("No entities have been retrieved yet.");
+        }
         return last;
     }
 
     @Nonnull
     @Override
     public T getFirst() {
-        if (cached.isEmpty())
+        if (cached.isEmpty()) {
             throw new NoSuchElementException("No entities have been retrieved yet.");
+        }
         return cached.get(0);
     }
 
@@ -355,25 +363,29 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
         route = route.withQueryParams("limit", limit);
 
-        if (localLastKey != 0)
+        if (localLastKey != 0) {
             route = route.withQueryParams(
                     order.getKey(), getPaginationLastEvaluatedKey(localLastKey, this.last));
-        else if (order == PaginationOrder.FORWARD)
+        } else if (order == PaginationOrder.FORWARD) {
             route = route.withQueryParams("after", getPaginationLastEvaluatedKey(0, this.last));
+        }
 
         return route;
     }
 
     protected List<T> getRemainingCache() {
         int index = getIteratorIndex();
-        if (useCache && index > -1 && index < cached.size())
+        if (useCache && index > -1 && index < cached.size()) {
             return cached.subList(index, cached.size());
+        }
         return Collections.emptyList();
     }
 
     public List<T> getNextChunk() {
         List<T> list = getRemainingCache();
-        if (!list.isEmpty()) return list;
+        if (!list.isEmpty()) {
+            return list;
+        }
 
         final int current = limit.getAndSet(getMaxLimit());
         list = complete();
@@ -385,7 +397,9 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     protected int getIteratorIndex() {
         for (int i = 0; i < cached.size(); i++) {
-            if (getKey(cached.get(i)) == iteratorIndex) return i + 1;
+            if (getKey(cached.get(i)) == iteratorIndex) {
+                return i + 1;
+            }
         }
         return -1;
     }
@@ -425,7 +439,9 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
             T previous = null;
             for (T it : list) {
                 if (task.isCancelled()) {
-                    if (previous != null) updateIndex(previous);
+                    if (previous != null) {
+                        updateIndex(previous);
+                    }
                     return;
                 }
                 if (action.execute(it)) {

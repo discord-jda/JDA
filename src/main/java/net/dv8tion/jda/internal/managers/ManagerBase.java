@@ -86,12 +86,17 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     public M reset(@Nonnull long... fields) {
         Checks.notNull(fields, "Fields");
         // trivial case
-        if (fields.length == 0) return (M) this;
-        else if (fields.length == 1) return reset(fields[0]);
+        if (fields.length == 0) {
+            return (M) this;
+        } else if (fields.length == 1) {
+            return reset(fields[0]);
+        }
 
         // complex case
         long sum = fields[0];
-        for (int i = 1; i < fields.length; i++) sum |= fields[i];
+        for (int i = 1; i < fields.length; i++) {
+            sum |= fields[i];
+        }
         return reset(sum);
     }
 
@@ -105,14 +110,20 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
 
     @Override
     public void queue(Consumer<? super Void> success, Consumer<? super Throwable> failure) {
-        if (shouldUpdate()) super.queue(success, failure);
-        else if (success != null) success.accept(null);
-        else getDefaultSuccess().accept(null);
+        if (shouldUpdate()) {
+            super.queue(success, failure);
+        } else if (success != null) {
+            success.accept(null);
+        } else {
+            getDefaultSuccess().accept(null);
+        }
     }
 
     @Override
     public Void complete(boolean shouldQueue) throws RateLimitedException {
-        if (shouldUpdate()) return super.complete(shouldQueue);
+        if (shouldUpdate()) {
+            return super.complete(shouldQueue);
+        }
         return null;
     }
 

@@ -43,7 +43,9 @@ public class ThreadMembersUpdateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getLong("guild_id");
-        if (api.getGuildSetupController().isLocked(guildId)) return guildId;
+        if (api.getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         final long threadId = content.getLong("id");
         ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);

@@ -49,14 +49,18 @@ public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEnti
 
     @Override
     default int compareTo(@Nonnull Role r) {
-        if (this == r) return 0;
+        if (this == r) {
+            return 0;
+        }
 
-        if (this.getGuild().getIdLong() != r.getGuild().getIdLong())
+        if (this.getGuild().getIdLong() != r.getGuild().getIdLong()) {
             throw new IllegalArgumentException(
                     "Cannot compare roles that aren't from the same guild!");
+        }
 
-        if (this.getPositionRaw() != r.getPositionRaw())
+        if (this.getPositionRaw() != r.getPositionRaw()) {
             return this.getPositionRaw() - r.getPositionRaw();
+        }
 
         OffsetDateTime thisTime = this.getTimeCreated();
         OffsetDateTime rTime = r.getTimeCreated();

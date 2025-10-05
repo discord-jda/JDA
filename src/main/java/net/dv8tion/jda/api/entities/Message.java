@@ -1799,8 +1799,9 @@ public interface Message extends ISnowflake, Formattable {
     @CheckReturnValue
     default MessageCreateAction forwardTo(@Nonnull MessageChannel channel) {
         Checks.notNull(channel, "Target channel");
-        if (channel instanceof MessageChannelMixin)
+        if (channel instanceof MessageChannelMixin) {
             ((MessageChannelMixin<?>) channel).checkCanSendMessage();
+        }
         return new MessageCreateActionImpl(channel)
                 .setMessageReference(MessageReference.MessageReferenceType.FORWARD, this);
     }
@@ -2909,7 +2910,9 @@ public interface Message extends ISnowflake, Formattable {
          */
         @Nullable
         public byte[] getWaveform() {
-            if (waveform == null) return null;
+            if (waveform == null) {
+                return null;
+            }
             return Base64.getDecoder().decode(waveform);
         }
 
@@ -2931,7 +2934,9 @@ public interface Message extends ISnowflake, Formattable {
          * @return True if this attachment is an image
          */
         public boolean isImage() {
-            if (width < 0) return false; // if width is -1, so is height
+            if (width < 0) {
+                return false; // if width is -1, so is height
+            }
             String extension = getFileExtension();
             return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase());
         }
@@ -2943,7 +2948,9 @@ public interface Message extends ISnowflake, Formattable {
          * @return True if this attachment is a video
          */
         public boolean isVideo() {
-            if (width < 0) return false; // if width is -1, so is height
+            if (width < 0) {
+                return false; // if width is -1, so is height
+            }
             String extension = getFileExtension();
             return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase());
         }
@@ -3152,7 +3159,9 @@ public interface Message extends ISnowflake, Formattable {
          */
         @Nullable
         public String getOriginalResponseMessageId() {
-            if (originalResponseMessageId == 0) return null;
+            if (originalResponseMessageId == 0) {
+                return null;
+            }
             return Long.toUnsignedString(originalResponseMessageId);
         }
 
@@ -3172,7 +3181,9 @@ public interface Message extends ISnowflake, Formattable {
          */
         @Nullable
         public String getInteractedMessageId() {
-            if (interactedMessageId == 0) return null;
+            if (interactedMessageId == 0) {
+                return null;
+            }
             return Long.toUnsignedString(interactedMessageId);
         }
 
@@ -3217,7 +3228,9 @@ public interface Message extends ISnowflake, Formattable {
          */
         @Nullable
         public String getTargetMessageId() {
-            if (targetMessageId == 0) return null;
+            if (targetMessageId == 0) {
+                return null;
+            }
             return Long.toUnsignedString(targetMessageId);
         }
     }

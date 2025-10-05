@@ -66,7 +66,9 @@ public class ContextException extends Exception {
 
         @Override
         public void accept(Throwable throwable) {
-            if (callback != null) callback.accept(Helpers.appendCause(throwable, context));
+            if (callback != null) {
+                callback.accept(Helpers.appendCause(throwable, context));
+            }
         }
     }
 }

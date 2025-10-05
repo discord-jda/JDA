@@ -146,7 +146,9 @@ public class Result<T> {
     @Nonnull
     public Result<T> onFailure(@Nonnull Consumer<? super Throwable> callback) {
         Checks.notNull(callback, "Callback");
-        if (isFailure()) callback.accept(error);
+        if (isFailure()) {
+            callback.accept(error);
+        }
         return this;
     }
 
@@ -166,7 +168,9 @@ public class Result<T> {
     @Nonnull
     public Result<T> onSuccess(@Nonnull Consumer<? super T> callback) {
         Checks.notNull(callback, "Callback");
-        if (isSuccess()) callback.accept(value);
+        if (isSuccess()) {
+            callback.accept(value);
+        }
         return this;
     }
 
@@ -191,7 +195,9 @@ public class Result<T> {
     @SuppressWarnings("unchecked")
     public <U> Result<U> map(@Nonnull Function<? super T, ? extends U> function) {
         Checks.notNull(function, "Function");
-        if (isSuccess()) return Result.defer(() -> function.apply(value));
+        if (isSuccess()) {
+            return Result.defer(() -> function.apply(value));
+        }
         return (Result<U>) this;
     }
 
@@ -215,7 +221,9 @@ public class Result<T> {
     public <U> Result<U> flatMap(@Nonnull Function<? super T, ? extends Result<U>> function) {
         Checks.notNull(function, "Function");
         try {
-            if (isSuccess()) return function.apply(value);
+            if (isSuccess()) {
+                return function.apply(value);
+            }
         } catch (Exception ex) {
             return Result.failure(ex);
         }
@@ -233,7 +241,9 @@ public class Result<T> {
      */
     @UnknownNullability
     public T get() {
-        if (isFailure()) throw new IllegalStateException(error);
+        if (isFailure()) {
+            throw new IllegalStateException(error);
+        }
         return value;
     }
 
@@ -266,15 +276,20 @@ public class Result<T> {
     @Nonnull
     public Result<T> expect(@Nonnull Predicate<? super Throwable> predicate) {
         Checks.notNull(predicate, "Predicate");
-        if (isFailure() && predicate.test(error)) throw new IllegalStateException(error);
+        if (isFailure() && predicate.test(error)) {
+            throw new IllegalStateException(error);
+        }
         return this;
     }
 
     @Override
     public String toString() {
         final EntityString entityString = new EntityString(this);
-        if (isSuccess()) entityString.addMetadata("success", value);
-        else entityString.addMetadata("error", error);
+        if (isSuccess()) {
+            entityString.addMetadata("success", value);
+        } else {
+            entityString.addMetadata("error", error);
+        }
 
         return entityString.toString();
     }

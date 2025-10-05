@@ -199,7 +199,9 @@ public interface JDA extends IGuildChannelContainer<Channel> {
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof ShardInfo)) return false;
+            if (!(o instanceof ShardInfo)) {
+                return false;
+            }
 
             ShardInfo oInfo = (ShardInfo) o;
             return shardId == oInfo.getShardId() && shardTotal == oInfo.getShardTotal();
@@ -2183,7 +2185,9 @@ public interface JDA extends IGuildChannelContainer<Channel> {
             } catch (IOException | URISyntaxException e) {
                 throw new IllegalStateException("No port available");
             }
-        } else throw new IllegalStateException("No port available");
+        } else {
+            throw new IllegalStateException("No port available");
+        }
         return new CompletedRestAction<>(this, port);
     }
 

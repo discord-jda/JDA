@@ -78,26 +78,55 @@ public class ExTermEncoder {
     @Nonnull
     @SuppressWarnings("unchecked")
     private static ByteBuffer pack(@Nonnull ByteBuffer buffer, @Nullable Object value) {
-        if (value instanceof String) return packBinary(buffer, (String) value);
-        if (value instanceof Map) return packMap(buffer, (Map<String, Object>) value);
-        if (value instanceof SerializableData)
+        if (value instanceof String) {
+            return packBinary(buffer, (String) value);
+        }
+        if (value instanceof Map) {
+            return packMap(buffer, (Map<String, Object>) value);
+        }
+        if (value instanceof SerializableData) {
             return packMap(buffer, ((SerializableData) value).toData().toMap());
-        if (value instanceof Collection) return packList(buffer, (Collection<Object>) value);
-        if (value instanceof DataArray) return packList(buffer, ((DataArray) value).toList());
-        if (value instanceof Byte) return packSmallInt(buffer, (byte) value);
-        if (value instanceof Integer || value instanceof Short)
+        }
+        if (value instanceof Collection) {
+            return packList(buffer, (Collection<Object>) value);
+        }
+        if (value instanceof DataArray) {
+            return packList(buffer, ((DataArray) value).toList());
+        }
+        if (value instanceof Byte) {
+            return packSmallInt(buffer, (byte) value);
+        }
+        if (value instanceof Integer || value instanceof Short) {
             return packInt(buffer, ((Number) value).intValue());
-        if (value instanceof Long) return packLong(buffer, (long) value);
-        if (value instanceof Float || value instanceof Double)
+        }
+        if (value instanceof Long) {
+            return packLong(buffer, (long) value);
+        }
+        if (value instanceof Float || value instanceof Double) {
             return packFloat(buffer, ((Number) value).doubleValue());
-        if (value instanceof Boolean) return packAtom(buffer, String.valueOf(value));
-        if (value == null) return packAtom(buffer, "nil");
-        if (value instanceof long[]) return packArray(buffer, (long[]) value);
-        if (value instanceof int[]) return packArray(buffer, (int[]) value);
-        if (value instanceof short[]) return packArray(buffer, (short[]) value);
-        if (value instanceof byte[]) return packArray(buffer, (byte[]) value);
+        }
+        if (value instanceof Boolean) {
+            return packAtom(buffer, String.valueOf(value));
+        }
+        if (value == null) {
+            return packAtom(buffer, "nil");
+        }
+        if (value instanceof long[]) {
+            return packArray(buffer, (long[]) value);
+        }
+        if (value instanceof int[]) {
+            return packArray(buffer, (int[]) value);
+        }
+        if (value instanceof short[]) {
+            return packArray(buffer, (short[]) value);
+        }
+        if (value instanceof byte[]) {
+            return packArray(buffer, (byte[]) value);
+        }
         // omitting other array types because we don't use them anywhere
-        if (value instanceof Object[]) return packList(buffer, Arrays.asList((Object[]) value));
+        if (value instanceof Object[]) {
+            return packList(buffer, Arrays.asList((Object[]) value));
+        }
 
         throw new UnsupportedOperationException(
                 "Cannot pack value of type " + value.getClass().getName());
@@ -105,7 +134,9 @@ public class ExTermEncoder {
 
     @Nonnull
     private static ByteBuffer realloc(@Nonnull ByteBuffer buffer, int length) {
-        if (buffer.remaining() >= length) return buffer;
+        if (buffer.remaining() >= length) {
+            return buffer;
+        }
 
         ByteBuffer allocated = ByteBuffer.allocate((buffer.position() + length) << 1);
         // This cast prevents issues with backwards compatibility in the ABI (java 11 made breaking
@@ -165,7 +196,9 @@ public class ExTermEncoder {
 
     @Nonnull
     private static ByteBuffer packInt(@Nonnull ByteBuffer buffer, int value) {
-        if (countBytes(value) <= 1 && value >= 0) return packSmallInt(buffer, (byte) value);
+        if (countBytes(value) <= 1 && value >= 0) {
+            return packSmallInt(buffer, (byte) value);
+        }
         buffer = realloc(buffer, 5);
         buffer.put(INT);
         buffer.putInt(value);
@@ -175,8 +208,9 @@ public class ExTermEncoder {
     @Nonnull
     private static ByteBuffer packLong(@Nonnull ByteBuffer buffer, long value) {
         byte bytes = countBytes(value);
-        if (bytes <= 1) // Use optimized small int encoding
-        return packSmallInt(buffer, (byte) value);
+        if (bytes <= 1) { // Use optimized small int encoding
+            return packSmallInt(buffer, (byte) value);
+        }
         if (bytes <= 4 && value >= 0) {
             // Use int to encode it
             buffer = realloc(buffer, 5);
@@ -218,7 +252,9 @@ public class ExTermEncoder {
 
     @Nonnull
     private static ByteBuffer packArray(@Nonnull ByteBuffer buffer, @Nonnull long[] array) {
-        if (array.length == 0) return packNil(buffer);
+        if (array.length == 0) {
+            return packNil(buffer);
+        }
 
         buffer = realloc(buffer, array.length * 8 + 6);
         buffer.put(LIST);
@@ -229,7 +265,9 @@ public class ExTermEncoder {
 
     @Nonnull
     private static ByteBuffer packArray(@Nonnull ByteBuffer buffer, @Nonnull int[] array) {
-        if (array.length == 0) return packNil(buffer);
+        if (array.length == 0) {
+            return packNil(buffer);
+        }
 
         buffer = realloc(buffer, array.length * 4 + 6);
         buffer.put(LIST);
@@ -240,7 +278,9 @@ public class ExTermEncoder {
 
     @Nonnull
     private static ByteBuffer packArray(@Nonnull ByteBuffer buffer, @Nonnull short[] array) {
-        if (array.length == 0) return packNil(buffer);
+        if (array.length == 0) {
+            return packNil(buffer);
+        }
 
         buffer = realloc(buffer, array.length * 2 + 6);
         buffer.put(LIST);
@@ -251,7 +291,9 @@ public class ExTermEncoder {
 
     @Nonnull
     private static ByteBuffer packArray(@Nonnull ByteBuffer buffer, @Nonnull byte[] array) {
-        if (array.length == 0) return packNil(buffer);
+        if (array.length == 0) {
+            return packNil(buffer);
+        }
 
         buffer = realloc(buffer, array.length + 6);
         buffer.put(LIST);

@@ -199,7 +199,9 @@ public class DefaultShardManager implements ShardManager {
             if (getShardsTotal() != -1) {
                 if (shardIds == null) {
                     this.shards = new ShardCacheViewImpl(getShardsTotal());
-                    for (int i = 0; i < getShardsTotal(); i++) this.queue.add(i);
+                    for (int i = 0; i < getShardsTotal(); i++) {
+                        this.queue.add(i);
+                    }
                 } else {
                     this.shards = new ShardCacheViewImpl(shardIds.size());
                     shardIds.stream().distinct().sorted().forEach(this.queue::add);
@@ -278,8 +280,11 @@ public class DefaultShardManager implements ShardManager {
             }
         } catch (final Exception e) {
             if (jda != null) {
-                if (shardingConfig.isUseShutdownNow()) jda.shutdownNow();
-                else jda.shutdown();
+                if (shardingConfig.isUseShutdownNow()) {
+                    jda.shutdownNow();
+                } else {
+                    jda.shutdown();
+                }
             }
 
             throw e;
@@ -289,7 +294,9 @@ public class DefaultShardManager implements ShardManager {
         // this.worker = this.executor.scheduleWithFixedDelay(this::processQueue, 5000, 5000,
         // TimeUnit.MILLISECONDS); // 5s for ratelimit
 
-        if (this.shutdownHook != null) Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+        if (this.shutdownHook != null) {
+            Runtime.getRuntime().addShutdownHook(this.shutdownHook);
+        }
     }
 
     @Override
@@ -299,8 +306,11 @@ public class DefaultShardManager implements ShardManager {
 
         JDA jda = this.shards.remove(shardId);
         if (jda != null) {
-            if (shardingConfig.isUseShutdownNow()) jda.shutdownNow();
-            else jda.shutdown();
+            if (shardingConfig.isUseShutdownNow()) {
+                jda.shutdownNow();
+            } else {
+                jda.shutdown();
+            }
         }
 
         enqueueShard(shardId);
@@ -317,9 +327,12 @@ public class DefaultShardManager implements ShardManager {
 
     @Override
     public void shutdown() {
-        if (this.shutdown.getAndSet(true)) return; // shutdown has already been requested
-
-        if (this.worker != null && !this.worker.isDone()) this.worker.cancel(true);
+        if (this.shutdown.getAndSet(true)) {
+            return; // shutdown has already been requested
+        }
+        if (this.worker != null && !this.worker.isDone()) {
+            this.worker.cancel(true);
+        }
 
         if (this.shutdownHook != null) {
             try {
@@ -334,8 +347,11 @@ public class DefaultShardManager implements ShardManager {
                 // shutdown is called
                 {
                     this.shards.forEach(jda -> {
-                        if (shardingConfig.isUseShutdownNow()) jda.shutdownNow();
-                        else jda.shutdown();
+                        if (shardingConfig.isUseShutdownNow()) {
+                            jda.shutdownNow();
+                        } else {
+                            jda.shutdown();
+                        }
                     });
                     queue.clear();
                 }
@@ -353,8 +369,11 @@ public class DefaultShardManager implements ShardManager {
     public void shutdown(final int shardId) {
         final JDA jda = this.shards.remove(shardId);
         if (jda != null) {
-            if (shardingConfig.isUseShutdownNow()) jda.shutdownNow();
-            else jda.shutdown();
+            if (shardingConfig.isUseShutdownNow()) {
+                jda.shutdownNow();
+            } else {
+                jda.shutdown();
+            }
         }
     }
 
@@ -373,15 +392,22 @@ public class DefaultShardManager implements ShardManager {
     }
 
     protected void runQueueWorker() {
-        if (shutdown.get())
+        if (shutdown.get()) {
             throw new RejectedExecutionException("ShardManager is already shutdown!");
-        if (worker != null) return;
+        }
+        if (worker != null) {
+            return;
+        }
         worker = executor.submit(() -> {
-            while (!queue.isEmpty() && !Thread.currentThread().isInterrupted()) processQueue();
+            while (!queue.isEmpty() && !Thread.currentThread().isInterrupted()) {
+                processQueue();
+            }
             this.gatewayURL = null;
             synchronized (queue) {
                 worker = null;
-                if (!shutdown.get() && !queue.isEmpty()) runQueueWorker();
+                if (!shutdown.get() && !queue.isEmpty()) {
+                    runQueueWorker();
+                }
             }
         });
     }
@@ -397,17 +423,23 @@ public class DefaultShardManager implements ShardManager {
             shardId = tmp == null ? -1 : tmp;
         }
 
-        if (shardId == -1) return;
+        if (shardId == -1) {
+            return;
+        }
 
         JDAImpl api;
         try {
             api = this.shards == null ? null : (JDAImpl) this.shards.getElementById(shardId);
 
-            if (api == null) api = this.buildInstance(shardId);
+            if (api == null) {
+                api = this.buildInstance(shardId);
+            }
         } catch (CompletionException e) {
-            if (e.getCause() instanceof InterruptedException)
+            if (e.getCause() instanceof InterruptedException) {
                 LOG.debug("The worker thread was interrupted");
-            else LOG.error("Caught an exception in queue processing thread", e);
+            } else {
+                LOG.error("Caught an exception in queue processing thread", e);
+            }
             return;
         } catch (InvalidTokenException e) {
             // this can only happen if the token has been changed
@@ -486,7 +518,9 @@ public class DefaultShardManager implements ShardManager {
                 this.metaConfig.getCacheFlags(),
                 this.sessionConfig.getFlags());
         RestConfig restConfig = this.restConfigProvider.apply(shardId);
-        if (restConfig == null) restConfig = new RestConfig();
+        if (restConfig == null) {
+            restConfig = new RestConfig();
+        }
 
         JDAImpl jda =
                 new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
@@ -495,17 +529,21 @@ public class DefaultShardManager implements ShardManager {
         jda.initRequester();
 
         // We can only do member chunking with the GUILD_MEMBERS intent
-        if ((shardingConfig.getIntents() & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0)
+        if ((shardingConfig.getIntents() & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0) {
             jda.setChunkingFilter(ChunkingFilter.NONE);
-        else jda.setChunkingFilter(chunkingFilter);
+        } else {
+            jda.setChunkingFilter(chunkingFilter);
+        }
 
         jda.setShardManager(this);
 
-        if (eventConfig.getEventManagerProvider() != null)
+        if (eventConfig.getEventManagerProvider() != null) {
             jda.setEventManager(this.eventConfig.getEventManagerProvider().apply(shardId));
+        }
 
-        if (this.sessionConfig.getAudioSendFactory() != null)
+        if (this.sessionConfig.getAudioSendFactory() != null) {
             jda.setAudioSendFactory(this.sessionConfig.getAudioSendFactory());
+        }
 
         jda.addEventListener(this.eventConfig.getListeners().toArray());
         this.eventConfig
@@ -515,20 +553,25 @@ public class DefaultShardManager implements ShardManager {
         // Set the presence information before connecting to have the correct information ready when
         // sending IDENTIFY
         PresenceImpl presence = ((PresenceImpl) jda.getPresence());
-        if (presenceConfig.getActivityProvider() != null)
+        if (presenceConfig.getActivityProvider() != null) {
             presence.setCacheActivity(presenceConfig.getActivityProvider().apply(shardId));
-        if (presenceConfig.getIdleProvider() != null)
+        }
+        if (presenceConfig.getIdleProvider() != null) {
             presence.setCacheIdle(presenceConfig.getIdleProvider().apply(shardId));
-        if (presenceConfig.getStatusProvider() != null)
+        }
+        if (presenceConfig.getStatusProvider() != null) {
             presence.setCacheStatus(presenceConfig.getStatusProvider().apply(shardId));
+        }
 
         if (this.gatewayURL == null) {
             SessionController.ShardedGateway gateway = jda.getShardedGateway();
             this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
             this.gatewayURL = gateway.getUrl();
-            if (this.gatewayURL == null)
+            if (this.gatewayURL == null) {
                 throw new IllegalStateException("Acquired null gateway url from SessionController");
-            else LOG.info("Login Successful!");
+            } else {
+                LOG.info("Login Successful!");
+            }
         }
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, getShardsTotal());
@@ -540,8 +583,11 @@ public class DefaultShardManager implements ShardManager {
                         .orElse(null));
 
         // Copy from other JDA instance or do initial fetch
-        if (selfUser == null) selfUser = retrieveSelfUser(jda);
-        else selfUser = SelfUserImpl.copyOf((SelfUserImpl) selfUser, jda);
+        if (selfUser == null) {
+            selfUser = retrieveSelfUser(jda);
+        } else {
+            selfUser = SelfUserImpl.copyOf((SelfUserImpl) selfUser, jda);
+        }
 
         jda.setSelfUser(selfUser);
         jda.setStatus(
@@ -596,7 +642,9 @@ public class DefaultShardManager implements ShardManager {
     }
 
     private synchronized void retrieveShardTotal(OkHttpClient httpClient) {
-        if (getShardsTotal() != -1) return;
+        if (getShardsTotal() != -1) {
+            return;
+        }
 
         LOG.debug("Fetching shard total using temporary rate-limiter");
 
@@ -618,11 +666,17 @@ public class DefaultShardManager implements ShardManager {
             this.shards = new ShardCacheViewImpl(shardTotal);
 
             synchronized (queue) {
-                for (int i = 0; i < shardTotal; i++) queue.add(i);
+                for (int i = 0; i < shardTotal; i++) {
+                    queue.add(i);
+                }
             }
         } catch (CompletionException ex) {
-            if (ex.getCause() instanceof RuntimeException) throw (RuntimeException) ex.getCause();
-            if (ex.getCause() instanceof Error) throw (Error) ex.getCause();
+            if (ex.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) ex.getCause();
+            }
+            if (ex.getCause() instanceof Error) {
+                throw (Error) ex.getCause();
+            }
             throw ex;
         } finally {
             future.cancel(false);
@@ -701,7 +755,9 @@ public class DefaultShardManager implements ShardManager {
                         .header("user-agent", config.getUserAgent());
 
                 Consumer<? super okhttp3.Request.Builder> customBuilder = config.getCustomBuilder();
-                if (customBuilder != null) customBuilder.accept(builder);
+                if (customBuilder != null) {
+                    customBuilder.accept(builder);
+                }
 
                 Call call = httpClient.newCall(builder.build());
                 okhttp3.Response response = call.execute();

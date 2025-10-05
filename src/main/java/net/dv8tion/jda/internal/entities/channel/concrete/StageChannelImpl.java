@@ -111,12 +111,13 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
                 Permission.VOICE_MUTE_OTHERS,
                 Permission.VOICE_MOVE_OTHERS);
         for (Permission perm : required) {
-            if (!permissions.contains(perm))
+            if (!permissions.contains(perm)) {
                 throw new InsufficientPermissionException(
                         this,
                         perm,
                         "You must be a stage moderator to create a stage instance! Missing"
                                 + " Permission: " + perm);
+            }
         }
 
         return new StageInstanceActionImpl(this).setTopic(topic);
@@ -156,13 +157,16 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
         DataObject body = DataObject.empty().put("channel_id", getId());
         // Stage moderators can bypass the request queue by just unsuppressing
-        if (guild.getSelfMember().hasPermission(this, Permission.VOICE_MUTE_OTHERS))
+        if (guild.getSelfMember().hasPermission(this, Permission.VOICE_MUTE_OTHERS)) {
             body.putNull("request_to_speak_timestamp").put("suppress", false);
-        else body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
+        } else {
+            body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
+        }
 
-        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel()))
+        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel())) {
             throw new IllegalStateException(
                     "Cannot request to speak without being connected to the stage channel!");
+        }
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
@@ -176,9 +180,10 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
                 .put("suppress", true)
                 .put("channel_id", getId());
 
-        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel()))
+        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel())) {
             throw new IllegalStateException(
                     "Cannot cancel request to speak without being connected to the stage channel!");
+        }
         return new RestActionImpl<>(getJDA(), route, body);
     }
 

@@ -148,12 +148,14 @@ public interface Emoji extends SerializableData, Formattable {
     static EmojiUnion fromFormatted(@Nonnull String code) {
         Checks.notEmpty(code, "Formatting Code");
         Matcher matcher = Message.MentionType.EMOJI.getPattern().matcher(code);
-        if (matcher.matches())
+        if (matcher.matches()) {
             return (EmojiUnion) fromCustom(
                     matcher.group(1),
                     Long.parseUnsignedLong(matcher.group(2)),
                     code.startsWith("<a"));
-        else return (EmojiUnion) fromUnicode(code);
+        } else {
+            return (EmojiUnion) fromUnicode(code);
+        }
     }
 
     /**
@@ -169,12 +171,14 @@ public interface Emoji extends SerializableData, Formattable {
     @Nonnull
     static EmojiUnion fromData(@Nonnull DataObject emoji) {
         Checks.notNull(emoji, "Emoji Data");
-        if (emoji.isNull("id")) return (EmojiUnion) fromUnicode(emoji.getString("name"));
-        else
+        if (emoji.isNull("id")) {
+            return (EmojiUnion) fromUnicode(emoji.getString("name"));
+        } else {
             return (EmojiUnion) fromCustom(
                     emoji.getString("name"),
                     emoji.getUnsignedLong("id"),
                     emoji.getBoolean("animated"));
+        }
     }
 
     /**

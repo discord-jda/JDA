@@ -308,15 +308,26 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     @Override
     public synchronized DataObject toData() {
         DataObject json = DataObject.empty();
-        if (isSet(CONTENT)) json.put("content", content);
-        if (isSet(EMBEDS)) json.put("embeds", DataArray.fromCollection(embeds));
-        if (isSet(COMPONENTS)) json.put("components", DataArray.fromCollection(components));
-        if (isSet(MENTIONS)) json.put("allowed_mentions", mentions);
-        if (isSet(FLAGS)) json.put("flags", messageFlags);
+        if (isSet(CONTENT)) {
+            json.put("content", content);
+        }
+        if (isSet(EMBEDS)) {
+            json.put("embeds", DataArray.fromCollection(embeds));
+        }
+        if (isSet(COMPONENTS)) {
+            json.put("components", DataArray.fromCollection(components));
+        }
+        if (isSet(MENTIONS)) {
+            json.put("allowed_mentions", mentions);
+        }
+        if (isSet(FLAGS)) {
+            json.put("flags", messageFlags);
+        }
 
         final List<FileUpload> additionalFiles = MessageUtil.getIndirectFiles(components);
-        if (isSet(ATTACHMENTS) || !additionalFiles.isEmpty())
+        if (isSet(ATTACHMENTS) || !additionalFiles.isEmpty()) {
             json.put("attachments", MessageUtil.getAttachmentsData(allDistinctFiles));
+        }
 
         return json;
     }
@@ -353,7 +364,9 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
         Set<AttachedFile> distinctFiles =
                 new LinkedHashSet<>((files == null ? 0 : files.size()) + indirectFiles.size());
-        if (files != null) distinctFiles.addAll(files);
+        if (files != null) {
+            distinctFiles.addAll(files);
+        }
         distinctFiles.addAll(indirectFiles);
         return Collections.unmodifiableSet(distinctFiles);
     }

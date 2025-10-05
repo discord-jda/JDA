@@ -131,18 +131,32 @@ public class TextInputImpl extends AbstractComponentImpl
                 .put("custom_id", id)
                 .put("style", style.getRaw())
                 .put("required", required);
-        if (uniqueId >= 0) obj.put("id", uniqueId);
-        if (minLength != -1) obj.put("min_length", minLength);
-        if (maxLength != -1) obj.put("max_length", maxLength);
-        if (value != null) obj.put("value", value);
-        if (placeholder != null) obj.put("placeholder", placeholder);
+        if (uniqueId >= 0) {
+            obj.put("id", uniqueId);
+        }
+        if (minLength != -1) {
+            obj.put("min_length", minLength);
+        }
+        if (maxLength != -1) {
+            obj.put("max_length", maxLength);
+        }
+        if (value != null) {
+            obj.put("value", value);
+        }
+        if (placeholder != null) {
+            obj.put("placeholder", placeholder);
+        }
         return obj;
     }
 
     @Override
     public final boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof TextInputImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof TextInputImpl)) {
+            return false;
+        }
         TextInputImpl that = (TextInputImpl) o;
         return uniqueId == that.uniqueId
                 && minLength == that.minLength

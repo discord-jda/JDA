@@ -55,7 +55,9 @@ public class DefaultSendSystem implements IAudioSendSystem {
         final DatagramSocket udpSocket = packetProvider.getUdpSocket();
 
         sendThread = new Thread(() -> {
-            if (contextMap != null) MDC.setContextMap(contextMap);
+            if (contextMap != null) {
+                MDC.setContextMap(contextMap);
+            }
             long lastFrameSent = System.currentTimeMillis();
             boolean sentPacket = true;
             while (!udpSocket.isClosed() && !sendThread.isInterrupted()) {
@@ -66,7 +68,9 @@ public class DefaultSendSystem implements IAudioSendSystem {
                     DatagramPacket packet = packetProvider.getNextPacket(changeTalking);
 
                     sentPacket = packet != null;
-                    if (sentPacket) udpSocket.send(packet);
+                    if (sentPacket) {
+                        udpSocket.send(packet);
+                    }
                 } catch (NoRouteToHostException e) {
                     packetProvider.onConnectionLost();
                 } catch (SocketException e) {
@@ -109,6 +113,8 @@ public class DefaultSendSystem implements IAudioSendSystem {
 
     @Override
     public void shutdown() {
-        if (sendThread != null) sendThread.interrupt();
+        if (sendThread != null) {
+            sendThread.interrupt();
+        }
     }
 }

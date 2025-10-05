@@ -81,9 +81,10 @@ public abstract class Event implements GenericEvent {
     @Override
     public DataObject getRawData() {
         if (api instanceof JDAImpl) {
-            if (!((JDAImpl) api).isEventPassthrough())
+            if (!((JDAImpl) api).isEventPassthrough()) {
                 throw new IllegalStateException("Event passthrough is not enabled, see"
                         + " JDABuilder#setEventPassthrough(boolean)");
+            }
         }
 
         return rawData;

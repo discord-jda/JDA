@@ -98,7 +98,9 @@ public class PresenceImpl implements Presence {
         Checks.check(
                 status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
-        if (status == OnlineStatus.OFFLINE || status == null) status = OnlineStatus.INVISIBLE;
+        if (status == OnlineStatus.OFFLINE || status == null) {
+            status = OnlineStatus.INVISIBLE;
+        }
 
         this.idle = idle;
         this.status = status;
@@ -124,8 +126,12 @@ public class PresenceImpl implements Presence {
     /* -- Impl Setters -- */
 
     public PresenceImpl setCacheStatus(OnlineStatus status) {
-        if (status == null) throw new NullPointerException("Null OnlineStatus is not allowed.");
-        if (status == OnlineStatus.OFFLINE) status = OnlineStatus.INVISIBLE;
+        if (status == null) {
+            throw new NullPointerException("Null OnlineStatus is not allowed.");
+        }
+        if (status == OnlineStatus.OFFLINE) {
+            status = OnlineStatus.INVISIBLE;
+        }
         this.status = status;
         return this;
     }
@@ -158,8 +164,9 @@ public class PresenceImpl implements Presence {
     }
 
     public static DataObject getGameJson(Activity activity) {
-        if (activity == null || activity.getName() == null || activity.getType() == null)
+        if (activity == null || activity.getName() == null || activity.getType() == null) {
             return null;
+        }
         DataObject gameObj = DataObject.empty();
 
         if (activity.getType() == Activity.ActivityType.CUSTOM_STATUS) {
@@ -168,11 +175,15 @@ public class PresenceImpl implements Presence {
         } else {
             gameObj.put("name", activity.getName());
             String state = activity.getState();
-            if (state != null) gameObj.put("state", state);
+            if (state != null) {
+                gameObj.put("state", state);
+            }
         }
 
         gameObj.put("type", activity.getType().getKey());
-        if (activity.getUrl() != null) gameObj.put("url", activity.getUrl());
+        if (activity.getUrl() != null) {
+            gameObj.put("url", activity.getUrl());
+        }
 
         return gameObj;
     }
@@ -184,7 +195,9 @@ public class PresenceImpl implements Presence {
         JDA.Status status = api.getStatus();
         if (status == JDA.Status.RECONNECT_QUEUED
                 || status == JDA.Status.SHUTDOWN
-                || status == JDA.Status.SHUTTING_DOWN) return;
+                || status == JDA.Status.SHUTTING_DOWN) {
+            return;
+        }
         api.getClient().send(DataObject.empty().put("d", data).put("op", WebSocketCode.PRESENCE));
     }
 }

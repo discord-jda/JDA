@@ -41,7 +41,9 @@ public enum ConfigFlag {
     public static EnumSet<ConfigFlag> getDefault() {
         EnumSet<ConfigFlag> set = EnumSet.noneOf(ConfigFlag.class);
         for (ConfigFlag flag : values()) {
-            if (flag.isDefault) set.add(flag);
+            if (flag.isDefault) {
+                set.add(flag);
+            }
         }
         return set;
     }

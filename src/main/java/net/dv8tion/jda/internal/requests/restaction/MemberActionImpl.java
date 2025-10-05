@@ -162,9 +162,12 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
     protected RequestBody finalizeData() {
         DataObject obj = DataObject.empty();
         obj.put("access_token", accessToken);
-        if (nick != null) obj.put("nick", nick);
-        if (roles != null && !roles.isEmpty())
+        if (nick != null) {
+            obj.put("nick", nick);
+        }
+        if (roles != null && !roles.isEmpty()) {
             obj.put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
+        }
         obj.put("mute", mute);
         obj.put("deaf", deaf);
         return getRequestBody(obj);

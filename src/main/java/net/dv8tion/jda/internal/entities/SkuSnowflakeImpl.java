@@ -38,8 +38,12 @@ public class SkuSnowflakeImpl implements SkuSnowflake {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof SkuSnowflakeImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof SkuSnowflakeImpl)) {
+            return false;
+        }
         return ((SkuSnowflakeImpl) obj).getIdLong() == this.id;
     }
 

@@ -79,8 +79,12 @@ public class CustomEmojiImpl implements CustomEmoji, EmojiUnion {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof CustomEmoji)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof CustomEmoji)) {
+            return false;
+        }
         CustomEmoji other = (CustomEmoji) obj;
         return this.id == other.getIdLong();
     }

@@ -232,19 +232,20 @@ public class ComponentDeserializer {
         Checks.notNull(treeType, "Tree type");
         Checks.notNull(components, "Components");
 
-        if (MessageComponentTree.class.isAssignableFrom(treeType))
+        if (MessageComponentTree.class.isAssignableFrom(treeType)) {
             return (T) MessageComponentTree.of(
                     deserializeAs(MessageTopLevelComponent.class, components)
                             .collect(Collectors.toList()));
-        else if (ModalComponentTree.class.isAssignableFrom(treeType))
+        } else if (ModalComponentTree.class.isAssignableFrom(treeType)) {
             return (T) ModalComponentTree.of(deserializeAs(ModalTopLevelComponent.class, components)
                     .collect(Collectors.toList()));
-        else if (ComponentTree.class.isAssignableFrom(treeType))
+        } else if (ComponentTree.class.isAssignableFrom(treeType)) {
             return (T) ComponentTree.of(
                     deserializeAs(Component.class, components).collect(Collectors.toList()));
-        else
+        } else {
             throw new UnsupportedOperationException(
                     "Cannot deserialize to tree of type " + treeType.getName());
+        }
     }
 
     @Nonnull

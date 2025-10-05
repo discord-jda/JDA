@@ -153,7 +153,9 @@ public class GenericMessageReactionEvent extends GenericMessageEvent {
     @CheckReturnValue
     public RestAction<User> retrieveUser() {
         User user = getUser();
-        if (user != null) return new CompletedRestAction<>(getJDA(), user);
+        if (user != null) {
+            return new CompletedRestAction<>(getJDA(), user);
+        }
         return getJDA().retrieveUserById(getUserIdLong());
     }
 
@@ -175,10 +177,13 @@ public class GenericMessageReactionEvent extends GenericMessageEvent {
     @Nonnull
     @CheckReturnValue
     public RestAction<Member> retrieveMember() {
-        if (member != null) return new CompletedRestAction<>(getJDA(), member);
-        if (!getChannel().getType().isGuild())
+        if (member != null) {
+            return new CompletedRestAction<>(getJDA(), member);
+        }
+        if (!getChannel().getType().isGuild()) {
             throw new IllegalStateException(
                     "Cannot retrieve member for a private reaction not from a guild");
+        }
         return getGuild().retrieveMemberById(getUserIdLong());
     }
 

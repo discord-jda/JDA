@@ -91,8 +91,11 @@ class AllowedMentionsData implements SerializableData {
     public void mention(@Nonnull Collection<? extends IMentionable> mentions) {
         Checks.noneNull(mentions, "Mentionables");
         for (IMentionable mentionable : mentions) {
-            if (mentionable instanceof UserSnowflake) mentionUsers.add(mentionable.getId());
-            else if (mentionable instanceof Role) mentionRoles.add(mentionable.getId());
+            if (mentionable instanceof UserSnowflake) {
+                mentionUsers.add(mentionable.getId());
+            } else if (mentionable instanceof Role) {
+                mentionRoles.add(mentionable.getId());
+            }
         }
     }
 

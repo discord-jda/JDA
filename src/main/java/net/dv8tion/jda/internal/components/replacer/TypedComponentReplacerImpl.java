@@ -43,9 +43,13 @@ public class TypedComponentReplacerImpl<T extends Component> implements Componen
     @Nullable
     @Override
     public Component apply(@Nonnull Component oldComponent) {
-        if (!type.isInstance(oldComponent)) return oldComponent;
+        if (!type.isInstance(oldComponent)) {
+            return oldComponent;
+        }
 
-        if (filter.test((T) oldComponent)) return updater.apply((T) oldComponent);
+        if (filter.test((T) oldComponent)) {
+            return updater.apply((T) oldComponent);
+        }
 
         return oldComponent;
     }

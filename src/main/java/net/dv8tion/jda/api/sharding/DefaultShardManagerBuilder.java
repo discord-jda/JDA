@@ -485,8 +485,9 @@ public class DefaultShardManagerBuilder {
         EnumSet<CacheFlag> disabledCache = EnumSet.allOf(CacheFlag.class);
         for (CacheFlag flag : CacheFlag.values()) {
             GatewayIntent requiredIntent = flag.getRequiredIntent();
-            if (requiredIntent == null || (requiredIntent.getRawValue() & intents) != 0)
+            if (requiredIntent == null || (requiredIntent.getRawValue() & intents) != 0) {
                 disabledCache.remove(flag);
+            }
         }
 
         boolean enableMembers = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
@@ -731,8 +732,11 @@ public class DefaultShardManagerBuilder {
      */
     @Nonnull
     public DefaultShardManagerBuilder setMemberCachePolicy(@Nullable MemberCachePolicy policy) {
-        if (policy == null) this.memberCachePolicy = MemberCachePolicy.ALL;
-        else this.memberCachePolicy = policy;
+        if (policy == null) {
+            this.memberCachePolicy = MemberCachePolicy.ALL;
+        } else {
+            this.memberCachePolicy = policy;
+        }
         return this;
     }
 
@@ -793,7 +797,9 @@ public class DefaultShardManagerBuilder {
     public DefaultShardManagerBuilder setContextMap(
             @Nullable IntFunction<? extends ConcurrentMap<String, String>> provider) {
         this.contextProvider = provider;
-        if (provider != null) setContextEnabled(true);
+        if (provider != null) {
+            setContextEnabled(true);
+        }
         return this;
     }
 
@@ -1797,7 +1803,9 @@ public class DefaultShardManagerBuilder {
                 minShardId <= maxShardId, "minShardId must be lower than or equal to maxShardId");
 
         List<Integer> shards = new ArrayList<>(maxShardId - minShardId + 1);
-        for (int i = minShardId; i <= maxShardId; i++) shards.add(i);
+        for (int i = minShardId; i <= maxShardId; i++) {
+            shards.add(i);
+        }
 
         this.shards = shards;
 
@@ -1995,8 +2003,9 @@ public class DefaultShardManagerBuilder {
     public DefaultShardManagerBuilder setDisabledIntents(
             @Nullable Collection<GatewayIntent> intents) {
         this.intents = GatewayIntent.ALL_INTENTS;
-        if (intents != null)
+        if (intents != null) {
             this.intents = 1 | (GatewayIntent.ALL_INTENTS & ~GatewayIntent.getRaw(intents));
+        }
         return this;
     }
 
@@ -2113,8 +2122,11 @@ public class DefaultShardManagerBuilder {
     @Nonnull
     public DefaultShardManagerBuilder setEnabledIntents(
             @Nullable Collection<GatewayIntent> intents) {
-        if (intents == null || intents.isEmpty()) this.intents = 1;
-        else this.intents = 1 | GatewayIntent.getRaw(intents);
+        if (intents == null || intents.isEmpty()) {
+            this.intents = 1;
+        } else {
+            this.intents = 1 | GatewayIntent.getRaw(intents);
+        }
         return this;
     }
 
@@ -2300,32 +2312,41 @@ public class DefaultShardManagerBuilder {
                 restConfigProvider,
                 chunkingFilter);
 
-        if (login) manager.login();
+        if (login) {
+            manager.login();
+        }
 
         return manager;
     }
 
     private DefaultShardManagerBuilder setFlag(ConfigFlag flag, boolean enable) {
-        if (enable) this.flags.add(flag);
-        else this.flags.remove(flag);
+        if (enable) {
+            this.flags.add(flag);
+        } else {
+            this.flags.remove(flag);
+        }
         return this;
     }
 
     private DefaultShardManagerBuilder setFlag(ShardingConfigFlag flag, boolean enable) {
-        if (enable) this.shardingFlags.add(flag);
-        else this.shardingFlags.remove(flag);
+        if (enable) {
+            this.shardingFlags.add(flag);
+        } else {
+            this.shardingFlags.remove(flag);
+        }
         return this;
     }
 
     private void checkIntents() {
         boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
-        if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL)
+        if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL) {
             throw new IllegalStateException(
                     "Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS"
                             + " enabled!");
-        else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE)
+        } else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE) {
             DefaultShardManager.LOG.warn(
                     "Member chunking is disabled due to missing GUILD_MEMBERS intent.");
+        }
 
         if (!automaticallyDisabled.isEmpty()) {
             JDAImpl.LOG.warn("Automatically disabled CacheFlags due to missing intents");
@@ -2346,14 +2367,17 @@ public class DefaultShardManagerBuilder {
             automaticallyDisabled.clear();
         }
 
-        if (cacheFlags.isEmpty()) return;
+        if (cacheFlags.isEmpty()) {
+            return;
+        }
 
         EnumSet<GatewayIntent> providedIntents = GatewayIntent.getIntents(intents);
         for (CacheFlag flag : cacheFlags) {
             GatewayIntent intent = flag.getRequiredIntent();
-            if (intent != null && !providedIntents.contains(intent))
+            if (intent != null && !providedIntents.contains(intent)) {
                 throw new IllegalArgumentException(
                         "Cannot use CacheFlag." + flag + " without GatewayIntent." + intent + "!");
+            }
         }
     }
 

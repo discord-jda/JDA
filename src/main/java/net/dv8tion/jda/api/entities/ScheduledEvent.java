@@ -368,7 +368,9 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
         @Nonnull
         public static Status fromKey(int key) {
             for (Status status : Status.values()) {
-                if (status.getKey() == key) return status;
+                if (status.getKey() == key) {
+                    return status;
+                }
             }
 
             return UNKNOWN;
@@ -431,7 +433,9 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
         @Nonnull
         public static Type fromKey(int key) {
             for (Type type : Type.values()) {
-                if (type.getKey() == key) return type;
+                if (type.getKey() == key) {
+                    return type;
+                }
             }
 
             return UNKNOWN;

@@ -81,13 +81,18 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T>
      *         If this was already initialized
      */
     private void initProxy(ScheduledFuture<?> future) {
-        if (this.future == null) this.future = future;
-        else throw new IllegalStateException("Cannot initialize twice");
+        if (this.future == null) {
+            this.future = future;
+        } else {
+            throw new IllegalStateException("Cannot initialize twice");
+        }
     }
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        if (future != null && !future.isDone()) future.cancel(mayInterruptIfRunning);
+        if (future != null && !future.isDone()) {
+            future.cancel(mayInterruptIfRunning);
+        }
         return super.cancel(mayInterruptIfRunning);
     }
 

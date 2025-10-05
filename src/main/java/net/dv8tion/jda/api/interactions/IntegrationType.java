@@ -81,7 +81,9 @@ public enum IntegrationType {
     @Nonnull
     public static IntegrationType fromKey(@Nonnull String key) {
         for (IntegrationType value : values()) {
-            if (value.key.equals(key)) return value;
+            if (value.key.equals(key)) {
+                return value;
+            }
         }
         return UNKNOWN;
     }

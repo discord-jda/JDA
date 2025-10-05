@@ -37,41 +37,59 @@ public class ListenerProxy implements ConnectionListener {
 
     @Override
     public void onPing(long ping) {
-        if (listener == null) return;
+        if (listener == null) {
+            return;
+        }
         ConnectionListener listener = this.listener;
         try {
-            if (listener != null) listener.onPing(ping);
+            if (listener != null) {
+                listener.onPing(ping);
+            }
         } catch (Throwable t) {
             log.error("The ConnectionListener encountered and uncaught exception", t);
-            if (t instanceof Error) throw (Error) t;
+            if (t instanceof Error) {
+                throw (Error) t;
+            }
         }
     }
 
     @Override
     public void onStatusChange(@Nonnull ConnectionStatus status) {
-        if (listener == null) return;
+        if (listener == null) {
+            return;
+        }
         ConnectionListener listener = this.listener;
         try {
-            if (listener != null) listener.onStatusChange(status);
+            if (listener != null) {
+                listener.onStatusChange(status);
+            }
         } catch (Throwable t) {
             log.error("The ConnectionListener encountered and uncaught exception", t);
-            if (t instanceof Error) throw (Error) t;
+            if (t instanceof Error) {
+                throw (Error) t;
+            }
         }
     }
 
     @Override
     public void onUserSpeakingModeUpdate(
             @Nonnull UserSnowflake user, @Nonnull EnumSet<SpeakingMode> modes) {
-        if (listener == null) return;
+        if (listener == null) {
+            return;
+        }
         ConnectionListener listener = this.listener;
         try {
             if (listener != null) {
                 listener.onUserSpeakingModeUpdate(user, modes);
-                if (user instanceof User) listener.onUserSpeakingModeUpdate((User) user, modes);
+                if (user instanceof User) {
+                    listener.onUserSpeakingModeUpdate((User) user, modes);
+                }
             }
         } catch (Throwable t) {
             log.error("The ConnectionListener encountered and uncaught exception", t);
-            if (t instanceof Error) throw (Error) t;
+            if (t instanceof Error) {
+                throw (Error) t;
+            }
         }
     }
 

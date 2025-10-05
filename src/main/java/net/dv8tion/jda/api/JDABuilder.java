@@ -471,8 +471,9 @@ public class JDABuilder {
         EnumSet<CacheFlag> disabledCache = EnumSet.allOf(CacheFlag.class);
         for (CacheFlag flag : CacheFlag.values()) {
             GatewayIntent requiredIntent = flag.getRequiredIntent();
-            if (requiredIntent == null || (requiredIntent.getRawValue() & intents) != 0)
+            if (requiredIntent == null || (requiredIntent.getRawValue() & intents) != 0) {
                 disabledCache.remove(flag);
+            }
         }
 
         boolean enableMembers = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
@@ -694,8 +695,11 @@ public class JDABuilder {
      */
     @Nonnull
     public JDABuilder setMemberCachePolicy(@Nullable MemberCachePolicy policy) {
-        if (policy == null) this.memberCachePolicy = MemberCachePolicy.ALL;
-        else this.memberCachePolicy = policy;
+        if (policy == null) {
+            this.memberCachePolicy = MemberCachePolicy.ALL;
+        } else {
+            this.memberCachePolicy = policy;
+        }
         return this;
     }
 
@@ -718,7 +722,9 @@ public class JDABuilder {
     @Nonnull
     public JDABuilder setContextMap(@Nullable ConcurrentMap<String, String> map) {
         this.contextMap = map;
-        if (map != null) setContextEnabled(true);
+        if (map != null) {
+            setContextEnabled(true);
+        }
         return this;
     }
 
@@ -1286,8 +1292,9 @@ public class JDABuilder {
     @Nonnull
     @SuppressWarnings("ConstantConditions") // we have to enforce the nonnull at runtime
     public JDABuilder setStatus(@Nonnull OnlineStatus status) {
-        if (status == null || status == OnlineStatus.UNKNOWN)
+        if (status == null || status == OnlineStatus.UNKNOWN) {
             throw new IllegalArgumentException("OnlineStatus cannot be null or unknown!");
+        }
         this.status = status;
         return this;
     }
@@ -1515,8 +1522,9 @@ public class JDABuilder {
     @Nonnull
     public JDABuilder setDisabledIntents(@Nullable Collection<GatewayIntent> intents) {
         this.intents = GatewayIntent.ALL_INTENTS;
-        if (intents != null)
+        if (intents != null) {
             this.intents = 1 | (GatewayIntent.ALL_INTENTS & ~GatewayIntent.getRaw(intents));
+        }
         return this;
     }
 
@@ -1632,8 +1640,11 @@ public class JDABuilder {
      */
     @Nonnull
     public JDABuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents) {
-        if (intents == null || intents.isEmpty()) this.intents = 1;
-        else this.intents = 1 | GatewayIntent.getRaw(intents);
+        if (intents == null || intents.isEmpty()) {
+            this.intents = 1;
+        } else {
+            this.intents = 1 | GatewayIntent.getRaw(intents);
+        }
         return this;
     }
 
@@ -1754,15 +1765,18 @@ public class JDABuilder {
         checkIntents();
         OkHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
-            if (this.httpClientBuilder == null)
+            if (this.httpClientBuilder == null) {
                 this.httpClientBuilder = IOUtil.newHttpClientBuilder();
+            }
             httpClient = this.httpClientBuilder.build();
         }
 
         WebSocketFactory wsFactory =
                 this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
 
-        if (controller == null && shardInfo != null) controller = new ConcurrentSessionController();
+        if (controller == null && shardInfo != null) {
+            controller = new ConcurrentSessionController();
+        }
 
         AuthorizationConfig authConfig = new AuthorizationConfig(token);
         ThreadingConfig threadingConfig = new ThreadingConfig();
@@ -1786,13 +1800,19 @@ public class JDABuilder {
                 new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
         jda.setMemberCachePolicy(memberCachePolicy);
         // We can only do member chunking with the GUILD_MEMBERS intent
-        if ((intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0)
+        if ((intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0) {
             jda.setChunkingFilter(ChunkingFilter.NONE);
-        else jda.setChunkingFilter(chunkingFilter);
+        } else {
+            jda.setChunkingFilter(chunkingFilter);
+        }
 
-        if (eventManager != null) jda.setEventManager(eventManager);
+        if (eventManager != null) {
+            jda.setEventManager(eventManager);
+        }
 
-        if (audioSendFactory != null) jda.setAudioSendFactory(audioSendFactory);
+        if (audioSendFactory != null) {
+            jda.setAudioSendFactory(audioSendFactory);
+        }
 
         jda.addEventListener(listeners.toArray());
         jda.setStatus(
@@ -1811,19 +1831,23 @@ public class JDABuilder {
     }
 
     private JDABuilder setFlag(ConfigFlag flag, boolean enable) {
-        if (enable) this.flags.add(flag);
-        else this.flags.remove(flag);
+        if (enable) {
+            this.flags.add(flag);
+        } else {
+            this.flags.remove(flag);
+        }
         return this;
     }
 
     protected void checkIntents() {
         boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
-        if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL)
+        if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL) {
             throw new IllegalStateException(
                     "Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS"
                             + " enabled!");
-        else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE)
+        } else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE) {
             JDAImpl.LOG.warn("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
+        }
 
         if (!automaticallyDisabled.isEmpty()) {
             JDAImpl.LOG.warn("Automatically disabled CacheFlags due to missing intents");
@@ -1844,14 +1868,17 @@ public class JDABuilder {
             automaticallyDisabled.clear();
         }
 
-        if (cacheFlags.isEmpty()) return;
+        if (cacheFlags.isEmpty()) {
+            return;
+        }
 
         EnumSet<GatewayIntent> providedIntents = GatewayIntent.getIntents(intents);
         for (CacheFlag flag : cacheFlags) {
             GatewayIntent intent = flag.getRequiredIntent();
-            if (intent != null && !providedIntents.contains(intent))
+            if (intent != null && !providedIntents.contains(intent)) {
                 throw new IllegalArgumentException(
                         "Cannot use CacheFlag." + flag + " without GatewayIntent." + intent + "!");
+            }
         }
     }
 }

@@ -74,8 +74,9 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
 
     @Override
     protected RequestBody finalizeData() {
-        if (builder.isUsingComponentsV2())
+        if (builder.isUsingComponentsV2()) {
             Checks.check(stickers.isEmpty(), "Cannot send stickers when using Components V2!");
+        }
 
         if (builder.isEmpty()) {
             // Special cases where builder is empty but can still send message on this endpoint
@@ -85,8 +86,9 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
             if (!stickers.isEmpty()
                     || messageReference != null
                             && messageReference.type
-                                    == MessageReference.MessageReferenceType.FORWARD)
+                                    == MessageReference.MessageReferenceType.FORWARD) {
                 return getRequestBody(body);
+            }
 
             throw new IllegalStateException(
                     "Cannot build empty messages! Must provide at least one of: content, embed,"
@@ -103,9 +105,14 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
 
     private void populateBody(DataObject json) {
         json.put("enforce_nonce", true);
-        if (nonce != null && !nonce.isEmpty()) json.put("nonce", nonce);
-        else json.put("nonce", Long.toUnsignedString(nonceGenerator.nextLong()));
-        if (stickers != null && !stickers.isEmpty()) json.put("sticker_ids", stickers);
+        if (nonce != null && !nonce.isEmpty()) {
+            json.put("nonce", nonce);
+        } else {
+            json.put("nonce", Long.toUnsignedString(nonceGenerator.nextLong()));
+        }
+        if (stickers != null && !stickers.isEmpty()) {
+            json.put("sticker_ids", stickers);
+        }
         if (messageReference != null) {
             json.put(
                     "message_reference",
@@ -122,7 +129,9 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
     @Nonnull
     @Override
     public MessageCreateAction setNonce(@Nullable String nonce) {
-        if (nonce != null) Checks.notLonger(nonce, Message.MAX_NONCE_LENGTH, "Nonce");
+        if (nonce != null) {
+            Checks.notLonger(nonce, Message.MAX_NONCE_LENGTH, "Nonce");
+        }
         this.nonce = nonce;
         return this;
     }
@@ -135,7 +144,9 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
             @Nonnull String channelId,
             @Nonnull String messageId) {
         Checks.notNull(type, "Type");
-        if (guildId != null) Checks.isSnowflake(guildId, "Guild ID");
+        if (guildId != null) {
+            Checks.isSnowflake(guildId, "Guild ID");
+        }
         Checks.isSnowflake(channelId, "Channel ID");
         Checks.isSnowflake(messageId, "Message ID");
         Checks.check(
@@ -155,8 +166,9 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
 
         Checks.isSnowflake(messageId);
         String guildId = null;
-        if (channel instanceof GuildChannel)
+        if (channel instanceof GuildChannel) {
             guildId = ((GuildChannel) channel).getGuild().getId();
+        }
         this.messageReference = new MessageReferenceData(
                 MessageReference.MessageReferenceType.DEFAULT, guildId, channel.getId(), messageId);
         return this;
@@ -174,10 +186,13 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
     public MessageCreateAction setStickers(
             @Nullable Collection<? extends StickerSnowflake> stickers) {
         this.stickers.clear();
-        if (stickers == null || stickers.isEmpty()) return this;
+        if (stickers == null || stickers.isEmpty()) {
+            return this;
+        }
 
-        if (!channel.getType().isGuild())
+        if (!channel.getType().isGuild()) {
             throw new IllegalStateException("Cannot send stickers in direct messages!");
+        }
 
         GuildChannel guildChannel = (GuildChannel) channel;
 
@@ -241,7 +256,9 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
                     .put("type", type.getId())
                     .put("message_id", messageId)
                     .put("channel_id", channelId);
-            if (guildId != null) data.put("guild_id", guildId);
+            if (guildId != null) {
+                data.put("guild_id", guildId);
+            }
             return data;
         }
     }

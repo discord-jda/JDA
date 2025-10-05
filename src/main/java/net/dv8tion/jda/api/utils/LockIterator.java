@@ -63,22 +63,30 @@ public class LockIterator<T> implements ClosableIterator<T> {
 
     @Override
     public void close() {
-        if (lock != null) lock.unlock();
+        if (lock != null) {
+            lock.unlock();
+        }
         lock = null;
     }
 
     @Override
     public boolean hasNext() {
-        if (lock == null) return false;
+        if (lock == null) {
+            return false;
+        }
         boolean hasNext = it.hasNext();
-        if (!hasNext) close();
+        if (!hasNext) {
+            close();
+        }
         return hasNext;
     }
 
     @Nonnull
     @Override
     public T next() {
-        if (lock == null) throw new NoSuchElementException();
+        if (lock == null) {
+            throw new NoSuchElementException();
+        }
         return it.next();
     }
 

@@ -2434,10 +2434,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     default RestAction<RichCustomEmoji> retrieveEmoji(@Nonnull CustomEmoji emoji) {
         Checks.notNull(emoji, "Emoji");
-        if (emoji instanceof RichCustomEmoji && ((RichCustomEmoji) emoji).getGuild() != null)
+        if (emoji instanceof RichCustomEmoji && ((RichCustomEmoji) emoji).getGuild() != null) {
             Checks.check(
                     ((RichCustomEmoji) emoji).getGuild().equals(this),
                     "Emoji must be from the same Guild!");
+        }
 
         JDA jda = getJDA();
         return new DeferredRestAction<>(
@@ -2448,8 +2449,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
                         RichCustomEmoji richEmoji = (RichCustomEmoji) emoji;
                         if (richEmoji.getOwner() != null
                                 || !getSelfMember()
-                                        .hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+                                        .hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
                             return richEmoji;
+                        }
                     }
                     return null;
                 },
@@ -3076,7 +3078,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         List<Member> list = new ArrayList<>();
         CompletableFuture<List<Member>> future = new CompletableFuture<>();
         Task<Void> reference = loadMembers((member) -> {
-            if (filter.test(member)) list.add(member);
+            if (filter.test(member)) {
+                list.add(member);
+            }
         });
         GatewayTask<List<Member>> task = new GatewayTask<>(future, reference::cancel)
                 .onSetTimeout(timeout -> reference.setTimeout(Duration.ofMillis(timeout)));
@@ -3123,7 +3127,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
         List<Role> rolesWithoutPublicRole =
                 roles.stream().filter(role -> !role.isPublicRole()).collect(Collectors.toList());
-        if (rolesWithoutPublicRole.isEmpty()) return loadMembers();
+        if (rolesWithoutPublicRole.isEmpty()) {
+            return loadMembers();
+        }
 
         return findMembers(member -> member.getUnsortedRoles().containsAll(rolesWithoutPublicRole));
     }
@@ -3361,9 +3367,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     default Task<List<Member>> retrieveMembers(@Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
-        if (users.isEmpty())
+        if (users.isEmpty()) {
             return new GatewayTask<>(
                     CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        }
 
         long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
         return retrieveMembersByIds(ids);
@@ -3401,9 +3408,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     default Task<List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
-        if (ids.isEmpty())
+        if (ids.isEmpty()) {
             return new GatewayTask<>(
                     CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        }
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
         return retrieveMembersByIds(arr);
@@ -3441,12 +3449,15 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     default Task<List<Member>> retrieveMembersByIds(@Nonnull String... ids) {
         Checks.notNull(ids, "Array");
-        if (ids.length == 0)
+        if (ids.length == 0) {
             return new GatewayTask<>(
                     CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        }
 
         long[] arr = new long[ids.length];
-        for (int i = 0; i < ids.length; i++) arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        for (int i = 0; i < ids.length; i++) {
+            arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        }
         return retrieveMembersByIds(arr);
     }
 
@@ -3519,9 +3530,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembers(
             boolean includePresence, @Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
-        if (users.isEmpty())
+        if (users.isEmpty()) {
             return new GatewayTask<>(
                     CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        }
 
         long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
         return retrieveMembersByIds(includePresence, ids);
@@ -3561,9 +3573,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembersByIds(
             boolean includePresence, @Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
-        if (ids.isEmpty())
+        if (ids.isEmpty()) {
             return new GatewayTask<>(
                     CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        }
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
         return retrieveMembersByIds(includePresence, arr);
@@ -3603,12 +3616,15 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembersByIds(
             boolean includePresence, @Nonnull String... ids) {
         Checks.notNull(ids, "Array");
-        if (ids.length == 0)
+        if (ids.length == 0) {
             return new GatewayTask<>(
                     CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        }
 
         long[] arr = new long[ids.length];
-        for (int i = 0; i < ids.length; i++) arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        for (int i = 0; i < ids.length; i++) {
+            arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        }
         return retrieveMembersByIds(includePresence, arr);
     }
 
@@ -5858,7 +5874,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         @Nonnull
         public static Timeout fromKey(int seconds) {
             for (Timeout t : values()) {
-                if (t.getSeconds() == seconds) return t;
+                if (t.getSeconds() == seconds) {
+                    return t;
+                }
             }
             throw new IllegalArgumentException(
                     "Provided key was not recognized. Seconds: " + seconds);
@@ -5910,7 +5928,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         @Nonnull
         public static VerificationLevel fromKey(int key) {
             for (VerificationLevel level : VerificationLevel.values()) {
-                if (level.getKey() == key) return level;
+                if (level.getKey() == key) {
+                    return level;
+                }
             }
             return UNKNOWN;
         }
@@ -5955,7 +5975,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         @Nonnull
         public static NotificationLevel fromKey(int key) {
             for (NotificationLevel level : values()) {
-                if (level.getKey() == key) return level;
+                if (level.getKey() == key) {
+                    return level;
+                }
             }
             return UNKNOWN;
         }
@@ -6000,7 +6022,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         @Nonnull
         public static MFALevel fromKey(int key) {
             for (MFALevel level : values()) {
-                if (level.getKey() == key) return level;
+                if (level.getKey() == key) {
+                    return level;
+                }
             }
             return UNKNOWN;
         }
@@ -6047,7 +6071,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         @Nonnull
         public static ExplicitContentLevel fromKey(int key) {
             for (ExplicitContentLevel level : values()) {
-                if (level.key == key) return level;
+                if (level.key == key) {
+                    return level;
+                }
             }
             return UNKNOWN;
         }
@@ -6105,7 +6131,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         @Nonnull
         public static NSFWLevel fromKey(int key) {
             for (NSFWLevel level : values()) {
-                if (level.getKey() == key) return level;
+                if (level.getKey() == key) {
+                    return level;
+                }
             }
             return UNKNOWN;
         }
@@ -6192,8 +6220,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
          * @see    net.dv8tion.jda.api.entities.Guild#getMaxFileSize()
          */
         public long getMaxFileSize() {
-            if (key == 2) return 50 << 20;
-            else if (key == 3) return 100 << 20;
+            if (key == 2) {
+                return 50 << 20;
+            } else if (key == 3) {
+                return 100 << 20;
+            }
             return Message.MAX_FILE_SIZE;
         }
 
@@ -6208,7 +6239,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         @Nonnull
         public static BoostTier fromKey(int key) {
             for (BoostTier tier : values()) {
-                if (tier.key == key) return tier;
+                if (tier.key == key) {
+                    return tier;
+                }
             }
             return UNKNOWN;
         }

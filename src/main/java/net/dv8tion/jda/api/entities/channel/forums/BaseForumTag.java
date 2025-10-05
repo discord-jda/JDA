@@ -63,8 +63,11 @@ public interface BaseForumTag extends SerializableData {
     default DataObject toData() {
         DataObject json = DataObject.empty().put("name", getName()).put("moderated", isModerated());
         EmojiUnion emoji = getEmoji();
-        if (emoji instanceof UnicodeEmoji) json.put("emoji_name", emoji.getName());
-        else if (emoji instanceof CustomEmoji) json.put("emoji_id", ((CustomEmoji) emoji).getId());
+        if (emoji instanceof UnicodeEmoji) {
+            json.put("emoji_name", emoji.getName());
+        } else if (emoji instanceof CustomEmoji) {
+            json.put("emoji_id", ((CustomEmoji) emoji).getId());
+        }
         return json;
     }
 }

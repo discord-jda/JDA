@@ -224,10 +224,11 @@ public class AutoModRuleData implements SerializableData {
     public AutoModRuleData setResponses(@Nonnull Collection<? extends AutoModResponse> responses) {
         Checks.noneNull(responses, "Responses");
         actions.clear();
-        if (eventType == AutoModEventType.MEMBER_UPDATE)
+        if (eventType == AutoModEventType.MEMBER_UPDATE) {
             actions.put(
                     AutoModResponse.Type.BLOCK_MEMBER_INTERACTION,
                     AutoModResponse.blockMemberInteraction());
+        }
         for (AutoModResponse response : responses) {
             AutoModResponse.Type type = response.getType();
             Checks.check(
@@ -416,9 +417,11 @@ public class AutoModRuleData implements SerializableData {
      */
     @Nonnull
     public EnumSet<Permission> getRequiredPermissions() {
-        if (actions.containsKey(AutoModResponse.Type.TIMEOUT))
+        if (actions.containsKey(AutoModResponse.Type.TIMEOUT)) {
             return EnumSet.of(Permission.MANAGE_SERVER, Permission.MODERATE_MEMBERS);
-        else return EnumSet.of(Permission.MANAGE_SERVER);
+        } else {
+            return EnumSet.of(Permission.MANAGE_SERVER);
+        }
     }
 
     @Nonnull
@@ -426,25 +429,28 @@ public class AutoModRuleData implements SerializableData {
     public DataObject toData() {
         AutoModTriggerType triggerType = triggerMetadata.getType();
         if (eventType == AutoModEventType.MEMBER_UPDATE) {
-            if (triggerType == AutoModTriggerType.KEYWORD)
+            if (triggerType == AutoModTriggerType.KEYWORD) {
                 triggerType = AutoModTriggerType.MEMBER_PROFILE_KEYWORD;
-            else
+            } else {
                 throw new IllegalStateException("Cannot create rule of trigger type " + triggerType
                         + " with event type " + eventType);
+            }
         }
 
         for (AutoModResponse response : actions.values()) {
-            if (!response.getType().isSupportedTrigger(triggerType))
+            if (!response.getType().isSupportedTrigger(triggerType)) {
                 throw new IllegalStateException("Cannot create a rule of trigger type "
                         + triggerType
                         + " with response type "
                         + response.getType());
+            }
         }
 
-        if (actions.isEmpty())
+        if (actions.isEmpty()) {
             throw new IllegalStateException(
                     "Cannot create a rule with no responses. Add at least one response with"
                             + " putResponses(...)");
+        }
 
         DataObject data = DataObject.empty()
                 .put("name", name)

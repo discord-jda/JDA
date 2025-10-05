@@ -54,7 +54,9 @@ public enum EmbedType {
     @Nonnull
     public static EmbedType fromKey(@Nullable String key) {
         for (EmbedType type : values()) {
-            if (type.key.equals(key)) return type;
+            if (type.key.equals(key)) {
+                return type;
+            }
         }
         return UNKNOWN;
     }

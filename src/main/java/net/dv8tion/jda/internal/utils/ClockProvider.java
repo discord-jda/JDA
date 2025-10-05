@@ -27,7 +27,9 @@ public class ClockProvider {
 
     @Nonnull
     public static Clock getClock() {
-        if (fixedTime != null) return fixedTime;
+        if (fixedTime != null) {
+            return fixedTime;
+        }
         return Clock.systemUTC();
     }
 

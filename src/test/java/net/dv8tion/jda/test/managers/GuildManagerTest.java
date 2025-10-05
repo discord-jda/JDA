@@ -88,7 +88,9 @@ public class GuildManagerTest extends IntegrationTest {
         AtomicInteger calledSetters = new AtomicInteger(0);
         GuildManagerImpl manager = new GuildManagerImpl(guild);
         for (Method method : GuildManager.class.getDeclaredMethods()) {
-            if (ignoredSetters.contains(method.getName())) continue;
+            if (ignoredSetters.contains(method.getName())) {
+                continue;
+            }
 
             if (method.getName().startsWith("set") && method.getParameterCount() == 1) {
                 assertThatNoException().describedAs("call " + method.getName()).isThrownBy(() -> {
@@ -127,11 +129,21 @@ public class GuildManagerTest extends IntegrationTest {
 
     private Object getParameterForSetter(Method setter) {
         Class<?> paramType = setter.getParameters()[0].getType();
-        if (paramType == String.class) return "test";
-        if (paramType == Boolean.TYPE) return true;
-        if (paramType == Integer.TYPE) return 42;
-        if (TextChannel.class.isAssignableFrom(paramType)) return textChannel;
-        if (VoiceChannel.class.isAssignableFrom(paramType)) return voiceChannel;
+        if (paramType == String.class) {
+            return "test";
+        }
+        if (paramType == Boolean.TYPE) {
+            return true;
+        }
+        if (paramType == Integer.TYPE) {
+            return 42;
+        }
+        if (TextChannel.class.isAssignableFrom(paramType)) {
+            return textChannel;
+        }
+        if (VoiceChannel.class.isAssignableFrom(paramType)) {
+            return voiceChannel;
+        }
         return mock(paramType);
     }
 }

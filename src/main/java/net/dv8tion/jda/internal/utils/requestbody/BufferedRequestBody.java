@@ -40,7 +40,9 @@ public class BufferedRequestBody extends TypedBody<BufferedRequestBody> {
 
     @Nonnull
     public BufferedRequestBody withType(@Nonnull MediaType type) {
-        if (type.equals(this.type)) return this;
+        if (type.equals(this.type)) {
+            return this;
+        }
         synchronized (source) {
             BufferedRequestBody copy = new BufferedRequestBody(source, type);
             copy.data = data;

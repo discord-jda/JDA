@@ -59,9 +59,10 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
     }
 
     public TLongObjectMap<T> getMap() {
-        if (!lock.writeLock().isHeldByCurrentThread())
+        if (!lock.writeLock().isHeldByCurrentThread()) {
             throw new IllegalStateException(
                     "Cannot access map directly without holding write lock!");
+        }
         return elements;
     }
 
@@ -110,10 +111,14 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
     @Nonnull
     @Override
     public List<T> asList() {
-        if (isEmpty()) return Collections.emptyList();
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
         try (UnlockHook hook = readLock()) {
             List<T> list = getCachedList();
-            if (list != null) return list;
+            if (list != null) {
+                return list;
+            }
             list = new ArrayList<>(elements.size());
             elements.forEachValue(list::add);
             return cache(list);
@@ -123,10 +128,14 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
     @Nonnull
     @Override
     public Set<T> asSet() {
-        if (isEmpty()) return Collections.emptySet();
+        if (isEmpty()) {
+            return Collections.emptySet();
+        }
         try (UnlockHook hook = readLock()) {
             Set<T> set = getCachedSet();
-            if (set != null) return set;
+            if (set != null) {
+                return set;
+            }
             set = new HashSet<>(elements.size());
             elements.forEachValue(set::add);
             return cache(set);
@@ -147,15 +156,22 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
     @Override
     public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase) {
         Checks.notEmpty(name, "Name");
-        if (elements.isEmpty()) return Collections.emptyList();
-        if (nameMapper == null) // no getName method available
-        throw new UnsupportedOperationException(
+        if (elements.isEmpty()) {
+            return Collections.emptyList();
+        }
+        if (nameMapper == null) { // no getName method available
+            throw new UnsupportedOperationException(
                     "The contained elements are not assigned with names.");
-        if (isEmpty()) return Collections.emptyList();
+        }
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
         List<T> list = new ArrayList<>();
         forEach(elem -> {
             String elementName = nameMapper.apply(elem);
-            if (elementName != null && equals(ignoreCase, elementName, name)) list.add(elem);
+            if (elementName != null && equals(ignoreCase, elementName, name)) {
+                list.add(elem);
+            }
         });
         return list; // must be modifiable because of SortedSnowflakeCacheView
     }
@@ -201,8 +217,12 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof AbstractCacheView)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof AbstractCacheView)) {
+            return false;
+        }
         AbstractCacheView view = (AbstractCacheView) obj;
         try (UnlockHook hook = readLock();
                 UnlockHook otherHook = view.readLock()) {

@@ -63,7 +63,9 @@ public class GatewayTask<T> implements Task<T> {
                 callback.accept(error);
             } catch (Throwable e) {
                 failureHandler.accept(e);
-                if (e instanceof Error) throw e;
+                if (e instanceof Error) {
+                    throw e;
+                }
             }
             return null;
         });
@@ -81,7 +83,9 @@ public class GatewayTask<T> implements Task<T> {
                 callback.accept(result);
             } catch (Throwable error) {
                 failureHandler.accept(error);
-                if (error instanceof Error) throw error;
+                if (error instanceof Error) {
+                    throw error;
+                }
             }
         });
         return this;
@@ -93,16 +97,19 @@ public class GatewayTask<T> implements Task<T> {
         Checks.notNull(timeout, "Timeout");
         long millis = timeout.toMillis();
         Checks.positive(millis, "Timeout");
-        if (this.setTimeout != null) this.setTimeout.accept(millis);
+        if (this.setTimeout != null) {
+            this.setTimeout.accept(millis);
+        }
         return this;
     }
 
     @Nonnull
     @Override
     public T get() {
-        if (WebSocketClient.WS_THREAD.get())
+        if (WebSocketClient.WS_THREAD.get()) {
             throw new UnsupportedOperationException(
                     "Blocking operations are not permitted on the gateway thread");
+        }
         return future.join();
     }
 

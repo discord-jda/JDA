@@ -91,8 +91,11 @@ public class TriggerRestAction<T> extends RestActionImpl<T> {
 
     public void onReady(Runnable callback) {
         MiscUtil.locked(mutex, () -> {
-            if (isReady || exception != null) callback.run();
-            else callbacks.add(callback);
+            if (isReady || exception != null) {
+                callback.run();
+            } else {
+                callbacks.add(callback);
+            }
         });
     }
 
@@ -105,15 +108,20 @@ public class TriggerRestAction<T> extends RestActionImpl<T> {
 
         Consumer<? super Throwable> onFailure = wrapContext(failure);
         onReady(() -> {
-            if (this.exception != null) onFailure.accept(exception);
-            else super.queue(success, onFailure);
+            if (this.exception != null) {
+                onFailure.accept(exception);
+            } else {
+                super.queue(success, onFailure);
+            }
         });
     }
 
     @Nonnull
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue) {
-        if (isReady) return super.submit(shouldQueue);
+        if (isReady) {
+            return super.submit(shouldQueue);
+        }
         CompletableFuture<T> future = new CompletableFuture<>();
         Consumer<? super Throwable> onFailure = wrapContext(future::completeExceptionally);
 
@@ -125,13 +133,18 @@ public class TriggerRestAction<T> extends RestActionImpl<T> {
 
             CompletableFuture<T> handle = super.submit(shouldQueue);
             handle.whenComplete((success, error) -> {
-                if (error != null) onFailure.accept(error);
-                else future.complete(success);
+                if (error != null) {
+                    onFailure.accept(error);
+                } else {
+                    future.complete(success);
+                }
             });
 
             // Handle cancel forwarding
             future.whenComplete((r, e) -> {
-                if (future.isCancelled()) handle.cancel(false);
+                if (future.isCancelled()) {
+                    handle.cancel(false);
+                }
             });
         });
         return future;
@@ -139,8 +152,9 @@ public class TriggerRestAction<T> extends RestActionImpl<T> {
 
     private Consumer<? super Throwable> wrapContext(Consumer<? super Throwable> failure) {
         failure = failure == null ? getDefaultFailure() : failure;
-        if (!isPassContext() || (failure instanceof ContextException.ContextConsumer))
+        if (!isPassContext() || (failure instanceof ContextException.ContextConsumer)) {
             return failure;
+        }
         return ContextException.here(failure);
     }
 }

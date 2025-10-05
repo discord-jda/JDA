@@ -136,7 +136,9 @@ public class UserImpl extends UserSnowflakeImpl implements User {
     }
 
     public PrivateChannel getPrivateChannel() {
-        if (!hasPrivateChannel()) return null;
+        if (!hasPrivateChannel()) {
+            return null;
+        }
         PrivateChannel channel = getJDA().getPrivateChannelById(privateChannelId);
         return channel != null ? channel : new PrivateChannelImpl(getJDA(), privateChannelId, this);
     }
@@ -213,7 +215,9 @@ public class UserImpl extends UserSnowflakeImpl implements User {
     }
 
     public UserImpl setPrivateChannel(PrivateChannel privateChannel) {
-        if (privateChannel != null) this.privateChannelId = privateChannel.getIdLong();
+        if (privateChannel != null) {
+            this.privateChannelId = privateChannel.getIdLong();
+        }
         return this;
     }
 
@@ -249,11 +253,17 @@ public class UserImpl extends UserSnowflakeImpl implements User {
                 (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
 
         String out;
-        if (!alt) out = getAsMention();
-        else if (discriminator == 0 && upper) out = getName().toUpperCase();
-        else if (discriminator == 0) out = getName();
-        else if (upper) out = getAsTag().toUpperCase();
-        else out = getAsTag();
+        if (!alt) {
+            out = getAsMention();
+        } else if (discriminator == 0 && upper) {
+            out = getName().toUpperCase();
+        } else if (discriminator == 0) {
+            out = getName();
+        } else if (upper) {
+            out = getAsTag().toUpperCase();
+        } else {
+            out = getAsTag();
+        }
 
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }

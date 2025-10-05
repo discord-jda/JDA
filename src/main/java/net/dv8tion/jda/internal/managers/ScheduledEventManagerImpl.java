@@ -54,14 +54,18 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
                 Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(
                         event.getGuild().getId(), event.getId()));
         this.event = event;
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     @Nonnull
     @Override
     public ScheduledEvent getScheduledEvent() {
         ScheduledEvent realEvent = event.getGuild().getScheduledEventById(event.getIdLong());
-        if (realEvent != null) event = realEvent;
+        if (realEvent != null) {
+            event = realEvent;
+        }
         return event;
     }
 
@@ -205,8 +209,12 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     protected RequestBody finalizeData() {
         preChecks();
         DataObject object = DataObject.empty();
-        if (shouldUpdate(NAME)) object.put("name", name);
-        if (shouldUpdate(DESCRIPTION)) object.put("description", description);
+        if (shouldUpdate(NAME)) {
+            object.put("name", name);
+        }
+        if (shouldUpdate(DESCRIPTION)) {
+            object.put("description", description);
+        }
         if (shouldUpdate(LOCATION)) {
             object.put("entity_type", entityType.getKey());
             switch (entityType) {
@@ -224,12 +232,18 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
                             "ScheduledEventType " + entityType + " is not supported!");
             }
         }
-        if (shouldUpdate(START_TIME))
+        if (shouldUpdate(START_TIME)) {
             object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
-        if (shouldUpdate(END_TIME))
+        }
+        if (shouldUpdate(END_TIME)) {
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
-        if (shouldUpdate(IMAGE)) object.put("image", image != null ? image.getEncoding() : null);
-        if (shouldUpdate(STATUS)) object.put("status", status.getKey());
+        }
+        if (shouldUpdate(IMAGE)) {
+            object.put("image", image != null ? image.getEncoding() : null);
+        }
+        if (shouldUpdate(STATUS)) {
+            object.put("status", status.getKey());
+        }
 
         return getRequestBody(object);
     }
@@ -244,8 +258,9 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
                     "Cannot update location type or location channel of non-scheduled event.");
             if (entityType == ScheduledEvent.Type.EXTERNAL
                     && endTime == null
-                    && getScheduledEvent().getEndTime() == null)
+                    && getScheduledEvent().getEndTime() == null) {
                 throw new IllegalStateException("Missing required parameter: End Time");
+            }
         }
 
         if (shouldUpdate(START_TIME)) {
@@ -259,10 +274,11 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
                     "Cannot schedule event to end before starting!");
         }
 
-        if (shouldUpdate(END_TIME))
+        if (shouldUpdate(END_TIME)) {
             Checks.check(
                     (startTime == null ? getScheduledEvent().getStartTime() : startTime)
                             .isBefore(endTime),
                     "Cannot schedule event to end before starting!");
+        }
     }
 }

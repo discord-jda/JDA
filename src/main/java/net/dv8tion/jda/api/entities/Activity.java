@@ -202,8 +202,11 @@ public interface Activity {
         name = Helpers.isBlank(name) ? name : name.trim();
         Checks.notLonger(name, MAX_ACTIVITY_NAME_LENGTH, "Name");
         ActivityType type;
-        if (isValidStreamingUrl(url)) type = ActivityType.STREAMING;
-        else type = ActivityType.PLAYING;
+        if (isValidStreamingUrl(url)) {
+            type = ActivityType.STREAMING;
+        } else {
+            type = ActivityType.PLAYING;
+        }
         return EntityBuilder.createActivity(name, url, type);
     }
 
@@ -562,7 +565,9 @@ public interface Activity {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof Timestamps)) return false;
+            if (!(obj instanceof Timestamps)) {
+                return false;
+            }
             Timestamps t = (Timestamps) obj;
             return start == t.start && end == t.end;
         }

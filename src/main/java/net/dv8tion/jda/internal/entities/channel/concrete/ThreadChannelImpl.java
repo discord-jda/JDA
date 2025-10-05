@@ -137,11 +137,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public boolean canTalk(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         if (type == ChannelType.GUILD_PRIVATE_THREAD
-                && threadMembers.get(member.getIdLong()) == null)
+                && threadMembers.get(member.getIdLong()) == null) {
             return member.hasPermission(
                     getParentChannel(),
                     Permission.MANAGE_THREADS,
                     Permission.MESSAGE_SEND_IN_THREADS);
+        }
         return member.hasPermission(
                 getParentChannel(), Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND_IN_THREADS);
     }
@@ -157,7 +158,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public IThreadContainerUnion getParentChannel() {
         IThreadContainer realChannel =
                 getGuild().getChannelById(IThreadContainer.class, parentChannel.getIdLong());
-        if (realChannel != null) parentChannel = (IThreadContainerUnion) realChannel;
+        if (realChannel != null) {
+            parentChannel = (IThreadContainerUnion) realChannel;
+        }
         return parentChannel;
     }
 
@@ -165,7 +168,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public List<ForumTag> getAppliedTags() {
         IThreadContainerUnion parent = getParentChannel();
-        if (parent.getType() != ChannelType.FORUM) return Collections.emptyList();
+        if (parent.getType() != ChannelType.FORUM) {
+            return Collections.emptyList();
+        }
         return parent.asForumChannel().getAvailableTagCache().stream()
                 .filter(tag -> this.appliedTags.contains(tag.getIdLong()))
                 .collect(Helpers.toUnmodifiableList());
@@ -233,9 +238,10 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Override
     public boolean isInvitable() {
-        if (type != ChannelType.GUILD_PRIVATE_THREAD)
+        if (type != ChannelType.GUILD_PRIVATE_THREAD) {
             throw new UnsupportedOperationException(
                     "Only private threads support the concept of invitable.");
+        }
 
         return invitable;
     }
@@ -302,7 +308,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
         boolean privateThreadOwner = type == ChannelType.GUILD_PRIVATE_THREAD
                 && ownerId == api.getSelfUser().getIdLong();
-        if (!privateThreadOwner) checkPermission(Permission.MANAGE_THREADS);
+        if (!privateThreadOwner) {
+            checkPermission(Permission.MANAGE_THREADS);
+        }
 
         Route.CompiledRoute route =
                 Route.Channels.REMOVE_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
@@ -317,7 +325,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Override
     public void checkCanManage() {
-        if (isOwner()) return;
+        if (isOwner()) {
+            return;
+        }
 
         checkPermission(Permission.MANAGE_THREADS);
     }
@@ -430,13 +440,18 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     }
 
     private void checkUnarchived() {
-        if (archived)
+        if (archived) {
             throw new IllegalStateException("Cannot modify a ThreadChannel while it is archived!");
+        }
     }
 
     private void checkInvitable() {
-        if (ownerId == api.getSelfUser().getIdLong()) return;
+        if (ownerId == api.getSelfUser().getIdLong()) {
+            return;
+        }
 
-        if (!isPublic() && !isInvitable()) checkPermission(Permission.MANAGE_THREADS);
+        if (!isPublic() && !isInvitable()) {
+            checkPermission(Permission.MANAGE_THREADS);
+        }
     }
 }

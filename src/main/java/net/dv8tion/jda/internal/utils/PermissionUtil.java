@@ -60,11 +60,16 @@ public class PermissionUtil {
         Checks.notNull(target, "Target Member");
 
         Guild guild = issuer.getGuild();
-        if (!guild.equals(target.getGuild()))
+        if (!guild.equals(target.getGuild())) {
             throw new IllegalArgumentException(
                     "Provided members must both be Member objects of the same Guild!");
-        if (issuer.isOwner()) return true;
-        if (target.isOwner()) return false;
+        }
+        if (issuer.isOwner()) {
+            return true;
+        }
+        if (target.isOwner()) {
+            return false;
+        }
         List<Role> issuerRoles = issuer.getRoles();
         List<Role> targetRoles = target.getRoles();
         return !issuerRoles.isEmpty()
@@ -91,10 +96,13 @@ public class PermissionUtil {
         Checks.notNull(target, "Target Role");
 
         Guild guild = issuer.getGuild();
-        if (!guild.equals(target.getGuild()))
+        if (!guild.equals(target.getGuild())) {
             throw new IllegalArgumentException(
                     "Provided Member issuer and Role target must be from the same Guild!");
-        if (issuer.isOwner()) return true;
+        }
+        if (issuer.isOwner()) {
+            return true;
+        }
         List<Role> issuerRoles = issuer.getRoles();
         return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
     }
@@ -118,8 +126,9 @@ public class PermissionUtil {
         Checks.notNull(issuer, "Issuer Role");
         Checks.notNull(target, "Target Role");
 
-        if (!issuer.getGuild().equals(target.getGuild()))
+        if (!issuer.getGuild().equals(target.getGuild())) {
             throw new IllegalArgumentException("The 2 Roles are not from same Guild!");
+        }
         return target.compareTo(issuer) < 0;
     }
 
@@ -146,8 +155,9 @@ public class PermissionUtil {
         Checks.notNull(issuer, "Issuer Member");
         Checks.notNull(emoji, "Target Emoji");
 
-        if (!issuer.getGuild().equals(emoji.getGuild()))
+        if (!issuer.getGuild().equals(emoji.getGuild())) {
             throw new IllegalArgumentException("The issuer and target are not in the same Guild");
+        }
 
         return emoji.getRoles()
                         .isEmpty() // emoji restricted to roles -> check if the issuer has them
@@ -179,10 +189,13 @@ public class PermissionUtil {
         Checks.notNull(emoji, "Target Emoji");
         Checks.notNull(channel, "Target Channel");
 
-        if (emoji.getGuild() == null || !emoji.getGuild().isMember(issuer))
+        if (emoji.getGuild() == null || !emoji.getGuild().isMember(issuer)) {
             return false; // cannot use an emoji if you're not in its guild
+        }
         Member member = emoji.getGuild().getMemberById(issuer.getIdLong());
-        if (!canInteract(member, emoji)) return false;
+        if (!canInteract(member, emoji)) {
+            return false;
+        }
         // external means it is available outside of its own guild - works for bots or if its
         // managed
         // currently we cannot check whether other users have nitro, we assume no here
@@ -310,24 +323,29 @@ public class PermissionUtil {
     public static long getEffectivePermission(Member member) {
         Checks.notNull(member, "Member");
 
-        if (member.isDetached())
+        if (member.isDetached()) {
             throw new DetachedEntityException(
                     "Cannot get the effective permissions of a detached member without a channel."
                             + " Instead, please use the Member methods while supplying a GuildChannel");
+        }
 
-        if (member.isOwner()) return ALL_PERMISSIONS;
+        if (member.isOwner()) {
+            return ALL_PERMISSIONS;
+        }
         // Default to binary OR of all global permissions in this guild
         long permission = member.getGuild().getPublicRole().getPermissionsRaw();
         for (Role role : member.getUnsortedRoles()) {
             permission |= role.getPermissionsRaw();
-            if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
+            if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue())) {
                 return ALL_PERMISSIONS;
+            }
         }
         // See
         // https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
-        if (member.isTimedOut())
+        if (member.isTimedOut()) {
             permission &= Permission.VIEW_CHANNEL.getRawValue()
                     | Permission.MESSAGE_HISTORY.getRawValue();
+        }
         return permission;
     }
 
@@ -360,10 +378,11 @@ public class PermissionUtil {
                 channel.getGuild().equals(member.getGuild()),
                 "Provided channel and provided member are not of the same guild!");
 
-        if (member.isDetached())
+        if (member.isDetached()) {
             throw new DetachedEntityException(
                     "Cannot get the effective permissions of a detached member. Instead, please use"
                             + " the Member methods while supplying a GuildChannel");
+        }
 
         if (member.isOwner()) {
             // Owner effectively has all permissions
@@ -372,7 +391,9 @@ public class PermissionUtil {
 
         long permission = getEffectivePermission(member);
         final long admin = Permission.ADMINISTRATOR.getRawValue();
-        if (isApplied(permission, admin)) return ALL_PERMISSIONS;
+        if (isApplied(permission, admin)) {
+            return ALL_PERMISSIONS;
+        }
 
         // MANAGE_CHANNEL allows to delete channels within a category (this is undocumented
         // behavior)
@@ -382,8 +403,9 @@ public class PermissionUtil {
                     && checkPermission(
                             categorizableChannel.getParentCategory(),
                             member,
-                            Permission.MANAGE_CHANNEL))
+                            Permission.MANAGE_CHANNEL)) {
                 permission |= Permission.MANAGE_CHANNEL.getRawValue();
+            }
         }
 
         AtomicLong allow = new AtomicLong(0);
@@ -403,8 +425,9 @@ public class PermissionUtil {
 
         // See
         // https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
-        if (member.isTimedOut())
+        if (member.isTimedOut()) {
             permission &= viewChannel | Permission.MESSAGE_HISTORY.getRawValue();
+        }
 
         return hasAccess ? permission : 0;
     }
@@ -431,14 +454,17 @@ public class PermissionUtil {
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
 
-        if (!channel.getGuild().equals(role.getGuild()))
+        if (!channel.getGuild().equals(role.getGuild())) {
             throw new IllegalArgumentException(
                     "Provided channel and role are not of the same guild!");
+        }
 
         long permissions = getExplicitPermission(channel, role);
-        if (isApplied(permissions, Permission.ADMINISTRATOR.getRawValue()))
+        if (isApplied(permissions, Permission.ADMINISTRATOR.getRawValue())) {
             return ALL_CHANNEL_PERMISSIONS;
-        else if (!isApplied(permissions, Permission.VIEW_CHANNEL.getRawValue())) return 0;
+        } else if (!isApplied(permissions, Permission.VIEW_CHANNEL.getRawValue())) {
+            return 0;
+        }
         return permissions;
     }
 
@@ -466,10 +492,11 @@ public class PermissionUtil {
     public static long getExplicitPermission(Member member) {
         Checks.notNull(member, "Member");
 
-        if (member.isDetached())
+        if (member.isDetached()) {
             throw new DetachedEntityException(
                     "Cannot get the explicit permissions of a detached member without a channel."
                             + " Instead, please use the Member methods while supplying a GuildChannel");
+        }
 
         final Guild guild = member.getGuild();
         long permission = guild.getPublicRole().getPermissionsRaw();
@@ -544,10 +571,11 @@ public class PermissionUtil {
 
         checkGuild(channel.getGuild(), member.getGuild(), "Member");
 
-        if (member.isDetached())
+        if (member.isDetached()) {
             throw new DetachedEntityException(
                     "Cannot get the explicit permissions of a detached member. Instead, please use"
                             + " the Member methods while supplying a GuildChannel");
+        }
 
         long permission = includeRoles ? getExplicitPermission(member) : 0L;
 
@@ -621,9 +649,10 @@ public class PermissionUtil {
 
         // Can't know exactly what the role's permissions in that channel are, since we don't have
         // the overrides.
-        if (role.isDetached())
+        if (role.isDetached()) {
             throw new DetachedEntityException(
                     "Cannot get the explicit permissions of a detached role");
+        }
 
         IPermissionContainer permsChannel = channel.getPermissionContainer();
 
@@ -634,9 +663,12 @@ public class PermissionUtil {
                 ? role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw()
                 : 0;
         PermissionOverride override = permsChannel.getPermissionOverride(guild.getPublicRole());
-        if (override != null)
+        if (override != null) {
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
-        if (role.isPublicRole()) return permission;
+        }
+        if (role.isPublicRole()) {
+            return permission;
+        }
 
         override = permsChannel.getPermissionOverride(role);
 

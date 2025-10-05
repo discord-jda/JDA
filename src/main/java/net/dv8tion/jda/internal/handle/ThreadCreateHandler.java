@@ -31,19 +31,27 @@ public class ThreadCreateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getLong("guild_id");
-        if (api.getGuildSetupController().isLocked(guildId)) return guildId;
+        if (api.getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         try {
             // Prevent possible duplicate events or unexpected situations of threads being revealed
             // after already being known due to permissions
-            if (api.getThreadChannelById(content.getUnsignedLong("id")) != null) return null;
+            if (api.getThreadChannelById(content.getUnsignedLong("id")) != null) {
+                return null;
+            }
             ThreadChannel thread = api.getEntityBuilder().createThreadChannel(content, guildId);
 
-            if (content.getBoolean("newly_created"))
+            if (content.getBoolean("newly_created")) {
                 api.handleEvent(new ChannelCreateEvent(api, responseNumber, thread));
-            else api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
+            } else {
+                api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
+            }
         } catch (IllegalArgumentException ex) {
-            if (!EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage())) throw ex;
+            if (!EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage())) {
+                throw ex;
+            }
 
             long parentId = content.getUnsignedLong("parent_id", 0L);
             EventCache.LOG.debug(

@@ -26,8 +26,9 @@ class SourceSets {
 
     @Nonnull
     static synchronized JavaClasses getApiClasses() {
-        if (apiClasses == null)
+        if (apiClasses == null) {
             apiClasses = new ClassFileImporter().importPackages("net.dv8tion.jda.api");
+        }
         return apiClasses;
     }
 }

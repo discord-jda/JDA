@@ -36,14 +36,22 @@ public abstract class RestActionOperator<I, O> implements RestAction<O> {
     }
 
     protected static <E> void doSuccess(Consumer<? super E> callback, E value) {
-        if (callback == null) RestAction.getDefaultSuccess().accept(value);
-        else callback.accept(value);
+        if (callback == null) {
+            RestAction.getDefaultSuccess().accept(value);
+        } else {
+            callback.accept(value);
+        }
     }
 
     protected static void doFailure(Consumer<? super Throwable> callback, Throwable throwable) {
-        if (callback == null) RestAction.getDefaultFailure().accept(throwable);
-        else callback.accept(throwable);
-        if (throwable instanceof Error) throw (Error) throwable;
+        if (callback == null) {
+            RestAction.getDefaultFailure().accept(throwable);
+        } else {
+            callback.accept(throwable);
+        }
+        if (throwable instanceof Error) {
+            throw (Error) throwable;
+        }
     }
 
     protected void handle(
@@ -54,7 +62,9 @@ public abstract class RestActionOperator<I, O> implements RestAction<O> {
         action.queue(
                 (result) -> {
                     try {
-                        if (success != null) success.accept(result);
+                        if (success != null) {
+                            success.accept(result);
+                        }
                     } catch (Throwable ex) {
                         doFailure(catcher, ex);
                     }
@@ -92,19 +102,27 @@ public abstract class RestActionOperator<I, O> implements RestAction<O> {
 
     @Nullable
     protected <T> RestAction<T> applyContext(RestAction<T> action) {
-        if (action == null) return null;
-        if (check != null) action.setCheck(check);
-        if (deadline >= 0) action.deadline(deadline);
+        if (action == null) {
+            return null;
+        }
+        if (check != null) {
+            action.setCheck(check);
+        }
+        if (deadline >= 0) {
+            action.deadline(deadline);
+        }
         return action;
     }
 
     @Nullable
     protected Consumer<? super Throwable> contextWrap(
             @Nullable Consumer<? super Throwable> callback) {
-        if (callback instanceof ContextException.ContextConsumer) return callback;
-        else if (RestAction.isPassContext())
+        if (callback instanceof ContextException.ContextConsumer) {
+            return callback;
+        } else if (RestAction.isPassContext()) {
             return ContextException.here(
                     callback == null ? RestAction.getDefaultFailure() : callback);
+        }
         return callback;
     }
 }

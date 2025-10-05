@@ -113,7 +113,9 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
         Checks.notNull(eventListenerProvider, "event listener provider");
         this.getShardCache().forEach(jda -> {
             Object listener = eventListenerProvider.apply(jda.getShardInfo().getShardId());
-            if (listener != null) jda.addEventListener(listener);
+            if (listener != null) {
+                jda.addEventListener(listener);
+            }
         });
     }
 
@@ -495,10 +497,14 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
             User user = shard.getUserById(id);
             boolean isUpdated = intents.contains(GatewayIntent.GUILD_PRESENCES)
                     || intents.contains(GatewayIntent.GUILD_MEMBERS);
-            if (user != null && isUpdated) return new CompletedRestAction<>(shard, user);
+            if (user != null && isUpdated) {
+                return new CompletedRestAction<>(shard, user);
+            }
         }
 
-        if (api == null) throw new IllegalStateException("no shards active");
+        if (api == null) {
+            throw new IllegalStateException("no shards active");
+        }
 
         JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
@@ -711,7 +717,9 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
         GuildChannel channel;
         for (JDA shard : getShards()) {
             channel = shard.getGuildChannelById(id);
-            if (channel != null) return channel;
+            if (channel != null) {
+                return channel;
+            }
         }
 
         return null;
@@ -723,7 +731,9 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
         GuildChannel channel;
         for (JDA shard : getShards()) {
             channel = shard.getGuildChannelById(type, id);
-            if (channel != null) return channel;
+            if (channel != null) {
+                return channel;
+            }
         }
 
         return null;

@@ -111,8 +111,9 @@ public class ReactionPaginationActionImpl
     @Nonnull
     @Override
     public MessageReaction getReaction() {
-        if (reaction == null)
+        if (reaction == null) {
             throw new IllegalStateException("Cannot get reaction for this action");
+        }
         return reaction;
     }
 
@@ -131,7 +132,9 @@ public class ReactionPaginationActionImpl
             try {
                 final User user = builder.createUser(array.getObject(i));
                 users.add(user);
-                if (useCache) cached.add(user);
+                if (useCache) {
+                    cached.add(user);
+                }
                 last = user;
                 lastKey = last.getIdLong();
             } catch (ParsingException | NullPointerException e) {

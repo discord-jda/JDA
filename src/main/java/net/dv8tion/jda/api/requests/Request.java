@@ -81,9 +81,13 @@ public class Request<T> {
         this.priority = priority;
         this.restAction = restAction;
         this.onSuccess = onSuccess;
-        if (onFailure instanceof ContextException.ContextConsumer) this.onFailure = onFailure;
-        else if (RestActionImpl.isPassContext()) this.onFailure = ContextException.here(onFailure);
-        else this.onFailure = onFailure;
+        if (onFailure instanceof ContextException.ContextConsumer) {
+            this.onFailure = onFailure;
+        } else if (RestActionImpl.isPassContext()) {
+            this.onFailure = ContextException.here(onFailure);
+        } else {
+            this.onFailure = onFailure;
+        }
         this.checks = checks;
         this.shouldQueue = shouldQueue;
         this.body = body;
@@ -110,7 +114,9 @@ public class Request<T> {
     }
 
     public void onSuccess(@Nullable T successObj) {
-        if (done) return;
+        if (done) {
+            return;
+        }
         done = true;
         cleanup();
         RestActionImpl.LOG.trace(
@@ -154,7 +160,9 @@ public class Request<T> {
     }
 
     public void onFailure(@Nonnull Throwable failException) {
-        if (done) return;
+        if (done) {
+            return;
+        }
         done = true;
         cleanup();
         RestActionImpl.LOG.trace(
@@ -169,8 +177,9 @@ public class Request<T> {
                         route.getMethod(),
                         route.getCompiledRoute());
                 onFailure.accept(failException);
-                if (failException instanceof Error)
+                if (failException instanceof Error) {
                     api.handleEvent(new ExceptionEvent(api, failException, false));
+                }
             } catch (Throwable t) {
                 RestActionImpl.LOG.error("Encountered error while processing failure consumer", t);
                 if (t instanceof Error) {
@@ -220,7 +229,9 @@ public class Request<T> {
             return true;
         }
         boolean skip = runChecks();
-        if (skip) onCancelled();
+        if (skip) {
+            onCancelled();
+        }
         return skip;
     }
 
@@ -262,7 +273,9 @@ public class Request<T> {
     }
 
     public void cancel() {
-        if (!this.isCancelled) onCancelled();
+        if (!this.isCancelled) {
+            onCancelled();
+        }
         this.isCancelled = true;
     }
 

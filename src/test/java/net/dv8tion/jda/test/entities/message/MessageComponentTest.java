@@ -181,20 +181,26 @@ public class MessageComponentTest {
 
     private static String getMaxContentString() {
         final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < Message.MAX_CONTENT_LENGTH_COMPONENT_V2; i++) builder.append('0');
+        for (int i = 0; i < Message.MAX_CONTENT_LENGTH_COMPONENT_V2; i++) {
+            builder.append('0');
+        }
         return builder.toString();
     }
 
     private static Collection<MessageTopLevelComponent> getMaxTopLevelV1() {
         final List<MessageTopLevelComponent> list = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
-        for (int i = 0; i < Message.MAX_COMPONENT_COUNT; i++) list.add(EXAMPLE_ROW);
+        for (int i = 0; i < Message.MAX_COMPONENT_COUNT; i++) {
+            list.add(EXAMPLE_ROW);
+        }
         return list;
     }
 
     private static Collection<MessageTopLevelComponent> getAbsurdTopLevelV2() {
         final int limit = Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE - 1;
         final List<MessageTopLevelComponent> list = new ArrayList<>(limit);
-        for (int i = 0; i < limit; i++) list.add(EXAMPLE_SEPARATOR);
+        for (int i = 0; i < limit; i++) {
+            list.add(EXAMPLE_SEPARATOR);
+        }
         return list;
     }
 
@@ -214,7 +220,9 @@ public class MessageComponentTest {
                 current.clear();
             }
         }
-        if (!current.isEmpty()) containers.add(Container.of(current));
+        if (!current.isEmpty()) {
+            containers.add(Container.of(current));
+        }
 
         return containers;
     }
@@ -234,8 +242,9 @@ public class MessageComponentTest {
     private static Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>>
             messageCreate(Function<MessageCreateBuilder, MessageCreateBuilder> function) {
         return abstractMessageBuilder -> {
-            if (abstractMessageBuilder instanceof MessageCreateBuilder)
+            if (abstractMessageBuilder instanceof MessageCreateBuilder) {
                 return function.apply((MessageCreateBuilder) abstractMessageBuilder);
+            }
             return null;
         };
     }
@@ -243,8 +252,9 @@ public class MessageComponentTest {
     private static Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> messageEdit(
             Function<MessageEditBuilder, MessageEditBuilder> function) {
         return abstractMessageBuilder -> {
-            if (abstractMessageBuilder instanceof MessageEditBuilder)
+            if (abstractMessageBuilder instanceof MessageEditBuilder) {
                 return function.apply((MessageEditBuilder) abstractMessageBuilder);
+            }
             return null;
         };
     }

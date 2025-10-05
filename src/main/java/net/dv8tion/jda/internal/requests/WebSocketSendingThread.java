@@ -65,7 +65,9 @@ class WebSocketSendingThread implements Runnable {
 
     public void shutdown() {
         shutdown = true;
-        if (handle != null) handle.cancel(false);
+        if (handle != null) {
+            handle.cancel(false);
+        }
     }
 
     public void start() {
@@ -74,17 +76,23 @@ class WebSocketSendingThread implements Runnable {
     }
 
     private void scheduleIdle() {
-        if (shutdown) return;
+        if (shutdown) {
+            return;
+        }
         handle = executor.schedule(this, 500, TimeUnit.MILLISECONDS);
     }
 
     private void scheduleSentMessage() {
-        if (shutdown) return;
+        if (shutdown) {
+            return;
+        }
         handle = executor.schedule(this, 10, TimeUnit.MILLISECONDS);
     }
 
     private void scheduleRateLimit() {
-        if (shutdown) return;
+        if (shutdown) {
+            return;
+        }
         handle = executor.schedule(this, 1, TimeUnit.MINUTES);
     }
 
@@ -115,9 +123,13 @@ class WebSocketSendingThread implements Runnable {
             }
 
             chunkRequest = chunkQueue.peek();
-            if (chunkRequest != null) handleChunkSync(chunkRequest);
-            else if (audioRequest != null) handleAudioRequest(audioRequest);
-            else handleNormalRequest();
+            if (chunkRequest != null) {
+                handleChunkSync(chunkRequest);
+            } else if (audioRequest != null) {
+                handleAudioRequest(audioRequest);
+            } else {
+                handleNormalRequest();
+            }
         } catch (InterruptedException ignored) {
             LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the"
                     + " websocket.");
@@ -128,15 +140,21 @@ class WebSocketSendingThread implements Runnable {
 
             if (!attemptedToSend) {
                 // Try to remove the failed request
-                if (chunkRequest != null) client.chunkSyncQueue.remove(chunkRequest);
-                else if (audioRequest != null)
+                if (chunkRequest != null) {
+                    client.chunkSyncQueue.remove(chunkRequest);
+                } else if (audioRequest != null) {
                     client.removeAudioConnection(audioRequest.getGuildIdLong());
+                }
             }
 
             // Rethrow if error to kill thread
-            if (ex instanceof Error) throw (Error) ex;
+            if (ex instanceof Error) {
+                throw (Error) ex;
+            }
         } finally {
-            if (hasLock) queueLock.unlock();
+            if (hasLock) {
+                queueLock.unlock();
+            }
         }
 
         scheduleNext();
@@ -144,18 +162,23 @@ class WebSocketSendingThread implements Runnable {
 
     private void scheduleNext() {
         try {
-            if (needRateLimit) scheduleRateLimit();
-            else if (!attemptedToSend) scheduleIdle();
-            else scheduleSentMessage();
+            if (needRateLimit) {
+                scheduleRateLimit();
+            } else if (!attemptedToSend) {
+                scheduleIdle();
+            } else {
+                scheduleSentMessage();
+            }
         } catch (RejectedExecutionException ex) {
             if (api.getStatus() == JDA.Status.SHUTTING_DOWN
-                    || api.getStatus() == JDA.Status.SHUTDOWN)
+                    || api.getStatus() == JDA.Status.SHUTDOWN) {
                 LOG.debug("Rejected task after shutdown", ex);
-            else
+            } else {
                 LOG.error(
                         "Was unable to schedule next packet due to rejected execution by"
                                 + " threadpool",
                         ex);
+            }
         }
     }
 
@@ -165,7 +188,9 @@ class WebSocketSendingThread implements Runnable {
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                 .put("d", chunkOrSyncRequest));
 
-        if (success) chunkQueue.remove();
+        if (success) {
+            chunkQueue.remove();
+        }
     }
 
     private void handleAudioRequest(ConnectionRequest audioRequest) {
@@ -208,7 +233,9 @@ class WebSocketSendingThread implements Runnable {
         DataObject message = ratelimitQueue.peek();
         if (message != null) {
             LOG.debug("Sending normal message {}", message);
-            if (send(message)) ratelimitQueue.remove();
+            if (send(message)) {
+                ratelimitQueue.remove();
+            }
         }
     }
 

@@ -75,7 +75,9 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
         // Load user from cache if one exists, ideally two members with the same id should wrap the
         // same user object
         User realUser = getJDA().getUserById(user.getIdLong());
-        if (realUser != null) this.user = realUser;
+        if (realUser != null) {
+            this.user = realUser;
+        }
         return user;
     }
 
@@ -94,7 +96,9 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Nonnull
     @Override
     public OffsetDateTime getTimeJoined() {
-        if (hasTimeJoined()) return Helpers.toOffset(joinDate);
+        if (hasTimeJoined()) {
+            return Helpers.toOffset(joinDate);
+        }
         return getGuild().getTimeCreated();
     }
 
@@ -187,7 +191,9 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     public int getColorRaw() {
         for (Role r : getRoles()) {
             final int colorRaw = r.getColorRaw();
-            if (colorRaw != Role.DEFAULT_COLOR_RAW) return colorRaw;
+            if (colorRaw != Role.DEFAULT_COLOR_RAW) {
+                return colorRaw;
+            }
         }
         return Role.DEFAULT_COLOR_RAW;
     }
@@ -234,14 +240,16 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     }
 
     private long getRawInteractionPermissions(@Nonnull GuildChannel channel) {
-        if (interactionPermissions.getChannelId() == channel.getIdLong())
+        if (interactionPermissions.getChannelId() == channel.getIdLong()) {
             return interactionPermissions.getPermissions();
+        }
 
         if (channel instanceof IInteractionPermissionMixin<?>) {
             final ChannelInteractionPermissions channelInteractionPermissions =
                     ((IInteractionPermissionMixin<?>) channel).getInteractionPermissions();
-            if (channelInteractionPermissions.getMemberId() == this.getIdLong())
+            if (channelInteractionPermissions.getMemberId() == this.getIdLong()) {
                 return channelInteractionPermissions.getPermissions();
+            }
         }
 
         throw new MissingEntityInteractionPermissionsException(
@@ -377,8 +385,12 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof DetachedMemberImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof DetachedMemberImpl)) {
+            return false;
+        }
 
         DetachedMemberImpl oMember = (DetachedMemberImpl) o;
         return oMember.user.getIdLong() == user.getIdLong()

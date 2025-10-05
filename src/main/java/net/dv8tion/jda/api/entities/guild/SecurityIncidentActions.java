@@ -109,8 +109,12 @@ public class SecurityIncidentActions {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof SecurityIncidentActions)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof SecurityIncidentActions)) {
+            return false;
+        }
         SecurityIncidentActions other = (SecurityIncidentActions) obj;
         return this.invitesDisabledUntil == other.invitesDisabledUntil
                 && this.directMessagesDisabledUntil == other.directMessagesDisabledUntil;

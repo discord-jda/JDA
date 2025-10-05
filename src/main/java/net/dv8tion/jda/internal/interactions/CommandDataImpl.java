@@ -78,13 +78,16 @@ public class CommandDataImpl implements SlashCommandData {
 
     public static CommandDataImpl of(
             @Nonnull Command.Type type, @Nonnull String name, @Nullable String description) {
-        if (type == Command.Type.SLASH) return new CommandDataImpl(name, description);
+        if (type == Command.Type.SLASH) {
+            return new CommandDataImpl(name, description);
+        }
         return new CommandDataImpl(type, name);
     }
 
     protected void checkType(Command.Type required, String action) {
-        if (required != type)
+        if (required != type) {
             throw new IllegalStateException("Cannot " + action + " for commands of type " + type);
+        }
     }
 
     public void checkName(@Nonnull String name) {
@@ -105,7 +108,9 @@ public class CommandDataImpl implements SlashCommandData {
     public DataObject toData() {
         DataArray options = DataArray.fromCollection(this.options);
 
-        if (localizationMapper != null) localizationMapper.localizeCommand(this, options);
+        if (localizationMapper != null) {
+            localizationMapper.localizeCommand(this, options);
+        }
 
         DataObject json = DataObject.empty()
                 .put("type", type.getId())
@@ -229,7 +234,9 @@ public class CommandDataImpl implements SlashCommandData {
     @Override
     public CommandDataImpl addOptions(@Nonnull OptionData... options) {
         Checks.noneNull(options, "Option");
-        if (options.length == 0) return this;
+        if (options.length == 0) {
+            return this;
+        }
         checkType(Command.Type.SLASH, "add options");
         Checks.check(
                 options.length + this.options.size() <= CommandData.MAX_OPTIONS,
@@ -270,10 +277,13 @@ public class CommandDataImpl implements SlashCommandData {
     @Override
     public CommandDataImpl addSubcommands(@Nonnull SubcommandData... subcommands) {
         Checks.noneNull(subcommands, "Subcommands");
-        if (subcommands.length == 0) return this;
+        if (subcommands.length == 0) {
+            return this;
+        }
         checkType(Command.Type.SLASH, "add subcommands");
-        if (!allowSubcommands)
+        if (!allowSubcommands) {
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+        }
         Checks.check(
                 subcommands.length + this.options.size() <= CommandData.MAX_OPTIONS,
                 "Cannot have more than %d subcommands for a command!",
@@ -294,10 +304,13 @@ public class CommandDataImpl implements SlashCommandData {
     @Override
     public CommandDataImpl addSubcommandGroups(@Nonnull SubcommandGroupData... groups) {
         Checks.noneNull(groups, "SubcommandGroups");
-        if (groups.length == 0) return this;
+        if (groups.length == 0) {
+            return this;
+        }
         checkType(Command.Type.SLASH, "add subcommand groups");
-        if (!allowSubcommands)
+        if (!allowSubcommands) {
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+        }
         Checks.check(
                 groups.length + this.options.size() <= CommandData.MAX_OPTIONS,
                 "Cannot have more than %d subcommand groups for a command!",
@@ -401,7 +414,9 @@ public class CommandDataImpl implements SlashCommandData {
         Checks.notNull(condition, "Condition");
         boolean modified =
                 options.removeIf((o) -> o instanceof OptionData && condition.test((OptionData) o));
-        if (modified) updateAllowedOptions();
+        if (modified) {
+            updateAllowedOptions();
+        }
         return modified;
     }
 
@@ -410,7 +425,9 @@ public class CommandDataImpl implements SlashCommandData {
         Checks.notNull(condition, "Condition");
         boolean modified = options.removeIf(
                 (o) -> o instanceof SubcommandData && condition.test((SubcommandData) o));
-        if (modified) updateAllowedOptions();
+        if (modified) {
+            updateAllowedOptions();
+        }
         return modified;
     }
 
@@ -420,7 +437,9 @@ public class CommandDataImpl implements SlashCommandData {
         Checks.notNull(condition, "Condition");
         boolean modified = options.removeIf(
                 (o) -> o instanceof SubcommandGroupData && condition.test((SubcommandGroupData) o));
-        if (modified) updateAllowedOptions();
+        if (modified) {
+            updateAllowedOptions();
+        }
         return modified;
     }
 

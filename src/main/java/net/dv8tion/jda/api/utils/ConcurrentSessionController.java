@@ -98,7 +98,9 @@ public class ConcurrentSessionController extends SessionControllerAdapter
 
         public synchronized void stop() {
             thread = null;
-            if (!queue.isEmpty()) start();
+            if (!queue.isEmpty()) {
+                start();
+            }
         }
 
         public void enqueue(@Nonnull SessionConnectNode node) {
@@ -142,22 +144,26 @@ public class ConcurrentSessionController extends SessionControllerAdapter
                 queue.add(node);
                 throw e;
             } catch (IllegalStateException | ErrorResponseException e) {
-                if (Helpers.hasCause(e, OpeningHandshakeException.class))
+                if (Helpers.hasCause(e, OpeningHandshakeException.class)) {
                     log.error(
                             "Failed opening handshake, appending to queue. Message: {}",
                             e.getMessage());
-                else if (e instanceof ErrorResponseException
+                } else if (e instanceof ErrorResponseException
                         && e.getCause() instanceof IOException) {
                     /* This is already logged by the Requester */
-                } else if (Helpers.hasCause(e, UnknownHostException.class))
+                } else if (Helpers.hasCause(e, UnknownHostException.class)) {
                     log.error("DNS resolution failed: {}", e.getMessage());
-                else if (e.getCause() != null
+                } else if (e.getCause() != null
                         && !JDA.Status.RECONNECT_QUEUED
                                 .name()
-                                .equals(e.getCause().getMessage()))
+                                .equals(e.getCause().getMessage())) {
                     log.error("Failed to establish connection for a node, appending to queue", e);
-                else log.error("Unexpected exception when running connect node", e);
-                if (node != null) queue.add(node);
+                } else {
+                    log.error("Unexpected exception when running connect node", e);
+                }
+                if (node != null) {
+                    queue.add(node);
+                }
             }
         }
     }

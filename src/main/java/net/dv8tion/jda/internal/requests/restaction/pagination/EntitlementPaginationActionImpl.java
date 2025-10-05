@@ -63,8 +63,11 @@ public class EntitlementPaginationActionImpl
     @Nonnull
     @Override
     public EntitlementPaginationAction user(@Nullable UserSnowflake user) {
-        if (user == null) userId = 0;
-        else userId = user.getIdLong();
+        if (user == null) {
+            userId = 0;
+        } else {
+            userId = user.getIdLong();
+        }
         return this;
     }
 
@@ -120,13 +123,21 @@ public class EntitlementPaginationActionImpl
     protected Route.CompiledRoute finalizeRoute() {
         Route.CompiledRoute route = super.finalizeRoute();
 
-        if (userId != 0) route = route.withQueryParams("user_id", Long.toUnsignedString(userId));
+        if (userId != 0) {
+            route = route.withQueryParams("user_id", Long.toUnsignedString(userId));
+        }
 
-        if (!skuIds.isEmpty()) route = route.withQueryParams("sku_ids", String.join(",", skuIds));
+        if (!skuIds.isEmpty()) {
+            route = route.withQueryParams("sku_ids", String.join(",", skuIds));
+        }
 
-        if (guildId != 0) route = route.withQueryParams("guild_id", Long.toUnsignedString(guildId));
+        if (guildId != 0) {
+            route = route.withQueryParams("guild_id", Long.toUnsignedString(guildId));
+        }
 
-        if (excludeEnded) route = route.withQueryParams("exclude_ended", String.valueOf(true));
+        if (excludeEnded) {
+            route = route.withQueryParams("exclude_ended", String.valueOf(true));
+        }
 
         return route;
     }
@@ -147,7 +158,9 @@ public class EntitlementPaginationActionImpl
         }
 
         if (!entitlements.isEmpty()) {
-            if (useCache) cached.addAll(entitlements);
+            if (useCache) {
+                cached.addAll(entitlements);
+            }
             last = entitlements.get(entitlements.size() - 1);
             lastKey = last.getIdLong();
         }

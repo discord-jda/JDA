@@ -41,7 +41,9 @@ public class MessagePollVoteHandler extends SocketHandler {
         long channelId = content.getUnsignedLong("channel_id");
         long guildId = content.getUnsignedLong("guild_id", 0);
 
-        if (api.getGuildSetupController().isLocked(guildId)) return guildId;
+        if (api.getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         Guild guild = api.getGuildById(guildId);
         MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
@@ -73,12 +75,13 @@ public class MessagePollVoteHandler extends SocketHandler {
                     .createPrivateChannel(DataObject.empty().put("id", channelId));
         }
 
-        if (add)
+        if (add) {
             api.handleEvent(new MessagePollVoteAddEvent(
                     channel, responseNumber, messageId, userId, answerId));
-        else
+        } else {
             api.handleEvent(new MessagePollVoteRemoveEvent(
                     channel, responseNumber, messageId, userId, answerId));
+        }
 
         return null;
     }

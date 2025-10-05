@@ -48,7 +48,9 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     public WebhookManagerImpl(Webhook webhook) {
         super(webhook.getJDA(), Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId()));
         this.webhook = webhook;
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     @Nonnull
@@ -62,9 +64,15 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     @CheckReturnValue
     public WebhookManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & NAME) == NAME) this.name = null;
-        if ((fields & CHANNEL) == CHANNEL) this.channel = null;
-        if ((fields & AVATAR) == AVATAR) this.avatar = null;
+        if ((fields & NAME) == NAME) {
+            this.name = null;
+        }
+        if ((fields & CHANNEL) == CHANNEL) {
+            this.channel = null;
+        }
+        if ((fields & AVATAR) == AVATAR) {
+            this.avatar = null;
+        }
         return this;
     }
 
@@ -120,9 +128,15 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     @Override
     protected RequestBody finalizeData() {
         DataObject data = DataObject.empty();
-        if (shouldUpdate(NAME)) data.put("name", name);
-        if (shouldUpdate(CHANNEL)) data.put("channel_id", channel);
-        if (shouldUpdate(AVATAR)) data.put("avatar", avatar == null ? null : avatar.getEncoding());
+        if (shouldUpdate(NAME)) {
+            data.put("name", name);
+        }
+        if (shouldUpdate(CHANNEL)) {
+            data.put("channel_id", channel);
+        }
+        if (shouldUpdate(AVATAR)) {
+            data.put("avatar", avatar == null ? null : avatar.getEncoding());
+        }
 
         return getRequestBody(data);
     }
@@ -132,8 +146,9 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         Member selfMember = getGuild().getSelfMember();
         GuildChannel guildChannel = getChannel();
         Checks.checkAccess(selfMember, guildChannel);
-        if (!selfMember.hasPermission(guildChannel, Permission.MANAGE_WEBHOOKS))
+        if (!selfMember.hasPermission(guildChannel, Permission.MANAGE_WEBHOOKS)) {
             throw new InsufficientPermissionException(guildChannel, Permission.MANAGE_WEBHOOKS);
+        }
         return super.checkPermissions();
     }
 }

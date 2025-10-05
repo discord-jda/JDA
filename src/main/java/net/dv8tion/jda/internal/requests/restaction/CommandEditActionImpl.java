@@ -213,13 +213,27 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     protected RequestBody finalizeData() {
         DataObject json = data.toData();
-        if (isUnchanged(NAME_SET)) json.remove("name");
-        if (isUnchanged(DESCRIPTION_SET)) json.remove("description");
-        if (isUnchanged(OPTIONS_SET)) json.remove("options");
-        if (isUnchanged(PERMISSIONS_SET)) json.remove("default_member_permissions");
-        if (isUnchanged(NSFW_SET)) json.remove("nsfw");
-        if (isUnchanged(INTERACTION_CONTEXTS_SET)) json.remove("contexts");
-        if (isUnchanged(INTEGRATION_TYPES_SET)) json.remove("integration_types");
+        if (isUnchanged(NAME_SET)) {
+            json.remove("name");
+        }
+        if (isUnchanged(DESCRIPTION_SET)) {
+            json.remove("description");
+        }
+        if (isUnchanged(OPTIONS_SET)) {
+            json.remove("options");
+        }
+        if (isUnchanged(PERMISSIONS_SET)) {
+            json.remove("default_member_permissions");
+        }
+        if (isUnchanged(NSFW_SET)) {
+            json.remove("nsfw");
+        }
+        if (isUnchanged(INTERACTION_CONTEXTS_SET)) {
+            json.remove("contexts");
+        }
+        if (isUnchanged(INTEGRATION_TYPES_SET)) {
+            json.remove("integration_types");
+        }
         reset();
         return getRequestBody(json);
     }

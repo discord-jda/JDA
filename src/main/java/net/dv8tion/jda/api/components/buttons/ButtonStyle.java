@@ -69,7 +69,9 @@ public enum ButtonStyle {
     @Nonnull
     public static ButtonStyle fromKey(int key) {
         for (ButtonStyle style : values()) {
-            if (style.key == key) return style;
+            if (style.key == key) {
+                return style;
+            }
         }
         return UNKNOWN;
     }

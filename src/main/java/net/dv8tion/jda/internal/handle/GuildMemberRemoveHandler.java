@@ -38,7 +38,9 @@ public class GuildMemberRemoveHandler extends SocketHandler {
     protected Long handleInternally(DataObject content) {
         final long id = content.getLong("guild_id");
         boolean setup = getJDA().getGuildSetupController().onRemoveMember(id, content);
-        if (setup) return null;
+        if (setup) {
+            return null;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(id);
         if (guild == null) {

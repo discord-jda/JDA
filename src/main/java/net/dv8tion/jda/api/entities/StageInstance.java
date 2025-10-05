@@ -184,7 +184,9 @@ public interface StageInstance extends ISnowflake {
         @Nonnull
         public static PrivacyLevel fromKey(int key) {
             for (PrivacyLevel level : values()) {
-                if (level.key == key) return level;
+                if (level.key == key) {
+                    return level;
+                }
             }
             return UNKNOWN;
         }

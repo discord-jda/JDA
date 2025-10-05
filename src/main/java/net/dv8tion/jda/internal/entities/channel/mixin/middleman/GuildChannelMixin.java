@@ -57,9 +57,11 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>>
 
     default void checkPermission(Permission permission, String message) {
         if (!hasPermission(permission)) {
-            if (message != null)
+            if (message != null) {
                 throw new InsufficientPermissionException(this, permission, message);
-            else throw new InsufficientPermissionException(this, permission);
+            } else {
+                throw new InsufficientPermissionException(this, permission);
+            }
         }
     }
 
@@ -71,7 +73,8 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>>
     // Overridden by AudioChannelMixin
     default void checkCanAccess() {
         checkAttached();
-        if (!hasPermission(Permission.VIEW_CHANNEL))
+        if (!hasPermission(Permission.VIEW_CHANNEL)) {
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
+        }
     }
 }

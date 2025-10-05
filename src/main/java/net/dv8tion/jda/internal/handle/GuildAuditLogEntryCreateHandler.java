@@ -30,7 +30,9 @@ public class GuildAuditLogEntryCreateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         final long id = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(id)) return id;
+        if (getJDA().getGuildSetupController().isLocked(id)) {
+            return id;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null) {

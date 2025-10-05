@@ -59,8 +59,12 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @CheckReturnValue
     public AccountManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & AVATAR) == AVATAR) avatar = null;
-        if ((fields & BANNER) == BANNER) banner = null;
+        if ((fields & AVATAR) == AVATAR) {
+            avatar = null;
+        }
+        if ((fields & BANNER) == BANNER) {
+            banner = null;
+        }
         return this;
     }
 
@@ -116,9 +120,15 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
 
-        if (shouldUpdate(NAME)) body.put("username", name);
-        if (shouldUpdate(AVATAR)) body.put("avatar", avatar == null ? null : avatar.getEncoding());
-        if (shouldUpdate(BANNER)) body.put("banner", banner == null ? null : banner.getEncoding());
+        if (shouldUpdate(NAME)) {
+            body.put("username", name);
+        }
+        if (shouldUpdate(AVATAR)) {
+            body.put("avatar", avatar == null ? null : avatar.getEncoding());
+        }
+        if (shouldUpdate(BANNER)) {
+            body.put("banner", banner == null ? null : banner.getEncoding());
+        }
 
         reset();
         return getRequestBody(body);

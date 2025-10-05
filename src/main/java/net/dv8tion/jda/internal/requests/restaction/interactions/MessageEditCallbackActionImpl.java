@@ -75,8 +75,9 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl
     @Override
     protected RequestBody finalizeData() {
         DataObject json = DataObject.empty();
-        if (isEmpty())
+        if (isEmpty()) {
             return getRequestBody(json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw()));
+        }
         json.put("type", ResponseType.MESSAGE_UPDATE.getRaw());
         try (MessageEditData data = builder.build()) {
             json.put("data", data);

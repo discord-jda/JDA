@@ -73,7 +73,9 @@ public enum AutoModEventType {
     @Nonnull
     public static AutoModEventType fromKey(int key) {
         for (AutoModEventType type : values()) {
-            if (type.key == key) return type;
+            if (type.key == key) {
+                return type;
+            }
         }
         return UNKNOWN;
     }

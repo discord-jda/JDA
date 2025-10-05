@@ -280,7 +280,9 @@ public interface IPostContainer extends IThreadContainer {
         @Nonnull
         public static SortOrder fromKey(int key) {
             for (SortOrder order : values()) {
-                if (order.order == key) return order;
+                if (order.order == key) {
+                    return order;
+                }
             }
 
             return UNKNOWN;

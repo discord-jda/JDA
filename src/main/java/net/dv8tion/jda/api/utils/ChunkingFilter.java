@@ -68,10 +68,14 @@ public interface ChunkingFilter {
     @Nonnull
     static ChunkingFilter include(@Nonnull long... ids) {
         Checks.notNull(ids, "ID array");
-        if (ids.length == 0) return NONE;
+        if (ids.length == 0) {
+            return NONE;
+        }
         return (guild) -> {
             for (long id : ids) {
-                if (id == guild) return true;
+                if (id == guild) {
+                    return true;
+                }
             }
             return false;
         };
@@ -92,10 +96,14 @@ public interface ChunkingFilter {
     @Nonnull
     static ChunkingFilter exclude(@Nonnull long... ids) {
         Checks.notNull(ids, "ID array");
-        if (ids.length == 0) return ALL;
+        if (ids.length == 0) {
+            return ALL;
+        }
         return (guild) -> {
             for (long id : ids) {
-                if (id == guild) return false;
+                if (id == guild) {
+                    return false;
+                }
             }
             return true;
         };

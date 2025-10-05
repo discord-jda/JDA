@@ -44,7 +44,9 @@ public enum AudioEncryption {
             try {
                 String name = String.valueOf(o).toUpperCase();
                 AudioEncryption e = valueOf(name);
-                if (encryption == null || e.ordinal() < encryption.ordinal()) encryption = e;
+                if (encryption == null || e.ordinal() < encryption.ordinal()) {
+                    encryption = e;
+                }
             } catch (IllegalArgumentException ignored) {
             }
         }

@@ -35,12 +35,13 @@ public interface CategoryMixin<T extends CategoryMixin<T>>
         ChannelAction<Category> action = guild.createCategory(getName());
         if (guild.equals(getGuild())) {
             for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
-                if (o.isMemberOverride())
+                if (o.isMemberOverride()) {
                     action.addMemberPermissionOverride(
                             o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
+                } else {
                     action.addRolePermissionOverride(
                             o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

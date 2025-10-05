@@ -122,7 +122,9 @@ public class EntitlementImpl implements Entitlement {
     @Nonnull
     @Override
     public RestAction<Void> consume() {
-        if (consumed) return new CompletedRestAction<>(api, null);
+        if (consumed) {
+            return new CompletedRestAction<>(api, null);
+        }
 
         Route.CompiledRoute route =
                 Route.Applications.CONSUME_ENTITLEMENT.compile(getApplicationId(), getId());

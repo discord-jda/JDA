@@ -67,23 +67,28 @@ public class ChannelUtil {
 
         if (thisThread != null && otherThread == null) {
             // Thread should be below its parent
-            if (thisThread.getParentChannel().getIdLong() == b.getIdLong()) return 1;
+            if (thisThread.getParentChannel().getIdLong() == b.getIdLong()) {
+                return 1;
+            }
             // Otherwise compare parents
             return thisThread.getParentChannel().compareTo(b);
         }
         if (thisThread == null && otherThread != null) {
             // Thread should be below its parent
-            if (otherThread.getParentChannel().getIdLong() == a.getIdLong()) return -1;
+            if (otherThread.getParentChannel().getIdLong() == a.getIdLong()) {
+                return -1;
+            }
             // Otherwise compare parents
             return a.compareTo(otherThread.getParentChannel());
         }
         if (thisThread != null) {
             // If they are threads on the same channel
             if (thisThread.getParentChannel().getIdLong()
-                    == otherThread.getParentChannel().getIdLong())
+                    == otherThread.getParentChannel().getIdLong()) {
                 return Long.compare(
                         b.getIdLong(), a.getIdLong()); // threads are ordered ascending by age
-            // If they are threads on different channels
+                // If they are threads on different channels
+            }
             return thisThread.getParentChannel().compareTo(otherThread.getParentChannel());
         }
 
@@ -98,7 +103,9 @@ public class ChannelUtil {
         if (thisParent != null && otherParent == null) {
             if (b instanceof Category) {
                 // The other channel is the parent category of this channel
-                if (b.getIdLong() == thisParent.getIdLong()) return 1;
+                if (b.getIdLong() == thisParent.getIdLong()) {
+                    return 1;
+                }
                 // The other channel is another category
                 return thisParent.compareTo(b);
             }
@@ -107,7 +114,9 @@ public class ChannelUtil {
         if (thisParent == null && otherParent != null) {
             if (a instanceof Category) {
                 // This channel is parent of other channel
-                if (a.getIdLong() == otherParent.getIdLong()) return -1;
+                if (a.getIdLong() == otherParent.getIdLong()) {
+                    return -1;
+                }
                 // This channel is a category higher than the other channel's parent category
                 return a.compareTo(
                         otherParent); // safe use of recursion since no circular parents exist
@@ -115,22 +124,25 @@ public class ChannelUtil {
             return -1;
         }
         // Both channels are in different categories, compare the categories instead
-        if (thisParent != null && !thisParent.equals(otherParent))
+        if (thisParent != null && !thisParent.equals(otherParent)) {
             return thisParent.compareTo(otherParent);
+        }
 
         // Check sort bucket (text/message is above audio)
-        if (a.getType().getSortBucket() != b.getType().getSortBucket())
+        if (a.getType().getSortBucket() != b.getType().getSortBucket()) {
             return Integer.compare(a.getType().getSortBucket(), b.getType().getSortBucket());
+        }
 
         // Check actual position
         if (b instanceof IPositionableChannel && a instanceof IPositionableChannel) {
             IPositionableChannel oPositionableChannel = (IPositionableChannel) b;
             IPositionableChannel thisPositionableChannel = (IPositionableChannel) a;
 
-            if (thisPositionableChannel.getPositionRaw() != oPositionableChannel.getPositionRaw())
+            if (thisPositionableChannel.getPositionRaw() != oPositionableChannel.getPositionRaw()) {
                 return Integer.compare(
                         thisPositionableChannel.getPositionRaw(),
                         oPositionableChannel.getPositionRaw());
+            }
         }
 
         // last resort by id

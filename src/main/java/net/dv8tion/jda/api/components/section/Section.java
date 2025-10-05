@@ -111,7 +111,9 @@ public interface Section
 
     @Override
     default boolean isMessageCompatible() {
-        if (!getType().isMessageCompatible()) return false;
+        if (!getType().isMessageCompatible()) {
+            return false;
+        }
 
         return getContentComponents().stream().allMatch(Component::isMessageCompatible)
                 && getAccessory().isMessageCompatible();
@@ -119,7 +121,9 @@ public interface Section
 
     @Override
     default boolean isModalCompatible() {
-        if (!getType().isModalCompatible()) return false;
+        if (!getType().isModalCompatible()) {
+            return false;
+        }
 
         return getContentComponents().stream().allMatch(Component::isModalCompatible)
                 && getAccessory().isModalCompatible();
@@ -230,8 +234,9 @@ public interface Section
     @Override
     default boolean isDisabled() {
         final SectionAccessoryComponentUnion accessory = getAccessory();
-        if (accessory instanceof IDisableable && ((IDisableable) accessory).isEnabled())
+        if (accessory instanceof IDisableable && ((IDisableable) accessory).isEnabled()) {
             return false;
+        }
 
         return ComponentIterator.createStream(getContentComponents())
                 .filter(IDisableable.class::isInstance)
@@ -242,8 +247,9 @@ public interface Section
     @Override
     default boolean isEnabled() {
         final SectionAccessoryComponentUnion accessory = getAccessory();
-        if (accessory instanceof IDisableable && ((IDisableable) accessory).isDisabled())
+        if (accessory instanceof IDisableable && ((IDisableable) accessory).isDisabled()) {
             return false;
+        }
 
         return ComponentIterator.createStream(getContentComponents())
                 .filter(IDisableable.class::isInstance)

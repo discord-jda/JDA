@@ -78,7 +78,9 @@ public class Once<E extends GenericEvent> implements EventListener {
             // On cancellation, throw cancellation exception and cancel timeout
             jda.removeEventListener(this);
             future.completeExceptionally(new CancellationException());
-            if (timeoutFuture != null) timeoutFuture.cancel(false);
+            if (timeoutFuture != null) {
+                timeoutFuture.cancel(false);
+            }
         });
         task.onSetTimeout(e -> {
             throw new UnsupportedOperationException(
@@ -90,20 +92,28 @@ public class Once<E extends GenericEvent> implements EventListener {
     @Nullable
     private ScheduledFuture<?> scheduleTimeout(
             @Nullable Duration timeout, @Nullable ScheduledExecutorService timeoutPool) {
-        if (timeout == null) return null;
-        if (timeoutPool == null) timeoutPool = jda.getGatewayPool();
+        if (timeout == null) {
+            return null;
+        }
+        if (timeoutPool == null) {
+            timeoutPool = jda.getGatewayPool();
+        }
 
         return timeoutPool.schedule(
                 () -> {
                     // On timeout, throw timeout exception and run timeout callback
                     jda.removeEventListener(this);
-                    if (!future.completeExceptionally(new TimeoutException())) return;
+                    if (!future.completeExceptionally(new TimeoutException())) {
+                        return;
+                    }
                     if (timeoutCallback != null) {
                         try {
                             timeoutCallback.run();
                         } catch (Throwable e) {
                             LOG.error("An error occurred while running the timeout callback", e);
-                            if (e instanceof Error) throw (Error) e;
+                            if (e instanceof Error) {
+                                throw (Error) e;
+                            }
                         }
                     }
                 },
@@ -114,17 +124,25 @@ public class Once<E extends GenericEvent> implements EventListener {
     @Override
     @SubscribeEvent
     public void onEvent(@Nonnull GenericEvent event) {
-        if (!eventType.isInstance(event)) return;
+        if (!eventType.isInstance(event)) {
+            return;
+        }
         final E casted = eventType.cast(event);
         try {
             if (filters.stream().allMatch(p -> p.test(casted))) {
-                if (timeoutFuture != null) timeoutFuture.cancel(false);
+                if (timeoutFuture != null) {
+                    timeoutFuture.cancel(false);
+                }
                 event.getJDA().removeEventListener(this);
                 future.complete(casted);
             }
         } catch (Throwable e) {
-            if (future.completeExceptionally(e)) event.getJDA().removeEventListener(this);
-            if (e instanceof Error) throw (Error) e;
+            if (future.completeExceptionally(e)) {
+                event.getJDA().removeEventListener(this);
+            }
+            if (e instanceof Error) {
+                throw (Error) e;
+            }
         }
     }
 

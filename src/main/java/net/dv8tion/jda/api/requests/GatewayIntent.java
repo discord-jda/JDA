@@ -269,7 +269,9 @@ public enum GatewayIntent {
     public static EnumSet<GatewayIntent> getIntents(int raw) {
         EnumSet<GatewayIntent> set = EnumSet.noneOf(GatewayIntent.class);
         for (GatewayIntent intent : values()) {
-            if ((intent.getRawValue() & raw) != 0) set.add(intent);
+            if ((intent.getRawValue() & raw) != 0) {
+                set.add(intent);
+            }
         }
         return set;
     }
@@ -350,7 +352,9 @@ public enum GatewayIntent {
         for (CacheFlag flag : flags) {
             Checks.notNull(flag, "CacheFlag");
             GatewayIntent intent = flag.getRequiredIntent();
-            if (intent != null) intents.add(intent);
+            if (intent != null) {
+                intents.add(intent);
+            }
         }
 
         return intents;
@@ -393,37 +397,38 @@ public enum GatewayIntent {
         for (Class<? extends GenericEvent> event : events) {
             Checks.notNull(event, "Event");
 
-            if (GenericUserPresenceEvent.class.isAssignableFrom(event))
+            if (GenericUserPresenceEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_PRESENCES);
-            else if (GenericUserUpdateEvent.class.isAssignableFrom(event)
+            } else if (GenericUserUpdateEvent.class.isAssignableFrom(event)
                     || GenericGuildMemberEvent.class.isAssignableFrom(event)
-                    || GuildMemberRemoveEvent.class.isAssignableFrom(event))
+                    || GuildMemberRemoveEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_MEMBERS);
-            else if (GuildBanEvent.class.isAssignableFrom(event)
+            } else if (GuildBanEvent.class.isAssignableFrom(event)
                     || GuildUnbanEvent.class.isAssignableFrom(event)
-                    || GuildAuditLogEntryCreateEvent.class.isAssignableFrom(event))
+                    || GuildAuditLogEntryCreateEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_MODERATION);
-            else if (GenericEmojiEvent.class.isAssignableFrom(event)
-                    || GenericGuildStickerEvent.class.isAssignableFrom(event))
+            } else if (GenericEmojiEvent.class.isAssignableFrom(event)
+                    || GenericGuildStickerEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_EXPRESSIONS);
-            else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event))
+            } else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event)) {
                 intents.add(SCHEDULED_EVENTS);
-            else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
+            } else if (GenericGuildInviteEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_INVITES);
-            else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))
+            } else if (GenericGuildVoiceEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_VOICE_STATES);
-            else if (MessageBulkDeleteEvent.class.isAssignableFrom(event))
+            } else if (MessageBulkDeleteEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_MESSAGES);
-            else if (GenericMessageReactionEvent.class.isAssignableFrom(event))
+            } else if (GenericMessageReactionEvent.class.isAssignableFrom(event)) {
                 Collections.addAll(intents, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGE_REACTIONS);
-            else if (GenericMessageEvent.class.isAssignableFrom(event))
+            } else if (GenericMessageEvent.class.isAssignableFrom(event)) {
                 Collections.addAll(intents, GUILD_MESSAGES, DIRECT_MESSAGES);
-            else if (UserTypingEvent.class.isAssignableFrom(event))
+            } else if (UserTypingEvent.class.isAssignableFrom(event)) {
                 Collections.addAll(intents, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
-            else if (AutoModExecutionEvent.class.isAssignableFrom(event))
+            } else if (AutoModExecutionEvent.class.isAssignableFrom(event)) {
                 intents.add(AUTO_MODERATION_EXECUTION);
-            else if (GenericAutoModRuleEvent.class.isAssignableFrom(event))
+            } else if (GenericAutoModRuleEvent.class.isAssignableFrom(event)) {
                 intents.add(AUTO_MODERATION_CONFIGURATION);
+            }
         }
         return intents;
     }

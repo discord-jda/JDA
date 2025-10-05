@@ -88,14 +88,20 @@ public class TextDisplayImpl extends AbstractComponentImpl
     public DataObject toData() {
         final DataObject json =
                 DataObject.empty().put("type", getType().getKey()).put("content", content);
-        if (uniqueId >= 0) json.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof TextDisplayImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof TextDisplayImpl)) {
+            return false;
+        }
         TextDisplayImpl that = (TextDisplayImpl) o;
         return uniqueId == that.uniqueId && Objects.equals(content, that.content);
     }

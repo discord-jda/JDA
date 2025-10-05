@@ -37,7 +37,9 @@ public class ChannelCreateHandler extends SocketHandler {
         JDAImpl jda = getJDA();
         if (type.isGuild()) {
             guildId = content.getLong("guild_id");
-            if (jda.getGuildSetupController().isLocked(guildId)) return guildId;
+            if (jda.getGuildSetupController().isLocked(guildId)) {
+                return guildId;
+            }
         }
 
         Channel channel = buildChannel(type, content, guildId);

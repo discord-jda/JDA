@@ -90,8 +90,12 @@ public class StringSelectMenuImpl extends SelectMenuImpl
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof StringSelectMenu)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof StringSelectMenu)) {
+            return false;
+        }
         StringSelectMenu other = (StringSelectMenu) obj;
         return Objects.equals(id, other.getCustomId())
                 && Objects.equals(placeholder, other.getPlaceholder())

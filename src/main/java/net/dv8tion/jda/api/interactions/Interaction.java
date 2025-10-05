@@ -105,7 +105,9 @@ public interface Interaction extends ISnowflake {
      */
     default boolean isFromAttachedGuild() {
         final Guild guild = getGuild();
-        if (guild == null) return false;
+        if (guild == null) {
+            return false;
+        }
         return !guild.isDetached();
     }
 
@@ -231,8 +233,9 @@ public interface Interaction extends ISnowflake {
      */
     @Nonnull
     default DiscordLocale getGuildLocale() {
-        if (!isFromGuild())
+        if (!isFromGuild()) {
             throw new IllegalStateException("This interaction did not happen in a guild");
+        }
         return getGuild().getLocale();
     }
 

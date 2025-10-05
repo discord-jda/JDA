@@ -192,7 +192,9 @@ public class OptionData implements SerializableData {
         setName(name);
         setDescription(description);
         setRequired(isRequired);
-        if (type.canSupportChoices()) choices = new ArrayList<>();
+        if (type.canSupportChoices()) {
+            choices = new ArrayList<>();
+        }
         setAutoComplete(isAutoComplete);
     }
 
@@ -351,7 +353,9 @@ public class OptionData implements SerializableData {
     @Nonnull
     @Unmodifiable
     public List<Command.Choice> getChoices() {
-        if (choices == null || choices.isEmpty()) return Collections.emptyList();
+        if (choices == null || choices.isEmpty()) {
+            return Collections.emptyList();
+        }
         return Collections.unmodifiableList(choices);
     }
 
@@ -521,12 +525,14 @@ public class OptionData implements SerializableData {
     @Nonnull
     public OptionData setAutoComplete(boolean autoComplete) {
         if (autoComplete) {
-            if (choices == null || !type.canSupportChoices())
+            if (choices == null || !type.canSupportChoices()) {
                 throw new IllegalStateException(
                         "Cannot enable auto-complete for options of type " + type);
-            if (!choices.isEmpty())
+            }
+            if (!choices.isEmpty()) {
                 throw new IllegalStateException(
                         "Cannot enable auto-complete for options with choices");
+            }
         }
 
         isAutoComplete = autoComplete;
@@ -576,17 +582,19 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setChannelTypes(@Nonnull Collection<ChannelType> channelTypes) {
-        if (type != OptionType.CHANNEL)
+        if (type != OptionType.CHANNEL) {
             throw new IllegalArgumentException(
                     "Can only apply channel type restriction to options of type CHANNEL");
+        }
         Checks.notNull(channelTypes, "ChannelType collection");
         Checks.noneNull(channelTypes, "ChannelType");
 
         for (ChannelType channelType : channelTypes) {
-            if (!channelType.isGuild())
+            if (!channelType.isGuild()) {
                 throw new IllegalArgumentException(
                         "Provided channel type is not a guild channel type. Provided: "
                                 + channelType);
+            }
         }
         this.channelTypes.clear();
         this.channelTypes.addAll(channelTypes);
@@ -608,9 +616,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setMinValue(long value) {
-        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER) {
             throw new IllegalArgumentException(
                     "Can only set min and max long value for options of type INTEGER or NUMBER");
+        }
         Checks.check(
                 value >= MIN_NEGATIVE_NUMBER,
                 "Long value may not be less than %f",
@@ -634,9 +643,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setMinValue(double value) {
-        if (type != OptionType.NUMBER)
+        if (type != OptionType.NUMBER) {
             throw new IllegalArgumentException(
                     "Can only set min double value for options of type NUMBER");
+        }
         Checks.check(
                 value >= MIN_NEGATIVE_NUMBER,
                 "Double value may not be less than %f",
@@ -660,9 +670,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setMaxValue(long value) {
-        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER) {
             throw new IllegalArgumentException(
                     "Can only set min and max long value for options of type INTEGER or NUMBER");
+        }
         Checks.check(
                 value <= MAX_POSITIVE_NUMBER,
                 "Long value may not be greater than %f",
@@ -686,9 +697,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setMaxValue(double value) {
-        if (type != OptionType.NUMBER)
+        if (type != OptionType.NUMBER) {
             throw new IllegalArgumentException(
                     "Can only set max double value for options of type NUMBER");
+        }
         Checks.check(
                 value <= MAX_POSITIVE_NUMBER,
                 "Double value may not be greater than %f",
@@ -715,9 +727,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setRequiredRange(long minValue, long maxValue) {
-        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER) {
             throw new IllegalArgumentException(
                     "Can only set min and max long value for options of type INTEGER or NUMBER");
+        }
         Checks.check(
                 minValue >= MIN_NEGATIVE_NUMBER,
                 "Long value may not be less than %f",
@@ -749,9 +762,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setRequiredRange(double minValue, double maxValue) {
-        if (type != OptionType.NUMBER)
+        if (type != OptionType.NUMBER) {
             throw new IllegalArgumentException(
                     "Can only set min and max double value for options of type NUMBER");
+        }
         Checks.check(
                 minValue >= MIN_NEGATIVE_NUMBER,
                 "Double value may not be less than %f",
@@ -780,9 +794,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setMinLength(int minLength) {
-        if (type != OptionType.STRING)
+        if (type != OptionType.STRING) {
             throw new IllegalArgumentException(
                     "Can only set min length for options of type STRING");
+        }
         Checks.positive(minLength, "Min length");
         this.minLength = minLength;
         return this;
@@ -803,9 +818,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setMaxLength(int maxLength) {
-        if (type != OptionType.STRING)
+        if (type != OptionType.STRING) {
             throw new IllegalArgumentException(
                     "Can only set max length for options of type STRING");
+        }
         Checks.positive(maxLength, "Max length");
         Checks.check(
                 maxLength <= MAX_STRING_OPTION_LENGTH,
@@ -833,9 +849,10 @@ public class OptionData implements SerializableData {
      */
     @Nonnull
     public OptionData setRequiredLength(int minLength, int maxLength) {
-        if (type != OptionType.STRING)
+        if (type != OptionType.STRING) {
             throw new IllegalArgumentException(
                     "Can only set min and max length for options of type STRING");
+        }
         Checks.check(
                 minLength <= maxLength,
                 "Min length must not be greater than max length. Provided: %d > %d",
@@ -879,10 +896,12 @@ public class OptionData implements SerializableData {
                 value <= MAX_POSITIVE_NUMBER,
                 "Double value may not be greater than %f",
                 MAX_POSITIVE_NUMBER);
-        if (isAutoComplete)
+        if (isAutoComplete) {
             throw new IllegalStateException("Cannot add choices to auto-complete options");
-        if (type != OptionType.NUMBER)
+        }
+        if (type != OptionType.NUMBER) {
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
+        }
         Checks.check(
                 choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
@@ -921,10 +940,12 @@ public class OptionData implements SerializableData {
                 value <= MAX_POSITIVE_NUMBER,
                 "Long value may not be greater than %f",
                 MAX_POSITIVE_NUMBER);
-        if (isAutoComplete)
+        if (isAutoComplete) {
             throw new IllegalStateException("Cannot add choices to auto-complete options");
-        if (type != OptionType.INTEGER)
+        }
+        if (type != OptionType.INTEGER) {
             throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
+        }
         Checks.check(
                 choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
@@ -957,10 +978,12 @@ public class OptionData implements SerializableData {
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
-        if (isAutoComplete)
+        if (isAutoComplete) {
             throw new IllegalStateException("Cannot add choices to auto-complete options");
-        if (type != OptionType.STRING)
+        }
+        if (type != OptionType.STRING) {
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
+        }
         Checks.check(
                 choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
@@ -1013,12 +1036,16 @@ public class OptionData implements SerializableData {
     @Nonnull
     public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices) {
         Checks.notNull(choices, "Choices");
-        if (choices.size() == 0) return this;
-        if (this.choices == null || !type.canSupportChoices())
+        if (choices.size() == 0) {
+            return this;
+        }
+        if (this.choices == null || !type.canSupportChoices()) {
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
+        }
         Checks.noneNull(choices, "Choices");
-        if (isAutoComplete)
+        if (isAutoComplete) {
             throw new IllegalStateException("Cannot add choices to auto-complete options");
+        }
         Checks.check(
                 choices.size() + this.choices.size() <= MAX_CHOICES,
                 "Cannot have more than 25 choices for one option!");
@@ -1046,17 +1073,26 @@ public class OptionData implements SerializableData {
                             .map(choice -> choice.toData(type))
                             .collect(Collectors.toList())));
         }
-        if (type == OptionType.CHANNEL && !channelTypes.isEmpty())
+        if (type == OptionType.CHANNEL && !channelTypes.isEmpty()) {
             json.put(
                     "channel_types",
                     channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
+        }
         if (type == OptionType.INTEGER || type == OptionType.NUMBER) {
-            if (minValue != null) json.put("min_value", minValue);
-            if (maxValue != null) json.put("max_value", maxValue);
+            if (minValue != null) {
+                json.put("min_value", minValue);
+            }
+            if (maxValue != null) {
+                json.put("max_value", maxValue);
+            }
         }
         if (type == OptionType.STRING) {
-            if (minLength != null) json.put("min_length", minLength);
-            if (maxLength != null) json.put("max_length", maxLength);
+            if (minLength != null) {
+                json.put("min_length", minLength);
+            }
+            if (maxLength != null) {
+                json.put("max_length", maxLength);
+            }
         }
         return json;
     }
@@ -1085,16 +1121,18 @@ public class OptionData implements SerializableData {
         option.setAutoComplete(json.getBoolean("autocomplete"));
         if (type == OptionType.INTEGER || type == OptionType.NUMBER) {
             if (!json.isNull("min_value")) {
-                if (json.isType("min_value", DataType.INT))
+                if (json.isType("min_value", DataType.INT)) {
                     option.setMinValue(json.getLong("min_value"));
-                else if (json.isType("min_value", DataType.FLOAT))
+                } else if (json.isType("min_value", DataType.FLOAT)) {
                     option.setMinValue(json.getDouble("min_value"));
+                }
             }
             if (!json.isNull("max_value")) {
-                if (json.isType("max_value", DataType.INT))
+                if (json.isType("max_value", DataType.INT)) {
                     option.setMaxValue(json.getLong("max_value"));
-                else if (json.isType("max_value", DataType.FLOAT))
+                } else if (json.isType("max_value", DataType.FLOAT)) {
                     option.setMaxValue(json.getDouble("max_value"));
+                }
             }
         }
         if (type == OptionType.CHANNEL) {
@@ -1105,8 +1143,12 @@ public class OptionData implements SerializableData {
                     .orElse(Collections.emptySet()));
         }
         if (type == OptionType.STRING) {
-            if (!json.isNull("min_length")) option.setMinLength(json.getInt("min_length"));
-            if (!json.isNull("max_length")) option.setMaxLength(json.getInt("max_length"));
+            if (!json.isNull("min_length")) {
+                option.setMinLength(json.getInt("min_length"));
+            }
+            if (!json.isNull("max_length")) {
+                option.setMaxLength(json.getInt("max_length"));
+            }
         }
         json.optArray("choices")
                 .ifPresent(choices1 -> option.addChoices(choices1.stream(DataArray::getObject)
@@ -1146,16 +1188,28 @@ public class OptionData implements SerializableData {
                 data.setChannelTypes(option.getChannelTypes());
                 break;
             case NUMBER:
-                if (min != null) data.setMinValue(min.doubleValue());
-                if (max != null) data.setMaxValue(max.doubleValue());
+                if (min != null) {
+                    data.setMinValue(min.doubleValue());
+                }
+                if (max != null) {
+                    data.setMaxValue(max.doubleValue());
+                }
                 break;
             case INTEGER:
-                if (min != null) data.setMinValue(min.longValue());
-                if (max != null) data.setMaxValue(max.longValue());
+                if (min != null) {
+                    data.setMinValue(min.longValue());
+                }
+                if (max != null) {
+                    data.setMaxValue(max.longValue());
+                }
                 break;
             case STRING:
-                if (minLength != null) data.setMinLength(minLength);
-                if (maxLength != null) data.setMaxLength(maxLength);
+                if (minLength != null) {
+                    data.setMinLength(minLength);
+                }
+                if (maxLength != null) {
+                    data.setMaxLength(maxLength);
+                }
                 break;
         }
         return data;

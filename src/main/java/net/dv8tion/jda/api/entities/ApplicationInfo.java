@@ -509,7 +509,9 @@ public interface ApplicationInfo extends ISnowflake {
         public static EnumSet<Flag> fromRaw(long raw) {
             EnumSet<Flag> set = EnumSet.noneOf(Flag.class);
             for (Flag flag : values()) {
-                if ((raw & flag.value) != 0) set.add(flag);
+                if ((raw & flag.value) != 0) {
+                    set.add(flag);
+                }
             }
             return set;
         }

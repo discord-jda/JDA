@@ -78,8 +78,9 @@ public class MessageHistory {
             GuildChannel guildChannel = (GuildChannel) channel;
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
-            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
+            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY)) {
                 throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_HISTORY);
+            }
         }
     }
 
@@ -179,18 +180,20 @@ public class MessageHistory {
     @Nonnull
     @CheckReturnValue
     public RestAction<@Unmodifiable List<Message>> retrievePast(int amount) {
-        if (amount > 100 || amount < 1)
+        if (amount > 100 || amount < 1) {
             throw new IllegalArgumentException(
                     "Message retrieval limit is between 1 and 100 messages. No more, no less. Limit"
                             + " provided: "
                             + amount);
+        }
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
                 .compile(channel.getId())
                 .withQueryParams("limit", Integer.toString(amount));
 
-        if (!history.isEmpty())
+        if (!history.isEmpty()) {
             route = route.withQueryParams("before", String.valueOf(history.lastKey()));
+        }
 
         JDAImpl jda = (JDAImpl) getJDA();
         return new RestActionImpl<>(jda, route, (response, request) -> {
@@ -257,16 +260,18 @@ public class MessageHistory {
     @Nonnull
     @CheckReturnValue
     public RestAction<@Unmodifiable List<Message>> retrieveFuture(int amount) {
-        if (amount > 100 || amount < 1)
+        if (amount > 100 || amount < 1) {
             throw new IllegalArgumentException(
                     "Message retrieval limit is between 1 and 100 messages. No more, no less. Limit"
                             + " provided: "
                             + amount);
+        }
 
-        if (history.isEmpty())
+        if (history.isEmpty()) {
             throw new IllegalStateException(
                     "No messages have been retrieved yet, so there is no message to act as a marker"
                             + " to retrieve more recent messages based on.");
+        }
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
                 .compile(channel.getId())
@@ -313,8 +318,11 @@ public class MessageHistory {
     @Unmodifiable
     public List<Message> getRetrievedHistory() {
         int size = size();
-        if (size == 0) return Collections.emptyList();
-        else if (size == 1) return Collections.singletonList(history.getValue(0));
+        if (size == 0) {
+            return Collections.emptyList();
+        } else if (size == 1) {
+            return Collections.singletonList(history.getValue(0));
+        }
         return Collections.unmodifiableList(new ArrayList<>(history.values()));
     }
 
@@ -537,8 +545,9 @@ public class MessageHistory {
             GuildChannel guildChannel = (GuildChannel) channel;
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
-            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
+            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY)) {
                 throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_HISTORY);
+            }
         }
     }
 

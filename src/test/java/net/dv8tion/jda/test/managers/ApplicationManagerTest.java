@@ -64,7 +64,9 @@ public class ApplicationManagerTest extends IntegrationTest {
         LinkedHashMap<IntegrationType, IntegrationTypeConfig> integrationTypeConfig =
                 new LinkedHashMap<>();
         for (IntegrationType type : IntegrationType.values())
-            if (type != IntegrationType.UNKNOWN) integrationTypeConfig.put(type, installParams);
+            if (type != IntegrationType.UNKNOWN) {
+                integrationTypeConfig.put(type, installParams);
+            }
 
         manager.setDescription("test")
                 .setIcon(getLogoIcon())
@@ -122,7 +124,9 @@ public class ApplicationManagerTest extends IntegrationTest {
     protected DataObject normalizeRequestBody(@Nonnull DataObject body) {
         String iconEncoding = getLogoIcon().getEncoding();
         for (String key : body.keys()) {
-            if (iconEncoding.equals(body.get(key))) body.put(key, "[MASKED]");
+            if (iconEncoding.equals(body.get(key))) {
+                body.put(key, "[MASKED]");
+            }
         }
         return super.normalizeRequestBody(body);
     }

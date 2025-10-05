@@ -94,7 +94,9 @@ public class AuditLogChange {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof AuditLogChange)) return false;
+        if (!(obj instanceof AuditLogChange)) {
+            return false;
+        }
         AuditLogChange other = (AuditLogChange) obj;
         return other.key.equals(key)
                 && Objects.equals(other.oldValue, oldValue)

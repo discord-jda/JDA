@@ -44,9 +44,13 @@ public class GuildEmojisUpdateHandler extends SocketHandler {
 
     @Override
     protected Long handleInternally(DataObject content) {
-        if (!getJDA().isCacheFlagSet(CacheFlag.EMOJI)) return null;
+        if (!getJDA().isCacheFlagSet(CacheFlag.EMOJI)) {
+            return null;
+        }
         final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
@@ -124,7 +128,9 @@ public class GuildEmojisUpdateHandler extends SocketHandler {
     }
 
     private void handleReplace(RichCustomEmoji oldEmoji, RichCustomEmoji newEmoji) {
-        if (oldEmoji == null || newEmoji == null) return;
+        if (oldEmoji == null || newEmoji == null) {
+            return;
+        }
 
         if (!Objects.equals(oldEmoji.getName(), newEmoji.getName())) {
             getJDA().handleEvent(new EmojiUpdateNameEvent(

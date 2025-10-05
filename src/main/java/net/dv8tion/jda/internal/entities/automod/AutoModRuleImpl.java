@@ -71,7 +71,9 @@ public class AutoModRuleImpl implements AutoModRule {
     @Override
     public Guild getGuild() {
         Guild realGuild = guild.getJDA().getGuildById(guild.getIdLong());
-        if (realGuild != null) guild = realGuild;
+        if (realGuild != null) {
+            guild = realGuild;
+        }
         return guild;
     }
 
@@ -110,7 +112,9 @@ public class AutoModRuleImpl implements AutoModRule {
         for (int i = 0; i < exemptRoles.size(); i++) {
             long roleId = exemptRoles.get(i);
             Role role = guild.getRoleById(roleId);
-            if (role != null) roles.add(role);
+            if (role != null) {
+                roles.add(role);
+            }
         }
         return Collections.unmodifiableList(roles);
     }
@@ -122,7 +126,9 @@ public class AutoModRuleImpl implements AutoModRule {
         for (int i = 0; i < exemptChannels.size(); i++) {
             long channelId = exemptChannels.get(i);
             GuildChannel channel = guild.getGuildChannelById(channelId);
-            if (channel != null) channels.add(channel);
+            if (channel != null) {
+                channels.add(channel);
+            }
         }
         return Collections.unmodifiableList(channels);
     }
@@ -244,8 +250,12 @@ public class AutoModRuleImpl implements AutoModRule {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof AutoModRuleImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof AutoModRuleImpl)) {
+            return false;
+        }
         AutoModRuleImpl oRule = (AutoModRuleImpl) obj;
         return this.id == oRule.id;
     }
@@ -307,7 +317,9 @@ public class AutoModRuleImpl implements AutoModRule {
 
     private static TLongList parseList(DataArray array) {
         TLongList list = new TLongArrayList(array.length());
-        for (int i = 0; i < array.length(); i++) list.add(array.getUnsignedLong(i));
+        for (int i = 0; i < array.length(); i++) {
+            list.add(array.getUnsignedLong(i));
+        }
         return list;
     }
 }

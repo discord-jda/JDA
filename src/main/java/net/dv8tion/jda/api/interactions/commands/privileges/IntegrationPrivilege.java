@@ -115,8 +115,12 @@ public class IntegrationPrivilege implements ISnowflake {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof IntegrationPrivilege)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof IntegrationPrivilege)) {
+            return false;
+        }
         IntegrationPrivilege other = (IntegrationPrivilege) obj;
         return other.id == id && other.enabled == enabled;
     }
@@ -155,7 +159,9 @@ public class IntegrationPrivilege implements ISnowflake {
         @Nonnull
         public static Type fromKey(int key) {
             for (Type type : values()) {
-                if (type.key == key) return type;
+                if (type.key == key) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

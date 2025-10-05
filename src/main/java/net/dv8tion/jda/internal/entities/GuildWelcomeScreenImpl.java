@@ -51,8 +51,9 @@ public class GuildWelcomeScreenImpl implements GuildWelcomeScreen {
     @Nonnull
     @Override
     public GuildWelcomeScreenManager getManager() {
-        if (guild == null)
+        if (guild == null) {
             throw new IllegalStateException("Cannot modify a guild welcome screen from an Invite");
+        }
         return guild.modifyWelcomeScreen();
     }
 
@@ -105,7 +106,9 @@ public class GuildWelcomeScreenImpl implements GuildWelcomeScreen {
         @Nullable
         @Override
         public GuildChannel getChannel() {
-            if (guild == null) return null;
+            if (guild == null) {
+                return null;
+            }
 
             return guild.getGuildChannelById(id);
         }
@@ -129,8 +132,9 @@ public class GuildWelcomeScreenImpl implements GuildWelcomeScreen {
             data.put("channel_id", id);
             data.put("description", description);
             if (emoji != null) {
-                if (emoji.getType() == Emoji.Type.CUSTOM)
+                if (emoji.getType() == Emoji.Type.CUSTOM) {
                     data.put("emoji_id", ((CustomEmoji) emoji).getId());
+                }
                 data.put("emoji_name", emoji.getName());
             }
 

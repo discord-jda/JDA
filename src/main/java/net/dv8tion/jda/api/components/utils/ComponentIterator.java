@@ -77,18 +77,24 @@ public class ComponentIterator implements Iterator<Component> {
     @Nonnull
     @Override
     public Component next() {
-        if (!hasNext()) throw new NoSuchElementException();
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
         Iterator<? extends Component> iterator = stack.peek();
         Component component = iterator.next();
 
         Iterator<? extends Component> childrenIterator = getIteratorForComponent(component);
-        if (childrenIterator != null) stack.push(childrenIterator);
+        if (childrenIterator != null) {
+            stack.push(childrenIterator);
+        }
 
         return component;
     }
 
     private void ensureNestedIteratorHasNext() {
-        while (!stack.isEmpty() && !stack.peek().hasNext()) stack.pop();
+        while (!stack.isEmpty() && !stack.peek().hasNext()) {
+            stack.pop();
+        }
     }
 
     @Nullable

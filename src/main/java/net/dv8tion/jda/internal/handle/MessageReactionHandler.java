@@ -53,7 +53,9 @@ public class MessageReactionHandler extends SocketHandler {
     protected Long handleInternally(DataObject content) {
         if (!content.isNull("guild_id")) {
             long guildId = content.getLong("guild_id");
-            if (api.getGuildSetupController().isLocked(guildId)) return guildId;
+            if (api.getGuildSetupController().isLocked(guildId)) {
+                return guildId;
+            }
         }
 
         DataObject emoji = content.getObject("emoji");
@@ -82,9 +84,9 @@ public class MessageReactionHandler extends SocketHandler {
             if (memberJson.isPresent()) // Check if we can load a member here
             {
                 DataObject json = memberJson.get();
-                if (member == null || !member.hasTimeJoined()) // do we need to load a member?
-                member = api.getEntityBuilder().createMember((GuildImpl) guild, json);
-                else // otherwise update the cache
+                if (member == null || !member.hasTimeJoined()) { // do we need to load a member?
+                    member = api.getEntityBuilder().createMember((GuildImpl) guild, json);
+                } else // otherwise update the cache
                 {
                     List<Role> roles = json.getArray("roles").stream(DataArray::getUnsignedLong)
                             .map(guild::getRoleById)
@@ -102,9 +104,9 @@ public class MessageReactionHandler extends SocketHandler {
         }
 
         User user = api.getUserById(userId);
-        if (user == null && member != null)
+        if (user == null && member != null) {
             user = member.getUser(); // this happens when we have guild subscriptions disabled
-
+        }
         if (user == null) {
             // We expect there to be a user object already cached when we are in a guild and adding
             // a new reaction as the user should be a member cached in the guild.

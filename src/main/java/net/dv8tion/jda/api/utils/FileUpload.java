@@ -307,7 +307,9 @@ public class FileUpload implements Closeable, AttachedFile {
      */
     @Nonnull
     public FileUpload asSpoiler() {
-        if (name.startsWith("SPOILER_")) return this;
+        if (name.startsWith("SPOILER_")) {
+            return this;
+        }
         return setName("SPOILER_" + name);
     }
 
@@ -342,9 +344,10 @@ public class FileUpload implements Closeable, AttachedFile {
      */
     @Nonnull
     public FileUpload setDescription(@Nullable String description) {
-        if (description != null)
+        if (description != null) {
             Checks.notLonger(
                     description = description.trim(), MAX_DESCRIPTION_LENGTH, "Description");
+        }
         this.description = description;
         return this;
     }
@@ -441,8 +444,11 @@ public class FileUpload implements Closeable, AttachedFile {
      */
     @Nonnull
     public InputStream getData() {
-        if (resource != null) return resource;
-        else return Okio.buffer(resourceSupplier.get()).inputStream();
+        if (resource != null) {
+            return resource;
+        } else {
+            return Okio.buffer(resourceSupplier.get()).inputStream();
+        }
     }
 
     /**
@@ -462,11 +468,15 @@ public class FileUpload implements Closeable, AttachedFile {
     @Nonnull
     public synchronized RequestBody getRequestBody(@Nonnull MediaType type) {
         Checks.notNull(type, "Type");
-        if (body != null) // This allows FileUpload to be used more than once!
-        return body.withType(type);
+        if (body != null) { // This allows FileUpload to be used more than once!
+            return body.withType(type);
+        }
 
-        if (resource == null) return body = new DataSupplierBody(type, resourceSupplier);
-        else return body = IOUtil.createRequestBody(type, resource);
+        if (resource == null) {
+            return body = new DataSupplierBody(type, resourceSupplier);
+        } else {
+            return body = IOUtil.createRequestBody(type, resource);
+        }
     }
 
     @Override
@@ -494,19 +504,24 @@ public class FileUpload implements Closeable, AttachedFile {
 
     @Override
     public synchronized void close() throws IOException {
-        if (body == null) forceClose();
+        if (body == null) {
+            forceClose();
+        }
     }
 
     @Override
     public void forceClose() throws IOException {
-        if (resource != null) resource.close();
+        if (resource != null) {
+            resource.close();
+        }
     }
 
     @Override
     @SuppressWarnings("deprecation")
     protected void finalize() {
-        if (body == null && resource != null) // Only close if the resource was never used
-        IOUtil.silentClose(resource);
+        if (body == null && resource != null) { // Only close if the resource was never used
+            IOUtil.silentClose(resource);
+        }
     }
 
     @Override

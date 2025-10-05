@@ -141,21 +141,28 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager>
     protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
 
-        if (shouldUpdate(NAME)) body.put("name", name);
-        if (shouldUpdate(ENABLED)) body.put("enabled", enabled);
-        if (shouldUpdate(RESPONSE))
+        if (shouldUpdate(NAME)) {
+            body.put("name", name);
+        }
+        if (shouldUpdate(ENABLED)) {
+            body.put("enabled", enabled);
+        }
+        if (shouldUpdate(RESPONSE)) {
             body.put("actions", DataArray.fromCollection(responses.values()));
-        if (shouldUpdate(EXEMPT_ROLES))
+        }
+        if (shouldUpdate(EXEMPT_ROLES)) {
             body.put(
                     "exempt_roles",
                     DataArray.fromCollection(
                             exemptRoles.stream().map(Role::getId).collect(Collectors.toList())));
-        if (shouldUpdate(EXEMPT_CHANNELS))
+        }
+        if (shouldUpdate(EXEMPT_CHANNELS)) {
             body.put(
                     "exempt_channels",
                     DataArray.fromCollection(exemptChannels.stream()
                             .map(GuildChannel::getId)
                             .collect(Collectors.toList())));
+        }
         if (shouldUpdate(TRIGGER_METADATA)) {
             body.put("trigger_type", triggerConfig.getType().getKey());
             body.put("trigger_metadata", triggerConfig.toData());

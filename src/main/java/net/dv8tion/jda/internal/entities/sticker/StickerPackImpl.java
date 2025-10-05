@@ -98,8 +98,12 @@ public class StickerPackImpl implements StickerPack {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof StickerPackImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof StickerPackImpl)) {
+            return false;
+        }
         StickerPackImpl other = (StickerPackImpl) obj;
         return id == other.id;
     }

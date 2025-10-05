@@ -66,7 +66,9 @@ public interface IPermissionContainerMixin<T extends IPermissionContainerMixin<T
                 "Provided permission holder is not from the same guild as this channel!");
 
         PermissionOverride override = getPermissionOverride(permissionHolder);
-        if (override != null) return override.getManager();
+        if (override != null) {
+            return override.getManager();
+        }
         return new PermissionOverrideActionImpl(getJDA(), this, permissionHolder);
     }
 

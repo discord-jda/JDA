@@ -150,7 +150,9 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl>
             long botPerms = PermissionUtil.getEffectivePermission(this, selfMember);
             for (PermissionOverride override : getPermissionOverrides()) {
                 long perms = override.getDeniedRaw() | override.getAllowedRaw();
-                if ((perms & ~botPerms) != 0) return action;
+                if ((perms & ~botPerms) != 0) {
+                    return action;
+                }
             }
         }
         return action.syncPermissionOverrides();

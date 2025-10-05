@@ -138,8 +138,9 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
     @Override
     @CheckReturnValue
     public ScheduledEventActionImpl setDescription(@Nullable String description) {
-        if (description != null)
+        if (description != null) {
             Checks.notLonger(description, ScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
+        }
         this.description = description;
         return this;
     }
@@ -202,10 +203,15 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
                         "ScheduledEventType " + entityType + " is not supported!");
         }
 
-        if (description != null) object.put("description", description);
-        if (image != null) object.put("image", image.getEncoding());
-        if (endTime != null)
+        if (description != null) {
+            object.put("description", description);
+        }
+        if (image != null) {
+            object.put("image", image.getEncoding());
+        }
+        if (endTime != null) {
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
+        }
 
         return getRequestBody(object);
     }

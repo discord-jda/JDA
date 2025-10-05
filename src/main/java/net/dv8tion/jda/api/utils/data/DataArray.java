@@ -258,7 +258,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
         } catch (ClassCastException ex) {
             log.error("Unable to extract child data", ex);
         }
-        if (child == null) throw valueError(index, "DataObject");
+        if (child == null) {
+            throw valueError(index, "DataObject");
+        }
         return new DataObject(child);
     }
 
@@ -282,7 +284,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
         } catch (ClassCastException ex) {
             log.error("Unable to extract child data", ex);
         }
-        if (child == null) throw valueError(index, "DataArray");
+        if (child == null) {
+            throw valueError(index, "DataArray");
+        }
         return new DataArray(child);
     }
 
@@ -300,7 +304,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
     @Nonnull
     public String getString(int index) {
         String value = get(String.class, index, UnaryOperator.identity(), String::valueOf);
-        if (value == null) throw valueError(index, "String");
+        if (value == null) {
+            throw valueError(index, "String");
+        }
         return value;
     }
 
@@ -369,7 +375,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     public int getInt(int index) {
         Integer value = get(Integer.class, index, Integer::parseInt, Number::intValue);
-        if (value == null) throw valueError(index, "int");
+        if (value == null) {
+            throw valueError(index, "int");
+        }
         return value;
     }
 
@@ -404,7 +412,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     public int getUnsignedInt(int index) {
         Integer value = get(Integer.class, index, Integer::parseUnsignedInt, Number::intValue);
-        if (value == null) throw valueError(index, "unsigned int");
+        if (value == null) {
+            throw valueError(index, "unsigned int");
+        }
         return value;
     }
 
@@ -439,7 +449,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     public long getLong(int index) {
         Long value = get(Long.class, index, Long::parseLong, Number::longValue);
-        if (value == null) throw valueError(index, "long");
+        if (value == null) {
+            throw valueError(index, "long");
+        }
         return value;
     }
 
@@ -474,7 +486,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     public long getUnsignedLong(int index) {
         Long value = get(Long.class, index, Long::parseUnsignedLong, Number::longValue);
-        if (value == null) throw valueError(index, "unsigned long");
+        if (value == null) {
+            throw valueError(index, "unsigned long");
+        }
         return value;
     }
 
@@ -493,7 +507,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
     @Nonnull
     public OffsetDateTime getOffsetDateTime(int index) {
         OffsetDateTime value = getOffsetDateTime(index, null);
-        if (value == null) throw valueError(index, "OffsetDateTime");
+        if (value == null) {
+            throw valueError(index, "OffsetDateTime");
+        }
         return value;
     }
 
@@ -556,7 +572,9 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     public double getDouble(int index) {
         Double value = get(Double.class, index, Double::parseDouble, Number::doubleValue);
-        if (value == null) throw valueError(index, "double");
+        if (value == null) {
+            throw valueError(index, "double");
+        }
         return value;
     }
 
@@ -588,10 +606,13 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     @Nonnull
     public DataArray add(@Nullable Object value) {
-        if (value instanceof SerializableData) data.add(((SerializableData) value).toData().data);
-        else if (value instanceof SerializableArray)
+        if (value instanceof SerializableData) {
+            data.add(((SerializableData) value).toData().data);
+        } else if (value instanceof SerializableArray) {
             data.add(((SerializableArray) value).toDataArray().data);
-        else data.add(value);
+        } else {
+            data.add(value);
+        }
         return this;
     }
 
@@ -634,11 +655,13 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     @Nonnull
     public DataArray insert(int index, @Nullable Object value) {
-        if (value instanceof SerializableData)
+        if (value instanceof SerializableData) {
             data.add(index, ((SerializableData) value).toData().data);
-        else if (value instanceof SerializableArray)
+        } else if (value instanceof SerializableArray) {
             data.add(index, ((SerializableArray) value).toDataArray().data);
-        else data.add(index, value);
+        } else {
+            data.add(index, value);
+        }
         return this;
     }
 
@@ -758,16 +781,25 @@ public class DataArray implements Iterable<Object>, SerializableArray {
             int index,
             @Nullable Function<String, T> stringMapper,
             @Nullable Function<Number, T> numberMapper) {
-        if (index < 0) throw new IndexOutOfBoundsException("Index out of range: " + index);
+        if (index < 0) {
+            throw new IndexOutOfBoundsException("Index out of range: " + index);
+        }
         Object value = index < data.size() ? data.get(index) : null;
-        if (value == null) return null;
-        if (type.isInstance(value)) return type.cast(value);
-        if (type == String.class) return type.cast(value.toString());
+        if (value == null) {
+            return null;
+        }
+        if (type.isInstance(value)) {
+            return type.cast(value);
+        }
+        if (type == String.class) {
+            return type.cast(value.toString());
+        }
         // attempt type coercion
-        if (stringMapper != null && value instanceof String)
+        if (stringMapper != null && value instanceof String) {
             return stringMapper.apply((String) value);
-        else if (numberMapper != null && value instanceof Number)
+        } else if (numberMapper != null && value instanceof Number) {
             return numberMapper.apply((Number) value);
+        }
 
         throw new ParsingException(Helpers.format(
                 "Cannot parse value for index %d into type %s: %s instance of %s",
@@ -794,8 +826,12 @@ public class DataArray implements Iterable<Object>, SerializableArray {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DataArray)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DataArray)) {
+            return false;
+        }
         DataArray objects = (DataArray) o;
         return Objects.equals(data, objects.data);
     }

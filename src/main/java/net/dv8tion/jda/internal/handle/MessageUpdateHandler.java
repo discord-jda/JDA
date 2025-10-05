@@ -38,7 +38,9 @@ public class MessageUpdateHandler extends SocketHandler {
         Guild guild = null;
         if (!content.isNull("guild_id")) {
             long guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+            if (getJDA().getGuildSetupController().isLocked(guildId)) {
+                return guildId;
+            }
             guild = api.getGuildById(guildId);
             if (guild == null) {
                 api.getEventCache()
@@ -55,12 +57,16 @@ public class MessageUpdateHandler extends SocketHandler {
         }
 
         // Drop ephemeral messages since they are broken due to missing guild_id
-        if ((content.getInt("flags", 0) & 64) != 0) return null;
+        if ((content.getInt("flags", 0) & 64) != 0) {
+            return null;
+        }
 
         if (content.hasKey("author")) {
             if (content.hasKey("type")) {
                 MessageType type = MessageType.fromId(content.getInt("type"));
-                if (!type.isSystem()) return handleMessage(content, guild);
+                if (!type.isSystem()) {
+                    return handleMessage(content, guild);
+                }
                 WebSocketClient.LOG.debug(
                         "JDA received a message update for an unexpected message type. Type: {}"
                                 + " JSON: {}",
@@ -76,8 +82,9 @@ public class MessageUpdateHandler extends SocketHandler {
         Message message;
         try {
             message = getJDA().getEntityBuilder().createMessageWithLookup(content, guild, true);
-            if (!message.hasChannel())
+            if (!message.hasChannel()) {
                 throw new IllegalArgumentException(EntityBuilder.MISSING_CHANNEL);
+            }
         } catch (IllegalArgumentException e) {
             switch (e.getMessage()) {
                 case EntityBuilder.MISSING_CHANNEL: {
@@ -125,8 +132,9 @@ public class MessageUpdateHandler extends SocketHandler {
             }
         }
 
-        if (message.getChannelType() == ChannelType.PRIVATE)
+        if (message.getChannelType() == ChannelType.PRIVATE) {
             getJDA().usedPrivateChannel(message.getChannel().getIdLong());
+        }
 
         getJDA().handleEvent(new MessageUpdateEvent(getJDA(), responseNumber, message));
         return null;

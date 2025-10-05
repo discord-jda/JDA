@@ -45,7 +45,9 @@ public interface PrivateChannelMixin<T extends PrivateChannelMixin<T>>
     @Override
     default RestAction<User> retrieveUser() {
         User user = getUser();
-        if (user != null) return new CompletedRestAction<>(getJDA(), user);
+        if (user != null) {
+            return new CompletedRestAction<>(getJDA(), user);
+        }
         // even if the user blocks the bot, this does not fail.
         return retrievePrivateChannel().map(PrivateChannel::getUser);
     }

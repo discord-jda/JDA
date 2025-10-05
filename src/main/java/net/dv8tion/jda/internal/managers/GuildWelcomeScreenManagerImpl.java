@@ -49,7 +49,9 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     public GuildWelcomeScreenManagerImpl(Guild guild) {
         super(guild.getJDA(), Route.Guilds.MODIFY_WELCOME_SCREEN.compile(guild.getId()));
         this.guild = guild;
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     @Nonnull
@@ -63,10 +65,15 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     @CheckReturnValue
     public GuildWelcomeScreenManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & ENABLED) == ENABLED)
+        if ((fields & ENABLED) == ENABLED) {
             this.enabled = false; // Most important is the flag being removed anyway
-        if ((fields & DESCRIPTION) == DESCRIPTION) this.description = null;
-        if ((fields & CHANNELS) == CHANNELS) this.channels.clear();
+        }
+        if ((fields & DESCRIPTION) == DESCRIPTION) {
+            this.description = null;
+        }
+        if ((fields & CHANNELS) == CHANNELS) {
+            this.channels.clear();
+        }
         return this;
     }
 
@@ -97,8 +104,9 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     @Nonnull
     @Override
     public GuildWelcomeScreenManager setDescription(@Nullable String description) {
-        if (description != null)
+        if (description != null) {
             Checks.notLonger(description, GuildWelcomeScreen.MAX_DESCRIPTION_LENGTH, "Description");
+        }
         this.description = description;
         set |= DESCRIPTION;
         return this;
@@ -138,11 +146,16 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
-        if (shouldUpdate(ENABLED)) object.put("enabled", enabled);
-        if (shouldUpdate(DESCRIPTION)) object.put("description", description);
+        if (shouldUpdate(ENABLED)) {
+            object.put("enabled", enabled);
+        }
+        if (shouldUpdate(DESCRIPTION)) {
+            object.put("description", description);
+        }
         withLock(this.channels, (list) -> {
-            if (shouldUpdate(CHANNELS))
+            if (shouldUpdate(CHANNELS)) {
                 object.put("welcome_channels", DataArray.fromCollection(list));
+            }
         });
         reset();
         return getRequestBody(object);
@@ -150,8 +163,9 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
 
     @Override
     protected boolean checkPermissions() {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_SERVER);
+        }
         return super.checkPermissions();
     }
 }

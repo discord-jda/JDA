@@ -43,8 +43,9 @@ public class ReadyHandler extends SocketHandler {
             DataObject guild = guilds.getObject(i);
             long id = guild.getUnsignedLong("id");
             DataObject previous = distinctGuilds.put(id, guild);
-            if (previous != null)
+            if (previous != null) {
                 WebSocketClient.LOG.warn("Found duplicate guild for id {} in ready payload", id);
+            }
         }
 
         DataObject selfJson = content.getObject("user");

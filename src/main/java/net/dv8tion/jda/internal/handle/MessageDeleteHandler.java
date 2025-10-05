@@ -36,7 +36,9 @@ public class MessageDeleteHandler extends SocketHandler {
         Guild guild = null;
         if (!content.isNull("guild_id")) {
             long guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+            if (getJDA().getGuildSetupController().isLocked(guildId)) {
+                return guildId;
+            }
 
             guild = getJDA().getGuildById(guildId);
             if (guild == null) {

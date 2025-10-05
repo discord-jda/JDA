@@ -166,9 +166,10 @@ public interface Sticker extends StickerSnowflake {
          */
         @Nonnull
         public String getExtension() {
-            if (this == UNKNOWN)
+            if (this == UNKNOWN) {
                 throw new IllegalStateException(
                         "Cannot get file extension for StickerFormat.UNKNOWN");
+            }
             return extension;
         }
 
@@ -183,7 +184,9 @@ public interface Sticker extends StickerSnowflake {
         @Nonnull
         public static StickerFormat fromId(int id) {
             for (StickerFormat stickerFormat : values()) {
-                if (stickerFormat.id == id) return stickerFormat;
+                if (stickerFormat.id == id) {
+                    return stickerFormat;
+                }
             }
             return UNKNOWN;
         }
@@ -225,7 +228,9 @@ public interface Sticker extends StickerSnowflake {
         @Nonnull
         public static Type fromId(int id) {
             for (Type type : values()) {
-                if (type.id == id) return type;
+                if (type.id == id) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

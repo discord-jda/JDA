@@ -254,7 +254,9 @@ public interface MessagePoll {
         @Nonnull
         public static LayoutType fromKey(int key) {
             for (LayoutType type : values()) {
-                if (type.key == key) return type;
+                if (type.key == key) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

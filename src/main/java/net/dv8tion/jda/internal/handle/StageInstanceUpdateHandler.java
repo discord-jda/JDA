@@ -34,7 +34,9 @@ public class StageInstanceUpdateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id", 0L);
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
@@ -51,21 +53,29 @@ public class StageInstanceUpdateHandler extends SocketHandler {
         }
 
         StageChannel channel = getJDA().getStageChannelById(content.getUnsignedLong("channel_id"));
-        if (channel == null) return null;
+        if (channel == null) {
+            return null;
+        }
         StageInstance oldInstance = channel.getStageInstance();
-        if (oldInstance == null) return null;
+        if (oldInstance == null) {
+            return null;
+        }
 
         String oldTopic = oldInstance.getTopic();
         StageInstance.PrivacyLevel oldLevel = oldInstance.getPrivacyLevel();
         StageInstance newInstance = getJDA().getEntityBuilder().createStageInstance(guild, content);
-        if (newInstance == null) return null;
+        if (newInstance == null) {
+            return null;
+        }
 
-        if (!Objects.equals(oldTopic, newInstance.getTopic()))
+        if (!Objects.equals(oldTopic, newInstance.getTopic())) {
             getJDA().handleEvent(new StageInstanceUpdateTopicEvent(
                     getJDA(), responseNumber, newInstance, oldTopic));
-        if (oldLevel != newInstance.getPrivacyLevel())
+        }
+        if (oldLevel != newInstance.getPrivacyLevel()) {
             getJDA().handleEvent(new StageInstanceUpdatePrivacyLevelEvent(
                     getJDA(), responseNumber, newInstance, oldLevel));
+        }
         return null;
     }
 }

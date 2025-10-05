@@ -46,7 +46,9 @@ public enum DataType {
     @Nonnull
     public static DataType getType(@Nullable Object value) {
         for (DataType type : values()) {
-            if (type.isType(value)) return type;
+            if (type.isType(value)) {
+                return type;
+            }
         }
         return UNKNOWN;
     }

@@ -73,8 +73,9 @@ public class MessageEditActionImpl extends RestActionImpl<Message>
     public MessageEditActionImpl withHook(
             WebhookClient<Message> hook, ChannelType channelType, long channelId) {
         this.webhook = hook;
-        if (!(hook instanceof InteractionHook) && channelType.isThread())
+        if (!(hook instanceof InteractionHook) && channelType.isThread()) {
             this.threadId = Long.toUnsignedString(channelId);
+        }
         return this;
     }
 
@@ -90,7 +91,9 @@ public class MessageEditActionImpl extends RestActionImpl<Message>
                         || !((InteractionHook) webhook).isExpired())) {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(
                     webhook.getId(), webhook.getToken(), messageId);
-            if (this.threadId != null) route = route.withQueryParams("thread_id", threadId);
+            if (this.threadId != null) {
+                route = route.withQueryParams("thread_id", threadId);
+            }
 
             return route;
         }

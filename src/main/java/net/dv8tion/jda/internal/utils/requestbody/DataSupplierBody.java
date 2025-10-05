@@ -37,7 +37,9 @@ public class DataSupplierBody extends TypedBody<DataSupplierBody> {
     @Nonnull
     @Override
     public DataSupplierBody withType(@Nonnull MediaType newType) {
-        if (this.type.equals(newType)) return this;
+        if (this.type.equals(newType)) {
+            return this;
+        }
         return new DataSupplierBody(newType, streamSupply);
     }
 

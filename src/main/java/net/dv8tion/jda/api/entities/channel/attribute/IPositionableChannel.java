@@ -51,7 +51,9 @@ public interface IPositionableChannel extends GuildChannel {
      */
     default int getPosition() {
         int position = getGuild().getChannels().indexOf(this);
-        if (position > -1) return position;
+        if (position > -1) {
+            return position;
+        }
         throw new IllegalStateException("Somehow when determining position we never found the "
                 + getType().name()
                 + " in the Guild's channels? wtf?");

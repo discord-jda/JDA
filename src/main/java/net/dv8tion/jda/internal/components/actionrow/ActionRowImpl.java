@@ -161,7 +161,9 @@ public class ActionRowImpl extends AbstractComponentImpl
         final DataObject json = DataObject.empty()
                 .put("type", 1)
                 .put("components", DataArray.fromCollection(components));
-        if (uniqueId >= 0) json.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
         return json;
     }
 
@@ -170,10 +172,11 @@ public class ActionRowImpl extends AbstractComponentImpl
                 components.stream().collect(Collectors.groupingBy(Component::getType));
         // TODO: You can't mix components right now but maybe in the future, we need to check back
         // on this when that happens
-        if (groups.size() > 1)
+        if (groups.size() > 1) {
             throw new IllegalArgumentException(
                     "Cannot create action row containing different component types! Provided: "
                             + groups.keySet());
+        }
 
         for (Map.Entry<Component.Type, List<ActionRowChildComponent>> entry : groups.entrySet()) {
             Component.Type type = entry.getKey();
@@ -203,8 +206,12 @@ public class ActionRowImpl extends AbstractComponentImpl
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof ActionRowImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ActionRowImpl)) {
+            return false;
+        }
 
         return components.equals(((ActionRowImpl) obj).components);
     }

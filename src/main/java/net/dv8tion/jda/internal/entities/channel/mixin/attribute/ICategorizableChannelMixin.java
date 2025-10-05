@@ -28,22 +28,28 @@ public interface ICategorizableChannelMixin<T extends ICategorizableChannelMixin
     @Override
     default boolean isSynced() {
         IPermissionContainerMixin<?> parent = (IPermissionContainerMixin<?>) getParentCategory();
-        if (parent == null)
+        if (parent == null) {
             return true; // Channels without a parent category are always considered synced. Also
-        // the case for categories.
+            // the case for categories.
 
+        }
         TLongObjectMap<PermissionOverride> parentOverrides = parent.getPermissionOverrideMap();
         TLongObjectMap<PermissionOverride> overrides = getPermissionOverrideMap();
-        if (parentOverrides.size() != overrides.size()) return false;
+        if (parentOverrides.size() != overrides.size()) {
+            return false;
+        }
 
         // Check that each override matches with the parent override
         for (PermissionOverride override : parentOverrides.valueCollection()) {
             PermissionOverride ourOverride = overrides.get(override.getIdLong());
-            if (ourOverride == null) // this means we don't have the parent override => not synced
-            return false;
+            if (ourOverride == null) { // this means we don't have the parent override => not synced
+                return false;
+            }
             // Permissions are different => not synced
             if (ourOverride.getAllowedRaw() != override.getAllowedRaw()
-                    || ourOverride.getDeniedRaw() != override.getDeniedRaw()) return false;
+                    || ourOverride.getDeniedRaw() != override.getDeniedRaw()) {
+                return false;
+            }
         }
 
         // All overrides exist and are the same as the parent => synced

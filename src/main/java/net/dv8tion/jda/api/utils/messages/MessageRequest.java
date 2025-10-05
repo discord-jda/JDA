@@ -610,7 +610,9 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     default R mentionUsers(@Nonnull long... userIds) {
         Checks.notNull(userIds, "UserId array");
         String[] stringIds = new String[userIds.length];
-        for (int i = 0; i < userIds.length; i++) stringIds[i] = Long.toUnsignedString(userIds[i]);
+        for (int i = 0; i < userIds.length; i++) {
+            stringIds[i] = Long.toUnsignedString(userIds[i]);
+        }
         return mentionUsers(stringIds);
     }
 
@@ -687,7 +689,9 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     default R mentionRoles(@Nonnull long... roleIds) {
         Checks.notNull(roleIds, "RoleId array");
         String[] stringIds = new String[roleIds.length];
-        for (int i = 0; i < roleIds.length; i++) stringIds[i] = Long.toUnsignedString(roleIds[i]);
+        for (int i = 0; i < roleIds.length; i++) {
+            stringIds[i] = Long.toUnsignedString(roleIds[i]);
+        }
         return mentionRoles(stringIds);
     }
 

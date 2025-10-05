@@ -59,13 +59,15 @@ public class ThreadingProviderConfig {
     }
 
     private void init(ThreadPoolProvider<?> provider, int shardTotal) {
-        if (provider instanceof ThreadPoolProvider.LazySharedProvider)
+        if (provider instanceof ThreadPoolProvider.LazySharedProvider) {
             ((ThreadPoolProvider.LazySharedProvider<?>) provider).init(shardTotal);
+        }
     }
 
     private void shutdown(ThreadPoolProvider<?> provider) {
-        if (provider instanceof ThreadPoolProvider.LazySharedProvider)
+        if (provider instanceof ThreadPoolProvider.LazySharedProvider) {
             ((ThreadPoolProvider.LazySharedProvider<?>) provider).shutdown();
+        }
     }
 
     public void init(int shardTotal) {

@@ -194,7 +194,9 @@ public interface Component {
         @Nonnull
         public static Type fromKey(int type) {
             for (Type t : values()) {
-                if (t.key == type) return t;
+                if (t.key == type) {
+                    return t;
+                }
             }
             return UNKNOWN;
         }

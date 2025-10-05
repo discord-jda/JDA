@@ -30,7 +30,9 @@ public class WebhookMessageDeleteActionImpl
     @Override
     protected Route.CompiledRoute finalizeRoute() {
         Route.CompiledRoute route = super.finalizeRoute();
-        if (threadId != null) route = route.withQueryParams("thread_id", threadId);
+        if (threadId != null) {
+            route = route.withQueryParams("thread_id", threadId);
+        }
         return route;
     }
 }

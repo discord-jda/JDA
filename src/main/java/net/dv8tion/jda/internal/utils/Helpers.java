@@ -112,58 +112,88 @@ public final class Helpers {
     }
 
     public static boolean containsWhitespace(final CharSequence seq) {
-        if (isEmpty(seq)) return false;
+        if (isEmpty(seq)) {
+            return false;
+        }
         for (int i = 0; i < seq.length(); i++) {
-            if (Character.isWhitespace(seq.charAt(i))) return true;
+            if (Character.isWhitespace(seq.charAt(i))) {
+                return true;
+            }
         }
         return false;
     }
 
     public static boolean isBlank(final CharSequence seq) {
-        if (isEmpty(seq)) return true;
+        if (isEmpty(seq)) {
+            return true;
+        }
         for (int i = 0; i < seq.length(); i++) {
-            if (!Character.isWhitespace(seq.charAt(i))) return false;
+            if (!Character.isWhitespace(seq.charAt(i))) {
+                return false;
+            }
         }
         return true;
     }
 
     public static int countMatches(final CharSequence seq, final char c) {
-        if (isEmpty(seq)) return 0;
+        if (isEmpty(seq)) {
+            return 0;
+        }
         int count = 0;
         for (int i = 0; i < seq.length(); i++) {
-            if (seq.charAt(i) == c) count++;
+            if (seq.charAt(i) == c) {
+                count++;
+            }
         }
         return count;
     }
 
     public static String truncate(final String input, final int maxWidth) {
-        if (input == null) return null;
+        if (input == null) {
+            return null;
+        }
         Checks.notNegative(maxWidth, "maxWidth");
-        if (input.length() <= maxWidth) return input;
-        if (maxWidth == 0) return "";
+        if (input.length() <= maxWidth) {
+            return input;
+        }
+        if (maxWidth == 0) {
+            return "";
+        }
         return input.substring(0, maxWidth);
     }
 
     public static String rightPad(final String input, final int size) {
         int pads = size - input.length();
-        if (pads <= 0) return input;
+        if (pads <= 0) {
+            return input;
+        }
         StringBuilder out = new StringBuilder(input);
-        for (int i = pads; i > 0; i--) out.append(' ');
+        for (int i = pads; i > 0; i--) {
+            out.append(' ');
+        }
         return out.toString();
     }
 
     public static String leftPad(final String input, final int size) {
         int pads = size - input.length();
-        if (pads <= 0) return input;
+        if (pads <= 0) {
+            return input;
+        }
         StringBuilder out = new StringBuilder();
-        for (int i = pads; i > 0; i--) out.append(' ');
+        for (int i = pads; i > 0; i--) {
+            out.append(' ');
+        }
         return out.append(input).toString();
     }
 
     public static boolean isNumeric(final String input) {
-        if (isEmpty(input)) return false;
+        if (isEmpty(input)) {
+            return false;
+        }
         for (char c : input.toCharArray()) {
-            if (!Character.isDigit(c)) return false;
+            if (!Character.isDigit(c)) {
+                return false;
+            }
         }
         return true;
     }
@@ -198,20 +228,30 @@ public final class Helpers {
     // ## CollectionUtils ##
 
     public static boolean deepEquals(Collection<?> first, Collection<?> second) {
-        if (first == second) return true;
-        if (first == null || second == null || first.size() != second.size()) return false;
+        if (first == second) {
+            return true;
+        }
+        if (first == null || second == null || first.size() != second.size()) {
+            return false;
+        }
         for (Iterator<?> itFirst = first.iterator(), itSecond = second.iterator();
                 itFirst.hasNext(); ) {
             Object elementFirst = itFirst.next();
             Object elementSecond = itSecond.next();
-            if (!Objects.equals(elementFirst, elementSecond)) return false;
+            if (!Objects.equals(elementFirst, elementSecond)) {
+                return false;
+            }
         }
         return true;
     }
 
     public static boolean deepEqualsUnordered(Collection<?> first, Collection<?> second) {
-        if (first == second) return true;
-        if (first == null || second == null) return false;
+        if (first == second) {
+            return true;
+        }
+        if (first == null || second == null) {
+            return false;
+        }
         return first.size() == second.size() && second.containsAll(first);
     }
 
@@ -250,8 +290,9 @@ public final class Helpers {
             Stream<I> stream, Function<I, O> mapper, String errorDescription) {
         return stream.map(tryMap(mapper))
                 .peek(result -> {
-                    if (result.isFailure())
+                    if (result.isFailure()) {
                         JDAImpl.LOG.error(errorDescription, result.getFailure());
+                    }
                 })
                 .filter(Result::isSuccess)
                 .map(Result::get);
@@ -261,7 +302,9 @@ public final class Helpers {
 
     public static <T extends Throwable> T appendCause(T throwable, Throwable cause) {
         Throwable t = throwable;
-        while (t.getCause() != null) t = t.getCause();
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
         t.initCause(cause);
         return throwable;
     }
@@ -269,7 +312,9 @@ public final class Helpers {
     public static boolean hasCause(Throwable throwable, Class<? extends Throwable> cause) {
         Throwable cursor = throwable;
         while (cursor != null) {
-            if (cause.isInstance(cursor)) return true;
+            if (cause.isInstance(cursor)) {
+                return true;
+            }
             cursor = cursor.getCause();
         }
         return false;
@@ -325,10 +370,18 @@ public final class Helpers {
                 - TimeUnit.MINUTES.toSeconds(minutes);
 
         StringJoiner joiner = new StringJoiner(" ");
-        if (days > 0) joiner.add(days + " days");
-        if (hours > 0) joiner.add(hours + " hours");
-        if (minutes > 0) joiner.add(minutes + " minutes");
-        if (seconds > 0) joiner.add(seconds + " seconds");
+        if (days > 0) {
+            joiner.add(days + " days");
+        }
+        if (hours > 0) {
+            joiner.add(hours + " hours");
+        }
+        if (minutes > 0) {
+            joiner.add(minutes + " minutes");
+        }
+        if (seconds > 0) {
+            joiner.add(seconds + " seconds");
+        }
 
         return raw + " (" + joiner + ")";
     }

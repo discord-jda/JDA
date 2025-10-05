@@ -103,7 +103,9 @@ public class JDABuilderTest extends AbstractSnapshotTest {
 
         builder = new TestJDABuilder(0);
         builder.applyIntents();
-        if (requiredIntent != null) builder.setEnabledIntents(requiredIntent);
+        if (requiredIntent != null) {
+            builder.setEnabledIntents(requiredIntent);
+        }
         builder.enableCache(cacheFlag);
 
         assertThatNoException().isThrownBy(builder::checkIntents);

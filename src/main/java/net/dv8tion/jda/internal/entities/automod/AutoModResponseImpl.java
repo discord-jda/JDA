@@ -98,12 +98,20 @@ public class AutoModResponseImpl implements AutoModResponse {
     public DataObject toData() {
         DataObject action = DataObject.empty();
         action.put("type", type.getKey());
-        if (type == Type.BLOCK_MESSAGE && customMessage == null) return action;
+        if (type == Type.BLOCK_MESSAGE && customMessage == null) {
+            return action;
+        }
 
         DataObject metadata = DataObject.empty();
-        if (customMessage != null) metadata.put("custom_message", customMessage);
-        if (channel != null) metadata.put("channel_id", channel.getId());
-        if (timeoutDuration > 0) metadata.put("duration_seconds", timeoutDuration);
+        if (customMessage != null) {
+            metadata.put("custom_message", customMessage);
+        }
+        if (channel != null) {
+            metadata.put("channel_id", channel.getId());
+        }
+        if (timeoutDuration > 0) {
+            metadata.put("duration_seconds", timeoutDuration);
+        }
         action.put("metadata", metadata);
         return action;
     }
@@ -115,8 +123,12 @@ public class AutoModResponseImpl implements AutoModResponse {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof AutoModResponseImpl)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof AutoModResponseImpl)) {
+            return false;
+        }
         AutoModResponseImpl o = (AutoModResponseImpl) obj;
         return type == o.type;
     }

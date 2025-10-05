@@ -50,10 +50,14 @@ public abstract class DeferrableCallbackActionImpl
 
     private void parseOptionalBody(Response response) {
         okhttp3.Response rawResponse = response.getRawResponse();
-        if (rawResponse == null) return;
+        if (rawResponse == null) {
+            return;
+        }
 
         ResponseBody body = rawResponse.body();
-        if (body == null) return;
+        if (body == null) {
+            return;
+        }
 
         MediaType mediaType = body.contentType();
         if (mediaType != null && mediaType.toString().startsWith("application/json")) {

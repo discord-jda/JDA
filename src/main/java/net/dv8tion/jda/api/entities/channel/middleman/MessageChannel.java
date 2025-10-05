@@ -160,9 +160,13 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull List<String> messageIds) {
-        if (messageIds == null || messageIds.isEmpty()) return Collections.emptyList();
+        if (messageIds == null || messageIds.isEmpty()) {
+            return Collections.emptyList();
+        }
         long[] ids = new long[messageIds.size()];
-        for (int i = 0; i < ids.length; i++) ids[i] = MiscUtil.parseSnowflake(messageIds.get(i));
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = MiscUtil.parseSnowflake(messageIds.get(i));
+        }
         return purgeMessagesById(ids);
     }
 
@@ -186,7 +190,9 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull String... messageIds) {
-        if (messageIds == null || messageIds.length == 0) return Collections.emptyList();
+        if (messageIds == null || messageIds.length == 0) {
+            return Collections.emptyList();
+        }
         return purgeMessagesById(Arrays.asList(messageIds));
     }
 
@@ -214,7 +220,9 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull Message... messages) {
-        if (messages == null || messages.length == 0) return Collections.emptyList();
+        if (messages == null || messages.length == 0) {
+            return Collections.emptyList();
+        }
         return purgeMessages(Arrays.asList(messages));
     }
 
@@ -244,7 +252,9 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages) {
-        if (messages == null || messages.isEmpty()) return Collections.emptyList();
+        if (messages == null || messages.isEmpty()) {
+            return Collections.emptyList();
+        }
         return purgeMessagesById(messages.stream()
                 .filter(m -> m.getType().canDelete())
                 .mapToLong(Message::getIdLong)
@@ -285,7 +295,9 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds) {
-        if (messageIds == null || messageIds.length == 0) return Collections.emptyList();
+        if (messageIds == null || messageIds.length == 0) {
+            return Collections.emptyList();
+        }
         List<CompletableFuture<Void>> list = new ArrayList<>(messageIds.length);
         TreeSet<Long> sortedIds = new TreeSet<>(Comparator.reverseOrder());
         for (long messageId : messageIds) sortedIds.add(messageId);

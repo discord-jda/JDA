@@ -170,7 +170,9 @@ public interface ApplicationTeam extends ISnowflake {
     @Nullable
     default TeamMember getMemberById(long userId) {
         for (TeamMember member : getMembers()) {
-            if (member.getUser().getIdLong() == userId) return member;
+            if (member.getUser().getIdLong() == userId) {
+                return member;
+            }
         }
         return null;
     }

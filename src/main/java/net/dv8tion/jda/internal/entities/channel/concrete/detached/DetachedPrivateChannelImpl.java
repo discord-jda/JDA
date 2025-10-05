@@ -134,8 +134,12 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof DetachedPrivateChannelImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof DetachedPrivateChannelImpl)) {
+            return false;
+        }
         DetachedPrivateChannelImpl impl = (DetachedPrivateChannelImpl) obj;
         return impl.id == this.id;
     }

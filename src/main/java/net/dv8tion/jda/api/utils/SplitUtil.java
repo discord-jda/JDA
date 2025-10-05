@@ -137,8 +137,12 @@ public class SplitUtil {
     public static List<String> split(
             @Nonnull String input, int limit, boolean trim, @Nonnull Strategy... strategies) {
         Checks.notNull(input, "Input string");
-        if (input.isEmpty() || input.length() <= limit) return Collections.singletonList(input);
-        if (strategies.length == 0) strategies = new Strategy[] {Strategy.ANYWHERE};
+        if (input.isEmpty() || input.length() <= limit) {
+            return Collections.singletonList(input);
+        }
+        if (strategies.length == 0) {
+            strategies = new Strategy[] {Strategy.ANYWHERE};
+        }
         int offset = 0;
         List<String> chunks = new LinkedList<>();
 
@@ -160,12 +164,17 @@ public class SplitUtil {
                 }
             }
 
-            if (chunk == null)
+            if (chunk == null) {
                 throw new IllegalStateException(
                         "None of the strategies successfully split the string. Try adding"
                                 + " Strategy.ANYWHERE to the end of your strategy list.");
-            if (trim) chunk = chunk.trim();
-            if (chunk.isEmpty()) continue;
+            }
+            if (trim) {
+                chunk = chunk.trim();
+            }
+            if (chunk.isEmpty()) {
+                continue;
+            }
             chunks.add(chunk);
         }
 
@@ -247,7 +256,9 @@ public class SplitUtil {
             Checks.notNull(predicate, "Predicate");
             return (string, offset, limit) -> {
                 for (int i = offset + limit; i > offset; i--) {
-                    if (predicate.test(string.charAt(i))) return i;
+                    if (predicate.test(string.charAt(i))) {
+                        return i;
+                    }
                 }
                 return -1;
             };

@@ -103,8 +103,9 @@ public class GenericChannelEvent extends Event {
      */
     @Nonnull
     public Guild getGuild() {
-        if (!isFromGuild())
+        if (!isFromGuild()) {
             throw new IllegalStateException("This channel event did not happen in a guild");
+        }
         return ((GuildChannel) channel).getGuild();
     }
 }

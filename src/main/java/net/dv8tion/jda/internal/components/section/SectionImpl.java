@@ -181,14 +181,20 @@ public class SectionImpl extends AbstractComponentImpl
         json.put("type", getType().getKey());
         json.put("accessory", accessory);
         json.put("components", DataArray.fromCollection(getContentComponents()));
-        if (uniqueId >= 0) json.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof SectionImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof SectionImpl)) {
+            return false;
+        }
         SectionImpl that = (SectionImpl) o;
         return uniqueId == that.uniqueId
                 && Objects.equals(components, that.components)

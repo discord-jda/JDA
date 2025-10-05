@@ -72,8 +72,9 @@ public class InteractionImpl implements Interaction {
         this.type = data.getInt("type");
         this.guild = data.optObject("guild")
                 .map(guildJson -> {
-                    if (!guildJson.hasKey("preferred_locale"))
+                    if (!guildJson.hasKey("preferred_locale")) {
                         guildJson.put("preferred_locale", data.getString("guild_locale", "en-US"));
+                    }
                     return interactionEntityBuilder.getOrCreateGuild(guildJson);
                 })
                 .orElse(null);
@@ -92,26 +93,31 @@ public class InteractionImpl implements Interaction {
             user = member.getUser();
 
             GuildChannel channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
-            if (channel == null && channelType.isThread())
+            if (channel == null && channelType.isThread()) {
                 channel = api.getEntityBuilder()
                         .createThreadChannel(
                                 (GuildImpl) guild, channelJson, guild.getIdLong(), false);
-            if (channel == null)
+            }
+            if (channel == null) {
                 throw new IllegalStateException(
                         "Failed to create channel instance for interaction! Channel Type: "
                                 + channelJson.getInt("type"));
+            }
             this.channel = channel;
         } else if (guild instanceof DetachedGuildImpl) {
             member = interactionEntityBuilder.createMember(guild, data.getObject("member"));
             user = member.getUser();
 
-            if (channelType.isThread())
+            if (channelType.isThread()) {
                 channel = interactionEntityBuilder.createThreadChannel(guild, channelJson);
-            else channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
-            if (channel == null)
+            } else {
+                channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
+            }
+            if (channel == null) {
                 throw new IllegalStateException(
                         "Failed to create channel instance for interaction! Channel Type: "
                                 + channelJson.getInt("type"));
+            }
         } else {
             // (G)DMs
             user = jda.getEntityBuilder().createUser(userObj);

@@ -44,17 +44,25 @@ public class SerializationUtil {
             ObjectNode out = objectMapper.createObjectNode();
             for (Map.Entry<String, JsonNode> e : n.properties()) {
                 JsonNode v = e.getValue();
-                if (v.isValueNode()) out.set(e.getKey(), v);
-                else if (v.isArray()) out.put(e.getKey(), TRUNCATED_ARRAY);
-                else out.put(e.getKey(), TRUNCATED_OBJECT);
+                if (v.isValueNode()) {
+                    out.set(e.getKey(), v);
+                } else if (v.isArray()) {
+                    out.put(e.getKey(), TRUNCATED_ARRAY);
+                } else {
+                    out.put(e.getKey(), TRUNCATED_OBJECT);
+                }
             }
             return out;
         } else if (n.isArray()) {
             ArrayNode out = objectMapper.createArrayNode();
             n.values().forEachRemaining(v -> {
-                if (v.isValueNode()) out.add(v);
-                else if (v.isArray()) out.add(TRUNCATED_ARRAY);
-                else out.add(TRUNCATED_OBJECT);
+                if (v.isValueNode()) {
+                    out.add(v);
+                } else if (v.isArray()) {
+                    out.add(TRUNCATED_ARRAY);
+                } else {
+                    out.add(TRUNCATED_OBJECT);
+                }
             });
             return out;
         }

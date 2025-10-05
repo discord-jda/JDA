@@ -113,11 +113,15 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                             .mapToInt(bucket -> bucket.getRequests().size())
                             .sum();
 
-                    if (count > 0) log.info("Waiting for {} requests to finish.", count);
+                    if (count > 0) {
+                        log.info("Waiting for {} requests to finish.", count);
+                    }
                     doShutdown = count == 0;
                 }
             }
-            if (doShutdown && !isShutdown) shutdown();
+            if (doShutdown && !isShutdown) {
+                shutdown();
+            }
         });
     }
 
@@ -138,8 +142,11 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                     .peek(Work::cancel)
                     .count();
 
-            if (cancelled == 1) log.warn("Cancelled 1 request!");
-            else if (cancelled > 1) log.warn("Cancelled {} requests!", cancelled);
+            if (cancelled == 1) {
+                log.warn("Cancelled 1 request!");
+            } else if (cancelled > 1) {
+                log.warn("Cancelled {} requests!", cancelled);
+            }
             return cancelled;
         });
     }
@@ -163,25 +170,34 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             while (entries.hasNext()) {
                 Map.Entry<String, Bucket> entry = entries.next();
                 Bucket bucket = entry.getValue();
-                if (isShutdown) bucket.requests.forEach(Work::cancel); // Cancel all requests
+                if (isShutdown) {
+                    bucket.requests.forEach(Work::cancel); // Cancel all requests
+                }
                 bucket.requests.removeIf(Work::isSkipped); // Remove cancelled requests
 
                 // Check if the bucket is empty
                 if (bucket.requests.isEmpty() && !rateLimitQueue.containsKey(bucket)) {
                     // remove uninit if requests are empty
-                    if (bucket.isUninit()) entries.remove();
-                    // If the requests of the bucket are drained and the reset is expired
-                    // the bucket has no valuable information
-                    else if (bucket.reset <= getNow()) entries.remove();
-                    // Remove empty buckets when the rate limiter is stopped
-                    else if (isStopped) entries.remove();
+                    if (bucket.isUninit()) {
+                        entries.remove();
+                        // If the requests of the bucket are drained and the reset is expired
+                        // the bucket has no valuable information
+                    } else if (bucket.reset <= getNow()) {
+                        entries.remove();
+                        // Remove empty buckets when the rate limiter is stopped
+                    } else if (isStopped) {
+                        entries.remove();
+                    }
                 }
             }
 
             // Log how many buckets were removed
             size -= buckets.size();
-            if (size > 0) log.debug("Removed {} expired buckets", size);
-            else if (isStopped && !isShutdown) shutdown();
+            if (size > 0) {
+                log.debug("Removed {} expired buckets", size);
+            } else if (isStopped && !isShutdown) {
+                shutdown();
+            }
         });
     }
 
@@ -196,32 +212,46 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             // Get or create a bucket for the hash + major parameters
             String bucketId = hash + ":" + route.getMajorParameters();
             return this.buckets.computeIfAbsent(bucketId, (id) -> {
-                if (route.getBaseRoute().isInteractionBucket()) return new InteractionBucket(id);
-                else return new ClassicBucket(id);
+                if (route.getBaseRoute().isInteractionBucket()) {
+                    return new InteractionBucket(id);
+                } else {
+                    return new ClassicBucket(id);
+                }
             });
         });
     }
 
     private void scheduleElastic(Bucket bucket) {
-        if (isShutdown) return;
+        if (isShutdown) {
+            return;
+        }
 
         ExecutorService elastic = config.getElastic();
         ScheduledExecutorService scheduler = config.getScheduler();
 
         try {
             // Avoid context switch if unnecessary
-            if (elastic == scheduler) bucket.run();
-            else elastic.execute(bucket);
+            if (elastic == scheduler) {
+                bucket.run();
+            } else {
+                elastic.execute(bucket);
+            }
         } catch (RejectedExecutionException ex) {
-            if (!isShutdown) log.error("Failed to execute bucket worker", ex);
+            if (!isShutdown) {
+                log.error("Failed to execute bucket worker", ex);
+            }
         } catch (Throwable t) {
             log.error("Caught throwable in bucket worker", t);
-            if (t instanceof Error) throw t;
+            if (t instanceof Error) {
+                throw t;
+            }
         }
     }
 
     private void runBucket(Bucket bucket) {
-        if (isShutdown) return;
+        if (isShutdown) {
+            return;
+        }
         // Schedule a new bucket worker if no worker is running
         MiscUtil.locked(
                 lock,
@@ -297,7 +327,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                         // don't log warning if we hit the rate limit for the first time,
                         // likely due to initialization of the bucket
                         // unless its a long retry-after delay (more than a minute)
-                        if (firstHit)
+                        if (firstHit) {
                             log.debug(
                                     "Encountered 429 on route {} with bucket {}"
                                             + " Retry-After: {} ms Scope: {}",
@@ -305,7 +335,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                                     bucket.bucketId,
                                     retryAfter,
                                     scope);
-                        else
+                        } else {
                             log.warn(
                                     "Encountered 429 on route {} with bucket {}"
                                             + " Retry-After: {} ms Scope: {}",
@@ -313,6 +343,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                                     bucket.bucketId,
                                     retryAfter,
                                     scope);
+                        }
                     }
 
                     log.trace(
@@ -324,7 +355,9 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
 
                 // If hash is null this means we didn't get enough information to update a
                 // bucket
-                if (hash == null) return bucket;
+                if (hash == null) {
+                    return bucket;
+                }
 
                 // Update the bucket parameters with new information
                 String limitHeader = headers.get(LIMIT_HEADER);
@@ -334,8 +367,11 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
 
                 //                bucket.limit = (int) Math.max(1L, parseLong(limitHeader));
                 bucket.remaining = (int) parseLong(remainingHeader);
-                if (config.isRelative()) bucket.reset = now + parseDouble(resetAfterHeader);
-                else bucket.reset = parseDouble(resetHeader);
+                if (config.isRelative()) {
+                    bucket.reset = now + parseDouble(resetAfterHeader);
+                } else {
+                    bucket.reset = parseDouble(resetHeader);
+                }
                 log.trace(
                         "Updated bucket {} to ({}/{}, {})",
                         bucket.bucketId,
@@ -379,7 +415,9 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
         }
 
         public void retry(@Nonnull Work request) {
-            if (!moveRequest(request)) requests.addFirst(request);
+            if (!moveRequest(request)) {
+                requests.addFirst(request);
+            }
         }
 
         public long getReset() {
@@ -416,9 +454,14 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             // Schedule backoff if requests are not done
             MiscUtil.locked(lock, () -> {
                 rateLimitQueue.remove(this);
-                if (!requests.isEmpty()) runBucket(this);
-                else if (isStopped) buckets.remove(bucketId);
-                if (isStopped && buckets.isEmpty()) shutdown();
+                if (!requests.isEmpty()) {
+                    runBucket(this);
+                } else if (isStopped) {
+                    buckets.remove(bucketId);
+                }
+                if (isStopped && buckets.isEmpty()) {
+                    shutdown();
+                }
             });
         }
 
@@ -442,11 +485,17 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
         protected boolean execute(@Nonnull Work request) {
             try {
                 Response response = request.execute();
-                if (response != null) updateBucket(request.getRoute(), response);
-                if (!request.isDone()) retry(request);
+                if (response != null) {
+                    updateBucket(request.getRoute(), response);
+                }
+                if (!request.isDone()) {
+                    retry(request);
+                }
             } catch (Throwable ex) {
                 log.error("Encountered exception trying to execute request", ex);
-                if (ex instanceof Error) throw (Error) ex;
+                if (ex instanceof Error) {
+                    throw (Error) ex;
+                }
                 return true;
             }
             return false;
@@ -462,11 +511,12 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                     Work request = requests.peekFirst(); // this *should* not be null
                     String baseRoute =
                             request != null ? request.getRoute().getBaseRoute().toString() : "N/A";
-                    if (!isGlobalRateLimit() && rateLimit >= 1000 * 60 * 30) // 30 minutes
-                    log.warn(
+                    if (!isGlobalRateLimit() && rateLimit >= 1000 * 60 * 30) { // 30 minutes
+                        log.warn(
                                 "Encountered long {} minutes Rate-Limit on route {}",
                                 TimeUnit.MILLISECONDS.toMinutes(rateLimit),
                                 baseRoute);
+                    }
                     log.debug(
                             "Backing off {} ms for bucket {} on route {}",
                             rateLimit,
@@ -476,11 +526,17 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                 }
 
                 Work request = requests.removeFirst();
-                if (request.isSkipped()) continue;
+                if (request.isSkipped()) {
+                    continue;
+                }
 
-                if (isUninit() && moveRequest(request)) continue;
+                if (isUninit() && moveRequest(request)) {
+                    continue;
+                }
 
-                if (execute(request)) break;
+                if (execute(request)) {
+                    break;
+                }
             }
 
             backoff();
@@ -498,8 +554,12 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (!(obj instanceof Bucket)) return false;
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Bucket)) {
+                return false;
+            }
             return this.bucketId.equals(((Bucket) obj).bucketId);
         }
     }

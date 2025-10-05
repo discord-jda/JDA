@@ -36,7 +36,9 @@ public class InviteCreateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
         Guild realGuild = getJDA().getGuildById(guildId);
         if (realGuild == null) {
             EventCache.LOG.debug("Caching INVITE_CREATE for unknown guild with id {}", guildId);

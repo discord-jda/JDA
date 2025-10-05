@@ -90,7 +90,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     public void ready() {
         MiscUtil.locked(mutex, () -> {
-            if (timeoutHandle != null) timeoutHandle.cancel(false);
+            if (timeoutHandle != null) {
+                timeoutHandle.cancel(false);
+            }
             isReady = true;
             readyCallbacks.forEach(TriggerRestAction::run);
         });
@@ -102,13 +104,14 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
                 this.exception = exception;
                 if (!readyCallbacks.isEmpty()) // only log this if we even tried any responses
                 {
-                    if (exception instanceof TimeoutException)
+                    if (exception instanceof TimeoutException) {
                         JDALogger.getLog(InteractionHook.class)
                                 .warn(
                                         "Up to {} Interaction Followup Messages Timed out!"
                                                 + " Did you forget to acknowledge the"
                                                 + " interaction?",
                                         readyCallbacks.size());
+                    }
                     readyCallbacks.forEach(callback -> callback.fail(exception));
                 }
             }
@@ -117,9 +120,13 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     private <T extends TriggerRestAction<R>, R> T onReady(T runnable) {
         return MiscUtil.locked(mutex, () -> {
-            if (isReady) runnable.run();
-            else if (exception != null) runnable.fail(exception);
-            else readyCallbacks.add(runnable);
+            if (isReady) {
+                runnable.run();
+            } else if (exception != null) {
+                runnable.fail(exception);
+            } else {
+                readyCallbacks.add(runnable);
+            }
             return runnable;
         });
     }
@@ -133,17 +140,19 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     @Nonnull
     @Override
     public InteractionImpl getInteraction() {
-        if (interaction == null)
+        if (interaction == null) {
             throw new IllegalStateException("Cannot get interaction instance from this webhook.");
+        }
         return interaction;
     }
 
     @Nonnull
     @Override
     public InteractionCallbackResponse getCallbackResponse() {
-        if (!hasCallbackResponse())
+        if (!hasCallbackResponse()) {
             throw new IllegalStateException(
                     "Cannot get callback response. Has this interaction been acknowledged yet?");
+        }
         return callbackResponse;
     }
 
@@ -182,7 +191,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     @Nonnull
     @Override
     public WebhookMessageEditActionImpl<Message> editRequest(String messageId) {
-        if (!"@original".equals(messageId)) Checks.isSnowflake(messageId);
+        if (!"@original".equals(messageId)) {
+            Checks.isSnowflake(messageId);
+        }
 
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(
                 api.getSelfUser().getApplicationId(), token, messageId);
@@ -196,7 +207,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     @Nonnull
     @Override
     public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId) {
-        if (!"@original".equals(messageId)) Checks.isSnowflake(messageId);
+        if (!"@original".equals(messageId)) {
+            Checks.isSnowflake(messageId);
+        }
         Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(
                 api.getSelfUser().getApplicationId(), token, messageId);
         WebhookMessageDeleteActionImpl action = new WebhookMessageDeleteActionImpl(api, route);
@@ -207,7 +220,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     @Nonnull
     @Override
     public WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId) {
-        if (!"@original".equals(messageId)) Checks.isSnowflake(messageId);
+        if (!"@original".equals(messageId)) {
+            Checks.isSnowflake(messageId);
+        }
         Route.CompiledRoute route = Route.Interactions.GET_MESSAGE.compile(
                 api.getSelfUser().getApplicationId(), token, messageId);
         WebhookMessageRetrieveActionImpl action = new WebhookMessageRetrieveActionImpl(
@@ -217,7 +232,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     }
 
     private boolean checkExpired() {
-        if (isExpired()) throw new InteractionExpiredException();
+        if (isExpired()) {
+            throw new InteractionExpiredException();
+        }
         return true;
     }
 
@@ -240,7 +257,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
         // Try finding the channel in cache through the id in the message
         long channelId = json.getUnsignedLong("channel_id");
-        if (channel == null) channel = api.getChannelById(MessageChannel.class, channelId);
+        if (channel == null) {
+            channel = api.getChannelById(MessageChannel.class, channelId);
+        }
 
         // Then build the message with the information we have
         ReceivedMessage message =

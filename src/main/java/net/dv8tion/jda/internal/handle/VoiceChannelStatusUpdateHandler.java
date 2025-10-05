@@ -29,7 +29,9 @@ public class VoiceChannelStatusUpdateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         long id = content.getUnsignedLong("id");
         VoiceChannelImpl channel = (VoiceChannelImpl) getJDA().getVoiceChannelById(id);

@@ -69,7 +69,9 @@ public class ForumTagData implements BaseForumTag {
         ForumTagData data = new ForumTagData(tag.getName())
                 .setEmoji(tag.getEmoji())
                 .setModerated(tag.isModerated());
-        if (tag instanceof ForumTagSnowflake) data.id = ((ForumTagSnowflake) tag).getIdLong();
+        if (tag instanceof ForumTagSnowflake) {
+            data.id = ((ForumTagSnowflake) tag).getIdLong();
+        }
         return data;
     }
 
@@ -144,7 +146,9 @@ public class ForumTagData implements BaseForumTag {
     @Override
     public DataObject toData() {
         DataObject json = BaseForumTag.super.toData();
-        if (id != 0) json.put("id", Long.toUnsignedString(id));
+        if (id != 0) {
+            json.put("id", Long.toUnsignedString(id));
+        }
         return json;
     }
 

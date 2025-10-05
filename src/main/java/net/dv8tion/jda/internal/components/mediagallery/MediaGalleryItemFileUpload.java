@@ -84,7 +84,9 @@ public class MediaGalleryItemFileUpload
     @Nullable
     @Override
     public String getDescription() {
-        if (description != null) return description;
+        if (description != null) {
+            return description;
+        }
         return file.getDescription(); // FileUpload is mutable
     }
 
@@ -104,8 +106,12 @@ public class MediaGalleryItemFileUpload
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof MediaGalleryItemFileUpload)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MediaGalleryItemFileUpload)) {
+            return false;
+        }
         MediaGalleryItemFileUpload that = (MediaGalleryItemFileUpload) o;
         return spoiler == that.spoiler
                 && Objects.equals(file, that.file)

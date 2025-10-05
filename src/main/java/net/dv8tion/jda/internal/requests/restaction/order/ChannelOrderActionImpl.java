@@ -115,25 +115,31 @@ public class ChannelOrderActionImpl extends OrderActionImpl<GuildChannel, Channe
     @Override
     public ChannelOrderAction setCategory(@Nullable Category category, boolean syncPermissions) {
         GuildChannel channel = getSelectedEntity();
-        if (!(channel instanceof ICategorizableChannel) && category != null)
+        if (!(channel instanceof ICategorizableChannel) && category != null) {
             throw new IllegalStateException(
                     "Cannot move channel of type " + channel.getType() + " to category!");
-        if (category != null)
+        }
+        if (category != null) {
             Checks.check(
                     category.getGuild().equals(getGuild()), "Category is not from the same guild!");
+        }
 
         long id = channel.getIdLong();
         parent.put(id, category == null ? 0 : category.getIdLong());
-        if (syncPermissions) lockPermissions.add(id);
-        else lockPermissions.remove(id);
+        if (syncPermissions) {
+            lockPermissions.add(id);
+        } else {
+            lockPermissions.remove(id);
+        }
         return this;
     }
 
     @Override
     protected RequestBody finalizeData() {
         final Member self = guild.getSelfMember();
-        if (!self.hasPermission(Permission.MANAGE_CHANNEL))
+        if (!self.hasPermission(Permission.MANAGE_CHANNEL)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_CHANNEL);
+        }
         DataArray array = DataArray.empty();
         for (int i = 0; i < orderList.size(); i++) {
             GuildChannel chan = orderList.get(i);

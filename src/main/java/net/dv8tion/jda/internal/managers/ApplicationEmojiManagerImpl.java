@@ -55,7 +55,9 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
     @CheckReturnValue
     public ApplicationEmojiManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & NAME) == NAME) this.name = null;
+        if ((fields & NAME) == NAME) {
+            this.name = null;
+        }
         return this;
     }
 
@@ -80,7 +82,9 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
-        if (shouldUpdate(NAME)) object.put("name", name);
+        if (shouldUpdate(NAME)) {
+            object.put("name", name);
+        }
         reset();
         return getRequestBody(object);
     }

@@ -66,7 +66,9 @@ public class ScheduledEventMembersPaginationActionImpl
         for (int i = 0; i < array.length(); i++) {
             try {
                 DataObject object = array.getObject(i);
-                if (object.isNull("member")) continue;
+                if (object.isNull("member")) {
+                    continue;
+                }
                 DataObject userObject = object.getObject("user");
                 DataObject memberObject = object.getObject("member");
                 Member member = builder.createMember(
@@ -77,8 +79,12 @@ public class ScheduledEventMembersPaginationActionImpl
             }
         }
 
-        if (order == PaginationOrder.BACKWARD) Collections.reverse(members);
-        if (useCache) cached.addAll(members);
+        if (order == PaginationOrder.BACKWARD) {
+            Collections.reverse(members);
+        }
+        if (useCache) {
+            cached.addAll(members);
+        }
 
         if (!members.isEmpty()) {
             last = members.get(members.size() - 1);

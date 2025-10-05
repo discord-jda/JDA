@@ -344,8 +344,9 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
         json.put("tts", tts);
         json.put("flags", flags);
         json.put("allowed_mentions", mentions);
-        if (files != null && !allDistinctFiles.isEmpty())
+        if (files != null && !allDistinctFiles.isEmpty()) {
             json.put("attachments", MessageUtil.getAttachmentsData(getAllDistinctFiles()));
+        }
 
         return json;
     }

@@ -148,8 +148,9 @@ public class EntitlementPaginationTest extends IntegrationTest {
         void bySkuIds() {
             Set<String> sku = new LinkedHashSet<>();
 
-            for (int i = -5; i < random.nextInt(10); i++)
+            for (int i = -5; i < random.nextInt(10); i++) {
                 sku.add(Long.toUnsignedString(random.nextLong()));
+            }
 
             assertThatRequestFrom(action.skuIds(sku))
                     .hasQueryParams("limit", "100", "sku_ids", String.join(",", sku))

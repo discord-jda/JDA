@@ -115,8 +115,11 @@ public class ActivityImpl implements Activity {
     public Activity withState(@Nullable String state) {
         if (state != null) {
             state = state.trim();
-            if (state.isEmpty()) state = null;
-            else Checks.notLonger(state, MAX_ACTIVITY_STATE_LENGTH, "State");
+            if (state.isEmpty()) {
+                state = null;
+            } else {
+                Checks.notLonger(state, MAX_ACTIVITY_STATE_LENGTH, "State");
+            }
         }
 
         return new ActivityImpl(name, state, url, type);
@@ -124,8 +127,12 @@ public class ActivityImpl implements Activity {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof ActivityImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ActivityImpl)) {
+            return false;
+        }
 
         ActivityImpl oGame = (ActivityImpl) o;
         return oGame.getType() == type
@@ -143,7 +150,9 @@ public class ActivityImpl implements Activity {
     @Override
     public String toString() {
         final EntityString entityString = new EntityString(this).setType(type).setName(name);
-        if (url != null) entityString.addMetadata("url", url);
+        if (url != null) {
+            entityString.addMetadata("url", url);
+        }
 
         return entityString.toString();
     }

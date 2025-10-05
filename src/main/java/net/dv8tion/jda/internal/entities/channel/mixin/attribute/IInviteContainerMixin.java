@@ -60,8 +60,9 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>>
             EntityBuilder entityBuilder = jda.getEntityBuilder();
             DataArray array = response.getArray();
             List<Invite> invites = new ArrayList<>(array.length());
-            for (int i = 0; i < array.length(); i++)
+            for (int i = 0; i < array.length(); i++) {
                 invites.add(entityBuilder.createInvite(array.getObject(i)));
+            }
             return Collections.unmodifiableList(invites);
         });
     }

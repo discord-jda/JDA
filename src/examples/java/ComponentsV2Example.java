@@ -280,8 +280,9 @@ public class ComponentsV2Example extends ListenerAdapter
         final String fileName = path.substring(lastSeparatorIndex + 1);
 
         final InputStream stream = ComponentsV2Example.class.getResourceAsStream(path);
-        if (stream == null)
+        if (stream == null) {
             throw new IllegalArgumentException("Could not find resource at: " + path);
+        }
 
         return FileUpload.fromData(stream, fileName);
     }
@@ -310,8 +311,9 @@ public class ComponentsV2Example extends ListenerAdapter
 
         for (ApplicationEmoji emoji : applicationEmojis)
         {
-            if (emoji.getName().equals(fileNameWithoutExtension))
+            if (emoji.getName().equals(fileNameWithoutExtension)) {
                 return emoji;
+            }
         }
         return jda.createApplicationEmoji(fileNameWithoutExtension, getResourceAsIcon(path)).complete();
     }
@@ -331,8 +333,9 @@ public class ComponentsV2Example extends ListenerAdapter
     private static Icon getResourceAsIcon(@Nonnull String path) throws IOException
     {
         final InputStream stream = ComponentsV2Example.class.getResourceAsStream(path);
-        if (stream == null)
+        if (stream == null) {
             throw new IllegalArgumentException("Could not find resource at: " + path);
+        }
 
         return Icon.from(stream);
     }

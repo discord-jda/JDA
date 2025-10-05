@@ -225,7 +225,9 @@ public class MessageActivity {
         @Nonnull
         public static ActivityType fromId(int id) {
             for (ActivityType activityType : values()) {
-                if (activityType.id == id) return activityType;
+                if (activityType.id == id) {
+                    return activityType;
+                }
             }
             return UNKNOWN;
         }

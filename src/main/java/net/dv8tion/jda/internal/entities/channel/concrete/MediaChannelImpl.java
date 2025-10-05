@@ -202,12 +202,14 @@ public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
 
     @Override
     public MediaChannelImpl setDefaultReaction(DataObject emoji) {
-        if (emoji != null && !emoji.isNull("emoji_id"))
+        if (emoji != null && !emoji.isNull("emoji_id")) {
             this.defaultReaction =
                     new CustomEmojiImpl("", emoji.getUnsignedLong("emoji_id"), false);
-        else if (emoji != null && !emoji.isNull("emoji_name"))
+        } else if (emoji != null && !emoji.isNull("emoji_name")) {
             this.defaultReaction = Emoji.fromUnicode(emoji.getString("emoji_name"));
-        else this.defaultReaction = null;
+        } else {
+            this.defaultReaction = null;
+        }
         return this;
     }
 

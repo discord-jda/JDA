@@ -60,14 +60,18 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
                 Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
         JDA api = role.getJDA();
         this.role = role;
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     @Nonnull
     @Override
     public Role getRole() {
         Role realRole = role.getGuild().getRoleById(role.getIdLong());
-        if (realRole != null) role = realRole;
+        if (realRole != null) {
+            role = realRole;
+        }
         return role;
     }
 
@@ -76,8 +80,12 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @CheckReturnValue
     public RoleManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & NAME) == NAME) this.name = null;
-        if ((fields & COLOR) == COLOR) this.color = Role.DEFAULT_COLOR_RAW;
+        if ((fields & NAME) == NAME) {
+            this.name = null;
+        }
+        if ((fields & COLOR) == COLOR) {
+            this.color = Role.DEFAULT_COLOR_RAW;
+        }
         return this;
     }
 
@@ -124,9 +132,10 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         // if any permissions remain, we have an issue
         if (missingPerms != 0 && isPermissionChecksEnabled()) {
             EnumSet<Permission> permissionList = Permission.getPermissions(missingPerms);
-            if (!permissionList.isEmpty())
+            if (!permissionList.isEmpty()) {
                 throw new InsufficientPermissionException(
                         getGuild(), permissionList.iterator().next());
+            }
         }
         this.permissions = perms;
         set |= PERMISSION;
@@ -201,12 +210,21 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty().put("name", getRole().getName());
-        if (shouldUpdate(NAME)) object.put("name", name);
-        if (shouldUpdate(PERMISSION)) object.put("permissions", permissions);
-        if (shouldUpdate(HOIST)) object.put("hoist", hoist);
-        if (shouldUpdate(MENTIONABLE)) object.put("mentionable", mentionable);
-        if (shouldUpdate(COLOR))
+        if (shouldUpdate(NAME)) {
+            object.put("name", name);
+        }
+        if (shouldUpdate(PERMISSION)) {
+            object.put("permissions", permissions);
+        }
+        if (shouldUpdate(HOIST)) {
+            object.put("hoist", hoist);
+        }
+        if (shouldUpdate(MENTIONABLE)) {
+            object.put("mentionable", mentionable);
+        }
+        if (shouldUpdate(COLOR)) {
             object.put("color", color == Role.DEFAULT_COLOR_RAW ? 0 : color & 0xFFFFFF);
+        }
         if (shouldUpdate(ICON)) {
             object.put("icon", icon == null ? null : icon.getEncoding());
             object.put("unicode_emoji", emoji);
@@ -218,15 +236,19 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     protected boolean checkPermissions() {
         Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.hasPermission(Permission.MANAGE_ROLES))
+        if (!selfMember.hasPermission(Permission.MANAGE_ROLES)) {
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_ROLES);
-        if (!selfMember.canInteract(getRole()))
+        }
+        if (!selfMember.canInteract(getRole())) {
             throw new HierarchyException(
                     "Cannot modify a role that is higher or equal in hierarchy");
+        }
         return super.checkPermissions();
     }
 
     private void setupPermissions() {
-        if (!shouldUpdate(PERMISSION)) this.permissions = getRole().getPermissionsRaw();
+        if (!shouldUpdate(PERMISSION)) {
+            this.permissions = getRole().getPermissionsRaw();
+        }
     }
 }

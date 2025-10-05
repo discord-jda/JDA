@@ -76,9 +76,10 @@ public class WebhookMessageCreateActionImpl<T>
     @Nonnull
     @Override
     public WebhookMessageCreateActionImpl<T> setEphemeral(boolean ephemeral) {
-        if (!isInteraction && ephemeral)
+        if (!isInteraction && ephemeral) {
             throw new IllegalStateException(
                     "Cannot create ephemeral messages with webhooks. Use InteractionHook instead!");
+        }
 
         this.ephemeral = ephemeral;
         return this;
@@ -87,8 +88,9 @@ public class WebhookMessageCreateActionImpl<T>
     @Nonnull
     @Override
     public WebhookMessageCreateAction<T> setUsername(@Nullable String name) {
-        if (isInteraction && username != null)
+        if (isInteraction && username != null) {
             throw new IllegalStateException("Cannot set username on interaction messages.");
+        }
 
         if (name != null) {
             name = name.trim();
@@ -103,8 +105,9 @@ public class WebhookMessageCreateActionImpl<T>
     @Nonnull
     @Override
     public WebhookMessageCreateAction<T> setAvatarUrl(@Nullable String iconUrl) {
-        if (isInteraction && iconUrl != null)
+        if (isInteraction && iconUrl != null) {
             throw new IllegalStateException("Cannot set avatar on interaction messages.");
+        }
 
         if (iconUrl != null) {
             Checks.noWhitespace(iconUrl, "Avatar URL");
@@ -122,8 +125,9 @@ public class WebhookMessageCreateActionImpl<T>
     @Override
     public WebhookMessageCreateAction<T> createThread(
             @Nonnull ThreadCreateMetadata threadMetadata) {
-        if (isInteraction)
+        if (isInteraction) {
             throw new IllegalStateException("Cannot create a thread through an interaction hook.");
+        }
 
         Checks.notNull(threadMetadata, "Thread Metadata");
         this.threadMetadata = threadMetadata;
@@ -135,21 +139,27 @@ public class WebhookMessageCreateActionImpl<T>
     protected RequestBody finalizeData() {
         try (MessageCreateData data = builder.build()) {
             DataObject json = data.toData();
-            if (ephemeral)
+            if (ephemeral) {
                 json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.getValue());
+            }
 
-            if (username != null) json.put("username", username);
-            if (avatar != null) json.put("avatar_url", avatar);
+            if (username != null) {
+                json.put("username", username);
+            }
+            if (avatar != null) {
+                json.put("avatar_url", avatar);
+            }
 
             if (threadId == null && threadMetadata != null) {
                 json.put("thread_name", threadMetadata.getName());
                 List<ForumTagSnowflake> tags = threadMetadata.getAppliedTags();
-                if (!tags.isEmpty())
+                if (!tags.isEmpty()) {
                     json.put(
                             "applied_tags",
                             tags.stream()
                                     .map(ForumTagSnowflake::getId)
                                     .collect(Helpers.toDataArray()));
+                }
             }
 
             return getMultipartBody(data.getAllDistinctFiles(), json);
@@ -159,7 +169,9 @@ public class WebhookMessageCreateActionImpl<T>
     @Override
     protected Route.CompiledRoute finalizeRoute() {
         Route.CompiledRoute route = super.finalizeRoute();
-        if (threadId != null) route = route.withQueryParams("thread_id", threadId);
+        if (threadId != null) {
+            route = route.withQueryParams("thread_id", threadId);
+        }
 
         return route;
     }

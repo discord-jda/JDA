@@ -39,7 +39,9 @@ public class GuildMembersChunkHandler extends SocketHandler {
         DataArray members = content.getArray("members");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild != null) {
-            if (api.getClient().getChunkManager().handleChunk(guildId, content)) return null;
+            if (api.getClient().getChunkManager().handleChunk(guildId, content)) {
+                return null;
+            }
             WebSocketClient.LOG.debug(
                     "Received member chunk for guild that is already in cache. GuildId: {} Count:"
                             + " {} Index: {}/{}",

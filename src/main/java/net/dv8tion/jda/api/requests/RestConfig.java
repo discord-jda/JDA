@@ -116,8 +116,11 @@ public class RestConfig {
         Checks.check(
                 baseUrl.length() > 4 && baseUrl.substring(0, 4).equalsIgnoreCase("http"),
                 "URL must be HTTP");
-        if (baseUrl.endsWith("/")) this.baseUrl = baseUrl;
-        else this.baseUrl = baseUrl + "/";
+        if (baseUrl.endsWith("/")) {
+            this.baseUrl = baseUrl;
+        } else {
+            this.baseUrl = baseUrl + "/";
+        }
         return this;
     }
 
@@ -133,8 +136,11 @@ public class RestConfig {
      */
     @Nonnull
     public RestConfig setUserAgentSuffix(@Nullable String suffix) {
-        if (suffix == null || Helpers.isBlank(suffix)) this.userAgent = USER_AGENT;
-        else this.userAgent = USER_AGENT + " " + suffix;
+        if (suffix == null || Helpers.isBlank(suffix)) {
+            this.userAgent = USER_AGENT;
+        } else {
+            this.userAgent = USER_AGENT + " " + suffix;
+        }
         return this;
     }
 

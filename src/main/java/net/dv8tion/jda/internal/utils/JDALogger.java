@@ -117,7 +117,9 @@ public class JDALogger {
      */
     public static Logger getLog(String name) {
         synchronized (LOGS) {
-            if (SLF4J_ENABLED || disableFallback) return LoggerFactory.getLogger(name);
+            if (SLF4J_ENABLED || disableFallback) {
+                return LoggerFactory.getLogger(name);
+            }
             return newFallbackLogger(name);
         }
     }
@@ -135,7 +137,9 @@ public class JDALogger {
      */
     public static Logger getLog(Class<?> clazz) {
         synchronized (LOGS) {
-            if (SLF4J_ENABLED || disableFallback) return LoggerFactory.getLogger(clazz);
+            if (SLF4J_ENABLED || disableFallback) {
+                return LoggerFactory.getLogger(clazz);
+            }
             return newFallbackLogger(clazz.getSimpleName());
         }
     }
@@ -150,15 +154,21 @@ public class JDALogger {
     }
 
     private static Logger newFallbackLogger(String name) {
-        if (disableFallback || fallbackLoggerConstructor == null) return NOPLogger.NOP_LOGGER;
+        if (disableFallback || fallbackLoggerConstructor == null) {
+            return NOPLogger.NOP_LOGGER;
+        }
 
         try {
             synchronized (LOGS) {
-                if (LOGS.containsKey(name)) return LOGS.get(name);
+                if (LOGS.containsKey(name)) {
+                    return LOGS.get(name);
+                }
                 Logger logger = (Logger) fallbackLoggerConstructor.invoke(name);
                 boolean isFirstFallback = LOGS.isEmpty();
                 LOGS.put(name, logger);
-                if (isFirstFallback) printFallbackWarning();
+                if (isFirstFallback) {
+                    printFallbackWarning();
+                }
                 return logger;
             }
         } catch (Throwable e) {

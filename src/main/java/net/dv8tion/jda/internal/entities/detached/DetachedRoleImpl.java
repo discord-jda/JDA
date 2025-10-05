@@ -148,7 +148,9 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
         long effectivePerms = rawPermissions;
         for (Permission perm : permissions) {
             final long rawValue = perm.getRawValue();
-            if ((effectivePerms & rawValue) != rawValue) return false;
+            if ((effectivePerms & rawValue) != rawValue) {
+                return false;
+            }
         }
         return true;
     }
@@ -225,8 +227,12 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof DetachedRoleImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof DetachedRoleImpl)) {
+            return false;
+        }
         DetachedRoleImpl oRole = (DetachedRoleImpl) o;
         return this.getIdLong() == oRole.getIdLong();
     }
@@ -287,7 +293,9 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
 
     @Override
     public DetachedRoleImpl setTags(DataObject tags) {
-        if (this.tags == null) return this;
+        if (this.tags == null) {
+            return this;
+        }
         this.tags = new RoleTagsImpl(tags);
         return this;
     }

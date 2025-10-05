@@ -1312,11 +1312,16 @@ public interface RestAction<T> {
     default DelayedCompletableFuture<T> submitAfter(
             long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor) {
         Checks.notNull(unit, "TimeUnit");
-        if (executor == null) executor = getJDA().getRateLimitPool();
+        if (executor == null) {
+            executor = getJDA().getRateLimitPool();
+        }
         return DelayedCompletableFuture.make(executor, delay, unit, (task) -> {
             final Consumer<? super Throwable> onFailure;
-            if (isPassContext()) onFailure = ContextException.here(task::completeExceptionally);
-            else onFailure = task::completeExceptionally;
+            if (isPassContext()) {
+                onFailure = ContextException.here(task::completeExceptionally);
+            } else {
+                onFailure = task::completeExceptionally;
+            }
             return new ContextRunnable<T>(() -> queue(task::complete, onFailure));
         });
     }
@@ -1554,12 +1559,16 @@ public interface RestAction<T> {
             @Nullable Consumer<? super Throwable> failure,
             @Nullable ScheduledExecutorService executor) {
         Checks.notNull(unit, "TimeUnit");
-        if (executor == null) executor = getJDA().getRateLimitPool();
+        if (executor == null) {
+            executor = getJDA().getRateLimitPool();
+        }
 
         final Consumer<? super Throwable> onFailure;
-        if (isPassContext())
+        if (isPassContext()) {
             onFailure = ContextException.here(failure == null ? getDefaultFailure() : failure);
-        else onFailure = failure;
+        } else {
+            onFailure = failure;
+        }
 
         Runnable task = new ContextRunnable<Void>(() -> queue(success, onFailure));
         return executor.schedule(task, delay, unit);

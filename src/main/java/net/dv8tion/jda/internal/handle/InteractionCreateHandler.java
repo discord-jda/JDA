@@ -60,7 +60,9 @@ public class InteractionCreateHandler extends SocketHandler {
         }
 
         long guildId = content.getUnsignedLong("guild_id", 0);
-        if (api.getGuildSetupController().isLocked(guildId)) return guildId;
+        if (api.getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         // Check channel type
         DataObject channelJson = content.getObject("channel");

@@ -45,21 +45,26 @@ public interface MediaChannelMixin<T extends MediaChannelMixin<T>>
                 .setTopic(getTopic())
                 .setSlowmode(getSlowmode())
                 .setAvailableTags(getAvailableTags());
-        if (getRawSortOrder() != -1)
+        if (getRawSortOrder() != -1) {
             action.setDefaultSortOrder(SortOrder.fromKey(getRawSortOrder()));
-        if (getDefaultReaction() instanceof UnicodeEmoji)
+        }
+        if (getDefaultReaction() instanceof UnicodeEmoji) {
             action.setDefaultReaction(getDefaultReaction());
+        }
         if (guild.equals(getGuild())) {
             Category parent = getParentCategory();
             action.setDefaultReaction(getDefaultReaction());
-            if (parent != null) action.setParent(parent);
+            if (parent != null) {
+                action.setParent(parent);
+            }
             for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
-                if (o.isMemberOverride())
+                if (o.isMemberOverride()) {
                     action.addMemberPermissionOverride(
                             o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
+                } else {
                     action.addRolePermissionOverride(
                             o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

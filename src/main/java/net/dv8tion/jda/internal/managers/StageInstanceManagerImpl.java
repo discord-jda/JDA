@@ -53,7 +53,9 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager>
         if (topic != null) {
             topic = topic.trim();
             Checks.notLonger(topic, 120, "Topic");
-            if (topic.isEmpty()) topic = null;
+            if (topic.isEmpty()) {
+                topic = null;
+            }
         }
         this.topic = topic;
         set |= TOPIC;
@@ -63,7 +65,9 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager>
     @Override
     protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
-        if (shouldUpdate(TOPIC) && topic != null) body.put("topic", topic);
+        if (shouldUpdate(TOPIC) && topic != null) {
+            body.put("topic", topic);
+        }
         return getRequestBody(body);
     }
 }

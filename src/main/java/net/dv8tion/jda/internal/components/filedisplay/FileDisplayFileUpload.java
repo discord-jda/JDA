@@ -105,14 +105,20 @@ public class FileDisplayFileUpload extends AbstractComponentImpl
                 .put("type", getType().getKey())
                 .put("file", DataObject.empty().put("url", getUrl()))
                 .put("spoiler", spoiler);
-        if (uniqueId >= 0) json.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof FileDisplayFileUpload)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof FileDisplayFileUpload)) {
+            return false;
+        }
         FileDisplayFileUpload fileDisplay = (FileDisplayFileUpload) o;
         return uniqueId == fileDisplay.uniqueId
                 && spoiler == fileDisplay.spoiler

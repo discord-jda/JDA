@@ -43,10 +43,14 @@ public class EventCache {
     public EventCache() {}
 
     public synchronized void timeout(final long responseTotal) {
-        if (eventCache.isEmpty()) return;
+        if (eventCache.isEmpty()) {
+            return;
+        }
         AtomicInteger count = new AtomicInteger();
         eventCache.forEach((type, map) -> {
-            if (map.isEmpty()) return;
+            if (map.isEmpty()) {
+                return;
+            }
             TLongObjectIterator<List<CacheNode>> iterator = map.iterator();
             while (iterator.hasNext()) {
                 iterator.advance();
@@ -65,12 +69,15 @@ public class EventCache {
                     }
                     return remove;
                 });
-                if (cache.isEmpty()) iterator.remove();
+                if (cache.isEmpty()) {
+                    iterator.remove();
+                }
             }
         });
         int amount = count.get();
-        if (amount > 0)
+        if (amount > 0) {
             LOG.debug("Removed {} events from cache that were too old to be recycled", amount);
+        }
     }
 
     public synchronized void cache(
@@ -93,7 +100,9 @@ public class EventCache {
 
     public synchronized void playbackCache(Type type, long triggerId) {
         TLongObjectMap<List<CacheNode>> typeCache = this.eventCache.get(type);
-        if (typeCache == null) return;
+        if (typeCache == null) {
+            return;
+        }
 
         List<CacheNode> items = typeCache.remove(triggerId);
         if (items != null && !items.isEmpty()) {
@@ -119,11 +128,14 @@ public class EventCache {
 
     public synchronized void clear(Type type, long id) {
         TLongObjectMap<List<CacheNode>> typeCache = this.eventCache.get(type);
-        if (typeCache == null) return;
+        if (typeCache == null) {
+            return;
+        }
 
         List<CacheNode> events = typeCache.remove(id);
-        if (events != null)
+        if (events != null) {
             LOG.debug("Clearing cache for type {} with ID {} (Size: {})", type, id, events.size());
+        }
     }
 
     public enum Type {

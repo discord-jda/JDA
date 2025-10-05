@@ -98,8 +98,9 @@ public class SelectOption implements SerializableData {
         Checks.notEmpty(value, "Value");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         Checks.notLonger(value, VALUE_MAX_LENGTH, "Value");
-        if (description != null)
+        if (description != null) {
             Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
+        }
         this.label = label;
         this.value = value;
         this.description = description;
@@ -268,8 +269,12 @@ public class SelectOption implements SerializableData {
         object.put("label", label);
         object.put("value", value);
         object.put("default", isDefault);
-        if (emoji != null) object.put("emoji", emoji);
-        if (description != null && !description.isEmpty()) object.put("description", description);
+        if (emoji != null) {
+            object.put("emoji", emoji);
+        }
+        if (description != null && !description.isEmpty()) {
+            object.put("description", description);
+        }
         return object;
     }
 
@@ -300,8 +305,12 @@ public class SelectOption implements SerializableData {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof SelectOption)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof SelectOption)) {
+            return false;
+        }
         SelectOption that = (SelectOption) o;
         return isDefault == that.isDefault
                 && Objects.equals(label, that.label)

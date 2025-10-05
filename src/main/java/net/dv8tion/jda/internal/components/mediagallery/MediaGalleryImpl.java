@@ -110,14 +110,20 @@ public class MediaGalleryImpl extends AbstractComponentImpl
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("items", DataArray.fromCollection(getItems()));
-        if (uniqueId >= 0) json.put("id", uniqueId);
+        if (uniqueId >= 0) {
+            json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof MediaGalleryImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MediaGalleryImpl)) {
+            return false;
+        }
         MediaGalleryImpl that = (MediaGalleryImpl) o;
         return uniqueId == that.uniqueId && Objects.equals(items, that.items);
     }

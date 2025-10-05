@@ -175,8 +175,9 @@ public class MessageReaction {
      * @see    #getCount(ReactionType)
      */
     public int getCount() {
-        if (!hasCount())
+        if (!hasCount()) {
             throw new IllegalStateException("Cannot retrieve count for this MessageReaction!");
+        }
         return counts[0];
     }
 
@@ -199,8 +200,9 @@ public class MessageReaction {
      * @see    #getCount()
      */
     public int getCount(@Nonnull ReactionType type) {
-        if (!hasCount())
+        if (!hasCount()) {
             throw new IllegalStateException("Cannot retrieve count for this MessageReaction!");
+        }
         Checks.notNull(type, "Type");
         return counts[type == ReactionType.NORMAL ? 1 : 2];
     }
@@ -253,7 +255,9 @@ public class MessageReaction {
      */
     @Nonnull
     public MessageChannelUnion getChannel() {
-        if (channel != null) return (MessageChannelUnion) channel;
+        if (channel != null) {
+            return (MessageChannelUnion) channel;
+        }
         throw new IllegalStateException(
                 "Cannot provide channel instance for this reaction! Use getChannelId() instead.");
     }
@@ -449,16 +453,18 @@ public class MessageReaction {
         Checks.notNull(user, "User");
         boolean self = user.equals(getJDA().getSelfUser());
         if (!self && channel != null) {
-            if (!channel.getType().isGuild())
+            if (!channel.getType().isGuild()) {
                 throw new PermissionException(
                         "Unable to remove Reaction of other user in non-guild channels!");
+            }
 
             GuildChannel guildChannel = (GuildChannel) channel;
             if (!guildChannel
                     .getGuild()
                     .getSelfMember()
-                    .hasPermission(guildChannel, Permission.MESSAGE_MANAGE))
+                    .hasPermission(guildChannel, Permission.MESSAGE_MANAGE)) {
                 throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
+            }
         }
 
         String code = emoji.getAsReactionCode();
@@ -505,17 +511,22 @@ public class MessageReaction {
         }
 
         // Requires permission, only works in guilds
-        if (!getChannelType().isGuild())
+        if (!getChannelType().isGuild()) {
             throw new UnsupportedOperationException(
                     "Cannot clear reactions on a message sent from a private channel");
+        }
         GuildMessageChannel guildChannel = Objects.requireNonNull(getGuildChannel());
         return guildChannel.clearReactionsById(getMessageId(), emoji);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof MessageReaction)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof MessageReaction)) {
+            return false;
+        }
         MessageReaction r = (MessageReaction) obj;
         return r.emoji.equals(emoji) && r.isSelf() == this.isSelf() && r.messageId == messageId;
     }

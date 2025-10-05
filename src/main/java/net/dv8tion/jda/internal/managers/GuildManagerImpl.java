@@ -60,14 +60,18 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     public GuildManagerImpl(Guild guild) {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
         this.guild = guild;
-        if (isPermissionChecksEnabled()) checkPermissions();
+        if (isPermissionChecksEnabled()) {
+            checkPermissions();
+        }
     }
 
     @Nonnull
     @Override
     public Guild getGuild() {
         Guild realGuild = api.getGuildById(guild.getIdLong());
-        if (realGuild != null) guild = realGuild;
+        if (realGuild != null) {
+            guild = realGuild;
+        }
         return guild;
     }
 
@@ -76,19 +80,39 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @CheckReturnValue
     public GuildManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & NAME) == NAME) this.name = null;
-        if ((fields & ICON) == ICON) this.icon = null;
-        if ((fields & SPLASH) == SPLASH) this.splash = null;
-        if ((fields & AFK_CHANNEL) == AFK_CHANNEL) this.afkChannel = null;
-        if ((fields & SYSTEM_CHANNEL) == SYSTEM_CHANNEL) this.systemChannel = null;
-        if ((fields & RULES_CHANNEL) == RULES_CHANNEL) this.rulesChannel = null;
-        if ((fields & COMMUNITY_UPDATES_CHANNEL) == COMMUNITY_UPDATES_CHANNEL)
+        if ((fields & NAME) == NAME) {
+            this.name = null;
+        }
+        if ((fields & ICON) == ICON) {
+            this.icon = null;
+        }
+        if ((fields & SPLASH) == SPLASH) {
+            this.splash = null;
+        }
+        if ((fields & AFK_CHANNEL) == AFK_CHANNEL) {
+            this.afkChannel = null;
+        }
+        if ((fields & SYSTEM_CHANNEL) == SYSTEM_CHANNEL) {
+            this.systemChannel = null;
+        }
+        if ((fields & RULES_CHANNEL) == RULES_CHANNEL) {
+            this.rulesChannel = null;
+        }
+        if ((fields & COMMUNITY_UPDATES_CHANNEL) == COMMUNITY_UPDATES_CHANNEL) {
             this.communityUpdatesChannel = null;
-        if ((fields & SAFETY_ALERTS_CHANNEL) == SAFETY_ALERTS_CHANNEL)
+        }
+        if ((fields & SAFETY_ALERTS_CHANNEL) == SAFETY_ALERTS_CHANNEL) {
             this.safetyAlertsChannel = null;
-        if ((fields & DESCRIPTION) == DESCRIPTION) this.description = null;
-        if ((fields & BANNER) == BANNER) this.banner = null;
-        if ((fields & FEATURES) == FEATURES) this.features = null;
+        }
+        if ((fields & DESCRIPTION) == DESCRIPTION) {
+            this.description = null;
+        }
+        if ((fields & BANNER) == BANNER) {
+            this.banner = null;
+        }
+        if ((fields & FEATURES) == FEATURES) {
+            this.features = null;
+        }
         return this;
     }
 
@@ -300,7 +324,9 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     private GuildManager updateFeatures(Collection<String> changed, Consumer<String> op) {
         Checks.noneNull(changed, "Features");
-        if (this.features == null) this.features = new HashSet<>(getGuild().getFeatures());
+        if (this.features == null) {
+            this.features = new HashSet<>(getGuild().getFeatures());
+        }
         changed.stream().map(String::toUpperCase).forEach(op);
         set |= FEATURES;
         return this;
@@ -309,27 +335,54 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     protected RequestBody finalizeData() {
         DataObject body = DataObject.empty().put("name", getGuild().getName());
-        if (shouldUpdate(NAME)) body.put("name", name);
-        if (shouldUpdate(AFK_TIMEOUT)) body.put("afk_timeout", afkTimeout);
-        if (shouldUpdate(ICON)) body.put("icon", icon == null ? null : icon.getEncoding());
-        if (shouldUpdate(SPLASH)) body.put("splash", splash == null ? null : splash.getEncoding());
-        if (shouldUpdate(AFK_CHANNEL)) body.put("afk_channel_id", afkChannel);
-        if (shouldUpdate(SYSTEM_CHANNEL)) body.put("system_channel_id", systemChannel);
-        if (shouldUpdate(RULES_CHANNEL)) body.put("rules_channel_id", rulesChannel);
-        if (shouldUpdate(COMMUNITY_UPDATES_CHANNEL))
+        if (shouldUpdate(NAME)) {
+            body.put("name", name);
+        }
+        if (shouldUpdate(AFK_TIMEOUT)) {
+            body.put("afk_timeout", afkTimeout);
+        }
+        if (shouldUpdate(ICON)) {
+            body.put("icon", icon == null ? null : icon.getEncoding());
+        }
+        if (shouldUpdate(SPLASH)) {
+            body.put("splash", splash == null ? null : splash.getEncoding());
+        }
+        if (shouldUpdate(AFK_CHANNEL)) {
+            body.put("afk_channel_id", afkChannel);
+        }
+        if (shouldUpdate(SYSTEM_CHANNEL)) {
+            body.put("system_channel_id", systemChannel);
+        }
+        if (shouldUpdate(RULES_CHANNEL)) {
+            body.put("rules_channel_id", rulesChannel);
+        }
+        if (shouldUpdate(COMMUNITY_UPDATES_CHANNEL)) {
             body.put("public_updates_channel_id", communityUpdatesChannel);
-        if (shouldUpdate(SAFETY_ALERTS_CHANNEL))
+        }
+        if (shouldUpdate(SAFETY_ALERTS_CHANNEL)) {
             body.put("safety_alerts_channel_id", safetyAlertsChannel);
-        if (shouldUpdate(VERIFICATION_LEVEL)) body.put("verification_level", verificationLevel);
-        if (shouldUpdate(NOTIFICATION_LEVEL))
+        }
+        if (shouldUpdate(VERIFICATION_LEVEL)) {
+            body.put("verification_level", verificationLevel);
+        }
+        if (shouldUpdate(NOTIFICATION_LEVEL)) {
             body.put("default_message_notifications", notificationLevel);
-        if (shouldUpdate(EXPLICIT_CONTENT_LEVEL))
+        }
+        if (shouldUpdate(EXPLICIT_CONTENT_LEVEL)) {
             body.put("explicit_content_filter", explicitContentLevel);
-        if (shouldUpdate(BANNER)) body.put("banner", banner == null ? null : banner.getEncoding());
-        if (shouldUpdate(DESCRIPTION)) body.put("description", description);
-        if (shouldUpdate(BOOST_PROGRESS_BAR_ENABLED))
+        }
+        if (shouldUpdate(BANNER)) {
+            body.put("banner", banner == null ? null : banner.getEncoding());
+        }
+        if (shouldUpdate(DESCRIPTION)) {
+            body.put("description", description);
+        }
+        if (shouldUpdate(BOOST_PROGRESS_BAR_ENABLED)) {
             body.put("premium_progress_bar_enabled", boostProgressBarEnabled);
-        if (shouldUpdate(FEATURES)) body.put("features", features);
+        }
+        if (shouldUpdate(FEATURES)) {
+            body.put("features", features);
+        }
 
         reset(); // now that we've built our JSON object, reset the manager back to the non-modified
         // state
@@ -338,14 +391,16 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     @Override
     protected boolean checkPermissions() {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_SERVER);
+        }
         return super.checkPermissions();
     }
 
     private void checkFeature(String feature) {
-        if (!getGuild().getFeatures().contains(feature))
+        if (!getGuild().getFeatures().contains(feature)) {
             throw new IllegalStateException(
                     "This guild doesn't have the " + feature + " feature enabled");
+        }
     }
 }

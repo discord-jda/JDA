@@ -53,17 +53,20 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
                     // If check passed we can apply the fallback function and
                     // flatten it
                     RestAction<? extends T> then = map.apply(error);
-                    if (then == null)
+                    if (then == null) {
                         doFailure(
                                 failure,
-                                new IllegalStateException(
-                                        "FlatMapError operand is null",
-                                        error)); // No contextFailure because error
-                    // already has context
-                    else then.queue(success, contextFailure); // Use contextFailure here to apply
-                    // new context to new errors
-                } else doFailure(failure, error); // No contextFailure because error already has
-                // context
+                                new IllegalStateException("FlatMapError operand is null", error));
+                        // No contextFailure because error
+                        // already has context
+                    } else {
+                        then.queue(success, contextFailure); // Use contextFailure here to apply
+                        // new context to new errors
+                    }
+                } else {
+                    doFailure(failure, error); // No contextFailure because error already has
+                    // context
+                }
             } catch (Throwable e) {
                 doFailure(
                         failure,
@@ -81,16 +84,19 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
             try {
                 if (check.test(error)) {
                     RestAction<? extends T> then = map.apply(error);
-                    if (then == null)
+                    if (then == null) {
                         throw new IllegalStateException("FlatMapError operand is null", error);
+                    }
                     return then.complete(shouldQueue);
                 }
             } catch (Throwable e) {
-                if (e instanceof IllegalStateException && e.getCause() == error)
+                if (e instanceof IllegalStateException && e.getCause() == error) {
                     throw (IllegalStateException) e;
-                else if (e instanceof RateLimitedException)
+                } else if (e instanceof RateLimitedException) {
                     throw (RateLimitedException) Helpers.appendCause(e, error);
-                else fail(Helpers.appendCause(e, error));
+                } else {
+                    fail(Helpers.appendCause(e, error));
+                }
             }
             fail(error);
         }
@@ -102,17 +108,23 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
     public CompletableFuture<T> submit(boolean shouldQueue) {
         return action.submit(shouldQueue)
                 .handle((result, error) -> {
-                    if (check.test(error))
+                    if (check.test(error)) {
                         return map.apply(error).submit(shouldQueue).thenApply(x -> (T) x);
-                    else return CompletableFuture.completedFuture(result);
+                    } else {
+                        return CompletableFuture.completedFuture(result);
+                    }
                 })
                 .thenCompose(Function.identity());
     }
 
     @Contract("_ -> fail")
     private void fail(Throwable error) {
-        if (error instanceof RuntimeException) throw (RuntimeException) error;
-        else if (error instanceof Error) throw (Error) error;
-        else throw new RuntimeException(error);
+        if (error instanceof RuntimeException) {
+            throw (RuntimeException) error;
+        } else if (error instanceof Error) {
+            throw (Error) error;
+        } else {
+            throw new RuntimeException(error);
+        }
     }
 }

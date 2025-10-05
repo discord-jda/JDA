@@ -130,21 +130,29 @@ public class DataPath {
             // isOptional
             if (key.endsWith("?")) {
                 key = key.substring(0, key.length() - 1);
-                if (root.isNull(key)) return null;
+                if (root.isNull(key)) {
+                    return null;
+                }
             }
 
             return getUnchecked(root.getArray(key), path, fromObject, fromArray);
         }
 
         boolean isOptional = current.endsWith("?");
-        if (isOptional) current = current.substring(0, current.length() - 1);
+        if (isOptional) {
+            current = current.substring(0, current.length() - 1);
+        }
 
         if (child == null) {
-            if (isOptional && root.isNull(current)) return null;
+            if (isOptional && root.isNull(current)) {
+                return null;
+            }
             return fromObject.apply(root, current);
         }
 
-        if (isOptional && root.isNull(current)) return null;
+        if (isOptional && root.isNull(current)) {
+            return null;
+        }
 
         return getUnchecked(root.getObject(current), child, fromObject, fromArray);
     }
@@ -213,15 +221,21 @@ public class DataPath {
             boolean isMissing = root.length() <= index || root.isNull(index);
             if (optional) {
                 offset++;
-                if (isMissing) return null;
+                if (isMissing) {
+                    return null;
+                }
             }
 
-            if (offset == chars.length) return fromArray.apply(root, index);
+            if (offset == chars.length) {
+                return fromArray.apply(root, index);
+            }
 
-            if (chars[offset] == '[') root = root.getArray(index);
-            else
+            if (chars[offset] == '[') {
+                root = root.getArray(index);
+            } else {
                 return getUnchecked(
                         root.getObject(index), path.substring(offset + 1), fromObject, fromArray);
+            }
         }
 
         throw new ParsingException("Array path nesting seems to be way too deep, we went "
@@ -230,7 +244,11 @@ public class DataPath {
 
     private static int indexOf(byte[] chars, int offset, char c) {
         byte b = (byte) c;
-        for (int i = offset; i < chars.length; i++) if (chars[i] == b) return i;
+        for (int i = offset; i < chars.length; i++) {
+            if (chars[i] == b) {
+                return i;
+            }
+        }
         return -1;
     }
 
@@ -362,7 +380,9 @@ public class DataPath {
      */
     public static int getInt(@Nonnull DataObject root, @Nonnull String path) {
         Integer integer = get(root, path, DataObject::getInt, DataArray::getInt);
-        if (integer == null) pathError(path, "int");
+        if (integer == null) {
+            pathError(path, "int");
+        }
         return integer;
     }
 
@@ -417,7 +437,9 @@ public class DataPath {
      */
     public static int getInt(@Nonnull DataArray root, @Nonnull String path) {
         Integer integer = get(root, path, DataObject::getInt, DataArray::getInt);
-        if (integer == null) pathError(path, "int");
+        if (integer == null) {
+            pathError(path, "int");
+        }
         return integer;
     }
 
@@ -472,7 +494,9 @@ public class DataPath {
      */
     public static int getUnsignedInt(@Nonnull DataObject root, @Nonnull String path) {
         Integer integer = get(root, path, DataObject::getUnsignedInt, DataArray::getUnsignedInt);
-        if (integer == null) pathError(path, "unsigned int");
+        if (integer == null) {
+            pathError(path, "unsigned int");
+        }
         return integer;
     }
 
@@ -527,7 +551,9 @@ public class DataPath {
      */
     public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path) {
         Integer integer = get(root, path, DataObject::getUnsignedInt, DataArray::getUnsignedInt);
-        if (integer == null) pathError(path, "unsigned int");
+        if (integer == null) {
+            pathError(path, "unsigned int");
+        }
         return integer;
     }
 
@@ -582,7 +608,9 @@ public class DataPath {
      */
     public static long getLong(@Nonnull DataObject root, @Nonnull String path) {
         Long longValue = get(root, path, DataObject::getLong, DataArray::getLong);
-        if (longValue == null) pathError(path, "long");
+        if (longValue == null) {
+            pathError(path, "long");
+        }
         return longValue;
     }
 
@@ -637,7 +665,9 @@ public class DataPath {
      */
     public static long getLong(@Nonnull DataArray root, @Nonnull String path) {
         Long longValue = get(root, path, DataObject::getLong, DataArray::getLong);
-        if (longValue == null) pathError(path, "long");
+        if (longValue == null) {
+            pathError(path, "long");
+        }
         return longValue;
     }
 
@@ -692,7 +722,9 @@ public class DataPath {
      */
     public static long getUnsignedLong(@Nonnull DataObject root, @Nonnull String path) {
         Long longValue = get(root, path, DataObject::getUnsignedLong, DataArray::getUnsignedLong);
-        if (longValue == null) throw pathError(path, "unsigned long");
+        if (longValue == null) {
+            throw pathError(path, "unsigned long");
+        }
         return longValue;
     }
 
@@ -748,7 +780,9 @@ public class DataPath {
      */
     public static long getUnsignedLong(@Nonnull DataArray root, @Nonnull String path) {
         Long longValue = get(root, path, DataObject::getUnsignedLong, DataArray::getUnsignedLong);
-        if (longValue == null) throw pathError(path, "unsigned long");
+        if (longValue == null) {
+            throw pathError(path, "unsigned long");
+        }
         return longValue;
     }
 
@@ -804,7 +838,9 @@ public class DataPath {
      */
     public static double getDouble(@Nonnull DataObject root, @Nonnull String path) {
         Double doubleValue = get(root, path, DataObject::getDouble, DataArray::getDouble);
-        if (doubleValue == null) pathError(path, "double");
+        if (doubleValue == null) {
+            pathError(path, "double");
+        }
         return doubleValue;
     }
 
@@ -860,7 +896,9 @@ public class DataPath {
      */
     public static double getDouble(@Nonnull DataArray root, @Nonnull String path) {
         Double doubleValue = get(root, path, DataObject::getDouble, DataArray::getDouble);
-        if (doubleValue == null) pathError(path, "double");
+        if (doubleValue == null) {
+            pathError(path, "double");
+        }
         return doubleValue;
     }
 
@@ -915,7 +953,9 @@ public class DataPath {
     @Nonnull
     public static String getString(@Nonnull DataObject root, @Nonnull String path) {
         String string = get(root, path, DataObject::getString, DataArray::getString);
-        if (string == null) pathError(path, "String");
+        if (string == null) {
+            pathError(path, "String");
+        }
         return string;
     }
 
@@ -971,7 +1011,9 @@ public class DataPath {
     @Nonnull
     public static String getString(@Nonnull DataArray root, @Nonnull String path) {
         String string = get(root, path, DataObject::getString, DataArray::getString);
-        if (string == null) pathError(path, "String");
+        if (string == null) {
+            pathError(path, "String");
+        }
         return string;
     }
 
@@ -1027,7 +1069,9 @@ public class DataPath {
     @Nonnull
     public static DataObject getObject(@Nonnull DataObject root, @Nonnull String path) {
         DataObject obj = optObject(root, path);
-        if (obj == null) pathError(path, "Object");
+        if (obj == null) {
+            pathError(path, "Object");
+        }
         return obj;
     }
 
@@ -1052,7 +1096,9 @@ public class DataPath {
      */
     @Nullable
     public static DataObject optObject(@Nonnull DataObject root, @Nonnull String path) {
-        if (!path.endsWith("?")) path += "?";
+        if (!path.endsWith("?")) {
+            path += "?";
+        }
         return get(root, path, DataObject::getObject, DataArray::getObject);
     }
 
@@ -1078,7 +1124,9 @@ public class DataPath {
     @Nonnull
     public static DataObject getObject(@Nonnull DataArray root, @Nonnull String path) {
         DataObject obj = optObject(root, path);
-        if (obj == null) pathError(path, "Object");
+        if (obj == null) {
+            pathError(path, "Object");
+        }
         return obj;
     }
 
@@ -1103,7 +1151,9 @@ public class DataPath {
      */
     @Nullable
     public static DataObject optObject(@Nonnull DataArray root, @Nonnull String path) {
-        if (!path.endsWith("?")) path += "?";
+        if (!path.endsWith("?")) {
+            path += "?";
+        }
         return get(root, path, DataObject::getObject, DataArray::getObject);
     }
 
@@ -1129,7 +1179,9 @@ public class DataPath {
     @Nonnull
     public static DataArray getArray(@Nonnull DataObject root, @Nonnull String path) {
         DataArray array = optArray(root, path);
-        if (array == null) pathError(path, "Array");
+        if (array == null) {
+            pathError(path, "Array");
+        }
         return array;
     }
 
@@ -1154,7 +1206,9 @@ public class DataPath {
      */
     @Nullable
     public static DataArray optArray(@Nonnull DataObject root, @Nonnull String path) {
-        if (!path.endsWith("?")) path += "?";
+        if (!path.endsWith("?")) {
+            path += "?";
+        }
         return get(root, path, DataObject::getArray, DataArray::getArray);
     }
 
@@ -1180,7 +1234,9 @@ public class DataPath {
     @Nonnull
     public static DataArray getArray(@Nonnull DataArray root, @Nonnull String path) {
         DataArray array = optArray(root, path);
-        if (array == null) pathError(path, "Array");
+        if (array == null) {
+            pathError(path, "Array");
+        }
         return array;
     }
 
@@ -1205,7 +1261,9 @@ public class DataPath {
      */
     @Nullable
     public static DataArray optArray(@Nonnull DataArray root, @Nonnull String path) {
-        if (!path.endsWith("?")) path += "?";
+        if (!path.endsWith("?")) {
+            path += "?";
+        }
         return get(root, path, DataObject::getArray, DataArray::getArray);
     }
 

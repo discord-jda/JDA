@@ -114,7 +114,9 @@ public class ScheduledEventImpl implements ScheduledEvent {
     @Nullable
     @Override
     public GuildChannelUnion getChannel() {
-        if (type.isChannel()) return (GuildChannelUnion) guild.getGuildChannelById(location);
+        if (type.isChannel()) {
+            return (GuildChannelUnion) guild.getGuildChannelById(location);
+        }
         return null;
     }
 
@@ -156,8 +158,9 @@ public class ScheduledEventImpl implements ScheduledEvent {
     @Override
     public AuditableRestAction<Void> delete() {
         Guild guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EVENTS))
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EVENTS)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_EVENTS);
+        }
 
         Route.CompiledRoute route =
                 Route.Guilds.DELETE_SCHEDULED_EVENT.compile(guild.getId(), getId());
@@ -234,15 +237,21 @@ public class ScheduledEventImpl implements ScheduledEvent {
 
         int startTimeComparison = OffsetDateTime.timeLineOrder()
                 .compare(this.getStartTime(), scheduledEvent.getStartTime());
-        if (startTimeComparison == 0)
+        if (startTimeComparison == 0) {
             return Long.compare(this.getIdLong(), scheduledEvent.getIdLong());
-        else return startTimeComparison;
+        } else {
+            return startTimeComparison;
+        }
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof ScheduledEventImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ScheduledEventImpl)) {
+            return false;
+        }
         return this.id == ((ScheduledEventImpl) o).id;
     }
 

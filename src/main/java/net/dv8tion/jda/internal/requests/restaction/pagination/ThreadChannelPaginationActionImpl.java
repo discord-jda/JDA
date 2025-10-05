@@ -73,7 +73,9 @@ public class ThreadChannelPaginationActionImpl
     @Nonnull
     @Override
     protected String getPaginationLastEvaluatedKey(long lastId, ThreadChannel last) {
-        if (useID) return Long.toUnsignedString(lastId);
+        if (useID) {
+            return Long.toUnsignedString(lastId);
+        }
 
         if (order == PaginationOrder.FORWARD && lastId == 0) {
             // first second of 2015 aka discords epoch, hard coding something older makes no sense
@@ -84,7 +86,9 @@ public class ThreadChannelPaginationActionImpl
         // this should be redundant, due to calling this with PaginationAction#getLast() as last
         // param,
         // but let's have this here.
-        if (last == null) return OffsetDateTime.now(ZoneOffset.UTC).toString();
+        if (last == null) {
+            return OffsetDateTime.now(ZoneOffset.UTC).toString();
+        }
 
         // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
         return last.getTimeArchiveInfoLastModified().toString();
@@ -120,17 +124,20 @@ public class ThreadChannelPaginationActionImpl
                             builder.createThreadChannel(threadObj, getGuild().getIdLong());
                     list.add(thread);
 
-                    if (this.useCache) this.cached.add(thread);
+                    if (this.useCache) {
+                        this.cached.add(thread);
+                    }
                     this.last = thread;
                     this.lastKey = last.getIdLong();
                 } catch (Exception e) {
-                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage()))
+                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage())) {
                         EntityBuilder.LOG.debug(
                                 "Discarding thread without cached parent channel. JSON: {}",
                                 threadObj);
-                    else
+                    } else {
                         EntityBuilder.LOG.warn(
                                 "Failed to create thread channel. JSON: {}", threadObj, e);
+                    }
                 }
             } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered exception in ThreadChannelPagination", e);

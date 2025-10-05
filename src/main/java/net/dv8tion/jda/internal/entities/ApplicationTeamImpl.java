@@ -65,8 +65,12 @@ public class ApplicationTeamImpl implements ApplicationTeam {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof ApplicationTeamImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ApplicationTeamImpl)) {
+            return false;
+        }
         ApplicationTeamImpl app = (ApplicationTeamImpl) obj;
         return app.id == this.id;
     }

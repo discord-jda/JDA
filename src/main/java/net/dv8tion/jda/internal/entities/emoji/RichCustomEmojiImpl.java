@@ -85,7 +85,9 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
     @Override
     public GuildImpl getGuild() {
         GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
-        if (realGuild != null) guild = realGuild;
+        if (realGuild != null) {
+            guild = realGuild;
+        }
         return guild;
     }
 
@@ -131,16 +133,18 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
     @Override
     public CacheRestAction<User> retrieveOwner() {
         GuildImpl guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
+        }
         return new DeferredRestAction<>(api, User.class, this::getOwner, () -> {
             Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(guild.getId(), getId());
             return new RestActionImpl<>(api, route, (response, request) -> {
                 DataObject data = response.getObject();
-                if (data.isNull("user")) // user is not provided when permissions are
+                if (data.isNull("user")) { // user is not provided when permissions are
                     // missing
                     throw ErrorResponseException.create(
                             ErrorResponse.MISSING_PERMISSIONS, response);
+                }
                 DataObject user = data.getObject("user");
                 return this.owner = api.getEntityBuilder().createUser(user);
             });
@@ -161,10 +165,13 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
     @Nonnull
     @Override
     public AuditableRestAction<Void> delete() {
-        if (managed) throw new UnsupportedOperationException("You cannot delete a managed emoji!");
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+        if (managed) {
+            throw new UnsupportedOperationException("You cannot delete a managed emoji!");
+        }
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
             throw new InsufficientPermissionException(
                     getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
+        }
 
         Route.CompiledRoute route = Route.Emojis.DELETE_EMOJI.compile(getGuild().getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -207,8 +214,12 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof CustomEmoji)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof CustomEmoji)) {
+            return false;
+        }
 
         CustomEmoji other = (CustomEmoji) obj;
         return this.id == other.getIdLong();

@@ -46,21 +46,22 @@ public class RestActionImpl<T> implements RestAction<T> {
 
     private static Consumer<Object> DEFAULT_SUCCESS = o -> {};
     private static Consumer<? super Throwable> DEFAULT_FAILURE = t -> {
-        if (t instanceof CancellationException || t instanceof TimeoutException)
+        if (t instanceof CancellationException || t instanceof TimeoutException) {
             LOG.debug(t.getMessage());
-        else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException))
+        } else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException)) {
             LOG.error("RestAction queue returned failure", t);
-        else if (t.getCause() != null)
+        } else if (t.getCause() != null) {
             LOG.error(
                     "RestAction queue returned failure: [{}] {}",
                     t.getClass().getSimpleName(),
                     t.getMessage(),
                     t.getCause());
-        else
+        } else {
             LOG.error(
                     "RestAction queue returned failure: [{}] {}",
                     t.getClass().getSimpleName(),
                     t.getMessage());
+        }
     };
 
     protected static boolean passContext = true;
@@ -196,8 +197,12 @@ public class RestActionImpl<T> implements RestAction<T> {
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        if (success == null) success = DEFAULT_SUCCESS;
-        if (failure == null) failure = DEFAULT_FAILURE;
+        if (success == null) {
+            success = DEFAULT_SUCCESS;
+        }
+        if (failure == null) {
+            failure = DEFAULT_FAILURE;
+        }
         api.getRequester()
                 .request(new Request<>(
                         this,
@@ -235,23 +240,30 @@ public class RestActionImpl<T> implements RestAction<T> {
 
     @Override
     public T complete(boolean shouldQueue) throws RateLimitedException {
-        if (CallbackContext.isCallbackContext())
+        if (CallbackContext.isCallbackContext()) {
             throw new IllegalStateException(
                     "Preventing use of complete() in callback threads! This operation can be a"
                             + " deadlock cause");
+        }
         try {
             return submit(shouldQueue).join();
         } catch (CompletionException e) {
             if (e.getCause() != null) {
                 Throwable cause = e.getCause();
-                if (cause instanceof ErrorResponseException)
+                if (cause instanceof ErrorResponseException) {
                     throw (ErrorResponseException)
                             cause.fillInStackTrace(); // this method will update the stacktrace
-                // to the current thread stack
-                if (cause instanceof RateLimitedException)
+                    // to the current thread stack
+                }
+                if (cause instanceof RateLimitedException) {
                     throw (RateLimitedException) cause.fillInStackTrace();
-                if (cause instanceof RuntimeException) throw (RuntimeException) cause;
-                if (cause instanceof Error) throw (Error) cause;
+                }
+                if (cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                }
+                if (cause instanceof Error) {
+                    throw (Error) cause;
+                }
             }
             throw e;
         }
@@ -293,7 +305,9 @@ public class RestActionImpl<T> implements RestAction<T> {
     protected RequestBody getMultipartBody(
             @Nonnull Set<? extends AttachedFile> files, @Nonnull DataObject json) {
         RequestBody payloadJson = getRequestBody(json);
-        if (files.isEmpty()) return payloadJson;
+        if (files.isEmpty()) {
+            return payloadJson;
+        }
         return AttachedFile.createMultipartBody(files, payloadJson).build();
     }
 
@@ -306,22 +320,30 @@ public class RestActionImpl<T> implements RestAction<T> {
     }
 
     public void handleResponse(Response response, Request<T> request) {
-        if (response.isOk()) handleSuccess(response, request);
-        else if (response.isRateLimit()) request.onRateLimited(response);
-        else {
+        if (response.isOk()) {
+            handleSuccess(response, request);
+        } else if (response.isRateLimit()) {
+            request.onRateLimited(response);
+        } else {
             final ErrorResponseException exception = request.createErrorResponseException(response);
             final Throwable mappedThrowable = this.errorMapper != null
                     ? this.errorMapper.apply(response, request, exception)
                     : null;
 
-            if (mappedThrowable != null) request.onFailure(mappedThrowable);
-            else request.onFailure(exception);
+            if (mappedThrowable != null) {
+                request.onFailure(mappedThrowable);
+            } else {
+                request.onFailure(exception);
+            }
         }
     }
 
     protected void handleSuccess(Response response, Request<T> request) {
-        if (handler == null) request.onSuccess(null);
-        else request.onSuccess(handler.apply(response, request));
+        if (handler == null) {
+            request.onSuccess(null);
+        } else {
+            request.onSuccess(handler.apply(response, request));
+        }
     }
 
     private long getDeadline() {

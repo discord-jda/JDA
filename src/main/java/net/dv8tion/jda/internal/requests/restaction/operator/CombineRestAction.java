@@ -99,7 +99,9 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
         AtomicReference<I1> result1 = new AtomicReference<>();
         AtomicReference<I2> result2 = new AtomicReference<>();
         Consumer<Throwable> failureCallback = (e) -> {
-            if (failed) return;
+            if (failed) {
+                return;
+            }
             failed = true;
             RestActionOperator.doFailure(failure, e);
         };
@@ -107,9 +109,10 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
                 (s) -> {
                     try {
                         result1.set(s);
-                        if (count.incrementAndGet() == 2)
+                        if (count.incrementAndGet() == 2) {
                             RestActionOperator.doSuccess(
                                     success, accumulator.apply(result1.get(), result2.get()));
+                        }
                     } catch (Exception e) {
                         failureCallback.accept(e);
                     }
@@ -119,9 +122,10 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
                 (s) -> {
                     try {
                         result2.set(s);
-                        if (count.incrementAndGet() == 2)
+                        if (count.incrementAndGet() == 2) {
                             RestActionOperator.doSuccess(
                                     success, accumulator.apply(result1.get(), result2.get()));
+                        }
                     } catch (Exception e) {
                         failureCallback.accept(e);
                     }
@@ -131,14 +135,17 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
 
     @Override
     public O complete(boolean shouldQueue) throws RateLimitedException {
-        if (!shouldQueue)
+        if (!shouldQueue) {
             return accumulator.apply(action1.complete(false), action2.complete(false));
+        }
         try {
             return submit(true).join();
         } catch (CompletionException e) {
-            if (e.getCause() instanceof RuntimeException) throw (RuntimeException) e.getCause();
-            else if (e.getCause() instanceof RateLimitedException)
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            } else if (e.getCause() instanceof RateLimitedException) {
                 throw (RateLimitedException) e.getCause();
+            }
             throw e;
         }
     }

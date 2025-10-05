@@ -38,7 +38,9 @@ public class FutureUtil {
         cf.whenComplete((u, throwable) -> {
             if (cf.isCancelled()) {
                 future.cancel(true);
-                if (onCancel != null) onCancel.run();
+                if (onCancel != null) {
+                    onCancel.run();
+                }
             }
         });
 

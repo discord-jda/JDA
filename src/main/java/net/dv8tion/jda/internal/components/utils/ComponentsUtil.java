@@ -67,7 +67,9 @@ public class ComponentsUtil {
      */
     public static <T extends Component> T safeUnionCastWithUnknownType(
             String componentCategory, Component component, Class<T> toUnionClass) {
-        if (toUnionClass.isInstance(component)) return toUnionClass.cast(component);
+        if (toUnionClass.isInstance(component)) {
+            return toUnionClass.cast(component);
+        }
 
         String cleanedClassName = component.getClass().getSimpleName().replace("Impl", "");
         throw new IllegalArgumentException(Helpers.format(
@@ -110,7 +112,9 @@ public class ComponentsUtil {
         List<E> newComponents = new ArrayList<>();
         for (E component : children) {
             Component newComponent = replacer.apply(component);
-            if (newComponent == null) continue;
+            if (newComponent == null) {
+                continue;
+            }
             // If it returned a different component, then use it and don't try to recurse
             if (newComponent != component) {
                 Checks.checkComponentType(expectedChildrenType, component, newComponent);
@@ -145,8 +149,9 @@ public class ComponentsUtil {
             @Nonnull Collection<? extends Component> components) {
         return ComponentIterator.createStream(components)
                 .mapToInt(c -> {
-                    if (c instanceof TextDisplay)
+                    if (c instanceof TextDisplay) {
                         return ((TextDisplay) c).getContent().length();
+                    }
                     return 0;
                 })
                 .sum();
@@ -157,7 +162,8 @@ public class ComponentsUtil {
         {
             final String fileName = Helpers.getLastPathSegment(media.getUrl());
             return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
-        } else // External URL or user-managed attachment
-        return Stream.empty();
+        } else { // External URL or user-managed attachment
+            return Stream.empty();
+        }
     }
 }

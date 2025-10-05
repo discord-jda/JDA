@@ -169,7 +169,9 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             @Nullable Collection<? extends AttachedFile> attachments) {
         this.attachments.clear();
         configuredFields |= ATTACHMENTS;
-        if (attachments != null) this.attachments.addAll(attachments);
+        if (attachments != null) {
+            this.attachments.addAll(attachments);
+        }
         return this;
     }
 
@@ -239,12 +241,24 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         this.configuredFields |= data.getConfiguredFields();
         this.replace |= data.isReplace();
 
-        if (data.isSet(CONTENT)) this.setContent(data.getContent());
-        if (data.isSet(EMBEDS)) this.setEmbeds(data.getEmbeds());
-        if (data.isSet(COMPONENTS)) this.setComponents(data.getComponents());
-        if (data.isSet(ATTACHMENTS)) this.setAttachments(data.getAttachments());
-        if (data.isSet(MENTIONS)) this.mentions = data.mentions.copy();
-        if (data.isSet(FLAGS)) this.messageFlags = data.getFlags();
+        if (data.isSet(CONTENT)) {
+            this.setContent(data.getContent());
+        }
+        if (data.isSet(EMBEDS)) {
+            this.setEmbeds(data.getEmbeds());
+        }
+        if (data.isSet(COMPONENTS)) {
+            this.setComponents(data.getComponents());
+        }
+        if (data.isSet(ATTACHMENTS)) {
+            this.setAttachments(data.getAttachments());
+        }
+        if (data.isSet(MENTIONS)) {
+            this.mentions = data.mentions.copy();
+        }
+        if (data.isSet(FLAGS)) {
+            this.messageFlags = data.getFlags();
+        }
 
         return this;
     }
@@ -256,31 +270,49 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Override
     public boolean isValid() {
-        if (isUsingComponentsV2()) return isV2Valid();
-        else return isV1Valid();
+        if (isUsingComponentsV2()) {
+            return isV2Valid();
+        } else {
+            return isV1Valid();
+        }
     }
 
     private boolean isV1Valid() {
-        if (isSet(CONTENT) && Helpers.codePointLength(content) > Message.MAX_CONTENT_LENGTH)
+        if (isSet(CONTENT) && Helpers.codePointLength(content) > Message.MAX_CONTENT_LENGTH) {
             return false;
-        if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT) return false;
+        }
+        if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT) {
+            return false;
+        }
         if (isSet(COMPONENTS)
                 && (components.size() > Message.MAX_COMPONENT_COUNT
-                        || ComponentsUtil.hasIllegalV1Components(components))) return false;
+                        || ComponentsUtil.hasIllegalV1Components(components))) {
+            return false;
+        }
 
         return true;
     }
 
     private boolean isV2Valid() {
-        if (isSet(EMBEDS) && !embeds.isEmpty()) return false;
+        if (isSet(EMBEDS) && !embeds.isEmpty()) {
+            return false;
+        }
         if (isSet(COMPONENTS)) {
             if (ComponentsUtil.getComponentTreeSize(components)
-                    > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE) return false;
+                    > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE) {
+                return false;
+            }
             if (ComponentsUtil.getComponentTreeTextContentLength(components)
-                    > Message.MAX_CONTENT_LENGTH_COMPONENT_V2) return false;
+                    > Message.MAX_CONTENT_LENGTH_COMPONENT_V2) {
+                return false;
+            }
         }
-        if (isSet(CONTENT) && content.length() > 0) return false;
-        if (isReplace() && components.isEmpty()) return false;
+        if (isSet(CONTENT) && content.length() > 0) {
+            return false;
+        }
+        if (isReplace() && components.isEmpty()) {
+            return false;
+        }
 
         return true;
     }
@@ -292,8 +324,11 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     @Nonnull
     @Override
     public MessageEditData build() {
-        if (isUsingComponentsV2()) return buildV2();
-        else return buildV1();
+        if (isUsingComponentsV2()) {
+            return buildV2();
+        } else {
+            return buildV1();
+        }
     }
 
     @Nonnull
@@ -306,29 +341,33 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         AllowedMentionsData mentions = this.mentions.copy();
 
         int length = isSet(CONTENT) ? Helpers.codePointLength(content) : 0;
-        if (length > Message.MAX_CONTENT_LENGTH)
+        if (length > Message.MAX_CONTENT_LENGTH) {
             throw new IllegalStateException("Message content is too long! Max length is "
                     + Message.MAX_CONTENT_LENGTH
                     + " characters, provided "
                     + length);
+        }
 
-        if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT)
+        if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT) {
             throw new IllegalStateException("Cannot build message with over "
                     + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
+        }
 
         if (isSet(COMPONENTS)) {
-            if (components.size() > Message.MAX_COMPONENT_COUNT)
+            if (components.size() > Message.MAX_COMPONENT_COUNT) {
                 throw new IllegalStateException("Cannot build message with over "
                         + Message.MAX_COMPONENT_COUNT
                         + " top-level components, provided "
                         + components.size());
+            }
             final List<? extends Component> illegalComponents =
                     ComponentsUtil.getIllegalV1Components(components);
-            if (!illegalComponents.isEmpty())
+            if (!illegalComponents.isEmpty()) {
                 throw new IllegalStateException(
                         "Cannot build message with components other than ActionRow while using"
                                 + " components V1, see #useComponentsV2, provided: "
                                 + illegalComponents);
+            }
         }
 
         return new MessageEditData(
@@ -349,29 +388,33 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         List<MessageTopLevelComponentUnion> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
-        if ((isSet(CONTENT) && content.length() > 0) || (isSet(EMBEDS) && !embeds.isEmpty()))
+        if ((isSet(CONTENT) && content.length() > 0) || (isSet(EMBEDS) && !embeds.isEmpty())) {
             throw new IllegalStateException(
                     "Cannot build a message with components V2 enabled while having content or"
                             + " embeds");
+        }
 
         if (isSet(COMPONENTS)) {
-            if (components.isEmpty())
+            if (components.isEmpty()) {
                 throw new IllegalStateException(
                         "Cannot build message with no V2 components, or did you forget to disable"
                                 + " them?");
+            }
             final long componentTreeSize = ComponentsUtil.getComponentTreeSize(components);
-            if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
+            if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE) {
                 throw new IllegalStateException("Cannot build message with over "
                         + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE
                         + " total components, provided "
                         + componentTreeSize);
+            }
             final long componentTreeLength =
                     ComponentsUtil.getComponentTreeTextContentLength(components);
-            if (componentTreeLength > Message.MAX_CONTENT_LENGTH_COMPONENT_V2)
+            if (componentTreeLength > Message.MAX_CONTENT_LENGTH_COMPONENT_V2) {
                 throw new IllegalStateException("Cannot build message with over "
                         + Message.MAX_CONTENT_LENGTH_COMPONENT_V2
                         + " total characters, provided "
                         + componentTreeLength);
+            }
         }
 
         return new MessageEditData(

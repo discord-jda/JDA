@@ -107,7 +107,9 @@ public class SnapshotHandler {
 
     private void updateOrCreateIfNecessary(String actual, String suffix, String extension)
             throws IOException {
-        if (System.getProperty("updateSnapshots") == null) return;
+        if (System.getProperty("updateSnapshots") == null) {
+            return;
+        }
 
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
         String filePath = getFilePath(suffix, extension);
@@ -137,8 +139,12 @@ public class SnapshotHandler {
         Class<?> enclosingClass = currentClass.getEnclosingClass();
         Method testMethod = testInfo.getTestMethod().orElseThrow(AssertionError::new);
         String fileName = currentClass.getSimpleName() + "/" + testMethod.getName();
-        if (enclosingClass != null) fileName = enclosingClass.getSimpleName() + "/" + fileName;
-        if (suffix != null && !suffix.isEmpty()) fileName += "_" + suffix;
+        if (enclosingClass != null) {
+            fileName = enclosingClass.getSimpleName() + "/" + fileName;
+        }
+        if (suffix != null && !suffix.isEmpty()) {
+            fileName += "_" + suffix;
+        }
         fileName += "." + extension;
         return fileName;
     }

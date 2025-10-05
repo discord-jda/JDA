@@ -44,7 +44,9 @@ public class ThreadUpdateHandler extends SocketHandler {
     @Override
     protected Long handleInternally(DataObject content) {
         long guildId = content.getLong("guild_id");
-        if (api.getGuildSetupController().isLocked(guildId)) return guildId;
+        if (api.getGuildSetupController().isLocked(guildId)) {
+            return guildId;
+        }
 
         final long threadId = content.getLong("id");
         ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);
@@ -57,7 +59,9 @@ public class ThreadUpdateHandler extends SocketHandler {
         // https://discord.com/developers/docs/topics/threads#unarchiving-a-thread
         if (thread == null) {
             // This seems to never be true but its better to check
-            if (content.getObject("thread_metadata").getBoolean("archived")) return null;
+            if (content.getObject("thread_metadata").getBoolean("archived")) {
+                return null;
+            }
 
             // Technically, when the ThreadChannel is unarchived the archive_timestamp
             // (getTimeArchiveInfoLastModified) changes

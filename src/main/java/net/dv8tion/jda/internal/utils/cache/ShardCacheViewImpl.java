@@ -68,8 +68,9 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
     }
 
     public TIntObjectMap<JDA> getMap() {
-        if (!lock.writeLock().isHeldByCurrentThread())
+        if (!lock.writeLock().isHeldByCurrentThread()) {
             throw new IllegalStateException("Cannot access map without holding write lock!");
+        }
         return elements;
     }
 
@@ -92,10 +93,14 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
     @Nonnull
     @Override
     public List<JDA> asList() {
-        if (isEmpty()) return Collections.emptyList();
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
         try (UnlockHook hook = readLock()) {
             List<JDA> list = getCachedList();
-            if (list != null) return list;
+            if (list != null) {
+                return list;
+            }
             return cache(new ArrayList<>(elements.valueCollection()));
         }
     }
@@ -103,10 +108,14 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
     @Nonnull
     @Override
     public Set<JDA> asSet() {
-        if (isEmpty()) return Collections.emptySet();
+        if (isEmpty()) {
+            return Collections.emptySet();
+        }
         try (UnlockHook hook = readLock()) {
             Set<JDA> set = getCachedSet();
-            if (set != null) return set;
+            if (set != null) {
+                return set;
+            }
             return cache(new HashSet<>(elements.valueCollection()));
         }
     }
@@ -139,7 +148,9 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
     @Override
     public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase) {
         Checks.notEmpty(name, "Name");
-        if (elements.isEmpty()) return Collections.emptyList();
+        if (elements.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         try (UnlockHook hook = readLock()) {
             List<JDA> list = new LinkedList<>();
@@ -147,9 +158,13 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
                 String elementName = elem.getShardInfo().getShardString();
                 if (elementName != null) {
                     if (ignoreCase) {
-                        if (elementName.equalsIgnoreCase(name)) list.add(elem);
+                        if (elementName.equalsIgnoreCase(name)) {
+                            list.add(elem);
+                        }
                     } else {
-                        if (elementName.equals(name)) list.add(elem);
+                        if (elementName.equals(name)) {
+                            list.add(elem);
+                        }
                     }
                 }
             }
@@ -203,8 +218,12 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof ShardCacheViewImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ShardCacheViewImpl)) {
+            return false;
+        }
         ShardCacheViewImpl view = (ShardCacheViewImpl) obj;
         try (UnlockHook hook = readLock();
                 UnlockHook otherHook = view.readLock()) {

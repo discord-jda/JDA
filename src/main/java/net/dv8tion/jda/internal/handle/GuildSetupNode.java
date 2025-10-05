@@ -111,7 +111,9 @@ public class GuildSetupNode {
     }
 
     public boolean containsMember(long userId) {
-        if (members == null || members.isEmpty()) return false;
+        if (members == null || members.isEmpty()) {
+            return false;
+        }
         return members.containsKey(userId);
     }
 
@@ -134,7 +136,9 @@ public class GuildSetupNode {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof GuildSetupNode)) return false;
+        if (!(obj instanceof GuildSetupNode)) {
+            return false;
+        }
         GuildSetupNode node = (GuildSetupNode) obj;
         return node.id == id;
     }
@@ -144,7 +148,9 @@ public class GuildSetupNode {
     }
 
     void updateStatus(GuildSetupController.Status status) {
-        if (status == this.status) return;
+        if (status == this.status) {
+            return;
+        }
         try {
             getController().listener.onStatusChange(id, this.status, status);
         } catch (Exception ex) {
@@ -158,8 +164,12 @@ public class GuildSetupNode {
         expectedMemberCount = 1;
         partialGuild = null;
         requestedChunk = false;
-        if (members != null) members.clear();
-        if (removedMembers != null) removedMembers.clear();
+        if (members != null) {
+            members.clear();
+        }
+        if (removedMembers != null) {
+            removedMembers.clear();
+        }
         cachedEvents.clear();
     }
 
@@ -227,7 +237,9 @@ public class GuildSetupNode {
     }
 
     void handleAddMember(DataObject member) {
-        if (members == null || removedMembers == null) return;
+        if (members == null || removedMembers == null) {
+            return;
+        }
         expectedMemberCount++;
         long userId = member.getObject("user").getLong("id");
         members.put(userId, member);
@@ -235,7 +247,9 @@ public class GuildSetupNode {
     }
 
     void handleRemoveMember(DataObject member) {
-        if (members == null || removedMembers == null) return;
+        if (members == null || removedMembers == null) {
+            return;
+        }
         expectedMemberCount--;
         long userId = member.getObject("user").getLong("id");
         members.remove(userId);
@@ -244,8 +258,9 @@ public class GuildSetupNode {
         if (!getController()
                 .containsMember(
                         userId,
-                        this)) // if no other setup node contains this userId we clear it here
-        eventCache.clear(EventCache.Type.USER, userId);
+                        this)) { // if no other setup node contains this userId we clear it here
+            eventCache.clear(EventCache.Type.USER, userId);
+        }
     }
 
     void cacheEvent(DataObject event) {
@@ -280,7 +295,9 @@ public class GuildSetupNode {
         updateStatus(GuildSetupController.Status.REMOVED);
         EventCache eventCache = getController().getJDA().getEventCache();
         eventCache.clear(EventCache.Type.GUILD, id);
-        if (partialGuild == null) return;
+        if (partialGuild == null) {
+            return;
+        }
 
         Optional<DataArray> channels = partialGuild.optArray("channels");
         Optional<DataArray> roles = partialGuild.optArray("roles");
@@ -307,9 +324,10 @@ public class GuildSetupNode {
                 if (!getController()
                         .containsMember(
                                 userId,
-                                this)) // if no other setup node contains this userId we clear it
+                                this)) { // if no other setup node contains this userId we clear it
                     // here
                     eventCache.clear(EventCache.Type.USER, userId);
+                }
             }
         }
     }
@@ -317,8 +335,9 @@ public class GuildSetupNode {
     private void completeSetup() {
         updateStatus(GuildSetupController.Status.BUILDING);
         JDAImpl api = getController().getJDA();
-        for (TLongIterator it = removedMembers.iterator(); it.hasNext(); )
+        for (TLongIterator it = removedMembers.iterator(); it.hasNext(); ) {
             members.remove(it.next());
+        }
         removedMembers.clear();
         GuildImpl guild =
                 api.getEntityBuilder().createGuild(id, partialGuild, members, expectedMemberCount);
@@ -330,8 +349,11 @@ public class GuildSetupNode {
                 break;
             case JOIN:
                 api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), guild));
-                if (requestedChunk) getController().ready(id);
-                else getController().remove(id);
+                if (requestedChunk) {
+                    getController().ready(id);
+                } else {
+                    getController().remove(id);
+                }
                 break;
             default:
                 api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), guild));
@@ -381,7 +403,9 @@ public class GuildSetupNode {
         try (UnlockHook hook = managerView.writeLock()) {
             TLongObjectMap<AudioManager> audioManagerMap = managerView.getMap();
             AudioManagerImpl mng = (AudioManagerImpl) audioManagerMap.get(id);
-            if (mng == null) return;
+            if (mng == null) {
+                return;
+            }
             ConnectionListener listener = mng.getConnectionListener();
             final AudioManagerImpl newMng = new AudioManagerImpl(guild);
             newMng.setSelfMuted(mng.isSelfMuted());
@@ -397,13 +421,15 @@ public class GuildSetupNode {
 
                 final VoiceChannel channel = api.getVoiceChannelById(channelId);
                 if (channel != null) {
-                    if (mng.isConnected())
+                    if (mng.isConnected()) {
                         mng.closeAudioConnection(ConnectionStatus.ERROR_CANNOT_RESUME);
+                    }
                 } else {
                     // The voice channel is not cached. It was probably deleted.
                     api.getClient().removeAudioConnection(id);
-                    if (listener != null)
+                    if (listener != null) {
                         listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+                    }
                 }
             }
             audioManagerMap.put(id, newMng);

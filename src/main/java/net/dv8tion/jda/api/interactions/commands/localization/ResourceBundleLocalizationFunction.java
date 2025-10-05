@@ -44,8 +44,9 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
         final Map<DiscordLocale, String> map = new HashMap<>();
         for (Bundle bundle : bundles) {
             final ResourceBundle resourceBundle = bundle.resourceBundle;
-            if (resourceBundle.containsKey(localizationKey))
+            if (resourceBundle.containsKey(localizationKey)) {
                 map.put(bundle.targetLocale, resourceBundle.getString(localizationKey));
+            }
         }
 
         return map;
@@ -233,12 +234,18 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Bundle)) return false;
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Bundle)) {
+                return false;
+            }
 
             Bundle bundle = (Bundle) o;
 
-            if (!targetLocale.equals(bundle.targetLocale)) return false;
+            if (!targetLocale.equals(bundle.targetLocale)) {
+                return false;
+            }
             return resourceBundle.equals(bundle.resourceBundle);
         }
 

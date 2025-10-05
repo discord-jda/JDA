@@ -685,7 +685,9 @@ public enum ActionType {
     @Nonnull
     public static ActionType from(int key) {
         for (ActionType type : values()) {
-            if (type.key == key) return type;
+            if (type.key == key) {
+                return type;
+            }
         }
         return UNKNOWN;
     }

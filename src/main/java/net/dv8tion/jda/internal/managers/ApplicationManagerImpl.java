@@ -64,9 +64,15 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
     public ApplicationManagerImpl reset(long fields) {
         super.reset(fields);
 
-        if ((fields & DESCRIPTION) == DESCRIPTION) description = null;
-        if ((fields & ICON) == ICON) icon = null;
-        if ((fields & COVER_IMAGE) == COVER_IMAGE) coverImage = null;
+        if ((fields & DESCRIPTION) == DESCRIPTION) {
+            description = null;
+        }
+        if ((fields & ICON) == ICON) {
+            icon = null;
+        }
+        if ((fields & COVER_IMAGE) == COVER_IMAGE) {
+            coverImage = null;
+        }
 
         return this;
     }
@@ -132,7 +138,9 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
     @Nonnull
     @Override
     public ApplicationManager setInteractionsEndpointUrl(@Nullable String interactionsEndpointUrl) {
-        if (interactionsEndpointUrl != null) checkUrl(interactionsEndpointUrl);
+        if (interactionsEndpointUrl != null) {
+            checkUrl(interactionsEndpointUrl);
+        }
         this.interactionsEndpointUrl = interactionsEndpointUrl;
         set |= INTERACTIONS_ENDPOINT_URL;
         return this;
@@ -141,7 +149,9 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
     @Nonnull
     @Override
     public ApplicationManager setCustomInstallUrl(@Nullable String customInstallUrl) {
-        if (customInstallUrl != null) checkUrl(customInstallUrl);
+        if (customInstallUrl != null) {
+            checkUrl(customInstallUrl);
+        }
         this.customInstallUrl = customInstallUrl;
         set |= CUSTOM_INSTALL_URL;
         return this;
@@ -177,16 +187,27 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
     protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
 
-        if (shouldUpdate(DESCRIPTION)) body.put("description", this.description);
-        if (shouldUpdate(ICON))
+        if (shouldUpdate(DESCRIPTION)) {
+            body.put("description", this.description);
+        }
+        if (shouldUpdate(ICON)) {
             body.put("icon", this.icon == null ? null : this.icon.getEncoding());
-        if (shouldUpdate(COVER_IMAGE))
+        }
+        if (shouldUpdate(COVER_IMAGE)) {
             body.put("cover_image", this.coverImage == null ? null : this.coverImage.getEncoding());
-        if (shouldUpdate(TAGS)) body.put("tags", DataArray.fromCollection(this.tags));
-        if (shouldUpdate(INTERACTIONS_ENDPOINT_URL))
+        }
+        if (shouldUpdate(TAGS)) {
+            body.put("tags", DataArray.fromCollection(this.tags));
+        }
+        if (shouldUpdate(INTERACTIONS_ENDPOINT_URL)) {
             body.put("interactions_endpoint_url", this.interactionsEndpointUrl);
-        if (shouldUpdate(CUSTOM_INSTALL_URL)) body.put("custom_install_url", this.customInstallUrl);
-        if (shouldUpdate(INSTALL_PARAMS)) body.put("install_params", this.installParams);
+        }
+        if (shouldUpdate(CUSTOM_INSTALL_URL)) {
+            body.put("custom_install_url", this.customInstallUrl);
+        }
+        if (shouldUpdate(INSTALL_PARAMS)) {
+            body.put("install_params", this.installParams);
+        }
         if (shouldUpdate(INTEGRATION_TYPES_CONFIG)) {
             DataObject config = DataObject.empty();
             integrationTypeConfig.forEach((key, value) ->

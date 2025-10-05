@@ -37,7 +37,9 @@ public class ChannelDeleteHandler extends SocketHandler {
         long guildId = 0;
         if (type.isGuild()) {
             guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+            if (getJDA().getGuildSetupController().isLocked(guildId)) {
+                return guildId;
+            }
         }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
@@ -46,11 +48,12 @@ public class ChannelDeleteHandler extends SocketHandler {
         if (guild == null) {
             PrivateChannel channel =
                     getJDA().getChannelsView().remove(ChannelType.PRIVATE, channelId);
-            if (channel == null)
+            if (channel == null) {
                 WebSocketClient.LOG.debug(
                         "CHANNEL_DELETE attempted to delete a private channel that is not yet"
                                 + " cached. JSON: {}",
                         content);
+            }
             return null;
         }
 

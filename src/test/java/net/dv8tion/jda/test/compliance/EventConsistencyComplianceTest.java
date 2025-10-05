@@ -52,7 +52,9 @@ public class EventConsistencyComplianceTest {
         Set<String> found = new HashSet<>();
 
         for (Class<? extends GenericEvent> type : eventTypes) {
-            if (excludedTypes.contains(type)) continue;
+            if (excludedTypes.contains(type)) {
+                continue;
+            }
             String name = type.getSimpleName();
             String methodName = "on" + name.substring(0, name.length() - "Event".length());
             assertThatCode(() -> adapter.getDeclaredMethod(methodName, type))
@@ -62,7 +64,9 @@ public class EventConsistencyComplianceTest {
         }
 
         for (Method method : adapter.getDeclaredMethods()) {
-            if (!method.isAccessible() || method.getAnnotation(Deprecated.class) != null) continue;
+            if (!method.isAccessible() || method.getAnnotation(Deprecated.class) != null) {
+                continue;
+            }
             assertThat(found.contains(method.getName()))
                     .as("Dangling method found in ListenerAdapter " + method.getName())
                     .isTrue();

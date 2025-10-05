@@ -70,7 +70,9 @@ public class ErrorResponseException extends RuntimeException {
                                         .collect(Collectors.joining("\n"))));
 
         this.response = response;
-        if (response != null && response.getException() != null) initCause(response.getException());
+        if (response != null && response.getException() != null) {
+            initCause(response.getException());
+        }
         this.errorResponse = errorResponse;
         this.code = code;
         this.meaning = meaning;
@@ -174,8 +176,12 @@ public class ErrorResponseException extends RuntimeException {
             } else if (optObj.isPresent()) {
                 DataObject obj = optObj.get();
                 if (!obj.isNull("code") || !obj.isNull("message")) {
-                    if (!obj.isNull("code")) code = obj.getInt("code");
-                    if (!obj.isNull("message")) meaning = obj.getString("message");
+                    if (!obj.isNull("code")) {
+                        code = obj.getInt("code");
+                    }
+                    if (!obj.isNull("message")) {
+                        meaning = obj.getString("message");
+                    }
                 } else {
                     // This means that neither code or message is provided
                     // In that case we simply put the raw response in place!
@@ -217,10 +223,12 @@ public class ErrorResponseException extends RuntimeException {
                 for (String index : schemaError.keys()) {
                     DataObject properties = schemaError.getObject(index);
                     String location = String.format("%s%s[%s].", currentLocation, name, index);
-                    if (properties.hasKey("_errors"))
+                    if (properties.hasKey("_errors")) {
                         schemaErrors.add(parseSchemaError(
                                 location.substring(0, location.length() - 1), properties));
-                    else parseSchema(schemaErrors, location, properties);
+                    } else {
+                        parseSchema(schemaErrors, location, properties);
+                    }
                 }
             } else {
                 // We have a nested schema error, use recursion!

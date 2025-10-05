@@ -43,8 +43,12 @@ public class ForumTagSnowflakeImpl implements ForumTagSnowflake {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (!(obj instanceof ForumTagSnowflakeImpl)) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ForumTagSnowflakeImpl)) {
+            return false;
+        }
         return ((ForumTagSnowflakeImpl) obj).id == id;
     }
 }

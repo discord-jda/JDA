@@ -57,10 +57,12 @@ public class ShardingSessionConfig extends SessionConfig {
                 flags,
                 maxReconnectDelay,
                 largeThreshold);
-        if (httpClient == null)
+        if (httpClient == null) {
             this.builder =
                     httpClientBuilder == null ? IOUtil.newHttpClientBuilder() : httpClientBuilder;
-        else this.builder = null;
+        } else {
+            this.builder = null;
+        }
         this.audioSendFactory = audioSendFactory;
         this.shardingFlags = shardingFlags;
     }

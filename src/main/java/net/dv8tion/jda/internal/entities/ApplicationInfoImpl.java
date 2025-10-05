@@ -150,8 +150,11 @@ public class ApplicationInfoImpl implements ApplicationInfo {
         Checks.noneNull(scopes, "Scopes");
         this.scopes = String.join("+", scopes);
         if (!this.scopes.contains("bot")) {
-            if (this.scopes.isEmpty()) this.scopes = "bot";
-            else this.scopes += "+bot";
+            if (this.scopes.isEmpty()) {
+                this.scopes = "bot";
+            } else {
+                this.scopes += "+bot";
+            }
         }
         return this;
     }

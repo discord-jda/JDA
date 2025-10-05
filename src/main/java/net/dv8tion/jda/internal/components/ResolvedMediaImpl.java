@@ -100,7 +100,9 @@ public class ResolvedMediaImpl implements ResolvedMedia {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof ResolvedMediaImpl)) return false;
+        if (!(o instanceof ResolvedMediaImpl)) {
+            return false;
+        }
         ResolvedMediaImpl that = (ResolvedMediaImpl) o;
         return Objects.equals(url, that.url);
     }

@@ -112,13 +112,17 @@ public class FileProxy {
 
     protected OkHttpClient getHttpClient() {
         // Return custom HTTP client if set
-        if (customHttpClient != null) return customHttpClient;
+        if (customHttpClient != null) {
+            return customHttpClient;
+        }
 
         // Otherwise, see if a default one has been assigned
         //  If there is no client then create a default one
         if (defaultHttpClient == null) {
             synchronized (this) {
-                if (defaultHttpClient == null) defaultHttpClient = new OkHttpClient();
+                if (defaultHttpClient == null) {
+                    defaultHttpClient = new OkHttpClient();
+                }
             }
         }
 
@@ -166,7 +170,9 @@ public class FileProxy {
                 .onSuccess((call, response) -> {
                     if (response.isSuccessful()) {
                         InputStream body = IOUtil.getBody(response);
-                        if (!future.complete(body)) IOUtil.silentClose(response);
+                        if (!future.complete(body)) {
+                            IOUtil.silentClose(response);
+                        }
                     } else {
                         future.completeExceptionally(
                                 new HttpException(response.code() + ": " + response.message()));

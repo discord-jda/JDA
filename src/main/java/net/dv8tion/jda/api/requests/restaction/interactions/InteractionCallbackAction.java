@@ -73,7 +73,9 @@ public interface InteractionCallbackAction<T> extends RestAction<T> {
         @Nonnull
         public static ResponseType fromId(int id) {
             for (ResponseType type : values()) {
-                if (type.raw == id) return type;
+                if (type.raw == id) {
+                    return type;
+                }
             }
             return UNKNOWN;
         }

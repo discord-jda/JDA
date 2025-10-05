@@ -78,7 +78,9 @@ public class AudioPacket {
         this.ssrc = buffer.getInt();
 
         this.csrc = new int[cc];
-        for (int i = 0; i < cc; i++) this.csrc[i] = buffer.getInt();
+        for (int i = 0; i < cc; i++) {
+            this.csrc[i] = buffer.getInt();
+        }
 
         // Extract extension length as described by
         // https://datatracker.ietf.org/doc/html/rfc3550#section-5.3.1
@@ -137,7 +139,9 @@ public class AudioPacket {
 
     public static AudioPacket decryptAudioPacket(CryptoAdapter crypto, DatagramPacket packet) {
         AudioPacket encryptedPacket = new AudioPacket(packet);
-        if (encryptedPacket.type != RTP_PAYLOAD_TYPE) return null;
+        if (encryptedPacket.type != RTP_PAYLOAD_TYPE) {
+            return null;
+        }
 
         byte[] decryptedPayload = crypto.decrypt(encryptedPacket.encodedAudio);
         int offset = 4 * encryptedPacket.extension;
@@ -153,7 +157,9 @@ public class AudioPacket {
 
     private static byte[] generateRawPacket(
             ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data) {
-        if (buffer == null) buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.remaining());
+        if (buffer == null) {
+            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.remaining());
+        }
         populateBuffer(seq, timestamp, ssrc, data, buffer);
         return buffer.array();
     }

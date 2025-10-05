@@ -159,9 +159,11 @@ public class GuildImpl implements Guild {
     public GuildImpl(JDAImpl api, long id) {
         this.id = id;
         this.api = api;
-        if (api.getCacheFlags().stream().anyMatch(CacheFlag::isPresence))
+        if (api.getCacheFlags().stream().anyMatch(CacheFlag::isPresence)) {
             memberPresences = new CacheView.SimpleCacheView<>(MemberPresenceImpl.class, null);
-        else memberPresences = null;
+        } else {
+            memberPresences = null;
+        }
     }
 
     @Override
@@ -186,10 +188,11 @@ public class GuildImpl implements Guild {
         final AbstractCacheView<AudioManager> audioManagerView = getJDA().getAudioManagersView();
         final AudioManagerImpl manager =
                 (AudioManagerImpl) audioManagerView.get(id); // read-lock access/release
-        if (manager != null)
+        if (manager != null) {
             manager.closeAudioConnection(
                     ConnectionStatus
                             .DISCONNECTED_REMOVED_FROM_GUILD); // connection-lock access/release
+        }
         audioManagerView.remove(id); // write-lock access/release
 
         // cleaning up all users that we do not share a guild with anymore
@@ -205,7 +208,9 @@ public class GuildImpl implements Guild {
         try (UnlockHook hook = userView.writeLock()) {
             long selfId = getJDA().getSelfUser().getIdLong();
             memberIds.forEach(memberId -> {
-                if (memberId == selfId) return true; // don't remove selfUser from cache
+                if (memberId == selfId) {
+                    return true; // don't remove selfUser from cache
+                }
                 userView.remove(memberId);
                 getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
                 return true;
@@ -219,7 +224,9 @@ public class GuildImpl implements Guild {
         // Enforce idempotence by checking the channel was in cache
         // If the channel was not in cache, there is no reason to cleanup anything else.
         // This idempotency makes sure that new cache is never affected by old cache
-        if (channelCache.remove(channel.getType(), id) == null) return;
+        if (channelCache.remove(channel.getType(), id) == null) {
+            return;
+        }
 
         api.getChannelsView().remove(channel.getType(), id);
 
@@ -346,10 +353,14 @@ public class GuildImpl implements Guild {
             DataArray arr = response.getArray();
             for (int i = 0; i < arr.length(); i++) {
                 DataObject obj = arr.getObject(i);
-                if (!includeDeprecated && obj.getBoolean("deprecated")) continue;
+                if (!includeDeprecated && obj.getBoolean("deprecated")) {
+                    continue;
+                }
                 String id = obj.getString("id", "");
                 Region region = Region.fromKey(id);
-                if (region != Region.UNKNOWN) set.add(region);
+                if (region != Region.UNKNOWN) {
+                    set.add(region);
+                }
             }
             return set;
         });
@@ -423,8 +434,9 @@ public class GuildImpl implements Guild {
         Checks.notBlank(accessToken, "Access-Token");
         Checks.notNull(user, "User");
         Checks.check(!isMember(user), "User is already in this guild");
-        if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
+        if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE)) {
             throw new InsufficientPermissionException(this, Permission.CREATE_INSTANT_INVITE);
+        }
         return new MemberActionImpl(getJDA(), this, user.getId(), accessToken);
     }
 
@@ -446,9 +458,13 @@ public class GuildImpl implements Guild {
 
     @Override
     public boolean unloadMember(long userId) {
-        if (userId == api.getSelfUser().getIdLong()) return false;
+        if (userId == api.getSelfUser().getIdLong()) {
+            return false;
+        }
         MemberImpl member = (MemberImpl) getMemberById(userId);
-        if (member == null) return false;
+        if (member == null) {
+            return false;
+        }
         api.getEntityBuilder().updateMemberCache(member, true);
         return true;
     }
@@ -649,8 +665,9 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public RestAction<List<Webhook>> retrieveWebhooks() {
-        if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
+        if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS)) {
             throw new InsufficientPermissionException(this, Permission.MANAGE_WEBHOOKS);
+        }
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
@@ -708,7 +725,9 @@ public class GuildImpl implements Guild {
     @Override
     public Member getSelfMember() {
         Member member = getMember(getJDA().getSelfUser());
-        if (member == null) throw new IllegalStateException("Guild does not have a self member");
+        if (member == null) {
+            throw new IllegalStateException("Guild does not have a self member");
+        }
         return member;
     }
 
@@ -841,14 +860,18 @@ public class GuildImpl implements Guild {
         channelCache.ofType(ICategorizableChannel.class).forEachUnordered(channel -> {
             // Hide threads and inaccessible channels
             if (channel.getType().isThread()
-                    || !self.hasPermission(channel, Permission.VIEW_CHANNEL)) return;
+                    || !self.hasPermission(channel, Permission.VIEW_CHANNEL)) {
+                return;
+            }
 
             Category category = channel.getParentCategory();
             channels.add(channel);
 
             // Empty categories will never show up here,
             // since no categorizable channel will add them to this group
-            if (category != null) channels.add(category);
+            if (category != null) {
+                channels.add(category);
+            }
         });
 
         return Collections.unmodifiableList(new ArrayList<>(channels));
@@ -885,8 +908,9 @@ public class GuildImpl implements Guild {
                     if (emoji != null) {
                         if (emoji.getOwner() != null
                                 || !getSelfMember()
-                                        .hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+                                        .hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
                             return emoji;
+                        }
                     }
                     return null;
                 },
@@ -939,10 +963,11 @@ public class GuildImpl implements Guild {
     @Override
     public GuildStickerManager editSticker(@Nonnull StickerSnowflake sticker) {
         Checks.notNull(sticker, "Sticker");
-        if (sticker instanceof GuildSticker)
+        if (sticker instanceof GuildSticker) {
             Checks.check(
                     ((GuildSticker) sticker).getGuildIdLong() == id,
                     "Cannot edit a sticker from another guild!");
+        }
         Checks.check(!(sticker instanceof StandardSticker), "Cannot edit a standard sticker.");
         return new GuildStickerManagerImpl(this, id, sticker);
     }
@@ -950,8 +975,9 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public BanPaginationActionImpl retrieveBanList() {
-        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
+        }
 
         return new BanPaginationActionImpl(this);
     }
@@ -959,8 +985,9 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public RestAction<Ban> retrieveBan(@Nonnull UserSnowflake user) {
-        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
+        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
+        }
 
         Checks.notNull(user, "User");
 
@@ -976,8 +1003,9 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public RestAction<Integer> retrievePrunableMemberCount(int days) {
-        if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
+        if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
             throw new InsufficientPermissionException(this, Permission.KICK_MEMBERS);
+        }
 
         Checks.check(days >= 1 && days <= 30, "Provided %d days must be between 1 and 30.", days);
 
@@ -1032,18 +1060,20 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public AudioManager getAudioManager() {
-        if (!getJDA().isIntent(GatewayIntent.GUILD_VOICE_STATES))
+        if (!getJDA().isIntent(GatewayIntent.GUILD_VOICE_STATES)) {
             throw new IllegalStateException(
                     "Cannot use audio features with disabled GUILD_VOICE_STATES intent!");
+        }
         final AbstractCacheView<AudioManager> managerMap = getJDA().getAudioManagersView();
         AudioManager mng = managerMap.get(id);
         if (mng == null) {
             // No previous manager found -> create one
             try (UnlockHook hook = managerMap.writeLock()) {
                 GuildImpl cachedGuild = (GuildImpl) getJDA().getGuildById(id);
-                if (cachedGuild == null)
+                if (cachedGuild == null) {
                     throw new IllegalStateException(
                             "Cannot get an AudioManager instance on an uncached Guild");
+                }
                 mng = managerMap.get(id);
                 if (mng == null) {
                     mng = new AudioManagerImpl(cachedGuild);
@@ -1057,7 +1087,9 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public synchronized Task<Void> requestToSpeak() {
-        if (!isRequestToSpeakPending()) pendingRequestToSpeak = new CompletableFuture<>();
+        if (!isRequestToSpeakPending()) {
+            pendingRequestToSpeak = new CompletableFuture<>();
+        }
 
         Task<Void> task = new GatewayTask<>(pendingRequestToSpeak, this::cancelRequestToSpeak);
         updateRequestToSpeak();
@@ -1144,9 +1176,10 @@ public class GuildImpl implements Guild {
     @Override
     public Task<Void> loadMembers(@Nonnull Consumer<Member> callback) {
         Checks.notNull(callback, "Callback");
-        if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
+        if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS)) {
             throw new IllegalStateException(
                     "Cannot use loadMembers without GatewayIntent.GUILD_MEMBERS!");
+        }
         if (isLoaded()) {
             memberCache.forEachUnordered(callback);
             return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
@@ -1170,8 +1203,9 @@ public class GuildImpl implements Guild {
     public CacheRestAction<Member> retrieveMemberById(long id) {
         JDAImpl jda = getJDA();
         return new DeferredRestAction<>(jda, Member.class, () -> getMemberById(id), () -> {
-                    if (id == jda.getSelfUser().getIdLong())
+                    if (id == jda.getSelfUser().getIdLong()) {
                         return new CompletedRestAction<>(jda, getSelfMember());
+                    }
                     Route.CompiledRoute route =
                             Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
                     return new RestActionImpl<>(jda, route, (resp, req) -> {
@@ -1192,9 +1226,10 @@ public class GuildImpl implements Guild {
                 !includePresence || api.isIntent(GatewayIntent.GUILD_PRESENCES),
                 "Cannot retrieve presences of members without GUILD_PRESENCES intent!");
 
-        if (ids.length == 0)
+        if (ids.length == 0) {
             return new GatewayTask<>(
                     CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        }
         Checks.check(ids.length <= 100, "You can only request 100 members at once");
         MemberChunkManager chunkManager = api.getClient().getChunkManager();
         List<Member> collect = new ArrayList<>(ids.length);
@@ -1202,7 +1237,9 @@ public class GuildImpl implements Guild {
         MemberChunkManager.ChunkRequest handle =
                 chunkManager.chunkGuild(this, includePresence, ids, (last, list) -> {
                     collect.addAll(list);
-                    if (last) result.complete(collect);
+                    if (last) {
+                        result.complete(collect);
+                    }
                 });
 
         handle.exceptionally(ex -> {
@@ -1230,7 +1267,9 @@ public class GuildImpl implements Guild {
         MemberChunkManager.ChunkRequest handle =
                 chunkManager.chunkGuild(this, prefix, limit, (last, list) -> {
                     collect.addAll(list);
-                    if (last) result.complete(collect);
+                    if (last) {
+                        result.complete(collect);
+                    }
                 });
 
         handle.exceptionally(ex -> {
@@ -1281,13 +1320,14 @@ public class GuildImpl implements Guild {
                     ThreadChannel thread = builder.createThreadChannel(threadObj, this.getIdLong());
                     list.add(thread);
                 } catch (Exception e) {
-                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage()))
+                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage())) {
                         EntityBuilder.LOG.debug(
                                 "Discarding thread without cached parent channel. JSON: {}",
                                 threadObj);
-                    else
+                    } else {
                         EntityBuilder.LOG.warn(
                                 "Failed to create thread channel. JSON: {}", threadObj, e);
+                    }
                 }
             }
 
@@ -1303,16 +1343,18 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public RestAction<List<Invite>> retrieveInvites() {
-        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
+        }
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
             EntityBuilder entityBuilder = api.getEntityBuilder();
             DataArray array = response.getArray();
             List<Invite> invites = new ArrayList<>(array.length());
-            for (int i = 0; i < array.length(); i++)
+            for (int i = 0; i < array.length(); i++) {
                 invites.add(entityBuilder.createInvite(array.getObject(i)));
+            }
             return Collections.unmodifiableList(invites);
         });
     }
@@ -1320,8 +1362,9 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public RestAction<List<Template>> retrieveTemplates() {
-        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
+        }
 
         final Route.CompiledRoute route = Route.Templates.GET_GUILD_TEMPLATES.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
@@ -1347,7 +1390,9 @@ public class GuildImpl implements Guild {
         name = name.trim();
 
         Checks.notLonger(name, 100, "Name");
-        if (description != null) Checks.notLonger(description, 120, "Description");
+        if (description != null) {
+            Checks.notLonger(description, 120, "Description");
+        }
 
         final Route.CompiledRoute route = Route.Templates.CREATE_TEMPLATE.compile(getId());
 
@@ -1377,41 +1422,50 @@ public class GuildImpl implements Guild {
             @Nonnull UserSnowflake user, @Nullable AudioChannel audioChannel) {
         Checks.notNull(user, "User");
         Member member = user instanceof Member ? (Member) user : getMember(user);
-        if (member != null) checkGuild(member.getGuild(), "Member");
-        if (audioChannel != null) checkGuild(audioChannel.getGuild(), "AudioChannel");
+        if (member != null) {
+            checkGuild(member.getGuild(), "Member");
+        }
+        if (audioChannel != null) {
+            checkGuild(audioChannel.getGuild(), "AudioChannel");
+        }
 
-        if (!getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE))
+        if (!getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE)) {
             throw new IllegalStateException(
                     "Cannot move a Member with disabled CacheFlag.VOICE_STATE");
+        }
         GuildVoiceState vState = voiceStateCache.getElementById(user.getIdLong());
-        if (vState == null)
+        if (vState == null) {
             throw new IllegalStateException(
                     "You cannot move a Member who isn't in an AudioChannel!");
+        }
         // A cached voice state means that the member is connected to a channel, but we'll check
         // just in case
         AudioChannel channel = vState.getChannel();
-        if (channel == null)
+        if (channel == null) {
             throw new IllegalStateException(
                     "You cannot move a Member who isn't in an AudioChannel!");
+        }
 
         Member selfMember = getSelfMember();
-        if (!selfMember.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
+        if (!selfMember.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)) {
             throw new InsufficientPermissionException(
                     channel,
                     Permission.VOICE_MOVE_OTHERS,
                     "This account does not have Permission to MOVE_OTHERS out of the channel that"
                             + " the Member is currently in.");
+        }
 
         if (member != null) {
             if (audioChannel != null
                     && !selfMember.hasPermission(audioChannel, Permission.VOICE_CONNECT)
-                    && !member.hasPermission(audioChannel, Permission.VOICE_CONNECT))
+                    && !member.hasPermission(audioChannel, Permission.VOICE_CONNECT)) {
                 throw new InsufficientPermissionException(
                         audioChannel,
                         Permission.VOICE_CONNECT,
                         "Neither this account nor the Member that is attempting to be moved have"
                                 + " the VOICE_CONNECT permission for the destination AudioChannel, so"
                                 + " the move cannot be done.");
+            }
         }
 
         DataObject body = DataObject.empty()
@@ -1428,11 +1482,12 @@ public class GuildImpl implements Guild {
 
         if (member.equals(getSelfMember())) {
             if (!member.hasPermission(Permission.NICKNAME_CHANGE)
-                    && !member.hasPermission(Permission.NICKNAME_MANAGE))
+                    && !member.hasPermission(Permission.NICKNAME_MANAGE)) {
                 throw new InsufficientPermissionException(
                         this,
                         Permission.NICKNAME_CHANGE,
                         "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
+            }
         } else {
             checkPermission(Permission.NICKNAME_MANAGE);
             checkPosition(member);
@@ -1444,11 +1499,12 @@ public class GuildImpl implements Guild {
                             DataObject.empty().put("nick", nickname == null ? "" : nickname);
 
                     Route.CompiledRoute route;
-                    if (member.equals(getSelfMember()))
+                    if (member.equals(getSelfMember())) {
                         route = Route.Guilds.MODIFY_SELF.compile(getId());
-                    else
+                    } else {
                         route = Route.Guilds.MODIFY_MEMBER.compile(
                                 getId(), member.getUser().getId());
+                    }
 
                     return new AuditableRestActionImpl<Void>(jda, route, body);
                 })
@@ -1466,7 +1522,9 @@ public class GuildImpl implements Guild {
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId());
         DataObject body = DataObject.empty();
         body.put("days", days);
-        if (!wait) body.put("compute_prune_count", false);
+        if (!wait) {
+            body.put("compute_prune_count", false);
+        }
         if (roles.length != 0) {
             for (Role role : roles) {
                 Checks.notNull(role, "Role");
@@ -1527,7 +1585,9 @@ public class GuildImpl implements Guild {
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
 
-        if (duration > 0) params.put("delete_message_seconds", unit.toSeconds(duration));
+        if (duration > 0) {
+            params.put("delete_message_seconds", unit.toSeconds(duration));
+        }
 
         return new AuditableRestActionImpl<>(getJDA(), route, params);
     }
@@ -1629,11 +1689,13 @@ public class GuildImpl implements Guild {
         if (shouldCacheVoiceState(user.getIdLong())) {
             GuildVoiceStateImpl voiceState = voiceStateCache.get(user.getIdLong());
             AudioChannelUnion channel = voiceState != null ? voiceState.getChannel() : null;
-            if (channel == null)
+            if (channel == null) {
                 throw new IllegalStateException(
                         "Can only deafen members who are currently in a voice channel");
-            if (voiceState.isGuildDeafened() == deafen)
+            }
+            if (voiceState.isGuildDeafened() == deafen) {
                 return new CompletedRestAction<>(getJDA(), null);
+            }
             ((GuildChannelMixin<?>) channel).checkPermission(Permission.VOICE_DEAF_OTHERS);
         }
 
@@ -1650,11 +1712,13 @@ public class GuildImpl implements Guild {
         if (shouldCacheVoiceState(user.getIdLong())) {
             GuildVoiceStateImpl voiceState = voiceStateCache.get(user.getIdLong());
             AudioChannelUnion channel = voiceState != null ? voiceState.getChannel() : null;
-            if (channel == null)
+            if (channel == null) {
                 throw new IllegalStateException(
                         "Can only mute members who are currently in a voice channel");
-            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
+            }
+            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed())) {
                 return new CompletedRestAction<>(getJDA(), null);
+            }
             ((GuildChannelMixin<?>) channel).checkPermission(Permission.VOICE_MUTE_OTHERS);
         }
 
@@ -1733,8 +1797,9 @@ public class GuildImpl implements Guild {
 
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
-        if (Helpers.deepEqualsUnordered(roles, memberRoles))
+        if (Helpers.deepEqualsUnordered(roles, memberRoles)) {
             return new CompletedRestAction<>(getJDA(), null);
+        }
 
         // Check removed roles
         for (Role r : memberRoles) {
@@ -1833,7 +1898,7 @@ public class GuildImpl implements Guild {
         body.put("name", name);
         body.put("image", icon.getEncoding());
         if (roles.length
-                > 0) // making sure none of the provided roles are null before mapping them to the
+                > 0) { // making sure none of the provided roles are null before mapping them to the
             // snowflake id
             body.put(
                     "roles",
@@ -1841,6 +1906,7 @@ public class GuildImpl implements Guild {
                             .filter(Objects::nonNull)
                             .map(ISnowflake::getId)
                             .collect(Collectors.toSet()));
+        }
 
         JDAImpl jda = getJDA();
         Route.CompiledRoute route = Route.Emojis.CREATE_EMOJI.compile(getId());
@@ -1862,7 +1928,9 @@ public class GuildImpl implements Guild {
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");
         Checks.notEmpty(tags, "Tags");
-        if (!description.isEmpty()) Checks.inRange(description, 2, 100, "Description");
+        if (!description.isEmpty()) {
+            Checks.inRange(description, 2, 100, "Description");
+        }
         for (String t : tags) Checks.notEmpty(t, "Tags");
 
         String csv = String.join(",", tags);
@@ -1968,28 +2036,32 @@ public class GuildImpl implements Guild {
     // ---- Checks ----
 
     protected void checkGuild(Guild providedGuild, String comment) {
-        if (!equals(providedGuild))
+        if (!equals(providedGuild)) {
             throw new IllegalArgumentException(
                     "Provided " + comment + " is not part of this Guild!");
+        }
     }
 
     protected void checkPermission(Permission perm) {
-        if (!getSelfMember().hasPermission(perm))
+        if (!getSelfMember().hasPermission(perm)) {
             throw new InsufficientPermissionException(this, perm);
+        }
     }
 
     protected void checkPosition(UserSnowflake user) {
         Member member = resolveMember(user);
-        if (member != null && !getSelfMember().canInteract(member))
+        if (member != null && !getSelfMember().canInteract(member)) {
             throw new HierarchyException(
                     "Can't modify a member with higher or equal highest role than yourself!");
+        }
     }
 
     protected void checkPosition(Role role) {
-        if (!getSelfMember().canInteract(role))
+        if (!getSelfMember().canInteract(role)) {
             throw new HierarchyException(
                     "Can't modify a role with higher or equal highest role than yourself! Role: "
                             + role.toString());
+        }
     }
 
     private void checkRoles(Collection<Role> roles, String type, String preposition) {
@@ -2009,16 +2081,18 @@ public class GuildImpl implements Guild {
     private void checkCanCreateChannel(Category parent) {
         if (parent != null) {
             Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
-            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL)) {
                 throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+            }
         } else {
             checkPermission(Permission.MANAGE_CHANNEL);
         }
     }
 
     private void checkOwner(long userId, String what) {
-        if (userId == ownerId)
+        if (userId == ownerId) {
             throw new HierarchyException("Cannot " + what + " the owner of a guild.");
+        }
     }
 
     private Member resolveMember(UserSnowflake user) {
@@ -2027,7 +2101,9 @@ public class GuildImpl implements Guild {
             member = (Member) user;
             // Only resolve if member is in the same guild, otherwise role information is not
             // accurate
-            if (!equals(member.getGuild())) member = null;
+            if (!equals(member.getGuild())) {
+                member = null;
+            }
         }
         return member;
     }
@@ -2037,9 +2113,13 @@ public class GuildImpl implements Guild {
     }
 
     public synchronized void updateRequestToSpeak() {
-        if (!isRequestToSpeakPending()) return;
+        if (!isRequestToSpeakPending()) {
+            return;
+        }
         AudioChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
-        if (!(connectedChannel instanceof StageChannel)) return;
+        if (!(connectedChannel instanceof StageChannel)) {
+            return;
+        }
         StageChannel stage = (StageChannel) connectedChannel;
         CompletableFuture<Void> future = pendingRequestToSpeak;
         pendingRequestToSpeak = null;
@@ -2049,7 +2129,9 @@ public class GuildImpl implements Guild {
                     .queue((v) -> future.complete(null), future::completeExceptionally);
         } catch (Throwable ex) {
             future.completeExceptionally(ex);
-            if (ex instanceof Error) throw ex;
+            if (ex instanceof Error) {
+                throw ex;
+            }
         }
     }
 
@@ -2057,7 +2139,9 @@ public class GuildImpl implements Guild {
 
     public GuildImpl setOwner(Member owner) {
         // Only cache owner if user cache is enabled
-        if (owner != null && getMemberById(owner.getIdLong()) != null) this.owner = owner;
+        if (owner != null && getMemberById(owner.getIdLong()) != null) {
+            this.owner = owner;
+        }
         return this;
     }
 
@@ -2259,7 +2343,9 @@ public class GuildImpl implements Guild {
     public void onMemberRemove(long memberId) {
         memberCount--;
         this.voiceStateCache.remove(memberId);
-        if (this.memberPresences != null) this.memberPresences.remove(memberId);
+        if (this.memberPresences != null) {
+            this.memberPresences.remove(memberId);
+        }
     }
 
     // -- Voice State Cache Handling --
@@ -2271,27 +2357,39 @@ public class GuildImpl implements Guild {
 
     public GuildVoiceStateImpl getVoiceState(Member member) {
         GuildVoiceStateImpl voiceState = this.voiceStateCache.getElementById(member.getIdLong());
-        if (voiceState != null) return voiceState;
-        if (shouldCacheVoiceState(member.getIdLong())) return new GuildVoiceStateImpl(member);
+        if (voiceState != null) {
+            return voiceState;
+        }
+        if (shouldCacheVoiceState(member.getIdLong())) {
+            return new GuildVoiceStateImpl(member);
+        }
         return null;
     }
 
     public void updateCacheVoiceStateMember(MemberImpl member) {
-        if (!shouldCacheVoiceState(member.getIdLong())) return;
+        if (!shouldCacheVoiceState(member.getIdLong())) {
+            return;
+        }
 
         try (UnlockHook hook = this.voiceStateCache.writeLock()) {
             GuildVoiceStateImpl voiceState = this.voiceStateCache.get(member.getIdLong());
-            if (voiceState != null) voiceState.setMember(member);
+            if (voiceState != null) {
+                voiceState.setMember(member);
+            }
         }
     }
 
     public void handleVoiceStateUpdate(GuildVoiceStateImpl voiceState) {
-        if (!shouldCacheVoiceState(voiceState.getIdLong())) return;
+        if (!shouldCacheVoiceState(voiceState.getIdLong())) {
+            return;
+        }
 
         try (UnlockHook hook = this.voiceStateCache.writeLock()) {
-            if (voiceState.getChannel() != null)
+            if (voiceState.getChannel() != null) {
                 this.voiceStateCache.getMap().put(voiceState.getIdLong(), voiceState);
-            else this.voiceStateCache.getMap().remove(voiceState.getIdLong());
+            } else {
+                this.voiceStateCache.getMap().remove(voiceState.getIdLong());
+            }
         }
     }
 
@@ -2307,8 +2405,12 @@ public class GuildImpl implements Guild {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof GuildImpl)) return false;
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof GuildImpl)) {
+            return false;
+        }
         GuildImpl oGuild = (GuildImpl) o;
         return this.id == oGuild.id;
     }

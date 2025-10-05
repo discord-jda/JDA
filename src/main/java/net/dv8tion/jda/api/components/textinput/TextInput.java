@@ -344,8 +344,9 @@ public interface TextInput extends ICustomId, LabelChildComponent {
          */
         @Nonnull
         public Builder setRequiredRange(int min, int max) {
-            if (min != -1 && max != -1 && min > max)
+            if (min != -1 && max != -1 && min > max) {
                 throw new IllegalArgumentException("minimum cannot be greater than maximum!");
+            }
 
             setMinLength(min);
             setMaxLength(max);
@@ -488,8 +489,9 @@ public interface TextInput extends ICustomId, LabelChildComponent {
          */
         @Nonnull
         public TextInput build() {
-            if (maxLength < minLength && maxLength != -1)
+            if (maxLength < minLength && maxLength != -1) {
                 throw new IllegalStateException("maxLength cannot be smaller than minLength!");
+            }
 
             return new TextInputImpl(
                     customId, uniqueId, style, minLength, maxLength, required, value, placeholder);

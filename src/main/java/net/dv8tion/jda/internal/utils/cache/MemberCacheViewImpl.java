@@ -41,11 +41,15 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
     @Override
     public List<Member> getElementsByUsername(@Nonnull String name, boolean ignoreCase) {
         Checks.notEmpty(name, "Name");
-        if (isEmpty()) return Collections.emptyList();
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Member> members = new ArrayList<>();
         forEach(member -> {
             final String nick = member.getUser().getName();
-            if (equals(ignoreCase, nick, name)) members.add(member);
+            if (equals(ignoreCase, nick, name)) {
+                members.add(member);
+            }
         });
         return Collections.unmodifiableList(members);
     }
@@ -53,16 +57,22 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
     @Nonnull
     @Override
     public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase) {
-        if (isEmpty()) return Collections.emptyList();
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
         List<Member> members = new ArrayList<>();
         forEach(member -> {
             final String nick = member.getNickname();
             if (nick == null) {
-                if (name == null) members.add(member);
+                if (name == null) {
+                    members.add(member);
+                }
                 return;
             }
 
-            if (equals(ignoreCase, nick, name)) members.add(member);
+            if (equals(ignoreCase, nick, name)) {
+                members.add(member);
+            }
         });
         return Collections.unmodifiableList(members);
     }
@@ -78,15 +88,21 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
     @Override
     public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles) {
         Checks.noneNull(roles, "Roles");
-        if (isEmpty()) return Collections.emptyList();
+        if (isEmpty()) {
+            return Collections.emptyList();
+        }
 
         List<Role> rolesWithoutPublicRole =
                 roles.stream().filter(role -> !role.isPublicRole()).collect(Collectors.toList());
-        if (rolesWithoutPublicRole.isEmpty()) return asList();
+        if (rolesWithoutPublicRole.isEmpty()) {
+            return asList();
+        }
 
         List<Member> members = new ArrayList<>();
         forEach(member -> {
-            if (member.getUnsortedRoles().containsAll(rolesWithoutPublicRole)) members.add(member);
+            if (member.getUnsortedRoles().containsAll(rolesWithoutPublicRole)) {
+                members.add(member);
+            }
         });
         return members;
     }

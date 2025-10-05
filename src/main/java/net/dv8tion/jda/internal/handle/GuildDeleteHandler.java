@@ -33,7 +33,9 @@ public class GuildDeleteHandler extends SocketHandler {
         final long id = content.getLong("id");
         GuildSetupController setupController = getJDA().getGuildSetupController();
         boolean wasInit = setupController.onDelete(id, content);
-        if (wasInit || setupController.isUnavailable(id)) return null;
+        if (wasInit || setupController.isUnavailable(id)) {
+            return null;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         boolean unavailable = content.getBoolean("unavailable");
@@ -51,7 +53,9 @@ public class GuildDeleteHandler extends SocketHandler {
         // If the event is attempting to mark the guild as unavailable, but it is already
         // unavailable,
         // ignore the event
-        if (setupController.isUnavailable(id) && unavailable) return null;
+        if (setupController.isUnavailable(id) && unavailable) {
+            return null;
+        }
 
         // Detach the guild cache from the global cache (also removes users if necessary)
         guild.invalidate();

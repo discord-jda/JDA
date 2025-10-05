@@ -40,7 +40,9 @@ public class StringChecksAssertions
     }
 
     public StringChecksAssertions checksNotBlank(boolean checkNull) {
-        if (checkNull) throwsFor(null, isNullError(name));
+        if (checkNull) {
+            throwsFor(null, isNullError(name));
+        }
         throwsFor("", isBlankError(name));
         throwsFor(" ", isBlankError(name));
         return this;
