@@ -55,7 +55,6 @@ import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.cache.SortedChannelCacheViewImpl;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -728,8 +727,9 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
         throw detachedException();
     }
 
+    @Nonnull
     @Override
-    public @NotNull EnumSet<SystemChannelFlag> getSystemChannelFlags()
+    public EnumSet<SystemChannelFlag> getSystemChannelFlags()
     {
         throw detachedException();
     }
