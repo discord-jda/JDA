@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -30,6 +31,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,7 +72,6 @@ public class GuildUpdateHandler extends SocketHandler
         long ownerId = content.getLong("owner_id");
         int boostCount = content.getInt("premium_subscription_count", 0);
         int boostTier = content.getInt("premium_tier", 0);
-        int systemChannelFlags = content.getInt("system_channel_flags", -1);
         String description = content.getString("description", null);
         String vanityCode = content.getString("vanity_url_code", null);
         String bannerId = content.getString("banner", null);
@@ -97,6 +98,10 @@ public class GuildUpdateHandler extends SocketHandler
         TextChannel safetyAlertsChannel = content.isNull("safety_alerts_channel_id")
                 ? null : guild.getChannelById(TextChannel.class, content.getLong("safety_alerts_channel_id"));
         Set<String> features;
+
+        final int systemChannelFlagBitmask = content.getInt("system_channel_flags", 0);
+        EnumSet<SystemChannelFlag> systemChannelFlags = SystemChannelFlag.fromBitmask(systemChannelFlagBitmask);
+
         if (!content.isNull("features"))
         {
             DataArray featureArr = content.getArray("features");
@@ -122,11 +127,14 @@ public class GuildUpdateHandler extends SocketHandler
                     guild, oldOwner,
                     oldOwnerId, ownerId));
         }
-        if (systemChannelFlags != guild.getSystemChannelFlagsAsInt())
+        if (!Objects.equals(systemChannelFlags, guild.getSystemChannelFlags()))
         {
-            int oldSystemChannelFlags = guild.getSystemChannelFlagsAsInt();
-            guild.setSystemChannelFlags(systemChannelFlags);
-            //TODO add events handling
+            EnumSet<SystemChannelFlag> oldSystemChannelFlags = guild.getSystemChannelFlags();
+            guild.setSystemChannelFlags(systemChannelFlagBitmask);
+            getJDA().handleEvent(
+                    new GuildUpdateSystemChannelFlagsEvent(
+                            getJDA(), responseNumber,
+                            guild, oldSystemChannelFlags, systemChannelFlags));
         }
         if (!Objects.equals(description, guild.getDescription()))
         {
