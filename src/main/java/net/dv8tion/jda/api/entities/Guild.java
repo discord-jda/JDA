@@ -1337,11 +1337,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     NSFWLevel getNSFWLevel();
 
     /**
-     * Returns the system channel flags associated to the guild. A system channel is a unique
-     * channel in a guild where messages like new members joining are received.
-     * System channel flags are flags associated with configuring these broadcasts. For
-     * example, {@link SystemChannelFlag#SUPPRESS_JOIN_NOTIFICATIONS} is a flag designated
-     * to suppress notifications upon new member join.
+     * Returns an {@link EnumSet} of {@link SystemChannelFlag} associated to the guild.
+     * <br>For a description of what system channel flags represent, see {@link SystemChannelFlag}.
+     * <p>
+     *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}.
      * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">

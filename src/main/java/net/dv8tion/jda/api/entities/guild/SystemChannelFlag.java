@@ -21,11 +21,13 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 /**
- * Flags for system channel settings. A system channel is a channel in a guild where
- * system messages are broadcast. Each guild has at-most one system channel, so each
- * guild has a single set of these system channel flags. According to the API docs,
- * these flags are represented as a bitmask, which can be converted to an {@link EnumSet}
- * of this class.
+ * Represents Discord's system channel flags of a guild. A system channel is a
+ * unique channel in a guild where guild notices such as welcome messages and boost events
+ * are posted. System channel flags configure suppressions of these messages and events. According
+ * to the <a href="https://discord.com/developers/docs/">Discord API docs<a/>, system channel flags
+ * are represented as one-hot encoded bitmasks, where each bit in a binary string represents whether
+ * a particular flag is enabled. This class contains methods to convert these bitmasks to an {@link EnumSet}
+ * of this class, which is the representation of system channel flags used by users of JDA.
  *
  * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
  *     System Channel Flags API documentation

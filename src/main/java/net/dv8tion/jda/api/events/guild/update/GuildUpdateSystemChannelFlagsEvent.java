@@ -25,7 +25,7 @@ import java.util.EnumSet;
 
 /**
  * Indicates that {@link Guild#getSystemChannelFlags() systemChannelFlags} have been updated. Note
- * that system channel flags are stored as {@link EnumSet}s of {@link SystemChannelFlag}.
+ * that these flags are stored as {@link EnumSet}s of {@link SystemChannelFlag}.
  *
  * <p>This event can be used to detect changes in system channel flags and retrieve the old one.
  *
