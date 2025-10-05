@@ -314,6 +314,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
         final int nsfwLevel = guildJson.getInt("nsfw_level", -1);
         final boolean boostProgressBarEnabled = guildJson.getBoolean("premium_progress_bar_enabled");
+        final int systemChannelFlags = guildJson.getInt("system_channel_flags", 0);
 
         guildObj.setName(name)
                 .setIconId(iconId)
@@ -336,7 +337,8 @@ public class EntityBuilder extends AbstractEntityBuilder
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount)
                 .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel))
-                .setBoostProgressBarEnabled(boostProgressBarEnabled);
+                .setBoostProgressBarEnabled(boostProgressBarEnabled)
+                .setSystemChannelFlags(systemChannelFlags);
 
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())

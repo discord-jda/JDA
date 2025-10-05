@@ -279,6 +279,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateVanityCode(@Nonnull GuildUpdateVanityCodeEvent event) {}
     public void onGuildUpdateBanner(@Nonnull GuildUpdateBannerEvent event) {}
     public void onGuildUpdateDescription(@Nonnull GuildUpdateDescriptionEvent event) {}
+    public void onGuildUpdateSystemChannelFlags(@Nonnull GuildUpdateSystemChannelFlagsEvent event) {}
     public void onGuildUpdateBoostTier(@Nonnull GuildUpdateBoostTierEvent event) {}
     public void onGuildUpdateBoostCount(@Nonnull GuildUpdateBoostCountEvent event) {}
     public void onGuildUpdateMaxMembers(@Nonnull GuildUpdateMaxMembersEvent event) {}

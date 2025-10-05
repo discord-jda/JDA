@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -143,6 +144,7 @@ public class GuildImpl implements Guild
     private BoostTier boostTier = BoostTier.NONE;
     private DiscordLocale preferredLocale = DiscordLocale.ENGLISH_US;
     private int memberCount;
+    private int systemChannelFlags;
     private boolean boostProgressBarEnabled;
 
     public GuildImpl(JDAImpl api, long id)
@@ -2324,6 +2326,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setSystemChannelFlags(int systemChannelFlags)
+    {
+        this.systemChannelFlags = systemChannelFlags;
+        return this;
+    }
+
     // -- Map getters --
 
     public SortedSnowflakeCacheViewImpl<ScheduledEvent> getScheduledEventsView()
@@ -2361,6 +2369,13 @@ public class GuildImpl implements Guild
     public NSFWLevel getNSFWLevel()
     {
         return nsfwLevel;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<SystemChannelFlag> getSystemChannelFlags()
+    {
+        return SystemChannelFlag.fromBitmask(systemChannelFlags);
     }
 
     @Nullable
