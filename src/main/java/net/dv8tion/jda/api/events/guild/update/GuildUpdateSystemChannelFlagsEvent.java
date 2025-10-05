@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 
 import javax.annotation.Nonnull;
-import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * Indicates that {@link Guild#getSystemChannelFlags()} have been updated.
@@ -29,16 +29,16 @@ import java.util.EnumSet;
  * <p>This event can be used to detect changes in system channel flags and retrieve the old one.
  *
  * <p>Identifier: {@code system_channel_flags}
- * */
-public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<EnumSet<SystemChannelFlag>>
+ */
+public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<Set<SystemChannelFlag>>
 {
     public static final String IDENTIFIER = "system_channel_flags";
 
     public GuildUpdateSystemChannelFlagsEvent(@Nonnull JDA api,
                                               long responseNumber,
                                               @Nonnull Guild guild,
-                                              @Nonnull EnumSet<SystemChannelFlag> oldFlags,
-                                              @Nonnull EnumSet<SystemChannelFlag> newFlags)
+                                              @Nonnull Set<SystemChannelFlag> oldFlags,
+                                              @Nonnull Set<SystemChannelFlag> newFlags)
     {
         super(api, responseNumber, guild, oldFlags, newFlags, IDENTIFIER);
     }
@@ -49,7 +49,7 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
      * @return The old system channel flags for this guild, or null if none was set.
      */
     @Nonnull
-    public EnumSet<SystemChannelFlag>  getOldFlags()
+    public Set<SystemChannelFlag> getOldFlags()
     {
         return getOldValue();
     }
@@ -60,7 +60,7 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
      * @return The new system channel flags for this guild, or null if none was set.
      */
     @Nonnull
-    public EnumSet<SystemChannelFlag>  getNewFlags()
+    public Set<SystemChannelFlag> getNewFlags()
     {
         return getNewValue();
     }
