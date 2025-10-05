@@ -87,7 +87,6 @@ import net.dv8tion.jda.internal.utils.cache.*;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -2372,10 +2371,16 @@ public class GuildImpl implements Guild
         return nsfwLevel;
     }
 
+    @Nonnull
     @Override
-    public @NotNull EnumSet<SystemChannelFlag> getSystemChannelFlags()
+    public EnumSet<SystemChannelFlag> getSystemChannelFlags()
     {
         return SystemChannelFlag.fromBitmask(systemChannelFlags);
+    }
+
+    public int getSystemChannelFlagsAsInt()
+    {
+        return systemChannelFlags;
     }
 
     @Nullable

@@ -70,6 +70,7 @@ public class GuildUpdateHandler extends SocketHandler
         long ownerId = content.getLong("owner_id");
         int boostCount = content.getInt("premium_subscription_count", 0);
         int boostTier = content.getInt("premium_tier", 0);
+        int systemChannelFlags = content.getInt("system_channel_flags", -1);
         String description = content.getString("description", null);
         String vanityCode = content.getString("vanity_url_code", null);
         String bannerId = content.getString("banner", null);
@@ -120,6 +121,12 @@ public class GuildUpdateHandler extends SocketHandler
                     getJDA(), responseNumber,
                     guild, oldOwner,
                     oldOwnerId, ownerId));
+        }
+        if (systemChannelFlags != guild.getSystemChannelFlagsAsInt())
+        {
+            int oldSystemChannelFlags = guild.getSystemChannelFlagsAsInt();
+            guild.setSystemChannelFlags(systemChannelFlags);
+            //TODO add events handling
         }
         if (!Objects.equals(description, guild.getDescription()))
         {
