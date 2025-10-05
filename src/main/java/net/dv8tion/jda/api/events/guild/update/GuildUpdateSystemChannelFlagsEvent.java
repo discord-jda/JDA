@@ -44,9 +44,9 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
     }
 
     /**
-     * The old system channel flags for this guild.
+     * Returns the old system channel flags for this guild.
      *
-     * @return The old system channel flags for this guild, or null if none was set.
+     * @return An unmodifiable set of old system channel flags for this guild.
      */
     @Nonnull
     public Set<SystemChannelFlag> getOldFlags()
@@ -55,9 +55,9 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
     }
 
     /**
-     * The new system channel flags for this guild.
+     * Returns the new system channel flags for this guild.
      *
-     * @return The new system channel flags for this guild, or null if none was set.
+     * @return An unmodifiable set of new system channel flags for this guild.
      */
     @Nonnull
     public Set<SystemChannelFlag> getNewFlags()

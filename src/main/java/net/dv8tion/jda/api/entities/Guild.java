@@ -1353,6 +1353,23 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     Set<SystemChannelFlag> getSystemChannelFlags();
 
     /**
+     * Returns the bitmask of the {@linkplain SystemChannelFlag system channel flags} associated
+     * to the guild. This method may be preferable over {@link Guild#getSystemChannelFlags()}
+     * if new flags are introduced to the Discord API and the {@link SystemChannelFlag} enumeration
+     * cannot yet accommodate the new flags.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}.
+     *
+     * @return An integer bitmask of system channel flags of this guild.
+     *
+     * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
+     *     System Channel Flags API documentation
+     *     <a/>
+     */
+    int getSystemChannelFlagsRaw();
+
+    /**
      * Gets the Guild specific {@link Member Member} object for the provided
      * {@link UserSnowflake}.
      * <br>If the user is not in this guild or currently uncached, {@code null} is returned.

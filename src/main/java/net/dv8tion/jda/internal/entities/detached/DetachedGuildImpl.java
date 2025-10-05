@@ -734,6 +734,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
         throw detachedException();
     }
 
+    @Override
+    public int getSystemChannelFlagsRaw()
+    {
+        throw detachedException();
+    }
+
     @Nonnull
     @Override
     public NotificationLevel getDefaultNotificationLevel()

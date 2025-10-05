@@ -2378,6 +2378,12 @@ public class GuildImpl implements Guild
         return SystemChannelFlag.getFlags(systemChannelFlags);
     }
 
+    @Override
+    public int getSystemChannelFlagsRaw()
+    {
+        return systemChannelFlags;
+    }
+
     @Nullable
     public CacheView.SimpleCacheView<MemberPresenceImpl> getPresenceView()
     {
