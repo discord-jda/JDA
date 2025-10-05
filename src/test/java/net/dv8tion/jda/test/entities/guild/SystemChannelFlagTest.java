@@ -27,7 +27,7 @@ import java.util.EnumSet;
 /**
  * Tests the class {@link SystemChannelFlag}, especially the conversion logic
  * between its {@link EnumSet} and bitmask representations.
- * */
+ */
 public final class SystemChannelFlagTest
 {
     @Test

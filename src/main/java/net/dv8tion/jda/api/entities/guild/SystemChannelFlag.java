@@ -25,40 +25,40 @@ import java.util.EnumSet;
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
  * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
- *     System Channel Flags API documentation
- *     <a/>
- * */
+ *      System Channel Flags API documentation
+ *      <a/>
+ */
 public enum SystemChannelFlag
 {
 
     /**
      * Suppress member join notifications.
-     * */
+     */
     SUPPRESS_JOIN_NOTIFICATIONS(0),
 
     /**
      * Suppress server boost notifications.
-     * */
+     */
     SUPPRESS_PREMIUM_SUBSCRIPTIONS(1),
 
     /**
      * Suppress server setup tips.
-     * */
+     */
     SUPPRESS_GUILD_REMINDER_NOTIFICATIONS(2),
 
     /**
      * Hide member join sticker reply buttons.
-     * */
+     */
     SUPPRESS_JOIN_NOTIFICATION_REPLIES(3),
 
     /**
      * Suppress role subscription purchase and renewal notifications.
-     * */
+     */
     SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS(4),
 
     /**
      * Hide role subscription sticker reply buttons.
-     * */
+     */
     SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES(5);
 
     private final int offset;
@@ -78,7 +78,7 @@ public enum SystemChannelFlag
      *        The raw bitmask representing the system channel flags.
      *
      * @return An {@link EnumSet} of system channel flags represented by the input bitmask.
-     * */
+     */
     @Nonnull
     public static EnumSet<SystemChannelFlag> getFlags(int raw)
     {
@@ -99,7 +99,7 @@ public enum SystemChannelFlag
      *        A set of system channel flags.
      *
      * @return An integer bitmask recognised on Discord's side.
-     * */
+     */
     public static int getRaw(@Nonnull Collection<SystemChannelFlag> flags)
     {
         int raw = 0;
