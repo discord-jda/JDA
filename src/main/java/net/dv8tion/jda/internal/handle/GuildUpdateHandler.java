@@ -100,7 +100,7 @@ public class GuildUpdateHandler extends SocketHandler
         Set<String> features;
 
         final int systemChannelFlagBitmask = content.getInt("system_channel_flags", 0);
-        EnumSet<SystemChannelFlag> systemChannelFlags = SystemChannelFlag.fromBitmask(systemChannelFlagBitmask);
+        EnumSet<SystemChannelFlag> systemChannelFlags = SystemChannelFlag.getFlags(systemChannelFlagBitmask);
 
         if (!content.isNull("features"))
         {

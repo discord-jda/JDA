@@ -73,23 +73,16 @@ public final class SystemChannelFlagTest
         );
     }
 
-    @Test
-    public void testException()
-    {
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> SystemChannelFlag.fromBitmask(0b10000000000000000));
-    }
-
     private void assertTo(int expectedBitmask, SystemChannelFlag... enumFlags)
     {
         EnumSet<SystemChannelFlag> flagSet = getEnumSet(enumFlags);
-        Assertions.assertEquals(expectedBitmask, SystemChannelFlag.toBitmask(flagSet));
+        Assertions.assertEquals(expectedBitmask, SystemChannelFlag.getRaw(flagSet));
     }
 
     private void assertFrom(int bitmask, SystemChannelFlag... expectedFlags)
     {
         EnumSet<SystemChannelFlag> flagSet = getEnumSet(expectedFlags);
-        Assertions.assertEquals(flagSet, SystemChannelFlag.fromBitmask(bitmask));
+        Assertions.assertEquals(flagSet, SystemChannelFlag.getFlags(bitmask));
     }
 
     private EnumSet<SystemChannelFlag> getEnumSet(SystemChannelFlag... enumFlags)

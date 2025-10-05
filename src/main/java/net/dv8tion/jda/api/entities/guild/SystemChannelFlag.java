@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.entities.guild;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 
 /**
  * Flags which configures a {@linkplain net.dv8tion.jda.api.entities.Guild#getSystemChannel() system channel} of a
@@ -38,96 +38,74 @@ public enum SystemChannelFlag
 
     /**
      * Suppress server boost notifications.
-     * Identical to the "SUPPRESS_PREMIUM_SUBSCRIPTIONS" flag in the API
-     * docs.
      * */
     SUPPRESS_PREMIUM_SUBSCRIPTIONS(1),
 
     /**
      * Suppress server setup tips.
-     * Identical to the "SUPPRESS_GUILD_REMINDER_NOTIFICATIONS" flag in the
-     * API docs.
      * */
     SUPPRESS_GUILD_REMINDER_NOTIFICATIONS(2),
 
     /**
      * Hide member join sticker reply buttons.
-     * Identical to "SUPPRESS_JOIN_NOTIFICATION_REPLIES" flag in the
-     * API docs.
      * */
     SUPPRESS_JOIN_NOTIFICATION_REPLIES(3),
 
     /**
      * Suppress role subscription purchase and renewal notifications.
-     * Identical to "SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS" flag
-     * in the API docs.
      * */
     SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS(4),
 
     /**
-     * Hide role subscription sticker reply buttons. Identical to
-     * "SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES" flag
-     * in the API docs.
+     * Hide role subscription sticker reply buttons.
      * */
     SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES(5);
 
     private final int offset;
 
-    private static final HashMap<Integer, SystemChannelFlag> OFFSET_TO_FLAG = new HashMap<>();
-
-    static
-    {
-        for (SystemChannelFlag flag : SystemChannelFlag.values())
-        {
-            OFFSET_TO_FLAG.put(flag.offset, flag);
-        }
-    }
+    private final int rawValue;
 
     SystemChannelFlag(int offset)
     {
         this.offset = offset;
+        this.rawValue = 0b1 << offset;
     }
 
     /**
-     * Converts a bitmask representation of system channel flags into its
-     * {@link EnumSet}.
-     * @param bitmask the raw bitmask representing the system channel flags.
-     * @return an {@link EnumSet} of system channel flags represented by the input bitmask.
-     * @throws IllegalArgumentException if the input bitmask is invalid.
+     * Converts a bitmask representation of system channel flags into its {@link EnumSet}.
+     *
+     * @param raw
+     *        The raw bitmask representing the system channel flags.
+     *
+     * @return An {@link EnumSet} of system channel flags represented by the input bitmask.
      * */
     @Nonnull
-    public static EnumSet<SystemChannelFlag> fromBitmask(final int bitmask)
+    public static EnumSet<SystemChannelFlag> getFlags(int raw)
     {
         EnumSet<SystemChannelFlag> enumSet = EnumSet.noneOf(SystemChannelFlag.class);
-        int offset = 0;
-        for (int v = bitmask; v != 0; v >>= 1)
+        for (SystemChannelFlag flag : SystemChannelFlag.values())
         {
-            int lsb = v & 0b1;
-            if(lsb == 0b1)
-            {
-                if(!OFFSET_TO_FLAG.containsKey(offset))
-                    throw new IllegalArgumentException("Input value must be a valid bitmask of Discord system channel flags.");
-                enumSet.add(OFFSET_TO_FLAG.get(offset));
-            }
-            offset++;
+            if ((flag.rawValue & raw) != 0)
+                enumSet.add(flag);
         }
         return enumSet;
     }
 
     /**
-     * Converts an {@link EnumSet} of this class to its respective bitmask representing the same
+     * Converts a {@link Collection} of this class to its respective bitmask representing the same
      * set of system channel flags.
-     * @param enumSet a set of system channel flags.
-     * @return an integer bitmask recognised on Discord's side.
+     *
+     * @param flags
+     *        A set of system channel flags.
+     *
+     * @return An integer bitmask recognised on Discord's side.
      * */
-    public static int toBitmask(final EnumSet<SystemChannelFlag> enumSet)
+    public static int getRaw(@Nonnull Collection<SystemChannelFlag> flags)
     {
-        int result = 0;
-        for (SystemChannelFlag flag : enumSet)
-        {
-            result |= 0b1 << flag.offset;
-        }
-        return result;
+        int raw = 0;
+        for (SystemChannelFlag flag : flags)
+            raw |= flag.rawValue;
+        return raw;
     }
 
 }

@@ -2375,7 +2375,7 @@ public class GuildImpl implements Guild
     @Override
     public EnumSet<SystemChannelFlag> getSystemChannelFlags()
     {
-        return SystemChannelFlag.fromBitmask(systemChannelFlags);
+        return SystemChannelFlag.getFlags(systemChannelFlags);
     }
 
     @Nullable
