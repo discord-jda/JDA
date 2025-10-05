@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
- * Indicates that {@link Guild#getSystemChannelFlags() systemChannelFlags} have been updated. Note
- * that these flags are stored as {@link EnumSet}s of {@link SystemChannelFlag}.
+ * Indicates that {@link Guild#getSystemChannelFlags()} have been updated.
  *
  * <p>This event can be used to detect changes in system channel flags and retrieve the old one.
  *
