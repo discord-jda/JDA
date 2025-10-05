@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.components.selections;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
@@ -114,6 +112,10 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
     /**
      * Whether the user must populate this select menu in Modals, or {@code null} if not set.
      *
+     * <p>This attribute is completely separate from the value range,
+     * for example, you can have an optional select menu with the range set to {@code [2 ; 5]},
+     * meaning you accept either 0 options, or, at least 2 but at most 5.
+     *
      * @return Whether this menu must be populated, or null
      */
     @Nullable
@@ -150,28 +152,6 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
         protected Builder(@Nonnull String customId)
         {
             setCustomId(customId);
-        }
-
-        /**
-         * Change the custom id used to identify the select menu.
-         *
-         * @param  customId
-         *         The new custom id to use
-         *
-         * @throws IllegalArgumentException
-         *         If the provided id is null, empty, or longer than {@value #ID_MAX_LENGTH} characters
-         *
-         * @return The same builder instance for chaining
-         *
-         * @deprecated
-         *         Replaced with {@link #setCustomId(String)}
-         */
-        @Nonnull
-        @Deprecated
-        @ReplaceWith("setCustomId(customId)")
-        public B setId(@Nonnull String customId)
-        {
-            return setCustomId(customId);
         }
 
         /**
@@ -325,6 +305,10 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * Configure whether the user must populate this select menu if inside a Modal.
          * <br>This defaults to {@code true} in Modals when unset.
          *
+         * <p>This attribute is completely separate from the value range,
+         * for example, you can have an optional select menu with the range set to {@code [2 ; 5]},
+         * meaning you accept either 0 options, or, at least 2 but at most 5.
+         *
          * <p>This only has an effect in Modals!
          *
          * @param required
@@ -337,23 +321,6 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
         {
             this.required = required;
             return (B) this;
-        }
-
-        /**
-         * The custom id used to identify the select menu.
-         *
-         * @return The custom id
-         *
-         * @deprecated
-         *         Replaced with {@link #getCustomId()}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getCustomId()")
-        public String getId()
-        {
-            return customId;
         }
 
         /**
@@ -420,6 +387,10 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
 
         /**
          * Whether the user must populate this select menu in Modals, or {@code null} if not set.
+         *
+         * <p>This attribute is completely separate from the value range,
+         * for example, you can have an optional select menu with the range set to {@code [2 ; 5]},
+         * meaning you accept either 0 options, or, at least 2 but at most 5.
          *
          * @return Whether this menu must be populated, or null
          */

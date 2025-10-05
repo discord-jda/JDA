@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.components.textinput;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.attribute.ICustomId;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.internal.components.textinput.TextInputImpl;
@@ -86,7 +84,11 @@ public interface TextInput extends ICustomId, LabelChildComponent
     int getMaxLength();
 
     /**
-     * Whether this TextInput is required to be non-empty
+     * Whether this TextInput is required to be non-empty.
+     *
+     * <p>This attribute is completely separate from the length range,
+     * for example, you can have an optional text input with the range set to {@code [2 ; 5]},
+     * meaning you accept either no input, or, at least 2 characters but at most 5.
      *
      * @return True if this TextInput is required to be used.
      */
@@ -193,32 +195,6 @@ public interface TextInput extends ICustomId, LabelChildComponent
         }
 
         /**
-         * Sets the id for this TextInput
-         * <br>This can be used to uniquely identify it, or pass data to other handlers.
-         *
-         * @param  id
-         *         The id to set
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If id is null or blank</li>
-         *             <li>If id is longer than {@value #MAX_ID_LENGTH} characters</li>
-         *         </ul>
-         *
-         * @return The same Builder for chaining convenience.
-         *
-         * @deprecated
-         *         Replaced by {@link #setCustomId(String)}
-         */
-        @Nonnull
-        @Deprecated
-        @ReplaceWith("setCustomId(id)")
-        public Builder setId(@Nonnull String id)
-        {
-            return setCustomId(id);
-        }
-
-        /**
          * Sets the custom ID for this TextInput
          * <br>This can be used to uniquely identify it, or pass data to other handlers.
          *
@@ -289,6 +265,10 @@ public interface TextInput extends ICustomId, LabelChildComponent
 
         /**
          * Sets whether the user is required to write in this TextInput. Default is true.
+         *
+         * <p>This attribute is completely separate from the length range,
+         * for example, you can have an optional text input with the range set to {@code [2 ; 5]},
+         * meaning you accept either no input, or, at least 2 characters but at most 5.
          *
          * @param  required 
          *         If this TextInput should be required
@@ -451,23 +431,6 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * The custom id
          *
          * @return Custom id
-         *
-         * @deprecated
-         *         Replaced with {@link #getCustomId()}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getCustomId()")
-        public String getId()
-        {
-            return customId;
-        }
-
-        /**
-         * The custom id
-         *
-         * @return Custom id
          */
         @Nonnull
         public String getCustomId()
@@ -522,6 +485,10 @@ public interface TextInput extends ICustomId, LabelChildComponent
         /**
          * Whether this TextInput is required.
          * <br>If this is True, the user must populate this TextInput field before they can submit the Modal.
+         *
+         * <p>This attribute is completely separate from the length range,
+         * for example, you can have an optional text input with the range set to {@code [2 ; 5]},
+         * meaning you accept either no input, or, at least 2 characters but at most 5.
          *
          * @return True if this TextInput is required
          * 

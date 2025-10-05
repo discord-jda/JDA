@@ -15,17 +15,14 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.components.tree.MessageComponentTree;
-import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
@@ -69,7 +66,6 @@ import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelM
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.MultipartBody;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -80,7 +76,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -702,10 +697,6 @@ public interface Message extends ISnowflake, Formattable
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable {@link List} of {@link MessageTopLevelComponent}
-     *
-     * @see    #getActionRows()
-     * @see    #getButtons()
-     * @see    #getButtonById(String)
      */
     @Nonnull
     @Unmodifiable
@@ -771,118 +762,6 @@ public interface Message extends ISnowflake, Formattable
     default PollVotersPaginationAction retrievePollVoters(long answerId)
     {
         return new PollVotersPaginationActionImpl(getJDA(), getChannelId(), getId(), answerId);
-    }
-
-    /**
-     * Rows of interactive components such as {@link Button Buttons}.
-     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
-     *
-     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
-     *
-     * @return Immutable {@link List} of {@link ActionRow}
-     *
-     * @see    #getButtons()
-     * @see    #getButtonById(String)
-     *
-     * @deprecated
-     *         Can be replaced with {@link ComponentTree#findAll(Class) getComponentTree().findAll(ActionRow.class)}
-     */
-    @Nonnull
-    @Unmodifiable
-    @Deprecated
-    @ForRemoval
-    default List<ActionRow> getActionRows()
-    {
-        return ComponentIterator.createStream(getComponents())
-                .filter(ActionRow.class::isInstance)
-                .map(ActionRow.class::cast)
-                .collect(Helpers.toUnmodifiableList());
-    }
-
-    /**
-     * All {@link Button Buttons} attached to this message.
-     *
-     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
-     *
-     * @return Immutable {@link List} of {@link Button Buttons}
-     *
-     * @deprecated
-     *         Can be replaced with {@link ComponentTree#findAll(Class) getComponentTree().findAll(Button.class)}
-     */
-    @Nonnull
-    @Unmodifiable
-    @Deprecated
-    @ForRemoval
-    default List<Button> getButtons()
-    {
-        return ComponentIterator.createStream(getComponents())
-                .filter(Button.class::isInstance)
-                .map(Button.class::cast)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets the {@link Button} with the specified ID.
-     *
-     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
-     *
-     * @param  id
-     *         The id of the button
-     *
-     * @throws IllegalArgumentException
-     *         If the id is null
-     *
-     * @return The {@link Button} or null if no button with that ID is present on this message
-     *
-     * @deprecated
-     *         Can be replaced with {@link ComponentTree#find(Class, Predicate) getComponentTree().find(Button.class, button -> id.equals(button.getCustomId()).orElse(null)}
-     */
-    @Nullable
-    @Deprecated
-    @ForRemoval
-    default Button getButtonById(@Nonnull String id)
-    {
-        Checks.notNull(id, "Button ID");
-        return getButtons().stream()
-                .filter(it -> id.equals(it.getCustomId()))
-                .findFirst().orElse(null);
-    }
-
-    /**
-     * All {@link Button Buttons} with the specified label attached to this message.
-     *
-     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
-     *
-     * @param  label
-     *         The button label
-     * @param  ignoreCase
-     *         Whether to use {@link String#equalsIgnoreCase(String)} instead of {@link String#equals(Object)}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided label is null
-     *
-     * @return Immutable {@link List} of {@link Button Buttons} with the specified label
-     *
-     * @deprecated
-     *         Can be replaced with {@link ComponentTree#findAll(Class, Predicate) getComponentTree().findAll(Button.class, button -> id.equals(button.getCustomId())},
-     *         usage is discouraged since content displayed to an user can change, prefer using data owned by the bot,
-     *         for example, in custom IDs or stored by the bot
-     */
-    @Nonnull
-    @Unmodifiable
-    @Deprecated
-    @ForRemoval
-    default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
-    {
-        Checks.notNull(label, "Label");
-        Predicate<Button> filter;
-        if (ignoreCase)
-            filter = b -> label.equalsIgnoreCase(b.getLabel());
-        else
-            filter = b -> label.equals(b.getLabel());
-        return getButtons().stream()
-                .filter(filter)
-                .collect(Helpers.toUnmodifiableList());
     }
 
     /**

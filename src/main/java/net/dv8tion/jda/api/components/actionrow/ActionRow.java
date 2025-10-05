@@ -165,7 +165,6 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
         case ROLE_SELECT:
         case MENTIONABLE_SELECT:
         case CHANNEL_SELECT:
-        case TEXT_INPUT:
             return 1;
         default:
             return 0;

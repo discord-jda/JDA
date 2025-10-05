@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.entities.Mentions;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -55,23 +53,6 @@ public class ModalMapping
         this.type = Component.Type.fromKey(object.getInt("type"));
         this.resolved = resolved;
         this.value = object;
-    }
-
-    /**
-     * The custom id of this component
-     *
-     * @return The custom id of this component
-     *
-     * @deprecated
-     *         Replaced with {@link #getCustomId()}
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval
-    @ReplaceWith("getCustomId()")
-    public String getId()
-    {
-        return customId;
     }
 
     /**
@@ -141,7 +122,6 @@ public class ModalMapping
      *         this returns the entity IDs chosen by the User.
      *     </li>
      * </ul>
-     * <p>
      *
      * <p>Use {@link #getType()} to check if this method can be used safely!
      *
