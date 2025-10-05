@@ -21,7 +21,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 /**
- * Flags which configures a {@linkplain Guild#getSystemChannel() system channel} of a {@link Guild}.
+ * Flags which configures a {@linkplain net.dv8tion.jda.api.entities.Guild#getSystemChannel() system channel} of a
+ * {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
  * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
  *     System Channel Flags API documentation
@@ -40,35 +41,35 @@ public enum SystemChannelFlag
      * Identical to the "SUPPRESS_PREMIUM_SUBSCRIPTIONS" flag in the API
      * docs.
      * */
-    SUPPRESS_BOOST_NOTIFICATIONS(1),
+    SUPPRESS_PREMIUM_SUBSCRIPTIONS(1),
 
     /**
      * Suppress server setup tips.
      * Identical to the "SUPPRESS_GUILD_REMINDER_NOTIFICATIONS" flag in the
      * API docs.
      * */
-    SUPPRESS_SETUP_TIPS(2),
+    SUPPRESS_GUILD_REMINDER_NOTIFICATIONS(2),
 
     /**
      * Hide member join sticker reply buttons.
      * Identical to "SUPPRESS_JOIN_NOTIFICATION_REPLIES" flag in the
      * API docs.
      * */
-    HIDE_JOIN_REPLY_STICKERS(3),
+    SUPPRESS_JOIN_NOTIFICATION_REPLIES(3),
 
     /**
      * Suppress role subscription purchase and renewal notifications.
      * Identical to "SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS" flag
      * in the API docs.
      * */
-    SUPPRESS_ROLE_PURCHASE_NOTIFICATIONS(4),
+    SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS(4),
 
     /**
      * Hide role subscription sticker reply buttons. Identical to
      * "SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES" flag
      * in the API docs.
      * */
-    HIDE_ROLE_SUBSCRIPTION_STICKERS(5);
+    SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES(5);
 
     private final int offset;
 
