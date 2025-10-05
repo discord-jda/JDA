@@ -25,25 +25,21 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
-public class DirectAudioControllerImpl implements DirectAudioController
-{
+public class DirectAudioControllerImpl implements DirectAudioController {
     private final JDAImpl api;
 
-    public DirectAudioControllerImpl(JDAImpl api)
-    {
+    public DirectAudioControllerImpl(JDAImpl api) {
         this.api = api;
     }
 
     @Nonnull
     @Override
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return api;
     }
 
     @Override
-    public void connect(@Nonnull AudioChannel channel)
-    {
+    public void connect(@Nonnull AudioChannel channel) {
         Checks.notNull(channel, "Audio Channel");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();
@@ -51,8 +47,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     }
 
     @Override
-    public void disconnect(@Nonnull Guild guild)
-    {
+    public void disconnect(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();
@@ -60,8 +55,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
     }
 
     @Override
-    public void reconnect(@Nonnull AudioChannel channel)
-    {
+    public void reconnect(@Nonnull AudioChannel channel) {
         Checks.notNull(channel, "Audio Channel");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();
@@ -87,8 +81,7 @@ public class DirectAudioControllerImpl implements DirectAudioController
      * @param channel
      *        The new channel, or null to signal disconnect
      */
-    public void update(Guild guild, AudioChannel channel)
-    {
+    public void update(Guild guild, AudioChannel channel) {
         Checks.notNull(guild, "Guild");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();

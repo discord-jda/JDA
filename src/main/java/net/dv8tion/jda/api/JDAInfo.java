@@ -19,8 +19,7 @@ package net.dv8tion.jda.api;
 /**
  * Contains information to this specific build of JDA.
  */
-public class JDAInfo
-{
+public class JDAInfo {
     public static final int DISCORD_GATEWAY_VERSION = 10;
     public static final int DISCORD_REST_VERSION = 10;
     public static final int AUDIO_GATEWAY_VERSION = 8;
@@ -30,7 +29,12 @@ public class JDAInfo
     public static final String VERSION_REVISION = "@versionRevision@";
     public static final String VERSION_CLASSIFIER = "!@versionClassifier@!";
     public static final String COMMIT_HASH = "@commitHash@";
-    public static final String VERSION = String.format("%s.%s.%s%s%s", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION,
-            VERSION_CLASSIFIER == null ? "" : "-" + VERSION_CLASSIFIER,
-            COMMIT_HASH == null ? "" : "_" + COMMIT_HASH);
+    public static final String VERSION =
+            String.format(
+                    "%s.%s.%s%s%s",
+                    VERSION_MAJOR,
+                    VERSION_MINOR,
+                    VERSION_REVISION,
+                    VERSION_CLASSIFIER == null ? "" : "-" + VERSION_CLASSIFIER,
+                    COMMIT_HASH == null ? "" : "_" + COMMIT_HASH);
 }

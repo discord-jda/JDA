@@ -36,9 +36,11 @@ import javax.annotation.Nullable;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface ICategorizableChannelManager<T extends ICategorizableChannel, M extends ICategorizableChannelManager<T, M>>
-        extends ChannelManager<T, M>, IPermissionContainerManager<T, M>, IPositionableChannelManager<T, M>
-{
+public interface ICategorizableChannelManager<
+                T extends ICategorizableChannel, M extends ICategorizableChannelManager<T, M>>
+        extends ChannelManager<T, M>,
+                IPermissionContainerManager<T, M>,
+                IPositionableChannelManager<T, M> {
     /**
      * Sets the <b><u>{@link Category Parent Category}</u></b>
      * of the selected {@link GuildChannel GuildChannel}.
@@ -81,10 +83,11 @@ public interface ICategorizableChannelManager<T extends ICategorizableChannel, M
      */
     @Nonnull
     @CheckReturnValue
-    default M sync()
-    {
+    default M sync() {
         if (!(getChannel() instanceof ICategorizableChannel))
-            throw new IllegalStateException("sync() requires that the channel be categorizable as it syncs the channel to the parent category.");
+            throw new IllegalStateException(
+                    "sync() requires that the channel be categorizable as it syncs the channel to"
+                            + " the parent category.");
 
         ICategorizableChannel categorizableChannel = (ICategorizableChannel) getChannel();
         if (categorizableChannel.getParentCategory() == null)

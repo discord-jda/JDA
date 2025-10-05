@@ -21,10 +21,11 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
+import java.util.EnumSet;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumSet;
 
 /**
  * Implementation of {@link OrderAction OrderAction}
@@ -42,8 +43,7 @@ import java.util.EnumSet;
  * @see   net.dv8tion.jda.api.entities.Guild#modifyCategoryPositions()
  * @see   CategoryOrderAction
  */
-public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrderAction>
-{
+public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrderAction> {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} which holds
      * the channels from {@link #getCurrentOrder()}
@@ -70,8 +70,7 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
      * @see    ChannelType#fromSortBucket(int)
      */
     @Nonnull
-    default EnumSet<ChannelType> getChannelTypes()
-    {
+    default EnumSet<ChannelType> getChannelTypes() {
         return ChannelType.fromSortBucket(getSortBucket());
     }
 
@@ -112,8 +111,7 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelOrderAction setCategory(@Nullable Category category)
-    {
+    default ChannelOrderAction setCategory(@Nullable Category category) {
         return setCategory(category, false);
     }
 }

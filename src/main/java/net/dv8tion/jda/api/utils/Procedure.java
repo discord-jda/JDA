@@ -24,7 +24,6 @@ import javax.annotation.Nonnull;
  * @param <T> The type of the argument
  */
 @FunctionalInterface
-public interface Procedure<T>
-{
+public interface Procedure<T> {
     boolean execute(@Nonnull T value);
 }

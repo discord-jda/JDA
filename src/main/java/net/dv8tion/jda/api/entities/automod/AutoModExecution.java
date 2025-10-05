@@ -26,8 +26,7 @@ import javax.annotation.Nullable;
 /**
  * Event triggered by an {@link AutoModRule} activation.
  */
-public interface AutoModExecution
-{
+public interface AutoModExecution {
     /**
      * The {@link Guild} that this execution occurred in.
      *
@@ -75,8 +74,7 @@ public interface AutoModExecution
      * @return The id of the user
      */
     @Nonnull
-    default String getUserId()
-    {
+    default String getUserId() {
         return Long.toUnsignedString(getUserIdLong());
     }
 
@@ -93,8 +91,7 @@ public interface AutoModExecution
      * @return The id of the rule
      */
     @Nonnull
-    default String getRuleId()
-    {
+    default String getRuleId() {
         return Long.toUnsignedString(getRuleIdLong());
     }
 
@@ -111,8 +108,7 @@ public interface AutoModExecution
      * @return The id of the message, or {@code null} if the message has been blocked
      */
     @Nullable
-    default String getMessageId()
-    {
+    default String getMessageId() {
         long id = getMessageIdLong();
         return id == 0L ? null : Long.toUnsignedString(getMessageIdLong());
     }
@@ -130,8 +126,7 @@ public interface AutoModExecution
      * @return The id of the alert message, or {@code null} if {@link AutoModResponse#getType()} is not {@link AutoModResponse.Type#SEND_ALERT_MESSAGE}
      */
     @Nullable
-    default String getAlertMessageId()
-    {
+    default String getAlertMessageId() {
         long id = getAlertMessageIdLong();
         return id == 0L ? null : Long.toUnsignedString(getAlertMessageIdLong());
     }

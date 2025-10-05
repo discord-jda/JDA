@@ -41,8 +41,12 @@ import javax.annotation.Nonnull;
  * @see Guild#createMediaChannel(String, Category)
  * @see #createForumPost(String, MessageCreateData)
  */
-public interface MediaChannel extends StandardGuildChannel, IPostContainer, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
-{
+public interface MediaChannel
+        extends StandardGuildChannel,
+                IPostContainer,
+                IWebhookContainer,
+                IAgeRestrictedChannel,
+                ISlowmodeChannel {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -56,15 +60,13 @@ public interface MediaChannel extends StandardGuildChannel, IPostContainer, IWeb
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelAction<MediaChannel> createCopy()
-    {
+    default ChannelAction<MediaChannel> createCopy() {
         return createCopy(getGuild());
     }
 
     @Nonnull
     @Override
-    default ChannelType getType()
-    {
+    default ChannelType getType() {
         return ChannelType.MEDIA;
     }
 
@@ -73,8 +75,7 @@ public interface MediaChannel extends StandardGuildChannel, IPostContainer, IWeb
      *
      * @return True, if download option is hidden
      */
-    default boolean isMediaDownloadHidden()
-    {
+    default boolean isMediaDownloadHidden() {
         return getFlags().contains(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
     }
 }

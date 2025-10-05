@@ -40,8 +40,7 @@ import java.util.Iterator;
  *
  * @since 4.0.0
  */
-public interface ClosableIterator<T> extends Iterator<T>, AutoCloseable
-{
+public interface ClosableIterator<T> extends Iterator<T>, AutoCloseable {
     @Override
     void close();
 }

@@ -22,9 +22,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Indicates that the activities of a guild member changed.
@@ -50,28 +51,29 @@ import java.util.List;
  *
  * @since  4.2.1
  */
-public class UserUpdateActivitiesEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent
-{
+public class UserUpdateActivitiesEvent extends GenericUserUpdateEvent<List<Activity>>
+        implements GenericUserPresenceEvent {
     public static final String IDENTIFIER = "activities";
     private final Member member;
 
-    public UserUpdateActivitiesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable List<Activity> previous)
-    {
+    public UserUpdateActivitiesEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Member member,
+            @Nullable List<Activity> previous) {
         super(api, responseNumber, member.getUser(), previous, member.getActivities(), IDENTIFIER);
         this.member = member;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return member.getGuild();
     }
 
     @Nonnull
     @Override
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 }

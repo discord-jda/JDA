@@ -36,73 +36,77 @@ import net.dv8tion.jda.internal.entities.MemberPresenceImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
+
 import org.slf4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class PresenceUpdateHandler extends SocketHandler
-{
+import javax.annotation.Nullable;
+
+public class PresenceUpdateHandler extends SocketHandler {
     private static final Logger log = JDALogger.getLog(PresenceUpdateHandler.class);
 
-    public PresenceUpdateHandler(JDAImpl api)
-    {
+    public PresenceUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         // Ignore events for relationships, presences are guild only to us
-        if (content.isNull("guild_id"))
-        {
+        if (content.isNull("guild_id")) {
             log.debug("Received PRESENCE_UPDATE without guild_id. Ignoring event.");
             return null;
         }
-        if (api.getCacheFlags().stream().noneMatch(CacheFlag::isPresence))
-            return null;
+        if (api.getCacheFlags().stream().noneMatch(CacheFlag::isPresence)) return null;
 
-        //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked or not cached.
+        // Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently
+        // locked or not cached.
         final long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId))
-            return guildId;
+        if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received a PRESENCE_UPDATE for a guild that is not yet cached! GuildId:{} UserId: {}",
-                                 guildId, content.getObject("user").get("id"));
+        if (guild == null) {
+            getJDA().getEventCache()
+                    .cache(
+                            EventCache.Type.GUILD,
+                            guildId,
+                            responseNumber,
+                            allContent,
+                            this::handle);
+            EventCache.LOG.debug(
+                    "Received a PRESENCE_UPDATE for a guild that is not yet cached! GuildId:{}"
+                            + " UserId: {}",
+                    guildId,
+                    content.getObject("user").get("id"));
             return null;
         }
 
         CacheView.SimpleCacheView<MemberPresenceImpl> presences = guild.getPresenceView();
-        if (presences == null)
-            return null; // technically this should be impossible
+        if (presences == null) return null; // technically this should be impossible
         DataObject jsonUser = content.getObject("user");
         final long userId = jsonUser.getUnsignedLong("id");
         MemberImpl member = (MemberImpl) guild.getMemberById(userId);
         MemberPresenceImpl presence = presences.get(userId);
         OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
-        if (status == OnlineStatus.OFFLINE)
-            presences.remove(userId);
-        if (presence == null)
-        {
+        if (status == OnlineStatus.OFFLINE) presences.remove(userId);
+        if (presence == null) {
             presence = new MemberPresenceImpl();
-            if (status != OnlineStatus.OFFLINE)
-            {
-                try (UnlockHook lock = presences.writeLock())
-                {
+            if (status != OnlineStatus.OFFLINE) {
+                try (UnlockHook lock = presences.writeLock()) {
                     presences.getMap().put(userId, presence);
                 }
             }
         }
 
-        //Now that we've update the User's info, lets see if we need to set the specific Presence information.
+        // Now that we've update the User's info, lets see if we need to set the specific Presence
+        // information.
         // This is stored in the Member objects.
-        //We set the activities to null to prevent parsing if the cache was disabled
-        final DataArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.ACTIVITY) || content.isNull("activities") ? null : content.getArray("activities");
+        // We set the activities to null to prevent parsing if the cache was disabled
+        final DataArray activityArray =
+                !getJDA().isCacheFlagSet(CacheFlag.ACTIVITY) || content.isNull("activities")
+                        ? null
+                        : content.getArray("activities");
         List<Activity> newActivities = new ArrayList<>();
         boolean parsedActivity = parseActivities(userId, activityArray, newActivities);
 
@@ -110,107 +114,95 @@ public class PresenceUpdateHandler extends SocketHandler
             handleClientStatus(content, presence);
 
         // Check if activities changed
-        if (parsedActivity)
-            handleActivities(newActivities, member, presence);
+        if (parsedActivity) handleActivities(newActivities, member, presence);
 
-        //The member is already cached, so modify the presence values and fire events as needed.
+        // The member is already cached, so modify the presence values and fire events as needed.
 
-        if (presence.getOnlineStatus() != status)
-        {
+        if (presence.getOnlineStatus() != status) {
             OnlineStatus oldStatus = presence.getOnlineStatus();
             presence.setOnlineStatus(status);
-            if (member != null)
-            {
+            if (member != null) {
                 getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
-                    new UserUpdateOnlineStatusEvent(
-                        getJDA(), responseNumber,
-                        member, oldStatus));
+                                new UserUpdateOnlineStatusEvent(
+                                        getJDA(), responseNumber, member, oldStatus));
             }
         }
         return null;
     }
 
-    private boolean parseActivities(long userId, DataArray activityArray, List<Activity> newActivities)
-    {
+    private boolean parseActivities(
+            long userId, DataArray activityArray, List<Activity> newActivities) {
         boolean parsedActivity = false;
-        try
-        {
-            if (activityArray != null)
-            {
+        try {
+            if (activityArray != null) {
                 for (int i = 0; i < activityArray.length(); i++)
                     newActivities.add(EntityBuilder.createActivity(activityArray.getObject(i)));
                 parsedActivity = true;
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             if (EntityBuilder.LOG.isDebugEnabled())
-                EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} JSON: {}", userId, activityArray, ex);
+                EntityBuilder.LOG.warn(
+                        "Encountered exception trying to parse a presence! UserID: {} JSON: {}",
+                        userId,
+                        activityArray,
+                        ex);
             else
-                EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} Message: {} Enable debug for details", userId, ex.getMessage());
+                EntityBuilder.LOG.warn(
+                        "Encountered exception trying to parse a presence! UserID: {} Message: {}"
+                                + " Enable debug for details",
+                        userId,
+                        ex.getMessage());
         }
         return parsedActivity;
     }
 
-    private void handleActivities(List<Activity> newActivities, @Nullable MemberImpl member, MemberPresenceImpl presence)
-    {
+    private void handleActivities(
+            List<Activity> newActivities,
+            @Nullable MemberImpl member,
+            MemberPresenceImpl presence) {
         List<Activity> oldActivities = presence.getActivities();
         presence.setActivities(newActivities);
-        if (member == null)
-            return;
+        if (member == null) return;
         boolean unorderedEquals = Helpers.deepEqualsUnordered(oldActivities, newActivities);
-        if (unorderedEquals)
-        {
+        if (unorderedEquals) {
             boolean deepEquals = Helpers.deepEquals(oldActivities, newActivities);
-            if (!deepEquals)
-            {
+            if (!deepEquals) {
                 getJDA().handleEvent(
-                    new UserUpdateActivityOrderEvent(
-                        getJDA(), responseNumber,
-                        oldActivities, member));
+                                new UserUpdateActivityOrderEvent(
+                                        getJDA(), responseNumber, oldActivities, member));
             }
-        }
-        else
-        {
+        } else {
             getJDA().getEntityBuilder().updateMemberCache(member);
-            List<Activity> stoppedActivities = new ArrayList<>(oldActivities); // create modifiable copy
+            List<Activity> stoppedActivities =
+                    new ArrayList<>(oldActivities); // create modifiable copy
             List<Activity> startedActivities = new ArrayList<>();
-            for (Activity activity : newActivities)
-            {
-                if (!stoppedActivities.remove(activity))
-                    startedActivities.add(activity);
+            for (Activity activity : newActivities) {
+                if (!stoppedActivities.remove(activity)) startedActivities.add(activity);
             }
 
-            for (Activity activity : startedActivities)
-            {
+            for (Activity activity : startedActivities) {
                 getJDA().handleEvent(
-                    new UserActivityStartEvent(
-                        getJDA(), responseNumber,
-                        member, activity));
+                                new UserActivityStartEvent(
+                                        getJDA(), responseNumber, member, activity));
             }
 
-            for (Activity activity : stoppedActivities)
-            {
+            for (Activity activity : stoppedActivities) {
                 getJDA().handleEvent(
-                    new UserActivityEndEvent(
-                        getJDA(), responseNumber,
-                        member, activity));
+                                new UserActivityEndEvent(
+                                        getJDA(), responseNumber, member, activity));
             }
 
             getJDA().handleEvent(
-                new UserUpdateActivitiesEvent(
-                    getJDA(), responseNumber,
-                    member, oldActivities));
+                            new UserUpdateActivitiesEvent(
+                                    getJDA(), responseNumber, member, oldActivities));
         }
     }
 
-    private void handleClientStatus(DataObject content, MemberPresenceImpl presence)
-    {
+    private void handleClientStatus(DataObject content, MemberPresenceImpl presence) {
         DataObject json = content.getObject("client_status");
         EnumSet<ClientType> types = EnumSet.of(ClientType.UNKNOWN);
-        for (String key : json.keys())
-        {
+        for (String key : json.keys()) {
             ClientType type = ClientType.fromKey(key);
             types.add(type);
             String raw = String.valueOf(json.get(key));

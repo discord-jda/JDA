@@ -29,8 +29,7 @@ import javax.annotation.Nullable;
  *
  * <p>Must be used inside {@link net.dv8tion.jda.api.components.label.Label Labels} only!
  */
-public interface TextInput extends ICustomId, LabelChildComponent
-{
+public interface TextInput extends ICustomId, LabelChildComponent {
     /**
      * The maximum length a TextInput value can have. ({@value})
      */
@@ -122,8 +121,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
 
     @Nonnull
     @Override
-    default Type getType()
-    {
+    default Type getType() {
         return Type.TEXT_INPUT;
     }
 
@@ -145,8 +143,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
      * @return The new TextInput Builder.
      */
     @Nonnull
-    static TextInput.Builder create(@Nonnull String id, @Nonnull TextInputStyle style)
-    {
+    static TextInput.Builder create(@Nonnull String id, @Nonnull TextInputStyle style) {
         return new Builder(id, style);
     }
 
@@ -169,16 +166,14 @@ public interface TextInput extends ICustomId, LabelChildComponent
      * @return The new TextInput instance.
      */
     @Nonnull
-    static TextInput of(@Nonnull String id, @Nonnull TextInputStyle style)
-    {
+    static TextInput of(@Nonnull String id, @Nonnull TextInputStyle style) {
         return TextInput.create(id, style).build();
     }
 
     /**
      * Builder for {@link TextInput TextInputs}
      */
-    class Builder
-    {
+    class Builder {
         private String customId;
         private int uniqueId = -1;
         private String value;
@@ -188,8 +183,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
         private TextInputStyle style;
         private boolean required = true;
 
-        protected Builder(String customId, TextInputStyle style)
-        {
+        protected Builder(String customId, TextInputStyle style) {
             setCustomId(customId);
             setStyle(style);
         }
@@ -210,8 +204,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same Builder for chaining convenience.
          */
         @Nonnull
-        public Builder setCustomId(@Nonnull String customId)
-        {
+        public Builder setCustomId(@Nonnull String customId) {
             Checks.notBlank(customId, "Custom ID");
             Checks.notLonger(customId, MAX_ID_LENGTH, "Custom ID");
             this.customId = customId;
@@ -231,8 +224,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same Builder for chaining convenience.
          */
         @Nonnull
-        public Builder setUniqueId(int uniqueId)
-        {
+        public Builder setUniqueId(int uniqueId) {
             Checks.positive(uniqueId, "Unique ID");
             this.uniqueId = uniqueId;
             return this;
@@ -255,8 +247,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same Builder for chaining convenience.
          */
         @Nonnull
-        public Builder setStyle(@Nonnull TextInputStyle style)
-        {
+        public Builder setStyle(@Nonnull TextInputStyle style) {
             Checks.notNull(style, "Style");
             Checks.check(style != TextInputStyle.UNKNOWN, "TextInputStyle cannot be UNKNOWN!");
             this.style = style;
@@ -276,8 +267,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setRequired(boolean required)
-        {
+        public Builder setRequired(boolean required) {
             this.required = required;
             return this;
         }
@@ -296,12 +286,13 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setMinLength(int minLength)
-        {
-            if (minLength != -1)
-            {
+        public Builder setMinLength(int minLength) {
+            if (minLength != -1) {
                 Checks.notNegative(minLength, "Minimum length");
-                Checks.check(minLength <= MAX_VALUE_LENGTH, "Minimum length cannot be longer than %d characters!", MAX_VALUE_LENGTH);
+                Checks.check(
+                        minLength <= MAX_VALUE_LENGTH,
+                        "Minimum length cannot be longer than %d characters!",
+                        MAX_VALUE_LENGTH);
             }
 
             this.minLength = minLength;
@@ -322,12 +313,13 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setMaxLength(int maxLength)
-        {
-            if (maxLength != -1)
-            {
+        public Builder setMaxLength(int maxLength) {
+            if (maxLength != -1) {
                 Checks.check(maxLength >= 1, "Maximum length cannot be smaller than 1 character!");
-                Checks.check(maxLength <= MAX_VALUE_LENGTH, "Maximum length cannot be longer than %d characters!", MAX_VALUE_LENGTH);
+                Checks.check(
+                        maxLength <= MAX_VALUE_LENGTH,
+                        "Maximum length cannot be longer than %d characters!",
+                        MAX_VALUE_LENGTH);
             }
 
             this.maxLength = maxLength;
@@ -341,7 +333,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          *         Minimum length of the text input, or -1 for none
          * @param  max
          *         Maximum length of the text input, or -1 for none
-
+         *
          * @throws IllegalArgumentException
          *         <ul>
          *             <li>If min is not -1 and is negative or greater than {@link #MAX_VALUE_LENGTH}</li>
@@ -351,8 +343,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setRequiredRange(int min, int max)
-        {
+        public Builder setRequiredRange(int min, int max) {
             if (min != -1 && max != -1 && min > max)
                 throw new IllegalArgumentException("minimum cannot be greater than maximum!");
 
@@ -371,10 +362,8 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setValue(@Nullable String value)
-        {
-            if (value != null)
-            {
+        public Builder setValue(@Nullable String value) {
+            if (value != null) {
                 Checks.notLonger(value, MAX_VALUE_LENGTH, "Value");
                 Checks.notBlank(value, "Value");
             }
@@ -396,10 +385,8 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setPlaceholder(@Nullable String placeholder)
-        {
-            if (placeholder != null)
-            {
+        public Builder setPlaceholder(@Nullable String placeholder) {
+            if (placeholder != null) {
                 Checks.notLonger(placeholder, MAX_PLACEHOLDER_LENGTH, "Placeholder");
                 Checks.notBlank(placeholder, "Placeholder");
             }
@@ -412,8 +399,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          *
          * @return Minimum length or -1
          */
-        public int getMinLength()
-        {
+        public int getMinLength() {
             return minLength;
         }
 
@@ -422,8 +408,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          *
          * @return Maximum length or -1
          */
-        public int getMaxLength()
-        {
+        public int getMaxLength() {
             return maxLength;
         }
 
@@ -433,8 +418,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return Custom id
          */
         @Nonnull
-        public String getCustomId()
-        {
+        public String getCustomId() {
             return customId;
         }
 
@@ -443,8 +427,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          *
          * @return Unique ID
          */
-        public int getUniqueId()
-        {
+        public int getUniqueId() {
             return uniqueId;
         }
 
@@ -454,8 +437,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return The TextInputStyle
          */
         @Nonnull
-        public TextInputStyle getStyle()
-        {
+        public TextInputStyle getStyle() {
             return style;
         }
 
@@ -466,8 +448,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return Placeholder
          */
         @Nullable
-        public String getPlaceholder()
-        {
+        public String getPlaceholder() {
             return placeholder;
         }
 
@@ -477,8 +458,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return Value
          */
         @Nullable
-        public String getValue()
-        {
+        public String getValue() {
             return value;
         }
 
@@ -494,8 +474,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
          *
          * @see    TextInput#isRequired()
          */
-        public boolean isRequired()
-        {
+        public boolean isRequired() {
             return required;
         }
 
@@ -508,12 +487,12 @@ public interface TextInput extends ICustomId, LabelChildComponent
          * @return the TextInput instance
          */
         @Nonnull
-        public TextInput build()
-        {
+        public TextInput build() {
             if (maxLength < minLength && maxLength != -1)
                 throw new IllegalStateException("maxLength cannot be smaller than minLength!");
 
-            return new TextInputImpl(customId, uniqueId, style, minLength, maxLength, required, value, placeholder);
+            return new TextInputImpl(
+                    customId, uniqueId, style, minLength, maxLength, required, value, placeholder);
         }
     }
 }

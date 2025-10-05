@@ -44,13 +44,15 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
-public abstract class GenericMessageEvent extends Event
-{
+public abstract class GenericMessageEvent extends Event {
     protected final long messageId;
     protected final MessageChannel channel;
 
-    public GenericMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel)
-    {
+    public GenericMessageEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            long messageId,
+            @Nonnull MessageChannel channel) {
         super(api, responseNumber);
         this.messageId = messageId;
         this.channel = channel;
@@ -62,8 +64,7 @@ public abstract class GenericMessageEvent extends Event
      * @return The MessageChannel
      */
     @Nonnull
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return (MessageChannelUnion) channel;
     }
 
@@ -79,8 +80,7 @@ public abstract class GenericMessageEvent extends Event
      * @return The GuildMessageChannel
      */
     @Nonnull
-    public GuildMessageChannelUnion getGuildChannel()
-    {
+    public GuildMessageChannelUnion getGuildChannel() {
         if (!isFromGuild())
             throw new IllegalStateException("This message event did not happen in a guild");
         return (GuildMessageChannelUnion) channel;
@@ -92,8 +92,7 @@ public abstract class GenericMessageEvent extends Event
      * @return The id for this message
      */
     @Nonnull
-    public String getMessageId()
-    {
+    public String getMessageId() {
         return Long.toUnsignedString(messageId);
     }
 
@@ -102,8 +101,7 @@ public abstract class GenericMessageEvent extends Event
      *
      * @return The id for this message
      */
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return messageId;
     }
 
@@ -115,8 +113,7 @@ public abstract class GenericMessageEvent extends Event
      *
      * @return True, if the message is from the specified channel type
      */
-    public boolean isFromType(@Nonnull ChannelType type)
-    {
+    public boolean isFromType(@Nonnull ChannelType type) {
         return channel.getType() == type;
     }
 
@@ -126,8 +123,7 @@ public abstract class GenericMessageEvent extends Event
      *
      * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
      */
-    public boolean isFromGuild()
-    {
+    public boolean isFromGuild() {
         return getChannelType().isGuild();
     }
 
@@ -137,8 +133,7 @@ public abstract class GenericMessageEvent extends Event
      * @return The ChannelType
      */
     @Nonnull
-    public ChannelType getChannelType()
-    {
+    public ChannelType getChannelType() {
         return channel.getType();
     }
 
@@ -157,8 +152,7 @@ public abstract class GenericMessageEvent extends Event
      * @see    #getChannelType()
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         if (!isFromGuild())
             throw new IllegalStateException("This message event did not happen in a guild");
 
@@ -172,9 +166,12 @@ public abstract class GenericMessageEvent extends Event
      * @return A String representing the jump-to URL for the message
      */
     @Nonnull
-    public String getJumpUrl()
-    {
-        return Helpers.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getMessageId());
+    public String getJumpUrl() {
+        return Helpers.format(
+                Message.JUMP_URL,
+                isFromGuild() ? getGuild().getId() : "@me",
+                getChannel().getId(),
+                getMessageId());
     }
 
     /**
@@ -184,8 +181,7 @@ public abstract class GenericMessageEvent extends Event
      *
      * @see ChannelType#isThread()
      */
-    public boolean isFromThread()
-    {
+    public boolean isFromThread() {
         return getChannelType().isThread();
     }
 }

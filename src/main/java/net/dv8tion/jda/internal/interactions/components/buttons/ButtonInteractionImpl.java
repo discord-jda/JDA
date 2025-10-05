@@ -25,32 +25,28 @@ import net.dv8tion.jda.internal.interactions.components.ComponentInteractionImpl
 
 import javax.annotation.Nonnull;
 
-public class ButtonInteractionImpl extends ComponentInteractionImpl implements ButtonInteraction
-{
+public class ButtonInteractionImpl extends ComponentInteractionImpl implements ButtonInteraction {
     private final Button button;
 
-    public ButtonInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public ButtonInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         if (message != null)
-            button = message.getComponentTree()
-                    .find(Button.class, b -> customId.equals(b.getCustomId()))
-                    .orElse(null);
-        else
-            button = null;
+            button =
+                    message.getComponentTree()
+                            .find(Button.class, b -> customId.equals(b.getCustomId()))
+                            .orElse(null);
+        else button = null;
     }
 
     @Nonnull
     @Override
-    public Component.Type getComponentType()
-    {
+    public Component.Type getComponentType() {
         return Component.Type.BUTTON;
     }
 
     @Nonnull
     @Override
-    public Button getButton()
-    {
+    public Button getButton() {
         return button;
     }
 }

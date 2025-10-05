@@ -23,12 +23,10 @@ import javax.annotation.Nonnull;
  *
  * <p>This includes stickers from {@link StickerPack StickerPacks}, such as wumpus or doggos.
  */
-public interface StandardSticker extends RichSticker
-{
+public interface StandardSticker extends RichSticker {
     @Nonnull
     @Override
-    default Type getType()
-    {
+    default Type getType() {
         return Type.STANDARD;
     }
 
@@ -45,8 +43,7 @@ public interface StandardSticker extends RichSticker
      * @return the ID of the pack the sticker is from
      */
     @Nonnull
-    default String getPackId()
-    {
+    default String getPackId() {
         return Long.toUnsignedString(getPackIdLong());
     }
 

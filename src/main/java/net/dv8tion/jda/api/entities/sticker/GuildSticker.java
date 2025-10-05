@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
+
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.CheckReturnValue;
@@ -33,12 +34,10 @@ import javax.annotation.Nullable;
 /**
  * Custom guild sticker created by a user.
  */
-public interface GuildSticker extends RichSticker
-{
+public interface GuildSticker extends RichSticker {
     @Nonnull
     @Override
-    default Type getType()
-    {
+    default Type getType() {
         return Type.GUILD;
     }
 
@@ -63,8 +62,7 @@ public interface GuildSticker extends RichSticker
      * @return The guild id
      */
     @Nonnull
-    default String getGuildId()
-    {
+    default String getGuildId() {
         return Long.toUnsignedString(getGuildIdLong());
     }
 

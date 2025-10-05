@@ -31,10 +31,8 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public class EmojiAddedEvent extends GenericEmojiEvent
-{
-    public EmojiAddedEvent(@Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji)
-    {
+public class EmojiAddedEvent extends GenericEmojiEvent {
+    public EmojiAddedEvent(@Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji) {
         super(api, responseNumber, emoji);
     }
 }

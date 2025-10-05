@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.test.entities.guild;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.entities.channel.concrete.VoiceChannelImpl;
@@ -23,6 +26,7 @@ import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.test.Constants;
 import net.dv8tion.jda.test.IntegrationTest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,21 +34,13 @@ import org.mockito.Mock;
 
 import java.util.EnumSet;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-public class GuildLevelCacheTest extends IntegrationTest
-{
-    @Mock
-    UserImpl user;
-    @Mock
-    SelfUserImpl selfUser;
-    @Mock
-    VoiceChannelImpl channel;
+public class GuildLevelCacheTest extends IntegrationTest {
+    @Mock UserImpl user;
+    @Mock SelfUserImpl selfUser;
+    @Mock VoiceChannelImpl channel;
 
     @BeforeEach
-    void setupMocks()
-    {
+    void setupMocks() {
         when(user.getJDA()).thenReturn(jda);
         when(user.getIdLong()).thenReturn(Constants.MINN_USER_ID);
 
@@ -53,20 +49,17 @@ public class GuildLevelCacheTest extends IntegrationTest
         when(selfUser.getIdLong()).thenReturn(Constants.BUTLER_USER_ID);
     }
 
-    private GuildImpl getGuild()
-    {
+    private GuildImpl getGuild() {
         GuildImpl guild = new GuildImpl(jda, random.nextLong());
         MemberCacheViewImpl membersView = guild.getMembersView();
-        try (UnlockHook hook = membersView.writeLock())
-        {
+        try (UnlockHook hook = membersView.writeLock()) {
             membersView.getMap().put(Constants.BUTLER_USER_ID, new MemberImpl(guild, selfUser));
         }
 
         return guild;
     }
 
-    private void assertThatVoiceStateIsCached(GuildImpl guild, MemberImpl member)
-    {
+    private void assertThatVoiceStateIsCached(GuildImpl guild, MemberImpl member) {
         GuildVoiceStateImpl voiceState = member.getVoiceState();
 
         assertThat(voiceState).isNotNull();
@@ -76,8 +69,7 @@ public class GuildLevelCacheTest extends IntegrationTest
             assertThat(guild.getConnectedMembers(channel)).contains(member);
     }
 
-    private void assertThatVoiceStateIsNotCached(GuildImpl guild, MemberImpl member)
-    {
+    private void assertThatVoiceStateIsNotCached(GuildImpl guild, MemberImpl member) {
         GuildVoiceStateImpl voiceState = member.getVoiceState();
         assertThat(guild.getVoiceStateView().get(member.getIdLong())).isNull();
 
@@ -86,18 +78,14 @@ public class GuildLevelCacheTest extends IntegrationTest
     }
 
     @Nested
-    class VoiceStateCacheDisabledTest
-    {
+    class VoiceStateCacheDisabledTest {
         @BeforeEach
-        void setupCacheFlags()
-        {
+        void setupCacheFlags() {
             withCacheFlags(EnumSet.noneOf(CacheFlag.class));
         }
 
-
         @Test
-        void shouldReturnNullForOtherMembers()
-        {
+        void shouldReturnNullForOtherMembers() {
             GuildImpl guild = getGuild();
             MemberImpl member = new MemberImpl(guild, user);
 
@@ -105,8 +93,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         }
 
         @Test
-        void shouldReturnNonNullForSelfUser()
-        {
+        void shouldReturnNonNullForSelfUser() {
             GuildImpl guild = getGuild();
             MemberImpl member = new MemberImpl(guild, selfUser);
 
@@ -114,8 +101,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         }
 
         @Test
-        void shouldNotCacheVoiceStateForConnectedMembers()
-        {
+        void shouldNotCacheVoiceStateForConnectedMembers() {
             GuildImpl guild = getGuild();
             MemberImpl member = new MemberImpl(guild, user);
 
@@ -126,8 +112,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         }
 
         @Test
-        void shouldCacheVoiceStateForSelfMember()
-        {
+        void shouldCacheVoiceStateForSelfMember() {
             GuildImpl guild = getGuild();
             MemberImpl member = (MemberImpl) guild.getSelfMember();
 
@@ -140,18 +125,14 @@ public class GuildLevelCacheTest extends IntegrationTest
     }
 
     @Nested
-    class VoiceStateCacheEnabledTest
-    {
+    class VoiceStateCacheEnabledTest {
         @BeforeEach
-        void setupCacheFlags()
-        {
+        void setupCacheFlags() {
             withCacheFlags(EnumSet.of(CacheFlag.VOICE_STATE));
         }
 
-
         @Test
-        void shouldReturnNonNullForOtherMembers()
-        {
+        void shouldReturnNonNullForOtherMembers() {
             GuildImpl guild = getGuild();
             MemberImpl member = new MemberImpl(guild, user);
 
@@ -159,8 +140,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         }
 
         @Test
-        void shouldReturnNonNullForSelfUser()
-        {
+        void shouldReturnNonNullForSelfUser() {
             GuildImpl guild = getGuild();
             MemberImpl member = new MemberImpl(guild, selfUser);
 
@@ -168,8 +148,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         }
 
         @Test
-        void shouldCacheVoiceStateForConnectedMembers()
-        {
+        void shouldCacheVoiceStateForConnectedMembers() {
             GuildImpl guild = getGuild();
             MemberImpl member = new MemberImpl(guild, user);
 
@@ -181,8 +160,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         }
 
         @Test
-        void shouldUncacheVoiceStateForDisconnectedMembers()
-        {
+        void shouldUncacheVoiceStateForDisconnectedMembers() {
             GuildImpl guild = getGuild();
             MemberImpl member = new MemberImpl(guild, user);
 

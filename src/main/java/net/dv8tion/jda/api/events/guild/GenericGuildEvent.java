@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any GuildEvent.
  */
-public abstract class GenericGuildEvent extends Event
-{
+public abstract class GenericGuildEvent extends Event {
     protected final Guild guild;
 
-    public GenericGuildEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
-    {
+    public GenericGuildEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild) {
         super(api, responseNumber);
         this.guild = guild;
     }
@@ -44,8 +42,7 @@ public abstract class GenericGuildEvent extends Event
      * @return The Guild
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 }

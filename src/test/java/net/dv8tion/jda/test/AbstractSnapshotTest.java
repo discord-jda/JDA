@@ -16,54 +16,49 @@
 
 package net.dv8tion.jda.test;
 
+import static net.dv8tion.jda.test.TestHelper.captureLogging;
+
 import net.dv8tion.jda.api.utils.data.SerializableArray;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.test.assertions.logging.LoggingAssertions;
 import net.dv8tion.jda.test.util.SnapshotHandler;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.List;
 
-import static net.dv8tion.jda.test.TestHelper.captureLogging;
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
-public class AbstractSnapshotTest
-{
+public class AbstractSnapshotTest {
     protected SnapshotHandler snapshotHandler;
 
     @BeforeEach
-    void initializeSnapshotHandler(TestInfo testInfo)
-    {
+    void initializeSnapshotHandler(TestInfo testInfo) {
         this.snapshotHandler = new SnapshotHandler(testInfo);
     }
 
     @Nonnull
     @CheckReturnValue
-    protected LoggingAssertions assertThatLoggingFrom(Runnable runnable)
-    {
+    protected LoggingAssertions assertThatLoggingFrom(Runnable runnable) {
         List<String> logs = captureLogging(runnable);
         return new LoggingAssertions(snapshotHandler, logs);
     }
 
-    protected void assertWithSnapshot(String actual, String suffix)
-    {
+    protected void assertWithSnapshot(String actual, String suffix) {
         snapshotHandler.compareWithSnapshot(actual, suffix);
     }
 
-    protected void assertWithSnapshot(SerializableData data)
-    {
+    protected void assertWithSnapshot(SerializableData data) {
         snapshotHandler.compareWithSnapshot(data.toData(), null);
     }
 
-    protected void assertWithSnapshot(SerializableArray data)
-    {
+    protected void assertWithSnapshot(SerializableArray data) {
         assertWithSnapshot(data, null);
     }
 
-    protected void assertWithSnapshot(SerializableArray data, String suffix)
-    {
+    protected void assertWithSnapshot(SerializableArray data, String suffix) {
         snapshotHandler.compareWithSnapshot(data.toDataArray(), suffix);
     }
 }

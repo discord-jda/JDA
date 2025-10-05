@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.test;
 
-public interface Resources
-{
+public interface Resources {
     String LOGO_PNG = "logo.png";
 }

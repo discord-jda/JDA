@@ -41,12 +41,10 @@ import javax.annotation.Nullable;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
-public class MessageUpdateEvent extends GenericMessageEvent
-{
+public class MessageUpdateEvent extends GenericMessageEvent {
     private final Message message;
 
-    public MessageUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
-    {
+    public MessageUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
         super(api, responseNumber, message.getIdLong(), message.getChannel());
         this.message = message;
     }
@@ -58,8 +56,7 @@ public class MessageUpdateEvent extends GenericMessageEvent
      * @return The updated Message
      */
     @Nonnull
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
@@ -71,8 +68,7 @@ public class MessageUpdateEvent extends GenericMessageEvent
      * @see    net.dv8tion.jda.api.entities.User User
      */
     @Nonnull
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return message.getAuthor();
     }
 
@@ -83,8 +79,7 @@ public class MessageUpdateEvent extends GenericMessageEvent
      * @return The Member instance for the author or null
      */
     @Nullable
-    public Member getMember()
-    {
-        return  message.getMember();
+    public Member getMember() {
+        return message.getMember();
     }
 }

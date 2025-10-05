@@ -16,10 +16,16 @@
 
 package net.dv8tion.jda.test.restaction;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.Method;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import net.dv8tion.jda.test.Constants;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,64 +35,52 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class CreateApplicationEmojiTest extends RestActionTest
-{
+public class CreateApplicationEmojiTest extends RestActionTest {
     private static final String EXAMPLE_NAME = "thinking";
-    private static final Icon EXAMPLE_ICON = Icon.from(new byte[]{1, 2, 3});
+    private static final Icon EXAMPLE_ICON = Icon.from(new byte[] {1, 2, 3});
 
     @BeforeEach
-    void setupMocks()
-    {
+    void setupMocks() {
         when(jda.createApplicationEmoji(any(), any())).thenCallRealMethod();
         when(jda.getSelfUser()).thenReturn(new SelfUserImpl(Constants.BUTLER_USER_ID, jda));
     }
 
     @MethodSource
     @ParameterizedTest
-    void testNullArguments(String name, Icon icon)
-    {
+    void testNullArguments(String name, Icon icon) {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> jda.createApplicationEmoji(name, icon));
+                .isThrownBy(() -> jda.createApplicationEmoji(name, icon));
     }
 
-    static Stream<Arguments> testNullArguments()
-    {
+    static Stream<Arguments> testNullArguments() {
         return Stream.of(
-            arguments(null, null),
-            arguments(null, EXAMPLE_ICON),
-            arguments(EXAMPLE_NAME, null)
-        );
+                arguments(null, null),
+                arguments(null, EXAMPLE_ICON),
+                arguments(EXAMPLE_NAME, null));
     }
 
     @Test
-    void testWrongNameFormat()
-    {
+    void testWrongNameFormat() {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> jda.createApplicationEmoji("test with spaces", EXAMPLE_ICON))
-            .withMessageContaining("must match regex");
+                .isThrownBy(() -> jda.createApplicationEmoji("test with spaces", EXAMPLE_ICON))
+                .withMessageContaining("must match regex");
     }
 
     @Test
-    void testWrongNameLength()
-    {
+    void testWrongNameLength() {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> jda.createApplicationEmoji(StringUtils.repeat('a', 33), EXAMPLE_ICON))
-            .withMessageContaining("must be between 2 and 32 characters long");
+                .isThrownBy(
+                        () -> jda.createApplicationEmoji(StringUtils.repeat('a', 33), EXAMPLE_ICON))
+                .withMessageContaining("must be between 2 and 32 characters long");
     }
 
     @Test
-    void testValidEmoji()
-    {
+    void testValidEmoji() {
         assertThatRequestFrom(jda.createApplicationEmoji(EXAMPLE_NAME, EXAMPLE_ICON))
-            .hasMethod(Method.POST)
-            .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/emojis")
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasMethod(Method.POST)
+                .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/emojis")
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 }

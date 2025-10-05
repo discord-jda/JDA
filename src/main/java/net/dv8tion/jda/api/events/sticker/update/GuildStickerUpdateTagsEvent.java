@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the tags of a {@link GuildSticker} changed.
@@ -37,29 +38,29 @@ import java.util.Set;
  *
  * <p>Identifier: {@code tags}
  */
-public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<Set<String>>
-{
+public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<Set<String>> {
     public static final String IDENTIFIER = "tags";
 
-    public GuildStickerUpdateTagsEvent(@Nonnull JDA api, long responseNumber,
-                                       @Nonnull Guild guild, @Nonnull GuildSticker sticker, @Nonnull Set<String> oldValue)
-    {
+    public GuildStickerUpdateTagsEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull GuildSticker sticker,
+            @Nonnull Set<String> oldValue) {
         super(api, responseNumber, guild, sticker, IDENTIFIER, oldValue, sticker.getTags());
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public Set<String> getOldValue()
-    {
+    public Set<String> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public Set<String> getNewValue()
-    {
+    public Set<String> getNewValue() {
         return super.getNewValue();
     }
 }

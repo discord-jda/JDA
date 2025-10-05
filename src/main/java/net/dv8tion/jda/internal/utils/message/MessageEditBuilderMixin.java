@@ -22,48 +22,44 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 @SuppressWarnings("unchecked")
-public interface MessageEditBuilderMixin<R extends MessageEditRequest<R>> extends AbstractMessageBuilderMixin<R, MessageEditBuilder>, MessageEditRequest<R>
-{
+public interface MessageEditBuilderMixin<R extends MessageEditRequest<R>>
+        extends AbstractMessageBuilderMixin<R, MessageEditBuilder>, MessageEditRequest<R> {
     @Nonnull
     @Override
-    default R setAttachments(@Nullable Collection<? extends AttachedFile> attachments)
-    {
+    default R setAttachments(@Nullable Collection<? extends AttachedFile> attachments) {
         getBuilder().setAttachments(attachments);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R setReplace(boolean isReplace)
-    {
+    default R setReplace(boolean isReplace) {
         getBuilder().setReplace(isReplace);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R setFiles(@Nullable Collection<? extends FileUpload> files)
-    {
+    default R setFiles(@Nullable Collection<? extends FileUpload> files) {
         getBuilder().setFiles(files);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R applyData(@Nonnull MessageEditData data)
-    {
+    default R applyData(@Nonnull MessageEditData data) {
         getBuilder().applyData(data);
         return (R) this;
     }
 
     @Override
-    default boolean isReplace()
-    {
+    default boolean isReplace() {
         return getBuilder().isReplace();
     }
 }

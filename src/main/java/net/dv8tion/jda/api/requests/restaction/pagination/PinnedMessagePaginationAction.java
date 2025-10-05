@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
+
+import javax.annotation.Nonnull;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the pinned messages in a {@link MessageChannel}.
@@ -34,21 +35,20 @@ import java.time.OffsetDateTime;
  *
  * @see MessageChannel#retrievePinnedMessages()
  */
-public interface PinnedMessagePaginationAction extends PaginationAction<PinnedMessagePaginationAction.PinnedMessage, PinnedMessagePaginationAction>
-{
+public interface PinnedMessagePaginationAction
+        extends PaginationAction<
+                PinnedMessagePaginationAction.PinnedMessage, PinnedMessagePaginationAction> {
     /**
      * A pinned message instance.
      *
      * @see #getTimePinned()
      * @see #getMessage()
      */
-    class PinnedMessage
-    {
+    class PinnedMessage {
         private final OffsetDateTime pinnedAt;
         private final Message message;
 
-        public PinnedMessage(OffsetDateTime pinnedAt, Message message)
-        {
+        public PinnedMessage(OffsetDateTime pinnedAt, Message message) {
             this.pinnedAt = pinnedAt;
             this.message = message;
         }
@@ -59,8 +59,7 @@ public interface PinnedMessagePaginationAction extends PaginationAction<PinnedMe
          * @return The pin timestamp
          */
         @Nonnull
-        public OffsetDateTime getTimePinned()
-        {
+        public OffsetDateTime getTimePinned() {
             return pinnedAt;
         }
 
@@ -70,18 +69,16 @@ public interface PinnedMessagePaginationAction extends PaginationAction<PinnedMe
          * @return The pinned message instance
          */
         @Nonnull
-        public Message getMessage()
-        {
+        public Message getMessage() {
             return message;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return new EntityString(this)
-                .addMetadata("pinned_at", pinnedAt)
-                .addMetadata("message", message)
-                .toString();
+                    .addMetadata("pinned_at", pinnedAt)
+                    .addMetadata("message", message)
+                    .toString();
         }
     }
 }

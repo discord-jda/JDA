@@ -28,74 +28,65 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
-public class GuildMemberRemoveHandler extends SocketHandler
-{
+public class GuildMemberRemoveHandler extends SocketHandler {
 
-    public GuildMemberRemoveHandler(JDAImpl api)
-    {
+    public GuildMemberRemoveHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         final long id = content.getLong("guild_id");
         boolean setup = getJDA().getGuildSetupController().onRemoveMember(id, content);
-        if (setup)
-            return null;
+        if (setup) return null;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(id);
-        if (guild == null)
-        {
-            //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
+        if (guild == null) {
+            // We probably just left the guild and this event is trying to remove us from the guild,
+            // therefore ignore
             return null;
         }
 
         final long userId = content.getObject("user").getUnsignedLong("id");
-        if (userId == getJDA().getSelfUser().getIdLong())
-        {
-            //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
+        if (userId == getJDA().getSelfUser().getIdLong()) {
+            // We probably just left the guild and this event is trying to remove us from the guild,
+            // therefore ignore
             return null;
         }
 
-        try
-        {
+        try {
             User user = api.getEntityBuilder().createUser(content.getObject("user"));
 
             GuildVoiceStateImpl voiceState = guild.getVoiceStateView().getElementById(userId);
-            if (voiceState != null && voiceState.inAudioChannel()) //If this user was in an AudioChannel, fire VoiceLeaveEvent.
+            if (voiceState != null
+                    && voiceState.inAudioChannel()) // If this user was in an AudioChannel, fire
+            // VoiceLeaveEvent.
             {
                 AudioChannel channel = voiceState.getChannel();
                 voiceState.updateConnectedChannel(null);
 
                 getJDA().handleEvent(
-                    new GuildVoiceUpdateEvent(
-                        getJDA(), responseNumber,
-                        voiceState.getMember(), channel));
+                                new GuildVoiceUpdateEvent(
+                                        getJDA(), responseNumber,
+                                        voiceState.getMember(), channel));
             }
 
             MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);
 
             SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
-            try (UnlockHook hook = userView.writeLock())
-            {
-                if (user.getMutualGuilds().isEmpty())
-                {
+            try (UnlockHook hook = userView.writeLock()) {
+                if (user.getMutualGuilds().isEmpty()) {
                     userView.remove(userId);
                     getJDA().getEventCache().clear(EventCache.Type.USER, userId);
                 }
             }
 
-
             // Cache independent event
             getJDA().handleEvent(
-                new GuildMemberRemoveEvent(
-                    getJDA(), responseNumber,
-                    guild, user, member));
+                            new GuildMemberRemoveEvent(
+                                    getJDA(), responseNumber, guild, user, member));
             return null;
-        }
-        finally
-        {
+        } finally {
             // Reduce member count and remove dependent caches
             guild.onMemberRemove(userId);
         }

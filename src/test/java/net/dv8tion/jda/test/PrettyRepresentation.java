@@ -18,17 +18,14 @@ package net.dv8tion.jda.test;
 
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+
 import org.assertj.core.presentation.StandardRepresentation;
 
-public class PrettyRepresentation extends StandardRepresentation
-{
+public class PrettyRepresentation extends StandardRepresentation {
     @Override
-    protected String fallbackToStringOf(Object object)
-    {
-        if (object instanceof DataObject)
-            return ((DataObject) object).toPrettyString();
-        else if (object instanceof DataArray)
-            return ((DataArray) object).toPrettyString();
+    protected String fallbackToStringOf(Object object) {
+        if (object instanceof DataObject) return ((DataObject) object).toPrettyString();
+        else if (object instanceof DataArray) return ((DataArray) object).toPrettyString();
         return object.toString();
     }
 }

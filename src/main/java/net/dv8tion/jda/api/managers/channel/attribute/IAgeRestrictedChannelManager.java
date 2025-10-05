@@ -28,9 +28,9 @@ import javax.annotation.Nonnull;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface IAgeRestrictedChannelManager<T extends IAgeRestrictedChannel, M extends IAgeRestrictedChannelManager<T, M>>
-        extends ChannelManager<T, M>
-{
+public interface IAgeRestrictedChannelManager<
+                T extends IAgeRestrictedChannel, M extends IAgeRestrictedChannelManager<T, M>>
+        extends ChannelManager<T, M> {
     /**
      * Sets the <b><u>nsfw flag</u></b> (also known as Age Restriction) of the selected {@link IAgeRestrictedChannel channel}.
      *

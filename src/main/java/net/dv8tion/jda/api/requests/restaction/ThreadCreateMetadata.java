@@ -21,19 +21,19 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Metadata used to create a thread through a {@link WebhookMessageCreateAction webhook message}.
  *
  * @see WebhookMessageCreateAction#createThread(ThreadCreateMetadata)
  */
-public class ThreadCreateMetadata
-{
+public class ThreadCreateMetadata {
     private final String name;
     private final List<ForumTagSnowflake> appliedTags = new ArrayList<>(ForumChannel.MAX_POST_TAGS);
 
@@ -46,8 +46,7 @@ public class ThreadCreateMetadata
      * @throws IllegalArgumentException
      *         If the provided name is null or not between 1 and {@value ThreadChannel#MAX_NAME_LENGTH} characters long
      */
-    public ThreadCreateMetadata(@Nonnull String name)
-    {
+    public ThreadCreateMetadata(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notLonger(name, ThreadChannel.MAX_NAME_LENGTH, "Name");
@@ -66,10 +65,13 @@ public class ThreadCreateMetadata
      * @return The updated metadata instance
      */
     @Nonnull
-    public ThreadCreateMetadata addTags(@Nonnull Collection<? extends ForumTagSnowflake> tags)
-    {
+    public ThreadCreateMetadata addTags(@Nonnull Collection<? extends ForumTagSnowflake> tags) {
         Checks.noneNull(tags, "Tags");
-        Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Cannot have more than %d post tags. Provided: %d", ForumChannel.MAX_POST_TAGS, tags.size());
+        Checks.check(
+                tags.size() <= ForumChannel.MAX_POST_TAGS,
+                "Cannot have more than %d post tags. Provided: %d",
+                ForumChannel.MAX_POST_TAGS,
+                tags.size());
         this.appliedTags.addAll(tags);
         return this;
     }
@@ -86,10 +88,13 @@ public class ThreadCreateMetadata
      * @return The updated metadata instance
      */
     @Nonnull
-    public ThreadCreateMetadata addTags(@Nonnull ForumTagSnowflake... tags)
-    {
+    public ThreadCreateMetadata addTags(@Nonnull ForumTagSnowflake... tags) {
         Checks.noneNull(tags, "Tags");
-        Checks.check(tags.length <= ForumChannel.MAX_POST_TAGS, "Cannot have more than %d post tags. Provided: %d", ForumChannel.MAX_POST_TAGS, tags.length);
+        Checks.check(
+                tags.length <= ForumChannel.MAX_POST_TAGS,
+                "Cannot have more than %d post tags. Provided: %d",
+                ForumChannel.MAX_POST_TAGS,
+                tags.length);
         Collections.addAll(this.appliedTags, tags);
         return this;
     }
@@ -100,8 +105,7 @@ public class ThreadCreateMetadata
      * @return The thread name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -111,8 +115,7 @@ public class ThreadCreateMetadata
      * @return The applied tags
      */
     @Nonnull
-    public List<ForumTagSnowflake> getAppliedTags()
-    {
+    public List<ForumTagSnowflake> getAppliedTags() {
         return appliedTags;
     }
 }

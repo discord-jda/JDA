@@ -34,13 +34,12 @@ import javax.annotation.Nonnull;
  * <p>Instead of {@link #deferReply()} and {@link #reply(String)} you can use {@link #deferEdit()} and {@link #editMessage(String)} with these interactions!
  * <b>You can only acknowledge an interaction once!</b>
  */
-public interface ComponentInteraction extends IReplyCallback, IMessageEditCallback, IModalCallback, ICustomIdInteraction
-{
+public interface ComponentInteraction
+        extends IReplyCallback, IMessageEditCallback, IModalCallback, ICustomIdInteraction {
 
     @Override
     @Nonnull
-    default String getCustomId()
-    {
+    default String getCustomId() {
         return getComponentId();
     }
 
@@ -65,8 +64,7 @@ public interface ComponentInteraction extends IReplyCallback, IMessageEditCallba
      *
      * @see    ActionComponent#getUniqueId()
      */
-    default int getUniqueId()
-    {
+    default int getUniqueId() {
         return getComponent().getUniqueId();
     }
 
@@ -99,8 +97,7 @@ public interface ComponentInteraction extends IReplyCallback, IMessageEditCallba
      * @return The message id
      */
     @Nonnull
-    default String getMessageId()
-    {
+    default String getMessageId() {
         return Long.toUnsignedString(getMessageIdLong());
     }
 
@@ -123,8 +120,7 @@ public interface ComponentInteraction extends IReplyCallback, IMessageEditCallba
 
     @Nonnull
     @Override
-    default GuildMessageChannelUnion getGuildChannel()
-    {
+    default GuildMessageChannelUnion getGuildChannel() {
         return (GuildMessageChannelUnion) IReplyCallback.super.getGuildChannel();
     }
 }

@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.components.textdisplay.TextDisplay TextDisplay}</li>
  * </ul>
  */
-public interface ModalTopLevelComponent extends Component
-{
+public interface ModalTopLevelComponent extends Component {
     @Nonnull
     @Override
     ModalTopLevelComponent withUniqueId(int uniqueId);

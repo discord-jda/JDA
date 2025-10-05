@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any UserEvent.
  */
-public abstract class GenericUserEvent extends Event
-{
+public abstract class GenericUserEvent extends Event {
     private final User user;
 
-    public GenericUserEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user)
-    {
+    public GenericUserEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user) {
         super(api, responseNumber);
         this.user = user;
     }
@@ -44,8 +42,7 @@ public abstract class GenericUserEvent extends Event
      * @return The user instance related to this event
      */
     @Nonnull
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 }

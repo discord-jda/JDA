@@ -39,8 +39,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
-public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent, IComponentUnion
-{
+public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent, IComponentUnion {
     /**
      * Casts this union to a {@link ActionRow}.
      * This method exists for developer discoverability.

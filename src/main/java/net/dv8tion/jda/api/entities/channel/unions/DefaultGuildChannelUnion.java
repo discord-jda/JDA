@@ -44,8 +44,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link NewsChannel}</li>
  * </ul>
  */
-public interface DefaultGuildChannelUnion extends StandardGuildChannel
-{
+public interface DefaultGuildChannelUnion extends StandardGuildChannel {
     /**
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.

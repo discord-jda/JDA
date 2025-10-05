@@ -22,12 +22,13 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * {@link net.dv8tion.jda.api.requests.RestAction RestAction} extension
@@ -39,8 +40,7 @@ import java.util.function.BooleanSupplier;
  * @see    Guild#addMember(String, UserSnowflake)
  * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
-public interface MemberAction extends RestAction<Void>
-{
+public interface MemberAction extends RestAction<Void> {
     @Nonnull
     @Override
     @CheckReturnValue

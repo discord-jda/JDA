@@ -30,27 +30,34 @@ import javax.annotation.Nonnull;
  * @see ChannelField#DEFAULT_SORT_ORDER
  */
 @SuppressWarnings("ConstantConditions")
-public class ChannelUpdateDefaultSortOrderEvent extends GenericChannelUpdateEvent<IPostContainer.SortOrder>
-{
+public class ChannelUpdateDefaultSortOrderEvent
+        extends GenericChannelUpdateEvent<IPostContainer.SortOrder> {
     public static final ChannelField FIELD = ChannelField.DEFAULT_SORT_ORDER;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateDefaultSortOrderEvent(@Nonnull JDA api, long responseNumber, IPostContainer channel, IPostContainer.SortOrder oldValue)
-    {
-        super(api, responseNumber, channel, ChannelField.DEFAULT_SORT_ORDER, oldValue, channel.getDefaultSortOrder());
+    public ChannelUpdateDefaultSortOrderEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            IPostContainer channel,
+            IPostContainer.SortOrder oldValue) {
+        super(
+                api,
+                responseNumber,
+                channel,
+                ChannelField.DEFAULT_SORT_ORDER,
+                oldValue,
+                channel.getDefaultSortOrder());
     }
 
     @Nonnull
     @Override
-    public IPostContainer.SortOrder getOldValue()
-    {
+    public IPostContainer.SortOrder getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public IPostContainer.SortOrder getNewValue()
-    {
+    public IPostContainer.SortOrder getNewValue() {
         return super.getNewValue();
     }
 }

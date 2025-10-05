@@ -34,12 +34,11 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public class GuildVoiceVideoEvent extends GenericGuildVoiceEvent
-{
+public class GuildVoiceVideoEvent extends GenericGuildVoiceEvent {
     private final boolean video;
 
-    public GuildVoiceVideoEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean video)
-    {
+    public GuildVoiceVideoEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean video) {
         super(api, responseNumber, member);
         this.video = video;
     }
@@ -49,8 +48,7 @@ public class GuildVoiceVideoEvent extends GenericGuildVoiceEvent
      *
      * @return True, if the user started sending video
      */
-    public boolean isSendingVideo()
-    {
+    public boolean isSendingVideo() {
         return video;
     }
 }

@@ -31,18 +31,13 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
-        GuildChannel,
-        GuildChannelUnion,
-        ChannelMixin<T>,
-        IDetachableEntityMixin
-{
+public interface GuildChannelMixin<T extends GuildChannelMixin<T>>
+        extends GuildChannel, GuildChannelUnion, ChannelMixin<T>, IDetachableEntityMixin {
     // ---- Default implementations of interface ----
     @Override
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> delete()
-    {
+    default AuditableRestAction<Void> delete() {
         checkCanAccess();
         checkCanManage();
 
@@ -51,33 +46,30 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
     }
 
     // ---- Helpers ---
-    default boolean hasPermission(Permission permission)
-    {
+    default boolean hasPermission(Permission permission) {
         IPermissionContainer permChannel = getPermissionContainer();
         return getGuild().getSelfMember().hasPermission(permChannel, permission);
     }
 
-    default void checkPermission(Permission permission) { checkPermission(permission, null); }
-    default void checkPermission(Permission permission, String message)
-    {
-        if (!hasPermission(permission))
-        {
+    default void checkPermission(Permission permission) {
+        checkPermission(permission, null);
+    }
+
+    default void checkPermission(Permission permission, String message) {
+        if (!hasPermission(permission)) {
             if (message != null)
                 throw new InsufficientPermissionException(this, permission, message);
-            else
-                throw new InsufficientPermissionException(this, permission);
+            else throw new InsufficientPermissionException(this, permission);
         }
     }
 
     // Overridden by ThreadChannelImpl
-    default void checkCanManage()
-    {
+    default void checkCanManage() {
         checkPermission(Permission.MANAGE_CHANNEL);
     }
 
     // Overridden by AudioChannelMixin
-    default void checkCanAccess()
-    {
+    default void checkCanAccess() {
         checkAttached();
         if (!hasPermission(Permission.VIEW_CHANNEL))
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);

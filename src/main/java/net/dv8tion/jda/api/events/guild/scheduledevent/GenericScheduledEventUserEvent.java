@@ -40,22 +40,24 @@ import javax.annotation.Nullable;
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
-public abstract class GenericScheduledEventUserEvent extends GenericScheduledEventGatewayEvent
-{
+public abstract class GenericScheduledEventUserEvent extends GenericScheduledEventGatewayEvent {
     private final long userId;
 
-    public GenericScheduledEventUserEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, long userId)
-    {
+    public GenericScheduledEventUserEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ScheduledEvent scheduledEvent,
+            long userId) {
         super(api, responseNumber, scheduledEvent);
         this.userId = userId;
     }
+
     /**
      * The id of the user that subscribed or unsubscribed to the {@link ScheduledEvent ScheduledEvent}.
      *
      * @return The long user id
      */
-    public long getUserIdLong()
-    {
+    public long getUserIdLong() {
         return userId;
     }
 
@@ -65,8 +67,7 @@ public abstract class GenericScheduledEventUserEvent extends GenericScheduledEve
      * @return The string user id
      */
     @Nonnull
-    public String getUserId()
-    {
+    public String getUserId() {
         return Long.toUnsignedString(userId);
     }
 
@@ -78,8 +79,7 @@ public abstract class GenericScheduledEventUserEvent extends GenericScheduledEve
      * @return The added user or null if this information is missing
      */
     @Nullable
-    public User getUser()
-    {
+    public User getUser() {
         return api.getUserById(userId);
     }
 
@@ -92,8 +92,7 @@ public abstract class GenericScheduledEventUserEvent extends GenericScheduledEve
      * @return Member of the added user or null if they are no longer member of this guild
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return guild.getMemberById(userId);
     }
 
@@ -105,8 +104,7 @@ public abstract class GenericScheduledEventUserEvent extends GenericScheduledEve
      */
     @Nonnull
     @CheckReturnValue
-    public CacheRestAction<User> retrieveUser()
-    {
+    public CacheRestAction<User> retrieveUser() {
         return getJDA().retrieveUserById(getUserIdLong());
     }
 
@@ -118,8 +116,7 @@ public abstract class GenericScheduledEventUserEvent extends GenericScheduledEve
      */
     @Nonnull
     @CheckReturnValue
-    public CacheRestAction<Member> retrieveMember()
-    {
+    public CacheRestAction<Member> retrieveMember() {
         return getGuild().retrieveMemberById(getUserIdLong());
     }
 }

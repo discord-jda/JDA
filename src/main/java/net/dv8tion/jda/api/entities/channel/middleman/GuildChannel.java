@@ -37,8 +37,7 @@ import javax.annotation.Nonnull;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends Channel, Comparable<GuildChannel>
-{
+public interface GuildChannel extends Channel, Comparable<GuildChannel> {
     /** Template for {@link #getJumpUrl()}.*/
     String JUMP_URL = "https://discord.com/channels/%s/%s";
 
@@ -116,8 +115,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @return A String representing the jump-to URL for the channel.
      */
     @Nonnull
-    default String getJumpUrl()
-    {
+    default String getJumpUrl() {
         return Helpers.format(JUMP_URL, getGuild().getId(), getId());
     }
 }

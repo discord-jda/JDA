@@ -16,44 +16,42 @@
 
 package net.dv8tion.jda.test.entities.message;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+
 import net.dv8tion.jda.api.requests.Method;
 import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.test.IntegrationTest;
+
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-
-public class PollVotersPaginationTest extends IntegrationTest
-{
-    private PollVotersPaginationActionImpl newAction()
-    {
-        return new PollVotersPaginationActionImpl(jda, "381886978205155338", "1228092239079804968", 5);
+public class PollVotersPaginationTest extends IntegrationTest {
+    private PollVotersPaginationActionImpl newAction() {
+        return new PollVotersPaginationActionImpl(
+                jda, "381886978205155338", "1228092239079804968", 5);
     }
 
     @Test
-    void testDefaults()
-    {
+    void testDefaults() {
         assertThatRequestFrom(newAction())
-            .hasMethod(Method.GET)
-            .hasCompiledRoute("channels/381886978205155338/polls/1228092239079804968/answers/5?limit=100&after=0")
-            .whenQueueCalled();
+                .hasMethod(Method.GET)
+                .hasCompiledRoute(
+                        "channels/381886978205155338/polls/1228092239079804968/answers/5?limit=100&after=0")
+                .whenQueueCalled();
     }
 
     @Test
-    void testSkipTo()
-    {
+    void testSkipTo() {
         long randomId = random.nextLong();
         assertThatRequestFrom(newAction().skipTo(randomId))
-            .hasMethod(Method.GET)
-            .hasQueryParams("limit", "100", "after", Long.toUnsignedString(randomId))
-            .whenQueueCalled();
+                .hasMethod(Method.GET)
+                .hasQueryParams("limit", "100", "after", Long.toUnsignedString(randomId))
+                .whenQueueCalled();
     }
 
     @Test
-    void testOrder()
-    {
+    void testOrder() {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> newAction().reverse())
-            .withMessage("Cannot use PaginationOrder.BACKWARD for this pagination endpoint.");
+                .isThrownBy(() -> newAction().reverse())
+                .withMessage("Cannot use PaginationOrder.BACKWARD for this pagination endpoint.");
     }
 }

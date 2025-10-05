@@ -29,8 +29,7 @@ import javax.annotation.Nonnull;
  * @see Emoji#fromFormatted(String)
  * @see Emoji#fromData(DataObject)
  */
-public interface UnicodeEmoji extends Emoji
-{
+public interface UnicodeEmoji extends Emoji {
     /**
      * Converts the unicode name into codepoint notation like {@code U+1F602}.
      *
@@ -41,15 +40,13 @@ public interface UnicodeEmoji extends Emoji
 
     @Nonnull
     @Override
-    default Type getType()
-    {
+    default Type getType() {
         return Type.UNICODE;
     }
 
     @Nonnull
     @Override
-    default String getFormatted()
-    {
+    default String getFormatted() {
         return getName();
     }
 }

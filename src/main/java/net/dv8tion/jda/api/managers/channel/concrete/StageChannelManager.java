@@ -32,10 +32,8 @@ import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManage
  *        .queue();
  * }</pre>
  */
-public interface StageChannelManager extends
-        AudioChannelManager<StageChannel, StageChannelManager>,
-        StandardGuildChannelManager<StageChannel, StageChannelManager>,
-        IAgeRestrictedChannelManager<StageChannel, StageChannelManager>,
-        ISlowmodeChannelManager<StageChannel, StageChannelManager>
-{
-}
+public interface StageChannelManager
+        extends AudioChannelManager<StageChannel, StageChannelManager>,
+                StandardGuildChannelManager<StageChannel, StageChannelManager>,
+                IAgeRestrictedChannelManager<StageChannel, StageChannelManager>,
+                ISlowmodeChannelManager<StageChannel, StageChannelManager> {}

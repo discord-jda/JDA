@@ -32,16 +32,14 @@ package net.dv8tion.jda.api.exceptions;
  *     <li>The member is the {@link net.dv8tion.jda.api.interactions.Interaction#getMember() interaction caller}, and the channel is an interaction option</li>
  * </ul>
  */
-public class MissingEntityInteractionPermissionsException extends IllegalStateException
-{
+public class MissingEntityInteractionPermissionsException extends IllegalStateException {
     /**
      * Creates a new MissingEntityInteractionPermissionsException
      *
      * @param reason
      *        The reason for this Exception
      */
-    public MissingEntityInteractionPermissionsException(String reason)
-    {
+    public MissingEntityInteractionPermissionsException(String reason) {
         super(reason);
     }
 }

@@ -16,7 +16,4 @@
 
 package net.dv8tion.jda.test.entitystring;
 
-public class AnEntity
-{
-
-}
+public class AnEntity {}

@@ -47,8 +47,7 @@ import javax.annotation.Nonnull;
  * @see   JDA#getTextChannelsByName(String, boolean)
  * @see   JDA#getTextChannelById(long)
  */
-public interface TextChannel extends StandardGuildMessageChannel, ISlowmodeChannel
-{
+public interface TextChannel extends StandardGuildMessageChannel, ISlowmodeChannel {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -57,8 +56,7 @@ public interface TextChannel extends StandardGuildMessageChannel, ISlowmodeChann
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelAction<TextChannel> createCopy()
-    {
+    default ChannelAction<TextChannel> createCopy() {
         return createCopy(getGuild());
     }
 

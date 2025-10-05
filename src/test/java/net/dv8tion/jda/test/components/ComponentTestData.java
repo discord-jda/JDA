@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.test.components;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
@@ -38,62 +40,71 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.UnknownComponentImpl;
 import net.dv8tion.jda.test.Resources;
 
-import static org.assertj.core.api.Assertions.fail;
-
-public class ComponentTestData
-{
-    public static  <T extends Component> T getMinimalComponent(Class<T> componentType, Component.Type type)
-    {
-        switch (type)
-        {
-        case UNKNOWN:
-            return componentType.cast(new UnknownComponentImpl(DataObject.empty().put("type", 42).put("id", 0)));
-        case ACTION_ROW:
-            return componentType.cast(ActionRow.of(Button.primary("button", "Click me!")));
-        case BUTTON:
-            return componentType.cast(Button.primary("button", "Click me!"));
-        case STRING_SELECT:
-            return componentType.cast(StringSelectMenu.create("select-menu").addOption("Option 1", "option-1").build());
-        case TEXT_INPUT:
-            return componentType.cast(TextInput.of("text-input", TextInputStyle.SHORT));
-        case USER_SELECT:
-            return componentType.cast(EntitySelectMenu.create("user-menu", SelectTarget.USER).build());
-        case ROLE_SELECT:
-            return componentType.cast(EntitySelectMenu.create("role-menu", SelectTarget.ROLE).build());
-        case MENTIONABLE_SELECT:
-            return componentType.cast(EntitySelectMenu.create("mentionable-menu", SelectTarget.USER, SelectTarget.ROLE).build());
-        case CHANNEL_SELECT:
-            return componentType.cast(EntitySelectMenu.create("channel-menu", SelectTarget.CHANNEL).build());
-        case SECTION:
-            return componentType.cast(Section.of(
-                Thumbnail.fromFile(getImageFileUpload()),
-                TextDisplay.of("Section with thumbnail")
-            ));
-        case TEXT_DISPLAY:
-            return componentType.cast(TextDisplay.of("TextDisplay"));
-        case THUMBNAIL:
-            return componentType.cast(Thumbnail.fromFile(getImageFileUpload()));
-        case MEDIA_GALLERY:
-            return componentType.cast(MediaGallery.of(MediaGalleryItem.fromFile(getImageFileUpload())));
-        case FILE_DISPLAY:
-            return componentType.cast(FileDisplay.fromFile(getImageFileUpload()));
-        case SEPARATOR:
-            return componentType.cast(Separator.createInvisible(Separator.Spacing.LARGE));
-        case CONTAINER:
-            return componentType.cast(Container.of(
-                TextDisplay.of("First text"),
-                Separator.createDivider(Separator.Spacing.SMALL),
-                FileDisplay.fromFile(getImageFileUpload())
-            ));
-        case LABEL:
-            return componentType.cast(Label.of("Custom label", TextInput.of("input", TextInputStyle.SHORT)));
-        default:
-            return fail("Unhandled component type: " + type);
+public class ComponentTestData {
+    public static <T extends Component> T getMinimalComponent(
+            Class<T> componentType, Component.Type type) {
+        switch (type) {
+            case UNKNOWN:
+                return componentType.cast(
+                        new UnknownComponentImpl(DataObject.empty().put("type", 42).put("id", 0)));
+            case ACTION_ROW:
+                return componentType.cast(ActionRow.of(Button.primary("button", "Click me!")));
+            case BUTTON:
+                return componentType.cast(Button.primary("button", "Click me!"));
+            case STRING_SELECT:
+                return componentType.cast(
+                        StringSelectMenu.create("select-menu")
+                                .addOption("Option 1", "option-1")
+                                .build());
+            case TEXT_INPUT:
+                return componentType.cast(TextInput.of("text-input", TextInputStyle.SHORT));
+            case USER_SELECT:
+                return componentType.cast(
+                        EntitySelectMenu.create("user-menu", SelectTarget.USER).build());
+            case ROLE_SELECT:
+                return componentType.cast(
+                        EntitySelectMenu.create("role-menu", SelectTarget.ROLE).build());
+            case MENTIONABLE_SELECT:
+                return componentType.cast(
+                        EntitySelectMenu.create(
+                                        "mentionable-menu", SelectTarget.USER, SelectTarget.ROLE)
+                                .build());
+            case CHANNEL_SELECT:
+                return componentType.cast(
+                        EntitySelectMenu.create("channel-menu", SelectTarget.CHANNEL).build());
+            case SECTION:
+                return componentType.cast(
+                        Section.of(
+                                Thumbnail.fromFile(getImageFileUpload()),
+                                TextDisplay.of("Section with thumbnail")));
+            case TEXT_DISPLAY:
+                return componentType.cast(TextDisplay.of("TextDisplay"));
+            case THUMBNAIL:
+                return componentType.cast(Thumbnail.fromFile(getImageFileUpload()));
+            case MEDIA_GALLERY:
+                return componentType.cast(
+                        MediaGallery.of(MediaGalleryItem.fromFile(getImageFileUpload())));
+            case FILE_DISPLAY:
+                return componentType.cast(FileDisplay.fromFile(getImageFileUpload()));
+            case SEPARATOR:
+                return componentType.cast(Separator.createInvisible(Separator.Spacing.LARGE));
+            case CONTAINER:
+                return componentType.cast(
+                        Container.of(
+                                TextDisplay.of("First text"),
+                                Separator.createDivider(Separator.Spacing.SMALL),
+                                FileDisplay.fromFile(getImageFileUpload())));
+            case LABEL:
+                return componentType.cast(
+                        Label.of("Custom label", TextInput.of("input", TextInputStyle.SHORT)));
+            default:
+                return fail("Unhandled component type: " + type);
         }
     }
 
-    private static FileUpload getImageFileUpload()
-    {
-        return FileUpload.fromData(ComponentTestData.class.getResourceAsStream("/" + Resources.LOGO_PNG), Resources.LOGO_PNG);
+    private static FileUpload getImageFileUpload() {
+        return FileUpload.fromData(
+                ComponentTestData.class.getResourceAsStream("/" + Resources.LOGO_PNG),
+                Resources.LOGO_PNG);
     }
 }

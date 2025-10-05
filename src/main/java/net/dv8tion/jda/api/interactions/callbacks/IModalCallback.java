@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Sending a modal using {@link #replyModal(Modal)} will automatically acknowledge this interaction.
  */
-public interface IModalCallback extends Interaction
-{
+public interface IModalCallback extends Interaction {
     /**
      * Acknowledgement of this interaction with a {@link Modal Modal}.
      *

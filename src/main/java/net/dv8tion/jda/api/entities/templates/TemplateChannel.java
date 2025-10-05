@@ -19,22 +19,23 @@ package net.dv8tion.jda.api.entities.templates;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * POJO for the channels information provided by a template.
  *
  * @see TemplateGuild#getChannels()
  */
-public class TemplateChannel implements ISnowflake
-{
+public class TemplateChannel implements ISnowflake {
     private final long id;
     private final ChannelType channelType;
     private final String name;
@@ -52,10 +53,19 @@ public class TemplateChannel implements ISnowflake
     private final int bitrate;
     private final int userLimit;
 
-    public TemplateChannel(final long id, final ChannelType channelType, final String name, final String topic, final int rawPosition, final long parentId,
-                           final boolean news, final List<TemplateChannel.PermissionOverride> permissionOverrides, final boolean nsfw, final int slowmode,
-                           final int bitrate, final int userLimit)
-    {
+    public TemplateChannel(
+            final long id,
+            final ChannelType channelType,
+            final String name,
+            final String topic,
+            final int rawPosition,
+            final long parentId,
+            final boolean news,
+            final List<TemplateChannel.PermissionOverride> permissionOverrides,
+            final boolean nsfw,
+            final int slowmode,
+            final int bitrate,
+            final int userLimit) {
         this.id = id;
         this.channelType = channelType;
         this.name = name;
@@ -78,8 +88,7 @@ public class TemplateChannel implements ISnowflake
      * @return The id of the channel as stored by Discord
      */
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return this.id;
     }
 
@@ -91,8 +100,7 @@ public class TemplateChannel implements ISnowflake
      */
     @Nonnull
     @Override
-    public OffsetDateTime getTimeCreated()
-    {
+    public OffsetDateTime getTimeCreated() {
         throw new UnsupportedOperationException("The date of creation cannot be calculated");
     }
 
@@ -102,8 +110,7 @@ public class TemplateChannel implements ISnowflake
      * @return The channel type
      */
     @Nonnull
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return this.channelType;
     }
 
@@ -114,8 +121,7 @@ public class TemplateChannel implements ISnowflake
      * @return The name of this GuildChannel
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
@@ -127,8 +133,7 @@ public class TemplateChannel implements ISnowflake
      * @return Possibly-null String containing the topic of this TemplateChannel.
      */
     @Nullable
-    public String getTopic()
-    {
+    public String getTopic() {
         return this.topic;
     }
 
@@ -140,8 +145,7 @@ public class TemplateChannel implements ISnowflake
      *
      * @return The true, Discord stored, position of the {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel}.
      */
-    public int getPositionRaw()
-    {
+    public int getPositionRaw() {
         return this.rawPosition;
     }
 
@@ -152,8 +156,7 @@ public class TemplateChannel implements ISnowflake
      *
      * @return The id of the parent Category or {@code -1} if the channel doesn't have a parent Category
      */
-    public long getParentId()
-    {
+    public long getParentId() {
         return this.parentId;
     }
 
@@ -164,8 +167,7 @@ public class TemplateChannel implements ISnowflake
      *
      * @return Whether this TextChannel is considered NSFW or {@code false} if the channel is not a text channel
      */
-    public boolean isNSFW()
-    {
+    public boolean isNSFW() {
         return this.nsfw;
     }
 
@@ -181,8 +183,7 @@ public class TemplateChannel implements ISnowflake
      *
      * @return The slowmode for this TextChannel, between 1 and {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, {@code 0} if no slowmode is set.
      */
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return this.slowmode;
     }
 
@@ -194,10 +195,10 @@ public class TemplateChannel implements ISnowflake
      *
      * @return The audio bitrate of this voice channel
      */
-    public int getBitrate()
-    {
+    public int getBitrate() {
         return this.bitrate;
     }
+
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
      * voice channel at once.
@@ -206,8 +207,7 @@ public class TemplateChannel implements ISnowflake
      *
      * @return The maximum amount of members allowed in this channel at once.
      */
-    public int getUserLimit()
-    {
+    public int getUserLimit() {
         return this.userLimit;
     }
 
@@ -217,8 +217,7 @@ public class TemplateChannel implements ISnowflake
      *
      * @return True, if this is considered a news channel
      */
-    public boolean isNews()
-    {
+    public boolean isNews() {
         return isNews;
     }
 
@@ -232,8 +231,7 @@ public class TemplateChannel implements ISnowflake
      */
     @Nonnull
     @Unmodifiable
-    public List<TemplateChannel.PermissionOverride> getPermissionOverrides()
-    {
+    public List<TemplateChannel.PermissionOverride> getPermissionOverrides() {
         return this.permissionOverrides;
     }
 
@@ -243,14 +241,12 @@ public class TemplateChannel implements ISnowflake
      *
      * @see TemplateChannel#getPermissionOverrides()
      */
-    public static class PermissionOverride implements ISnowflake
-    {
+    public static class PermissionOverride implements ISnowflake {
         private final long id;
         private final long allow;
         private final long deny;
 
-        public PermissionOverride(final long id, final long allow, final long deny)
-        {
+        public PermissionOverride(final long id, final long allow, final long deny) {
             this.id = id;
             this.allow = allow;
             this.deny = deny;
@@ -262,8 +258,7 @@ public class TemplateChannel implements ISnowflake
          *
          * @return Never-negative long containing the binary representation of the allowed permissions of this override.
          */
-        public long getAllowedRaw()
-        {
+        public long getAllowedRaw() {
             return allow;
         }
 
@@ -273,8 +268,7 @@ public class TemplateChannel implements ISnowflake
          *
          * @return Never-negative long containing the binary representation of the unaffected permissions of this override.
          */
-        public long getInheritRaw()
-        {
+        public long getInheritRaw() {
             return ~(allow | deny);
         }
 
@@ -284,8 +278,7 @@ public class TemplateChannel implements ISnowflake
          *
          * @return Never-negative long containing the binary representation of the denied permissions of this override.
          */
-        public long getDeniedRaw()
-        {
+        public long getDeniedRaw() {
             return deny;
         }
 
@@ -296,8 +289,7 @@ public class TemplateChannel implements ISnowflake
          * @return Possibly-empty set of allowed {@link net.dv8tion.jda.api.Permission Permissions}.
          */
         @Nonnull
-        public EnumSet<Permission> getAllowed()
-        {
+        public EnumSet<Permission> getAllowed() {
             return Permission.getPermissions(allow);
         }
 
@@ -308,8 +300,7 @@ public class TemplateChannel implements ISnowflake
          * @return Possibly-empty set of unaffected {@link net.dv8tion.jda.api.Permission Permissions}.
          */
         @Nonnull
-        public EnumSet<Permission> getInherit()
-        {
+        public EnumSet<Permission> getInherit() {
             return Permission.getPermissions(getInheritRaw());
         }
 
@@ -320,8 +311,7 @@ public class TemplateChannel implements ISnowflake
          * @return Possibly-empty set of denied {@link net.dv8tion.jda.api.Permission Permissions}.
          */
         @Nonnull
-        public EnumSet<Permission> getDenied()
-        {
+        public EnumSet<Permission> getDenied() {
             return Permission.getPermissions(deny);
         }
 
@@ -331,8 +321,7 @@ public class TemplateChannel implements ISnowflake
          * @return The id for the role this override is for
          */
         @Override
-        public long getIdLong()
-        {
+        public long getIdLong() {
             return id;
         }
 
@@ -344,8 +333,7 @@ public class TemplateChannel implements ISnowflake
          */
         @Nonnull
         @Override
-        public OffsetDateTime getTimeCreated()
-        {
+        public OffsetDateTime getTimeCreated() {
             throw new UnsupportedOperationException("The date of creation cannot be calculated");
         }
     }

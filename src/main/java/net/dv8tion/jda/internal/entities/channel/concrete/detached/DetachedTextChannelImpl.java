@@ -27,75 +27,67 @@ import net.dv8tion.jda.internal.entities.channel.mixin.concrete.TextChannelMixin
 import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
-public class DetachedTextChannelImpl extends AbstractStandardGuildMessageChannelImpl<DetachedTextChannelImpl>
-    implements
-        TextChannel,
-        DefaultGuildChannelUnion,
-        TextChannelMixin<DetachedTextChannelImpl>,
-        IInteractionPermissionMixin<DetachedTextChannelImpl>
-{
+import javax.annotation.Nonnull;
+
+public class DetachedTextChannelImpl
+        extends AbstractStandardGuildMessageChannelImpl<DetachedTextChannelImpl>
+        implements TextChannel,
+                DefaultGuildChannelUnion,
+                TextChannelMixin<DetachedTextChannelImpl>,
+                IInteractionPermissionMixin<DetachedTextChannelImpl> {
     private int slowmode;
     private ChannelInteractionPermissions interactionPermissions;
 
-    public DetachedTextChannelImpl(long id, DetachedGuildImpl guild)
-    {
+    public DetachedTextChannelImpl(long id, DetachedGuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return true;
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.TEXT;
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         throw detachedException();
     }
 
     @Override
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return slowmode;
     }
 
     @Nonnull
     @Override
-    public TextChannelManager getManager()
-    {
+    public TextChannelManager getManager() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelInteractionPermissions getInteractionPermissions()
-    {
+    public ChannelInteractionPermissions getInteractionPermissions() {
         return interactionPermissions;
     }
 
     @Override
-    public DetachedTextChannelImpl setSlowmode(int slowmode)
-    {
+    public DetachedTextChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
         return this;
     }
 
     @Nonnull
     @Override
-    public DetachedTextChannelImpl setInteractionPermissions(@Nonnull ChannelInteractionPermissions interactionPermissions)
-    {
+    public DetachedTextChannelImpl setInteractionPermissions(
+            @Nonnull ChannelInteractionPermissions interactionPermissions) {
         this.interactionPermissions = interactionPermissions;
         return this;
     }

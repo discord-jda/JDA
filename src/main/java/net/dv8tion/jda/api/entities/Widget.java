@@ -20,9 +20,10 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.WidgetUtil;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Represents a guild's widget
@@ -30,8 +31,7 @@ import java.util.List;
  * @see WidgetUtil#getWidget(long)
  * @see WidgetUtil#getWidget(String)
  */
-public interface Widget extends ISnowflake
-{
+public interface Widget extends ISnowflake {
 
     /**
      * Shows whether or not the widget for a guild is available. If this
@@ -154,8 +154,7 @@ public interface Widget extends ISnowflake
      * @see     Widget#getMemberById(String)
      * @see     VoiceChannel#getMembers()
      */
-    public interface Member extends IMentionable
-    {
+    public interface Member extends IMentionable {
 
         /**
          * Returns whether or not the given member is a bot account
@@ -312,7 +311,6 @@ public interface Widget extends ISnowflake
          */
         @Nonnull
         Widget getWidget();
-
     }
 
     /**
@@ -322,8 +320,7 @@ public interface Widget extends ISnowflake
      * @see     Widget#getVoiceChannelById(long)
      * @see     Widget#getVoiceChannelById(String)
      */
-    public interface VoiceChannel extends ISnowflake
-    {
+    public interface VoiceChannel extends ISnowflake {
 
         /**
          * Gets the integer position of the channel
@@ -361,8 +358,7 @@ public interface Widget extends ISnowflake
      *
      * @see     Member#getVoiceState()
      */
-    public interface VoiceState
-    {
+    public interface VoiceState {
 
         /**
          * Gets the channel the member is in

@@ -36,27 +36,26 @@ import javax.annotation.Nonnull;
  *
  * @see StringSelectInteractionEvent
  */
-public class EntitySelectInteractionEvent extends GenericSelectMenuInteractionEvent<IMentionable, EntitySelectMenu> implements EntitySelectInteraction
-{
+public class EntitySelectInteractionEvent
+        extends GenericSelectMenuInteractionEvent<IMentionable, EntitySelectMenu>
+        implements EntitySelectInteraction {
     private final EntitySelectInteraction interaction;
 
-    public EntitySelectInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull EntitySelectInteraction interaction)
-    {
+    public EntitySelectInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull EntitySelectInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public EntitySelectInteraction getInteraction()
-    {
+    public EntitySelectInteraction getInteraction() {
         return this.interaction;
     }
 
     @Nonnull
     @Override
-    public Mentions getMentions()
-    {
+    public Mentions getMentions() {
         return interaction.getMentions();
     }
 }

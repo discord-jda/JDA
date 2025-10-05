@@ -22,9 +22,10 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that a bulk deletion is executed in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel GuildMessageChannel}.
@@ -40,13 +41,15 @@ import java.util.List;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
-public class MessageBulkDeleteEvent extends Event
-{
+public class MessageBulkDeleteEvent extends Event {
     protected final GuildMessageChannel channel;
     protected final List<String> messageIds;
 
-    public MessageBulkDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildMessageChannel channel, @Nonnull List<String> messageIds)
-    {
+    public MessageBulkDeleteEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull GuildMessageChannel channel,
+            @Nonnull List<String> messageIds) {
         super(api, responseNumber);
         this.channel = channel;
         this.messageIds = Collections.unmodifiableList(messageIds);
@@ -58,8 +61,7 @@ public class MessageBulkDeleteEvent extends Event
      * @return The TextChannel
      */
     @Nonnull
-    public GuildMessageChannelUnion getChannel()
-    {
+    public GuildMessageChannelUnion getChannel() {
         return (GuildMessageChannelUnion) channel;
     }
 
@@ -69,8 +71,7 @@ public class MessageBulkDeleteEvent extends Event
      * @return The Guild
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return channel.getGuild();
     }
 
@@ -80,8 +81,7 @@ public class MessageBulkDeleteEvent extends Event
      * @return The list of message ids
      */
     @Nonnull
-    public List<String> getMessageIds()
-    {
+    public List<String> getMessageIds() {
         return messageIds;
     }
 }

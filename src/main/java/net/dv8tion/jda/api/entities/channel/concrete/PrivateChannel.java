@@ -32,8 +32,7 @@ import javax.annotation.Nullable;
  *
  * @see User#openPrivateChannel()
  */
-public interface PrivateChannel extends MessageChannel
-{
+public interface PrivateChannel extends MessageChannel {
     /**
      * The {@link net.dv8tion.jda.api.entities.User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      *

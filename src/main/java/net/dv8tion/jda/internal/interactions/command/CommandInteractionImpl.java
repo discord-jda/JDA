@@ -30,33 +30,29 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
-public class CommandInteractionImpl extends DeferrableInteractionImpl implements CommandInteraction, CommandInteractionPayloadMixin
-{
+public class CommandInteractionImpl extends DeferrableInteractionImpl
+        implements CommandInteraction, CommandInteractionPayloadMixin {
     private final CommandInteractionPayloadImpl payload;
 
-    public CommandInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public CommandInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         this.payload = new CommandInteractionPayloadImpl(jda, data);
     }
 
     @Override
-    public CommandInteractionPayload getCommandPayload()
-    {
+    public CommandInteractionPayload getCommandPayload() {
         return payload;
     }
 
     @Nonnull
     @Override
-    public ReplyCallbackAction deferReply()
-    {
+    public ReplyCallbackAction deferReply() {
         return new ReplyCallbackActionImpl(hook);
     }
 
     @Nonnull
     @Override
-    public ModalCallbackAction replyModal(@Nonnull Modal modal)
-    {
+    public ModalCallbackAction replyModal(@Nonnull Modal modal) {
         Checks.notNull(modal, "Modal");
         return new ModalCallbackActionImpl(this, modal);
     }

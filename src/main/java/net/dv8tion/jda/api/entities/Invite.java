@@ -24,12 +24,13 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Representation of a Discord Invite.
@@ -44,8 +45,7 @@ import java.util.Set;
  * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild.retrieveInvites()
  * @see    net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer#retrieveInvites()
  */
-public interface Invite
-{
+public interface Invite {
     /**
      * Retrieves a new {@link Invite Invite} instance for the given invite code.
      * <br><b>You cannot resolve invites if you were banned from the origin Guild!</b>
@@ -66,8 +66,7 @@ public interface Invite
      */
     @Nonnull
     @CheckReturnValue
-    static RestAction<Invite> resolve(@Nonnull final JDA api, @Nonnull final String code)
-    {
+    static RestAction<Invite> resolve(@Nonnull final JDA api, @Nonnull final String code) {
         return resolve(api, code, false);
     }
 
@@ -93,8 +92,8 @@ public interface Invite
      */
     @Nonnull
     @CheckReturnValue
-    static RestAction<Invite> resolve(@Nonnull final JDA api, @Nonnull final String code, final boolean withCounts)
-    {
+    static RestAction<Invite> resolve(
+            @Nonnull final JDA api, @Nonnull final String code, final boolean withCounts) {
         return InviteImpl.resolve(api, code, withCounts);
     }
 
@@ -203,8 +202,7 @@ public interface Invite
      * @return Invite URL for this Invite
      */
     @Nonnull
-    default String getUrl()
-    {
+    default String getUrl() {
         return "https://discord.gg/" + getCode();
     }
 
@@ -251,18 +249,18 @@ public interface Invite
     int getMaxAge();
 
     /**
-    * The max uses of this invite. If there is no limit thus will return {@code 0}.
-    *
-    * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-    *
-    * @throws IllegalStateException
+     * The max uses of this invite. If there is no limit thus will return {@code 0}.
+     *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     *
+     * @throws IllegalStateException
      *        if this invite is not expanded
-    *
-    * @return The max uses of this invite or {@code 0} if there is no limit
-    *
-    * @see    #expand()
-    * @see    #isExpanded()
-    */
+     *
+     * @return The max uses of this invite or {@code 0} if there is no limit
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
+     */
     int getMaxUses();
 
     /**
@@ -331,8 +329,7 @@ public interface Invite
      *
      * @see #getChannel()
      */
-    interface Channel extends ISnowflake
-    {
+    interface Channel extends ISnowflake {
         /**
          * The name of this channel.
          *
@@ -356,8 +353,7 @@ public interface Invite
      *
      * @see #getGuild()
      */
-    interface Guild extends ISnowflake
-    {
+    interface Guild extends ISnowflake {
         /**
          * The icon id of this guild.
          *
@@ -386,8 +382,7 @@ public interface Invite
          * @see    #getIconUrl()
          */
         @Nullable
-        default ImageProxy getIcon()
-        {
+        default ImageProxy getIcon() {
             final String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
         }
@@ -428,8 +423,7 @@ public interface Invite
          * @see    #getSplashUrl()
          */
         @Nullable
-        default ImageProxy getSplash()
-        {
+        default ImageProxy getSplash() {
             final String splashUrl = getSplashUrl();
             return splashUrl == null ? null : new ImageProxy(splashUrl);
         }
@@ -495,8 +489,7 @@ public interface Invite
      *
      * @see #getChannel()
      */
-    interface Group extends ISnowflake
-    {
+    interface Group extends ISnowflake {
         /**
          * The icon id of this group or {@code null} if the group has no icon.
          *
@@ -525,8 +518,7 @@ public interface Invite
          * @see    #getIconUrl()
          */
         @Nullable
-        default ImageProxy getIcon()
-        {
+        default ImageProxy getIcon() {
             final String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
         }
@@ -556,8 +548,7 @@ public interface Invite
      *
      * @see #getTarget()
      */
-    interface InviteTarget
-    {
+    interface InviteTarget {
 
         /**
          * The type of this invite target.
@@ -614,8 +605,7 @@ public interface Invite
      *
      * @see InviteTarget#getApplication()
      */
-    interface EmbeddedApplication extends ISnowflake
-    {
+    interface EmbeddedApplication extends ISnowflake {
         /**
          * The name of this application.
          *
@@ -668,8 +658,7 @@ public interface Invite
          * @see    #getIconUrl()
          */
         @Nullable
-        default ImageProxy getIcon()
-        {
+        default ImageProxy getIcon() {
             final String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
         }
@@ -687,8 +676,7 @@ public interface Invite
      *
      * @see #getType()
      */
-    enum InviteType
-    {
+    enum InviteType {
         GUILD,
         GROUP,
         UNKNOWN
@@ -702,8 +690,7 @@ public interface Invite
      *
      * @see InviteTarget#getType()
      */
-    enum TargetType
-    {
+    enum TargetType {
         /**
          * The invite does not have a target type, {@link Invite#getTarget()} will return {@code null}.
          */
@@ -739,8 +726,7 @@ public interface Invite
 
         private final int id;
 
-        TargetType(int id)
-        {
+        TargetType(int id) {
             this.id = id;
         }
 
@@ -749,8 +735,7 @@ public interface Invite
          *
          * @return The id key used by discord for this channel type.
          */
-        public int getId()
-        {
+        public int getId() {
             return id;
         }
 
@@ -763,12 +748,9 @@ public interface Invite
          * @return The TargetType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
          */
         @Nonnull
-        public static TargetType fromId(int id)
-        {
-            for (TargetType type : values())
-            {
-                if (type.id == id)
-                    return type;
+        public static TargetType fromId(int id) {
+            for (TargetType type : values()) {
+                if (type.id == id) return type;
             }
             return UNKNOWN;
         }

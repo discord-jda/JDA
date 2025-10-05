@@ -37,10 +37,12 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
-public class MessageDeleteEvent extends GenericMessageEvent
-{
-    public MessageDeleteEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel)
-    {
+public class MessageDeleteEvent extends GenericMessageEvent {
+    public MessageDeleteEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            long messageId,
+            @Nonnull MessageChannel channel) {
         super(api, responseNumber, messageId, channel);
     }
 }

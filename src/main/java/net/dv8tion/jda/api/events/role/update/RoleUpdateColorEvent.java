@@ -19,9 +19,10 @@ package net.dv8tion.jda.api.events.role.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 
+import java.awt.*;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} updated its color.
@@ -30,12 +31,11 @@ import java.awt.*;
  *
  * <p>Identifier: {@code color}
  */
-public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
-{
+public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer> {
     public static final String IDENTIFIER = "color";
 
-    public RoleUpdateColorEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, int oldColor)
-    {
+    public RoleUpdateColorEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Role role, int oldColor) {
         super(api, responseNumber, role, oldColor, role.getColorRaw(), IDENTIFIER);
     }
 
@@ -45,8 +45,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      * @return The old color, or null
      */
     @Nullable
-    public Color getOldColor()
-    {
+    public Color getOldColor() {
         return previous != Role.DEFAULT_COLOR_RAW ? new Color(previous) : null;
     }
 
@@ -55,8 +54,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      *
      * @return The raw rgb value of the old color
      */
-    public int getOldColorRaw()
-    {
+    public int getOldColorRaw() {
         return getOldValue();
     }
 
@@ -66,8 +64,7 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      * @return The new color, or null
      */
     @Nullable
-    public Color getNewColor()
-    {
+    public Color getNewColor() {
         return next != Role.DEFAULT_COLOR_RAW ? new Color(next) : null;
     }
 
@@ -76,22 +73,19 @@ public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
      *
      * @return The raw rgb value of the new color
      */
-    public int getNewColorRaw()
-    {
+    public int getNewColorRaw() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Integer getOldValue()
-    {
+    public Integer getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Integer getNewValue()
-    {
+    public Integer getNewValue() {
         return super.getNewValue();
     }
 }

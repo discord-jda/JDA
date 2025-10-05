@@ -25,7 +25,6 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR})
-public @interface ReplaceWith
-{
+public @interface ReplaceWith {
     String value();
 }

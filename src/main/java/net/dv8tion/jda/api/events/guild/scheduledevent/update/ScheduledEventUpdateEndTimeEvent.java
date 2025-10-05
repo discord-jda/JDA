@@ -20,9 +20,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import java.time.OffsetDateTime;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 
 /**
  * Indicates the {@link ScheduledEvent#getEndTime() end time} of a {@link ScheduledEvent} has changed.
@@ -41,13 +42,22 @@ import java.time.OffsetDateTime;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateEndTimeEvent extends GenericScheduledEventUpdateEvent<OffsetDateTime>
-{
+public class ScheduledEventUpdateEndTimeEvent
+        extends GenericScheduledEventUpdateEvent<OffsetDateTime> {
     public static final String IDENTIFIER = "end_time";
 
-    public ScheduledEventUpdateEndTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nullable OffsetDateTime previous)
-    {
-        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getEndTime(), IDENTIFIER);
+    public ScheduledEventUpdateEndTimeEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ScheduledEvent scheduledEvent,
+            @Nullable OffsetDateTime previous) {
+        super(
+                api,
+                responseNumber,
+                scheduledEvent,
+                previous,
+                scheduledEvent.getEndTime(),
+                IDENTIFIER);
     }
 
     /**
@@ -56,8 +66,7 @@ public class ScheduledEventUpdateEndTimeEvent extends GenericScheduledEventUpdat
      * @return The old end time, or {@code null} if no end time was previously set.
      */
     @Nullable
-    public OffsetDateTime getOldEndTime()
-    {
+    public OffsetDateTime getOldEndTime() {
         return getOldValue();
     }
 
@@ -67,8 +76,7 @@ public class ScheduledEventUpdateEndTimeEvent extends GenericScheduledEventUpdat
      * @return The new start time, or {@code null} if the end time has been removed.
      */
     @Nullable
-    public OffsetDateTime getNewEndTime()
-    {
+    public OffsetDateTime getNewEndTime() {
         return getNewValue();
     }
 }

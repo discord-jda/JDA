@@ -34,29 +34,29 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code available}
  */
-public class GuildStickerUpdateAvailableEvent extends GenericGuildStickerUpdateEvent<Boolean>
-{
+public class GuildStickerUpdateAvailableEvent extends GenericGuildStickerUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "available";
 
-    public GuildStickerUpdateAvailableEvent(@Nonnull JDA api, long responseNumber,
-                                            @Nonnull Guild guild, @Nonnull GuildSticker sticker, boolean oldValue)
-    {
+    public GuildStickerUpdateAvailableEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull GuildSticker sticker,
+            boolean oldValue) {
         super(api, responseNumber, guild, sticker, IDENTIFIER, oldValue, sticker.isAvailable());
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public Boolean getOldValue()
-    {
+    public Boolean getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public Boolean getNewValue()
-    {
+    public Boolean getNewValue() {
         return super.getNewValue();
     }
 }

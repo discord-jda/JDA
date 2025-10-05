@@ -40,14 +40,12 @@ import javax.annotation.Nullable;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} to work in guild text channels</li>
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
-
+ *
  */
-public class MessageReceivedEvent extends GenericMessageEvent
-{
+public class MessageReceivedEvent extends GenericMessageEvent {
     private final Message message;
 
-    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
-    {
+    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
         super(api, responseNumber, message.getIdLong(), message.getChannel());
         this.message = message;
     }
@@ -58,8 +56,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @return The received {@link net.dv8tion.jda.api.entities.Message Message} object.
      */
     @Nonnull
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
@@ -73,8 +70,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @see #isWebhookMessage()
      */
     @Nonnull
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return message.getAuthor();
     }
 
@@ -89,8 +85,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @see    #isWebhookMessage()
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return message.getMember();
     }
 
@@ -100,8 +95,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @return True, if the Message was sent via Webhook
      */
-    public boolean isWebhookMessage()
-    {
+    public boolean isWebhookMessage() {
         return getMessage().isWebhookMessage();
     }
 }

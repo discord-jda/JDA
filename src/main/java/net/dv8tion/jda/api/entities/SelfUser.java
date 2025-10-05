@@ -27,8 +27,7 @@ import javax.annotation.Nonnull;
  *
  * @see JDA#getSelfUser()
  */
-public interface SelfUser extends User
-{
+public interface SelfUser extends User {
     /**
      * The associated application id for the bot account.
      * <br>For most bots this is identical to the user id.
@@ -44,11 +43,9 @@ public interface SelfUser extends User
      * @return The application id
      */
     @Nonnull
-    default String getApplicationId()
-    {
+    default String getApplicationId() {
         return Long.toUnsignedString(getApplicationIdLong());
     }
-
 
     /**
      * The status of this account's verification.

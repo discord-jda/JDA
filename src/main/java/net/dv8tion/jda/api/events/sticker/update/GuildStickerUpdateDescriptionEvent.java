@@ -36,29 +36,29 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code description}
  */
-public class GuildStickerUpdateDescriptionEvent extends GenericGuildStickerUpdateEvent<String>
-{
+public class GuildStickerUpdateDescriptionEvent extends GenericGuildStickerUpdateEvent<String> {
     public static final String IDENTIFIER = "description";
 
-    public GuildStickerUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber,
-                                       @Nonnull Guild guild, @Nonnull GuildSticker sticker, @Nonnull String oldValue)
-    {
+    public GuildStickerUpdateDescriptionEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull GuildSticker sticker,
+            @Nonnull String oldValue) {
         super(api, responseNumber, guild, sticker, IDENTIFIER, oldValue, sticker.getDescription());
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

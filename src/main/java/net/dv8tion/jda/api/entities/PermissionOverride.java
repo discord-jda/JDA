@@ -23,10 +23,11 @@ import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 
+import java.util.EnumSet;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumSet;
 
 /**
  * Represents the specific {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}
@@ -39,8 +40,7 @@ import java.util.EnumSet;
  * @see net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getMemberPermissionOverrides()
  * @see net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getRolePermissionOverrides()
  */
-public interface PermissionOverride extends ISnowflake
-{
+public interface PermissionOverride extends ISnowflake {
     /**
      * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.
      * <br>The long relates to the offsets used by each {@link net.dv8tion.jda.api.Permission Permission}.

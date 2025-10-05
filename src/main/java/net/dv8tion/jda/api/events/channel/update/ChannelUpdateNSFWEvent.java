@@ -33,13 +33,16 @@ import javax.annotation.Nonnull;
  * @see IAgeRestrictedChannel#isNSFW()
  * @see ChannelField#NSFW
  */
-public class ChannelUpdateNSFWEvent extends GenericChannelUpdateEvent<Boolean>
-{
+public class ChannelUpdateNSFWEvent extends GenericChannelUpdateEvent<Boolean> {
     public static ChannelField FIELD = ChannelField.NSFW;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateNSFWEvent(@Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue)
-    {
+    public ChannelUpdateNSFWEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            Channel channel,
+            Boolean oldValue,
+            Boolean newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

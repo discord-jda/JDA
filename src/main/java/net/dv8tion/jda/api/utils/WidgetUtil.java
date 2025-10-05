@@ -25,16 +25,18 @@ import net.dv8tion.jda.internal.entities.WidgetImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The WidgetUtil is a class for interacting with various facets of Discord's
@@ -43,11 +45,13 @@ import java.net.HttpURLConnection;
  * @since  3.0
  * @author John A. Grosh
  */
-public class WidgetUtil
-{
-    public static final String WIDGET_PNG = RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.png?style=%s";
+public class WidgetUtil {
+    public static final String WIDGET_PNG =
+            RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.png?style=%s";
     public static final String WIDGET_URL = RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.json";
-    public static final String WIDGET_HTML = "<iframe src=\"https://discord.com/widget?id=%s&theme=%s\" width=\"%d\" height=\"%d\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";
+    public static final String WIDGET_HTML =
+            "<iframe src=\"https://discord.com/widget?id=%s&theme=%s\" width=\"%d\" height=\"%d\""
+                    + " allowtransparency=\"true\" frameborder=\"0\"></iframe>";
 
     /**
      * Gets the banner image for the specified guild of the specified type.
@@ -62,8 +66,7 @@ public class WidgetUtil
      * @return A String containing the URL of the banner image
      */
     @Nonnull
-    public static String getWidgetBanner(@Nonnull Guild guild, @Nonnull BannerType type)
-    {
+    public static String getWidgetBanner(@Nonnull Guild guild, @Nonnull BannerType type) {
         Checks.notNull(guild, "Guild");
         return getWidgetBanner(guild.getId(), type);
     }
@@ -82,8 +85,7 @@ public class WidgetUtil
      * @return A String containing the URL of the banner image
      */
     @Nonnull
-    public static String getWidgetBanner(@Nonnull String guildId, @Nonnull BannerType type)
-    {
+    public static String getWidgetBanner(@Nonnull String guildId, @Nonnull BannerType type) {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(type, "BannerType");
         return String.format(WIDGET_PNG, guildId, type.name().toLowerCase());
@@ -106,8 +108,8 @@ public class WidgetUtil
      * @return a String containing the pre-made widget with the supplied settings
      */
     @Nonnull
-    public static String getPremadeWidgetHtml(@Nonnull Guild guild, @Nonnull WidgetTheme theme, int width, int height)
-    {
+    public static String getPremadeWidgetHtml(
+            @Nonnull Guild guild, @Nonnull WidgetTheme theme, int width, int height) {
         Checks.notNull(guild, "Guild");
         return getPremadeWidgetHtml(guild.getId(), theme, width, height);
     }
@@ -130,8 +132,8 @@ public class WidgetUtil
      * @return a String containing the pre-made widget with the supplied settings
      */
     @Nonnull
-    public static String getPremadeWidgetHtml(@Nonnull String guildId, @Nonnull WidgetTheme theme, int width, int height)
-    {
+    public static String getPremadeWidgetHtml(
+            @Nonnull String guildId, @Nonnull WidgetTheme theme, int width, int height) {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(theme, "WidgetTheme");
         Checks.notNegative(width, "Width");
@@ -165,8 +167,7 @@ public class WidgetUtil
      *         in question has the widget enabled.
      */
     @Nullable
-    public static Widget getWidget(@Nonnull String guildId) throws RateLimitedException
-    {
+    public static Widget getWidget(@Nonnull String guildId) throws RateLimitedException {
         return getWidget(MiscUtil.parseSnowflake(guildId));
     }
 
@@ -196,61 +197,52 @@ public class WidgetUtil
      *         in question has the widget enabled.
      */
     @Nullable
-    public static Widget getWidget(long guildId) throws RateLimitedException
-    {
+    public static Widget getWidget(long guildId) throws RateLimitedException {
         Checks.notNull(guildId, "GuildId");
 
         HttpURLConnection connection;
         OkHttpClient client = new OkHttpClient.Builder().build();
-        Request request = new Request.Builder()
-                    .url(String.format(WIDGET_URL, guildId))
-                    .method("GET", null)
-                    .header("user-agent", RestConfig.USER_AGENT)
-                    .header("accept-encoding", "gzip")
-                    .build();
+        Request request =
+                new Request.Builder()
+                        .url(String.format(WIDGET_URL, guildId))
+                        .method("GET", null)
+                        .header("user-agent", RestConfig.USER_AGENT)
+                        .header("accept-encoding", "gzip")
+                        .build();
 
-        try (Response response = client.newCall(request).execute())
-        {
+        try (Response response = client.newCall(request).execute()) {
             final int code = response.code();
             InputStream data = IOUtil.getBody(response);
 
-            switch (code)
-            {
+            switch (code) {
                 case 200: // ok
-                {
-                    try (InputStream stream = data)
                     {
-                        return new WidgetImpl(DataObject.fromJson(stream));
+                        try (InputStream stream = data) {
+                            return new WidgetImpl(DataObject.fromJson(stream));
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
                     }
-                    catch (IOException e)
-                    {
-                        throw new UncheckedIOException(e);
-                    }
-                }
                 case 400: // not valid snowflake
                 case 404: // guild not found
                     return null;
                 case 403: // widget disabled
                     return new WidgetImpl(guildId);
                 case 429: // ratelimited
-                {
-                    long retryAfter;
-                    try (InputStream stream = data)
                     {
-                        retryAfter = DataObject.fromJson(stream).getLong("retry_after");
+                        long retryAfter;
+                        try (InputStream stream = data) {
+                            retryAfter = DataObject.fromJson(stream).getLong("retry_after");
+                        } catch (Exception e) {
+                            retryAfter = 0;
+                        }
+                        throw new RateLimitedException(WIDGET_URL, retryAfter);
                     }
-                    catch (Exception e)
-                    {
-                        retryAfter = 0;
-                    }
-                    throw new RateLimitedException(WIDGET_URL, retryAfter);
-                }
                 default:
-                    throw new IllegalStateException("An unknown status was returned: " + code + " " + response.message());
+                    throw new IllegalStateException(
+                            "An unknown status was returned: " + code + " " + response.message());
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -266,17 +258,20 @@ public class WidgetUtil
      * <br><b>Banner3</b> - medium, contains server name, icon, and online count, and a Discord logo with a "Chat Now" bar on the bottom
      * <br><b>Banner4</b> - large, contains a very big Discord logo, server name, icon, and online count, and a big "Join My Server" button
      */
-    public enum BannerType
-    {
-        SHIELD, BANNER1, BANNER2, BANNER3, BANNER4
+    public enum BannerType {
+        SHIELD,
+        BANNER1,
+        BANNER2,
+        BANNER3,
+        BANNER4
     }
 
     /**
      * Represents the color scheme of the widget
      * <br>These color themes match Discord's dark and light themes
      */
-    public enum WidgetTheme
-    {
-        LIGHT, DARK
+    public enum WidgetTheme {
+        LIGHT,
+        DARK
     }
 }

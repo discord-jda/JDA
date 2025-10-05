@@ -21,72 +21,63 @@ import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildMe
 
 import javax.annotation.Nullable;
 
-public abstract class AbstractStandardGuildMessageChannelImpl<T extends AbstractStandardGuildMessageChannelImpl<T>> extends AbstractStandardGuildChannelImpl<T>
-        implements StandardGuildMessageChannelMixin<T>
-{
+public abstract class AbstractStandardGuildMessageChannelImpl<
+                T extends AbstractStandardGuildMessageChannelImpl<T>>
+        extends AbstractStandardGuildChannelImpl<T> implements StandardGuildMessageChannelMixin<T> {
     protected String topic;
     protected boolean nsfw;
     protected long latestMessageId;
     protected int defaultThreadSlowmode;
 
-    public AbstractStandardGuildMessageChannelImpl(long id, Guild guild)
-    {
+    public AbstractStandardGuildMessageChannelImpl(long id, Guild guild) {
         super(id, guild);
     }
 
     @Nullable
     @Override
-    public String getTopic()
-    {
+    public String getTopic() {
         return topic;
     }
 
     @Override
-    public boolean isNSFW()
-    {
+    public boolean isNSFW() {
         return nsfw;
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         return latestMessageId;
     }
 
     @Override
-    public int getDefaultThreadSlowmode()
-    {
+    public int getDefaultThreadSlowmode() {
         return defaultThreadSlowmode;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T setTopic(String topic)
-    {
+    public T setTopic(String topic) {
         this.topic = topic;
         return (T) this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T setNSFW(boolean nsfw)
-    {
+    public T setNSFW(boolean nsfw) {
         this.nsfw = nsfw;
         return (T) this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T setLatestMessageIdLong(long latestMessageId)
-    {
+    public T setLatestMessageIdLong(long latestMessageId) {
         this.latestMessageId = latestMessageId;
         return (T) this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T setDefaultThreadSlowmode(int defaultThreadSlowmode)
-    {
+    public T setDefaultThreadSlowmode(int defaultThreadSlowmode) {
         this.defaultThreadSlowmode = defaultThreadSlowmode;
         return (T) this;
     }

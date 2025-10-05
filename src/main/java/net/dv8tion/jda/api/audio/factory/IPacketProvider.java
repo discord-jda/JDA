@@ -19,13 +19,14 @@ package net.dv8tion.jda.api.audio.factory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 /**
  * Represents the connection between a {@link net.dv8tion.jda.api.audio.factory.IAudioSendSystem IAudioSendSystem} and
@@ -35,8 +36,7 @@ import java.nio.ByteBuffer;
  * <p><b>Note that this provider is not thread-safe!</b>
  */
 @NotThreadSafe
-public interface IPacketProvider
-{
+public interface IPacketProvider {
     /**
      * Provides a unique String identifier for the connection.
      * <br>Uses shard information and specific audio connection information to build string.

@@ -16,19 +16,18 @@
 
 package net.dv8tion.jda.test.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import net.dv8tion.jda.internal.utils.Helpers;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class HelpersTest
-{
+public class HelpersTest {
     @Test
-    void testIsEmpty()
-    {
+    void testIsEmpty() {
         assertThat(Helpers.isEmpty(null)).isTrue();
         assertThat(Helpers.isEmpty("")).isTrue();
         assertThat(Helpers.isEmpty("null")).isFalse();
@@ -36,8 +35,7 @@ public class HelpersTest
     }
 
     @Test
-    void testContainsWhitespace()
-    {
+    void testContainsWhitespace() {
         assertThat(Helpers.containsWhitespace(" ")).isTrue();
         assertThat(Helpers.containsWhitespace("testing with spaces")).isTrue();
         assertThat(Helpers.containsWhitespace(null)).isFalse();
@@ -46,8 +44,7 @@ public class HelpersTest
     }
 
     @Test
-    void testIsBlank()
-    {
+    void testIsBlank() {
         assertThat(Helpers.isBlank(" ")).isTrue();
         assertThat(Helpers.isBlank(null)).isTrue();
         assertThat(Helpers.isBlank("")).isTrue();
@@ -56,8 +53,7 @@ public class HelpersTest
     }
 
     @Test
-    void testCountMatches()
-    {
+    void testCountMatches() {
         assertThat(Helpers.countMatches("Hello World", 'l')).isEqualTo(3);
         assertThat(Helpers.countMatches("Hello World", ' ')).isEqualTo(1);
         assertThat(Helpers.countMatches("Hello World", '_')).isEqualTo(0);
@@ -66,8 +62,7 @@ public class HelpersTest
     }
 
     @Test
-    void testTruncate()
-    {
+    void testTruncate() {
         assertThat(Helpers.truncate("Hello World", 5)).isEqualTo("Hello");
         assertThat(Helpers.truncate("Hello", 5)).isEqualTo("Hello");
         assertThat(Helpers.truncate("Hello", 10)).isEqualTo("Hello");
@@ -77,24 +72,21 @@ public class HelpersTest
     }
 
     @Test
-    void testRightPad()
-    {
+    void testRightPad() {
         assertThat(Helpers.rightPad("Hello", 9)).isEqualTo("Hello    ");
         assertThat(Helpers.rightPad("Hello World", 9)).isEqualTo("Hello World");
         assertThat(Helpers.rightPad("Hello", 5)).isEqualTo("Hello");
     }
 
     @Test
-    void testLeftPad()
-    {
+    void testLeftPad() {
         assertThat(Helpers.leftPad("Hello", 9)).isEqualTo("    Hello");
         assertThat(Helpers.leftPad("Hello World", 9)).isEqualTo("Hello World");
         assertThat(Helpers.leftPad("Hello", 5)).isEqualTo("Hello");
     }
 
     @Test
-    void testIsNumeric()
-    {
+    void testIsNumeric() {
         assertThat(Helpers.isNumeric("10")).isTrue();
         assertThat(Helpers.isNumeric("1")).isTrue();
         assertThat(Helpers.isNumeric("0")).isTrue();
@@ -107,8 +99,7 @@ public class HelpersTest
     }
 
     @Test
-    void testDeepEquals()
-    {
+    void testDeepEquals() {
         List<String> a = Arrays.asList("A", "B", "C");
         List<String> b = Arrays.asList("B", "A", "C");
         List<String> c = Arrays.asList("A", "B");

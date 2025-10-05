@@ -27,12 +27,14 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Represents a Custom Emoji.
@@ -50,8 +52,7 @@ import java.util.List;
  * @see    JDA#getEmojisByName(String, boolean)
  * @see    JDA#getEmojis()
  */
-public interface RichCustomEmoji extends CustomEmoji
-{
+public interface RichCustomEmoji extends CustomEmoji {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emoji is attached to.
      *
@@ -186,8 +187,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(@Nonnull Member issuer)
-    {
+    default boolean canInteract(@Nonnull Member issuer) {
         return PermissionUtil.canInteract(issuer, this);
     }
 
@@ -202,8 +202,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel)
-    {
+    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel) {
         return PermissionUtil.canInteract(issuer, this, channel);
     }
 
@@ -220,8 +219,8 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel, boolean botOverride)
-    {
+    default boolean canInteract(
+            @Nonnull User issuer, @Nonnull MessageChannel channel, boolean botOverride) {
         return PermissionUtil.canInteract(issuer, this, channel, botOverride);
     }
 }

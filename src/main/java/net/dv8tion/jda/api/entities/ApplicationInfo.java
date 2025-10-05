@@ -21,11 +21,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
+
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * Represents a Discord Application from its bot's point of view.
@@ -35,14 +37,16 @@ import java.util.*;
  *
  * @see    net.dv8tion.jda.api.JDA#retrieveApplicationInfo()
  */
-public interface ApplicationInfo extends ISnowflake
-{
+public interface ApplicationInfo extends ISnowflake {
     /** The maximum length for an application description ({@value}) */
     int MAX_DESCRIPTION_LENGTH = 400;
+
     /** The maximum length for any URL set on an application ({@value}) */
     int MAX_URL_LENGTH = 2048;
+
     /** The maximum allowed number of unique tags for an application ({@value})*/
     int MAX_TAGS = 5;
+
     /** The maximum length a single tag is allowed to be ({@value}) */
     int MAX_TAG_LENGTH = 20;
 
@@ -107,8 +111,7 @@ public interface ApplicationInfo extends ISnowflake
      * @see    #getIconUrl()
      */
     @Nullable
-    default ImageProxy getIcon()
-    {
+    default ImageProxy getIcon() {
         final String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
@@ -134,8 +137,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return The current ApplicationInfo instance
      */
     @Nonnull
-    default ApplicationInfo setRequiredScopes(@Nonnull String... scopes)
-    {
+    default ApplicationInfo setRequiredScopes(@Nonnull String... scopes) {
         Checks.noneNull(scopes, "Scopes");
         return setRequiredScopes(Arrays.asList(scopes));
     }
@@ -169,8 +171,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return The link used to invite the bot
      */
     @Nonnull
-    default String getInviteUrl(@Nullable Collection<Permission> permissions)
-    {
+    default String getInviteUrl(@Nullable Collection<Permission> permissions) {
         return getInviteUrl(null, permissions);
     }
 
@@ -187,8 +188,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return The link used to invite the bot
      */
     @Nonnull
-    default String getInviteUrl(@Nullable Permission... permissions)
-    {
+    default String getInviteUrl(@Nullable Permission... permissions) {
         return getInviteUrl(null, permissions);
     }
 
@@ -229,8 +229,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return The link used to invite the bot
      */
     @Nonnull
-    default String getInviteUrl(long guildId, @Nullable Collection<Permission> permissions)
-    {
+    default String getInviteUrl(long guildId, @Nullable Collection<Permission> permissions) {
         return getInviteUrl(Long.toUnsignedString(guildId), permissions);
     }
 
@@ -253,8 +252,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return The link used to invite the bot
      */
     @Nonnull
-    default String getInviteUrl(@Nullable String guildId, @Nullable Permission... permissions)
-    {
+    default String getInviteUrl(@Nullable String guildId, @Nullable Permission... permissions) {
         return getInviteUrl(guildId, permissions == null ? null : Arrays.asList(permissions));
     }
 
@@ -274,8 +272,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return The link used to invite the bot
      */
     @Nonnull
-    default String getInviteUrl(long guildId, @Nullable Permission... permissions)
-    {
+    default String getInviteUrl(long guildId, @Nullable Permission... permissions) {
         return getInviteUrl(Long.toUnsignedString(guildId), permissions);
     }
 
@@ -403,8 +400,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return {@link EnumSet} of {@link Flag}
      */
     @Nonnull
-    default EnumSet<Flag> getFlags()
-    {
+    default EnumSet<Flag> getFlags() {
         return Flag.fromRaw(getFlagsRaw());
     }
 
@@ -436,8 +432,7 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @see ApplicationInfo#getIntegrationTypesConfig()
      */
-    interface IntegrationTypeConfiguration
-    {
+    interface IntegrationTypeConfiguration {
         /**
          * The OAuth2 install parameters for the default in-app authorization link.
          * <br>When a user invites your application in the Discord app, these will be the parameters of the invite url.
@@ -453,8 +448,7 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @see IntegrationTypeConfiguration#getInstallParameters()
      */
-    interface InstallParameters
-    {
+    interface InstallParameters {
         /**
          * Gets the required scopes granted to the bot when invited.
          *
@@ -478,8 +472,7 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @see #getFlags()
      */
-    enum Flag
-    {
+    enum Flag {
         /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GatewayIntent.GUILD_PRESENCES} in 100 or more guilds */
         GATEWAY_PRESENCE(1 << 12),
         /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GatewayIntent.GUILD_PRESENCES} in under 100 guilds */
@@ -500,8 +493,7 @@ public interface ApplicationInfo extends ISnowflake
 
         private final long value;
 
-        Flag(long value)
-        {
+        Flag(long value) {
             this.value = value;
         }
 
@@ -514,13 +506,10 @@ public interface ApplicationInfo extends ISnowflake
          * @return {@link EnumSet} of {@link Flag}
          */
         @Nonnull
-        public static EnumSet<Flag> fromRaw(long raw)
-        {
+        public static EnumSet<Flag> fromRaw(long raw) {
             EnumSet<Flag> set = EnumSet.noneOf(Flag.class);
-            for (Flag flag : values())
-            {
-                if ((raw & flag.value) != 0)
-                    set.add(flag);
+            for (Flag flag : values()) {
+                if ((raw & flag.value) != 0) set.add(flag);
             }
             return set;
         }

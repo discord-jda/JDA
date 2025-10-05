@@ -39,10 +39,8 @@ import javax.annotation.Nonnull;
  * Guilds that timeout will be marked as unavailable by the timeout event,
  * they will <b>not</b> fire a {@link GuildUnavailableEvent} as that event is only indicating that a guild becomes unavailable <b>after</b> ready happened.
  */
-public class GuildReadyEvent extends GenericGuildEvent
-{
-    public GuildReadyEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
-    {
+public class GuildReadyEvent extends GenericGuildEvent {
+    public GuildReadyEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild) {
         super(api, responseNumber, guild);
     }
 }

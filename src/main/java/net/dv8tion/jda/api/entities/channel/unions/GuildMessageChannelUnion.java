@@ -40,8 +40,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link ThreadChannel}</li>
  * </ul>
  */
-public interface GuildMessageChannelUnion extends GuildMessageChannel
-{
+public interface GuildMessageChannelUnion extends GuildMessageChannel {
     /**
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.

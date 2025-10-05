@@ -21,8 +21,7 @@ import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 
 public interface AudioChannelMixin<T extends AudioChannelMixin<T>>
-        extends AudioChannelUnion, StandardGuildChannelMixin<T>
-{
+        extends AudioChannelUnion, StandardGuildChannelMixin<T> {
     // ---- State Accessors ----
 
     T setBitrate(int bitrate);
@@ -33,8 +32,7 @@ public interface AudioChannelMixin<T extends AudioChannelMixin<T>>
 
     // AudioChannels also require connect permission to grant access
     @Override
-    default void checkCanAccess()
-    {
+    default void checkCanAccess() {
         checkAttached();
         if (!hasPermission(Permission.VIEW_CHANNEL))
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);

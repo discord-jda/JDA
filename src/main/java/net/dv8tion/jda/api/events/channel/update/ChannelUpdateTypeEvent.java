@@ -38,13 +38,16 @@ import javax.annotation.Nonnull;
  * @see Channel#getType()
  * @see ChannelField#TYPE
  */
-public class ChannelUpdateTypeEvent extends GenericChannelUpdateEvent<ChannelType>
-{
+public class ChannelUpdateTypeEvent extends GenericChannelUpdateEvent<ChannelType> {
     public static final ChannelField FIELD = ChannelField.TYPE;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateTypeEvent(@Nonnull JDA api, long responseNumber, Channel channel, ChannelType oldValue, ChannelType newValue)
-    {
+    public ChannelUpdateTypeEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            Channel channel,
+            ChannelType oldValue,
+            ChannelType newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

@@ -40,12 +40,14 @@ import javax.annotation.Nullable;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEvent<String>
-{
+public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEvent<String> {
     public static final String IDENTIFIER = "nick";
 
-    public GuildMemberUpdateNicknameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldNick)
-    {
+    public GuildMemberUpdateNicknameEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Member member,
+            @Nullable String oldNick) {
         super(api, responseNumber, member, oldNick, member.getNickname(), IDENTIFIER);
     }
 
@@ -55,8 +57,7 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEven
      * @return The old nickname
      */
     @Nullable
-    public String getOldNickname()
-    {
+    public String getOldNickname() {
         return getOldValue();
     }
 
@@ -66,8 +67,7 @@ public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEven
      * @return The new nickname
      */
     @Nullable
-    public String getNewNickname()
-    {
+    public String getNewNickname() {
         return getNewValue();
     }
 }

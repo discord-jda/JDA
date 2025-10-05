@@ -29,17 +29,17 @@ import javax.annotation.Nonnull;
  * <p>Can be used to indicate when JDA finished populating internal objects and is ready to be used.
  * When this is fired all <b>available</b> entities are cached and accessible.
  */
-public class ReadyEvent extends GenericSessionEvent
-{
+public class ReadyEvent extends GenericSessionEvent {
     private final int availableGuilds;
     private final int unavailableGuilds;
 
-    public ReadyEvent(@Nonnull JDA api)
-    {
+    public ReadyEvent(@Nonnull JDA api) {
         super(api, SessionState.READY);
         this.availableGuilds = (int) getJDA().getGuildCache().size();
         GuildSetupController setupController = ((JDAImpl) getJDA()).getGuildSetupController();
-        this.unavailableGuilds = setupController.getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size() + setupController.getUnavailableGuilds().size();
+        this.unavailableGuilds =
+                setupController.getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size()
+                        + setupController.getUnavailableGuilds().size();
     }
 
     /**
@@ -52,8 +52,7 @@ public class ReadyEvent extends GenericSessionEvent
      * @see    #getGuildTotalCount()
      * @see    #getGuildUnavailableCount()
      */
-    public int getGuildAvailableCount()
-    {
+    public int getGuildAvailableCount() {
         return availableGuilds;
     }
 
@@ -64,8 +63,7 @@ public class ReadyEvent extends GenericSessionEvent
      *
      * @return Number of currently unavailable guilds
      */
-    public int getGuildUnavailableCount()
-    {
+    public int getGuildUnavailableCount() {
         return unavailableGuilds;
     }
 
@@ -74,8 +72,7 @@ public class ReadyEvent extends GenericSessionEvent
      *
      * @return Total numbers of guilds known to this JDA session
      */
-    public int getGuildTotalCount()
-    {
+    public int getGuildTotalCount() {
         return getGuildAvailableCount() + getGuildUnavailableCount();
     }
 }

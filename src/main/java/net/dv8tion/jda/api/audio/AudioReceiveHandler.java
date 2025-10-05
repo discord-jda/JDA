@@ -24,8 +24,7 @@ import javax.sound.sampled.AudioFormat;
 /**
  * Interface used to receive audio from Discord through JDA.
  */
-public interface AudioReceiveHandler
-{
+public interface AudioReceiveHandler {
     /**
      * Audio Output Format used by JDA. 48KHz 16bit stereo signed BigEndian PCM.
      */
@@ -37,8 +36,7 @@ public interface AudioReceiveHandler
      *
      * @return If true, JDA enables subsystems to combine all user audio into a single provided data packet.
      */
-    default boolean canReceiveCombined()
-    {
+    default boolean canReceiveCombined() {
         return false;
     }
 
@@ -47,8 +45,7 @@ public interface AudioReceiveHandler
      *
      * @return If true, JDA enables subsystems to provide user specific audio data.
      */
-    default boolean canReceiveUser()
-    {
+    default boolean canReceiveUser() {
         return false;
     }
 
@@ -63,8 +60,7 @@ public interface AudioReceiveHandler
      *
      * @since  4.0.0
      */
-    default boolean canReceiveEncoded()
-    {
+    default boolean canReceiveEncoded() {
         return false;
     }
 
@@ -145,8 +141,7 @@ public interface AudioReceiveHandler
      * @return If true, JDA will include the user's audio when merging audio sources when created packets
      *         for {@link #handleCombinedAudio(CombinedAudio)}
      */
-    default boolean includeUserInCombinedAudio(@Nonnull User user)
-    {
+    default boolean includeUserInCombinedAudio(@Nonnull User user) {
         return true;
     }
 }

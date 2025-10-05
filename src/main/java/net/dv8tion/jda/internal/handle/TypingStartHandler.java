@@ -30,47 +30,37 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-public class TypingStartHandler extends SocketHandler
-{
+public class TypingStartHandler extends SocketHandler {
 
-    public TypingStartHandler(JDAImpl api)
-    {
+    public TypingStartHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         GuildImpl guild = null;
-        if (!content.isNull("guild_id"))
-        {
+        if (!content.isNull("guild_id")) {
             long guildId = content.getUnsignedLong("guild_id");
             guild = (GuildImpl) getJDA().getGuildById(guildId);
-            if (getJDA().getGuildSetupController().isLocked(guildId))
-                return guildId;
-            else if (guild == null)
-                return null; // Don't cache typing events
+            if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
+            else if (guild == null) return null; // Don't cache typing events
         }
 
         final long channelId = content.getLong("channel_id");
 
         MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
 
-        //We don't have the channel cached yet. We chose not to cache this event
+        // We don't have the channel cached yet. We chose not to cache this event
         // because that happens very often and could easily fill up the EventCache if
         // we, for some reason, never get the channel. Especially in an active channel.
-        if (channel == null)
-            return null;
+        if (channel == null) return null;
 
         final long userId = content.getLong("user_id");
         User user;
         MemberImpl member = null;
-        if (channel instanceof PrivateChannel)
-            user = ((PrivateChannel) channel).getUser();
-        else
-            user = getJDA().getUsersView().get(userId);
-        if (!content.isNull("member"))
-        {
+        if (channel instanceof PrivateChannel) user = ((PrivateChannel) channel).getUser();
+        else user = getJDA().getUsersView().get(userId);
+        if (!content.isNull("member")) {
             // Try to load member for the typing event
             EntityBuilder entityBuilder = getJDA().getEntityBuilder();
             member = entityBuilder.createMember(guild, content.getObject("member"));
@@ -79,14 +69,15 @@ public class TypingStartHandler extends SocketHandler
         }
 
         if (user == null)
-            return null;    //Just like in the comment above, if for some reason we don't have the user
-                            // then we will just throw the event away.
+            return null; // Just like in the comment above, if for some reason we don't have the
+        // user
+        // then we will just throw the event away.
 
-        OffsetDateTime timestamp = Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
+        OffsetDateTime timestamp =
+                Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);
         getJDA().handleEvent(
-            new UserTypingEvent(
-                getJDA(), responseNumber,
-                user, channel, timestamp, member));
+                        new UserTypingEvent(
+                                getJDA(), responseNumber, user, channel, timestamp, member));
         return null;
     }
 }

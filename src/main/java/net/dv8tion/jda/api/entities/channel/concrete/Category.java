@@ -29,11 +29,13 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 import net.dv8tion.jda.internal.utils.Helpers;
+
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Represents a channel category in the official Discord API.
@@ -49,8 +51,12 @@ import java.util.List;
  * @see   JDA#getCategoriesByName(String, boolean)
  * @see   JDA#getCategoryById(long)
  */
-public interface Category extends GuildChannel, ICopyableChannel, IPositionableChannel, IPermissionContainer, IMemberContainer
-{
+public interface Category
+        extends GuildChannel,
+                ICopyableChannel,
+                IPositionableChannel,
+                IPermissionContainer,
+                IMemberContainer {
     /**
      * All {@link GuildChannel Channels} listed for this Category.
      * <br>Includes all types of channels, except for threads.
@@ -62,16 +68,15 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      */
     @Nonnull
     @Unmodifiable
-    default List<GuildChannel> getChannels()
-    {
+    default List<GuildChannel> getChannels() {
         return getGuild()
                 .getChannelCache()
                 .ofType(ICategorizableChannel.class)
-                .applyStream(stream -> stream
-                    .filter(it -> this.equals(it.getParentCategory()))
-                    .sorted()
-                    .collect(Helpers.toUnmodifiableList())
-                );
+                .applyStream(
+                        stream ->
+                                stream.filter(it -> this.equals(it.getParentCategory()))
+                                        .sorted()
+                                        .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -85,13 +90,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      */
     @Nonnull
     @Unmodifiable
-    default List<TextChannel> getTextChannels()
-    {
-        return getGuild().getTextChannelCache().applyStream(stream ->
-            stream.filter(channel -> equals(channel.getParentCategory()))
-                  .sorted()
-                  .collect(Helpers.toUnmodifiableList())
-        );
+    default List<TextChannel> getTextChannels() {
+        return getGuild()
+                .getTextChannelCache()
+                .applyStream(
+                        stream ->
+                                stream.filter(channel -> equals(channel.getParentCategory()))
+                                        .sorted()
+                                        .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -105,13 +111,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      */
     @Nonnull
     @Unmodifiable
-    default List<NewsChannel> getNewsChannels()
-    {
-        return getGuild().getNewsChannelCache().applyStream(stream ->
-            stream.filter(channel -> equals(channel.getParentCategory()))
-                  .sorted()
-                  .collect(Helpers.toUnmodifiableList())
-        );
+    default List<NewsChannel> getNewsChannels() {
+        return getGuild()
+                .getNewsChannelCache()
+                .applyStream(
+                        stream ->
+                                stream.filter(channel -> equals(channel.getParentCategory()))
+                                        .sorted()
+                                        .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -124,13 +131,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      */
     @Nonnull
     @Unmodifiable
-    default List<ForumChannel> getForumChannels()
-    {
-        return getGuild().getForumChannelCache().applyStream(stream ->
-            stream.filter(channel -> equals(channel.getParentCategory()))
-                  .sorted()
-                  .collect(Helpers.toUnmodifiableList())
-        );
+    default List<ForumChannel> getForumChannels() {
+        return getGuild()
+                .getForumChannelCache()
+                .applyStream(
+                        stream ->
+                                stream.filter(channel -> equals(channel.getParentCategory()))
+                                        .sorted()
+                                        .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -143,13 +151,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      */
     @Nonnull
     @Unmodifiable
-    default List<MediaChannel> getMediaChannels()
-    {
-        return getGuild().getMediaChannelCache().applyStream(stream ->
-                stream.filter(channel -> equals(channel.getParentCategory()))
-                        .sorted()
-                        .collect(Helpers.toUnmodifiableList())
-        );
+    default List<MediaChannel> getMediaChannels() {
+        return getGuild()
+                .getMediaChannelCache()
+                .applyStream(
+                        stream ->
+                                stream.filter(channel -> equals(channel.getParentCategory()))
+                                        .sorted()
+                                        .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -163,13 +172,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      */
     @Nonnull
     @Unmodifiable
-    default List<VoiceChannel> getVoiceChannels()
-    {
-        return getGuild().getVoiceChannelCache().applyStream(stream ->
-            stream.filter(channel -> equals(channel.getParentCategory()))
-                  .sorted()
-                  .collect(Helpers.toUnmodifiableList())
-        );
+    default List<VoiceChannel> getVoiceChannels() {
+        return getGuild()
+                .getVoiceChannelCache()
+                .applyStream(
+                        stream ->
+                                stream.filter(channel -> equals(channel.getParentCategory()))
+                                        .sorted()
+                                        .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -183,13 +193,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      */
     @Nonnull
     @Unmodifiable
-    default List<StageChannel> getStageChannels()
-    {
-        return getGuild().getStageChannelCache().applyStream(stream ->
-            stream.filter(channel -> equals(channel.getParentCategory()))
-                  .sorted()
-                  .collect(Helpers.toUnmodifiableList())
-        );
+    default List<StageChannel> getStageChannels() {
+        return getGuild()
+                .getStageChannelCache()
+                .applyStream(
+                        stream ->
+                                stream.filter(channel -> equals(channel.getParentCategory()))
+                                        .sorted()
+                                        .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -491,15 +502,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     @Override
     @Unmodifiable
-    default List<Member> getMembers()
-    {
+    default List<Member> getMembers() {
         return getChannels().stream()
-            .filter(IMemberContainer.class::isInstance)
-            .map(IMemberContainer.class::cast)
-            .map(IMemberContainer::getMembers)
-            .flatMap(List::stream)
-            .distinct()
-            .collect(Helpers.toUnmodifiableList());
+                .filter(IMemberContainer.class::isInstance)
+                .map(IMemberContainer.class::cast)
+                .map(IMemberContainer::getMembers)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull

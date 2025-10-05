@@ -19,16 +19,16 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
+
+import javax.annotation.Nonnull;
 
 /**
  * A {@link ThreadMember} represents a {@link Member Member's} participation in a Thread.
  * <br>ThreadMembers are subscribed to {@link ThreadChannel Threads} and receive updates for them, like new message and thread changes.
  * Only subscribed members are shown in a thread's sidebar.
  */
-public interface ThreadMember extends IMentionable
-{
+public interface ThreadMember extends IMentionable {
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this thread member.
      *
@@ -59,7 +59,8 @@ public interface ThreadMember extends IMentionable
      *
      * @return The User instance
      */
-    //We might not actually be able to provide a user because we only get the `userId` in the ThreadMember object.
+    // We might not actually be able to provide a user because we only get the `userId` in the
+    // ThreadMember object.
     @Nonnull
     User getUser();
 
@@ -84,8 +85,7 @@ public interface ThreadMember extends IMentionable
      *
      * @return True, if this {@link ThreadMember} owns the subscribed {@link ThreadChannel}.
      */
-    default boolean isThreadOwner()
-    {
+    default boolean isThreadOwner() {
         return getThread().getOwnerIdLong() == getIdLong();
     }
 }

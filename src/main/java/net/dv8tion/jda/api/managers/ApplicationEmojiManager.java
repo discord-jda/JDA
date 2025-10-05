@@ -33,8 +33,7 @@ import javax.annotation.Nonnull;
  *
  * @see ApplicationEmoji#getManager()
  */
-public interface ApplicationEmojiManager extends Manager<ApplicationEmojiManager>
-{
+public interface ApplicationEmojiManager extends Manager<ApplicationEmojiManager> {
     /** Used to reset the name field */
     long NAME = 1;
 

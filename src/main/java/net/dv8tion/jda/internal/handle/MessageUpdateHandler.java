@@ -27,89 +27,102 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class MessageUpdateHandler extends SocketHandler
-{
+public class MessageUpdateHandler extends SocketHandler {
 
-    public MessageUpdateHandler(JDAImpl api)
-    {
+    public MessageUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         Guild guild = null;
-        if (!content.isNull("guild_id"))
-        {
+        if (!content.isNull("guild_id")) {
             long guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId))
-                return guildId;
+            if (getJDA().getGuildSetupController().isLocked(guildId)) return guildId;
             guild = api.getGuildById(guildId);
-            if (guild == null)
-            {
-                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
-                EventCache.LOG.debug("Received message for a guild that JDA does not currently have cached");
+            if (guild == null) {
+                api.getEventCache()
+                        .cache(
+                                EventCache.Type.GUILD,
+                                guildId,
+                                responseNumber,
+                                allContent,
+                                this::handle);
+                EventCache.LOG.debug(
+                        "Received message for a guild that JDA does not currently have cached");
                 return null;
             }
         }
 
         // Drop ephemeral messages since they are broken due to missing guild_id
-        if ((content.getInt("flags", 0) & 64) != 0)
-            return null;
+        if ((content.getInt("flags", 0) & 64) != 0) return null;
 
-        if (content.hasKey("author"))
-        {
-            if (content.hasKey("type"))
-            {
+        if (content.hasKey("author")) {
+            if (content.hasKey("type")) {
                 MessageType type = MessageType.fromId(content.getInt("type"));
-                if (!type.isSystem())
-                    return handleMessage(content, guild);
-                WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
+                if (!type.isSystem()) return handleMessage(content, guild);
+                WebSocketClient.LOG.debug(
+                        "JDA received a message update for an unexpected message type. Type: {}"
+                                + " JSON: {}",
+                        type,
+                        content);
                 return null;
             }
         }
         return null;
     }
 
-    private Long handleMessage(DataObject content, Guild guild)
-    {
+    private Long handleMessage(DataObject content, Guild guild) {
         Message message;
-        try
-        {
+        try {
             message = getJDA().getEntityBuilder().createMessageWithLookup(content, guild, true);
             if (!message.hasChannel())
                 throw new IllegalArgumentException(EntityBuilder.MISSING_CHANNEL);
-        }
-        catch (IllegalArgumentException e)
-        {
-            switch (e.getMessage())
-            {
+        } catch (IllegalArgumentException e) {
+            switch (e.getMessage()) {
                 case EntityBuilder.MISSING_CHANNEL:
-                {
-                    final long channelId = content.getUnsignedLong("channel_id");
-
-                    // If discord adds message support for unexpected types in the future, drop the event instead of caching it
-                    if (guild != null)
                     {
-                        GuildChannel actual = guild.getGuildChannelById(channelId);
-                        if (actual != null)
-                        {
-                            WebSocketClient.LOG.debug("Dropping MESSAGE_UPDATE for unexpected channel of type {}", actual.getType());
-                            return null;
-                        }
-                    }
+                        final long channelId = content.getUnsignedLong("channel_id");
 
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("Received a message update for a channel that JDA does not currently have cached");
-                    return null;
-                }
+                        // If discord adds message support for unexpected types in the future, drop
+                        // the event instead of caching it
+                        if (guild != null) {
+                            GuildChannel actual = guild.getGuildChannelById(channelId);
+                            if (actual != null) {
+                                WebSocketClient.LOG.debug(
+                                        "Dropping MESSAGE_UPDATE for unexpected channel of type {}",
+                                        actual.getType());
+                                return null;
+                            }
+                        }
+
+                        getJDA().getEventCache()
+                                .cache(
+                                        EventCache.Type.CHANNEL,
+                                        channelId,
+                                        responseNumber,
+                                        allContent,
+                                        this::handle);
+                        EventCache.LOG.debug(
+                                "Received a message update for a channel that JDA does not"
+                                        + " currently have cached");
+                        return null;
+                    }
                 case EntityBuilder.MISSING_USER:
-                {
-                    final long authorId = content.getObject("author").getLong("id");
-                    getJDA().getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
-                    EventCache.LOG.debug("Received a message update for a user that JDA does not currently have cached");
-                    return null;
-                }
+                    {
+                        final long authorId = content.getObject("author").getLong("id");
+                        getJDA().getEventCache()
+                                .cache(
+                                        EventCache.Type.USER,
+                                        authorId,
+                                        responseNumber,
+                                        allContent,
+                                        this::handle);
+                        EventCache.LOG.debug(
+                                "Received a message update for a user that JDA does not currently"
+                                        + " have cached");
+                        return null;
+                    }
                 default:
                     throw e;
             }
@@ -118,10 +131,7 @@ public class MessageUpdateHandler extends SocketHandler
         if (message.getChannelType() == ChannelType.PRIVATE)
             getJDA().usedPrivateChannel(message.getChannel().getIdLong());
 
-        getJDA().handleEvent(
-                new MessageUpdateEvent(
-                        getJDA(), responseNumber,
-                        message));
+        getJDA().handleEvent(new MessageUpdateEvent(getJDA(), responseNumber, message));
         return null;
     }
 }

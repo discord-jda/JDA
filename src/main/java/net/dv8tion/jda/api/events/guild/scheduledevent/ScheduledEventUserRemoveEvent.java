@@ -34,10 +34,12 @@ import javax.annotation.Nonnull;
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
-public class ScheduledEventUserRemoveEvent extends GenericScheduledEventUserEvent
-{
-    public ScheduledEventUserRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, long userId)
-    {
+public class ScheduledEventUserRemoveEvent extends GenericScheduledEventUserEvent {
+    public ScheduledEventUserRemoveEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ScheduledEvent scheduledEvent,
+            long userId) {
         super(api, responseNumber, scheduledEvent, userId);
     }
 }

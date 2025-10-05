@@ -19,19 +19,19 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * Specialized {@link RestAction} used to create a {@link StageInstance}
  *
  * @see net.dv8tion.jda.api.entities.channel.concrete.StageChannel#createStageInstance(String)
  */
-public interface StageInstanceAction extends RestAction<StageInstance>
-{
+public interface StageInstanceAction extends RestAction<StageInstance> {
     @Nonnull
     @Override
     @CheckReturnValue

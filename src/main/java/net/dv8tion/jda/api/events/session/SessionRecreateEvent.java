@@ -27,10 +27,8 @@ import javax.annotation.Nonnull;
  * <p>Can be used to mark the continuation of event flow which was stopped by the {@link SessionDisconnectEvent}.
  * User should replace any cached Objects (like User/Guild objects).
  */
-public class SessionRecreateEvent extends GenericSessionEvent
-{
-    public SessionRecreateEvent(@Nonnull JDA api)
-    {
+public class SessionRecreateEvent extends GenericSessionEvent {
+    public SessionRecreateEvent(@Nonnull JDA api) {
         super(api, SessionState.RECREATED);
     }
 }

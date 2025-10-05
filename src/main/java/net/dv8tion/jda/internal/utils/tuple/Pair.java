@@ -35,7 +35,8 @@ import java.util.Objects;
  *
  * @since Lang 3.0
  */
-public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L, R>>,*/ Serializable {
+public abstract class Pair<L, R>
+        implements /*Map.Entry<L, R>, Comparable<Pair<L, R>>,*/ Serializable {
 
     /**
      * <p>Obtains an immutable pair of from two objects inferring the generic types.</p>
@@ -53,7 +54,7 @@ public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L
         return new ImmutablePair<>(left, right);
     }
 
-    //-----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
     /**
      * <p>Gets the left element from this pair.</p>
      *
@@ -72,7 +73,6 @@ public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L
      */
     public abstract R getRight();
 
-
     /**
      * <p>Compares this pair to another based on the two elements.</p>
      *
@@ -87,7 +87,7 @@ public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L
         if (obj instanceof Pair<?, ?>) {
             final Pair<?, ?> other = (Pair<?, ?>) obj;
             return Objects.equals(getLeft(), other.getLeft())
-                && Objects.equals(getRight(), other.getRight());
+                    && Objects.equals(getRight(), other.getRight());
         }
         return false;
     }
@@ -113,5 +113,4 @@ public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L
     public String toString() {
         return "(" + getLeft() + ',' + getRight() + ')';
     }
-
 }
