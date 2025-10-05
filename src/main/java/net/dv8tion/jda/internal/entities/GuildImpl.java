@@ -2373,7 +2373,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public EnumSet<SystemChannelFlag> getSystemChannelFlags()
+    public Set<SystemChannelFlag> getSystemChannelFlags()
     {
         return SystemChannelFlag.getFlags(systemChannelFlags);
     }

@@ -1337,19 +1337,20 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     NSFWLevel getNSFWLevel();
 
     /**
-     * Returns an {@link EnumSet} of {@link SystemChannelFlag} associated to the guild.
+     * Returns a {@link Set} of {@link SystemChannelFlag} associated to the guild.
      * <br>For a description of what system channel flags represent, see {@link SystemChannelFlag}.
-     * <p>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}.
+     *
+     * @return An <b>unmodifiable</b> set of system channel flags of this guild.
+     *
      * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
      *     System Channel Flags API documentation
      *     <a/>
-     * @return the system channel flags of this guild.
      * */
     @Nonnull
-    EnumSet<SystemChannelFlag> getSystemChannelFlags();
+    Set<SystemChannelFlag> getSystemChannelFlags();
 
     /**
      * Gets the Guild specific {@link Member Member} object for the provided

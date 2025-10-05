@@ -729,7 +729,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
 
     @Nonnull
     @Override
-    public EnumSet<SystemChannelFlag> getSystemChannelFlags()
+    public Set<SystemChannelFlag> getSystemChannelFlags()
     {
         throw detachedException();
     }

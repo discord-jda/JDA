@@ -129,7 +129,7 @@ public class GuildUpdateHandler extends SocketHandler
         }
         if (!Objects.equals(systemChannelFlags, guild.getSystemChannelFlags()))
         {
-            EnumSet<SystemChannelFlag> oldSystemChannelFlags = guild.getSystemChannelFlags();
+            Set<SystemChannelFlag> oldSystemChannelFlags = guild.getSystemChannelFlags();
             guild.setSystemChannelFlags(systemChannelFlagBitmask);
             getJDA().handleEvent(
                     new GuildUpdateSystemChannelFlagsEvent(
