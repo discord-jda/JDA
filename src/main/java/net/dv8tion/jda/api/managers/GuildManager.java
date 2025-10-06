@@ -496,7 +496,8 @@ public interface GuildManager extends Manager<GuildManager>
      * }</pre>
      *
      * @param  flags
-     *         The new flags to use
+     *         Collection of the new flags to use, flags not included in the collection
+     *         will be disabled.
      *
      * @throws IllegalArgumentException
      *         If any of the flags in the provided collection are null
