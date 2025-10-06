@@ -2375,7 +2375,7 @@ public class GuildImpl implements Guild
     @Override
     public Set<SystemChannelFlag> getSystemChannelFlags()
     {
-        return SystemChannelFlag.getFlags(systemChannelFlags);
+        return Collections.unmodifiableSet(SystemChannelFlag.getFlags(systemChannelFlags));
     }
 
     @Override

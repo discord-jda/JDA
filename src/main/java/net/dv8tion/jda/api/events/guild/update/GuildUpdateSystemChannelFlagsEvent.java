@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -40,7 +41,10 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
                                               @Nonnull Set<SystemChannelFlag> oldFlags,
                                               @Nonnull Set<SystemChannelFlag> newFlags)
     {
-        super(api, responseNumber, guild, oldFlags, newFlags, IDENTIFIER);
+        super(api, responseNumber, guild,
+                Collections.unmodifiableSet(oldFlags),
+                Collections.unmodifiableSet(newFlags),
+                IDENTIFIER);
     }
 
     /**
