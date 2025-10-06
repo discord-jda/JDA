@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.Route;
@@ -51,6 +52,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected int verificationLevel;
     protected boolean boostProgressBarEnabled;
     protected Set<String> features;
+    protected Collection<SystemChannelFlag> systemChannelFlags;
 
     public GuildManagerImpl(Guild guild)
     {
@@ -98,6 +100,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             this.banner = null;
         if ((fields & FEATURES) == FEATURES)
             this.features = null;
+        if ((fields & SYSTEM_CHANNEL_FLAGS) == SYSTEM_CHANNEL_FLAGS)
+            this.systemChannelFlags = null;
         return this;
     }
 
@@ -124,6 +128,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         this.afkChannel = null;
         this.systemChannel = null;
         this.features = null;
+        this.systemChannelFlags = null;
         return this;
     }
 
@@ -329,6 +334,40 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
+    @Override
+    public GuildManager setSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
+    {
+        Checks.noneNull(flags, "System channel flag");
+        this.systemChannelFlags = flags;
+        set |= SYSTEM_CHANNEL_FLAGS;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager addSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
+    {
+        return updateSystemChannelFlags(flags, flag -> this.systemChannelFlags.add(flag));
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager removeSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
+    {
+        return updateSystemChannelFlags(flags, flag -> this.systemChannelFlags.remove(flag));
+    }
+
+    private GuildManager updateSystemChannelFlags(Collection<SystemChannelFlag> changed, Consumer<SystemChannelFlag> op)
+    {
+        Checks.noneNull(changed, "System channel flag");
+        if (this.systemChannelFlags == null)
+            this.systemChannelFlags = new HashSet<>(SystemChannelFlag.getFlags(getGuild().getSystemChannelFlagsRaw()));
+        changed.forEach(op);
+        set |= SYSTEM_CHANNEL_FLAGS;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -365,6 +404,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("premium_progress_bar_enabled", boostProgressBarEnabled);
         if (shouldUpdate(FEATURES))
             body.put("features", features);
+        if (shouldUpdate(SYSTEM_CHANNEL_FLAGS))
+            body.put("system_channel_flags", SystemChannelFlag.getRaw(systemChannelFlags));
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         return getRequestBody(body);
