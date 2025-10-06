@@ -484,7 +484,7 @@ public interface GuildManager extends Manager<GuildManager>
     }
 
     /**
-     * Configures the new {@link Guild#getSystemChannelFlags() system channel flags} of the {@link Guild}.
+     * Configures the new {@linkplain Guild#getSystemChannelFlags() system channel flags} of the {@link Guild}.
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
@@ -510,7 +510,7 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager setSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
 
     /**
-     * Adds {@link Guild#getSystemChannelFlags()} system channel flags} to the set of flags.
+     * Enables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
@@ -524,10 +524,10 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    GuildManager addSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
+    GuildManager enableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
 
     /**
-     * Adds {@link Guild#getSystemChannelFlags()} system channel flags} to the set of flags.
+     * Enables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
@@ -541,14 +541,14 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager addSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
+    default GuildManager enableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
     {
         Checks.noneNull(flags, "System channel flag");
-        return addSystemChannelFlags(Arrays.asList(flags));
+        return enableSystemChannelFlags(Arrays.asList(flags));
     }
 
     /**
-     * Removes {@link Guild#getSystemChannelFlags()} system channel flags} from the set of flags.
+     * Removes the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
@@ -562,10 +562,10 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    GuildManager removeSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
+    GuildManager disableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
 
     /**
-     * Removes {@link Guild#getSystemChannelFlags()} system channel flags} from the set of flags.
+     * Removes the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
@@ -579,10 +579,10 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager removeSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
+    default GuildManager disableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
     {
         Checks.noneNull(flags, "System channel flag");
-        return removeSystemChannelFlags(Arrays.asList(flags));
+        return disableSystemChannelFlags(Arrays.asList(flags));
     }
 
     /**

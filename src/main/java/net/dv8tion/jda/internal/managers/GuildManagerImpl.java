@@ -346,14 +346,14 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     @Nonnull
     @Override
-    public GuildManager addSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
+    public GuildManager enableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
     {
         return updateSystemChannelFlags(flags, flag -> this.systemChannelFlags.add(flag));
     }
 
     @Nonnull
     @Override
-    public GuildManager removeSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
+    public GuildManager disableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
     {
         return updateSystemChannelFlags(flags, flag -> this.systemChannelFlags.remove(flag));
     }
