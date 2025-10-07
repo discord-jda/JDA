@@ -544,10 +544,11 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager enableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
+    default GuildManager enableSystemChannelFlags(@Nonnull SystemChannelFlag flag, @Nonnull SystemChannelFlag... flags)
     {
-        Checks.noneNull(flags, "System channel flag");
-        return enableSystemChannelFlags(Arrays.asList(flags));
+        Checks.notNull(flag, "System channel flag");
+        Checks.noneNull(flags, "System channel flags");
+        return enableSystemChannelFlags(EnumSet.of(flag, flags));
     }
 
     /**
