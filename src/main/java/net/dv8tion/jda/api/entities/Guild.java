@@ -1347,7 +1347,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
      *      System Channel Flags API documentation
-     *      <a/>
+     *      </a>
      */
     @Nonnull
     Set<SystemChannelFlag> getSystemChannelFlags();
@@ -1365,7 +1365,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
      *      System Channel Flags API documentation
-     *      <a/>
+     *      </a>
      */
     int getSystemChannelFlagsRaw();
 

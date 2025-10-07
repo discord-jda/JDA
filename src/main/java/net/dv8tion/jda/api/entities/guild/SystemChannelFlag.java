@@ -26,7 +26,7 @@ import java.util.EnumSet;
  *
  * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
  *      System Channel Flags API documentation
- *      <a/>
+ *      </a>
  */
 public enum SystemChannelFlag
 {
