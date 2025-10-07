@@ -31,7 +31,6 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -100,7 +99,8 @@ public class GuildUpdateHandler extends SocketHandler
         Set<String> features;
 
         final int systemChannelFlagBitmask = content.getInt("system_channel_flags", 0);
-        EnumSet<SystemChannelFlag> systemChannelFlags = SystemChannelFlag.getFlags(systemChannelFlagBitmask);
+        Set<SystemChannelFlag> systemChannelFlags =
+                Collections.unmodifiableSet(SystemChannelFlag.getFlags(systemChannelFlagBitmask));
 
         if (!content.isNull("features"))
         {

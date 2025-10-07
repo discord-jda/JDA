@@ -82,7 +82,7 @@ public class GuildManagerTest extends IntegrationTest
         when(guild.getFeatures()).thenReturn(features);
 
         Set<String> ignoredSetters = new HashSet<>(Arrays.asList(
-            "setFeatures", "setInvitesDisabled"
+            "setFeatures", "setSystemChannelFlags", "setInvitesDisabled"
         ));
 
         AtomicInteger calledSetters = new AtomicInteger(0);

@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -339,7 +340,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     public GuildManager setSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
     {
         Checks.noneNull(flags, "System channel flag");
-        this.systemChannelFlags = flags;
+        this.systemChannelFlags = Helpers.copyEnumSet(SystemChannelFlag.class, flags);
         set |= SYSTEM_CHANNEL_FLAGS;
         return this;
     }

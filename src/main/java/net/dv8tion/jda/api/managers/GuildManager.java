@@ -102,6 +102,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
      *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
      *     <li>{@link #FEATURES}</li>
+     *     <li>{@link #SYSTEM_CHANNEL_FLAGS}</li>
      * </ul>
      *
      * @param  fields
@@ -133,6 +134,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
      *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
      *     <li>{@link #FEATURES}</li>
+     *     <li>{@link #SYSTEM_CHANNEL_FLAGS}</li>
      * </ul>
      *
      * @param  fields
