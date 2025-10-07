@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -499,10 +500,11 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @param  flags
      *         Collection of the new flags to use, flags not included in the collection
-     *         will be disabled.
+     *         will be disabled
      *
      * @throws IllegalArgumentException
-     *         If any of the flags in the provided collection are null
+     *         If any of the flags in the provided collection are null, or if the
+     *         collection itself is null
      *
      * @return GuildManager for chaining convenience
      *
@@ -518,10 +520,11 @@ public interface GuildManager extends Manager<GuildManager>
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  flags
-     *         The flags to add
+     *         A collection of the flags to enable
      *
      * @throws IllegalArgumentException
-     *         If any of the flags in the provided collection are null
+     *         If any of the flags in the provided collection are null, or if the
+     *         collection itself is null
      *
      * @return GuildManager for chaining convenience
      */
@@ -534,11 +537,13 @@ public interface GuildManager extends Manager<GuildManager>
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
+     * @param  flag
+     *         The first system channel flag to enable
      * @param  flags
-     *         The flags to add
+     *         The remaining system channel flags to enable
      *
      * @throws IllegalArgumentException
-     *         If any of the flags in the provided collection are null
+     *         If any input flags are null, or if array itself is null
      *
      * @return GuildManager for chaining convenience
      */
@@ -552,15 +557,16 @@ public interface GuildManager extends Manager<GuildManager>
     }
 
     /**
-     * Removes the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
+     * Disables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  flags
-     *         The flags to remove
+     *         The flags to disable
      *
      * @throws IllegalArgumentException
-     *         If any of the flags in the provided collection are null
+     *         If any of the flags in the provided collection are null, or if the
+     *         collection itself is null
      *
      * @return GuildManager for chaining convenience
      */
@@ -569,15 +575,17 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager disableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
 
     /**
-     * Removes the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
+     * Disables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
+     * @param  flag
+     *         The first system channel flag to disable
      * @param  flags
-     *         The flags to remove
+     *         The remaining system channel flags to disable
      *
      * @throws IllegalArgumentException
-     *         If any of the flags in the provided collection are null
+     *         If any input flags are null, or if the array itself is null
      *
      * @return GuildManager for chaining convenience
      */
@@ -585,7 +593,7 @@ public interface GuildManager extends Manager<GuildManager>
     @CheckReturnValue
     default GuildManager disableSystemChannelFlags(@Nonnull SystemChannelFlag flag, @Nonnull SystemChannelFlag... flags)
     {
-        Checks.notNull(flag, "System channel flag")
+        Checks.notNull(flag, "System channel flag");
         Checks.noneNull(flags, "System channel flags");
         return disableSystemChannelFlags(EnumSet.of(flag, flags));
     }

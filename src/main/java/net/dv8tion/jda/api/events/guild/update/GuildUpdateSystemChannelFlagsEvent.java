@@ -41,10 +41,7 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
                                               @Nonnull Set<SystemChannelFlag> oldFlags,
                                               @Nonnull Set<SystemChannelFlag> newFlags)
     {
-        super(api, responseNumber, guild,
-                Collections.unmodifiableSet(oldFlags),
-                Collections.unmodifiableSet(newFlags),
-                IDENTIFIER);
+        super(api, responseNumber, guild, oldFlags, newFlags, IDENTIFIER);
     }
 
     /**

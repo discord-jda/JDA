@@ -36,6 +36,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected int verificationLevel;
     protected boolean boostProgressBarEnabled;
     protected Set<String> features;
-    protected Collection<SystemChannelFlag> systemChannelFlags;
+    protected Set<SystemChannelFlag> systemChannelFlags;
 
     public GuildManagerImpl(Guild guild)
     {

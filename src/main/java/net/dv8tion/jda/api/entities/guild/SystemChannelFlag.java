@@ -74,8 +74,8 @@ public enum SystemChannelFlag
     /**
      * Converts a bitmask representation of system channel flags into its {@link EnumSet}.
      *
-     * @param raw
-     *        The raw bitmask representing the system channel flags.
+     * @param  raw
+     *         The raw bitmask representing the system channel flags.
      *
      * @return An {@link EnumSet} of system channel flags represented by the input bitmask.
      */
@@ -95,8 +95,8 @@ public enum SystemChannelFlag
      * Converts a {@link Collection} of this class to its respective bitmask representing the same
      * set of system channel flags.
      *
-     * @param flags
-     *        A set of system channel flags.
+     * @param  flags
+     *         A set of system channel flags.
      *
      * @return An integer bitmask recognised on Discord's side.
      */
