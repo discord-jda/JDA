@@ -349,22 +349,22 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     public GuildManager enableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
     {
-        return updateSystemChannelFlags(flags, flag -> this.systemChannelFlags.add(flag));
+        return updateSystemChannelFlags(flags, Set::addAll);
     }
 
     @Nonnull
     @Override
     public GuildManager disableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags)
     {
-        return updateSystemChannelFlags(flags, flag -> this.systemChannelFlags.remove(flag));
+        return updateSystemChannelFlags(flags, Set::removeAll);
     }
 
-    private GuildManager updateSystemChannelFlags(Collection<SystemChannelFlag> changed, Consumer<SystemChannelFlag> op)
+    private GuildManager updateSystemChannelFlags(Collection<SystemChannelFlag> flags, BiConsumer<Set<SystemChannelFlag>, Collection<SystemChannelFlag>> bulkUpdateOp)
     {
-        Checks.noneNull(changed, "System channel flag");
+        Checks.noneNull(flags, "System channel flag");
         if (this.systemChannelFlags == null)
-            this.systemChannelFlags = new HashSet<>(SystemChannelFlag.getFlags(getGuild().getSystemChannelFlagsRaw()));
-        changed.forEach(op);
+            this.systemChannelFlags = Helpers.copyEnumSet(SystemChannelFlag.class, getGuild().getSystemChannelFlags());
+        bulkUpdateOp.accept(this.systemChannelFlags, flags);
         set |= SYSTEM_CHANNEL_FLAGS;
         return this;
     }
