@@ -506,7 +506,7 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @return GuildManager for chaining convenience
      *
-     * @see SystemChannelFlag
+     * @see    SystemChannelFlag
      */
     @Nonnull
     @CheckReturnValue
