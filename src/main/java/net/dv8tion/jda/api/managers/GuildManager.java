@@ -503,7 +503,7 @@ public interface GuildManager extends Manager<GuildManager>
      *         will be disabled
      *
      * @throws IllegalArgumentException
-     *         If any of the flags in the provided collection are null, or if the
+     *         If any of the flags in the provided collection is null, or if the
      *         collection itself is null
      *
      * @return GuildManager for chaining convenience
@@ -521,7 +521,7 @@ public interface GuildManager extends Manager<GuildManager>
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  flag
-     *         The first system channel flag to set
+     *         A system channel flag that should be set initially
      * @param  flags
      *         The remaining system channel flags to set
      *
@@ -546,7 +546,7 @@ public interface GuildManager extends Manager<GuildManager>
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  flags
-     *         A collection of the flags to enable
+     *         A collection of the system channel flags to enable
      *
      * @throws IllegalArgumentException
      *         If any of the flags in the provided collection are null, or if the
@@ -564,7 +564,7 @@ public interface GuildManager extends Manager<GuildManager>
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  flag
-     *         The first system channel flag to enable
+     *         A system channel flag that should be enabled initially
      * @param  flags
      *         The remaining system channel flags to enable
      *
@@ -588,7 +588,7 @@ public interface GuildManager extends Manager<GuildManager>
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  flags
-     *         The flags to disable
+     *         The system channel flags to disable
      *
      * @throws IllegalArgumentException
      *         If any of the flags in the provided collection are null, or if the
@@ -606,7 +606,7 @@ public interface GuildManager extends Manager<GuildManager>
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  flag
-     *         The first system channel flag to disable
+     *         A system channel flag that should be disabled initially
      * @param  flags
      *         The remaining system channel flags to disable
      *
