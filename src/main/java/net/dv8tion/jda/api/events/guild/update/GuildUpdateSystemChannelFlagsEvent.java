@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * Indicates that {@link Guild#getSystemChannelFlags()} have been updated.
  *
- * <p>This event can be used to detect changes in system channel flags and retrieve the old one.
+ * <p>This event can be used to detect changes in system channel flags and retrieve the old ones.
  *
  * <p>Identifier: {@code system_channel_flags}
  */
