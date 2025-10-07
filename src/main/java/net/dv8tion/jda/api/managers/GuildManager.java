@@ -515,6 +515,32 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager setSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
 
     /**
+     * Configures the new {@linkplain Guild#getSystemChannelFlags() system channel flags} of the {@link Guild}. A system
+     * channel flag in the corresponding guild will be enabled if and only if it is in the method input.
+     * <br>The list of available system channel flags, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  flag
+     *         The first system channel flag to set
+     * @param  flags
+     *         The remaining system channel flags to set
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided flags are null, or if the array itself is null
+     *
+     * @return GuildManager for chaining convenience
+     *
+     * @see    SystemChannelFlag
+     */
+    @Nonnull
+    @CheckReturnValue
+    default GuildManager setSystemChannelFlags(@Nonnull SystemChannelFlag flag, @Nonnull SystemChannelFlag... flags)
+    {
+        Checks.noneNull(flags, "System channel flags");
+        return setSystemChannelFlags(EnumSet.of(flag, flags));
+    }
+
+    /**
      * Enables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
