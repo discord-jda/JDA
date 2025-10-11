@@ -48,7 +48,6 @@ projectEnvironment {
 }
 
 artifactFilters {
-    opusExclusions.addAll("natives/**", "com/sun/jna/**", "club/minnced/opus/util/*", "tomp2p/opuswrapper/*")
     additionalAudioExclusions.addAll("com/google/crypto/tink/**", "com/google/gson/**", "com/google/protobuf/**", "google/protobuf/**")
 }
 
@@ -129,16 +128,8 @@ dependencies {
     api(libs.websocket.client)
     api(libs.okhttp)
 
-    //Opus library support
-    api(libs.opus)
-
     //Collections Utility
     api(libs.commons.collections)
-
-    //we use this only together with opus-java
-    // if that dependency is excluded it also doesn't need jna anymore
-    // since jna is a transitive runtime dependency of opus-java we don't include it explicitly as dependency
-    compileOnly(libs.jna)
 
     /* Internal dependencies */
 
@@ -154,6 +145,8 @@ dependencies {
         addAll(configurations["api"].allDependencies)
         addAll(configurations["implementation"].allDependencies)
         addAll(configurations["compileOnly"].allDependencies)
+
+        add(project(":opus-jna"))
     }
 
     testImplementation(libs.bundles.junit)
@@ -253,16 +246,6 @@ val generateJavaSources by tasks.registering(SourceTask::class) {
     dependsOn(sourcesForRelease)
 }
 
-val noOpusJar by tasks.registering(ShadowJar::class) {
-    dependsOn(shadowJar)
-    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
-
-    configurations = shadowJar.configurations
-    from(sourceSets["main"].output)
-    applyOpusExclusions(artifactFilters)
-    manifest.from(jar.manifest)
-}
-
 val minimalJar by tasks.registering(ShadowJar::class) {
     dependsOn(shadowJar)
     minimize()
@@ -340,7 +323,6 @@ tasks.build.configure {
     dependsOn(javadocJar)
     dependsOn(sourcesJar)
     dependsOn(shadowJar)
-    dependsOn(noOpusJar)
     dependsOn(minimalJar)
 
     jar.mustRunAfter(tasks.clean)

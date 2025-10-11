@@ -16,17 +16,38 @@
 
 package net.dv8tion.jda.internal.audio;
 
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
+
 import javax.annotation.Nonnull;
+import java.util.ServiceLoader;
 
 public class OpusCodecFactoryProvider
 {
+    private static final Logger LOG = JDALogger.getLog(OpusCodecFactoryProvider.class);
+
     private static OpusCodecFactory codecFactory;
 
     @Nonnull
     public static synchronized OpusCodecFactory getInstance()
     {
         if (codecFactory == null)
-            codecFactory = new OpusJnaCodecFactory();
+        {
+            final ServiceLoader<OpusCodecFactory> codecFactories = ServiceLoader.load(OpusCodecFactory.class);
+            for (OpusCodecFactory factory : codecFactories)
+            {
+                if (codecFactory != null)
+                {
+                    LOG.trace("Ignoring {} for opus support as {} is used already", factory.getClass().getName(), codecFactory.getClass().getName());
+                    continue;
+                }
+                LOG.debug("Using {} for Opus support", factory.getClass().getName());
+                codecFactory = factory;
+            }
+
+            if (codecFactory == null)
+                throw new MissingOpusException();
+        }
 
         return codecFactory;
     }

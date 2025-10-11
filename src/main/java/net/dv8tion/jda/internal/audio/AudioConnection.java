@@ -61,7 +61,6 @@ public class AudioConnection
 
     protected volatile DatagramSocket udpSocket;
 
-    private final OpusCodecFactory codecFactory = OpusCodecFactoryProvider.getInstance();
     private final TIntLongMap ssrcMap = new TIntLongHashMap();
     private final TIntObjectMap<OpusDecoder> opusDecoders = new TIntObjectHashMap<>();
     private final HashMap<User, Queue<AudioData>> combinedQueue = new HashMap<>();
@@ -287,7 +286,7 @@ public class AudioConnection
 
             //Only create a decoder if we are actively handling received audio.
             if (receiveThread != null && AudioNatives.ensureOpus())
-                opusDecoders.put(ssrc, codecFactory.createDecoder(ssrc));
+                opusDecoders.put(ssrc, getCodecFactory().createDecoder(ssrc));
         }
     }
 
@@ -392,7 +391,7 @@ public class AudioConnection
                             {
                                 if (AudioNatives.ensureOpus())
                                 {
-                                    opusDecoders.put(ssrc, decoder = codecFactory.createDecoder(ssrc));
+                                    opusDecoders.put(ssrc, decoder = getCodecFactory().createDecoder(ssrc));
                                 }
                                 else if (!receiveHandler.canReceiveEncoded())
                                 {
@@ -571,6 +570,11 @@ public class AudioConnection
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
     }
 
+    /** Lazy load optional Opus dependency */
+    private static OpusCodecFactory getCodecFactory()
+    {
+        return OpusCodecFactoryProvider.getInstance();
+    }
 
     @Override
     @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
@@ -676,7 +680,7 @@ public class AudioConnection
                     printedError = true;
                     return null;
                 }
-                opusEncoder = codecFactory.createEncoder();
+                opusEncoder = getCodecFactory().createEncoder();
                 if (opusEncoder == null)
                 {
                     return null;
