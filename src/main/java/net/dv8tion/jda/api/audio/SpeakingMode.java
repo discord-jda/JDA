@@ -82,7 +82,9 @@ public enum SpeakingMode {
             return 0;
         }
         int mask = 0;
-        for (SpeakingMode m : modes) mask |= m.raw;
+        for (SpeakingMode m : modes) {
+            mask |= m.raw;
+        }
         return mask;
     }
 
@@ -100,7 +102,9 @@ public enum SpeakingMode {
             return 0;
         }
         int raw = 0;
-        for (SpeakingMode mode : modes) raw |= mode.getRaw();
+        for (SpeakingMode mode : modes) {
+            raw |= mode.getRaw();
+        }
         return raw;
     }
 }

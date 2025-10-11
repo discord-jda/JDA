@@ -71,9 +71,10 @@ public interface Emoji extends SerializableData, Formattable {
         if (code.startsWith("U+") || code.startsWith("u+")) {
             StringBuilder emoji = new StringBuilder();
             String[] codepoints = code.trim().split("\\s*[uU]\\+");
-            for (String codepoint : codepoints)
+            for (String codepoint : codepoints) {
                 emoji.append(
                         codepoint.isEmpty() ? "" : EncodingUtil.decodeCodepoint("U+" + codepoint));
+            }
             code = emoji.toString();
         }
         return new UnicodeEmojiImpl(code);

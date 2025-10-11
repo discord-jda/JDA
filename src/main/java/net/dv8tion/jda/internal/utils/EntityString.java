@@ -87,8 +87,9 @@ public class EntityString {
                 metadataJoiner.add("id=" + ((ISnowflake) entity).getId());
             }
             if (this.metadata != null) {
-                for (Object metadataItem : this.metadata)
+                for (Object metadataItem : this.metadata) {
                     metadataJoiner.add(metadataItem.toString());
+                }
             }
 
             sb.append(metadataJoiner);

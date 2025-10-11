@@ -62,10 +62,11 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
         long twoWeeksAgo = TimeUtil.getDiscordTimestamp(
                 (System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
-        for (String id : messageIds)
+        for (String id : messageIds) {
             Checks.check(
                     MiscUtil.parseSnowflake(id) > twoWeeksAgo,
                     "Message Id provided was older than 2 weeks. Id: " + id);
+        }
 
         return bulkDeleteMessages(messageIds);
     }

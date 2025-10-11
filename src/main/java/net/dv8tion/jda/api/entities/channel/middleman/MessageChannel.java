@@ -300,8 +300,12 @@ public interface MessageChannel extends Channel, Formattable {
         }
         List<CompletableFuture<Void>> list = new ArrayList<>(messageIds.length);
         TreeSet<Long> sortedIds = new TreeSet<>(Comparator.reverseOrder());
-        for (long messageId : messageIds) sortedIds.add(messageId);
-        for (long messageId : sortedIds) list.add(deleteMessageById(messageId).submit());
+        for (long messageId : messageIds) {
+            sortedIds.add(messageId);
+        }
+        for (long messageId : sortedIds) {
+            list.add(deleteMessageById(messageId).submit());
+        }
         return list;
     }
 

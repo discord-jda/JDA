@@ -54,7 +54,9 @@ public class PresetKeywordTriggerConfig
     @Nonnull
     public PresetKeywordTriggerConfig enablePresets(@Nonnull AutoModRule.KeywordPreset... presets) {
         Checks.notNull(presets, "Presets");
-        for (AutoModRule.KeywordPreset preset : presets) checkKnown(preset);
+        for (AutoModRule.KeywordPreset preset : presets) {
+            checkKnown(preset);
+        }
         Collections.addAll(this.presets, presets);
         return this;
     }
@@ -94,7 +96,9 @@ public class PresetKeywordTriggerConfig
     public PresetKeywordTriggerConfig disablePresets(
             @Nonnull AutoModRule.KeywordPreset... presets) {
         Checks.noneNull(presets, "Presets");
-        for (AutoModRule.KeywordPreset preset : presets) this.presets.remove(preset);
+        for (AutoModRule.KeywordPreset preset : presets) {
+            this.presets.remove(preset);
+        }
         return this;
     }
 

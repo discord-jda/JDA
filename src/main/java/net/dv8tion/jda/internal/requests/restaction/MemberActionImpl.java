@@ -123,7 +123,9 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
             return this;
         }
         Set<Role> newRoles = new HashSet<>(roles.size());
-        for (Role role : roles) checkAndAdd(newRoles, role);
+        for (Role role : roles) {
+            checkAndAdd(newRoles, role);
+        }
         this.roles = newRoles;
         return this;
     }
@@ -137,7 +139,9 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
             return this;
         }
         Set<Role> newRoles = new HashSet<>(roles.length);
-        for (Role role : roles) checkAndAdd(newRoles, role);
+        for (Role role : roles) {
+            checkAndAdd(newRoles, role);
+        }
         this.roles = newRoles;
         return this;
     }

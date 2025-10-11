@@ -172,7 +172,9 @@ public class ExTermEncoder {
         buffer = realloc(buffer, data.size() + 6);
         buffer.put(LIST);
         buffer.putInt(data.size());
-        for (Object element : data) buffer = pack(buffer, element);
+        for (Object element : data) {
+            buffer = pack(buffer, element);
+        }
         return packNil(buffer);
     }
 
@@ -259,7 +261,9 @@ public class ExTermEncoder {
         buffer = realloc(buffer, array.length * 8 + 6);
         buffer.put(LIST);
         buffer.putInt(array.length);
-        for (long it : array) buffer = packLong(buffer, it);
+        for (long it : array) {
+            buffer = packLong(buffer, it);
+        }
         return packNil(buffer);
     }
 
@@ -272,7 +276,9 @@ public class ExTermEncoder {
         buffer = realloc(buffer, array.length * 4 + 6);
         buffer.put(LIST);
         buffer.putInt(array.length);
-        for (int it : array) buffer = packInt(buffer, it);
+        for (int it : array) {
+            buffer = packInt(buffer, it);
+        }
         return packNil(buffer);
     }
 
@@ -285,7 +291,9 @@ public class ExTermEncoder {
         buffer = realloc(buffer, array.length * 2 + 6);
         buffer.put(LIST);
         buffer.putInt(array.length);
-        for (short it : array) buffer = packInt(buffer, it);
+        for (short it : array) {
+            buffer = packInt(buffer, it);
+        }
         return packNil(buffer);
     }
 
@@ -298,7 +306,9 @@ public class ExTermEncoder {
         buffer = realloc(buffer, array.length + 6);
         buffer.put(LIST);
         buffer.putInt(array.length);
-        for (byte it : array) buffer = packSmallInt(buffer, it);
+        for (byte it : array) {
+            buffer = packSmallInt(buffer, it);
+        }
         return packNil(buffer);
     }
 

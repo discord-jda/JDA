@@ -68,8 +68,9 @@ public class MessagePollBuilder {
         this.title = poll.getQuestion().getText();
         this.isMultiAnswer = poll.isMultiAnswer();
         this.layout = poll.getLayout();
-        for (MessagePoll.Answer answer : poll.getAnswers())
+        for (MessagePoll.Answer answer : poll.getAnswers()) {
             addAnswer(answer.getText(), answer.getEmoji());
+        }
     }
 
     /**

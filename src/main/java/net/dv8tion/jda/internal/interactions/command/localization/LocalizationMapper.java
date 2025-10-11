@@ -146,9 +146,10 @@ public class LocalizationMapper {
 
         private String getKey(String finalComponent) {
             final StringJoiner joiner = new StringJoiner(".");
-            for (String keyComponent : keyComponents)
+            for (String keyComponent : keyComponents) {
                 joiner.add(keyComponent.replace(
                         " ", "_")); // Context commands can have spaces, we need to replace them
+            }
             joiner.add(finalComponent.replace(" ", "_"));
             return joiner.toString().toLowerCase();
         }

@@ -122,10 +122,11 @@ public enum CloseCode {
      */
     @Nullable
     public static CloseCode from(int code) {
-        for (CloseCode c : values())
+        for (CloseCode c : values()) {
             if (c.code == code) {
                 return c;
             }
+        }
         return null;
     }
 }

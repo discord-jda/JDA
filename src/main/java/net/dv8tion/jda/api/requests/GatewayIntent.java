@@ -289,7 +289,9 @@ public enum GatewayIntent {
      */
     public static int getRaw(@Nonnull Collection<GatewayIntent> set) {
         int raw = 0;
-        for (GatewayIntent intent : set) raw |= intent.rawValue;
+        for (GatewayIntent intent : set) {
+            raw |= intent.rawValue;
+        }
         return raw;
     }
 

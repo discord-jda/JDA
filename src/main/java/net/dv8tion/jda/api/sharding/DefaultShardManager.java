@@ -219,13 +219,17 @@ public class DefaultShardManager implements ShardManager {
     @Override
     public void addEventListener(@Nonnull final Object... listeners) {
         ShardManager.super.addEventListener(listeners);
-        for (Object o : listeners) eventConfig.addEventListener(o);
+        for (Object o : listeners) {
+            eventConfig.addEventListener(o);
+        }
     }
 
     @Override
     public void removeEventListener(@Nonnull final Object... listeners) {
         ShardManager.super.removeEventListener(listeners);
-        for (Object o : listeners) eventConfig.removeEventListener(o);
+        for (Object o : listeners) {
+            eventConfig.removeEventListener(o);
+        }
     }
 
     @Override

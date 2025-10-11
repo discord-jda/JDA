@@ -98,11 +98,12 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager>
                 roles.size() <= AutoModRule.MAX_EXEMPT_ROLES,
                 "Cannot have more than %d exempt roles!",
                 AutoModRule.MAX_EXEMPT_ROLES);
-        for (Role role : roles)
+        for (Role role : roles) {
             Checks.check(
                     role.getGuild().equals(guild),
                     "Role %s is not from the same guild as this rule!",
                     role);
+        }
         this.exemptRoles = new ArrayList<>(roles);
         set |= EXEMPT_ROLES;
         return this;
@@ -117,11 +118,12 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager>
                 channels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS,
                 "Cannot have more than %d exempt channels!",
                 AutoModRule.MAX_EXEMPT_CHANNELS);
-        for (GuildChannel channel : channels)
+        for (GuildChannel channel : channels) {
             Checks.check(
                     channel.getGuild().equals(guild),
                     "Channel %s is not from the same guild as this rule!",
                     channel);
+        }
         this.exemptChannels = new ArrayList<>(channels);
         set |= EXEMPT_CHANNELS;
         return this;

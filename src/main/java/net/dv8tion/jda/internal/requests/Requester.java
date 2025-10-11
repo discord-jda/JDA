@@ -327,8 +327,9 @@ public class Requester {
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing
         if (apiRequest.getHeaders() != null) {
-            for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
+            for (Entry<String, String> header : apiRequest.getHeaders().entrySet()) {
                 builder.header(header.getKey(), header.getValue());
+            }
         }
     }
 

@@ -75,7 +75,9 @@ public class EntitlementPaginationActionImpl
     @Override
     public EntitlementPaginationAction skuIds(@Nonnull long... skuIds) {
         this.skuIds.clear();
-        for (long skuId : skuIds) this.skuIds.add(Long.toUnsignedString(skuId));
+        for (long skuId : skuIds) {
+            this.skuIds.add(Long.toUnsignedString(skuId));
+        }
         return this;
     }
 
@@ -83,7 +85,9 @@ public class EntitlementPaginationActionImpl
     @Override
     public EntitlementPaginationAction skuIds(@Nonnull String... skuIds) {
         Checks.noneNull(skuIds, "skuIds");
-        for (String skuId : skuIds) Checks.isSnowflake(skuId, "skuId");
+        for (String skuId : skuIds) {
+            Checks.isSnowflake(skuId, "skuId");
+        }
 
         this.skuIds.clear();
 

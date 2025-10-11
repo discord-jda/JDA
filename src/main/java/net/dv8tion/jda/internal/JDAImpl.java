@@ -605,7 +605,9 @@ public class JDAImpl implements JDA {
     @Override
     public List<Guild> getMutualGuilds(@Nonnull Collection<? extends UserSnowflake> users) {
         Checks.notNull(users, "users");
-        for (UserSnowflake u : users) Checks.notNull(u, "All users");
+        for (UserSnowflake u : users) {
+            Checks.notNull(u, "All users");
+        }
         return getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
                 .collect(Helpers.toUnmodifiableList());
@@ -1022,14 +1024,18 @@ public class JDAImpl implements JDA {
     public void addEventListener(@Nonnull Object... listeners) {
         Checks.noneNull(listeners, "listeners");
 
-        for (Object listener : listeners) eventManager.register(listener);
+        for (Object listener : listeners) {
+            eventManager.register(listener);
+        }
     }
 
     @Override
     public void removeEventListener(@Nonnull Object... listeners) {
         Checks.noneNull(listeners, "listeners");
 
-        for (Object listener : listeners) eventManager.unregister(listener);
+        for (Object listener : listeners) {
+            eventManager.unregister(listener);
+        }
     }
 
     @Nonnull

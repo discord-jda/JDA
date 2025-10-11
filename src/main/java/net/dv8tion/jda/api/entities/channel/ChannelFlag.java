@@ -90,7 +90,9 @@ public enum ChannelFlag {
     public static int getRaw(@Nonnull Collection<ChannelFlag> flags) {
         Checks.notNull(flags, "Flags");
         int raw = 0;
-        for (ChannelFlag flag : flags) raw |= flag.getRaw();
+        for (ChannelFlag flag : flags) {
+            raw |= flag.getRaw();
+        }
         return raw;
     }
 }

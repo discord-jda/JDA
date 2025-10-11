@@ -501,7 +501,9 @@ public class PermissionUtil {
         final Guild guild = member.getGuild();
         long permission = guild.getPublicRole().getPermissionsRaw();
 
-        for (Role role : member.getUnsortedRoles()) permission |= role.getPermissionsRaw();
+        for (Role role : member.getUnsortedRoles()) {
+            permission |= role.getPermissionsRaw();
+        }
 
         return permission;
     }

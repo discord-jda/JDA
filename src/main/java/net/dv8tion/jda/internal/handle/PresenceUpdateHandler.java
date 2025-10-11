@@ -221,7 +221,8 @@ public class PresenceUpdateHandler extends SocketHandler {
             OnlineStatus clientStatus = OnlineStatus.fromKey(raw);
             presence.setOnlineStatus(type, clientStatus);
         }
-        for (ClientType type : EnumSet.complementOf(types))
+        for (ClientType type : EnumSet.complementOf(types)) {
             presence.setOnlineStatus(type, null); // set remaining types to offline
+        }
     }
 }

@@ -1626,8 +1626,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Unmodifiable
     default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles) {
         Checks.noneNull(roles, "Roles");
-        for (Role role : roles)
+        for (Role role : roles) {
             Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
+        }
         return getMemberCache().getElementsWithRoles(roles);
     }
 
@@ -3116,8 +3117,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     default Task<List<Member>> findMembersWithRoles(@Nonnull Collection<Role> roles) {
         Checks.noneNull(roles, "Roles");
-        for (Role role : roles)
+        for (Role role : roles) {
             Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
+        }
 
         if (isLoaded()) {
             CompletableFuture<List<Member>> future =

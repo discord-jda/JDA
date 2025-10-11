@@ -71,7 +71,9 @@ public class CustomKeywordTriggerConfig
                 this.keywords.size() + keywords.length <= AutoModRule.MAX_KEYWORD_AMOUNT,
                 "Cannot add more than %d keywords!",
                 AutoModRule.MAX_KEYWORD_AMOUNT);
-        for (String keyword : keywords) checkKeyword(keyword);
+        for (String keyword : keywords) {
+            checkKeyword(keyword);
+        }
 
         Collections.addAll(this.keywords, keywords);
         return this;
@@ -107,7 +109,9 @@ public class CustomKeywordTriggerConfig
                 this.keywords.size() + keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT,
                 "Cannot add more than %d keywords!",
                 AutoModRule.MAX_KEYWORD_AMOUNT);
-        for (String keyword : keywords) checkKeyword(keyword);
+        for (String keyword : keywords) {
+            checkKeyword(keyword);
+        }
 
         this.keywords.addAll(keywords);
         return this;
@@ -143,7 +147,9 @@ public class CustomKeywordTriggerConfig
                 keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT,
                 "Cannot add more than %d keywords!",
                 AutoModRule.MAX_KEYWORD_AMOUNT);
-        for (String keyword : keywords) checkKeyword(keyword);
+        for (String keyword : keywords) {
+            checkKeyword(keyword);
+        }
 
         this.keywords.clear();
         this.keywords.addAll(keywords);
@@ -178,7 +184,9 @@ public class CustomKeywordTriggerConfig
                 this.patterns.size() + patterns.length <= AutoModRule.MAX_PATTERN_AMOUNT,
                 "Cannot add more than %d patterns!",
                 AutoModRule.MAX_PATTERN_AMOUNT);
-        for (String pattern : patterns) checkPattern(pattern);
+        for (String pattern : patterns) {
+            checkPattern(pattern);
+        }
 
         Collections.addAll(this.patterns, patterns);
         return this;
@@ -212,7 +220,9 @@ public class CustomKeywordTriggerConfig
                 this.patterns.size() + patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT,
                 "Cannot add more than %d patterns!",
                 AutoModRule.MAX_PATTERN_AMOUNT);
-        for (String pattern : patterns) checkPattern(pattern);
+        for (String pattern : patterns) {
+            checkPattern(pattern);
+        }
 
         this.patterns.addAll(patterns);
         return this;
@@ -246,7 +256,9 @@ public class CustomKeywordTriggerConfig
                 patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT,
                 "Cannot add more than %d patterns!",
                 AutoModRule.MAX_PATTERN_AMOUNT);
-        for (String pattern : patterns) checkPattern(pattern);
+        for (String pattern : patterns) {
+            checkPattern(pattern);
+        }
 
         this.patterns.clear();
         this.patterns.addAll(patterns);

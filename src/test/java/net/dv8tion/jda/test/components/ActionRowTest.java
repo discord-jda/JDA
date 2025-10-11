@@ -49,8 +49,9 @@ public class ActionRowTest extends AbstractSnapshotTest {
     void testGetMaxAllowedIsUpdated() {
         DataObject actual = DataObject.empty();
 
-        for (Component.Type type : Component.Type.values())
+        for (Component.Type type : Component.Type.values()) {
             actual.put(type.name(), ActionRow.getMaxAllowed(type));
+        }
 
         snapshotHandler.compareWithSnapshot(actual, null);
     }

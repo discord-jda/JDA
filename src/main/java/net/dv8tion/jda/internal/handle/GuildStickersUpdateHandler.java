@@ -105,7 +105,9 @@ public class GuildStickersUpdateHandler extends SocketHandler {
                 // check for updated fields and fire events
                 handleReplace(guild, oldSticker, sticker);
             }
-            for (GuildSticker e : oldStickers) stickersMap.remove(e.getIdLong());
+            for (GuildSticker e : oldStickers) {
+                stickersMap.remove(e.getIdLong());
+            }
         }
         // cleanup old stickers that don't exist anymore
         for (GuildSticker e : oldStickers) {

@@ -1004,7 +1004,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
         public static int toRaw(@Nonnull Collection<MemberFlag> flags) {
             Checks.noneNull(flags, "Flags");
             int raw = 0;
-            for (MemberFlag flag : flags) raw |= flag.raw;
+            for (MemberFlag flag : flags) {
+                raw |= flag.raw;
+            }
             return raw;
         }
     }

@@ -113,7 +113,9 @@ public class GuildEmojisUpdateHandler extends SocketHandler {
                 // check for updated fields and fire events
                 handleReplace(oldEmoji, emoji);
             }
-            for (RichCustomEmoji e : oldEmojis) emojiMap.remove(e.getIdLong());
+            for (RichCustomEmoji e : oldEmojis) {
+                emojiMap.remove(e.getIdLong());
+            }
         }
         // cleanup old emojis that don't exist anymore
         for (RichCustomEmoji e : oldEmojis) {

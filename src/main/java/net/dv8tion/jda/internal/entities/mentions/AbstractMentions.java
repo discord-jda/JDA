@@ -251,8 +251,12 @@ public abstract class AbstractMentions implements Mentions {
                     break;
                 case USER:
                     TLongObjectMap<IMentionable> set = new TLongObjectHashMap<>();
-                    for (User u : getUsers()) set.put(u.getIdLong(), u);
-                    for (Member m : getMembers()) set.put(m.getIdLong(), m);
+                    for (User u : getUsers()) {
+                        set.put(u.getIdLong(), u);
+                    }
+                    for (Member m : getMembers()) {
+                        set.put(m.getIdLong(), m);
+                    }
                     mentions.addAll(set.valueCollection());
                     break;
                 case ROLE:
@@ -398,11 +402,12 @@ public abstract class AbstractMentions implements Mentions {
     protected boolean isSlashCommandMentioned(IMentionable mentionable) {
         if (mentionable instanceof ICommandReference) {
             final ICommandReference reference = (ICommandReference) mentionable;
-            for (SlashCommandReference r : getSlashCommands())
+            for (SlashCommandReference r : getSlashCommands()) {
                 if (r.getFullCommandName().equals(reference.getFullCommandName())
                         && r.getIdLong() == reference.getIdLong()) {
                     return true;
                 }
+            }
         }
         return false;
     }

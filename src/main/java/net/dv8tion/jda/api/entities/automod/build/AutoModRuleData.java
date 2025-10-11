@@ -259,7 +259,9 @@ public class AutoModRuleData implements SerializableData {
                 roles.length + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES,
                 "Cannot add more than %d roles",
                 AutoModRule.MAX_EXEMPT_ROLES);
-        for (Role role : roles) exemptRoles.add(role.getId());
+        for (Role role : roles) {
+            exemptRoles.add(role.getId());
+        }
         return this;
     }
 
@@ -283,7 +285,9 @@ public class AutoModRuleData implements SerializableData {
                 roles.size() + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES,
                 "Cannot add more than %d roles",
                 AutoModRule.MAX_EXEMPT_ROLES);
-        for (Role role : roles) exemptRoles.add(role.getId());
+        for (Role role : roles) {
+            exemptRoles.add(role.getId());
+        }
         return this;
     }
 
@@ -308,7 +312,9 @@ public class AutoModRuleData implements SerializableData {
                 "Cannot add more than %d roles",
                 AutoModRule.MAX_EXEMPT_ROLES);
         exemptRoles.clear();
-        for (Role role : roles) exemptRoles.add(role.getId());
+        for (Role role : roles) {
+            exemptRoles.add(role.getId());
+        }
         return this;
     }
 
@@ -332,7 +338,9 @@ public class AutoModRuleData implements SerializableData {
                 channels.length + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS,
                 "Cannot add more than %d channels",
                 AutoModRule.MAX_EXEMPT_CHANNELS);
-        for (GuildChannel channel : channels) exemptChannels.add(channel.getId());
+        for (GuildChannel channel : channels) {
+            exemptChannels.add(channel.getId());
+        }
         return this;
     }
 
@@ -356,7 +364,9 @@ public class AutoModRuleData implements SerializableData {
                 channels.size() + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS,
                 "Cannot add more than %d channels",
                 AutoModRule.MAX_EXEMPT_CHANNELS);
-        for (GuildChannel channel : channels) exemptChannels.add(channel.getId());
+        for (GuildChannel channel : channels) {
+            exemptChannels.add(channel.getId());
+        }
         return this;
     }
 
@@ -381,7 +391,9 @@ public class AutoModRuleData implements SerializableData {
                 "Cannot add more than %d channels",
                 AutoModRule.MAX_EXEMPT_CHANNELS);
         exemptChannels.clear();
-        for (GuildChannel channel : channels) exemptChannels.add(channel.getId());
+        for (GuildChannel channel : channels) {
+            exemptChannels.add(channel.getId());
+        }
         return this;
     }
 

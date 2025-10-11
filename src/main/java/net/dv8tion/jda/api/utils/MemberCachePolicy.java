@@ -191,7 +191,9 @@ public interface MemberCachePolicy {
             @Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies) {
         Checks.notNull(policy, "Policy");
         Checks.notNull(policies, "Policy");
-        for (MemberCachePolicy p : policies) policy = policy.or(p);
+        for (MemberCachePolicy p : policies) {
+            policy = policy.or(p);
+        }
         return policy;
     }
 
@@ -211,7 +213,9 @@ public interface MemberCachePolicy {
             @Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies) {
         Checks.notNull(policy, "Policy");
         Checks.notNull(policies, "Policy");
-        for (MemberCachePolicy p : policies) policy = policy.and(p);
+        for (MemberCachePolicy p : policies) {
+            policy = policy.and(p);
+        }
         return policy;
     }
 

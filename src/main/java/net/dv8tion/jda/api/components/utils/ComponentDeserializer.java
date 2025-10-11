@@ -78,7 +78,9 @@ public class ComponentDeserializer {
      */
     public ComponentDeserializer(@Nonnull Collection<? extends FileUpload> files) {
         this.files = new LinkedHashMap<>(files.size());
-        for (FileUpload file : files) this.files.put(file.getName(), file);
+        for (FileUpload file : files) {
+            this.files.put(file.getName(), file);
+        }
     }
 
     /**

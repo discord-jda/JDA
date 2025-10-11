@@ -526,9 +526,10 @@ public interface EntitySelectMenu extends SelectMenu {
         @Nonnull
         public Builder setChannelTypes(@Nonnull Collection<ChannelType> types) {
             Checks.noneNull(types, "Types");
-            for (ChannelType type : types)
+            for (ChannelType type : types) {
                 Checks.check(
                         type.isGuild(), "Only guild channel types are allowed! Provided: %s", type);
+            }
             this.channelTypes = Helpers.copyEnumSet(ChannelType.class, types);
             return this;
         }

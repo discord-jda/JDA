@@ -63,10 +63,11 @@ public class ApplicationManagerTest extends IntegrationTest {
 
         LinkedHashMap<IntegrationType, IntegrationTypeConfig> integrationTypeConfig =
                 new LinkedHashMap<>();
-        for (IntegrationType type : IntegrationType.values())
+        for (IntegrationType type : IntegrationType.values()) {
             if (type != IntegrationType.UNKNOWN) {
                 integrationTypeConfig.put(type, installParams);
             }
+        }
 
         manager.setDescription("test")
                 .setIcon(getLogoIcon())

@@ -63,7 +63,9 @@ public class AnnotatedEventManager implements IEventManager {
     @Override
     public void register(@Nonnull Object listener) {
         if (listener.getClass().isArray()) {
-            for (Object o : ((Object[]) listener)) register(o);
+            for (Object o : ((Object[]) listener)) {
+                register(o);
+            }
             return;
         }
 
@@ -75,7 +77,9 @@ public class AnnotatedEventManager implements IEventManager {
     @Override
     public void unregister(@Nonnull Object listener) {
         if (listener.getClass().isArray()) {
-            for (Object o : ((Object[]) listener)) unregister(o);
+            for (Object o : ((Object[]) listener)) {
+                unregister(o);
+            }
             return;
         }
 

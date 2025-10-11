@@ -60,8 +60,9 @@ public class MessagePinDeadlineTest {
 
         // Make sure the permissions are checked in the given order (to check short-circuiting)
         final InOrder channelInOrder = inOrder(channel);
-        for (Permission expectedCheckedPermission : expectedCheckedPermissions)
+        for (Permission expectedCheckedPermission : expectedCheckedPermissions) {
             channelInOrder.verify(channel).hasPermission(expectedCheckedPermission);
+        }
         channelInOrder.verifyNoMoreInteractions();
     }
 
@@ -102,8 +103,9 @@ public class MessagePinDeadlineTest {
 
         // Make sure the permissions are checked in the given order
         final InOrder channelInOrder = inOrder(channel);
-        for (Permission expectedCheckedPermission : expectedCheckedPermissions)
+        for (Permission expectedCheckedPermission : expectedCheckedPermissions) {
             channelInOrder.verify(channel).hasPermission(expectedCheckedPermission);
+        }
         // Make sure no extra permissions were checked
         channelInOrder.verify(channel, never()).hasPermission(any());
     }

@@ -131,7 +131,9 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
 
         // delete messages too old for bulk delete
         if (!norm.isEmpty()) {
-            for (long message : norm) list.add(deleteMessageById(message).submit());
+            for (long message : norm) {
+                list.add(deleteMessageById(message).submit());
+            }
         }
         return list;
     }

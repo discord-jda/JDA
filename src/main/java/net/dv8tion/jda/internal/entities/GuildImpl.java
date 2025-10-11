@@ -1931,7 +1931,9 @@ public class GuildImpl implements Guild {
         if (!description.isEmpty()) {
             Checks.inRange(description, 2, 100, "Description");
         }
-        for (String t : tags) Checks.notEmpty(t, "Tags");
+        for (String t : tags) {
+            Checks.notEmpty(t, "Tags");
+        }
 
         String csv = String.join(",", tags);
         Checks.notLonger(csv, 200, "Tags");

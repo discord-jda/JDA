@@ -123,7 +123,9 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @CheckReturnValue
     public RoleActionImpl setPermissions(Long permissions) {
         if (permissions != null) {
-            for (Permission p : Permission.getPermissions(permissions)) checkPermission(p);
+            for (Permission p : Permission.getPermissions(permissions)) {
+                checkPermission(p);
+            }
         }
         this.permissions = permissions;
         return this;

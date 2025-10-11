@@ -111,7 +111,9 @@ public class EventCache {
                     items.size(),
                     type,
                     triggerId);
-            for (CacheNode item : items) item.execute();
+            for (CacheNode item : items) {
+                item.execute();
+            }
         }
     }
 
