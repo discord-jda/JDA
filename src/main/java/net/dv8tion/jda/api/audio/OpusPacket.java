@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.audio;
 
 import net.dv8tion.jda.internal.audio.AudioPacket;
-import net.dv8tion.jda.internal.audio.Decoder;
+import net.dv8tion.jda.internal.audio.OpusDecoder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,13 +45,13 @@ public final class OpusPacket implements Comparable<OpusPacket>
 
     private final long userId;
     private final byte[] opusAudio;
-    private final Decoder decoder;
+    private final OpusDecoder decoder;
     private final AudioPacket rawPacket;
 
     private short[] decoded;
     private boolean triedDecode;
 
-    public OpusPacket(@Nonnull AudioPacket packet, long userId, @Nullable Decoder decoder)
+    public OpusPacket(@Nonnull AudioPacket packet, long userId, @Nullable OpusDecoder decoder)
     {
         this.rawPacket = packet;
         this.userId = userId;
@@ -156,7 +156,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
         if (!decoder.isInOrder(getSequence()))
             throw new IllegalStateException("Packet is not in order");
         triedDecode = true;
-        return decoded = decoder.decodeFromOpus(rawPacket); // null if failed to decode
+        return decoded = decoder.decode(rawPacket); // null if failed to decode
     }
 
     /**
