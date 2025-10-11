@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.audio;
 
+import net.dv8tion.jda.internal.audio.MissingOpusException;
 import net.dv8tion.jda.internal.audio.OpusCodecFactoryProvider;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public final class AudioNatives
         {
             LOG.error("Sorry, JDA's audio system doesn't support this system.\n{}", e.getMessage());
         }
-        else if (e instanceof NoClassDefFoundError)
+        else if (e instanceof MissingOpusException)
         {
             LOG.error("Missing opus dependency, unable to initialize audio!");
         }
