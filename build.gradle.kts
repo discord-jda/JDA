@@ -217,8 +217,8 @@ spotless {
 
     java {
         palantirJavaFormat("2.75.0")
-            .style("AOSP")
-            .formatJavadoc(false)
+                .style("AOSP")
+                .formatJavadoc(false)
 
         licenseHeaderFile("spotless/licence-header.txt")
 
@@ -238,9 +238,20 @@ tasks.named("spotlessJavaApply").configure {
     dependsOn(tasks.named("rewriteRun"))
 }
 
-tasks.named("check").configure {
+tasks.register("format") {
+    group = "verification"
+    dependsOn(tasks.named("spotlessApply"))
+    dependsOn(tasks.named("versionCatalogFormat"))
+}
+
+val checkFormat by tasks.registering {
+    group = "verification"
     dependsOn(tasks.named("spotlessCheck"))
     dependsOn(tasks.named("rewriteDryRun"))
+}
+
+tasks.named("check").configure {
+    dependsOn(checkFormat)
 }
 
 
