@@ -33,13 +33,16 @@ import javax.annotation.Nonnull;
  * @see IPositionableChannel#getPosition()
  * @see ChannelField#POSITION
  */
-public class ChannelUpdatePositionEvent extends GenericChannelUpdateEvent<Integer>
-{
+public class ChannelUpdatePositionEvent extends GenericChannelUpdateEvent<Integer> {
     public static final ChannelField FIELD = ChannelField.POSITION;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
-    {
+    public ChannelUpdatePositionEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            Channel channel,
+            Integer oldValue,
+            Integer newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

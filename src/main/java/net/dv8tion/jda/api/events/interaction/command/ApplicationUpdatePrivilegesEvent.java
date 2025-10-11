@@ -21,8 +21,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.interactions.commands.privileges.PrivilegeTargetType;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link IntegrationPrivilege Privileges} of an application changed.
@@ -30,17 +31,19 @@ import java.util.List;
  *
  * <p>Can be used to get affected Guild and {@link List} of new {@link IntegrationPrivilege Privileges}
  */
-public class ApplicationUpdatePrivilegesEvent extends GenericPrivilegeUpdateEvent
-{
-    public ApplicationUpdatePrivilegesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, long applicationId, @Nonnull List<IntegrationPrivilege> privileges)
-    {
+public class ApplicationUpdatePrivilegesEvent extends GenericPrivilegeUpdateEvent {
+    public ApplicationUpdatePrivilegesEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            long applicationId,
+            @Nonnull List<IntegrationPrivilege> privileges) {
         super(api, responseNumber, guild, applicationId, applicationId, privileges);
     }
 
     @Nonnull
     @Override
-    public PrivilegeTargetType getTargetType()
-    {
+    public PrivilegeTargetType getTargetType() {
         return PrivilegeTargetType.INTEGRATION;
     }
 }

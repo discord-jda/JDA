@@ -27,20 +27,22 @@ import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * One row of action components.
  *
  * @see ActionRowChildComponent
  */
-public interface ActionRow extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
-{
+public interface ActionRow
+        extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable {
     /**
      * Create one row of {@link ActionRowChildComponent components}.
      * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link #getMaxAllowed(Type)}.
@@ -54,8 +56,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return The action row
      */
     @Nonnull
-    static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> components)
-    {
+    static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> components) {
         return ActionRowImpl.validated(components);
     }
 
@@ -74,8 +75,9 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return The action row
      */
     @Nonnull
-    static ActionRow of(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
-    {
+    static ActionRow of(
+            @Nonnull ActionRowChildComponent component,
+            @Nonnull ActionRowChildComponent... components) {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
         return of(Helpers.mergeVararg(component, components));
@@ -108,8 +110,8 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
-    static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> components)
-    {
+    static List<ActionRow> partitionOf(
+            @Nonnull Collection<? extends ActionRowChildComponent> components) {
         return ActionRowImpl.partitionOf(components);
     }
 
@@ -142,8 +144,9 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
-    static List<ActionRow> partitionOf(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
-    {
+    static List<ActionRow> partitionOf(
+            @Nonnull ActionRowChildComponent component,
+            @Nonnull ActionRowChildComponent... components) {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
         return partitionOf(Helpers.mergeVararg(component, components));
@@ -154,20 +157,18 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      *
      * @return The maximum amount an action row can contain
      */
-    static int getMaxAllowed(@Nonnull Component.Type type)
-    {
-        switch (type)
-        {
-        case BUTTON:
-            return 5;
-        case STRING_SELECT:
-        case USER_SELECT:
-        case ROLE_SELECT:
-        case MENTIONABLE_SELECT:
-        case CHANNEL_SELECT:
-            return 1;
-        default:
-            return 0;
+    static int getMaxAllowed(@Nonnull Component.Type type) {
+        switch (type) {
+            case BUTTON:
+                return 5;
+            case STRING_SELECT:
+            case USER_SELECT:
+            case ROLE_SELECT:
+            case MENTIONABLE_SELECT:
+            case CHANNEL_SELECT:
+                return 1;
+            default:
+                return 0;
         }
     }
 
@@ -192,8 +193,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      */
     @Nonnull
     @Unmodifiable
-    default List<ActionComponent> getActionComponents()
-    {
+    default List<ActionComponent> getActionComponents() {
         return getComponents().stream()
                 .filter(ActionComponent.class::isInstance)
                 .map(ActionComponent.class::cast)
@@ -207,8 +207,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      */
     @Nonnull
     @Unmodifiable
-    default List<Button> getButtons()
-    {
+    default List<Button> getButtons() {
         return getComponents().stream()
                 .filter(Button.class::isInstance)
                 .map(Button.class::cast)
@@ -216,19 +215,19 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
     }
 
     @Override
-    default boolean isMessageCompatible()
-    {
-        if (!getType().isMessageCompatible())
+    default boolean isMessageCompatible() {
+        if (!getType().isMessageCompatible()) {
             return false;
+        }
 
         return getComponents().stream().allMatch(Component::isMessageCompatible);
     }
 
     @Override
-    default boolean isModalCompatible()
-    {
-        if (!getType().isModalCompatible())
+    default boolean isModalCompatible() {
+        if (!getType().isModalCompatible()) {
             return false;
+        }
 
         return getComponents().stream().allMatch(Component::isModalCompatible);
     }
@@ -239,36 +238,32 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
     ActionRow replace(@Nonnull ComponentReplacer replacer);
 
     @Override
-    default boolean isDisabled()
-    {
+    default boolean isDisabled() {
         return getActionComponents().stream().allMatch(ActionComponent::isDisabled);
     }
 
     @Override
-    default boolean isEnabled()
-    {
+    default boolean isEnabled() {
         return getActionComponents().stream().noneMatch(ActionComponent::isDisabled);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default ActionRow withDisabled(boolean disabled)
-    {
-        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
+    default ActionRow withDisabled(boolean disabled) {
+        return replace(
+                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
     }
 
     @Nonnull
     @Override
-    default ActionRow asDisabled()
-    {
+    default ActionRow asDisabled() {
         return (ActionRow) IDisableable.super.asDisabled();
     }
 
     @Nonnull
     @Override
-    default ActionRow asEnabled()
-    {
+    default ActionRow asEnabled() {
         return (ActionRow) IDisableable.super.asEnabled();
     }
 
@@ -302,8 +297,9 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      */
     @Nonnull
     @CheckReturnValue
-    default ActionRow withComponents(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
-    {
+    default ActionRow withComponents(
+            @Nonnull ActionRowChildComponent component,
+            @Nonnull ActionRowChildComponent... components) {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
         return withComponents(Helpers.mergeVararg(component, components));

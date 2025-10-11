@@ -22,12 +22,14 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.internal.utils.Helpers;
+
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Represents a {@link GuildChannel} that uses {@link net.dv8tion.jda.api.entities.PermissionOverride Permission Overrides}.
@@ -36,8 +38,7 @@ import java.util.List;
  *
  * @see net.dv8tion.jda.api.entities.PermissionOverride
  */
-public interface IPermissionContainer extends GuildChannel
-{
+public interface IPermissionContainer extends GuildChannel {
     @Override
     @Nonnull
     @CheckReturnValue
@@ -98,8 +99,7 @@ public interface IPermissionContainer extends GuildChannel
      */
     @Nonnull
     @Unmodifiable
-    default List<PermissionOverride> getMemberPermissionOverrides()
-    {
+    default List<PermissionOverride> getMemberPermissionOverrides() {
         return getPermissionOverrides().stream()
                 .filter(PermissionOverride::isMemberOverride)
                 .collect(Helpers.toUnmodifiableList());
@@ -118,8 +118,7 @@ public interface IPermissionContainer extends GuildChannel
      */
     @Nonnull
     @Unmodifiable
-    default List<PermissionOverride> getRolePermissionOverrides()
-    {
+    default List<PermissionOverride> getRolePermissionOverrides() {
         return getPermissionOverrides().stream()
                 .filter(PermissionOverride::isRoleOverride)
                 .collect(Helpers.toUnmodifiableList());

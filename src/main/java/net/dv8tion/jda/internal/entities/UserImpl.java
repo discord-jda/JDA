@@ -30,15 +30,15 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public class UserImpl extends UserSnowflakeImpl implements User
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class UserImpl extends UserSnowflakeImpl implements User {
     protected final JDAImpl api;
 
     protected short discriminator;
@@ -52,44 +52,38 @@ public class UserImpl extends UserSnowflakeImpl implements User
     protected int flags;
     protected PrimaryGuild primaryGuild;
 
-    public UserImpl(long id, JDAImpl api)
-    {
+    public UserImpl(long id, JDAImpl api) {
         super(id);
         this.api = api;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Nullable
     @Override
-    public String getGlobalName()
-    {
+    public String getGlobalName() {
         return globalName;
     }
 
     @Nonnull
     @Override
-    public String getDiscriminator()
-    {
+    public String getDiscriminator() {
         return discriminator == 0 ? "0000" : Helpers.format("%04d", discriminator);
     }
 
     @Nullable
     @Override
-    public String getAvatarId()
-    {
+    public String getAvatarId() {
         return avatarId;
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<Profile> retrieveProfile()
-    {
+    public CacheRestAction<Profile> retrieveProfile() {
         return new DeferredRestAction<>(getJDA(), Profile.class, this::getProfile, () -> {
             Route.CompiledRoute route = Route.Users.GET_USER.compile(getId());
             return new RestActionImpl<>(getJDA(), route, (response, request) -> {
@@ -103,196 +97,173 @@ public class UserImpl extends UserSnowflakeImpl implements User
         });
     }
 
-    public Profile getProfile()
-    {
+    public Profile getProfile() {
         return profile;
     }
 
     @Nonnull
     @Override
-    public String getDefaultAvatarId()
-    {
+    public String getDefaultAvatarId() {
         // Backwards compatibility with old discriminator system
         return discriminator != 0 ? String.valueOf(discriminator % 5) : super.getDefaultAvatarId();
     }
 
     @Nonnull
     @Override
-    public String getAsTag()
-    {
+    public String getAsTag() {
         return getName() + '#' + getDiscriminator();
     }
 
     @Override
-    public boolean hasPrivateChannel()
-    {
+    public boolean hasPrivateChannel() {
         return privateChannelId != 0;
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<PrivateChannel> openPrivateChannel()
-    {
-        return new DeferredRestAction<>(getJDA(), PrivateChannel.class, this::getPrivateChannel, () -> {
-            Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
-            DataObject body = DataObject.empty().put("recipient_id", getId());
-            return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
-            {
-                PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
-                UserImpl.this.privateChannelId = priv.getIdLong();
-                return priv;
-            });
-        });
+    public CacheRestAction<PrivateChannel> openPrivateChannel() {
+        return new DeferredRestAction<>(
+                getJDA(), PrivateChannel.class, this::getPrivateChannel, () -> {
+                    Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
+                    DataObject body = DataObject.empty().put("recipient_id", getId());
+                    return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
+                        PrivateChannel priv = api.getEntityBuilder()
+                                .createPrivateChannel(response.getObject(), this);
+                        UserImpl.this.privateChannelId = priv.getIdLong();
+                        return priv;
+                    });
+                });
     }
 
-    public PrivateChannel getPrivateChannel()
-    {
-        if (!hasPrivateChannel())
+    public PrivateChannel getPrivateChannel() {
+        if (!hasPrivateChannel()) {
             return null;
+        }
         PrivateChannel channel = getJDA().getPrivateChannelById(privateChannelId);
         return channel != null ? channel : new PrivateChannelImpl(getJDA(), privateChannelId, this);
     }
 
     @Nonnull
     @Override
-    public List<Guild> getMutualGuilds()
-    {
+    public List<Guild> getMutualGuilds() {
         return getJDA().getMutualGuilds(this);
     }
 
     @Override
-    public boolean isBot()
-    {
+    public boolean isBot() {
         return bot;
     }
 
     @Override
-    public boolean isSystem()
-    {
+    public boolean isSystem() {
         return system;
     }
 
     @Nonnull
     @Override
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public EnumSet<UserFlag> getFlags()
-    {
+    public EnumSet<UserFlag> getFlags() {
         return UserFlag.getFlags(flags);
     }
-    
+
     @Override
-    public int getFlagsRaw()
-    {
+    public int getFlagsRaw() {
         return flags;
     }
-    
+
     @Nullable
     @Override
-    public PrimaryGuild getPrimaryGuild()
-    {
+    public PrimaryGuild getPrimaryGuild() {
         return primaryGuild;
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setName(name)
-                .toString();
+    public String toString() {
+        return new EntityString(this).setName(name).toString();
     }
 
     // -- Setters --
 
-    public UserImpl setName(String name)
-    {
+    public UserImpl setName(String name) {
         this.name = name;
         return this;
     }
 
-    public UserImpl setGlobalName(String globalName)
-    {
+    public UserImpl setGlobalName(String globalName) {
         this.globalName = globalName;
         return this;
     }
 
-    public UserImpl setDiscriminator(short discriminator)
-    {
+    public UserImpl setDiscriminator(short discriminator) {
         this.discriminator = discriminator;
         return this;
     }
 
-    public UserImpl setAvatarId(String avatarId)
-    {
+    public UserImpl setAvatarId(String avatarId) {
         this.avatarId = avatarId;
         return this;
     }
 
-    public UserImpl setProfile(Profile profile)
-    {
+    public UserImpl setProfile(Profile profile) {
         this.profile = profile;
         return this;
     }
 
-    public UserImpl setPrivateChannel(PrivateChannel privateChannel)
-    {
-        if (privateChannel != null)
+    public UserImpl setPrivateChannel(PrivateChannel privateChannel) {
+        if (privateChannel != null) {
             this.privateChannelId = privateChannel.getIdLong();
+        }
         return this;
     }
 
-    public UserImpl setBot(boolean bot)
-    {
+    public UserImpl setBot(boolean bot) {
         this.bot = bot;
         return this;
     }
 
-    public UserImpl setSystem(boolean system)
-    {
+    public UserImpl setSystem(boolean system) {
         this.system = system;
         return this;
     }
 
-    public UserImpl setFlags(int flags)
-    {
+    public UserImpl setFlags(int flags) {
         this.flags = flags;
         return this;
     }
-    
-    public UserImpl setPrimaryGuild(PrimaryGuild primaryGuild)
-    {
+
+    public UserImpl setPrimaryGuild(PrimaryGuild primaryGuild) {
         this.primaryGuild = primaryGuild;
         return this;
     }
 
-    public short getDiscriminatorInt()
-    {
+    public short getDiscriminatorInt() {
         return discriminator;
     }
 
     @Override
-    public void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
+    public void formatTo(Formatter formatter, int flags, int width, int precision) {
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
-        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean leftJustified =
+                (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
 
         String out;
-        if (!alt)
+        if (!alt) {
             out = getAsMention();
-        else if (discriminator == 0 && upper)
+        } else if (discriminator == 0 && upper) {
             out = getName().toUpperCase();
-        else if (discriminator == 0)
+        } else if (discriminator == 0) {
             out = getName();
-        else if (upper)
+        } else if (upper) {
             out = getAsTag().toUpperCase();
-        else
+        } else {
             out = getAsTag();
+        }
 
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }

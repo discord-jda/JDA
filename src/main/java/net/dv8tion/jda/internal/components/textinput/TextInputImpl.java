@@ -24,14 +24,13 @@ import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class TextInputImpl
-        extends AbstractComponentImpl
-        implements TextInput, LabelChildComponentUnion
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class TextInputImpl extends AbstractComponentImpl
+        implements TextInput, LabelChildComponentUnion {
     private final String id;
     private final int uniqueId;
     private final TextInputStyle style;
@@ -41,8 +40,7 @@ public class TextInputImpl
     private final String value;
     private final String placeholder;
 
-    public TextInputImpl(DataObject object)
-    {
+    public TextInputImpl(DataObject object) {
         this(
                 object.getString("custom_id"),
                 object.getInt("id", -1),
@@ -51,14 +49,18 @@ public class TextInputImpl
                 object.getInt("max_length", -1),
                 object.getBoolean("required", true),
                 object.getString("value", null),
-                object.getString("placeholder", null)
-        );
+                object.getString("placeholder", null));
     }
 
     public TextInputImpl(
-            String id, int uniqueId, TextInputStyle style, int minLength,
-            int maxLength, boolean required, String value, String placeholder)
-    {
+            String id,
+            int uniqueId,
+            TextInputStyle style,
+            int minLength,
+            int maxLength,
+            boolean required,
+            String value,
+            String placeholder) {
         this.id = id;
         this.uniqueId = uniqueId;
         this.style = style;
@@ -71,106 +73,109 @@ public class TextInputImpl
 
     @Nonnull
     @Override
-    public TextInputImpl withUniqueId(int uniqueId)
-    {
+    public TextInputImpl withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
-        return new TextInputImpl(id, uniqueId, style, minLength, maxLength, required, value, placeholder);
+        return new TextInputImpl(
+                id, uniqueId, style, minLength, maxLength, required, value, placeholder);
     }
 
     @Nonnull
     @Override
-    public TextInputStyle getStyle()
-    {
+    public TextInputStyle getStyle() {
         return style;
     }
 
     @Nonnull
     @Override
-    public String getCustomId()
-    {
+    public String getCustomId() {
         return id;
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Override
-    public int getMinLength()
-    {
+    public int getMinLength() {
         return minLength;
     }
 
     @Override
-    public int getMaxLength()
-    {
+    public int getMaxLength() {
         return maxLength;
     }
 
     @Override
-    public boolean isRequired()
-    {
+    public boolean isRequired() {
         return required;
     }
 
     @Nullable
     @Override
-    public String getValue()
-    {
+    public String getValue() {
         return value;
     }
 
     @Nullable
     @Override
-    public String getPlaceHolder()
-    {
+    public String getPlaceHolder() {
         return placeholder;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject obj = DataObject.empty()
-                    .put("type", getType().getKey())
-                    .put("custom_id", id)
-                    .put("style", style.getRaw())
-                    .put("required", required);
-        if (uniqueId >= 0)
+                .put("type", getType().getKey())
+                .put("custom_id", id)
+                .put("style", style.getRaw())
+                .put("required", required);
+        if (uniqueId >= 0) {
             obj.put("id", uniqueId);
-        if (minLength != -1)
+        }
+        if (minLength != -1) {
             obj.put("min_length", minLength);
-        if (maxLength != -1)
+        }
+        if (maxLength != -1) {
             obj.put("max_length", maxLength);
-        if (value != null)
+        }
+        if (value != null) {
             obj.put("value", value);
-        if (placeholder != null)
+        }
+        if (placeholder != null) {
             obj.put("placeholder", placeholder);
+        }
         return obj;
     }
 
     @Override
-    public final boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof TextInputImpl)) return false;
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof TextInputImpl)) {
+            return false;
+        }
         TextInputImpl that = (TextInputImpl) o;
-        return uniqueId == that.uniqueId && minLength == that.minLength && maxLength == that.maxLength
-                && required == that.required && id.equals(that.id) && style == that.style
-                && Objects.equals(value, that.value) && Objects.equals(placeholder, that.placeholder);
+        return uniqueId == that.uniqueId
+                && minLength == that.minLength
+                && maxLength == that.maxLength
+                && required == that.required
+                && id.equals(that.id)
+                && style == that.style
+                && Objects.equals(value, that.value)
+                && Objects.equals(placeholder, that.placeholder);
     }
 
     @Override
-    public int hashCode()
-    {
-        return Objects.hash(id, uniqueId, style, minLength, maxLength, required, value, placeholder);
+    public int hashCode() {
+        return Objects.hash(
+                id, uniqueId, style, minLength, maxLength, required, value, placeholder);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setType(style)
                 .addMetadata("id", id)

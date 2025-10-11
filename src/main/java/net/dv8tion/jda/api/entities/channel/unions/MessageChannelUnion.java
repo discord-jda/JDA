@@ -41,8 +41,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link GroupChannel}</li>
  * </ul>
  */
-public interface MessageChannelUnion extends MessageChannel
-{
+public interface MessageChannelUnion extends MessageChannel {
     /**
      * Casts this union to a {@link PrivateChannel}.
      * This method exists for developer discoverability.

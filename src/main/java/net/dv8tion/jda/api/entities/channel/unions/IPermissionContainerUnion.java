@@ -42,8 +42,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link Category}</li>
  * </ul>
  */
-public interface IPermissionContainerUnion extends IPermissionContainer
-{
+public interface IPermissionContainerUnion extends IPermissionContainer {
     /**
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.

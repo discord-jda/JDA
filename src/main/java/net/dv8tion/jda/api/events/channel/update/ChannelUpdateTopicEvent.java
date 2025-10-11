@@ -36,13 +36,16 @@ import javax.annotation.Nonnull;
  * @see StandardGuildMessageChannel#getTopic()
  * @see ForumChannel#getTopic()
  */
-public class ChannelUpdateTopicEvent extends GenericChannelUpdateEvent<String>
-{
+public class ChannelUpdateTopicEvent extends GenericChannelUpdateEvent<String> {
     public static final ChannelField FIELD = ChannelField.TOPIC;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateTopicEvent(@Nonnull JDA api, long responseNumber, Channel channel, String oldValue, String newValue)
-    {
+    public ChannelUpdateTopicEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            Channel channel,
+            String oldValue,
+            String newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

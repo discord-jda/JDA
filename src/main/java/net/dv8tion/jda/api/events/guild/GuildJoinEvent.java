@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild;
 
 import net.dv8tion.jda.api.JDA;
@@ -28,10 +29,8 @@ import javax.annotation.Nonnull;
  *
  * @see UnavailableGuildJoinedEvent
  */
-public class GuildJoinEvent extends GenericGuildEvent
-{
-    public GuildJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
-    {
+public class GuildJoinEvent extends GenericGuildEvent {
+    public GuildJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild) {
         super(api, responseNumber, guild);
     }
 }

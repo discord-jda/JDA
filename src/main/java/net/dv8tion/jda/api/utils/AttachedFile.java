@@ -19,22 +19,23 @@ package net.dv8tion.jda.api.utils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Represents files that are attached to requests.
  */
-public interface AttachedFile extends Closeable
-{
+public interface AttachedFile extends Closeable {
     /**
      * The maximum length a {@link FileUpload#setDescription(String) description} can be ({@value}).
      */
@@ -60,8 +61,7 @@ public interface AttachedFile extends Closeable
      * @see    java.io.FileInputStream FileInputStream
      */
     @Nonnull
-    static FileUpload fromData(@Nonnull InputStream data, @Nonnull String name)
-    {
+    static FileUpload fromData(@Nonnull InputStream data, @Nonnull String name) {
         return FileUpload.fromData(data, name);
     }
 
@@ -80,8 +80,7 @@ public interface AttachedFile extends Closeable
      * @return {@link FileUpload}
      */
     @Nonnull
-    static FileUpload fromData(@Nonnull byte[] data, @Nonnull String name)
-    {
+    static FileUpload fromData(@Nonnull byte[] data, @Nonnull String name) {
         return FileUpload.fromData(data, name);
     }
 
@@ -107,8 +106,7 @@ public interface AttachedFile extends Closeable
      * @see    java.io.FileInputStream FileInputStream
      */
     @Nonnull
-    static FileUpload fromData(@Nonnull File file, @Nonnull String name)
-    {
+    static FileUpload fromData(@Nonnull File file, @Nonnull String name) {
         return FileUpload.fromData(file, name);
     }
 
@@ -133,8 +131,7 @@ public interface AttachedFile extends Closeable
      * @see    #fromData(File, String)
      */
     @Nonnull
-    static FileUpload fromData(@Nonnull File file)
-    {
+    static FileUpload fromData(@Nonnull File file) {
         return FileUpload.fromData(file);
     }
 
@@ -160,8 +157,8 @@ public interface AttachedFile extends Closeable
      * @return {@link FileUpload}
      */
     @Nonnull
-    static FileUpload fromData(@Nonnull Path path, @Nonnull String name, @Nonnull OpenOption... options)
-    {
+    static FileUpload fromData(
+            @Nonnull Path path, @Nonnull String name, @Nonnull OpenOption... options) {
         return FileUpload.fromData(path, name, options);
     }
 
@@ -186,8 +183,7 @@ public interface AttachedFile extends Closeable
      * @return {@link FileUpload}
      */
     @Nonnull
-    static FileUpload fromData(@Nonnull Path path, @Nonnull OpenOption... options)
-    {
+    static FileUpload fromData(@Nonnull Path path, @Nonnull OpenOption... options) {
         return FileUpload.fromData(path, options);
     }
 
@@ -201,8 +197,7 @@ public interface AttachedFile extends Closeable
      * @return {@link AttachmentUpdate}
      */
     @Nonnull
-    static AttachmentUpdate fromAttachment(long id)
-    {
+    static AttachmentUpdate fromAttachment(long id) {
         return AttachmentUpdate.fromAttachment(id);
     }
 
@@ -219,11 +214,9 @@ public interface AttachedFile extends Closeable
      * @return {@link AttachmentUpdate}
      */
     @Nonnull
-    static AttachmentUpdate fromAttachment(@Nonnull String id)
-    {
+    static AttachmentUpdate fromAttachment(@Nonnull String id) {
         return AttachmentUpdate.fromAttachment(id);
     }
-
 
     /**
      * Creates an {@link AttachmentUpdate} with the given attachment.
@@ -235,8 +228,7 @@ public interface AttachedFile extends Closeable
      * @return {@link AttachmentUpdate}
      */
     @Nonnull
-    static AttachmentUpdate fromAttachment(@Nonnull Message.Attachment attachment)
-    {
+    static AttachmentUpdate fromAttachment(@Nonnull Message.Attachment attachment) {
         return AttachmentUpdate.fromAttachment(attachment);
     }
 
@@ -276,8 +268,8 @@ public interface AttachedFile extends Closeable
      * @return {@link MultipartBody.Builder}
      */
     @Nonnull
-    static MultipartBody.Builder createMultipartBody(@Nonnull Collection<? extends AttachedFile> files)
-    {
+    static MultipartBody.Builder createMultipartBody(
+            @Nonnull Collection<? extends AttachedFile> files) {
         return createMultipartBody(files, (RequestBody) null);
     }
 
@@ -295,9 +287,11 @@ public interface AttachedFile extends Closeable
      * @return {@link MultipartBody.Builder}
      */
     @Nonnull
-    static MultipartBody.Builder createMultipartBody(@Nonnull Collection<? extends AttachedFile> files, @Nullable DataObject payloadJson)
-    {
-        RequestBody body = payloadJson != null ? RequestBody.create(payloadJson.toJson(), Requester.MEDIA_TYPE_JSON) : null;
+    static MultipartBody.Builder createMultipartBody(
+            @Nonnull Collection<? extends AttachedFile> files, @Nullable DataObject payloadJson) {
+        RequestBody body = payloadJson != null
+                ? RequestBody.create(payloadJson.toJson(), Requester.MEDIA_TYPE_JSON)
+                : null;
         return createMultipartBody(files, body);
     }
 
@@ -315,16 +309,18 @@ public interface AttachedFile extends Closeable
      * @return {@link MultipartBody.Builder}
      */
     @Nonnull
-    static MultipartBody.Builder createMultipartBody(@Nonnull Collection<? extends AttachedFile> files, @Nullable RequestBody payloadJson)
-    {
+    static MultipartBody.Builder createMultipartBody(
+            @Nonnull Collection<? extends AttachedFile> files, @Nullable RequestBody payloadJson) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         // Match the attachment `id` fields generated by [[MessageUtil#getAttachmentsData]]
         int i = 0;
-        for (AttachedFile file : files)
+        for (AttachedFile file : files) {
             file.addPart(builder, i++);
+        }
 
-        if (payloadJson != null)
+        if (payloadJson != null) {
             builder.addFormDataPart("payload_json", null, payloadJson);
+        }
         return builder;
     }
 

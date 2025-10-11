@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * A callback action is used to <b>acknowledge</b> an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
  */
-public interface InteractionCallbackAction<T> extends RestAction<T>
-{
+public interface InteractionCallbackAction<T> extends RestAction<T> {
     /**
      * Closes all owned resources used for this request.
      *
@@ -40,8 +39,7 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
     /**
      * The possible types of interaction responses.
      */
-    enum ResponseType
-    {
+    enum ResponseType {
         /** Immediately respond to an interaction with a message */
         CHANNEL_MESSAGE_WITH_SOURCE(4),
         /** Delayed or Deferred response to an interaction, this sends a "Thinking..." message to the channel */
@@ -59,8 +57,7 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         ;
         private final int raw;
 
-        ResponseType(int raw)
-        {
+        ResponseType(int raw) {
             this.raw = raw;
         }
 
@@ -69,18 +66,16 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
          *
          * @return The raw key
          */
-        public int getRaw()
-        {
+        public int getRaw() {
             return raw;
         }
 
         @Nonnull
-        public static ResponseType fromId(int id)
-        {
-            for (ResponseType type : values())
-            {
-                if (type.raw == id)
+        public static ResponseType fromId(int id) {
+            for (ResponseType type : values()) {
+                if (type.raw == id) {
                     return type;
+                }
             }
             return UNKNOWN;
         }

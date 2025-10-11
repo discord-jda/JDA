@@ -18,9 +18,10 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.Instant;
+
+import javax.annotation.Nonnull;
 
 /**
  * Utility class representing Discord Markdown timestamps.
@@ -29,13 +30,11 @@ import java.time.Instant;
  * <p>These timestamps are rendered by the individual receiving Discord client in a local timezone and language format.
  * Each timestamp can be displayed with different {@link TimeFormat TimeFormats}.
  */
-public class Timestamp
-{
+public class Timestamp {
     private final TimeFormat format;
     private final long timestamp;
 
-    protected Timestamp(TimeFormat format, long timestamp)
-    {
+    protected Timestamp(TimeFormat format, long timestamp) {
         Checks.notNull(format, "TimeFormat");
         this.format = format;
         this.timestamp = timestamp;
@@ -47,8 +46,7 @@ public class Timestamp
      * @return The {@link TimeFormat}
      */
     @Nonnull
-    public TimeFormat getFormat()
-    {
+    public TimeFormat getFormat() {
         return format;
     }
 
@@ -59,8 +57,7 @@ public class Timestamp
      *
      * @return The millisecond unix epoch timestamp
      */
-    public long getTimestamp()
-    {
+    public long getTimestamp() {
         return timestamp;
     }
 
@@ -70,8 +67,7 @@ public class Timestamp
      * @return The {@link Instant} of this timestamp
      */
     @Nonnull
-    public Instant toInstant()
-    {
+    public Instant toInstant() {
         return Instant.ofEpochMilli(timestamp);
     }
 
@@ -86,8 +82,7 @@ public class Timestamp
      * @see    #plus(Duration)
      */
     @Nonnull
-    public Timestamp plus(long millis)
-    {
+    public Timestamp plus(long millis) {
         return new Timestamp(format, timestamp + millis);
     }
 
@@ -105,8 +100,7 @@ public class Timestamp
      * @see    #plus(long)
      */
     @Nonnull
-    public Timestamp plus(@Nonnull Duration duration)
-    {
+    public Timestamp plus(@Nonnull Duration duration) {
         Checks.notNull(duration, "Duration");
         return plus(duration.toMillis());
     }
@@ -122,8 +116,7 @@ public class Timestamp
      * @see    #minus(Duration)
      */
     @Nonnull
-    public Timestamp minus(long millis)
-    {
+    public Timestamp minus(long millis) {
         return new Timestamp(format, timestamp - millis);
     }
 
@@ -141,15 +134,13 @@ public class Timestamp
      * @see    #minus(long)
      */
     @Nonnull
-    public Timestamp minus(@Nonnull Duration duration)
-    {
+    public Timestamp minus(@Nonnull Duration duration) {
         Checks.notNull(duration, "Duration");
         return minus(duration.toMillis());
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "<t:" + timestamp / 1000 + ":" + format.getStyle() + ">";
     }
 }

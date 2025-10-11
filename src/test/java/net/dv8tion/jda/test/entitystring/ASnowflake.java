@@ -18,11 +18,9 @@ package net.dv8tion.jda.test.entitystring;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
 
-public class ASnowflake implements ISnowflake
-{
+public class ASnowflake implements ISnowflake {
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return 42;
     }
 }

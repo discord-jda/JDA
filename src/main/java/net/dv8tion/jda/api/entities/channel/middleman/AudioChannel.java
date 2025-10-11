@@ -47,8 +47,7 @@ import javax.annotation.Nullable;
  * @see JDA#getVoiceChannelById(long)
  * @see JDA#getStageChannelById(long)
  */
-public interface AudioChannel extends StandardGuildChannel
-{
+public interface AudioChannel extends StandardGuildChannel {
     @Override
     @Nonnull
     @CheckReturnValue
@@ -80,8 +79,7 @@ public interface AudioChannel extends StandardGuildChannel
      * @return the {@link Region} of this channel.
      */
     @Nonnull
-    default Region getRegion()
-    {
+    default Region getRegion() {
         return getRegionRaw() == null ? Region.AUTOMATIC : Region.fromKey(getRegionRaw());
     }
 

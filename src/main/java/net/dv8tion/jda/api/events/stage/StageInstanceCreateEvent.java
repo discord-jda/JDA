@@ -26,10 +26,9 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the created StageInstance and its Guild.
  */
-public class StageInstanceCreateEvent extends GenericStageInstanceEvent
-{
-    public StageInstanceCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)
-    {
+public class StageInstanceCreateEvent extends GenericStageInstanceEvent {
+    public StageInstanceCreateEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance) {
         super(api, responseNumber, stageInstance);
     }
 }

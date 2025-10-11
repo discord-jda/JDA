@@ -42,8 +42,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link MediaChannel}</li>
  * </ul>
  */
-public interface IWebhookContainerUnion extends IWebhookContainer
-{
+public interface IWebhookContainerUnion extends IWebhookContainer {
     /**
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.

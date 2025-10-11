@@ -45,12 +45,11 @@ import javax.annotation.Nonnull;
  * @since  4.2.1
  */
 @Incubating
-public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent<Boolean>
-{
+public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "pending";
 
-    public GuildMemberUpdatePendingEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean previous)
-    {
+    public GuildMemberUpdatePendingEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean previous) {
         super(api, responseNumber, member, previous, member.isPending(), IDENTIFIER);
     }
 
@@ -59,8 +58,7 @@ public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent
      *
      * @return The old pending status
      */
-    public boolean getOldPending()
-    {
+    public boolean getOldPending() {
         return getOldValue();
     }
 
@@ -69,8 +67,7 @@ public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent
      *
      * @return The new pending status
      */
-    public boolean getNewPending()
-    {
+    public boolean getNewPending() {
         return getNewValue();
     }
 }

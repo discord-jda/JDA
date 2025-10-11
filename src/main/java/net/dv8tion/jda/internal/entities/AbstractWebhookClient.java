@@ -34,130 +34,126 @@ import net.dv8tion.jda.internal.requests.restaction.WebhookMessageDeleteActionIm
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
-{
+import javax.annotation.Nonnull;
+
+public abstract class AbstractWebhookClient<T> implements WebhookClient<T> {
     protected final long id;
     protected final JDA api;
     protected String token;
 
-    protected AbstractWebhookClient(long webhookId, String webhookToken, JDA api)
-    {
+    protected AbstractWebhookClient(long webhookId, String webhookToken, JDA api) {
         this.id = webhookId;
         this.token = webhookToken;
         this.api = api;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public String getToken()
-    {
+    public String getToken() {
         return token;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     public abstract WebhookMessageCreateActionImpl<T> sendRequest();
+
     public abstract WebhookMessageEditActionImpl<T> editRequest(String messageId);
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessage(@Nonnull String content)
-    {
+    public WebhookMessageCreateAction<T> sendMessage(@Nonnull String content) {
         return sendRequest().setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public WebhookMessageCreateAction<T> sendMessageEmbeds(
+            @Nonnull Collection<? extends MessageEmbed> embeds) {
         return sendRequest().addEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    public WebhookMessageCreateAction<T> sendMessageComponents(
+            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         return sendRequest().setComponents(components);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessage(@Nonnull MessageCreateData message)
-    {
+    public WebhookMessageCreateAction<T> sendMessage(@Nonnull MessageCreateData message) {
         return sendRequest().applyData(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessagePoll(@Nonnull MessagePollData poll)
-    {
+    public WebhookMessageCreateAction<T> sendMessagePoll(@Nonnull MessagePollData poll) {
         Checks.notNull(poll, "Message Poll");
         return sendRequest().setPoll(poll);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files)
-    {
+    public WebhookMessageCreateAction<T> sendFiles(
+            @Nonnull Collection<? extends FileUpload> files) {
         return sendRequest().addFiles(files);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content)
-    {
+    public WebhookMessageEditActionImpl<T> editMessageById(
+            @Nonnull String messageId, @Nonnull String content) {
         return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    public WebhookMessageEditAction<T> editMessageComponentsById(
+            @Nonnull String messageId,
+            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.noneNull(components, "Components");
         return editRequest(messageId).setComponents(components);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageEditActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public WebhookMessageEditActionImpl<T> editMessageEmbedsById(
+            @Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds) {
         return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull MessageEditData message)
-    {
+    public WebhookMessageEditActionImpl<T> editMessageById(
+            @Nonnull String messageId, @Nonnull MessageEditData message) {
         return (WebhookMessageEditActionImpl<T>) editRequest(messageId).applyData(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageEditActionImpl<T> editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments)
-    {
+    public WebhookMessageEditActionImpl<T> editMessageAttachmentsById(
+            @Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments) {
         return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setAttachments(attachments);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId)
-    {
-        if (!"@original".equals(messageId))
+    public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId) {
+        if (!"@original".equals(messageId)) {
             Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(Long.toUnsignedString(id), token, messageId);
+        }
+        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(
+                Long.toUnsignedString(id), token, messageId);
         return new WebhookMessageDeleteActionImpl(api, route);
     }
 }

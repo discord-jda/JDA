@@ -67,8 +67,8 @@ import javax.annotation.Nullable;
  *
  * @see    Guild#retrieveAuditLogs()
  */
-public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry, AuditLogPaginationAction>
-{
+public interface AuditLogPaginationAction
+        extends PaginationAction<AuditLogEntry, AuditLogPaginationAction> {
     /**
      * The current target {@link net.dv8tion.jda.api.entities.Guild Guild} for
      * this AuditLogPaginationAction.

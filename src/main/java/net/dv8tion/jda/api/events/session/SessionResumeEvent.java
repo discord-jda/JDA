@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.session;
 
 import net.dv8tion.jda.api.JDA;
@@ -25,10 +26,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect the continuation of event flow stopped by the {@link SessionDisconnectEvent}.
  */
-public class SessionResumeEvent extends GenericSessionEvent
-{
-    public SessionResumeEvent(@Nonnull JDA api)
-    {
+public class SessionResumeEvent extends GenericSessionEvent {
+    public SessionResumeEvent(@Nonnull JDA api) {
         super(api, SessionState.RESUMED);
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -48,8 +49,7 @@ import javax.annotation.Nonnull;
  * @see Guild#retrieveBanList()
  * @see Guild#retrieveBan(net.dv8tion.jda.api.entities.UserSnowflake)
  */
-public interface BanPaginationAction extends PaginationAction<Guild.Ban, BanPaginationAction>
-{
+public interface BanPaginationAction extends PaginationAction<Guild.Ban, BanPaginationAction> {
     /**
      * The current target {@link net.dv8tion.jda.api.entities.Guild Guild} for
      * this BanPaginationAction.

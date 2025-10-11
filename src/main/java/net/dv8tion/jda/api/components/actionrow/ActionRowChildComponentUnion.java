@@ -34,8 +34,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
-public interface ActionRowChildComponentUnion extends ActionRowChildComponent, IComponentUnion
-{
+public interface ActionRowChildComponentUnion extends ActionRowChildComponent, IComponentUnion {
     /**
      * Casts this union to a {@link Button}.
      * This method exists for developer discoverability.

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.member;
 
 import net.dv8tion.jda.api.JDA;
@@ -31,10 +32,8 @@ import javax.annotation.Nonnull;
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
-public class GuildMemberJoinEvent extends GenericGuildMemberEvent
-{
-    public GuildMemberJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+public class GuildMemberJoinEvent extends GenericGuildMemberEvent {
+    public GuildMemberJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member);
     }
 }

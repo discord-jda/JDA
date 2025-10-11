@@ -24,6 +24,5 @@ import net.dv8tion.jda.api.requests.FluentRestAction;
  * @see    net.dv8tion.jda.api.interactions.callbacks.IModalCallback
  * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */
-public interface ModalCallbackAction extends InteractionCallbackAction<Void>, FluentRestAction<Void, ModalCallbackAction>
-{
-}
+public interface ModalCallbackAction
+        extends InteractionCallbackAction<Void>, FluentRestAction<Void, ModalCallbackAction> {}

@@ -26,9 +26,10 @@ import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 /**
  * ID/Value pair for a {@link net.dv8tion.jda.api.events.interaction.ModalInteractionEvent ModalInteractionEvent}.
@@ -36,8 +37,7 @@ import java.util.Objects;
  * @see    ModalInteractionEvent#getValue(String)
  * @see    ModalInteractionEvent#getValues()
  */
-public class ModalMapping
-{
+public class ModalMapping {
     private final InteractionImpl interaction;
     private final String customId;
     private final int uniqueId;
@@ -45,8 +45,7 @@ public class ModalMapping
     private final DataObject value;
     private final Component.Type type;
 
-    public ModalMapping(InteractionImpl interaction, DataObject resolved, DataObject object)
-    {
+    public ModalMapping(InteractionImpl interaction, DataObject resolved, DataObject object) {
         this.interaction = interaction;
         this.uniqueId = object.getInt("id");
         this.customId = object.getString("custom_id");
@@ -61,8 +60,7 @@ public class ModalMapping
      * @return The custom id of the component
      */
     @Nonnull
-    public String getCustomId()
-    {
+    public String getCustomId() {
         return customId;
     }
 
@@ -71,8 +69,7 @@ public class ModalMapping
      *
      * @return The numeric id of the component
      */
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
@@ -82,8 +79,7 @@ public class ModalMapping
      * @return Type of this component
      */
     @Nonnull
-    public Component.Type getType()
-    {
+    public Component.Type getType() {
         return type;
     }
 
@@ -100,10 +96,10 @@ public class ModalMapping
      * @return The String representation of this component.
      */
     @Nonnull
-    public String getAsString()
-    {
-        if (type != Component.Type.TEXT_INPUT)
+    public String getAsString() {
+        if (type != Component.Type.TEXT_INPUT) {
             typeError("String");
+        }
 
         return value.getString("value");
     }
@@ -131,13 +127,12 @@ public class ModalMapping
      * @return The string list representation of this component.
      */
     @Nonnull
-    public List<String> getAsStringList()
-    {
-        if (type != Component.Type.STRING_SELECT && !type.isEntitySelectMenu())
+    public List<String> getAsStringList() {
+        if (type != Component.Type.STRING_SELECT && !type.isEntitySelectMenu()) {
             typeError("List<String>");
+        }
 
-        return value.getArray("values")
-                .stream(DataArray::getString)
+        return value.getArray("values").stream(DataArray::getString)
                 .collect(Helpers.toUnmodifiableList());
     }
 
@@ -154,13 +149,12 @@ public class ModalMapping
      * @return This component's value as a list of Longs.
      */
     @Nonnull
-    public List<Long> getAsLongList()
-    {
-        if (!type.isEntitySelectMenu())
+    public List<Long> getAsLongList() {
+        if (!type.isEntitySelectMenu()) {
             typeError("List<Long>");
+        }
 
-        return value.getArray("values")
-                .stream(DataArray::getLong)
+        return value.getArray("values").stream(DataArray::getLong)
                 .collect(Helpers.toUnmodifiableList());
     }
 
@@ -177,17 +171,21 @@ public class ModalMapping
      * @return This component's value as a {@link Mentions} object.
      */
     @Nonnull
-    public Mentions getAsMentions()
-    {
-        if (!type.isEntitySelectMenu())
+    public Mentions getAsMentions() {
+        if (!type.isEntitySelectMenu()) {
             typeError("Mentions");
+        }
 
-        return new SelectMenuMentions(interaction.getJDA(), interaction.getInteractionEntityBuilder(), interaction.getGuild(), resolved, value.getArray("values"));
+        return new SelectMenuMentions(
+                interaction.getJDA(),
+                interaction.getInteractionEntityBuilder(),
+                interaction.getGuild(),
+                resolved,
+                value.getArray("values"));
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setType(getType())
                 .addMetadata("customId", customId)
@@ -195,22 +193,27 @@ public class ModalMapping
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) return true;
-        if (!(o instanceof ModalMapping)) return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ModalMapping)) {
+            return false;
+        }
         ModalMapping that = (ModalMapping) o;
-        return type == that.type && Objects.equals(customId, that.customId) && Objects.equals(uniqueId, that.uniqueId) && Objects.equals(value, that.value);
+        return type == that.type
+                && Objects.equals(customId, that.customId)
+                && Objects.equals(uniqueId, that.uniqueId)
+                && Objects.equals(value, that.value);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(customId, uniqueId, value, type);
     }
 
-    private void typeError(String targetType)
-    {
-        throw new IllegalStateException("ModalMapping of type " + getType() + " can not be represented as " + targetType + "!");
+    private void typeError(String targetType) {
+        throw new IllegalStateException("ModalMapping of type " + getType()
+                + " can not be represented as " + targetType + "!");
     }
 }

@@ -27,26 +27,26 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 
 public interface NewsChannelMixin<T extends NewsChannelMixin<T>>
-    extends NewsChannel,
-        StandardGuildMessageChannelMixin<T>
-{
+        extends NewsChannel, StandardGuildMessageChannelMixin<T> {
     @Nonnull
     @Override
-    default ChannelAction<NewsChannel> createCopy(@Nonnull Guild guild)
-    {
+    default ChannelAction<NewsChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
-        ChannelAction<NewsChannel> action = guild.createNewsChannel(getName()).setNSFW(isNSFW()).setTopic(getTopic());
-        if (guild.equals(getGuild()))
-        {
+        ChannelAction<NewsChannel> action =
+                guild.createNewsChannel(getName()).setNSFW(isNSFW()).setTopic(getTopic());
+        if (guild.equals(getGuild())) {
             Category parent = getParentCategory();
-            if (parent != null)
+            if (parent != null) {
                 action.setParent(parent);
-            for (PermissionOverride o : getPermissionOverrideMap().valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+            }
+            for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
+                if (o.isMemberOverride()) {
+                    action.addMemberPermissionOverride(
+                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                } else {
+                    action.addRolePermissionOverride(
+                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

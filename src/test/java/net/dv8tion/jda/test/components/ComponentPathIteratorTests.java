@@ -16,18 +16,19 @@
 
 package net.dv8tion.jda.test.components;
 
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.*;
+
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.*;
 
 public class ComponentPathIteratorTests {
     /**
@@ -36,45 +37,47 @@ public class ComponentPathIteratorTests {
      */
     @Test
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    void testIteratorIsUpdated()
-    {
-        for (Component.Type type : Component.Type.values())
-        {
-            switch (type)
-            {
-            case UNKNOWN:
-            case BUTTON:
-            case STRING_SELECT:
-            case TEXT_INPUT:
-            case USER_SELECT:
-            case ROLE_SELECT:
-            case MENTIONABLE_SELECT:
-            case CHANNEL_SELECT:
-            case TEXT_DISPLAY:
-            case THUMBNAIL:
-            case MEDIA_GALLERY:
-            case FILE_DISPLAY:
-            case SEPARATOR:
-            case LABEL:
-                break;
-            case ACTION_ROW:
-                final ActionRow row = mock(ActionRow.class);
-                ComponentIterator.createStream(Collections.singleton(row)).collect(Collectors.toList());
-                verify(row, times(1)).getComponents();
-                break;
-            case SECTION:
-                final Section section = mock(Section.class);
-                ComponentIterator.createStream(Collections.singleton(section)).collect(Collectors.toList());
-                verify(section, times(1)).getContentComponents();
-                verify(section, times(1)).getAccessory();
-                break;
-            case CONTAINER:
-                final Container container = mock(Container.class);
-                ComponentIterator.createStream(Collections.singleton(container)).collect(Collectors.toList());
-                verify(container, times(1)).getComponents();
-                break;
-            default:
-                fail("Please update this test with the new component type, then update ComponentPathIterator if necessary " + type.name());
+    void testIteratorIsUpdated() {
+        for (Component.Type type : Component.Type.values()) {
+            switch (type) {
+                case UNKNOWN:
+                case BUTTON:
+                case STRING_SELECT:
+                case TEXT_INPUT:
+                case USER_SELECT:
+                case ROLE_SELECT:
+                case MENTIONABLE_SELECT:
+                case CHANNEL_SELECT:
+                case TEXT_DISPLAY:
+                case THUMBNAIL:
+                case MEDIA_GALLERY:
+                case FILE_DISPLAY:
+                case SEPARATOR:
+                case LABEL:
+                    break;
+                case ACTION_ROW:
+                    final ActionRow row = mock(ActionRow.class);
+                    ComponentIterator.createStream(Collections.singleton(row))
+                            .collect(Collectors.toList());
+                    verify(row, times(1)).getComponents();
+                    break;
+                case SECTION:
+                    final Section section = mock(Section.class);
+                    ComponentIterator.createStream(Collections.singleton(section))
+                            .collect(Collectors.toList());
+                    verify(section, times(1)).getContentComponents();
+                    verify(section, times(1)).getAccessory();
+                    break;
+                case CONTAINER:
+                    final Container container = mock(Container.class);
+                    ComponentIterator.createStream(Collections.singleton(container))
+                            .collect(Collectors.toList());
+                    verify(container, times(1)).getComponents();
+                    break;
+                default:
+                    fail("Please update this test with the new component type, then update"
+                            + " ComponentPathIterator if necessary "
+                            + type.name());
             }
         }
     }

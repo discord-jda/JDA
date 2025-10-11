@@ -22,17 +22,18 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandReference;
+
 import org.apache.commons.collections4.Bag;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Interface to access the mentions of various entities.
  */
-public interface Mentions
-{
+public interface Mentions {
     /**
      * The corresponding JDA instance
      *

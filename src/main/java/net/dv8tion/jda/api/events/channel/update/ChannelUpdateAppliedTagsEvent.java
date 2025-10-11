@@ -24,10 +24,11 @@ import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the tags applied to a {@link ThreadChannel forum post thread} have been updated.
@@ -37,13 +38,16 @@ import java.util.Objects;
  * @see ThreadChannel#getAppliedTags()
  * @see ChannelField#APPLIED_TAGS
  */
-public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<List<Long>>
-{
+public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<List<Long>> {
     public static final ChannelField FIELD = ChannelField.APPLIED_TAGS;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateAppliedTagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull ThreadChannel channel, @Nonnull List<Long> oldValue, @Nonnull List<Long> newValue)
-    {
+    public ChannelUpdateAppliedTagsEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ThreadChannel channel,
+            @Nonnull List<Long> oldValue,
+            @Nonnull List<Long> newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 
@@ -55,8 +59,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      * @return The tags that were added to the post
      */
     @Nonnull
-    public List<ForumTag> getAddedTags()
-    {
+    public List<ForumTag> getAddedTags() {
         List<ForumTag> newTags = new ArrayList<>(getNewTags());
         newTags.removeAll(getOldTags());
         return newTags;
@@ -70,8 +73,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      * @return The tags that were removed from the post
      */
     @Nonnull
-    public List<ForumTag> getRemovedTags()
-    {
+    public List<ForumTag> getRemovedTags() {
         List<ForumTag> oldTags = new ArrayList<>(getOldTags());
         oldTags.removeAll(getNewTags());
         return oldTags;
@@ -85,9 +87,12 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      * @return The updated list of applied tags
      */
     @Nonnull
-    public List<ForumTag> getNewTags()
-    {
-        SortedSnowflakeCacheView<ForumTag> cache = getChannel().asThreadChannel().getParentChannel().asForumChannel().getAvailableTagCache();
+    public List<ForumTag> getNewTags() {
+        SortedSnowflakeCacheView<ForumTag> cache = getChannel()
+                .asThreadChannel()
+                .getParentChannel()
+                .asForumChannel()
+                .getAvailableTagCache();
         return getNewValue().stream()
                 .map(cache::getElementById)
                 .filter(Objects::nonNull)
@@ -103,9 +108,12 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      * @return The previous list of applied tags
      */
     @Nonnull
-    public List<ForumTag> getOldTags()
-    {
-        SortedSnowflakeCacheView<ForumTag> cache = getChannel().asThreadChannel().getParentChannel().asForumChannel().getAvailableTagCache();
+    public List<ForumTag> getOldTags() {
+        SortedSnowflakeCacheView<ForumTag> cache = getChannel()
+                .asThreadChannel()
+                .getParentChannel()
+                .asForumChannel()
+                .getAvailableTagCache();
         return getOldValue().stream()
                 .map(cache::getElementById)
                 .filter(Objects::nonNull)
@@ -115,15 +123,13 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
 
     @Nonnull
     @Override
-    public List<Long> getOldValue()
-    {
+    public List<Long> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Long> getNewValue()
-    {
+    public List<Long> getNewValue() {
         return super.getNewValue();
     }
 }

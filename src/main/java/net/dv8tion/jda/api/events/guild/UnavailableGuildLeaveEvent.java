@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve id of the unavailable Guild.
  */
-public class UnavailableGuildLeaveEvent extends Event
-{
+public class UnavailableGuildLeaveEvent extends Event {
     private final long guildId;
 
-    public UnavailableGuildLeaveEvent(@Nonnull JDA api, long responseNumber, long guildId)
-    {
+    public UnavailableGuildLeaveEvent(@Nonnull JDA api, long responseNumber, long guildId) {
         super(api, responseNumber);
         this.guildId = guildId;
     }
@@ -43,8 +41,7 @@ public class UnavailableGuildLeaveEvent extends Event
      * @return The id for the guild
      */
     @Nonnull
-    public String getGuildId()
-    {
+    public String getGuildId() {
         return Long.toUnsignedString(guildId);
     }
 
@@ -53,8 +50,7 @@ public class UnavailableGuildLeaveEvent extends Event
      *
      * @return The id for the guild
      */
-    public long getGuildIdLong()
-    {
+    public long getGuildIdLong() {
         return guildId;
     }
 }

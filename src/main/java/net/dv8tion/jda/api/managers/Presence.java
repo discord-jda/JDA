@@ -28,8 +28,7 @@ import javax.annotation.Nullable;
  *
  * @since  3.0
  */
-public interface Presence
-{
+public interface Presence {
     /**
      * The JDA instance of this Presence
      *

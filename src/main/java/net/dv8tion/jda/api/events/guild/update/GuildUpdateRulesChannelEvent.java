@@ -30,23 +30,24 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code rules_channel}
  */
-public class GuildUpdateRulesChannelEvent extends GenericGuildUpdateEvent<TextChannel>
-{
+public class GuildUpdateRulesChannelEvent extends GenericGuildUpdateEvent<TextChannel> {
     public static final String IDENTIFIER = "rules_channel";
 
-    public GuildUpdateRulesChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldRulesChannel)
-    {
+    public GuildUpdateRulesChannelEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nullable TextChannel oldRulesChannel) {
         super(api, responseNumber, guild, oldRulesChannel, guild.getRulesChannel(), IDENTIFIER);
     }
 
     /**
      * The previous rules channel.
-     * 
+     *
      * @return The previous rules channel
      */
     @Nullable
-    public TextChannel getOldRulesChannel()
-    {
+    public TextChannel getOldRulesChannel() {
         return getOldValue();
     }
 
@@ -56,8 +57,7 @@ public class GuildUpdateRulesChannelEvent extends GenericGuildUpdateEvent<TextCh
      * @return The new rules channel
      */
     @Nullable
-    public TextChannel getNewRulesChannel()
-    {
+    public TextChannel getNewRulesChannel() {
         return getNewValue();
     }
 }

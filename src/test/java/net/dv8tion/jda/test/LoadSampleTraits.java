@@ -16,21 +16,19 @@
 
 package net.dv8tion.jda.test;
 
-import java.io.InputStream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-public interface LoadSampleTraits
-{
-    default InputStream loadSample(String name)
-    {
+import java.io.InputStream;
+
+public interface LoadSampleTraits {
+    default InputStream loadSample(String name) {
         Class<? extends LoadSampleTraits> self = getClass();
         String path = "/samples/" + self.getName().replace('.', '/') + "/" + name;
         InputStream resource = self.getResourceAsStream(path);
 
         assertThat(resource)
-            .as("Resource " + name + " not found at path " + path)
-            .isNotNull();
+                .as("Resource " + name + " not found at path " + path)
+                .isNotNull();
 
         return resource;
     }

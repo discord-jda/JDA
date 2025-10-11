@@ -25,11 +25,12 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 /**
  * Utility class to serialize a list of {@link Component Components} into {@link DataObject}.
@@ -46,8 +47,7 @@ import java.util.stream.Collectors;
  *
  * @see ComponentDeserializer
  */
-public class ComponentSerializer
-{
+public class ComponentSerializer {
     /**
      * Serializes the provided component into a {@link DataObject} instance.
      *
@@ -65,8 +65,7 @@ public class ComponentSerializer
      * @return Serialized {@link DataObject} for the provided component
      */
     @Nonnull
-    public DataObject serialize(@Nonnull Component component)
-    {
+    public DataObject serialize(@Nonnull Component component) {
         Checks.notNull(component, "Component");
         Checks.check(component instanceof SerializableData, "Component is not serializable");
         return ((SerializableData) component).toData();
@@ -89,13 +88,12 @@ public class ComponentSerializer
      * @return {@link List} of {@link DataObject}
      */
     @Nonnull
-    public List<DataObject> serializeAll(@Nonnull Collection<? extends Component> components)
-    {
+    public List<DataObject> serializeAll(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
         return components.stream()
-            .map(SerializableData.class::cast)
-            .map(SerializableData::toData)
-            .collect(Collectors.toList());
+                .map(SerializableData.class::cast)
+                .map(SerializableData::toData)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -110,8 +108,7 @@ public class ComponentSerializer
      * @return The implicit {@link FileUpload} instances for the provided component
      */
     @Nonnull
-    public List<FileUpload> getFileUploads(@Nonnull Component component)
-    {
+    public List<FileUpload> getFileUploads(@Nonnull Component component) {
         Checks.notNull(component, "Component");
         return MessageUtil.getIndirectFiles(Collections.singletonList(component));
     }
@@ -128,8 +125,7 @@ public class ComponentSerializer
      * @return The implicit {@link FileUpload} instances for the provided components
      */
     @Nonnull
-    public List<FileUpload> getFileUploads(@Nonnull Collection<? extends Component> components)
-    {
+    public List<FileUpload> getFileUploads(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
         return MessageUtil.getIndirectFiles(components);
     }

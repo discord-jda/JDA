@@ -21,8 +21,9 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link Channel#getFlags() flags} of a {@link Channel} changed.
@@ -31,27 +32,28 @@ import java.util.EnumSet;
  *
  * @see ChannelField#FLAGS
  */
-public class ChannelUpdateFlagsEvent extends GenericChannelUpdateEvent<EnumSet<ChannelFlag>>
-{
+public class ChannelUpdateFlagsEvent extends GenericChannelUpdateEvent<EnumSet<ChannelFlag>> {
     public static final ChannelField FIELD = ChannelField.FLAGS;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Channel channel, @Nonnull EnumSet<ChannelFlag> oldValue, @Nonnull EnumSet<ChannelFlag> newValue)
-    {
+    public ChannelUpdateFlagsEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Channel channel,
+            @Nonnull EnumSet<ChannelFlag> oldValue,
+            @Nonnull EnumSet<ChannelFlag> newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 
     @Nonnull
     @Override
-    public EnumSet<ChannelFlag> getOldValue()
-    {
+    public EnumSet<ChannelFlag> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public EnumSet<ChannelFlag> getNewValue()
-    {
+    public EnumSet<ChannelFlag> getNewValue() {
         return super.getNewValue();
     }
 }

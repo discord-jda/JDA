@@ -25,12 +25,10 @@ import javax.annotation.Nonnull;
  *
  * @see IComponentUnion#isUnknownComponent()
  */
-public interface UnknownComponent extends Component
-{
+public interface UnknownComponent extends Component {
     @Override
     @Nonnull
-    default Type getType()
-    {
+    default Type getType() {
         return Type.UNKNOWN;
     }
 

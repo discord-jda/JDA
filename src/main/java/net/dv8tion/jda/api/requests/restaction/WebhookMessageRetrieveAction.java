@@ -22,6 +22,5 @@ import net.dv8tion.jda.api.entities.Message;
  * Request to fetch a message from a webhook.
  * <br>Optionally, provide a {@link #setThreadId(long) thread id} to retrieve messages from threads.
  */
-public interface WebhookMessageRetrieveAction extends AbstractWebhookMessageAction<Message, WebhookMessageRetrieveAction>
-{
-}
+public interface WebhookMessageRetrieveAction
+        extends AbstractWebhookMessageAction<Message, WebhookMessageRetrieveAction> {}

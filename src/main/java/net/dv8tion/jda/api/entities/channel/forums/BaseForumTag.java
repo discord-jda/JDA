@@ -33,8 +33,7 @@ import javax.annotation.Nullable;
  * @see ForumTagData
  * @see ForumTagSnowflake
  */
-public interface BaseForumTag extends SerializableData
-{
+public interface BaseForumTag extends SerializableData {
     /**
      * The name of the tag.
      *
@@ -61,16 +60,14 @@ public interface BaseForumTag extends SerializableData
 
     @Nonnull
     @Override
-    default DataObject toData()
-    {
-        DataObject json = DataObject.empty()
-                .put("name", getName())
-                .put("moderated", isModerated());
+    default DataObject toData() {
+        DataObject json = DataObject.empty().put("name", getName()).put("moderated", isModerated());
         EmojiUnion emoji = getEmoji();
-        if (emoji instanceof UnicodeEmoji)
+        if (emoji instanceof UnicodeEmoji) {
             json.put("emoji_name", emoji.getName());
-        else if (emoji instanceof CustomEmoji)
+        } else if (emoji instanceof CustomEmoji) {
             json.put("emoji_id", ((CustomEmoji) emoji).getId());
+        }
         return json;
     }
 }

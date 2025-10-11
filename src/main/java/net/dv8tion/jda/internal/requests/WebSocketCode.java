@@ -21,8 +21,7 @@ package net.dv8tion.jda.internal.requests;
  * <br>Used in {@link WebSocketClient WebSocketClient} to handle discord payloads
  * and send payloads with central readable OP Codes
  */
-public final class WebSocketCode
-{
+public final class WebSocketCode {
     public static final int DISPATCH = 0;
     public static final int HEARTBEAT = 1;
     public static final int IDENTIFY = 2;

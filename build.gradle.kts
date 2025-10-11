@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import com.diffplug.spotless.LineEnding
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
@@ -37,6 +38,8 @@ plugins {
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.jreleaser)
     alias(libs.plugins.download)
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.openrewrite)
 }
 
 
@@ -165,6 +168,9 @@ dependencies {
 
     // For authoring tests for any kind of Recipe
     testImplementation("org.openrewrite:rewrite-test")
+
+    // Needed for rewrite gradle tasks
+    rewrite(libs.openrewrite.staticanalysis)
 }
 
 fun isNonStable(version: String): Boolean {
@@ -184,6 +190,68 @@ tasks.withType<DependencyUpdatesTask> {
 
 versionCatalogUpdate {
     versionSelector(VersionSelectors.STABLE)
+}
+
+
+////////////////////////////////////
+//                                //
+//    Formatting and Linting      //
+//                                //
+////////////////////////////////////
+
+rewrite {
+    failOnDryRunResults = true
+    activeRecipe("org.openrewrite.staticanalysis.NeedBraces")
+}
+
+spotless {
+    encoding("UTF-8")
+    lineEndings = LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME
+
+    kotlinGradle {
+        target("*.gradle.kts", "buildSrc/*.gradle.kts", "buildSrc/src/**/*.kt*")
+
+        trimTrailingWhitespace()
+        leadingTabsToSpaces()
+    }
+
+    java {
+        palantirJavaFormat("2.75.0")
+                .style("AOSP")
+                .formatJavadoc(false)
+
+        licenseHeaderFile("spotless/licence-header.txt")
+
+        target("src/main/**/*.java", "src/test/**/*.java")
+
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        leadingTabsToSpaces()
+    }
+}
+
+tasks.named("spotlessJavaCheck").configure {
+    dependsOn(tasks.named("rewriteDryRun"))
+}
+
+tasks.named("spotlessJavaApply").configure {
+    dependsOn(tasks.named("rewriteRun"))
+}
+
+tasks.register("format") {
+    group = "verification"
+    dependsOn(tasks.named("spotlessApply"))
+    dependsOn(tasks.named("versionCatalogFormat"))
+}
+
+val checkFormat by tasks.registering {
+    group = "verification"
+    dependsOn(tasks.named("spotlessCheck"))
+    dependsOn(tasks.named("rewriteDryRun"))
+}
+
+tasks.named("check").configure {
+    dependsOn(checkFormat)
 }
 
 
@@ -209,11 +277,11 @@ val sourcesForRelease by tasks.registering(Copy::class) {
         val version = projectEnvironment.version.get()
 
         val tokens = mapOf(
-            "versionMajor" to version.major,
-            "versionMinor" to version.minor,
-            "versionRevision" to version.revision,
-            "versionClassifier" to nullableReplacement(version.classifier),
-            "commitHash" to projectEnvironment.commitHash
+                "versionMajor" to version.major,
+                "versionMinor" to version.minor,
+                "versionRevision" to version.revision,
+                "versionClassifier" to nullableReplacement(version.classifier),
+                "commitHash" to projectEnvironment.commitHash
         )
         // Allow for setting null on some strings without breaking the source
         // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
@@ -303,7 +371,7 @@ val javadoc by tasks.getting(Javadoc::class) {
     source = generateJavaSources.get().source
 
     exclude {
-        it.file.absolutePath.contains("internal", ignoreCase=false)
+        it.file.absolutePath.contains("internal", ignoreCase = false)
     }
 }
 

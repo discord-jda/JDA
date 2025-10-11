@@ -22,21 +22,20 @@ import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.section.Section;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Utility class to recursively iterate on a list of components.
  */
-public class ComponentIterator implements Iterator<Component>
-{
+public class ComponentIterator implements Iterator<Component> {
     private final Deque<Iterator<? extends Component>> stack = new ArrayDeque<>();
 
-    protected ComponentIterator(Collection<? extends Component> components)
-    {
+    protected ComponentIterator(Collection<? extends Component> components) {
         stack.push(components.iterator());
     }
 
@@ -49,8 +48,7 @@ public class ComponentIterator implements Iterator<Component>
      * @return A new {@link ComponentIterator}
      */
     @Nonnull
-    public static ComponentIterator create(@Nonnull Collection<? extends Component> components)
-    {
+    public static ComponentIterator create(@Nonnull Collection<? extends Component> components) {
         return new ComponentIterator(components);
     }
 
@@ -63,65 +61,58 @@ public class ComponentIterator implements Iterator<Component>
      * @return A new, ordered {@link Stream} of {@link Component}
      */
     @Nonnull
-    public static Stream<Component> createStream(@Nonnull Collection<? extends Component> components)
-    {
-        Spliterator<Component> spliterator = Spliterators.spliteratorUnknownSize(create(components), Spliterator.ORDERED);
+    public static Stream<Component> createStream(
+            @Nonnull Collection<? extends Component> components) {
+        Spliterator<Component> spliterator =
+                Spliterators.spliteratorUnknownSize(create(components), Spliterator.ORDERED);
         return StreamSupport.stream(spliterator, false);
     }
 
     @Override
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         ensureNestedIteratorHasNext();
         return !stack.isEmpty();
     }
 
     @Nonnull
     @Override
-    public Component next()
-    {
-        if (!hasNext())
+    public Component next() {
+        if (!hasNext()) {
             throw new NoSuchElementException();
+        }
         Iterator<? extends Component> iterator = stack.peek();
         Component component = iterator.next();
 
         Iterator<? extends Component> childrenIterator = getIteratorForComponent(component);
-        if (childrenIterator != null)
+        if (childrenIterator != null) {
             stack.push(childrenIterator);
+        }
 
         return component;
     }
 
-    private void ensureNestedIteratorHasNext()
-    {
-        while (!stack.isEmpty() && !stack.peek().hasNext())
+    private void ensureNestedIteratorHasNext() {
+        while (!stack.isEmpty() && !stack.peek().hasNext()) {
             stack.pop();
+        }
     }
 
     @Nullable
-    private static Iterator<? extends Component> getIteratorForComponent(Component component)
-    {
-        if (component instanceof Container)
-        {
+    private static Iterator<? extends Component> getIteratorForComponent(Component component) {
+        if (component instanceof Container) {
             Container container = (Container) component;
             return container.getComponents().iterator();
-        }
-        else if (component instanceof ActionRow)
-        {
+        } else if (component instanceof ActionRow) {
             ActionRow actionRow = (ActionRow) component;
             return actionRow.getComponents().iterator();
-        }
-        else if (component instanceof Section)
-        {
+        } else if (component instanceof Section) {
             Section section = (Section) component;
 
             List<Component> sectionComponents = new ArrayList<>(section.getContentComponents());
             sectionComponents.add(section.getAccessory());
 
             return sectionComponents.iterator();
-        }
-        else if (component instanceof Label)
-        {
+        } else if (component instanceof Label) {
             Label label = (Label) component;
             return Collections.singleton(label.getChild()).iterator();
         }

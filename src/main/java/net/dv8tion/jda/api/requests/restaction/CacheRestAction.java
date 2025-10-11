@@ -18,11 +18,12 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * Requests which can use cached values instead of making a request to Discord.
@@ -30,8 +31,7 @@ import java.util.function.BooleanSupplier;
  * @param <T>
  *        The entity type
  */
-public interface CacheRestAction<T> extends RestAction<T>
-{
+public interface CacheRestAction<T> extends RestAction<T> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -40,24 +40,21 @@ public interface CacheRestAction<T> extends RestAction<T>
     @Nonnull
     @Override
     @CheckReturnValue
-    default CacheRestAction<T> addCheck(@Nonnull BooleanSupplier checks)
-    {
+    default CacheRestAction<T> addCheck(@Nonnull BooleanSupplier checks) {
         return (CacheRestAction<T>) RestAction.super.addCheck(checks);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default CacheRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    default CacheRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit) {
         return (CacheRestAction<T>) RestAction.super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default CacheRestAction<T> deadline(long timestamp)
-    {
+    default CacheRestAction<T> deadline(long timestamp) {
         return (CacheRestAction<T>) RestAction.super.deadline(timestamp);
     }
 

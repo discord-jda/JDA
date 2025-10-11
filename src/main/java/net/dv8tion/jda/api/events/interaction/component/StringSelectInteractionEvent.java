@@ -34,20 +34,20 @@ import javax.annotation.Nonnull;
  *
  * @see EntitySelectInteractionEvent
  */
-public class StringSelectInteractionEvent extends GenericSelectMenuInteractionEvent<String, StringSelectMenu> implements StringSelectInteraction
-{
+public class StringSelectInteractionEvent
+        extends GenericSelectMenuInteractionEvent<String, StringSelectMenu>
+        implements StringSelectInteraction {
     private final StringSelectInteraction interaction;
 
-    public StringSelectInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull StringSelectInteraction interaction)
-    {
+    public StringSelectInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull StringSelectInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public StringSelectInteraction getInteraction()
-    {
+    public StringSelectInteraction getInteraction() {
         return interaction;
     }
 }

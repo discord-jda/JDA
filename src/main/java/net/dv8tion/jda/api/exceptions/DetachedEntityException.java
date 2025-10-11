@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.exceptions;
 
 /**
@@ -20,13 +21,11 @@ package net.dv8tion.jda.api.exceptions;
  *
  * @see net.dv8tion.jda.api.entities.detached.IDetachableEntity IDetachableEntity
  */
-public class DetachedEntityException extends UnsupportedOperationException
-{
+public class DetachedEntityException extends UnsupportedOperationException {
     /**
      * Creates a new DetachedEntityException
      */
-    public DetachedEntityException()
-    {
+    public DetachedEntityException() {
         this("Unsupported operation on detached entities");
     }
 
@@ -36,8 +35,7 @@ public class DetachedEntityException extends UnsupportedOperationException
      * @param reason
      *        The reason for this Exception
      */
-    public DetachedEntityException(String reason)
-    {
+    public DetachedEntityException(String reason) {
         super(reason);
     }
 }

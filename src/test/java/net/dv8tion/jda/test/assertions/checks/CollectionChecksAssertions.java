@@ -16,29 +16,26 @@
 
 package net.dv8tion.jda.test.assertions.checks;
 
+import static net.dv8tion.jda.test.ChecksHelper.isEmptyError;
+import static net.dv8tion.jda.test.ChecksHelper.isNullError;
+
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import static net.dv8tion.jda.test.ChecksHelper.isEmptyError;
-import static net.dv8tion.jda.test.ChecksHelper.isNullError;
-
-public class CollectionChecksAssertions<T> extends AbstractChecksAssertions<Collection<T>, CollectionChecksAssertions<T>>
-{
-    public CollectionChecksAssertions(String name, ThrowingConsumer<Collection<T>> callable)
-    {
+public class CollectionChecksAssertions<T>
+        extends AbstractChecksAssertions<Collection<T>, CollectionChecksAssertions<T>> {
+    public CollectionChecksAssertions(String name, ThrowingConsumer<Collection<T>> callable) {
         super(name, callable);
     }
 
-    public CollectionChecksAssertions<T> checksNotNull()
-    {
+    public CollectionChecksAssertions<T> checksNotNull() {
         throwsFor(null, isNullError(name));
         return this;
     }
 
-    public CollectionChecksAssertions<T> checksNotEmpty()
-    {
+    public CollectionChecksAssertions<T> checksNotEmpty() {
         throwsFor(Collections.emptyList(), isEmptyError(name));
         return this;
     }

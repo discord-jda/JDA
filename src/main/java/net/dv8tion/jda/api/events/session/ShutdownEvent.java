@@ -13,26 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.session;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.CloseCode;
 
+import java.time.OffsetDateTime;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 
 /**
  * Indicates that JDA has fully disconnected from Discord and will not attempt to reconnect again.
  * <br>At this stage all internal cache is invalid!
  */
-public class ShutdownEvent extends GenericSessionEvent
-{
+public class ShutdownEvent extends GenericSessionEvent {
     protected final OffsetDateTime shutdownTime;
     protected final int code;
 
-    public ShutdownEvent(@Nonnull JDA api, @Nonnull OffsetDateTime shutdownTime, int code)
-    {
+    public ShutdownEvent(@Nonnull JDA api, @Nonnull OffsetDateTime shutdownTime, int code) {
         super(api, SessionState.SHUTDOWN);
         this.shutdownTime = shutdownTime;
         this.code = code;
@@ -45,8 +45,7 @@ public class ShutdownEvent extends GenericSessionEvent
      *         the point in time when the connection was dropped.
      */
     @Nonnull
-    public OffsetDateTime getTimeShutdown()
-    {
+    public OffsetDateTime getTimeShutdown() {
         return shutdownTime;
     }
 
@@ -59,8 +58,7 @@ public class ShutdownEvent extends GenericSessionEvent
      * @return Possibly-null {@link net.dv8tion.jda.api.requests.CloseCode CloseCode}
      */
     @Nullable
-    public CloseCode getCloseCode()
-    {
+    public CloseCode getCloseCode() {
         return CloseCode.from(code);
     }
 
@@ -70,8 +68,7 @@ public class ShutdownEvent extends GenericSessionEvent
      *
      * @return int close code of the Server Close-Frame
      */
-    public int getCode()
-    {
+    public int getCode() {
         return code;
     }
 }

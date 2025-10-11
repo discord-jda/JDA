@@ -29,14 +29,15 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
+
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * AudioManager deals with creating, managing and severing audio connections to
@@ -44,8 +45,7 @@ import java.util.EnumSet;
  *
  * @see Guild#getAudioManager()
  */
-public interface AudioManager
-{
+public interface AudioManager {
     long DEFAULT_CONNECTION_TIMEOUT = 10000;
     Logger LOG = JDALogger.getLog(AudioManager.class);
 
@@ -120,8 +120,7 @@ public interface AudioManager
      * @see    #getSpeakingMode()
      */
     @Incubating
-    default void setSpeakingMode(@Nonnull SpeakingMode... mode)
-    {
+    default void setSpeakingMode(@Nonnull SpeakingMode... mode) {
         Checks.notNull(mode, "Speaking Mode");
         setSpeakingMode(Arrays.asList(mode));
     }

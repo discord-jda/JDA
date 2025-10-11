@@ -21,15 +21,14 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 
 import javax.annotation.Nonnull;
 
-class SourceSets
-{
+class SourceSets {
     private static JavaClasses apiClasses;
 
     @Nonnull
-    synchronized static JavaClasses getApiClasses()
-    {
-        if (apiClasses == null)
+    static synchronized JavaClasses getApiClasses() {
+        if (apiClasses == null) {
             apiClasses = new ClassFileImporter().importPackages("net.dv8tion.jda.api");
+        }
         return apiClasses;
     }
 }

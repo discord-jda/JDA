@@ -26,61 +26,57 @@ import net.dv8tion.jda.internal.entities.channel.mixin.concrete.PrivateChannelMi
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements
-        PrivateChannel,
-        PrivateChannelMixin<PrivateChannelImpl>
-{
+public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl>
+        implements PrivateChannel, PrivateChannelMixin<PrivateChannelImpl> {
     private User user;
     private long latestMessageId;
 
-    public PrivateChannelImpl(JDA api, long id, @Nullable User user)
-    {
+    public PrivateChannelImpl(JDA api, long id, @Nullable User user) {
         super(id, api);
         this.user = user;
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return false;
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.PRIVATE;
     }
 
     @Nullable
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         updateUser();
         return user;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return PrivateChannelMixin.super.getName();
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         return latestMessageId;
     }
 
     @Override
-    public boolean canTalk()
-    {
-        //The only way user is null is when an event is dispatched that doesn't give us enough information to build the recipient user,
-        // which only happens if this bot sends a message (or otherwise triggers an event) from a shard other than shard 0.
-        // The event will be received on shard 0 and not have enough information to build the recipient user.
-        //As such, since events will only happen in this channel if it is between the bot and the user, a null user is a valid channel state.
-        // Events cannot happen between a bot and another bot, so the user would never be null in that case.
+    public boolean canTalk() {
+        // The only way user is null is when an event is dispatched that doesn't give us enough
+        // information to build the recipient user,
+        // which only happens if this bot sends a message (or otherwise triggers an event) from a
+        // shard other than shard 0.
+        // The event will be received on shard 0 and not have enough information to build the
+        // recipient user.
+        // As such, since events will only happen in this channel if it is between the bot and the
+        // user, a null user is a valid channel state.
+        // Events cannot happen between a bot and another bot, so the user would never be null in
+        // that case.
         return user == null || !user.isBot();
     }
 
@@ -111,59 +107,62 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     public void checkCanControlMessagePins() {}
 
     @Override
-    public boolean canDeleteOtherUsersMessages()
-    {
+    public boolean canDeleteOtherUsersMessages() {
         return false;
     }
 
-    public void setUser(User user)
-    {
+    public void setUser(User user) {
         this.user = user;
     }
 
     @Override
-    public PrivateChannelImpl setLatestMessageIdLong(long latestMessageId)
-    {
+    public PrivateChannelImpl setLatestMessageIdLong(long latestMessageId) {
         this.latestMessageId = latestMessageId;
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof PrivateChannelImpl))
+        }
+        if (!(obj instanceof PrivateChannelImpl)) {
             return false;
+        }
         PrivateChannelImpl impl = (PrivateChannelImpl) obj;
         return impl.id == this.id;
     }
 
-    private void updateUser()
-    {
-        //if the user is null then we don't even know their ID, and so we have to check that first
-        if (user == null)
+    private void updateUser() {
+        // if the user is null then we don't even know their ID, and so we have to check that first
+        if (user == null) {
             return;
+        }
         // Load user from cache if one exists, otherwise we might have an outdated user instance
         User realUser = getJDA().getUserById(user.getIdLong());
-        if (realUser != null)
+        if (realUser != null) {
             this.user = realUser;
+        }
     }
 
-    private void checkBot()
-    {
-        //The only way user is null is when an event is dispatched that doesn't give us enough information to build the recipient user,
-        // which only happens if this bot sends a message (or otherwise triggers an event) from a shard other than shard 0.
-        // The event will be received on shard 0 and not have enough information to build the recipient user.
-        //As such, since events will only happen in this channel if it is between the bot and the user, a null user is a valid channel state.
-        // Events cannot happen between a bot and another bot, so the user would never be null in that case.
-        if (getUser() != null && getUser().isBot())
+    private void checkBot() {
+        // The only way user is null is when an event is dispatched that doesn't give us enough
+        // information to build the recipient user,
+        // which only happens if this bot sends a message (or otherwise triggers an event) from a
+        // shard other than shard 0.
+        // The event will be received on shard 0 and not have enough information to build the
+        // recipient user.
+        // As such, since events will only happen in this channel if it is between the bot and the
+        // user, a null user is a valid channel state.
+        // Events cannot happen between a bot and another bot, so the user would never be null in
+        // that case.
+        if (getUser() != null && getUser().isBot()) {
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
+        }
     }
 }

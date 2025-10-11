@@ -23,43 +23,37 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public enum AudioEncryption
-{
+public enum AudioEncryption {
     // ordered by priority descending
     AEAD_AES256_GCM_RTPSIZE,
     AEAD_XCHACHA20_POLY1305_RTPSIZE;
 
     private final String key;
 
-    AudioEncryption()
-    {
+    AudioEncryption() {
         this.key = name().toLowerCase();
     }
 
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
-    public static AudioEncryption getPreferredMode(DataArray array)
-    {
+    public static AudioEncryption getPreferredMode(DataArray array) {
         AudioEncryption encryption = null;
-        for (Object o : array)
-        {
-            try
-            {
+        for (Object o : array) {
+            try {
                 String name = String.valueOf(o).toUpperCase();
                 AudioEncryption e = valueOf(name);
-                if (encryption == null || e.ordinal() < encryption.ordinal())
+                if (encryption == null || e.ordinal() < encryption.ordinal()) {
                     encryption = e;
+                }
+            } catch (IllegalArgumentException ignored) {
             }
-            catch (IllegalArgumentException ignored) {}
         }
         return encryption;
     }
 
-    public static EnumSet<AudioEncryption> fromArray(DataArray modes)
-    {
+    public static EnumSet<AudioEncryption> fromArray(DataArray modes) {
         return modes.stream(DataArray::getString)
                 .map(mode -> mode.toLowerCase(Locale.ROOT))
                 .map(AudioEncryption::forMode)
@@ -67,16 +61,14 @@ public enum AudioEncryption
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(AudioEncryption.class)));
     }
 
-    public static AudioEncryption forMode(String mode)
-    {
-        switch (mode)
-        {
-        case "aead_aes256_gcm_rtpsize":
-            return AEAD_AES256_GCM_RTPSIZE;
-        case "aead_xchacha20_poly1305_rtpsize":
-            return AEAD_XCHACHA20_POLY1305_RTPSIZE;
-        default:
-            return null;
+    public static AudioEncryption forMode(String mode) {
+        switch (mode) {
+            case "aead_aes256_gcm_rtpsize":
+                return AEAD_AES256_GCM_RTPSIZE;
+            case "aead_xchacha20_poly1305_rtpsize":
+                return AEAD_XCHACHA20_POLY1305_RTPSIZE;
+            default:
+                return null;
         }
     }
 }

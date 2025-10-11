@@ -25,59 +25,63 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class MessagePollVoteHandler extends SocketHandler
-{
+public class MessagePollVoteHandler extends SocketHandler {
     private final boolean add;
 
-    public MessagePollVoteHandler(JDAImpl api, boolean add)
-    {
+    public MessagePollVoteHandler(JDAImpl api, boolean add) {
         super(api);
         this.add = add;
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        long answerId  = content.getLong("answer_id");
-        long userId    = content.getUnsignedLong("user_id");
+    protected Long handleInternally(DataObject content) {
+        long answerId = content.getLong("answer_id");
+        long userId = content.getUnsignedLong("user_id");
         long messageId = content.getUnsignedLong("message_id");
         long channelId = content.getUnsignedLong("channel_id");
-        long guildId   = content.getUnsignedLong("guild_id", 0);
+        long guildId = content.getUnsignedLong("guild_id", 0);
 
-        if (api.getGuildSetupController().isLocked(guildId))
+        if (api.getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         Guild guild = api.getGuildById(guildId);
         MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
-        if (channel == null)
-        {
-            if (guild != null)
-            {
+        if (channel == null) {
+            if (guild != null) {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
-                if (actual != null)
-                {
-                    WebSocketClient.LOG.debug("Dropping message poll vote event for unexpected channel of type {}", actual.getType());
+                if (actual != null) {
+                    WebSocketClient.LOG.debug(
+                            "Dropping message poll vote event for unexpected channel of type {}",
+                            actual.getType());
                     return null;
                 }
             }
 
-            if (guildId != 0)
-            {
-                api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-                EventCache.LOG.debug("Received a vote for a channel that JDA does not currently have cached");
+            if (guildId != 0) {
+                api.getEventCache()
+                        .cache(
+                                EventCache.Type.CHANNEL,
+                                channelId,
+                                responseNumber,
+                                allContent,
+                                this::handle);
+                EventCache.LOG.debug(
+                        "Received a vote for a channel that JDA does not currently have cached");
                 return null;
             }
 
-            channel = getJDA().getEntityBuilder().createPrivateChannel(
-                DataObject.empty()
-                    .put("id", channelId)
-            );
+            channel = getJDA().getEntityBuilder()
+                    .createPrivateChannel(DataObject.empty().put("id", channelId));
         }
 
-        if (add)
-            api.handleEvent(new MessagePollVoteAddEvent(channel, responseNumber, messageId, userId, answerId));
-        else
-            api.handleEvent(new MessagePollVoteRemoveEvent(channel, responseNumber, messageId, userId, answerId));
+        if (add) {
+            api.handleEvent(new MessagePollVoteAddEvent(
+                    channel, responseNumber, messageId, userId, answerId));
+        } else {
+            api.handleEvent(new MessagePollVoteRemoveEvent(
+                    channel, responseNumber, messageId, userId, answerId));
+        }
 
         return null;
     }

@@ -30,12 +30,10 @@ import javax.annotation.Nonnull;
  * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.api.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
  * <br>Adapter implementation: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
  */
-public class GenericThreadEvent extends Event
-{
+public class GenericThreadEvent extends Event {
     protected final ThreadChannel thread;
 
-    public GenericThreadEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread)
-    {
+    public GenericThreadEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread) {
         super(api, responseNumber);
 
         this.thread = thread;
@@ -47,8 +45,7 @@ public class GenericThreadEvent extends Event
      * @return The event related {@link ThreadChannel} object
      */
     @Nonnull
-    public ThreadChannel getThread()
-    {
+    public ThreadChannel getThread() {
         return thread;
     }
 
@@ -58,8 +55,7 @@ public class GenericThreadEvent extends Event
      * @return The {@link Guild} containing the {@link ThreadChannel}.
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return thread.getGuild();
     }
 }

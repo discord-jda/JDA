@@ -26,19 +26,18 @@ import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
-public class ThreadMemberImpl implements ThreadMember
-{
+import javax.annotation.Nonnull;
+
+public class ThreadMemberImpl implements ThreadMember {
     private final JDA api;
     private final ThreadChannelImpl thread;
-    
+
     private Member member;
     private long joinedTimestamp;
 
-    public ThreadMemberImpl(Member member, ThreadChannelImpl thread)
-    {
+    public ThreadMemberImpl(Member member, ThreadChannelImpl thread) {
         this.api = member.getJDA();
         this.member = member;
         this.thread = thread;
@@ -46,72 +45,60 @@ public class ThreadMemberImpl implements ThreadMember
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
-    
+
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return thread.getGuild();
     }
-    
+
     @Nonnull
     @Override
-    public ThreadChannel getThread()
-    {
+    public ThreadChannel getThread() {
         return this.thread;
     }
 
     @Nonnull
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         return member.getUser();
     }
 
     @Nonnull
     @Override
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getTimeJoined()
-    {
+    public OffsetDateTime getTimeJoined() {
         return Helpers.toOffset(joinedTimestamp);
     }
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
+    public String getAsMention() {
         return member.getAsMention();
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return member.getIdLong();
     }
 
     // ===== Setters =======
 
-    public ThreadMemberImpl setJoinedTimestamp(long joinedTimestamp)
-    {
+    public ThreadMemberImpl setJoinedTimestamp(long joinedTimestamp) {
         this.joinedTimestamp = joinedTimestamp;
         return this;
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .addMetadata("member", getMember())
-                .toString();
+    public String toString() {
+        return new EntityString(this).addMetadata("member", getMember()).toString();
     }
 }

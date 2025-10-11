@@ -16,10 +16,14 @@
 
 package net.dv8tion.jda.test.compliance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
@@ -29,50 +33,43 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-
-public class EventConsistencyComplianceTest
-{
+public class EventConsistencyComplianceTest {
     static Set<Class<? extends GenericEvent>> eventTypes;
     static Set<Class<? extends GenericEvent>> excludedTypes;
 
     @BeforeAll
-    static void setup()
-    {
+    static void setup() {
         Reflections events = new Reflections("net.dv8tion.jda.api.events");
         eventTypes = events.getSubTypesOf(GenericEvent.class);
         excludedTypes = new HashSet<>(Arrays.asList(
-            // Special casing
-            UpdateEvent.class, Event.class, GenericEvent.class
-        ));
+                // Special casing
+                UpdateEvent.class, Event.class, GenericEvent.class));
     }
 
     @Test
-    void testListenerAdapter()
-    {
+    void testListenerAdapter() {
         Class<ListenerAdapter> adapter = ListenerAdapter.class;
         Set<String> found = new HashSet<>();
 
-        for (Class<? extends GenericEvent> type : eventTypes)
-        {
-            if (excludedTypes.contains(type))
+        for (Class<? extends GenericEvent> type : eventTypes) {
+            if (excludedTypes.contains(type)) {
                 continue;
+            }
             String name = type.getSimpleName();
             String methodName = "on" + name.substring(0, name.length() - "Event".length());
             assertThatCode(() -> adapter.getDeclaredMethod(methodName, type))
-                .as("Method for event " + type + " is missing!")
-                .doesNotThrowAnyException();
+                    .as("Method for event " + type + " is missing!")
+                    .doesNotThrowAnyException();
             found.add(methodName);
         }
 
-        for (Method method : adapter.getDeclaredMethods())
-        {
-            if (!method.isAccessible() || method.getAnnotation(Deprecated.class) != null)
+        for (Method method : adapter.getDeclaredMethods()) {
+            if (!method.isAccessible() || method.getAnnotation(Deprecated.class) != null) {
                 continue;
+            }
             assertThat(found.contains(method.getName()))
-                .as("Dangling method found in ListenerAdapter " + method.getName())
-                .isTrue();
+                    .as("Dangling method found in ListenerAdapter " + method.getName())
+                    .isTrue();
         }
     }
 }

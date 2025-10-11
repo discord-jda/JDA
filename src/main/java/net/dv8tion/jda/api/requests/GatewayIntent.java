@@ -40,11 +40,12 @@ import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Flags which enable or disable specific events from the discord gateway.
@@ -84,9 +85,9 @@ import java.util.EnumSet;
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#disableIntents(GatewayIntent, GatewayIntent...)
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#enableIntents(GatewayIntent, GatewayIntent...)
  */
-public enum GatewayIntent
-{
-    //GUILDS(0), we currently don't support to disable this one as its required to get a good base cache
+public enum GatewayIntent {
+    // GUILDS(0), we currently don't support to disable this one as its required to get a good base
+    // cache
     /**
      * <b>PRIVILEGED INTENT</b> Events which inform us about member update/leave/join of a guild.
      * <br>This is required to chunk all members of a guild. Without this enabled you have to use {@link net.dv8tion.jda.api.utils.ChunkingFilter#NONE ChunkingFilter.NONE}!
@@ -102,10 +103,10 @@ public enum GatewayIntent
      * Custom emoji, sticker and soundboard sound add/update/delete events.
      */
     GUILD_EXPRESSIONS(3),
-//    /**
-//     * Integration events. (unused)
-//     */
-//    GUILD_INTEGRATIONS(4),
+    //    /**
+    //     * Integration events. (unused)
+    //     */
+    //    GUILD_INTEGRATIONS(4),
     /**
      * Webhook events.
      */
@@ -192,7 +193,6 @@ public enum GatewayIntent
      * Events for poll votes in {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannels}.
      */
     DIRECT_MESSAGE_POLLS(25),
-
     ;
 
     /**
@@ -221,13 +221,19 @@ public enum GatewayIntent
      * You can further configure intents by using {@link net.dv8tion.jda.api.JDABuilder#enableIntents(GatewayIntent, GatewayIntent...) enableIntents(intents)}
      * and {@link net.dv8tion.jda.api.JDABuilder#disableIntents(GatewayIntent, GatewayIntent...) disableIntents(intents)}.
      */
-    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, MESSAGE_CONTENT, GUILD_WEBHOOKS, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
+    public static final int DEFAULT = ALL_INTENTS
+            & ~getRaw(
+                    GUILD_MEMBERS,
+                    GUILD_PRESENCES,
+                    MESSAGE_CONTENT,
+                    GUILD_WEBHOOKS,
+                    GUILD_MESSAGE_TYPING,
+                    DIRECT_MESSAGE_TYPING);
 
     private final int rawValue;
     private final int offset;
 
-    GatewayIntent(int offset)
-    {
+    GatewayIntent(int offset) {
         this.offset = offset;
         this.rawValue = 1 << offset;
     }
@@ -237,8 +243,7 @@ public enum GatewayIntent
      *
      * @return The raw bitmask value
      */
-    public int getRawValue()
-    {
+    public int getRawValue() {
         return rawValue;
     }
 
@@ -248,8 +253,7 @@ public enum GatewayIntent
      *
      * @return The offset
      */
-    public int getOffset()
-    {
+    public int getOffset() {
         return offset;
     }
 
@@ -262,13 +266,12 @@ public enum GatewayIntent
      * @return {@link EnumSet} of intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> getIntents(int raw)
-    {
+    public static EnumSet<GatewayIntent> getIntents(int raw) {
         EnumSet<GatewayIntent> set = EnumSet.noneOf(GatewayIntent.class);
-        for (GatewayIntent intent : values())
-        {
-            if ((intent.getRawValue() & raw) != 0)
+        for (GatewayIntent intent : values()) {
+            if ((intent.getRawValue() & raw) != 0) {
                 set.add(intent);
+            }
         }
         return set;
     }
@@ -284,11 +287,11 @@ public enum GatewayIntent
      *
      * @return The bitmask for this set of intents
      */
-    public static int getRaw(@Nonnull Collection<GatewayIntent> set)
-    {
+    public static int getRaw(@Nonnull Collection<GatewayIntent> set) {
         int raw = 0;
-        for (GatewayIntent intent : set)
+        for (GatewayIntent intent : set) {
             raw |= intent.rawValue;
+        }
         return raw;
     }
 
@@ -305,8 +308,7 @@ public enum GatewayIntent
      *
      * @return The bitmask for this set of intents
      */
-    public static int getRaw(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... set)
-    {
+    public static int getRaw(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... set) {
         Checks.notNull(intent, "Intent");
         Checks.notNull(set, "Intent");
         return getRaw(EnumSet.of(intent, set));
@@ -327,8 +329,8 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull CacheFlag flag, @Nonnull CacheFlag... other)
-    {
+    public static EnumSet<GatewayIntent> fromCacheFlags(
+            @Nonnull CacheFlag flag, @Nonnull CacheFlag... other) {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(other, "CacheFlag");
         return fromCacheFlags(EnumSet.of(flag, other));
@@ -347,15 +349,14 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull Collection<CacheFlag> flags)
-    {
+    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull Collection<CacheFlag> flags) {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
-        for (CacheFlag flag : flags)
-        {
+        for (CacheFlag flag : flags) {
             Checks.notNull(flag, "CacheFlag");
             GatewayIntent intent = flag.getRequiredIntent();
-            if (intent != null)
+            if (intent != null) {
                 intents.add(intent);
+            }
         }
 
         return intents;
@@ -374,8 +375,8 @@ public enum GatewayIntent
      */
     @Nonnull
     @SafeVarargs
-    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Class<? extends GenericEvent>... events)
-    {
+    public static EnumSet<GatewayIntent> fromEvents(
+            @Nonnull Class<? extends GenericEvent>... events) {
         Checks.noneNull(events, "Event");
         return fromEvents(Arrays.asList(events));
     }
@@ -392,45 +393,44 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events)
-    {
+    public static EnumSet<GatewayIntent> fromEvents(
+            @Nonnull Collection<Class<? extends GenericEvent>> events) {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
-        for (Class<? extends GenericEvent> event : events)
-        {
+        for (Class<? extends GenericEvent> event : events) {
             Checks.notNull(event, "Event");
 
-            if (GenericUserPresenceEvent.class.isAssignableFrom(event))
+            if (GenericUserPresenceEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_PRESENCES);
-            else if (GenericUserUpdateEvent.class.isAssignableFrom(event) || GenericGuildMemberEvent.class.isAssignableFrom(event) || GuildMemberRemoveEvent.class.isAssignableFrom(event))
+            } else if (GenericUserUpdateEvent.class.isAssignableFrom(event)
+                    || GenericGuildMemberEvent.class.isAssignableFrom(event)
+                    || GuildMemberRemoveEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_MEMBERS);
-
-            else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event) || GuildAuditLogEntryCreateEvent.class.isAssignableFrom(event))
+            } else if (GuildBanEvent.class.isAssignableFrom(event)
+                    || GuildUnbanEvent.class.isAssignableFrom(event)
+                    || GuildAuditLogEntryCreateEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_MODERATION);
-            else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
+            } else if (GenericEmojiEvent.class.isAssignableFrom(event)
+                    || GenericGuildStickerEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_EXPRESSIONS);
-            else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event))
+            } else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event)) {
                 intents.add(SCHEDULED_EVENTS);
-            else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
+            } else if (GenericGuildInviteEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_INVITES);
-            else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))
+            } else if (GenericGuildVoiceEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_VOICE_STATES);
-
-            else if (MessageBulkDeleteEvent.class.isAssignableFrom(event))
+            } else if (MessageBulkDeleteEvent.class.isAssignableFrom(event)) {
                 intents.add(GUILD_MESSAGES);
-
-            else if (GenericMessageReactionEvent.class.isAssignableFrom(event))
+            } else if (GenericMessageReactionEvent.class.isAssignableFrom(event)) {
                 Collections.addAll(intents, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGE_REACTIONS);
-
-            else if (GenericMessageEvent.class.isAssignableFrom(event))
+            } else if (GenericMessageEvent.class.isAssignableFrom(event)) {
                 Collections.addAll(intents, GUILD_MESSAGES, DIRECT_MESSAGES);
-
-            else if (UserTypingEvent.class.isAssignableFrom(event))
+            } else if (UserTypingEvent.class.isAssignableFrom(event)) {
                 Collections.addAll(intents, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
-
-            else if (AutoModExecutionEvent.class.isAssignableFrom(event))
+            } else if (AutoModExecutionEvent.class.isAssignableFrom(event)) {
                 intents.add(AUTO_MODERATION_EXECUTION);
-            else if (GenericAutoModRuleEvent.class.isAssignableFrom(event))
+            } else if (GenericAutoModRuleEvent.class.isAssignableFrom(event)) {
                 intents.add(AUTO_MODERATION_CONFIGURATION);
+            }
         }
         return intents;
     }
@@ -449,8 +449,9 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> from(@Nonnull Collection<Class<? extends GenericEvent>> events, @Nonnull Collection<CacheFlag> flags)
-    {
+    public static EnumSet<GatewayIntent> from(
+            @Nonnull Collection<Class<? extends GenericEvent>> events,
+            @Nonnull Collection<CacheFlag> flags) {
         EnumSet<GatewayIntent> intents = fromEvents(events);
         intents.addAll(fromCacheFlags(flags));
         return intents;

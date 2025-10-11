@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.set.TLongSet;
+
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -35,51 +36,59 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.LongStream;
 
-public class ThreadUpdateHandler extends SocketHandler
-{
-    public ThreadUpdateHandler(JDAImpl api)
-    {
+public class ThreadUpdateHandler extends SocketHandler {
+    public ThreadUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getLong("guild_id");
-        if (api.getGuildSetupController().isLocked(guildId))
+        if (api.getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         final long threadId = content.getLong("id");
         ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);
 
-
-        //If the thread is missing then that means that the bot started up while the thread was archived
-        // thus it didn't get the thread. Now that it's been unarchived we've been given the entire thread and need to build it.
-        //Refer to the documentation for more info: https://discord.com/developers/docs/topics/threads#unarchiving-a-thread
-        if (thread == null)
-        {
+        // If the thread is missing then that means that the bot started up while the thread was
+        // archived
+        // thus it didn't get the thread. Now that it's been unarchived we've been given the entire
+        // thread and need to build it.
+        // Refer to the documentation for more info:
+        // https://discord.com/developers/docs/topics/threads#unarchiving-a-thread
+        if (thread == null) {
             // This seems to never be true but its better to check
-            if (content.getObject("thread_metadata").getBoolean("archived"))
+            if (content.getObject("thread_metadata").getBoolean("archived")) {
                 return null;
-
-            //Technically, when the ThreadChannel is unarchived the archive_timestamp (getTimeArchiveInfoLastModified) changes
-            // as well, but we don't have the original value because we didn't have the thread in memory, so we can't
-            // provide an entirely accurate ChannelUpdateArchiveTimestampEvent. Not sure how much that'll matter.
-            try
-            {
-                thread = (ThreadChannelImpl) api.getEntityBuilder().createThreadChannel(content, guildId);
-                api.handleEvent(
-                    new ChannelUpdateArchivedEvent(
-                        api, responseNumber,
-                        thread, true, false));
             }
-            catch (IllegalArgumentException ex)
-            {
-                if (EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage()))
-                {
+
+            // Technically, when the ThreadChannel is unarchived the archive_timestamp
+            // (getTimeArchiveInfoLastModified) changes
+            // as well, but we don't have the original value because we didn't have the thread in
+            // memory, so we can't
+            // provide an entirely accurate ChannelUpdateArchiveTimestampEvent. Not sure how much
+            // that'll matter.
+            try {
+                thread = (ThreadChannelImpl)
+                        api.getEntityBuilder().createThreadChannel(content, guildId);
+                api.handleEvent(
+                        new ChannelUpdateArchivedEvent(api, responseNumber, thread, true, false));
+            } catch (IllegalArgumentException ex) {
+                if (EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage())) {
                     long parentId = content.getUnsignedLong("parent_id", 0L);
-                    EventCache.LOG.debug("Caching THREAD_UPDATE for a thread with uncached parent. Parent ID: {} JSON: {}", parentId, content);
-                    api.getEventCache().cache(EventCache.Type.CHANNEL, parentId, responseNumber, allContent, this::handle);
+                    EventCache.LOG.debug(
+                            "Caching THREAD_UPDATE for a thread with uncached parent. Parent ID: {}"
+                                    + " JSON: {}",
+                            parentId,
+                            content);
+                    api.getEventCache()
+                            .cache(
+                                    EventCache.Type.CHANNEL,
+                                    parentId,
+                                    responseNumber,
+                                    allContent,
+                                    this::handle);
                     return null;
                 }
 
@@ -92,15 +101,19 @@ public class ThreadUpdateHandler extends SocketHandler
         final DataObject threadMetadata = content.getObject("thread_metadata");
         final String name = content.getString("name");
         final int flags = content.getInt("flags", 0);
-        final ThreadChannel.AutoArchiveDuration autoArchiveDuration = ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration"));
+        final ThreadChannel.AutoArchiveDuration autoArchiveDuration =
+                ThreadChannel.AutoArchiveDuration.fromKey(
+                        threadMetadata.getInt("auto_archive_duration"));
         final boolean locked = threadMetadata.getBoolean("locked");
         final boolean archived = threadMetadata.getBoolean("archived");
         final boolean invitable = threadMetadata.getBoolean("invitable");
-        final long archiveTimestamp = Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"));
+        final long archiveTimestamp =
+                Helpers.toTimestamp(threadMetadata.getString("archive_timestamp"));
         final int slowmode = content.getInt("rate_limit_per_user", 0);
 
         final String oldName = thread.getName();
-        final ThreadChannel.AutoArchiveDuration oldAutoArchiveDuration = thread.getAutoArchiveDuration();
+        final ThreadChannel.AutoArchiveDuration oldAutoArchiveDuration =
+                thread.getAutoArchiveDuration();
         final boolean oldLocked = thread.isLocked();
         final boolean oldArchived = thread.isArchived();
         final boolean oldInvitable = !thread.isPublic() && thread.isInvitable();
@@ -108,93 +121,70 @@ public class ThreadUpdateHandler extends SocketHandler
         final int oldSlowmode = thread.getSlowmode();
         final int oldFlags = thread.getRawFlags();
 
-
-        if (!Objects.equals(oldName, name))
-        {
+        if (!Objects.equals(oldName, name)) {
             thread.setName(name);
             api.handleEvent(
-                new ChannelUpdateNameEvent(
-                    getJDA(), responseNumber,
-                    thread, oldName, name));
+                    new ChannelUpdateNameEvent(getJDA(), responseNumber, thread, oldName, name));
         }
-        if (oldFlags != flags)
-        {
+        if (oldFlags != flags) {
             thread.setFlags(flags);
-            api.handleEvent(
-                new ChannelUpdateFlagsEvent(
-                    getJDA(), responseNumber,
-                    thread, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
+            api.handleEvent(new ChannelUpdateFlagsEvent(
+                    getJDA(),
+                    responseNumber,
+                    thread,
+                    ChannelFlag.fromRaw(oldFlags),
+                    ChannelFlag.fromRaw(flags)));
         }
-        if (oldSlowmode != slowmode)
-        {
+        if (oldSlowmode != slowmode) {
             thread.setSlowmode(slowmode);
-            api.handleEvent(
-                new ChannelUpdateSlowmodeEvent(
-                    api, responseNumber,
-                    thread, oldSlowmode, slowmode));
+            api.handleEvent(new ChannelUpdateSlowmodeEvent(
+                    api, responseNumber, thread, oldSlowmode, slowmode));
         }
-        if (oldAutoArchiveDuration != autoArchiveDuration)
-        {
+        if (oldAutoArchiveDuration != autoArchiveDuration) {
             thread.setAutoArchiveDuration(autoArchiveDuration);
-            api.handleEvent(
-                new ChannelUpdateAutoArchiveDurationEvent(
-                    api, responseNumber,
-                    thread, oldAutoArchiveDuration, autoArchiveDuration));
+            api.handleEvent(new ChannelUpdateAutoArchiveDurationEvent(
+                    api, responseNumber, thread, oldAutoArchiveDuration, autoArchiveDuration));
         }
-        if (oldLocked != locked)
-        {
+        if (oldLocked != locked) {
             thread.setLocked(locked);
             api.handleEvent(
-                new ChannelUpdateLockedEvent(
-                    api, responseNumber,
-                    thread, oldLocked, locked));
+                    new ChannelUpdateLockedEvent(api, responseNumber, thread, oldLocked, locked));
         }
-        if (oldArchived != archived)
-        {
+        if (oldArchived != archived) {
             thread.setArchived(archived);
-            api.handleEvent(
-                new ChannelUpdateArchivedEvent(
-                    api, responseNumber,
-                    thread, oldArchived, archived));
+            api.handleEvent(new ChannelUpdateArchivedEvent(
+                    api, responseNumber, thread, oldArchived, archived));
         }
-        if (oldArchiveTimestamp != archiveTimestamp)
-        {
+        if (oldArchiveTimestamp != archiveTimestamp) {
             thread.setArchiveTimestamp(archiveTimestamp);
-            api.handleEvent(
-                new ChannelUpdateArchiveTimestampEvent(
-                    api, responseNumber,
-                    thread, oldArchiveTimestamp, archiveTimestamp));
+            api.handleEvent(new ChannelUpdateArchiveTimestampEvent(
+                    api, responseNumber, thread, oldArchiveTimestamp, archiveTimestamp));
         }
-        if (oldInvitable != invitable)
-        {
+        if (oldInvitable != invitable) {
             thread.setInvitable(invitable);
-            api.handleEvent(
-                new ChannelUpdateInvitableEvent(
-                    api, responseNumber,
-                    thread, oldInvitable, invitable));
+            api.handleEvent(new ChannelUpdateInvitableEvent(
+                    api, responseNumber, thread, oldInvitable, invitable));
         }
 
-        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS) && !content.isNull("applied_tags"))
-        {
+        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS) && !content.isNull("applied_tags")) {
             final TLongSet oldTags = thread.getAppliedTagsSet();
-            thread.setAppliedTags(content.getArray("applied_tags")
-                    .stream(DataArray::getUnsignedLong)
-                    .mapToLong(Long::longValue));
+            thread.setAppliedTags(
+                    content.getArray("applied_tags").stream(DataArray::getUnsignedLong)
+                            .mapToLong(Long::longValue));
             final TLongSet tags = thread.getAppliedTagsSet();
 
-            if (!oldTags.equals(tags))
-            {
-                List<Long> oldTagList = LongStream.of(oldTags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
-                List<Long> newTagList = LongStream.of(tags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
-                api.handleEvent(
-                    new ChannelUpdateAppliedTagsEvent(
-                        api, responseNumber,
-                        thread, oldTagList, newTagList));
+            if (!oldTags.equals(tags)) {
+                List<Long> oldTagList = LongStream.of(oldTags.toArray())
+                        .boxed()
+                        .collect(Helpers.toUnmodifiableList());
+                List<Long> newTagList =
+                        LongStream.of(tags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
+                api.handleEvent(new ChannelUpdateAppliedTagsEvent(
+                        api, responseNumber, thread, oldTagList, newTagList));
             }
         }
 
-        if (thread.isArchived())
-        {
+        if (thread.isArchived()) {
             ChannelCacheViewImpl<GuildChannel> guildView = thread.getGuild().getChannelView();
             ChannelCacheViewImpl<Channel> globalView = api.getChannelsView();
             guildView.remove(thread);

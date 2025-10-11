@@ -16,32 +16,28 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import javax.annotation.Nonnull;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 
-public class ClockProvider
-{
+import javax.annotation.Nonnull;
+
+public class ClockProvider {
     private static Clock fixedTime = null;
 
     @Nonnull
-    public static Clock getClock()
-    {
-        if (fixedTime != null)
+    public static Clock getClock() {
+        if (fixedTime != null) {
             return fixedTime;
+        }
         return Clock.systemUTC();
     }
 
-    public static void withFixedTime(@Nonnull Instant instant, @Nonnull Runnable runnable)
-    {
+    public static void withFixedTime(@Nonnull Instant instant, @Nonnull Runnable runnable) {
         fixedTime = Clock.fixed(instant, ZoneOffset.UTC);
-        try
-        {
+        try {
             runnable.run();
-        }
-        finally
-        {
+        } finally {
             fixedTime = null;
         }
     }

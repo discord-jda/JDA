@@ -32,27 +32,25 @@ import javax.annotation.Nonnull;
  *
  * @see SlashCommandInteraction
  */
-public class SlashCommandInteractionEvent extends GenericCommandInteractionEvent implements SlashCommandInteraction
-{
+public class SlashCommandInteractionEvent extends GenericCommandInteractionEvent
+        implements SlashCommandInteraction {
     private final SlashCommandInteraction interaction;
 
-    public SlashCommandInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteraction interaction)
-    {
+    public SlashCommandInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public SlashCommandInteraction getInteraction()
-    {
+    public SlashCommandInteraction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return interaction.getChannel();
     }
 }

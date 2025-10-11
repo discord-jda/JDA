@@ -33,8 +33,7 @@ import javax.annotation.Nonnull;
  * @see MessageTopLevelComponentUnion
  * @see ModalTopLevelComponentUnion
  */
-public interface IComponentUnion extends Component
-{
+public interface IComponentUnion extends Component {
     /**
      * Whether this component is an {@link UnknownComponent}.
      *

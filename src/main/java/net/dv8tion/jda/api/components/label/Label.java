@@ -32,8 +32,7 @@ import javax.annotation.Nullable;
  * @see LabelChildComponent
  * @see LabelChildComponentUnion
  */
-public interface Label extends ModalTopLevelComponent
-{
+public interface Label extends ModalTopLevelComponent {
     /**
      * The maximum length a label can have. ({@value})
      */
@@ -64,8 +63,10 @@ public interface Label extends ModalTopLevelComponent
      * @return The new {@link Label}
      */
     @Nonnull
-    static Label of(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
-    {
+    static Label of(
+            @Nonnull String label,
+            @Nullable String description,
+            @Nonnull LabelChildComponent child) {
         return LabelImpl.validated(label, description, child);
     }
 
@@ -86,8 +87,7 @@ public interface Label extends ModalTopLevelComponent
      * @return The new {@link Label}
      */
     @Nonnull
-    static Label of(@Nonnull String label, @Nonnull LabelChildComponent child)
-    {
+    static Label of(@Nonnull String label, @Nonnull LabelChildComponent child) {
         return of(label, null, child);
     }
 

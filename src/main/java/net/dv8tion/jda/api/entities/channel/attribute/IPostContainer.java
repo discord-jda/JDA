@@ -30,13 +30,15 @@ import net.dv8tion.jda.api.managers.channel.attribute.IPostContainerManager;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+
 import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * A channel which contains {@link #createForumPost(String, MessageCreateData) Forum Posts}.
@@ -49,12 +51,12 @@ import java.util.List;
  * @see MediaChannel
  * @see #createForumPost(String, MessageCreateData)
  */
-public interface IPostContainer extends IThreadContainer
-{
+public interface IPostContainer extends IThreadContainer {
     /**
      * The maximum length of a forum / media channel topic ({@value})
      */
     int MAX_POST_CONTAINER_TOPIC_LENGTH = 4096;
+
     /**
      * The maximum number of {@link ForumPostAction#setTags(Collection) tags} that can be applied to a forum post. ({@value})
      */
@@ -89,8 +91,7 @@ public interface IPostContainer extends IThreadContainer
      */
     @Nonnull
     @Unmodifiable
-    default List<ForumTag> getAvailableTags()
-    {
+    default List<ForumTag> getAvailableTags() {
         return getAvailableTagCache().asList();
     }
 
@@ -115,8 +116,7 @@ public interface IPostContainer extends IThreadContainer
      */
     @Nonnull
     @Unmodifiable
-    default List<ForumTag> getAvailableTagsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<ForumTag> getAvailableTagsByName(@Nonnull String name, boolean ignoreCase) {
         return getAvailableTagCache().getElementsByName(name, ignoreCase);
     }
 
@@ -133,8 +133,7 @@ public interface IPostContainer extends IThreadContainer
      * @see    net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake#fromId(long)
      */
     @Nullable
-    default ForumTag getAvailableTagById(long id)
-    {
+    default ForumTag getAvailableTagById(long id) {
         return getAvailableTagCache().getElementById(id);
     }
 
@@ -156,8 +155,7 @@ public interface IPostContainer extends IThreadContainer
      * @see    net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake#fromId(String)
      */
     @Nullable
-    default ForumTag getAvailableTagById(@Nonnull String id)
-    {
+    default ForumTag getAvailableTagById(@Nonnull String id) {
         return getAvailableTagCache().getElementById(id);
     }
 
@@ -175,8 +173,7 @@ public interface IPostContainer extends IThreadContainer
      *
      * @return True, if all new posts must have a tag.
      */
-    default boolean isTagRequired()
-    {
+    default boolean isTagRequired() {
         return getFlags().contains(ChannelFlag.REQUIRE_TAG);
     }
 
@@ -242,8 +239,7 @@ public interface IPostContainer extends IThreadContainer
     /**
      * The order used to sort forum posts.
      */
-    enum SortOrder
-    {
+    enum SortOrder {
         /**
          * Sort by recent activity, including unarchive, message, reaction, and thread creation.
          */
@@ -260,8 +256,7 @@ public interface IPostContainer extends IThreadContainer
 
         private final int order;
 
-        SortOrder(int order)
-        {
+        SortOrder(int order) {
             this.order = order;
         }
 
@@ -270,8 +265,7 @@ public interface IPostContainer extends IThreadContainer
          *
          * @return The raw order key
          */
-        public int getKey()
-        {
+        public int getKey() {
             return order;
         }
 
@@ -284,12 +278,11 @@ public interface IPostContainer extends IThreadContainer
          * @return The {@link SortOrder} for the provided key, or {@link #UNKNOWN} if the key is not known
          */
         @Nonnull
-        public static SortOrder fromKey(int key)
-        {
-            for (SortOrder order : values())
-            {
-                if (order.order == key)
+        public static SortOrder fromKey(int key) {
+            for (SortOrder order : values()) {
+                if (order.order == key) {
                     return order;
+                }
             }
 
             return UNKNOWN;

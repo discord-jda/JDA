@@ -21,10 +21,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents a {@link GuildChannel} that is capable of containing members.
@@ -40,8 +42,7 @@ import java.util.List;
  *
  * @see IMemberContainer#getMembers()
  */
-public interface IMemberContainer extends GuildChannel
-{
+public interface IMemberContainer extends GuildChannel {
     /**
      * A List of all {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel
      * <br>For {@link TextChannel TextChannels},

@@ -31,8 +31,7 @@ import javax.annotation.Nonnull;
  *
  * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  */
-public interface Separator extends Component, MessageTopLevelComponent, ContainerChildComponent
-{
+public interface Separator extends Component, MessageTopLevelComponent, ContainerChildComponent {
     /**
      * Constructs a new, visible {@link Separator} from the given content.
      * <br>This is equivalent to {@code create(true, spacing)}.
@@ -46,8 +45,7 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
      * @return The new {@link Separator}
      */
     @Nonnull
-    static Separator createDivider(@Nonnull Spacing spacing)
-    {
+    static Separator createDivider(@Nonnull Spacing spacing) {
         return create(true, spacing);
     }
 
@@ -64,8 +62,7 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
      * @return The new {@link Separator}
      */
     @Nonnull
-    static Separator createInvisible(@Nonnull Spacing spacing)
-    {
+    static Separator createInvisible(@Nonnull Spacing spacing) {
         return create(false, spacing);
     }
 
@@ -83,8 +80,7 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
      * @return The new {@link Separator}
      */
     @Nonnull
-    static Separator create(boolean isDivider, @Nonnull Spacing spacing)
-    {
+    static Separator create(boolean isDivider, @Nonnull Spacing spacing) {
         Checks.notNull(spacing, "Spacing");
         return new SeparatorImpl(spacing, isDivider);
     }
@@ -143,8 +139,7 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
 
         private final int key;
 
-        Spacing(int key)
-        {
+        Spacing(int key) {
             this.key = key;
         }
 
@@ -155,8 +150,7 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
          *
          * @return Raw int representing this Spacing
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -169,12 +163,11 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
          * @return The Type or {@link #UNKNOWN}
          */
         @Nonnull
-        public static Spacing fromKey(int type)
-        {
-            for (Spacing t : values())
-            {
-                if (t.key == type)
+        public static Spacing fromKey(int type) {
+            for (Spacing t : values()) {
+                if (t.key == type) {
                     return t;
+                }
             }
             return UNKNOWN;
         }

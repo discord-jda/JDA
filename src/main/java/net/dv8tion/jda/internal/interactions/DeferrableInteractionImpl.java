@@ -24,29 +24,26 @@ import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
 
-public class DeferrableInteractionImpl extends InteractionImpl implements IDeferrableCallback
-{
+public class DeferrableInteractionImpl extends InteractionImpl implements IDeferrableCallback {
     protected final InteractionHookImpl hook;
 
-    public DeferrableInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public DeferrableInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         this.hook = new InteractionHookImpl(this, jda);
     }
 
     @Override
-    public synchronized void releaseHook(boolean success)
-    {
-        if (success)
+    public synchronized void releaseHook(boolean success) {
+        if (success) {
             hook.ready();
-        else
+        } else {
             hook.fail(new InteractionFailureException());
+        }
     }
 
     @Nonnull
     @Override
-    public InteractionHook getHook()
-    {
+    public InteractionHook getHook() {
         return hook;
     }
 }

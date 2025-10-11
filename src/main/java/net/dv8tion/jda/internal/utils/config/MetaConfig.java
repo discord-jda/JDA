@@ -19,15 +19,16 @@ package net.dv8tion.jda.internal.utils.config;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class MetaConfig
-{
-    private static final MetaConfig defaultConfig = new MetaConfig(2048, null, EnumSet.allOf(CacheFlag.class), ConfigFlag.getDefault());
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class MetaConfig {
+    private static final MetaConfig defaultConfig =
+            new MetaConfig(2048, null, EnumSet.allOf(CacheFlag.class), ConfigFlag.getDefault());
     private final ConcurrentMap<String, String> mdcContextMap;
     private final EnumSet<CacheFlag> cacheFlags;
     private final boolean enableMDC;
@@ -37,48 +38,43 @@ public class MetaConfig
     public MetaConfig(
             int maxBufferSize,
             @Nullable ConcurrentMap<String, String> mdcContextMap,
-            @Nullable EnumSet<CacheFlag> cacheFlags, EnumSet<ConfigFlag> flags)
-    {
+            @Nullable EnumSet<CacheFlag> cacheFlags,
+            EnumSet<ConfigFlag> flags) {
         this.maxBufferSize = maxBufferSize;
         this.cacheFlags = cacheFlags == null ? EnumSet.allOf(CacheFlag.class) : cacheFlags;
         this.enableMDC = flags.contains(ConfigFlag.MDC_CONTEXT);
-        if (enableMDC)
+        if (enableMDC) {
             this.mdcContextMap = mdcContextMap == null ? new ConcurrentHashMap<>() : mdcContextMap;
-        else
+        } else {
             this.mdcContextMap = null;
+        }
         this.useShutdownHook = flags.contains(ConfigFlag.SHUTDOWN_HOOK);
     }
 
     @Nullable
-    public ConcurrentMap<String, String> getMdcContextMap()
-    {
+    public ConcurrentMap<String, String> getMdcContextMap() {
         return mdcContextMap;
     }
 
     @Nonnull
-    public EnumSet<CacheFlag> getCacheFlags()
-    {
+    public EnumSet<CacheFlag> getCacheFlags() {
         return cacheFlags;
     }
 
-    public boolean isEnableMDC()
-    {
+    public boolean isEnableMDC() {
         return enableMDC;
     }
 
-    public boolean isUseShutdownHook()
-    {
+    public boolean isUseShutdownHook() {
         return useShutdownHook;
     }
 
-    public int getMaxBufferSize()
-    {
+    public int getMaxBufferSize() {
         return maxBufferSize;
     }
 
     @Nonnull
-    public static MetaConfig getDefault()
-    {
+    public static MetaConfig getDefault() {
         return defaultConfig;
     }
 }

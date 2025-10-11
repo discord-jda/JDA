@@ -16,27 +16,29 @@
 
 package net.dv8tion.jda.test.components;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu.Builder;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu.DefaultValue;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.selections.EntitySelectMenuImpl;
+
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-
-public class SelectMenuTests
-{
+public class SelectMenuTests {
     @Test
-    void testEntitySelectDefaultValueValid()
-    {
+    void testEntitySelectDefaultValueValid() {
         Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);
         builder.setDefaultValues(DefaultValue.role("1234"));
 
         EntitySelectMenu menu = builder.build();
-        DataObject value = ((EntitySelectMenuImpl) menu).toData().getArray("default_values").getObject(0);
+        DataObject value = ((EntitySelectMenuImpl) menu)
+                .toData()
+                .getArray("default_values")
+                .getObject(0);
 
         assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.role("1234"));
         assertThat(value.getString("type")).isEqualTo("role");
@@ -46,7 +48,10 @@ public class SelectMenuTests
         builder.setDefaultValues(DefaultValue.user("1234"));
 
         menu = builder.build();
-        value = ((EntitySelectMenuImpl) menu).toData().getArray("default_values").getObject(0);
+        value = ((EntitySelectMenuImpl) menu)
+                .toData()
+                .getArray("default_values")
+                .getObject(0);
 
         assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.user("1234"));
         assertThat(value.getString("type")).isEqualTo("user");
@@ -56,7 +61,10 @@ public class SelectMenuTests
         builder.setDefaultValues(DefaultValue.channel("1234"));
 
         menu = builder.build();
-        value = ((EntitySelectMenuImpl) menu).toData().getArray("default_values").getObject(0);
+        value = ((EntitySelectMenuImpl) menu)
+                .toData()
+                .getArray("default_values")
+                .getObject(0);
 
         assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.channel("1234"));
         assertThat(value.getString("type")).isEqualTo("channel");
@@ -64,35 +72,63 @@ public class SelectMenuTests
     }
 
     @Test
-    void testEntitySelectDefaultValueInvalid()
-    {
-        assertThatIllegalArgumentException().isThrownBy(() -> {
-            Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);
-            builder.setDefaultValues(DefaultValue.user("1234"));
-        }).withMessage("The select menu supports types SelectTarget.ROLE, but provided default value has type SelectTarget.USER!");
-        assertThatIllegalArgumentException().isThrownBy(() -> {
-            Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);
-            builder.setDefaultValues(DefaultValue.channel("1234"));
-        }).withMessage("The select menu supports types SelectTarget.ROLE, but provided default value has type SelectTarget.CHANNEL!");
-        assertThatIllegalArgumentException().isThrownBy(() -> {
-            Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE, SelectTarget.USER);
-            builder.setDefaultValues(DefaultValue.channel("1234"));
-        }).withMessage("The select menu supports types SelectTarget.ROLE and SelectTarget.USER, but provided default value has type SelectTarget.CHANNEL!");
-        assertThatIllegalArgumentException().isThrownBy(() -> {
-            Builder builder = EntitySelectMenu.create("customid", SelectTarget.USER);
-            builder.setDefaultValues(DefaultValue.channel("1234"));
-        }).withMessage("The select menu supports types SelectTarget.USER, but provided default value has type SelectTarget.CHANNEL!");
-        assertThatIllegalArgumentException().isThrownBy(() -> {
-            Builder builder = EntitySelectMenu.create("customid", SelectTarget.USER);
-            builder.setDefaultValues(DefaultValue.role("1234"));
-        }).withMessage("The select menu supports types SelectTarget.USER, but provided default value has type SelectTarget.ROLE!");
-        assertThatIllegalArgumentException().isThrownBy(() -> {
-            Builder builder = EntitySelectMenu.create("customid", SelectTarget.CHANNEL);
-            builder.setDefaultValues(DefaultValue.user("1234"));
-        }).withMessage("The select menu supports types SelectTarget.CHANNEL, but provided default value has type SelectTarget.USER!");
-        assertThatIllegalArgumentException().isThrownBy(() -> {
-            Builder builder = EntitySelectMenu.create("customid", SelectTarget.CHANNEL);
-            builder.setDefaultValues(DefaultValue.role("1234"));
-        }).withMessage("The select menu supports types SelectTarget.CHANNEL, but provided default value has type SelectTarget.ROLE!");
+    void testEntitySelectDefaultValueInvalid() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);
+                    builder.setDefaultValues(DefaultValue.user("1234"));
+                })
+                .withMessage(
+                        "The select menu supports types SelectTarget.ROLE, but provided default"
+                                + " value has type SelectTarget.USER!");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);
+                    builder.setDefaultValues(DefaultValue.channel("1234"));
+                })
+                .withMessage(
+                        "The select menu supports types SelectTarget.ROLE, but provided default"
+                                + " value has type SelectTarget.CHANNEL!");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    Builder builder = EntitySelectMenu.create(
+                            "customid", SelectTarget.ROLE, SelectTarget.USER);
+                    builder.setDefaultValues(DefaultValue.channel("1234"));
+                })
+                .withMessage(
+                        "The select menu supports types SelectTarget.ROLE and SelectTarget.USER,"
+                                + " but provided default value has type SelectTarget.CHANNEL!");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    Builder builder = EntitySelectMenu.create("customid", SelectTarget.USER);
+                    builder.setDefaultValues(DefaultValue.channel("1234"));
+                })
+                .withMessage(
+                        "The select menu supports types SelectTarget.USER, but provided default"
+                                + " value has type SelectTarget.CHANNEL!");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    Builder builder = EntitySelectMenu.create("customid", SelectTarget.USER);
+                    builder.setDefaultValues(DefaultValue.role("1234"));
+                })
+                .withMessage(
+                        "The select menu supports types SelectTarget.USER, but provided default"
+                                + " value has type SelectTarget.ROLE!");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    Builder builder = EntitySelectMenu.create("customid", SelectTarget.CHANNEL);
+                    builder.setDefaultValues(DefaultValue.user("1234"));
+                })
+                .withMessage(
+                        "The select menu supports types SelectTarget.CHANNEL, but provided default"
+                                + " value has type SelectTarget.USER!");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    Builder builder = EntitySelectMenu.create("customid", SelectTarget.CHANNEL);
+                    builder.setDefaultValues(DefaultValue.role("1234"));
+                })
+                .withMessage(
+                        "The select menu supports types SelectTarget.CHANNEL, but provided default"
+                                + " value has type SelectTarget.ROLE!");
     }
 }

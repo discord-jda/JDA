@@ -35,24 +35,22 @@ import javax.annotation.Nullable;
  * @see UserContextInteraction
  * @see IReplyCallback
  */
-public class UserContextInteractionEvent extends GenericContextInteractionEvent<User> implements UserContextInteraction
-{
-    public UserContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull UserContextInteraction interaction)
-    {
+public class UserContextInteractionEvent extends GenericContextInteractionEvent<User>
+        implements UserContextInteraction {
+    public UserContextInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull UserContextInteraction interaction) {
         super(api, responseNumber, interaction);
     }
 
     @Nonnull
     @Override
-    public UserContextInteraction getInteraction()
-    {
+    public UserContextInteraction getInteraction() {
         return (UserContextInteraction) super.getInteraction();
     }
 
     @Nullable
     @Override
-    public Member getTargetMember()
-    {
+    public Member getTargetMember() {
         return getInteraction().getTargetMember();
     }
 }

@@ -38,10 +38,8 @@ import javax.annotation.Nonnull;
  *
  * @since  4.2.1
  */
-public class GuildMemberUpdateEvent extends GenericGuildMemberEvent
-{
-    public GuildMemberUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+public class GuildMemberUpdateEvent extends GenericGuildMemberEvent {
+    public GuildMemberUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member);
     }
 }

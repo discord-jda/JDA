@@ -18,10 +18,11 @@ package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
 
-import javax.annotation.Nonnull;
 import java.util.NavigableSet;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
 
 /**
  * Specialized {@link CacheView} for entities that occur in a specified order.
@@ -33,8 +34,8 @@ import java.util.stream.Stream;
  *
  * @see   CacheView CacheView for details on Efficient Memory Usage
  */
-public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISnowflake> extends SnowflakeCacheView<T>
-{
+public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISnowflake>
+        extends SnowflakeCacheView<T> {
     /**
      * Behavior similar to {@link CacheView#forEach(Consumer)} but does not preserve order.
      * <br>This will not copy the data store as sorting is not needed.

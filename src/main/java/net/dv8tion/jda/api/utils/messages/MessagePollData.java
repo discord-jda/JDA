@@ -21,10 +21,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
 
 /**
  * A poll that can be attached to a {@link MessageCreateRequest}.
@@ -43,16 +44,19 @@ import java.util.concurrent.TimeUnit;
  * @see #builder(String)
  * @see MessageCreateBuilder#setPoll(MessagePollData)
  */
-public class MessagePollData implements SerializableData
-{
+public class MessagePollData implements SerializableData {
     private final MessagePoll.LayoutType layout;
     private final MessagePoll.Question question;
     private final List<MessagePoll.Answer> answers;
     private final Duration duration;
     private final boolean isMultiAnswer;
 
-    public MessagePollData(MessagePoll.LayoutType layout, MessagePoll.Question question, List<MessagePoll.Answer> answers, Duration duration, boolean isMultiAnswer)
-    {
+    public MessagePollData(
+            MessagePoll.LayoutType layout,
+            MessagePoll.Question question,
+            List<MessagePoll.Answer> answers,
+            Duration duration,
+            boolean isMultiAnswer) {
         this.layout = layout;
         this.question = question;
         this.answers = answers;
@@ -74,8 +78,7 @@ public class MessagePollData implements SerializableData
      * @return {@link MessagePollBuilder}
      */
     @Nonnull
-    public static MessagePollBuilder builder(@Nonnull String title)
-    {
+    public static MessagePollBuilder builder(@Nonnull String title) {
         return new MessagePollBuilder(title);
     }
 
@@ -92,31 +95,32 @@ public class MessagePollData implements SerializableData
      * @return MessagePollData instance
      */
     @Nonnull
-    public static MessagePollData from(@Nonnull MessagePoll poll)
-    {
+    public static MessagePollData from(@Nonnull MessagePoll poll) {
         return new MessagePollBuilder(poll).build();
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject data = DataObject.empty();
 
         data.put("duration", TimeUnit.SECONDS.toHours(duration.getSeconds()));
         data.put("allow_multiselect", isMultiAnswer);
         data.put("layout_type", layout.getKey());
 
-        data.put("question", DataObject.empty()
-                .put("text", question.getText()));
+        data.put("question", DataObject.empty().put("text", question.getText()));
 
-        data.put("answers", answers.stream()
-            .map(answer -> DataObject.empty()
-                .put("answer_id", answer.getId())
-                .put("poll_media", DataObject.empty()
-                    .put("text", answer.getText())
-                    .put("emoji", answer.getEmoji())))
-            .collect(Helpers.toDataArray()));
+        data.put(
+                "answers",
+                answers.stream()
+                        .map(answer -> DataObject.empty()
+                                .put("answer_id", answer.getId())
+                                .put(
+                                        "poll_media",
+                                        DataObject.empty()
+                                                .put("text", answer.getText())
+                                                .put("emoji", answer.getEmoji())))
+                        .collect(Helpers.toDataArray()));
 
         return data;
     }

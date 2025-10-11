@@ -20,6 +20,5 @@ package net.dv8tion.jda.api.requests.restaction;
  * Request to delete a message from a webhook.
  * <br>Optionally, provide a {@link #setThreadId(long) thread id} to retrieve messages from threads.
  */
-public interface WebhookMessageDeleteAction extends AbstractWebhookMessageAction<Void, WebhookMessageDeleteAction>
-{
-}
+public interface WebhookMessageDeleteAction
+        extends AbstractWebhookMessageAction<Void, WebhookMessageDeleteAction> {}

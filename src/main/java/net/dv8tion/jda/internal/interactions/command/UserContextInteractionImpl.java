@@ -23,34 +23,32 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
-public class UserContextInteractionImpl extends ContextInteractionImpl<User> implements UserContextInteraction
-{
+public class UserContextInteractionImpl extends ContextInteractionImpl<User>
+        implements UserContextInteraction {
     private Member member;
 
-    public UserContextInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public UserContextInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
     }
 
     @Override
-    protected User parse(DataObject interaction, DataObject resolved)
-    {
+    protected User parse(DataObject interaction, DataObject resolved) {
         DataObject users = resolved.getObject("users");
         DataObject user = users.getObject(users.keys().iterator().next());
 
         resolved.optObject("members").filter(m -> !m.keys().isEmpty()).ifPresent(members -> {
             DataObject member = members.getObject(members.keys().iterator().next());
             this.member = interactionEntityBuilder.createMember(guild, member);
-            if (this.member instanceof MemberImpl)
+            if (this.member instanceof MemberImpl) {
                 api.getEntityBuilder().updateMemberCache((MemberImpl) this.member);
+            }
         });
 
         return api.getEntityBuilder().createUser(user);
     }
 
     @Override
-    public Member getTargetMember()
-    {
+    public Member getTargetMember() {
         return member;
     }
 }

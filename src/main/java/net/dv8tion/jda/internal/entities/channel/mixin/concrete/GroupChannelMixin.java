@@ -22,9 +22,7 @@ import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelM
 import javax.annotation.Nullable;
 
 public interface GroupChannelMixin<T extends GroupChannelMixin<T>>
-    extends GroupChannel,
-        MessageChannelMixin<T>
-{
+        extends GroupChannel, MessageChannelMixin<T> {
     T setOwnerId(long ownerId);
 
     T setIcon(@Nullable String icon);

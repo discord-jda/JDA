@@ -74,8 +74,7 @@ import javax.annotation.Nonnull;
  * builder.build();
  * </code></pre>
  */
-public interface SessionController
-{
+public interface SessionController {
     /**
      * The default delay (in seconds) to wait between running {@link net.dv8tion.jda.api.utils.SessionController.SessionConnectNode SessionConnectNodes}
      */
@@ -129,8 +128,7 @@ public interface SessionController
      * @return The global rate-limiter
      */
     @Nonnull
-    default RestRateLimiter.GlobalRateLimit getRateLimitHandle()
-    {
+    default RestRateLimiter.GlobalRateLimit getRateLimitHandle() {
         return RestRateLimiter.GlobalRateLimit.create();
     }
 
@@ -142,8 +140,7 @@ public interface SessionController
      * @return The gateway endpoint
      */
     @Nonnull
-    default String getGateway()
-    {
+    default String getGateway() {
         return "wss://gateway.discord.gg/";
     }
 
@@ -165,8 +162,7 @@ public interface SessionController
     /**
      * POJO containing the gateway endpoint and recommended shard total for a shard manager.
      */
-    class ShardedGateway
-    {
+    class ShardedGateway {
         private final String url;
         private final int shardTotal;
         private final int concurrency;
@@ -179,13 +175,11 @@ public interface SessionController
          * @param shardTotal
          *        The recommended shard total
          */
-        public ShardedGateway(String url, int shardTotal)
-        {
+        public ShardedGateway(String url, int shardTotal) {
             this(url, shardTotal, 1);
         }
 
-        public ShardedGateway(String url, int shardTotal, int concurrency)
-        {
+        public ShardedGateway(String url, int shardTotal, int concurrency) {
             this.url = url;
             this.shardTotal = shardTotal;
             this.concurrency = concurrency;
@@ -197,8 +191,7 @@ public interface SessionController
          * @return The endpoint
          */
         @Nonnull
-        public String getUrl()
-        {
+        public String getUrl() {
             return url;
         }
 
@@ -207,8 +200,7 @@ public interface SessionController
          *
          * @return The shard total
          */
-        public int getShardTotal()
-        {
+        public int getShardTotal() {
             return shardTotal;
         }
 
@@ -221,8 +213,7 @@ public interface SessionController
          *
          * @see    #setConcurrency(int)
          */
-        public int getConcurrency()
-        {
+        public int getConcurrency() {
             return concurrency;
         }
     }
@@ -233,8 +224,7 @@ public interface SessionController
      *
      * <p><b>Note: None of the provided session nodes can be resumed, the resume timeframe has already passed</b>
      */
-    interface SessionConnectNode
-    {
+    interface SessionConnectNode {
         /**
          * Whether this node is reconnecting. Can be used to setup a priority based system.
          *

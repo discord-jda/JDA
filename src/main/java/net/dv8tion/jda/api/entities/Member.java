@@ -31,11 +31,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -45,6 +43,10 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a Guild-specific User.
@@ -64,10 +66,10 @@ import java.util.concurrent.TimeUnit;
  * @see   Guild#getMembersWithRoles(Role...)
  * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder, IDetachableEntity, UserSnowflake
-{
+public interface Member extends IMentionable, IPermissionHolder, IDetachableEntity, UserSnowflake {
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
+
     /** Maximum number of days a Member can be timed out for */
     int MAX_TIME_OUT_LENGTH = 28;
 
@@ -156,8 +158,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return True, if this Member is in time out
      */
-    default boolean isTimedOut()
-    {
+    default boolean isTimedOut() {
         return getTimeOutEnd() != null && getTimeOutEnd().isAfter(OffsetDateTime.now());
     }
 
@@ -289,10 +290,16 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar url.
      */
     @Nullable
-    default String getAvatarUrl()
-    {
+    default String getAvatarUrl() {
         String avatarId = getAvatarId();
-        return avatarId == null ? null : String.format(AVATAR_URL, getGuild().getId(), getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+        return avatarId == null
+                ? null
+                : String.format(
+                        AVATAR_URL,
+                        getGuild().getId(),
+                        getId(),
+                        avatarId,
+                        avatarId.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -303,8 +310,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @see    #getAvatarUrl()
      */
     @Nullable
-    default ImageProxy getAvatar()
-    {
+    default ImageProxy getAvatar() {
         final String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? null : new ImageProxy(avatarUrl);
     }
@@ -317,8 +323,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.Member} avatar url.
      */
     @Nonnull
-    default String getEffectiveAvatarUrl()
-    {
+    default String getEffectiveAvatarUrl() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
     }
@@ -331,8 +336,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @see    #getEffectiveAvatarUrl()
      */
     @Nonnull
-    default ImageProxy getEffectiveAvatar()
-    {
+    default ImageProxy getEffectiveAvatar() {
         final ImageProxy avatar = getAvatar();
         return avatar == null ? getUser().getEffectiveAvatar() : avatar;
     }
@@ -422,8 +426,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @return The flags
      */
     @Nonnull
-    default EnumSet<MemberFlag> getFlags()
-    {
+    default EnumSet<MemberFlag> getFlags() {
         return MemberFlag.fromRaw(getFlagsRaw());
     }
 
@@ -573,8 +576,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(int deletionTimeframe, @Nonnull TimeUnit unit)
-    {
+    default AuditableRestAction<Void> ban(int deletionTimeframe, @Nonnull TimeUnit unit) {
         return getGuild().ban(this, deletionTimeframe, unit);
     }
 
@@ -609,8 +611,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick()
-    {
+    default AuditableRestAction<Void> kick() {
         return getGuild().kick(this);
     }
 
@@ -650,8 +651,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutFor(long amount, @Nonnull TimeUnit unit)
-    {
+    default AuditableRestAction<Void> timeoutFor(long amount, @Nonnull TimeUnit unit) {
         return getGuild().timeoutFor(this, amount, unit);
     }
 
@@ -689,8 +689,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutFor(@Nonnull Duration duration)
-    {
+    default AuditableRestAction<Void> timeoutFor(@Nonnull Duration duration) {
         return getGuild().timeoutFor(this, duration);
     }
 
@@ -728,8 +727,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntil(@Nonnull TemporalAccessor temporal)
-    {
+    default AuditableRestAction<Void> timeoutUntil(@Nonnull TemporalAccessor temporal) {
         return getGuild().timeoutUntil(this, temporal);
     }
 
@@ -755,8 +753,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> removeTimeout()
-    {
+    default AuditableRestAction<Void> removeTimeout() {
         return getGuild().removeTimeout(this);
     }
 
@@ -796,8 +793,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> mute(boolean mute)
-    {
+    default AuditableRestAction<Void> mute(boolean mute) {
         return getGuild().mute(this, mute);
     }
 
@@ -836,8 +832,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> deafen(boolean deafen)
-    {
+    default AuditableRestAction<Void> deafen(boolean deafen) {
         return getGuild().deafen(this, deafen);
     }
 
@@ -882,8 +877,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> modifyNickname(@Nullable String nickname)
-    {
+    default AuditableRestAction<Void> modifyNickname(@Nullable String nickname) {
         return getGuild().modifyNickname(this, nickname);
     }
 
@@ -907,34 +901,33 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> modifyFlags(@Nonnull Collection<MemberFlag> newFlags)
-    {
+    default AuditableRestAction<Void> modifyFlags(@Nonnull Collection<MemberFlag> newFlags) {
         Checks.noneNull(newFlags, "Flags");
-        if (!getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS))
+        if (!getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS)) {
             throw new InsufficientPermissionException(getGuild(), Permission.MODERATE_MEMBERS);
+        }
         int flags = getFlagsRaw();
         EnumSet<MemberFlag> updated = Helpers.copyEnumSet(MemberFlag.class, newFlags);
-        for (MemberFlag flag : MemberFlag.values())
-        {
-            if (flag.modifiable)
-            {
-                if (updated.contains(flag))
+        for (MemberFlag flag : MemberFlag.values()) {
+            if (flag.modifiable) {
+                if (updated.contains(flag)) {
                     flags |= flag.raw;
-                else
+                } else {
                     flags &= ~flag.raw;
+                }
             }
         }
 
         DataObject body = DataObject.empty().put("flags", flags);
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), getId());
+        Route.CompiledRoute route =
+                Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
     /**
      * Member flags indicating information about the membership state.
      */
-    enum MemberFlag
-    {
+    enum MemberFlag {
         /**
          * The Member has left and rejoined the guild
          */
@@ -956,9 +949,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
         private final int raw;
         private final boolean modifiable;
 
-
-        MemberFlag(int raw, boolean modifiable)
-        {
+        MemberFlag(int raw, boolean modifiable) {
             this.raw = raw;
             this.modifiable = modifiable;
         }
@@ -968,8 +959,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
          *
          * @return The raw value
          */
-        public int getRaw()
-        {
+        public int getRaw() {
             return raw;
         }
 
@@ -978,8 +968,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
          *
          * @return True, if this flag can be modified
          */
-        public boolean isModifiable()
-        {
+        public boolean isModifiable() {
             return modifiable;
         }
 
@@ -993,13 +982,12 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
          * @return EnumSet containing the flags represented by the provided raw value
          */
         @Nonnull
-        public static EnumSet<MemberFlag> fromRaw(int raw)
-        {
+        public static EnumSet<MemberFlag> fromRaw(int raw) {
             EnumSet<MemberFlag> flags = EnumSet.noneOf(MemberFlag.class);
-            for (MemberFlag flag : values())
-            {
-                if ((raw & flag.raw) == flag.raw)
+            for (MemberFlag flag : values()) {
+                if ((raw & flag.raw) == flag.raw) {
                     flags.add(flag);
+                }
             }
             return flags;
         }
@@ -1013,12 +1001,12 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
          *
          * @return The raw value of the provided flags
          */
-        public static int toRaw(@Nonnull Collection<MemberFlag> flags)
-        {
+        public static int toRaw(@Nonnull Collection<MemberFlag> flags) {
             Checks.noneNull(flags, "Flags");
             int raw = 0;
-            for (MemberFlag flag : flags)
+            for (MemberFlag flag : flags) {
                 raw |= flag.raw;
+            }
             return raw;
         }
     }

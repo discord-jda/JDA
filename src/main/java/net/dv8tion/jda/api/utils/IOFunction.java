@@ -27,8 +27,7 @@ import java.io.IOException;
  * @param <R> The type of the return value
  */
 @FunctionalInterface
-public interface IOFunction<T, R>
-{
+public interface IOFunction<T, R> {
     @UnknownNullability
     R apply(T t) throws IOException;
 }

@@ -26,11 +26,12 @@ import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 
+import java.util.Collection;
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Indicates that a user is typing in an {@link net.dv8tion.jda.api.interactions.commands.build.OptionData option} which
@@ -43,89 +44,80 @@ import java.util.List;
  * @see CommandAutoCompleteInteraction
  * @see IAutoCompleteCallback
  */
-public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInteractionEvent implements CommandAutoCompleteInteraction
-{
+public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInteractionEvent
+        implements CommandAutoCompleteInteraction {
     private final CommandAutoCompleteInteraction interaction;
 
-    public CommandAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandAutoCompleteInteraction interaction)
-    {
+    public CommandAutoCompleteInteractionEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull CommandAutoCompleteInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public CommandAutoCompleteInteraction getInteraction()
-    {
+    public CommandAutoCompleteInteraction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public AutoCompleteQuery getFocusedOption()
-    {
+    public AutoCompleteQuery getFocusedOption() {
         return interaction.getFocusedOption();
     }
 
     @Nonnull
     @Override
-    public Command.Type getCommandType()
-    {
+    public Command.Type getCommandType() {
         return interaction.getCommandType();
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return interaction.getName();
     }
 
     @Nullable
     @Override
-    public String getSubcommandName()
-    {
+    public String getSubcommandName() {
         return interaction.getSubcommandName();
     }
 
     @Nullable
     @Override
-    public String getSubcommandGroup()
-    {
+    public String getSubcommandGroup() {
         return interaction.getSubcommandGroup();
     }
 
     @Override
-    public long getCommandIdLong()
-    {
+    public long getCommandIdLong() {
         return interaction.getCommandIdLong();
     }
 
     @Override
-    public boolean isGuildCommand()
-    {
+    public boolean isGuildCommand() {
         return interaction.isGuildCommand();
     }
 
     @Nonnull
     @Override
-    public List<OptionMapping> getOptions()
-    {
+    public List<OptionMapping> getOptions() {
         return interaction.getOptions();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
-    {
+    public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices) {
         return interaction.replyChoices(choices);
     }
 
     @Nonnull
     @Override
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return interaction.getChannel();
     }
 }

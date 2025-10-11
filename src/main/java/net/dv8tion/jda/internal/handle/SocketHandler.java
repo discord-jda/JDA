@@ -13,38 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-public abstract class SocketHandler
-{
+public abstract class SocketHandler {
     public static final ThreadLocal<DataObject> CURRENT_EVENT = new ThreadLocal<>();
 
     protected final JDAImpl api;
     protected long responseNumber;
     protected DataObject allContent;
 
-    public SocketHandler(JDAImpl api)
-    {
+    public SocketHandler(JDAImpl api) {
         this.api = api;
     }
 
-    public final synchronized void handle(long responseTotal, DataObject o)
-    {
+    public final synchronized void handle(long responseTotal, DataObject o) {
         this.allContent = o;
         this.responseNumber = responseTotal;
-        if (getJDA().isEventPassthrough()) CURRENT_EVENT.set(o);
+        if (getJDA().isEventPassthrough()) {
+            CURRENT_EVENT.set(o);
+        }
         final Long guildId = handleInternally(o.getObject("d"));
-        if (guildId != null)
+        if (guildId != null) {
             getJDA().getGuildSetupController().cacheEvent(guildId, o);
+        }
         this.allContent = null;
-        if (getJDA().isEventPassthrough()) CURRENT_EVENT.set(null);
+        if (getJDA().isEventPassthrough()) {
+            CURRENT_EVENT.set(null);
+        }
     }
 
-    protected JDAImpl getJDA()
-    {
+    protected JDAImpl getJDA() {
         return api;
     }
 
@@ -57,16 +59,13 @@ public abstract class SocketHandler
      */
     protected abstract Long handleInternally(DataObject content);
 
-    public static class NOPHandler extends SocketHandler
-    {
-        public NOPHandler(JDAImpl api)
-        {
+    public static class NOPHandler extends SocketHandler {
+        public NOPHandler(JDAImpl api) {
             super(api);
         }
 
         @Override
-        protected Long handleInternally(DataObject content)
-        {
+        protected Long handleInternally(DataObject content) {
             return null;
         }
     }

@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
  * <br>
  * <img alt="ButtonExample" src="https://raw.githubusercontent.com/discord-jda/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  */
-public enum ButtonStyle
-{
+public enum ButtonStyle {
     /** Placeholder for future styles */
     UNKNOWN(-1),
     /** Primary button style, usually in blue. Often used as the accept, submit, or acknowledge button. For confirm buttons (destructive action), use {@link  #DANGER}. */
@@ -46,8 +45,7 @@ public enum ButtonStyle
 
     private final int key;
 
-    ButtonStyle(int key)
-    {
+    ButtonStyle(int key) {
         this.key = key;
     }
 
@@ -56,8 +54,7 @@ public enum ButtonStyle
      *
      * @return The raw style key
      */
-    public int getKey()
-    {
+    public int getKey() {
         return key;
     }
 
@@ -70,12 +67,11 @@ public enum ButtonStyle
      * @return The button style or {@link #UNKNOWN}
      */
     @Nonnull
-    public static ButtonStyle fromKey(int key)
-    {
-        for (ButtonStyle style : values())
-        {
-            if (style.key == key)
+    public static ButtonStyle fromKey(int key) {
+        for (ButtonStyle style : values()) {
+            if (style.key == key) {
                 return style;
+            }
         }
         return UNKNOWN;
     }

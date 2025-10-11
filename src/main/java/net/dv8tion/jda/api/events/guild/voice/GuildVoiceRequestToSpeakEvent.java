@@ -22,10 +22,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.time.OffsetDateTime;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 
 /**
  * Indicates that a guild member has updated their {@link GuildVoiceState#getRequestToSpeakTimestamp() Request-to-Speak}.
@@ -40,13 +41,15 @@ import java.time.OffsetDateTime;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
-{
+public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent {
     private final OffsetDateTime oldTime, newTime;
 
-    public GuildVoiceRequestToSpeakEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member,
-                                         @Nullable OffsetDateTime oldTime, @Nullable OffsetDateTime newTime)
-    {
+    public GuildVoiceRequestToSpeakEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Member member,
+            @Nullable OffsetDateTime oldTime,
+            @Nullable OffsetDateTime newTime) {
         super(api, responseNumber, member);
         this.oldTime = oldTime;
         this.newTime = newTime;
@@ -58,8 +61,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
      * @return The old timestamp, or null if this member did not request to speak before
      */
     @Nullable
-    public OffsetDateTime getOldTime()
-    {
+    public OffsetDateTime getOldTime() {
         return oldTime;
     }
 
@@ -69,8 +71,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
      * @return The new timestamp, or null if the request to speak was declined or cancelled
      */
     @Nullable
-    public OffsetDateTime getNewTime()
-    {
+    public OffsetDateTime getNewTime() {
         return newTime;
     }
 
@@ -89,8 +90,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> approveSpeaker()
-    {
+    public RestAction<Void> approveSpeaker() {
         return getVoiceState().approveSpeaker();
     }
 
@@ -109,8 +109,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> declineSpeaker()
-    {
+    public RestAction<Void> declineSpeaker() {
         return getVoiceState().declineSpeaker();
     }
 }

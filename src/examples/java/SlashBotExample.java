@@ -98,8 +98,9 @@ public class SlashBotExample extends ListenerAdapter
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
         // Only accept commands from guilds
-        if (event.getGuild() == null)
+        if (event.getGuild() == null) {
             return;
+        }
         switch (event.getName())
         {
         case "ban":
@@ -128,10 +129,11 @@ public class SlashBotExample extends ListenerAdapter
         String authorId = id[0];
         String type = id[1];
         // Check that the button is for the user that clicked it, otherwise just ignore the event (let interaction fail)
-        if (!authorId.equals(event.getUser().getId()))
+        if (!authorId.equals(event.getUser().getId())) {
             return;
+        }
         event.deferEdit().queue(); // acknowledge the button was clicked, otherwise the interaction will fail
- 
+
         MessageChannel channel = event.getChannel();
         switch (type)
         {
@@ -193,12 +195,14 @@ public class SlashBotExample extends ListenerAdapter
 
     public void leave(SlashCommandInteractionEvent event)
     {
-        if (!event.getMember().hasPermission(Permission.KICK_MEMBERS))
+        if (!event.getMember().hasPermission(Permission.KICK_MEMBERS)) {
             event.reply("You do not have permissions to kick me.").setEphemeral(true).queue();
-        else
+        }
+        else {
             event.reply("Leaving the server... :wave:") // Yep we received it
-                 .flatMap(v -> event.getGuild().leave()) // Leave server after acknowledging the command
-                 .queue();
+                    .flatMap(v -> event.getGuild().leave()) // Leave server after acknowledging the command
+                    .queue();
+        }
     }
 
     public void prune(SlashCommandInteractionEvent event)

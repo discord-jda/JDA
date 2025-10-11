@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  * @see AutoModRule#getEventType()
  * @see AutoModRuleData#onMessage(String, TriggerConfig)
  */
-public enum AutoModEventType
-{
+public enum AutoModEventType {
     /**
      * The rule is triggered by a message being sent in a guild channel.
      */
@@ -50,8 +49,7 @@ public enum AutoModEventType
 
     private final int key;
 
-    AutoModEventType(int key)
-    {
+    AutoModEventType(int key) {
         this.key = key;
     }
 
@@ -60,8 +58,7 @@ public enum AutoModEventType
      *
      * @return The raw value
      */
-    public int getKey()
-    {
+    public int getKey() {
         return key;
     }
 
@@ -74,12 +71,11 @@ public enum AutoModEventType
      * @return The {@link AutoModEventType} or {@link #UNKNOWN}
      */
     @Nonnull
-    public static AutoModEventType fromKey(int key)
-    {
-        for (AutoModEventType type : values())
-        {
-            if (type.key == key)
+    public static AutoModEventType fromKey(int key) {
+        for (AutoModEventType type : values()) {
+            if (type.key == key) {
                 return type;
+            }
         }
         return UNKNOWN;
     }

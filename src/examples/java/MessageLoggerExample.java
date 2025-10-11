@@ -178,7 +178,8 @@ public class MessageLoggerExample extends ListenerAdapter
     @Override
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event)
     {
-        if (event.getEmoji().equals(HEART))
+        if (event.getEmoji().equals(HEART)) {
             System.out.println("A user loved a message!");
+        }
     }
 }

@@ -20,18 +20,17 @@ import net.dv8tion.jda.api.entities.TeamMember;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class TeamMemberImpl implements TeamMember
-{
+import javax.annotation.Nonnull;
+
+public class TeamMemberImpl implements TeamMember {
     private final User user;
     private final MembershipState state;
     private final RoleType roleType;
     private final long teamId;
 
-    public TeamMemberImpl(User user, MembershipState state, RoleType roleType, long teamId)
-    {
+    public TeamMemberImpl(User user, MembershipState state, RoleType roleType, long teamId) {
         this.user = user;
         this.state = state;
         this.roleType = roleType;
@@ -40,51 +39,46 @@ public class TeamMemberImpl implements TeamMember
 
     @Nonnull
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 
     @Nonnull
     @Override
-    public MembershipState getMembershipState()
-    {
+    public MembershipState getMembershipState() {
         return state;
     }
 
     @Nonnull
     @Override
-    public RoleType getRoleType()
-    {
+    public RoleType getRoleType() {
         return roleType;
     }
 
     @Override
-    public long getTeamIdLong()
-    {
+    public long getTeamIdLong() {
         return teamId;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(user, teamId);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof TeamMemberImpl))
+        }
+        if (!(obj instanceof TeamMemberImpl)) {
             return false;
+        }
         TeamMemberImpl member = (TeamMemberImpl) obj;
         return member.teamId == this.teamId && member.user.equals(this.user);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("teamId", getTeamId())
                 .addMetadata("user", user)

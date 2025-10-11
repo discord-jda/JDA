@@ -37,86 +37,74 @@ import javax.annotation.Nullable;
  * <br>This event will only fire for guilds where the bot has the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
  * Additionally, access to {@link #getContent()} and {@link #getMatchedContent()} requires the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent to be enabled.
  */
-public class AutoModExecutionEvent extends Event implements AutoModExecution
-{
+public class AutoModExecutionEvent extends Event implements AutoModExecution {
     private final AutoModExecution execution;
 
-    public AutoModExecutionEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModExecution execution)
-    {
+    public AutoModExecutionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull AutoModExecution execution) {
         super(api, responseNumber);
         this.execution = execution;
     }
-    
+
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return execution.getGuild();
     }
-    
+
     @Nullable
     @Override
-    public GuildMessageChannelUnion getChannel()
-    {
+    public GuildMessageChannelUnion getChannel() {
         return execution.getChannel();
     }
 
     @Nonnull
     @Override
-    public AutoModResponse getResponse()
-    {
+    public AutoModResponse getResponse() {
         return execution.getResponse();
     }
 
     @Nonnull
     @Override
-    public AutoModTriggerType getTriggerType()
-    {
+    public AutoModTriggerType getTriggerType() {
         return execution.getTriggerType();
     }
 
     @Override
-    public long getUserIdLong()
-    {
+    public long getUserIdLong() {
         return execution.getUserIdLong();
     }
 
     @Override
-    public long getRuleIdLong()
-    {
+    public long getRuleIdLong() {
         return execution.getRuleIdLong();
     }
 
     @Override
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return execution.getMessageIdLong();
     }
 
     @Override
-    public long getAlertMessageIdLong()
-    {
+    public long getAlertMessageIdLong() {
         return execution.getAlertMessageIdLong();
     }
 
     @Nonnull
     @Override
-    public String getContent()
-    {
+    public String getContent() {
         return execution.getContent();
     }
 
     @Nullable
     @Override
-    public String getMatchedContent()
-    {
+    public String getMatchedContent() {
         return execution.getMatchedContent();
     }
 
     @Nullable
     @Override
-    public String getMatchedKeyword()
-    {
+    public String getMatchedKeyword() {
         return execution.getMatchedKeyword();
     }
 }

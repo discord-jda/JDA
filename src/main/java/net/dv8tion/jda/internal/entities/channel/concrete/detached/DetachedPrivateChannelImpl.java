@@ -27,62 +27,52 @@ import net.dv8tion.jda.internal.entities.channel.mixin.concrete.PrivateChannelMi
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPrivateChannelImpl> implements
-        PrivateChannel,
-        PrivateChannelMixin<DetachedPrivateChannelImpl>
-{
+public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPrivateChannelImpl>
+        implements PrivateChannel, PrivateChannelMixin<DetachedPrivateChannelImpl> {
     private final User user;
     private long latestMessageId;
 
-    public DetachedPrivateChannelImpl(JDA api, long id, @Nullable User user)
-    {
+    public DetachedPrivateChannelImpl(JDA api, long id, @Nullable User user) {
         super(id, api);
         this.user = user;
     }
 
     @Nonnull
     @Override
-    public DetachedEntityException detachedException()
-    {
+    public DetachedEntityException detachedException() {
         return new DetachedEntityException("Cannot perform action in friend DMs");
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return true;
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.PRIVATE;
     }
 
     @Nullable
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return PrivateChannelMixin.super.getName();
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         return latestMessageId;
     }
 
     @Override
-    public boolean canTalk()
-    {
+    public boolean canTalk() {
         return false;
     }
 
@@ -127,31 +117,29 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
     }
 
     @Override
-    public boolean canDeleteOtherUsersMessages()
-    {
+    public boolean canDeleteOtherUsersMessages() {
         return false;
     }
 
     @Override
-    public DetachedPrivateChannelImpl setLatestMessageIdLong(long latestMessageId)
-    {
+    public DetachedPrivateChannelImpl setLatestMessageIdLong(long latestMessageId) {
         this.latestMessageId = latestMessageId;
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof DetachedPrivateChannelImpl))
+        }
+        if (!(obj instanceof DetachedPrivateChannelImpl)) {
             return false;
+        }
         DetachedPrivateChannelImpl impl = (DetachedPrivateChannelImpl) obj;
         return impl.id == this.id;
     }

@@ -25,36 +25,30 @@ import net.dv8tion.jda.internal.interactions.components.ComponentInteractionImpl
 
 import javax.annotation.Nonnull;
 
-public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu> extends ComponentInteractionImpl implements SelectMenuInteraction<T, S>
-{
+public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu>
+        extends ComponentInteractionImpl implements SelectMenuInteraction<T, S> {
     private final S menu;
 
-    public SelectMenuInteractionImpl(JDAImpl jda, Class<S> type, DataObject data)
-    {
+    public SelectMenuInteractionImpl(JDAImpl jda, Class<S> type, DataObject data) {
         super(jda, data);
-        if (message != null)
-        {
+        if (message != null) {
             menu = message.getComponentTree()
                     .find(type, s -> customId.equals(s.getCustomId()))
                     .orElse(null);
-        }
-        else
-        {
+        } else {
             menu = null;
         }
     }
 
     @Nonnull
     @Override
-    public S getComponent()
-    {
+    public S getComponent() {
         return menu;
     }
 
     @Nonnull
     @Override
-    public Component.Type getComponentType()
-    {
+    public Component.Type getComponentType() {
         return menu.getType();
     }
 }

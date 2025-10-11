@@ -32,13 +32,11 @@ import javax.annotation.Nonnull;
  * @see #getThreadChannel()
  * @see #getMessage()
  */
-public class ForumPost
-{
+public class ForumPost {
     private final Message message;
     private final ThreadChannel thread;
 
-    public ForumPost(@Nonnull Message message, @Nonnull ThreadChannel thread)
-    {
+    public ForumPost(@Nonnull Message message, @Nonnull ThreadChannel thread) {
         this.message = message;
         this.thread = thread;
     }
@@ -50,8 +48,7 @@ public class ForumPost
      * @return {@link Message}
      */
     @Nonnull
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
@@ -62,8 +59,7 @@ public class ForumPost
      * @return The forum post thread channel
      */
     @Nonnull
-    public ThreadChannel getThreadChannel()
-    {
+    public ThreadChannel getThreadChannel() {
         return thread;
     }
 }

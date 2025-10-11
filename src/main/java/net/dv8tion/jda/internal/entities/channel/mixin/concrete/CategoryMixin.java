@@ -27,24 +27,21 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 
 public interface CategoryMixin<T extends CategoryMixin<T>>
-    extends Category,
-        IPositionableChannelMixin<T>,
-        IPermissionContainerMixin<T>
-{
+        extends Category, IPositionableChannelMixin<T>, IPermissionContainerMixin<T> {
     @Nonnull
     @Override
-    default ChannelAction<Category> createCopy(@Nonnull Guild guild)
-    {
+    default ChannelAction<Category> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
         ChannelAction<Category> action = guild.createCategory(getName());
-        if (guild.equals(getGuild()))
-        {
-            for (PermissionOverride o : getPermissionOverrideMap().valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+        if (guild.equals(getGuild())) {
+            for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
+                if (o.isMemberOverride()) {
+                    action.addMemberPermissionOverride(
+                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                } else {
+                    action.addRolePermissionOverride(
+                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

@@ -40,11 +40,12 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Collection;
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
@@ -65,8 +66,8 @@ import java.util.List;
  * @param <T>
  *        The type of channel to create
  */
-public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRestAction<T, ChannelAction<T>>
-{
+public interface ChannelAction<T extends GuildChannel>
+        extends FluentAuditableRestAction<T, ChannelAction<T>> {
     /**
      * The guild to create this {@link GuildChannel} in
      *
@@ -326,8 +327,10 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default ChannelAction<T> addPermissionOverride(
+            @Nonnull IPermissionHolder target,
+            @Nullable Collection<Permission> allow,
+            @Nullable Collection<Permission> deny) {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -375,14 +378,16 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny)
-    {
+    default ChannelAction<T> addPermissionOverride(
+            @Nonnull IPermissionHolder target, long allow, long deny) {
         Checks.notNull(target, "Override Role/Member");
-        if (target instanceof Role)
+        if (target instanceof Role) {
             return addRolePermissionOverride(target.getIdLong(), allow, deny);
-        else if (target instanceof Member)
+        } else if (target instanceof Member) {
             return addMemberPermissionOverride(target.getIdLong(), allow, deny);
-        throw new IllegalArgumentException("Cannot add override for " + target.getClass().getSimpleName());
+        }
+        throw new IllegalArgumentException(
+                "Cannot add override for " + target.getClass().getSimpleName());
     }
 
     /**
@@ -416,8 +421,10 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default ChannelAction<T> addMemberPermissionOverride(
+            long memberId,
+            @Nullable Collection<Permission> allow,
+            @Nullable Collection<Permission> deny) {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -455,8 +462,10 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default ChannelAction<T> addRolePermissionOverride(
+            long roleId,
+            @Nullable Collection<Permission> allow,
+            @Nullable Collection<Permission> deny) {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -566,8 +575,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> removePermissionOverride(@Nonnull String id)
-    {
+    default ChannelAction<T> removePermissionOverride(@Nonnull String id) {
         return removePermissionOverride(MiscUtil.parseSnowflake(id));
     }
 
@@ -585,8 +593,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> removePermissionOverride(@Nonnull IPermissionHolder holder)
-    {
+    default ChannelAction<T> removePermissionOverride(@Nonnull IPermissionHolder holder) {
         Checks.notNull(holder, "PermissionHolder");
         return removePermissionOverride(holder.getIdLong());
     }

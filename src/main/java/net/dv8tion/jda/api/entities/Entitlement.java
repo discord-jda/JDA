@@ -18,18 +18,18 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.time.OffsetDateTime;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 
 /**
  * Represents a user or guild that has access to a premium offering in your application.
  *
  * @see <a href="https://discord.com/developers/docs/monetization/entitlements" target="_blank">Discord Docs about Entitlements</a>
  */
-public interface Entitlement extends ISnowflake
-{
+public interface Entitlement extends ISnowflake {
 
     /**
      * The id of the SKU related to this {@link Entitlement Entitlement}
@@ -44,8 +44,7 @@ public interface Entitlement extends ISnowflake
      * @return The id of the SKU related to this {@link Entitlement Entitlement}
      */
     @Nonnull
-    default String getSkuId()
-    {
+    default String getSkuId() {
         return Long.toUnsignedString(getSkuIdLong());
     }
 
@@ -62,8 +61,7 @@ public interface Entitlement extends ISnowflake
      * @return The id of the parent application of this {@link Entitlement Entitlement}
      */
     @Nonnull
-    default String getApplicationId()
-    {
+    default String getApplicationId() {
         return Long.toUnsignedString(getApplicationIdLong());
     }
 
@@ -80,8 +78,7 @@ public interface Entitlement extends ISnowflake
      * @return The id of the user that purchased the {@link Entitlement Entitlement}
      */
     @Nonnull
-    default String getUserId()
-    {
+    default String getUserId() {
         return Long.toUnsignedString(getUserIdLong());
     }
 
@@ -98,10 +95,10 @@ public interface Entitlement extends ISnowflake
      * @return The id of the guild that purchased the {@link Entitlement Entitlement} or {@code null} if this is not a guild subscription
      */
     @Nullable
-    default String getGuildId()
-    {
-        if (getGuildIdLong() == 0)
+    default String getGuildId() {
+        if (getGuildIdLong() == 0) {
             return null;
+        }
 
         return Long.toUnsignedString(getGuildIdLong());
     }
@@ -160,8 +157,7 @@ public interface Entitlement extends ISnowflake
     /**
      * Represents the type of this Entitlement
      */
-    enum EntitlementType
-    {
+    enum EntitlementType {
         /**
          * Entitlement was purchased by user
          */
@@ -201,8 +197,7 @@ public interface Entitlement extends ISnowflake
 
         private final int key;
 
-        EntitlementType(int key)
-        {
+        EntitlementType(int key) {
             this.key = key;
         }
 
@@ -211,8 +206,7 @@ public interface Entitlement extends ISnowflake
          *
          * @return the id key.
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -226,12 +220,11 @@ public interface Entitlement extends ISnowflake
          * @return The EntitlementType that has the key provided, or {@link #UNKNOWN} for unknown key.
          */
         @Nonnull
-        public static EntitlementType fromKey(int key)
-        {
-            for (EntitlementType type : values())
-            {
-                if (type.getKey() == key)
+        public static EntitlementType fromKey(int key) {
+            for (EntitlementType type : values()) {
+                if (type.getKey() == key) {
                     return type;
+                }
             }
             return UNKNOWN;
         }

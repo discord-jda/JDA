@@ -22,11 +22,12 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * {@link net.dv8tion.jda.api.entities.Invite Invite} Builder system created as an extension of {@link net.dv8tion.jda.api.requests.RestAction}
@@ -34,8 +35,7 @@ import java.util.function.BooleanSupplier;
  *
  * @see net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer#createInvite()
  */
-public interface InviteAction extends AuditableRestAction<Invite>
-{
+public interface InviteAction extends AuditableRestAction<Invite> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -156,8 +156,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetApplication(@Nonnull final String applicationId)
-    {
+    default InviteAction setTargetApplication(@Nonnull final String applicationId) {
         return setTargetApplication(MiscUtil.parseSnowflake(applicationId));
     }
 
@@ -192,8 +191,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetStream(@Nonnull final String userId)
-    {
+    default InviteAction setTargetStream(@Nonnull final String userId) {
         return setTargetStream(MiscUtil.parseSnowflake(userId));
     }
 
@@ -212,8 +210,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetStream(@Nonnull final User user)
-    {
+    default InviteAction setTargetStream(@Nonnull final User user) {
         Checks.notNull(user, "User");
         return setTargetStream(user.getIdLong());
     }
@@ -233,10 +230,8 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetStream(@Nonnull final Member member)
-    {
+    default InviteAction setTargetStream(@Nonnull final Member member) {
         Checks.notNull(member, "Member");
         return setTargetStream(member.getIdLong());
     }
-
 }

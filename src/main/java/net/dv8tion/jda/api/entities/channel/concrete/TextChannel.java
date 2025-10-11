@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.JDA;
@@ -46,8 +47,7 @@ import javax.annotation.Nonnull;
  * @see   JDA#getTextChannelsByName(String, boolean)
  * @see   JDA#getTextChannelById(long)
  */
-public interface TextChannel extends StandardGuildMessageChannel, ISlowmodeChannel
-{
+public interface TextChannel extends StandardGuildMessageChannel, ISlowmodeChannel {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -56,8 +56,7 @@ public interface TextChannel extends StandardGuildMessageChannel, ISlowmodeChann
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelAction<TextChannel> createCopy()
-    {
+    default ChannelAction<TextChannel> createCopy() {
         return createCopy(getGuild());
     }
 

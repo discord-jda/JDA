@@ -22,31 +22,32 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 
-public abstract class AbstractWebhookMessageActionImpl<T, R extends AbstractWebhookMessageActionImpl<T, R>> extends TriggerRestAction<T>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public abstract class AbstractWebhookMessageActionImpl<
+                T, R extends AbstractWebhookMessageActionImpl<T, R>>
+        extends TriggerRestAction<T> {
     protected String threadId;
 
-    public AbstractWebhookMessageActionImpl(JDA api, Route.CompiledRoute route)
-    {
+    public AbstractWebhookMessageActionImpl(JDA api, Route.CompiledRoute route) {
         super(api, route);
     }
 
-    public AbstractWebhookMessageActionImpl(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler)
-    {
+    public AbstractWebhookMessageActionImpl(
+            JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, handler);
     }
 
     @Nonnull
     @SuppressWarnings("unchecked")
-    public R setThreadId(@Nullable String threadId)
-    {
-        if (threadId != null)
+    public R setThreadId(@Nullable String threadId) {
+        if (threadId != null) {
             Checks.isSnowflake(threadId, "Thread ID");
+        }
         this.threadId = threadId;
         return (R) this;
     }
@@ -54,16 +55,14 @@ public abstract class AbstractWebhookMessageActionImpl<T, R extends AbstractWebh
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public R setCheck(BooleanSupplier checks)
-    {
+    public R setCheck(BooleanSupplier checks) {
         return (R) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public R deadline(long timestamp)
-    {
+    public R deadline(long timestamp) {
         return (R) super.deadline(timestamp);
     }
 }

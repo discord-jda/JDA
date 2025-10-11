@@ -33,12 +33,10 @@ import javax.annotation.Nonnull;
  * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.api.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
  * <br>Adapter implementation: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
  */
-public class GenericChannelEvent extends Event
-{
+public class GenericChannelEvent extends Event {
     protected final Channel channel;
 
-    public GenericChannelEvent(@Nonnull JDA api, long responseNumber, Channel channel)
-    {
+    public GenericChannelEvent(@Nonnull JDA api, long responseNumber, Channel channel) {
         super(api, responseNumber);
 
         this.channel = channel;
@@ -50,8 +48,7 @@ public class GenericChannelEvent extends Event
      *
      * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
      */
-    public boolean isFromGuild()
-    {
+    public boolean isFromGuild() {
         return getChannelType().isGuild();
     }
 
@@ -61,8 +58,7 @@ public class GenericChannelEvent extends Event
      * @return The {@link ChannelType} of the channel the event was fired from.
      */
     @Nonnull
-    public ChannelType getChannelType()
-    {
+    public ChannelType getChannelType() {
         return this.channel.getType();
     }
 
@@ -78,8 +74,7 @@ public class GenericChannelEvent extends Event
      * @return True if the {@link net.dv8tion.jda.api.entities.channel.ChannelType ChannelType} which this message was received
      *         from is the same as the one specified by {@code type}.
      */
-    public boolean isFromType(@Nonnull ChannelType type)
-    {
+    public boolean isFromType(@Nonnull ChannelType type) {
         return getChannelType() == type;
     }
 
@@ -89,8 +84,7 @@ public class GenericChannelEvent extends Event
      * @return The {@link ChannelType} of the channel the event was fired from.
      */
     @Nonnull
-    public ChannelUnion getChannel()
-    {
+    public ChannelUnion getChannel() {
         return (ChannelUnion) this.channel;
     }
 
@@ -108,10 +102,10 @@ public class GenericChannelEvent extends Event
      * @see    #getChannelType()
      */
     @Nonnull
-    public Guild getGuild()
-    {
-        if (!isFromGuild())
+    public Guild getGuild() {
+        if (!isFromGuild()) {
             throw new IllegalStateException("This channel event did not happen in a guild");
+        }
         return ((GuildChannel) channel).getGuild();
     }
 }

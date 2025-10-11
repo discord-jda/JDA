@@ -32,12 +32,11 @@ import javax.annotation.Nonnull;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MODERATION GUILD_MODERATION} intent to be enabled.
  */
-public class GuildAuditLogEntryCreateEvent extends GenericGuildEvent
-{
+public class GuildAuditLogEntryCreateEvent extends GenericGuildEvent {
     private final AuditLogEntry entry;
 
-    public GuildAuditLogEntryCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull AuditLogEntry entry)
-    {
+    public GuildAuditLogEntryCreateEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull AuditLogEntry entry) {
         super(api, responseNumber, entry.getGuild());
         this.entry = entry;
     }
@@ -48,8 +47,7 @@ public class GuildAuditLogEntryCreateEvent extends GenericGuildEvent
      * @return The added entry
      */
     @Nonnull
-    public AuditLogEntry getEntry()
-    {
+    public AuditLogEntry getEntry() {
         return entry;
     }
 }

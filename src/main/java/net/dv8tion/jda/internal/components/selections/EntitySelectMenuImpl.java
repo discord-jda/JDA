@@ -24,35 +24,48 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelectMenu, LabelChildComponentUnion
-{
+import javax.annotation.Nonnull;
+
+public class EntitySelectMenuImpl extends SelectMenuImpl
+        implements EntitySelectMenu, LabelChildComponentUnion {
     protected final Component.Type type;
     protected final EnumSet<ChannelType> channelTypes;
     protected final List<DefaultValue> defaultValues;
 
-    public EntitySelectMenuImpl(DataObject data)
-    {
+    public EntitySelectMenuImpl(DataObject data) {
         super(data);
         this.type = Component.Type.fromKey(data.getInt("type"));
-        this.channelTypes = Helpers.copyEnumSet(ChannelType.class, data.optArray("channel_types").map(
-            arr -> arr.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toList())
-        ).orElse(null));
-        this.defaultValues = data.optArray("default_values").map(array ->
-            array.stream(DataArray::getObject)
-                .map(DefaultValue::fromData)
-                .collect(Helpers.toUnmodifiableList())
-        ).orElse(Collections.emptyList());
+        this.channelTypes = Helpers.copyEnumSet(
+                ChannelType.class,
+                data.optArray("channel_types")
+                        .map(arr -> arr.stream(DataArray::getInt)
+                                .map(ChannelType::fromId)
+                                .collect(Collectors.toList()))
+                        .orElse(null));
+        this.defaultValues = data.optArray("default_values")
+                .map(array -> array.stream(DataArray::getObject)
+                        .map(DefaultValue::fromData)
+                        .collect(Helpers.toUnmodifiableList()))
+                .orElse(Collections.emptyList());
     }
 
-    public EntitySelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, Type type, EnumSet<ChannelType> channelTypes, List<DefaultValue> defaultValues, Boolean required)
-    {
+    public EntitySelectMenuImpl(
+            String id,
+            int uniqueId,
+            String placeholder,
+            int minValues,
+            int maxValues,
+            boolean disabled,
+            Type type,
+            EnumSet<ChannelType> channelTypes,
+            List<DefaultValue> defaultValues,
+            Boolean required) {
         super(id, uniqueId, placeholder, minValues, maxValues, disabled, required);
         this.type = type;
         this.channelTypes = channelTypes;
@@ -61,32 +74,28 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return type;
     }
 
     @Nonnull
     @Override
-    public EntitySelectMenuImpl withUniqueId(int uniqueId)
-    {
+    public EntitySelectMenuImpl withUniqueId(int uniqueId) {
         return (EntitySelectMenuImpl) createCopy().setUniqueId(uniqueId).build();
     }
 
     @Nonnull
     @Override
-    public EnumSet<SelectTarget> getEntityTypes()
-    {
-        switch (type)
-        {
-        case ROLE_SELECT:
-            return EnumSet.of(SelectTarget.ROLE);
-        case USER_SELECT:
-            return EnumSet.of(SelectTarget.USER);
-        case CHANNEL_SELECT:
-            return EnumSet.of(SelectTarget.CHANNEL);
-        case MENTIONABLE_SELECT:
-            return EnumSet.of(SelectTarget.ROLE, SelectTarget.USER);
+    public EnumSet<SelectTarget> getEntityTypes() {
+        switch (type) {
+            case ROLE_SELECT:
+                return EnumSet.of(SelectTarget.ROLE);
+            case USER_SELECT:
+                return EnumSet.of(SelectTarget.USER);
+            case CHANNEL_SELECT:
+                return EnumSet.of(SelectTarget.CHANNEL);
+            case MENTIONABLE_SELECT:
+                return EnumSet.of(SelectTarget.ROLE, SelectTarget.USER);
         }
         // Ideally this never happens, so its undocumented
         throw new IllegalStateException("Unsupported type: " + type);
@@ -94,43 +103,47 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
 
     @Nonnull
     @Override
-    public EnumSet<ChannelType> getChannelTypes()
-    {
+    public EnumSet<ChannelType> getChannelTypes() {
         return channelTypes;
     }
 
     @Nonnull
     @Override
-    public List<DefaultValue> getDefaultValues()
-    {
+    public List<DefaultValue> getDefaultValues() {
         return defaultValues;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject json = super.toData().put("type", type.getKey());
-        if (type == Type.CHANNEL_SELECT && !channelTypes.isEmpty())
-            json.put("channel_types", DataArray.fromCollection(channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
-        if (!defaultValues.isEmpty())
+        if (type == Type.CHANNEL_SELECT && !channelTypes.isEmpty()) {
+            json.put(
+                    "channel_types",
+                    DataArray.fromCollection(channelTypes.stream()
+                            .map(ChannelType::getId)
+                            .collect(Collectors.toList())));
+        }
+        if (!defaultValues.isEmpty()) {
             json.put("default_values", DataArray.fromCollection(defaultValues));
+        }
         return json;
     }
 
     @Override
-    public int hashCode()
-    {
-        return Objects.hash(id, placeholder, minValues, maxValues, disabled, type, channelTypes, defaultValues);
+    public int hashCode() {
+        return Objects.hash(
+                id, placeholder, minValues, maxValues, disabled, type, channelTypes, defaultValues);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof EntitySelectMenu))
+        }
+        if (!(obj instanceof EntitySelectMenu)) {
             return false;
+        }
         EntitySelectMenu other = (EntitySelectMenu) obj;
         return Objects.equals(id, other.getCustomId())
                 && Objects.equals(placeholder, other.getPlaceholder())

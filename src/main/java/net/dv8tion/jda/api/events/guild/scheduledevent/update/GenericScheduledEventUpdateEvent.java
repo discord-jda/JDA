@@ -45,16 +45,19 @@ import javax.annotation.Nullable;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public abstract class GenericScheduledEventUpdateEvent<T> extends GenericScheduledEventGatewayEvent implements UpdateEvent<ScheduledEvent, T>
-{
+public abstract class GenericScheduledEventUpdateEvent<T> extends GenericScheduledEventGatewayEvent
+        implements UpdateEvent<ScheduledEvent, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
     public GenericScheduledEventUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent,
-        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
-    {
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ScheduledEvent scheduledEvent,
+            @Nullable T previous,
+            @Nullable T next,
+            @Nonnull String identifier) {
         super(api, responseNumber, scheduledEvent);
         this.previous = previous;
         this.next = next;
@@ -63,35 +66,31 @@ public abstract class GenericScheduledEventUpdateEvent<T> extends GenericSchedul
 
     @Nonnull
     @Override
-    public ScheduledEvent getEntity()
-    {
+    public ScheduledEvent getEntity() {
         return getScheduledEvent();
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 
     @Override
-    public String toString()
-    {
-        return "ScheduledEventUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
+    public String toString() {
+        return "ScheduledEventUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->"
+                + getNewValue() + ')';
     }
 }

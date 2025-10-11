@@ -34,64 +34,68 @@ import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageRetrieveActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.function.Function;
 
-public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> implements IncomingWebhookClient
-{
-    public IncomingWebhookClientImpl(long webhookId, String webhookToken, JDA api)
-    {
+import javax.annotation.Nonnull;
+
+public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message>
+        implements IncomingWebhookClient {
+    public IncomingWebhookClientImpl(long webhookId, String webhookToken, JDA api) {
         super(webhookId, webhookToken, api);
     }
 
     @Override
-    public WebhookMessageCreateActionImpl<Message> sendRequest()
-    {
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(Long.toUnsignedString(id), token);
+    public WebhookMessageCreateActionImpl<Message> sendRequest() {
+        Route.CompiledRoute route =
+                Route.Webhooks.EXECUTE_WEBHOOK.compile(Long.toUnsignedString(id), token);
         route = route.withQueryParams("wait", "true");
         route = route.withQueryParams("with_components", "true");
-        WebhookMessageCreateActionImpl<Message> action = new WebhookMessageCreateActionImpl<>(api, route, builder());
+        WebhookMessageCreateActionImpl<Message> action =
+                new WebhookMessageCreateActionImpl<>(api, route, builder());
         action.run();
         action.setInteraction(false);
         return action;
     }
 
     @Override
-    public WebhookMessageEditActionImpl<Message> editRequest(@Nonnull String messageId)
-    {
-        if (!"@original".equals(messageId))
+    public WebhookMessageEditActionImpl<Message> editRequest(@Nonnull String messageId) {
+        if (!"@original".equals(messageId)) {
             Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(Long.toUnsignedString(id), token, messageId);
+        }
+        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(
+                Long.toUnsignedString(id), token, messageId);
         route = route.withQueryParams("wait", "true");
         route = route.withQueryParams("with_components", "true");
-        WebhookMessageEditActionImpl<Message> action = new WebhookMessageEditActionImpl<>(api, route, builder());
+        WebhookMessageEditActionImpl<Message> action =
+                new WebhookMessageEditActionImpl<>(api, route, builder());
         action.run();
         return action;
     }
 
     @Nonnull
     @Override
-    public WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId)
-    {
-        if (!"@original".equals(messageId))
+    public WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId) {
+        if (!"@original".equals(messageId)) {
             Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_FETCH.compile(Long.toUnsignedString(id), token, messageId);
-        WebhookMessageRetrieveActionImpl action = new WebhookMessageRetrieveActionImpl(api, route, (response, request) -> builder().apply(response.getObject()));
+        }
+        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_FETCH.compile(
+                Long.toUnsignedString(id), token, messageId);
+        WebhookMessageRetrieveActionImpl action = new WebhookMessageRetrieveActionImpl(
+                api, route, (response, request) -> builder().apply(response.getObject()));
         action.run();
         return action;
     }
 
     @Nonnull
     @Override
-    public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId)
-    {
-        WebhookMessageDeleteActionImpl action = (WebhookMessageDeleteActionImpl) super.deleteMessageById(messageId);
+    public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId) {
+        WebhookMessageDeleteActionImpl action =
+                (WebhookMessageDeleteActionImpl) super.deleteMessageById(messageId);
         action.run();
         return action;
     }
 
-    private Function<DataObject, Message> builder()
-    {
+    private Function<DataObject, Message> builder() {
         return (data) -> {
             JDAImpl jda = (JDAImpl) api;
             long channelId = data.getUnsignedLong("channel_id");

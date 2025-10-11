@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 /**
  * Privilege used to restrict access to a command within a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -32,15 +33,14 @@ import java.util.Objects;
  * @see net.dv8tion.jda.api.events.interaction.command.ApplicationCommandUpdatePrivilegesEvent
  * @see net.dv8tion.jda.api.events.interaction.command.ApplicationUpdatePrivilegesEvent
  */
-public class IntegrationPrivilege implements ISnowflake
-{
+public class IntegrationPrivilege implements ISnowflake {
     private final Guild guild;
     private final Type type;
     private final boolean enabled;
     private final long id;
 
-    public IntegrationPrivilege(@Nonnull Guild guild, @Nonnull Type type, boolean enabled, long id)
-    {
+    public IntegrationPrivilege(
+            @Nonnull Guild guild, @Nonnull Type type, boolean enabled, long id) {
         this.guild = guild;
         this.type = type;
         this.enabled = enabled;
@@ -52,8 +52,7 @@ public class IntegrationPrivilege implements ISnowflake
      *
      * @return True, if this IntegrationPrivilege targets the {@literal @everyone} Role
      */
-    public boolean targetsEveryone()
-    {
+    public boolean targetsEveryone() {
         return type == Type.ROLE && id == guild.getIdLong();
     }
 
@@ -62,14 +61,12 @@ public class IntegrationPrivilege implements ISnowflake
      *
      * @return True, if this IntegrationPrivilege targets all channels
      */
-    public boolean targetsAllChannels()
-    {
+    public boolean targetsAllChannels() {
         return type == Type.CHANNEL && id == guild.getIdLong() - 1;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
@@ -79,8 +76,7 @@ public class IntegrationPrivilege implements ISnowflake
      * @return The target {@link Type}
      */
     @Nonnull
-    public Type getType()
-    {
+    public Type getType() {
         return type;
     }
 
@@ -90,8 +86,7 @@ public class IntegrationPrivilege implements ISnowflake
      * @return the guild in which this IntegrationPrivilege was created in.
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
@@ -100,8 +95,7 @@ public class IntegrationPrivilege implements ISnowflake
      *
      * @return Whether this privilege grants access
      */
-    public boolean isEnabled()
-    {
+    public boolean isEnabled() {
         return enabled;
     }
 
@@ -110,31 +104,29 @@ public class IntegrationPrivilege implements ISnowflake
      *
      * @return Whether this privilege denies access
      */
-    public boolean isDisabled()
-    {
+    public boolean isDisabled() {
         return !enabled;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(id, enabled);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof IntegrationPrivilege))
+        }
+        if (!(obj instanceof IntegrationPrivilege)) {
             return false;
+        }
         IntegrationPrivilege other = (IntegrationPrivilege) obj;
         return other.id == id && other.enabled == enabled;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setType(getType())
                 .addMetadata("enabled", enabled)
@@ -144,8 +136,7 @@ public class IntegrationPrivilege implements ISnowflake
     /**
      * The target type this privilege applies to.
      */
-    public enum Type
-    {
+    public enum Type {
         UNKNOWN(-1),
         ROLE(1),
         USER(2),
@@ -153,8 +144,7 @@ public class IntegrationPrivilege implements ISnowflake
 
         private final int key;
 
-        Type(int key)
-        {
+        Type(int key) {
             this.key = key;
         }
 
@@ -167,12 +157,11 @@ public class IntegrationPrivilege implements ISnowflake
          * @return The Type constant, or {@link #UNKNOWN} if there is no known representation
          */
         @Nonnull
-        public static Type fromKey(int key)
-        {
-            for (Type type : values())
-            {
-                if (type.key == key)
+        public static Type fromKey(int key) {
+            for (Type type : values()) {
+                if (type.key == key) {
                     return type;
+                }
             }
             return UNKNOWN;
         }

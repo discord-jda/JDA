@@ -20,18 +20,17 @@ import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.TeamMember;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-public class ApplicationTeamImpl implements ApplicationTeam
-{
+import javax.annotation.Nonnull;
+
+public class ApplicationTeamImpl implements ApplicationTeam {
     private final String iconId;
     private final List<TeamMember> members;
     private final long id, ownerId;
 
-    public ApplicationTeamImpl(String iconId, List<TeamMember> members, long id, long ownerId)
-    {
+    public ApplicationTeamImpl(String iconId, List<TeamMember> members, long id, long ownerId) {
         this.iconId = iconId;
         this.members = Collections.unmodifiableList(members);
         this.id = id;
@@ -39,50 +38,45 @@ public class ApplicationTeamImpl implements ApplicationTeam
     }
 
     @Override
-    public long getOwnerIdLong()
-    {
+    public long getOwnerIdLong() {
         return ownerId;
     }
 
     @Override
-    public String getIconId()
-    {
+    public String getIconId() {
         return iconId;
     }
 
     @Nonnull
     @Override
-    public List<TeamMember> getMembers()
-    {
+    public List<TeamMember> getMembers() {
         return members;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof ApplicationTeamImpl))
+        }
+        if (!(obj instanceof ApplicationTeamImpl)) {
             return false;
+        }
         ApplicationTeamImpl app = (ApplicationTeamImpl) obj;
         return app.id == this.id;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this).toString();
     }
 }

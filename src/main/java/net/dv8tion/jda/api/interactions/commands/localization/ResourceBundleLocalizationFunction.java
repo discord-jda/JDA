@@ -19,8 +19,9 @@ package net.dv8tion.jda.api.interactions.commands.localization;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.*;
+
+import javax.annotation.Nonnull;
 
 /**
  * A default implementation for {@link LocalizationFunction}
@@ -30,25 +31,22 @@ import java.util.*;
  * <p>
  * You can look at a complete localization example <a href="https://github.com/discord-jda/JDA/blob/master/src/examples/java/LocalizationExample.java" target="_blank">here</a>
  */
-public class ResourceBundleLocalizationFunction implements LocalizationFunction
-{
+public class ResourceBundleLocalizationFunction implements LocalizationFunction {
     private final Set<Bundle> bundles;
 
-    private ResourceBundleLocalizationFunction(Set<Bundle> bundles)
-    {
+    private ResourceBundleLocalizationFunction(Set<Bundle> bundles) {
         this.bundles = bundles;
     }
 
     @Nonnull
     @Override
-    public Map<DiscordLocale, String> apply(@Nonnull String localizationKey)
-    {
+    public Map<DiscordLocale, String> apply(@Nonnull String localizationKey) {
         final Map<DiscordLocale, String> map = new HashMap<>();
-        for (Bundle bundle : bundles)
-        {
+        for (Bundle bundle : bundles) {
             final ResourceBundle resourceBundle = bundle.resourceBundle;
-            if (resourceBundle.containsKey(localizationKey))
+            if (resourceBundle.containsKey(localizationKey)) {
                 map.put(bundle.targetLocale, resourceBundle.getString(localizationKey));
+            }
         }
 
         return map;
@@ -83,10 +81,9 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
      * @return The new builder
      */
     @Nonnull
-    public static Builder fromBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale)
-    {
-        return new Builder()
-                .addBundle(resourceBundle, locale);
+    public static Builder fromBundle(
+            @Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale) {
+        return new Builder().addBundle(resourceBundle, locale);
     }
 
     /**
@@ -119,8 +116,7 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
      * @return The new builder
      */
     @Nonnull
-    public static Builder fromBundles(@Nonnull String baseName, @Nonnull DiscordLocale... locales)
-    {
+    public static Builder fromBundles(@Nonnull String baseName, @Nonnull DiscordLocale... locales) {
         return new Builder().addBundles(baseName, locales);
     }
 
@@ -130,8 +126,7 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
      * @return The empty builder
      */
     @Nonnull
-    public static Builder empty()
-    {
+    public static Builder empty() {
         return new Builder();
     }
 
@@ -139,11 +134,10 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
      * Builder for {@link ResourceBundleLocalizationFunction}
      * <br>Use the factory methods in {@link ResourceBundleLocalizationFunction} to create instances of this builder
      *
-     * @see ResourceBundleLocalizationFunction#fromBundle(ResourceBundle, DiscordLocale) 
+     * @see ResourceBundleLocalizationFunction#fromBundle(ResourceBundle, DiscordLocale)
      * @see ResourceBundleLocalizationFunction#fromBundles(String, DiscordLocale...)
      */
-    public static class Builder
-    {
+    public static class Builder {
         private final Set<Bundle> bundles = new HashSet<>();
 
         protected Builder() {}
@@ -171,11 +165,11 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
          * @see #fromBundle(ResourceBundle, DiscordLocale)
          */
         @Nonnull
-        public Builder addBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale)
-        {
+        public Builder addBundle(
+                @Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale) {
             Checks.notNull(resourceBundle, "Resource bundle");
             Checks.notNull(locale, "Locale");
-            Checks.check(locale != DiscordLocale.UNKNOWN,"Cannot use UNKNOWN DiscordLocale");
+            Checks.check(locale != DiscordLocale.UNKNOWN, "Cannot use UNKNOWN DiscordLocale");
 
             bundles.add(new Bundle(locale, resourceBundle));
             return this;
@@ -204,16 +198,15 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
          * @see #fromBundles(String, DiscordLocale...)
          */
         @Nonnull
-        public Builder addBundles(@Nonnull String baseName, @Nonnull DiscordLocale... locales)
-        {
+        public Builder addBundles(@Nonnull String baseName, @Nonnull DiscordLocale... locales) {
             Checks.notNull(baseName, "Base name");
             Checks.noneNull(locales, "Locale");
 
-            for (DiscordLocale locale : locales)
-            {
-                Checks.check(locale != DiscordLocale.UNKNOWN,"Cannot use UNKNOWN DiscordLocale");
+            for (DiscordLocale locale : locales) {
+                Checks.check(locale != DiscordLocale.UNKNOWN, "Cannot use UNKNOWN DiscordLocale");
 
-                final ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, Locale.forLanguageTag(locale.getLocale()));
+                final ResourceBundle resourceBundle = ResourceBundle.getBundle(
+                        baseName, Locale.forLanguageTag(locale.getLocale()));
                 bundles.add(new Bundle(locale, resourceBundle));
             }
             return this;
@@ -225,38 +218,39 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction
          * @return The new {@link ResourceBundleLocalizationFunction}
          */
         @Nonnull
-        public ResourceBundleLocalizationFunction build()
-        {
+        public ResourceBundleLocalizationFunction build() {
             return new ResourceBundleLocalizationFunction(bundles);
         }
     }
 
-    private static final class Bundle
-    {
+    private static final class Bundle {
         private final DiscordLocale targetLocale;
         private final ResourceBundle resourceBundle;
 
-        public Bundle(DiscordLocale targetLocale, ResourceBundle resourceBundle)
-        {
+        public Bundle(DiscordLocale targetLocale, ResourceBundle resourceBundle) {
             this.targetLocale = targetLocale;
             this.resourceBundle = resourceBundle;
         }
 
         @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (!(o instanceof Bundle)) return false;
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof Bundle)) {
+                return false;
+            }
 
             Bundle bundle = (Bundle) o;
 
-            if (!targetLocale.equals(bundle.targetLocale)) return false;
+            if (!targetLocale.equals(bundle.targetLocale)) {
+                return false;
+            }
             return resourceBundle.equals(bundle.resourceBundle);
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(targetLocale, resourceBundle);
         }
     }

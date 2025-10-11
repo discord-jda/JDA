@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
@@ -21,14 +22,15 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that a bulk deletion is executed in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel GuildMessageChannel}.
  * <br>Set {@link net.dv8tion.jda.api.JDABuilder#setBulkDeleteSplittingEnabled(boolean)} to false in order to enable this event.
- * 
+ *
  * <p>Can be used to detect that a large chunk of Messages is deleted in a GuildMessageChannel. Providing a list of Message IDs and the specific GuildMessageChannel.
  *
  * <p><b>Requirements</b><br>
@@ -39,13 +41,15 @@ import java.util.List;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
-public class MessageBulkDeleteEvent extends Event
-{
+public class MessageBulkDeleteEvent extends Event {
     protected final GuildMessageChannel channel;
     protected final List<String> messageIds;
 
-    public MessageBulkDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildMessageChannel channel, @Nonnull List<String> messageIds)
-    {
+    public MessageBulkDeleteEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull GuildMessageChannel channel,
+            @Nonnull List<String> messageIds) {
         super(api, responseNumber);
         this.channel = channel;
         this.messageIds = Collections.unmodifiableList(messageIds);
@@ -57,8 +61,7 @@ public class MessageBulkDeleteEvent extends Event
      * @return The TextChannel
      */
     @Nonnull
-    public GuildMessageChannelUnion getChannel()
-    {
+    public GuildMessageChannelUnion getChannel() {
         return (GuildMessageChannelUnion) channel;
     }
 
@@ -68,19 +71,17 @@ public class MessageBulkDeleteEvent extends Event
      * @return The Guild
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return channel.getGuild();
     }
-    
+
     /**
      * List of messages that have been deleted.
      *
      * @return The list of message ids
      */
     @Nonnull
-    public List<String> getMessageIds()
-    {
+    public List<String> getMessageIds() {
         return messageIds;
     }
 }

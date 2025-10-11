@@ -17,36 +17,45 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
+
 import okhttp3.Response;
+
 import org.jetbrains.annotations.Blocking;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interface used to handle requests to the Discord API.
  * <p>Requests are handed to the rate-limiter via {@link #enqueue(Work)} and executed using {@link Work#execute()}.
  * The rate-limiter is responsible to ensure that requests do not exceed the rate-limit set by Discord.
  */
-public interface RestRateLimiter
-{
+public interface RestRateLimiter {
     /** Total time (in seconds) of when the current rate limit bucket will reset. Can have decimals to match previous millisecond ratelimit precision */
     String RESET_AFTER_HEADER = "X-RateLimit-Reset-After";
+
     /** Epoch time (seconds since 00:00:00 UTC on January 1, 1970) at which the rate limit resets */
     String RESET_HEADER = "X-RateLimit-Reset";
+
     /** The number of requests that can be made */
     String LIMIT_HEADER = "X-RateLimit-Limit";
+
     /** The number of remaining requests that can be made */
     String REMAINING_HEADER = "X-RateLimit-Remaining";
+
     /** Returned only on HTTP 429 responses if the rate limit encountered is the global rate limit (not per-route) */
     String GLOBAL_HEADER = "X-RateLimit-Global";
+
     /** A unique string denoting the rate limit being encountered (non-inclusive of top-level resources in the path) */
     String HASH_HEADER = "X-RateLimit-Bucket";
+
     /** The number of seconds to wait before submitting another request */
     String RETRY_AFTER_HEADER = "Retry-After";
+
     /** Returned only on HTTP 429 responses. Value can be user (per bot or user limit), global (per bot or user global limit), or shared (per resource limit) */
     String SCOPE_HEADER = "X-RateLimit-Scope";
 
@@ -89,8 +98,7 @@ public interface RestRateLimiter
      *
      * <p>Use {@link #execute()} to run the request (on the calling thread) and {@link #isDone()} to discard it once completed.
      */
-    interface Work
-    {
+    interface Work {
         /**
          * The {@link Route.CompiledRoute compiled route} of the request.
          * <br>This is primarily used to handle rate-limit buckets.
@@ -167,8 +175,7 @@ public interface RestRateLimiter
      * Global rate-limit store.
      * <br>This can be used to share the global rate-limit information between multiple instances.
      */
-    interface GlobalRateLimit
-    {
+    interface GlobalRateLimit {
         /**
          * The current global rate-limit reset time.
          * <br>This is the rate-limit applied on the bot token.
@@ -210,34 +217,28 @@ public interface RestRateLimiter
          * @return The default implementation
          */
         @Nonnull
-        static GlobalRateLimit create()
-        {
-            return new GlobalRateLimit()
-            {
+        static GlobalRateLimit create() {
+            return new GlobalRateLimit() {
                 private final AtomicLong classic = new AtomicLong(-1);
                 private final AtomicLong cloudflare = new AtomicLong(-1);
 
                 @Override
-                public long getClassic()
-                {
+                public long getClassic() {
                     return classic.get();
                 }
 
                 @Override
-                public void setClassic(long timestamp)
-                {
+                public void setClassic(long timestamp) {
                     classic.set(timestamp);
                 }
 
                 @Override
-                public long getCloudflare()
-                {
+                public long getCloudflare() {
                     return cloudflare.get();
                 }
 
                 @Override
-                public void setCloudflare(long timestamp)
-                {
+                public void setCloudflare(long timestamp) {
                     cloudflare.set(timestamp);
                 }
             };
@@ -247,20 +248,24 @@ public interface RestRateLimiter
     /**
      * Configuration for the rate-limiter.
      */
-    class RateLimitConfig
-    {
+    class RateLimitConfig {
         private final ScheduledExecutorService scheduler;
         private final ExecutorService elastic;
         private final GlobalRateLimit globalRateLimit;
         private final boolean isRelative;
 
-        public RateLimitConfig(@Nonnull ScheduledExecutorService scheduler, @Nonnull GlobalRateLimit globalRateLimit, boolean isRelative)
-        {
+        public RateLimitConfig(
+                @Nonnull ScheduledExecutorService scheduler,
+                @Nonnull GlobalRateLimit globalRateLimit,
+                boolean isRelative) {
             this(scheduler, scheduler, globalRateLimit, isRelative);
         }
 
-        public RateLimitConfig(@Nonnull ScheduledExecutorService scheduler, @Nonnull ExecutorService elastic, @Nonnull GlobalRateLimit globalRateLimit, boolean isRelative)
-        {
+        public RateLimitConfig(
+                @Nonnull ScheduledExecutorService scheduler,
+                @Nonnull ExecutorService elastic,
+                @Nonnull GlobalRateLimit globalRateLimit,
+                boolean isRelative) {
             this.scheduler = scheduler;
             this.elastic = elastic;
             this.globalRateLimit = globalRateLimit;
@@ -273,8 +278,7 @@ public interface RestRateLimiter
          * @return The {@link ScheduledExecutorService}
          */
         @Nonnull
-        public ScheduledExecutorService getScheduler()
-        {
+        public ScheduledExecutorService getScheduler() {
             return scheduler;
         }
 
@@ -287,8 +291,7 @@ public interface RestRateLimiter
          * @return The elastic {@link ExecutorService}
          */
         @Nonnull
-        public ExecutorService getElastic()
-        {
+        public ExecutorService getElastic() {
             return elastic;
         }
 
@@ -298,8 +301,7 @@ public interface RestRateLimiter
          * @return The global rate-limit store
          */
         @Nonnull
-        public GlobalRateLimit getGlobalRateLimit()
-        {
+        public GlobalRateLimit getGlobalRateLimit() {
             return globalRateLimit;
         }
 
@@ -309,8 +311,7 @@ public interface RestRateLimiter
          *
          * @return True, if {@link #RESET_AFTER_HEADER} should be used instead of {@link #RESET_HEADER}
          */
-        public boolean isRelative()
-        {
+        public boolean isRelative() {
             return isRelative;
         }
     }

@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
  * Channels which can be set to age-restricted.
  * <br>These channels only allow users with a verified mature age to participate.
  */
-public interface IAgeRestrictedChannel extends GuildChannel
-{
+public interface IAgeRestrictedChannel extends GuildChannel {
     /**
      * Whether this channel is considered as age-restricted, also known as NSFW (Not-Safe-For-Work)
      *

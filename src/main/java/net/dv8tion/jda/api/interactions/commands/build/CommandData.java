@@ -30,13 +30,15 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+
 import org.jetbrains.annotations.UnmodifiableView;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 /**
  * Builder for Application Commands.
@@ -44,8 +46,7 @@ import java.util.Set;
  *
  * @see Commands
  */
-public interface CommandData extends SerializableData
-{
+public interface CommandData extends SerializableData {
     /**
      * The maximum length the name of a command can be. ({@value})
      */
@@ -159,8 +160,7 @@ public interface CommandData extends SerializableData
      * @return The builder instance, for chaining
      */
     @Nonnull
-    default CommandData setContexts(@Nonnull InteractionContextType... contexts)
-    {
+    default CommandData setContexts(@Nonnull InteractionContextType... contexts) {
         Checks.notEmpty(contexts, "Contexts");
         return setContexts(Arrays.asList(contexts));
     }
@@ -193,8 +193,7 @@ public interface CommandData extends SerializableData
      * @return The builder instance, for chaining
      */
     @Nonnull
-    default CommandData setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
-    {
+    default CommandData setIntegrationTypes(@Nonnull IntegrationType... integrationTypes) {
         Checks.notEmpty(integrationTypes, "Integration types");
         return setIntegrationTypes(Arrays.asList(integrationTypes));
     }
@@ -307,18 +306,17 @@ public interface CommandData extends SerializableData
      * @see    SlashCommandData#fromCommand(Command)
      */
     @Nonnull
-    static CommandData fromCommand(@Nonnull Command command)
-    {
+    static CommandData fromCommand(@Nonnull Command command) {
         Checks.notNull(command, "Command");
-        if (command.getType() != Command.Type.SLASH)
-        {
+        if (command.getType() != Command.Type.SLASH) {
             final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
             return data.setDefaultPermissions(command.getDefaultPermissions())
                     .setContexts(command.getContexts())
                     .setIntegrationTypes(command.getIntegrationTypes())
                     .setNSFW(command.isNSFW())
                     .setNameLocalizations(command.getNameLocalizations().toMap())
-                    .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
+                    .setDescriptionLocalizations(
+                            command.getDescriptionLocalizations().toMap());
         }
 
         return SlashCommandData.fromCommand(command);
@@ -342,43 +340,44 @@ public interface CommandData extends SerializableData
      * @see    Commands#fromList(Collection)
      */
     @Nonnull
-    static CommandData fromData(@Nonnull DataObject object)
-    {
+    static CommandData fromData(@Nonnull DataObject object) {
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
-        if (commandType != Command.Type.SLASH)
-        {
+        if (commandType != Command.Type.SLASH) {
             CommandDataImpl data = new CommandDataImpl(commandType, name);
-            if (!object.isNull("default_member_permissions"))
-            {
+            if (!object.isNull("default_member_permissions")) {
                 long defaultPermissions = object.getLong("default_member_permissions");
-                data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
+                data.setDefaultPermissions(
+                        defaultPermissions == 0
+                                ? DefaultMemberPermissions.DISABLED
+                                : DefaultMemberPermissions.enabledFor(defaultPermissions));
             }
 
-            if (!object.isNull("contexts"))
-            {
-                data.setContexts(object.getArray("contexts")
-                        .stream(DataArray::getString)
+            if (!object.isNull("contexts")) {
+                data.setContexts(object.getArray("contexts").stream(DataArray::getString)
                         .map(InteractionContextType::fromKey)
                         .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
+            } else {
+                data.setContexts(Helpers.unmodifiableEnumSet(
+                        InteractionContextType.GUILD, InteractionContextType.BOT_DM));
             }
-            else
-                data.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
 
-            if (!object.isNull("integration_types"))
-            {
-                data.setIntegrationTypes(object.getArray("integration_types")
-                        .stream(DataArray::getString)
-                        .map(IntegrationType::fromKey)
-                        .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+            if (!object.isNull("integration_types")) {
+                data.setIntegrationTypes(
+                        object.getArray("integration_types").stream(DataArray::getString)
+                                .map(IntegrationType::fromKey)
+                                .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+            } else {
+                data.setIntegrationTypes(
+                        Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
             }
-            else
-                data.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
 
             data.setNSFW(object.getBoolean("nsfw"));
-            data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
-            data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
+            data.setNameLocalizations(
+                    LocalizationUtils.mapFromProperty(object, "name_localizations"));
+            data.setDescriptionLocalizations(
+                    LocalizationUtils.mapFromProperty(object, "description_localizations"));
             return data;
         }
 

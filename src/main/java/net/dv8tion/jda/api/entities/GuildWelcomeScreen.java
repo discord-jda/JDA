@@ -26,10 +26,11 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.GuildWelcomeScreenImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * The welcome screen of a {@link Guild}.
@@ -38,8 +39,7 @@ import java.util.List;
  * @see Guild#retrieveWelcomeScreen()
  * @see Invite.Guild#getWelcomeScreen()
  */
-public interface GuildWelcomeScreen
-{
+public interface GuildWelcomeScreen {
     /** The maximum length of a welcome screen description ({@value}) */
     int MAX_DESCRIPTION_LENGTH = 140;
 
@@ -93,8 +93,7 @@ public interface GuildWelcomeScreen
      *
      * @see GuildWelcomeScreen#getChannels()
      */
-    interface Channel extends ISnowflake, SerializableData
-    {
+    interface Channel extends ISnowflake, SerializableData {
         /** Maximum length of a channel description ({@value}) */
         int MAX_DESCRIPTION_LENGTH = 42;
 
@@ -115,8 +114,7 @@ public interface GuildWelcomeScreen
          * @return The new welcome channel
          */
         @Nonnull
-        static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description)
-        {
+        static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description) {
             return of(channel, description, null);
         }
 
@@ -139,13 +137,16 @@ public interface GuildWelcomeScreen
          * @return The new welcome channel
          */
         @Nonnull
-        static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description, @Nullable Emoji emoji)
-        {
+        static Channel of(
+                @Nonnull StandardGuildChannel channel,
+                @Nonnull String description,
+                @Nullable Emoji emoji) {
             Checks.notNull(channel, "Channel");
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
 
-            return new GuildWelcomeScreenImpl.ChannelImpl(channel.getGuild(), channel.getIdLong(), description, (EmojiUnion) emoji);
+            return new GuildWelcomeScreenImpl.ChannelImpl(
+                    channel.getGuild(), channel.getIdLong(), description, (EmojiUnion) emoji);
         }
 
         /**

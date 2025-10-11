@@ -16,11 +16,12 @@
 
 package net.dv8tion.jda.api.requests;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * Interface used to mixin the customization parameters for {@link RestAction RestActions}.
@@ -32,8 +33,7 @@ import java.util.function.BooleanSupplier;
  *        The concrete RestAction type used for chaining (fluent interface)
  */
 @SuppressWarnings("unchecked")
-public interface FluentRestAction<T, R extends FluentRestAction<T, R>> extends RestAction<T>
-{
+public interface FluentRestAction<T, R extends FluentRestAction<T, R>> extends RestAction<T> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -42,24 +42,21 @@ public interface FluentRestAction<T, R extends FluentRestAction<T, R>> extends R
     @Nonnull
     @Override
     @CheckReturnValue
-    default R addCheck(@Nonnull BooleanSupplier checks)
-    {
+    default R addCheck(@Nonnull BooleanSupplier checks) {
         return (R) RestAction.super.addCheck(checks);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default R timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    default R timeout(long timeout, @Nonnull TimeUnit unit) {
         return (R) RestAction.super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default R deadline(long timestamp)
-    {
+    default R deadline(long timestamp) {
         return (R) RestAction.super.deadline(timestamp);
     }
 }

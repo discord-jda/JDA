@@ -23,16 +23,17 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class DeferredRestAction<T, R extends RestAction<T>> implements AuditableRestAction<T>, CacheRestAction<T>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class DeferredRestAction<T, R extends RestAction<T>>
+        implements AuditableRestAction<T>, CacheRestAction<T> {
     private final JDA api;
     private final Class<T> type;
     private final Supplier<T> valueSupplier;
@@ -44,15 +45,12 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
     private BooleanSupplier isAction;
     private BooleanSupplier transitiveChecks;
 
-    public DeferredRestAction(JDA api, Supplier<R> actionSupplier)
-    {
+    public DeferredRestAction(JDA api, Supplier<R> actionSupplier) {
         this(api, null, null, actionSupplier);
     }
 
-    public DeferredRestAction(JDA api, Class<T> type,
-                              Supplier<T> valueSupplier,
-                              Supplier<R> actionSupplier)
-    {
+    public DeferredRestAction(
+            JDA api, Class<T> type, Supplier<T> valueSupplier, Supplier<R> actionSupplier) {
         this.api = api;
         this.type = type;
         this.valueSupplier = valueSupplier;
@@ -61,135 +59,125 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<T> reason(String reason)
-    {
+    public AuditableRestAction<T> reason(String reason) {
         this.reason = reason;
         return this;
     }
 
     @Nonnull
     @Override
-    public DeferredRestAction<T, R> setCheck(BooleanSupplier checks)
-    {
+    public DeferredRestAction<T, R> setCheck(BooleanSupplier checks) {
         this.transitiveChecks = checks;
         return this;
     }
 
     @Nullable
     @Override
-    public BooleanSupplier getCheck()
-    {
+    public BooleanSupplier getCheck() {
         return transitiveChecks;
     }
 
     @Nonnull
     @Override
-    public DeferredRestAction<T, R> timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public DeferredRestAction<T, R> timeout(long timeout, @Nonnull TimeUnit unit) {
         Checks.notNull(unit, "TimeUnit");
         return deadline(timeout <= 0 ? 0 : System.currentTimeMillis() + unit.toMillis(timeout));
     }
 
     @Nonnull
     @Override
-    public DeferredRestAction<T, R> deadline(long timestamp)
-    {
+    public DeferredRestAction<T, R> deadline(long timestamp) {
         this.deadline = timestamp;
         return this;
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<T> useCache(boolean useCache)
-    {
+    public CacheRestAction<T> useCache(boolean useCache) {
         this.useCache = useCache;
         return this;
     }
 
-    public AuditableRestAction<T> setCacheCheck(BooleanSupplier checks)
-    {
+    public AuditableRestAction<T> setCacheCheck(BooleanSupplier checks) {
         this.isAction = checks;
         return this;
     }
 
     @Override
-    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
-    {
+    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure) {
         Consumer<? super T> finalSuccess;
-        if (success != null)
+        if (success != null) {
             finalSuccess = success;
-        else
+        } else {
             finalSuccess = RestAction.getDefaultSuccess();
+        }
 
-        if (type == null)
-        {
+        if (type == null) {
             BooleanSupplier checks = this.isAction;
-            if (checks != null && checks.getAsBoolean())
+            if (checks != null && checks.getAsBoolean()) {
                 getAction().queue(success, failure);
-            else
+            } else {
                 finalSuccess.accept(null);
+            }
             return;
         }
 
         T value = valueSupplier.get();
-        if (!useCache || value == null)
-        {
+        if (!useCache || value == null) {
             getAction().queue(success, failure);
-        }
-        else
-        {
+        } else {
             finalSuccess.accept(value);
         }
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
-        if (type == null)
-        {
+    public CompletableFuture<T> submit(boolean shouldQueue) {
+        if (type == null) {
             BooleanSupplier checks = this.isAction;
-            if (checks != null && checks.getAsBoolean())
+            if (checks != null && checks.getAsBoolean()) {
                 return getAction().submit(shouldQueue);
+            }
             return CompletableFuture.completedFuture(null);
         }
         T value = valueSupplier.get();
-        if (useCache && value != null)
+        if (useCache && value != null) {
             return CompletableFuture.completedFuture(value);
+        }
         return getAction().submit(shouldQueue);
     }
 
     @Override
-    public T complete(boolean shouldQueue) throws RateLimitedException
-    {
-        if (type == null)
-        {
+    public T complete(boolean shouldQueue) throws RateLimitedException {
+        if (type == null) {
             BooleanSupplier checks = this.isAction;
-            if (checks != null && checks.getAsBoolean())
+            if (checks != null && checks.getAsBoolean()) {
                 return getAction().complete(shouldQueue);
+            }
             return null;
         }
         T value = valueSupplier.get();
-        if (useCache && value != null)
+        if (useCache && value != null) {
             return value;
+        }
         return getAction().complete(shouldQueue);
     }
 
-    private R getAction()
-    {
+    private R getAction() {
         R action = actionSupplier.get();
         action.setCheck(transitiveChecks);
-        if (deadline >= 0)
+        if (deadline >= 0) {
             action.deadline(deadline);
-        if (action instanceof AuditableRestAction && reason != null)
+        }
+        if (action instanceof AuditableRestAction && reason != null) {
             ((AuditableRestAction<?>) action).reason(reason);
+        }
         return action;
     }
 }

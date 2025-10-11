@@ -23,8 +23,9 @@ import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.channel.forum.GenericForumTagEvent;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import javax.annotation.Nonnull;
 
 /**
  * Abstraction of all {@link ForumTag} updates.
@@ -36,15 +37,20 @@ import java.util.Collection;
  * @param <T>
  *        The type of the updated field
  */
-public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent implements UpdateEvent<ForumTag, T>
-{
+public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent
+        implements UpdateEvent<ForumTag, T> {
     private final T previous;
     private final T next;
     private final String identifier;
 
-    public GenericForumTagUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag,
-                                      T previous, T next, @Nonnull String identifier)
-    {
+    public GenericForumTagUpdateEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull IPostContainer channel,
+            @Nonnull ForumTag tag,
+            T previous,
+            T next,
+            @Nonnull String identifier) {
         super(api, responseNumber, channel, tag);
         this.previous = previous;
         this.next = next;
@@ -53,29 +59,25 @@ public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent
 
     @Nonnull
     @Override
-    public ForumTag getEntity()
-    {
+    public ForumTag getEntity() {
         return getTag();
     }
 
     @Override
     @UnknownNullability
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Override
     @UnknownNullability
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 }

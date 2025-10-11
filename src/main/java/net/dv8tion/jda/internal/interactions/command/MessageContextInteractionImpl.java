@@ -24,16 +24,14 @@ import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteracti
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-public class MessageContextInteractionImpl extends ContextInteractionImpl<Message> implements MessageContextInteraction
-{
-    public MessageContextInteractionImpl(JDAImpl jda, DataObject data)
-    {
+public class MessageContextInteractionImpl extends ContextInteractionImpl<Message>
+        implements MessageContextInteraction {
+    public MessageContextInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
     }
 
     @Override
-    protected Message parse(DataObject interaction, DataObject resolved)
-    {
+    protected Message parse(DataObject interaction, DataObject resolved) {
         DataObject messages = resolved.getObject("messages");
         DataObject message = messages.getObject(messages.keys().iterator().next());
 
@@ -44,8 +42,7 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
     }
 
     @Override
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return (MessageChannelUnion) super.getChannel();
     }
 }

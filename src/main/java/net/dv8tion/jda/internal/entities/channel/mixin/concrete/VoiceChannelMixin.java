@@ -35,43 +35,43 @@ import javax.annotation.Nonnull;
 
 public interface VoiceChannelMixin<T extends VoiceChannelMixin<T>>
         extends VoiceChannel,
-        GuildMessageChannelMixin<T>,
-        AudioChannelMixin<T>,
-        IWebhookContainerMixin<T>,
-        IAgeRestrictedChannelMixin<T>,
-        ISlowmodeChannelMixin<T>
-{
+                GuildMessageChannelMixin<T>,
+                AudioChannelMixin<T>,
+                IWebhookContainerMixin<T>,
+                IAgeRestrictedChannelMixin<T>,
+                ISlowmodeChannelMixin<T> {
     @Override
-    default boolean canTalk(@Nonnull Member member)
-    {
+    default boolean canTalk(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return member.hasPermission(this, Permission.MESSAGE_SEND);
     }
 
     @Nonnull
     @Override
-    default ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild)
-    {
+    default ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
 
         ChannelAction<VoiceChannel> action = guild.createVoiceChannel(getName())
                 .setBitrate(getBitrate())
                 .setUserlimit(getUserLimit());
 
-        if (getRegionRaw() != null)
+        if (getRegionRaw() != null) {
             action.setRegion(Region.fromKey(getRegionRaw()));
+        }
 
-        if (guild.equals(getGuild()))
-        {
+        if (guild.equals(getGuild())) {
             Category parent = getParentCategory();
-            if (parent != null)
+            if (parent != null) {
                 action.setParent(parent);
-            for (PermissionOverride o : getPermissionOverrideMap().valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+            }
+            for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
+                if (o.isMemberOverride()) {
+                    action.addMemberPermissionOverride(
+                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                } else {
+                    action.addRolePermissionOverride(
+                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

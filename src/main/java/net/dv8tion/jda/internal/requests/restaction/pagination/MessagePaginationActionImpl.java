@@ -32,28 +32,32 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class MessagePaginationActionImpl
-    extends PaginationActionImpl<Message, MessagePaginationAction>
-    implements MessagePaginationAction
-{
+        extends PaginationActionImpl<Message, MessagePaginationAction>
+        implements MessagePaginationAction {
     private final MessageChannel channel;
 
-    public MessagePaginationActionImpl(MessageChannel channel)
-    {
-        super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
+    public MessagePaginationActionImpl(MessageChannel channel) {
+        super(
+                channel.getJDA(),
+                Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()),
+                1,
+                100,
+                100);
 
-        if (channel instanceof GuildChannel)
-        {
+        if (channel instanceof GuildChannel) {
             GuildChannel guildChannel = (GuildChannel) channel;
             Member selfMember = guildChannel.getGuild().getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
-            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
+            if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY)) {
                 throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_HISTORY);
+            }
         }
 
         this.channel = channel;
@@ -61,44 +65,38 @@ public class MessagePaginationActionImpl
 
     @Nonnull
     @Override
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return (MessageChannelUnion) channel;
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<Message>> request)
-    {
+    protected void handleSuccess(Response response, Request<List<Message>> request) {
         DataArray array = response.getArray();
         List<Message> messages = new ArrayList<>(array.length());
         EntityBuilder builder = api.getEntityBuilder();
-        for (int i = 0; i < array.length(); i++)
-        {
-            try
-            {
+        for (int i = 0; i < array.length(); i++) {
+            try {
                 Message msg = builder.createMessageWithChannel(array.getObject(i), channel, false);
                 messages.add(msg);
-            }
-            catch (ParsingException | NullPointerException e)
-            {
+            } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered an exception in MessagePagination", e);
-            }
-            catch (IllegalArgumentException e)
-            {
-                if (EntityBuilder.UNKNOWN_MESSAGE_TYPE.equals(e.getMessage()))
+            } catch (IllegalArgumentException e) {
+                if (EntityBuilder.UNKNOWN_MESSAGE_TYPE.equals(e.getMessage())) {
                     LOG.warn("Skipping unknown message type during pagination", e);
-                else
+                } else {
                     LOG.warn("Unexpected issue trying to parse message during pagination", e);
+                }
             }
         }
 
-        if (order == PaginationOrder.FORWARD)
+        if (order == PaginationOrder.FORWARD) {
             Collections.reverse(messages);
-        if (useCache)
+        }
+        if (useCache) {
             cached.addAll(messages);
+        }
 
-        if (!messages.isEmpty())
-        {
+        if (!messages.isEmpty()) {
             last = messages.get(messages.size() - 1);
             lastKey = last.getIdLong();
         }
@@ -107,8 +105,7 @@ public class MessagePaginationActionImpl
     }
 
     @Override
-    protected long getKey(Message it)
-    {
+    protected long getKey(Message it) {
         return it.getIdLong();
     }
 }

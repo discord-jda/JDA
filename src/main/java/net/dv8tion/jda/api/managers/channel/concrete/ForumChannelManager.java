@@ -40,12 +40,11 @@ import javax.annotation.Nonnull;
  *  .queue();
  * }</pre>
  */
-public interface ForumChannelManager extends
-        StandardGuildChannelManager<ForumChannel, ForumChannelManager>,
-        IPostContainerManager<ForumChannel, ForumChannelManager>,
-        IAgeRestrictedChannelManager<ForumChannel, ForumChannelManager>,
-        ISlowmodeChannelManager<ForumChannel, ForumChannelManager>
-{
+public interface ForumChannelManager
+        extends StandardGuildChannelManager<ForumChannel, ForumChannelManager>,
+                IPostContainerManager<ForumChannel, ForumChannelManager>,
+                IAgeRestrictedChannelManager<ForumChannel, ForumChannelManager>,
+                ISlowmodeChannelManager<ForumChannel, ForumChannelManager> {
     /**
      * Sets the <b><u>default layout</u></b> of the selected {@link ForumChannel}.
      *

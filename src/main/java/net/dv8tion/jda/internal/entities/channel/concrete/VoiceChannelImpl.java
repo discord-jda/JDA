@@ -31,14 +31,13 @@ import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImp
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
-public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChannelImpl> implements
-        VoiceChannel,
-        VoiceChannelMixin<VoiceChannelImpl>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChannelImpl>
+        implements VoiceChannel, VoiceChannelMixin<VoiceChannelImpl> {
     private String region;
     private String status = "";
     private long latestMessageId;
@@ -47,99 +46,86 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     private int slowmode;
     private boolean nsfw;
 
-    public VoiceChannelImpl(long id, GuildImpl guild)
-    {
+    public VoiceChannelImpl(long id, GuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return false;
     }
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.VOICE;
     }
 
     @Override
-    public int getBitrate()
-    {
+    public int getBitrate() {
         return bitrate;
     }
 
     @Nullable
     @Override
-    public String getRegionRaw()
-    {
+    public String getRegionRaw() {
         return region;
     }
 
     @Override
-    public int getUserLimit()
-    {
+    public int getUserLimit() {
         return userLimit;
     }
 
     @Override
-    public boolean isNSFW()
-    {
+    public boolean isNSFW() {
         return nsfw;
     }
 
     @Override
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return slowmode;
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         return latestMessageId;
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         return getGuild().getConnectedMembers(this);
     }
 
     @Nonnull
     @Override
-    public VoiceChannelManager getManager()
-    {
+    public VoiceChannelManager getManager() {
         return new VoiceChannelManagerImpl(this);
     }
 
     @Nonnull
     @Override
-    public String getStatus()
-    {
+    public String getStatus() {
         return status;
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifyStatus(@Nonnull String status)
-    {
+    public AuditableRestAction<Void> modifyStatus(@Nonnull String status) {
         Checks.notLonger(status, MAX_STATUS_LENGTH, "Voice Status");
         checkCanAccess();
-        if (this.equals(getGuild().getSelfMember().getVoiceState().getChannel()))
+        if (this.equals(getGuild().getSelfMember().getVoiceState().getChannel())) {
             checkPermission(Permission.VOICE_SET_STATUS);
-        else
+        } else {
             checkCanManage();
+        }
 
         Route.CompiledRoute route = Route.Channels.SET_STATUS.compile(getId());
         DataObject body = DataObject.empty().put("status", status);
@@ -147,50 +133,43 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     }
 
     @Override
-    public VoiceChannelImpl setBitrate(int bitrate)
-    {
+    public VoiceChannelImpl setBitrate(int bitrate) {
         this.bitrate = bitrate;
         return this;
     }
 
     @Override
-    public VoiceChannelImpl setRegion(String region)
-    {
+    public VoiceChannelImpl setRegion(String region) {
         this.region = region;
         return this;
     }
 
     @Override
-    public VoiceChannelImpl setUserLimit(int userLimit)
-    {
+    public VoiceChannelImpl setUserLimit(int userLimit) {
         this.userLimit = userLimit;
         return this;
     }
 
     @Override
-    public VoiceChannelImpl setNSFW(boolean nsfw)
-    {
+    public VoiceChannelImpl setNSFW(boolean nsfw) {
         this.nsfw = nsfw;
         return this;
     }
 
     @Override
-    public VoiceChannelImpl setSlowmode(int slowmode)
-    {
+    public VoiceChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
         return this;
     }
 
     @Override
-    public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
-    {
+    public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId) {
         this.latestMessageId = latestMessageId;
         return this;
     }
 
     @Override
-    public VoiceChannelImpl setStatus(String status)
-    {
+    public VoiceChannelImpl setStatus(String status) {
         this.status = status;
         return this;
     }

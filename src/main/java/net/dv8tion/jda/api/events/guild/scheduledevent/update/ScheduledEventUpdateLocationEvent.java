@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
@@ -38,13 +39,21 @@ import javax.annotation.Nonnull;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateLocationEvent extends GenericScheduledEventUpdateEvent<String>
-{
+public class ScheduledEventUpdateLocationEvent extends GenericScheduledEventUpdateEvent<String> {
     public static final String IDENTIFIER = "location";
 
-    public ScheduledEventUpdateLocationEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous)
-    {
-        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getLocation(), IDENTIFIER);
+    public ScheduledEventUpdateLocationEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ScheduledEvent scheduledEvent,
+            @Nonnull String previous) {
+        super(
+                api,
+                responseNumber,
+                scheduledEvent,
+                previous,
+                scheduledEvent.getLocation(),
+                IDENTIFIER);
     }
 
     /**
@@ -53,8 +62,7 @@ public class ScheduledEventUpdateLocationEvent extends GenericScheduledEventUpda
      * @return The old location
      */
     @Nonnull
-    public String getOldLocation()
-    {
+    public String getOldLocation() {
         return getOldValue();
     }
 
@@ -64,22 +72,19 @@ public class ScheduledEventUpdateLocationEvent extends GenericScheduledEventUpda
      * @return The new location
      */
     @Nonnull
-    public String getNewLocation()
-    {
+    public String getNewLocation() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

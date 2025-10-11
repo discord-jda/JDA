@@ -28,8 +28,6 @@ import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManage
  * manager.setName("Cool People Only").queue();
  * }</pre>
  */
-public interface CategoryManager extends
-        IPermissionContainerManager<Category, CategoryManager>,
-        IPositionableChannelManager<Category, CategoryManager>
-{
-}
+public interface CategoryManager
+        extends IPermissionContainerManager<Category, CategoryManager>,
+                IPositionableChannelManager<Category, CategoryManager> {}

@@ -74,8 +74,9 @@ public class AudioEchoExample extends ListenerAdapter
         Guild guild = event.getGuild();
 
         // Ignore message if bot
-        if (author.isBot())
+        if (author.isBot()) {
             return;
+        }
 
         // We only want to handle message in Guilds
         if (!event.isFromGuild())
@@ -136,11 +137,12 @@ public class AudioEchoExample extends ListenerAdapter
             channel = guild.getVoiceChannelById(arg);
         }
         if (channel == null)                    // Then the input must be a name?
-        {
-            List<VoiceChannel> channels = guild.getVoiceChannelsByName(arg, true);
-            if (!channels.isEmpty())            // Make sure we found at least one exact match
-                channel = channels.get(0);      // We found a channel! This cannot be null.
-        }
+            {
+                List<VoiceChannel> channels = guild.getVoiceChannelsByName(arg, true);
+                if (!channels.isEmpty()) {            // Make sure we found at least one exact match
+                    channel = channels.get(0);      // We found a channel! This cannot be null.
+                }
+            }
 
         MessageChannel messageChannel = event.getChannel();
         if (channel == null)                    // I have no idea what you want mr user
@@ -228,8 +230,9 @@ public class AudioEchoExample extends ListenerAdapter
         public void handleCombinedAudio(CombinedAudio combinedAudio)
         {
             // we only want to send data when a user actually sent something, otherwise we would just send silence
-            if (combinedAudio.getUsers().isEmpty())
+            if (combinedAudio.getUsers().isEmpty()) {
                 return;
+            }
 
             byte[] data = combinedAudio.getAudioData(1.0f); // volume at 100% = 1.0 (50% = 0.5 / 55% = 0.55)
             queue.add(data);

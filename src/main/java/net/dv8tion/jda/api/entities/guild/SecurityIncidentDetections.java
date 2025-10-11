@@ -20,22 +20,21 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 /**
  * Detected security incidents of a {@link Guild}.
  */
-public class SecurityIncidentDetections
-{
+public class SecurityIncidentDetections {
     public static final SecurityIncidentDetections EMPTY = new SecurityIncidentDetections(0, 0);
 
     private final long dmSpamDetectedAt;
     private final long raidDetectedAt;
 
-    public SecurityIncidentDetections(long dmSpamDetectedAt, long raidDetectedAt)
-    {
+    public SecurityIncidentDetections(long dmSpamDetectedAt, long raidDetectedAt) {
         this.dmSpamDetectedAt = dmSpamDetectedAt;
         this.raidDetectedAt = raidDetectedAt;
     }
@@ -46,8 +45,7 @@ public class SecurityIncidentDetections
      * @return {@link OffsetDateTime} of the detection, or null when there is no current detection
      */
     @Nullable
-    public OffsetDateTime getTimeDetectedDmSpam()
-    {
+    public OffsetDateTime getTimeDetectedDmSpam() {
         return this.dmSpamDetectedAt == 0 ? null : Helpers.toOffset(dmSpamDetectedAt);
     }
 
@@ -57,29 +55,30 @@ public class SecurityIncidentDetections
      * @return {@link OffsetDateTime} of the detection, or null when there is no current detection
      */
     @Nullable
-    public OffsetDateTime getTimeDetectedRaid()
-    {
+    public OffsetDateTime getTimeDetectedRaid() {
         return this.raidDetectedAt == 0 ? null : Helpers.toOffset(raidDetectedAt);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(dmSpamDetectedAt, raidDetectedAt);
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) return true;
-        if (!(o instanceof SecurityIncidentDetections)) return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SecurityIncidentDetections)) {
+            return false;
+        }
         SecurityIncidentDetections that = (SecurityIncidentDetections) o;
-        return this.dmSpamDetectedAt == that.dmSpamDetectedAt && this.raidDetectedAt == that.raidDetectedAt;
+        return this.dmSpamDetectedAt == that.dmSpamDetectedAt
+                && this.raidDetectedAt == that.raidDetectedAt;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("dmSpamDetectedAt", getTimeDetectedDmSpam())
                 .addMetadata("raidDetectedAt", getTimeDetectedRaid())

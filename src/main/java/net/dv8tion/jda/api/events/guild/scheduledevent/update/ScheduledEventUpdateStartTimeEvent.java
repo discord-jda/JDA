@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates the {@link ScheduledEvent#getStartTime() start time} of a {@link ScheduledEvent} has changed.
@@ -39,13 +41,22 @@ import java.time.OffsetDateTime;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateStartTimeEvent extends GenericScheduledEventUpdateEvent<OffsetDateTime>
-{
+public class ScheduledEventUpdateStartTimeEvent
+        extends GenericScheduledEventUpdateEvent<OffsetDateTime> {
     public static final String IDENTIFIER = "start_time";
 
-    public ScheduledEventUpdateStartTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull OffsetDateTime previous)
-    {
-        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getStartTime(), IDENTIFIER);
+    public ScheduledEventUpdateStartTimeEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ScheduledEvent scheduledEvent,
+            @Nonnull OffsetDateTime previous) {
+        super(
+                api,
+                responseNumber,
+                scheduledEvent,
+                previous,
+                scheduledEvent.getStartTime(),
+                IDENTIFIER);
     }
 
     /**
@@ -54,8 +65,7 @@ public class ScheduledEventUpdateStartTimeEvent extends GenericScheduledEventUpd
      * @return The old start time
      */
     @Nonnull
-    public OffsetDateTime getOldStartTime()
-    {
+    public OffsetDateTime getOldStartTime() {
         return getOldValue();
     }
 
@@ -65,22 +75,19 @@ public class ScheduledEventUpdateStartTimeEvent extends GenericScheduledEventUpd
      * @return The new start time
      */
     @Nonnull
-    public OffsetDateTime getNewStartTime()
-    {
+    public OffsetDateTime getNewStartTime() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getOldValue()
-    {
+    public OffsetDateTime getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getNewValue()
-    {
+    public OffsetDateTime getNewValue() {
         return super.getNewValue();
     }
 }
