@@ -134,6 +134,7 @@ public interface Component
         SEPARATOR(14, true, false),
         CONTAINER(17, true, false),
         LABEL(18, false, true),
+        FILE_UPLOAD(19, false, true),
         ;
 
         private final int key;
