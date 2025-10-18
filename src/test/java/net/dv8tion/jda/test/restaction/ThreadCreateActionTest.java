@@ -18,7 +18,7 @@ package net.dv8tion.jda.test.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.SelfMember;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -46,7 +46,7 @@ public class ThreadCreateActionTest extends IntegrationTest
     @Mock
     private TextChannel textChannel;
     @Mock
-    private Member selfMember;
+    private SelfMember selfMember;
 
     @BeforeEach
     void setupMocks()

@@ -423,7 +423,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
 
     @Nonnull
     @Override
-    public Member getSelfMember()
+    public SelfMember getSelfMember()
     {
         throw detachedException();
     }

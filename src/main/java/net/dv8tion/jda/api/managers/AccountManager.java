@@ -67,6 +67,7 @@ public interface AccountManager extends Manager<AccountManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #AVATAR}</li>
+     *     <li>{@link #BANNER}</li>
      * </ul>
      *
      * @param  fields
@@ -87,6 +88,7 @@ public interface AccountManager extends Manager<AccountManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #AVATAR}</li>
+     *     <li>{@link #BANNER}</li>
      * </ul>
      *
      * @param  fields

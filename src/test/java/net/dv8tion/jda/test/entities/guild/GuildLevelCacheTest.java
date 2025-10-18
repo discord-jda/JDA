@@ -59,7 +59,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         MemberCacheViewImpl membersView = guild.getMembersView();
         try (UnlockHook hook = membersView.writeLock())
         {
-            membersView.getMap().put(Constants.BUTLER_USER_ID, new MemberImpl(guild, selfUser));
+            membersView.getMap().put(Constants.BUTLER_USER_ID, new SelfMemberImpl(guild, selfUser));
         }
 
         return guild;
@@ -108,7 +108,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         void shouldReturnNonNullForSelfUser()
         {
             GuildImpl guild = getGuild();
-            MemberImpl member = new MemberImpl(guild, selfUser);
+            MemberImpl member = new SelfMemberImpl(guild, selfUser);
 
             assertThat(member.getVoiceState()).isNotNull();
         }
@@ -162,7 +162,7 @@ public class GuildLevelCacheTest extends IntegrationTest
         void shouldReturnNonNullForSelfUser()
         {
             GuildImpl guild = getGuild();
-            MemberImpl member = new MemberImpl(guild, selfUser);
+            MemberImpl member = new SelfMemberImpl(guild, selfUser);
 
             assertThat(member.getVoiceState()).isNotNull();
         }
