@@ -19,11 +19,10 @@ package net.dv8tion.jda.test.util;
 
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import okio.BufferedSink;
+import okio.BufferedSource;
 import okio.Okio;
 import okio.Path;
-import org.assertj.core.api.iterable.ThrowingExtractor;
 import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,44 +51,40 @@ public class SnapshotHandler
     public void compareWithSnapshot(String actual, String suffix)
     {
         compareWithSnapshot(
-            stream -> new String(IOUtil.readFully(stream), StandardCharsets.UTF_8),
-            actual,
-            suffix,
-            "txt"
+                actual,
+                suffix,
+                "txt"
         );
     }
 
     public void compareWithSnapshot(Collection<?> actual, String suffix)
     {
         compareWithSnapshot(
-            stream -> DataArray.fromJson(stream).toPrettyString(),
-            DataArray.fromCollection(actual).toPrettyString(),
-            suffix,
-            "json"
+                DataArray.fromCollection(actual).toPrettyString(),
+                suffix,
+                "json"
         );
     }
 
     public void compareWithSnapshot(DataObject actual, String suffix)
     {
         compareWithSnapshot(
-            stream -> DataObject.fromJson(stream).toPrettyString(),
-            actual.toPrettyString(),
-            suffix,
-            "json"
+                actual.toPrettyString(),
+                suffix,
+                "json"
         );
     }
 
     public void compareWithSnapshot(DataArray actual, String suffix)
     {
         compareWithSnapshot(
-            stream -> DataArray.fromJson(stream).toPrettyString(),
-            actual.toPrettyString(),
-            suffix,
-            "json"
+                actual.toPrettyString(),
+                suffix,
+                "json"
         );
     }
 
-    private void compareWithSnapshot(ThrowingExtractor<InputStream, String, Exception> reader, String actual, String suffix, String extension)
+    private void compareWithSnapshot(String actual, String suffix, String extension)
     {
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
         String filePath = getFilePath(suffix, extension);
@@ -97,8 +92,8 @@ public class SnapshotHandler
         try (InputStream stream = currentClass.getResourceAsStream(filePath))
         {
             assertThat(stream).as("Loading sample from resource file '%s'", filePath).isNotNull();
-            assertThat(reader.apply(stream))
-                .isEqualToNormalizingWhitespace(actual);
+            BufferedSource fileBuffer = Okio.buffer(Okio.source(stream));
+            assertThat(fileBuffer.readUtf8()).isEqualToNormalizingNewlines(actual);
         }
         catch (IOException e)
         {
