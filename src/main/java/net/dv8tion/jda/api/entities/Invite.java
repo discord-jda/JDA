@@ -516,6 +516,11 @@ public interface Invite
         @Nonnull
         VerificationLevel getVerificationLevel();
 
+        /**
+         * Returns the {@link NSFWLevel} of this guild.
+         *
+         * @return the nsfw level of the guild
+         */
         @Nonnull
         NSFWLevel getNSFWLevel();
         
