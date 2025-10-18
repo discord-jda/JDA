@@ -915,7 +915,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
     /**
      * The description for this guild.
-     * <br>This is displayed in the server browser below the guild name for verified guilds.
+     * <br>This is displayed in the server browser below the guild name for verified guilds,
+     * and in embedded invite links.
      *
      * <p>The description can be modified using {@link GuildManager#setDescription(String)}.
      *
