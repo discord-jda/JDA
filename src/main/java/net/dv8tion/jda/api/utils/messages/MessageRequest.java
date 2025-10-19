@@ -106,6 +106,11 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <p>This can be overwritten with {@link #useComponentsV2(boolean)} on each builder instance.
      *
+     * <p><b>NOTE:</b> When enabled, be aware that messages which were built for "V1" content
+     * will cause errors if they don't explicitly disable their V2 flag.
+     * You should check if the helpers you use do set their flag appropriately,
+     * this includes your own utilities/replies as well as 3rd party libraries you may use.
+     *
      * @param  use
      *         {@code true} to enable V2 components by default, {@code false} to disabled them by default.
      */
