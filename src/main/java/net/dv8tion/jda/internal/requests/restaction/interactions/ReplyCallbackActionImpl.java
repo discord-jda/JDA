@@ -58,6 +58,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     protected RequestBody finalizeData()
     {
         DataObject json = DataObject.empty();
+        long flags = this.flags | builder.getMessageFlagsRaw();
         if (builder.isEmpty())
         {
             json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
@@ -70,7 +71,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
         try (MessageCreateData data = builder.build())
         {
             DataObject msg = data.toData();
-            msg.put("flags", msg.getInt("flags", 0) | flags);
+            msg.put("flags", flags);
             json.put("data",msg);
             return getMultipartBody(data.getAllDistinctFiles(), json);
         }
