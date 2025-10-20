@@ -57,11 +57,12 @@ public class InviteImpl implements Invite
     private final int maxUses;
     private final boolean temporary;
     private final OffsetDateTime timeCreated;
+    private final OffsetDateTime timeExpires;
     private final int uses;
     private final Invite.InviteType type;
 
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
-            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated, final int uses,
+            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated, final OffsetDateTime timeExpires, final int uses,
             final Channel channel, final Guild guild, final Group group, final InviteTarget target, final Invite.InviteType type)
     {
         this.api = api;
@@ -72,6 +73,7 @@ public class InviteImpl implements Invite
         this.maxUses = maxUses;
         this.temporary = temporary;
         this.timeCreated = timeCreated;
+        this.timeExpires = timeExpires;
         this.uses = uses;
         this.channel = channel;
         this.guild = guild;
@@ -240,6 +242,13 @@ public class InviteImpl implements Invite
         return this.timeCreated;
     }
 
+    @Nullable
+    @Override
+    public OffsetDateTime getTimeExpires()
+    {
+        return this.timeExpires;
+    }
+
     @Override
     public int getUses()
     {
@@ -253,7 +262,7 @@ public class InviteImpl implements Invite
     {
         return this.expanded;
     }
-
+    
     @Override
     public boolean isTemporary()
     {
