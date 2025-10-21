@@ -653,7 +653,10 @@ public class EntityBuilder extends AbstractEntityBuilder
         if (member == null)
         {
             // Create a brand new member
-            member = new MemberImpl(guild, user);
+            if (user.getIdLong() == getJDA().getSelfUser().getIdLong())
+                member = new SelfMemberImpl(guild, ((SelfUser) user));
+            else
+                member = new MemberImpl(guild, user);
             configureMember(memberJson, member);
             Set<Role> roles = member.getRoleSet();
             for (int i = 0; i < roleArray.length(); i++)
@@ -2320,11 +2323,15 @@ public class EntityBuilder extends AbstractEntityBuilder
 
             final DataObject guildObject = object.getObject("guild");
 
+            final String guildVanityCode = guildObject.getString("vanity_url_code", null);
+            final String guildBannerId = guildObject.getString("banner", null);
             final String guildIconId = guildObject.getString("icon", null);
             final long guildId = guildObject.getLong("id");
             final String guildName = guildObject.getString("name");
             final String guildSplashId = guildObject.getString("splash", null);
+            final String description = guildObject.getString("description", null);
             final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
+            final Guild.NSFWLevel guildNsfwLevel = Guild.NSFWLevel.fromKey(guildObject.getInt("nsfw_level", -1));
             final int presenceCount = object.getInt("approximate_presence_count", -1);
             final int memberCount = object.getInt("approximate_member_count", -1);
 
@@ -2338,7 +2345,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                     ? null
                     : createWelcomeScreen(null, guildObject.getObject("welcome_screen"));
 
-            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
+            guild = new InviteImpl.GuildImpl(guildId, guildVanityCode, guildBannerId, guildIconId, guildName, guildSplashId, description, guildVerificationLevel, guildNsfwLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
             final String channelName = channelObject.getString("name");
             final long channelId = channelObject.getLong("id");

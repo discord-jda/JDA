@@ -1,0 +1,7 @@
+[ {
+  "custom_id" : "file-upload",
+  "max_values" : 1,
+  "min_values" : 1,
+  "required" : true,
+  "type" : 19
+} ]

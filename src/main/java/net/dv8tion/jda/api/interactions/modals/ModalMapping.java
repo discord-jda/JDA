@@ -18,9 +18,11 @@ package net.dv8tion.jda.api.interactions.modals;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.entities.Mentions;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.SelectMenuMentions;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -183,6 +185,30 @@ public class ModalMapping
             typeError("Mentions");
 
         return new SelectMenuMentions(interaction.getJDA(), interaction.getInteractionEntityBuilder(), interaction.getGuild(), resolved, value.getArray("values"));
+    }
+
+    /**
+     * Returns this component's value as a list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} objects.
+     *
+     * <p>You can check if {@link #getType()} is equal to {@link Component.Type#FILE_UPLOAD FILE_UPLOAD} to see if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as such.
+     *
+     * @return This component's value as a list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} objects
+     */
+    @Nonnull
+    public List<Message.Attachment> getAsAttachmentList()
+    {
+        if (type != Component.Type.FILE_UPLOAD)
+            typeError("List<Message.Attachment>");
+
+        final DataObject attachments = resolved.getObject("attachments");
+        final EntityBuilder entityBuilder = interaction.getJDA().getEntityBuilder();
+        return value.getArray("values")
+                .stream(DataArray::getString)
+                .map(id -> entityBuilder.createMessageAttachment(attachments.getObject(id)))
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Override

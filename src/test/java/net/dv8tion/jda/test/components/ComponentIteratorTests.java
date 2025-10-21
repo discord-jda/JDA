@@ -57,6 +57,7 @@ public class ComponentIteratorTests
             case FILE_DISPLAY:
             case SEPARATOR:
             case LABEL:
+            case FILE_UPLOAD:
                 break;
             case ACTION_ROW:
                 final ActionRow row = mock(ActionRow.class);

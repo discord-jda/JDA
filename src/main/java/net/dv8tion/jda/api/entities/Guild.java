@@ -915,7 +915,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
     /**
      * The description for this guild.
-     * <br>This is displayed in the server browser below the guild name for verified guilds.
+     * <br>This is displayed in the server browser below the guild name for verified guilds,
+     * and in embedded invite links.
      *
      * <p>The description can be modified using {@link GuildManager#setDescription(String)}.
      *
@@ -1319,7 +1320,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return The Member object of the currently logged in account.
      */
     @Nonnull
-    Member getSelfMember();
+    SelfMember getSelfMember();
 
     /**
      * Returns the NSFW Level that this guild is classified with.
@@ -3916,13 +3917,16 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @param  member
      *         The {@link Member Member} for which the nickname should be changed.
      * @param  nickname
-     *         The new nickname of the {@link Member Member}, provide {@code null} or an
-     *         empty String to reset the nickname
+     *         The new nickname of the {@link Member Member}, max {@value Member#MAX_NICKNAME_LENGTH} characters in length,
+     *         provide {@code null} or an empty String to reset the nickname
      *
      * @throws IllegalArgumentException
-     *         If the specified {@link Member Member}
-     *         is not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *         Or if the provided member is {@code null}
+     *         <ul>
+     *             <li>If the specified {@link Member} is {@code null}</li>
+     *             <li>If the specified {@link Member} is not from the same {@link Guild}</li>
+     *             <li>If the new nickname is more than {@value Member#MAX_NICKNAME_LENGTH} characters in length</li>
+     *         </ul>
+     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If attempting to set nickname for self and the logged in account has neither {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE}
