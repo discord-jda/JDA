@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -202,6 +203,9 @@ public class ModalMapping
     {
         if (type != Component.Type.FILE_UPLOAD)
             typeError("List<Message.Attachment>");
+
+        if (resolved.isNull("attachments"))
+            return Collections.emptyList();
 
         final DataObject attachments = resolved.getObject("attachments");
         final EntityBuilder entityBuilder = interaction.getJDA().getEntityBuilder();
