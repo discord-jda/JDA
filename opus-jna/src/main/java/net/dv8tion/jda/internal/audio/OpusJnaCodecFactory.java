@@ -43,8 +43,8 @@ public class OpusJnaCodecFactory implements OpusCodecFactory {
 
         if (OpusLibrary.isInitialized())
             return audioSupported = true;
-        audioSupported = OpusLibrary.loadFromJar();
-        return audioSupported;
+        OpusLibrary.loadFromJar();
+        return audioSupported = true;
     }
 
     @Nonnull
