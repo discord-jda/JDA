@@ -68,11 +68,6 @@ base {
     archivesName.set("JDA")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
 configure<SourceSetContainer> {
     register("examples") {
         java.srcDir("src/examples/java")
