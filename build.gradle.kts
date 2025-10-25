@@ -264,30 +264,10 @@ val sourcesJar by tasks.registering(Jar::class) {
     dependsOn(sourcesForRelease)
 }
 
-val javadoc by tasks.getting(Javadoc::class) {
-    isFailOnError = projectEnvironment.isGithubAction
-
-    (options as? StandardJavadocDocletOptions)?.apply {
-        memberLevel = JavadocMemberLevel.PUBLIC
-        encoding = "UTF-8"
-
-        author()
-        tags("incubating:a:Incubating:")
-        links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
-
-        addStringOption("-release", "8")
-        addBooleanOption("Xdoclint:all,-missing", true)
-
-        overview = "$projectDir/overview.html"
-    }
-
-    dependsOn(generateJavaSources)
-    source = generateJavaSources.get().source
-
-    exclude {
-        it.file.absolutePath.contains("internal", ignoreCase=false)
-    }
-}
+val javadoc by configureJavadoc(
+        failOnError = projectEnvironment.isGithubAction,
+        overviewFile = "$projectDir/overview.html",
+)
 
 val javadocJar by tasks.registering(Jar::class) {
     dependsOn(javadoc)
