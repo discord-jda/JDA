@@ -237,6 +237,7 @@ val sourcesJar by tasks.registering(Jar::class) {
 }
 
 val javadoc by configureJavadoc(
+        targetVersion = JavaVersion.VERSION_1_8,
         failOnError = projectEnvironment.isGithubAction,
         overviewFile = "$projectDir/overview.html",
 )

@@ -6,8 +6,13 @@ import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.JavadocMemberLevel
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.getting
+import kotlin.math.max
 
-fun Project.configureJavadoc(failOnError: Boolean, overviewFile: String?) = tasks.getting(Javadoc::class) {
+fun Project.configureJavadoc(
+        targetVersion: JavaVersion,
+        failOnError: Boolean,
+        overviewFile: String?,
+) = tasks.getting(Javadoc::class) {
     isFailOnError = failOnError
 
     (options as? StandardJavadocDocletOptions)?.apply {
@@ -16,12 +21,16 @@ fun Project.configureJavadoc(failOnError: Boolean, overviewFile: String?) = task
 
         author()
         tags("incubating:a:Incubating:")
-        links("https://docs.oracle.com/en/java/javase/17/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
+        // We compile to Java 8 but JDK 8 docs don't seem to supply `element-list` anymore, failing the build
+        // so we'll be using the closest valid link (JDK 11) instead.
+        // Failing: https://docs.oracle.com/javase/8/docs/api/element-list
+        val effectiveJdkDocsVersion = max(11, targetVersion.majorVersion.toInt())
+        links("https://docs.oracle.com/en/java/javase/${effectiveJdkDocsVersion}/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
         val javaVersion = JavaVersion.current()
         if (JavaVersion.VERSION_1_8 < javaVersion) {
             addBooleanOption("html5", true) // Adds search bar
-            addStringOption("-release", "8")
+            addStringOption("-release", targetVersion.majorVersion)
         }
 
         // Fix for https://stackoverflow.com/questions/52326318/maven-javadoc-search-redirects-to-undefined-url
