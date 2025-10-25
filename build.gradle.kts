@@ -275,7 +275,10 @@ val javadoc by tasks.getting(Javadoc::class) {
 
         author()
         tags("incubating:a:Incubating:")
-        links("https://docs.oracle.com/javase/8/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
+        // We compile to Java 8 but JDK 8 docs don't seem to supply `element-list` anymore, failing the build
+        // so we'll be using the minimum JDK that can be used to build JDA (JDK 17 due to Gradle 9) instead.
+        // Failing: https://docs.oracle.com/javase/8/docs/api/element-list
+        links("https://docs.oracle.com/en/java/javase/17/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
         if (JavaVersion.VERSION_1_8 < javaVersion) {
             addBooleanOption("html5", true) // Adds search bar
@@ -493,4 +496,3 @@ jreleaser {
 tasks.withType<AbstractJReleaserTask>().configureEach {
     mustRunAfter(tasks.named("publish"))
 }
-
