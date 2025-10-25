@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
-import org.jreleaser.model.Active
+import net.dv8tion.jda.tasks.registerPublication
 
 plugins {
     `java-library`
-    `maven-publish`
-
-    alias(libs.plugins.jreleaser)
+    `jda-publish`
 }
 
 ////////////////////////////////////
@@ -117,94 +114,12 @@ tasks.withType<JavaCompile> {
 //                                //
 ////////////////////////////////////
 
+registerPublication(
+        name = fullProjectName,
+        description = "Opus support for JDA, based on JNA",
+        url = "https://github.com/discord-jda/JDA/tree/master/opus-jna",
+) {
+    from(components["java"])
 
-// Generate pom file for maven central
-
-fun MavenPom.populate() {
-    packaging = "jar"
-    name.set(fullProjectName)
-    description.set("Opus support for JDA based on JNA")
-    url.set("https://github.com/discord-jda/JDA/tree/master/opus-jna")
-    scm {
-        url.set("https://github.com/discord-jda/JDA")
-        connection.set("scm:git:git://github.com/discord-jda/JDA")
-        developerConnection.set("scm:git:ssh:git@github.com:discord-jda/JDA")
-    }
-    licenses {
-        license {
-            name.set("The Apache Software License, Version 2.0")
-            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            distribution.set("repo")
-        }
-    }
-    developers {
-        developer {
-            id.set("Minn")
-            name.set("Florian Spieß")
-            email.set("business@minn.dev")
-        }
-        developer {
-            id.set("DV8FromTheWorld")
-            name.set("Austin Keener")
-            email.set("keeneraustin@yahoo.com")
-        }
-    }
-}
-
-val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
-
-publishing {
-    publications {
-        register<MavenPublication>("Release") {
-            from(components["java"])
-
-            artifactId = fullProjectName
-            groupId = project.group as String
-            version = project.version as String
-
-            artifact(javadocJar)
-
-            pom.populate()
-        }
-    }
-
-    repositories.maven {
-        url = stagingDirectory.asFile.toURI()
-    }
-}
-
-jreleaser {
-    // Since this is a submodule
-    gitRootSearch = true
-
-    project {
-        versionPattern = "CUSTOM"
-    }
-
-    release {
-        github {
-            enabled = false
-        }
-    }
-
-    signing {
-        active = Active.RELEASE
-        armored = true
-    }
-
-    deploy {
-        maven {
-            mavenCentral {
-                register("sonatype") {
-                    active = Active.RELEASE
-                    url = "https://central.sonatype.com/api/v1/publisher"
-                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
-                }
-            }
-        }
-    }
-}
-
-tasks.withType<AbstractJReleaserTask>().configureEach {
-    mustRunAfter(tasks.named("publish"))
+    artifact(javadocJar)
 }
