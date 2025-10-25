@@ -38,9 +38,6 @@ base {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
     withSourcesJar()
 }
 
@@ -108,10 +105,7 @@ tasks.withType<JavaCompile> {
 
     val args = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
 
-    if (JavaVersion.current().isJava9Compatible) {
-        args.add("--release")
-        args.add("8")
-    }
+    options.release = 8
 
     options.compilerArgs.addAll(args)
 }
