@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import net.dv8tion.jda.tasks.configureJavadoc
 import net.dv8tion.jda.tasks.registerPublication
 
 plugins {
+    environment
     `java-library`
     `jda-publish`
 }
@@ -88,10 +90,15 @@ val jar by tasks.getting(Jar::class) {
     manifest.attributes("Implementation-Version" to project.version, "Automatic-Module-Name" to "net.dv8tion.jda")
 }
 
+val javadoc by configureJavadoc(
+        failOnError = projectEnvironment.isGithubAction,
+        overviewFile = null,
+)
+
 val javadocJar by tasks.registering(Jar::class) {
-    this.archiveBaseName.set(fullProjectName)
+    dependsOn(javadoc)
     archiveClassifier.set("javadoc")
-    // Empty by design
+    from(javadoc.destinationDir)
 }
 
 tasks.withType<JavaCompile> {
