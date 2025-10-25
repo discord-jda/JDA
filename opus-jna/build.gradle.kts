@@ -91,6 +91,7 @@ val jar by tasks.getting(Jar::class) {
 }
 
 val javadoc by configureJavadoc(
+        targetVersion = JavaVersion.VERSION_1_8,
         failOnError = projectEnvironment.isGithubAction,
         overviewFile = null,
 )
