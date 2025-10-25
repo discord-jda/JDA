@@ -62,8 +62,6 @@ if (projectEnvironment.canPublish) {
     project.version = "${projectEnvironment.version.get()}_${projectEnvironment.commitHash}"
 }
 
-val javaVersion = JavaVersion.current()
-
 project.group = "net.dv8tion"
 
 base {
@@ -277,24 +275,9 @@ val javadoc by tasks.getting(Javadoc::class) {
         tags("incubating:a:Incubating:")
         links("https://docs.oracle.com/javase/8/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
-        if (JavaVersion.VERSION_1_8 < javaVersion) {
-            addBooleanOption("html5", true) // Adds search bar
-            addStringOption("-release", "8")
-        }
-
-        // Fix for https://stackoverflow.com/questions/52326318/maven-javadoc-search-redirects-to-undefined-url
-        if (javaVersion in JavaVersion.VERSION_11..JavaVersion.VERSION_12) {
-            addBooleanOption("-no-module-directories", true)
-        }
-
-        // Java 13 changed accessibility rules.
-        // On versions less than Java 13, we simply ignore the errors.
-        // Both of these remove "no comment" warnings.
-        if (javaVersion >= JavaVersion.VERSION_13) {
-            addBooleanOption("Xdoclint:all,-missing", true)
-        } else {
-            addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
-        }
+        addBooleanOption("html5", true) // Adds search bar
+        addStringOption("-release", "8")
+        addBooleanOption("Xdoclint:all,-missing", true)
 
         overview = "$projectDir/overview.html"
     }
@@ -319,11 +302,7 @@ tasks.withType<JavaCompile> {
 
     val args = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
 
-    if (javaVersion.isJava9Compatible) {
-        args.add("--release")
-        args.add("8")
-    }
-
+    options.release = 8
     options.compilerArgs.addAll(args)
 }
 
@@ -493,4 +472,3 @@ jreleaser {
 tasks.withType<AbstractJReleaserTask>().configureEach {
     mustRunAfter(tasks.named("publish"))
 }
-
