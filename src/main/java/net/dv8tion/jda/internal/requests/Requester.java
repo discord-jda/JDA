@@ -27,7 +27,6 @@ import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import okhttp3.internal.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -46,6 +45,48 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
+
+class HttpMethod
+{
+    public static boolean invalidatesCache(String method)
+    {
+        return "POST".equals(method) ||
+               "PATCH".equals(method) ||
+               "PUT".equals(method) ||
+               "DELETE".equals(method) ||
+               "MOVE".equals(method);
+    }
+
+    public static boolean requiresRequestBody(String method)
+    {
+        return "POST".equals(method) ||
+               "PUT".equals(method) ||
+               "PATCH".equals(method) ||
+               "PROPPATCH".equals(method) ||
+               "QUERY".equals(method) ||
+               "REPORT".equals(method);
+    }
+
+    public static boolean permitsRequestBody(String method)
+    {
+        return !("GET".equals(method) || "HEAD".equals(method));
+    }
+
+    public static boolean redirectsWithBody(String method)
+    {
+        return "PROPFIND".equals(method);
+    }
+
+    public static boolean redirectsToGet(String method)
+    {
+        return !"PROPFIND".equals(method);
+    }
+
+    public static boolean isCacheable(String requestMethod)
+    {
+        return "GET".equals(requestMethod) || "QUERY".equals(requestMethod);
+    }
+}
 
 public class Requester
 {
