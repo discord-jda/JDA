@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.requests;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Enum used to specify the HTTP method to use for a request.
  */
@@ -29,13 +32,10 @@ public enum Method
     PUT,
     PATCH;
 
-    public static boolean requiresRequestBody(String method)
+    public boolean requiresRequestBody() 
     {
-        return "POST".equals(method)
-            || "PUT".equals(method)
-            || "PATCH".equals(method)
-            || "PROPPATCH".equals(method)
-            || "QUERY".equals(method)
-            || "REPORT".equals(method);
+        return this == POST
+            || this == PUT
+            || this == PATCH;
     }
 }

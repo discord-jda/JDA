@@ -296,13 +296,13 @@ public class Requester
 
     private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder)
     {
-        String method = apiRequest.getRoute().getMethod().toString();
+        Method method = apiRequest.getRoute().getMethod();
         RequestBody body = apiRequest.getBody();
 
-        if (body == null && Method.requiresRequestBody(method))
+        if (body == null && method.requiresRequestBody())
             body = EMPTY_BODY;
 
-        builder.method(method, body);
+        builder.method(method.toString(), body);
 
         if (apiRequest.getRawBody() != null)
         {
