@@ -46,48 +46,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
 
-class HttpMethod
-{
-    public static boolean invalidatesCache(String method)
-    {
-        return "POST".equals(method) ||
-               "PATCH".equals(method) ||
-               "PUT".equals(method) ||
-               "DELETE".equals(method) ||
-               "MOVE".equals(method);
-    }
-
-    public static boolean requiresRequestBody(String method)
-    {
-        return "POST".equals(method) ||
-               "PUT".equals(method) ||
-               "PATCH".equals(method) ||
-               "PROPPATCH".equals(method) ||
-               "QUERY".equals(method) ||
-               "REPORT".equals(method);
-    }
-
-    public static boolean permitsRequestBody(String method)
-    {
-        return !("GET".equals(method) || "HEAD".equals(method));
-    }
-
-    public static boolean redirectsWithBody(String method)
-    {
-        return "PROPFIND".equals(method);
-    }
-
-    public static boolean redirectsToGet(String method)
-    {
-        return !"PROPFIND".equals(method);
-    }
-
-    public static boolean isCacheable(String requestMethod)
-    {
-        return "GET".equals(requestMethod) || "QUERY".equals(requestMethod);
-    }
-}
-
 public class Requester
 {
     private static final int[] RETRY_ERROR_CODES = {
@@ -341,7 +299,7 @@ public class Requester
         String method = apiRequest.getRoute().getMethod().toString();
         RequestBody body = apiRequest.getBody();
 
-        if (body == null && HttpMethod.requiresRequestBody(method))
+        if (body == null && Method.requiresRequestBody(method))
             body = EMPTY_BODY;
 
         builder.method(method, body);

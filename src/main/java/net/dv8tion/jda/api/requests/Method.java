@@ -27,5 +27,15 @@ public enum Method
     OPTIONS,
     POST,
     PUT,
-    PATCH
+    PATCH;
+
+    public static boolean requiresRequestBody(String method)
+    {
+        return "POST".equals(method)
+            || "PUT".equals(method)
+            || "PATCH".equals(method)
+            || "PROPPATCH".equals(method)
+            || "QUERY".equals(method)
+            || "REPORT".equals(method);
+    }
 }
