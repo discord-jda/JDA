@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api.requests;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 /**
  * Enum used to specify the HTTP method to use for a request.
  */
