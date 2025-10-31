@@ -1676,7 +1676,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id of the message that will act as a marker.
      * @param  limit
-     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     *         The amount of messages to be retrieved before the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1736,7 +1736,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id of the message that will act as a marker.
      * @param  limit
-     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     *         The amount of messages to be retrieved before the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -1771,7 +1771,7 @@ public interface MessageChannel extends Channel, Formattable
      * <p><b>Examples:</b>
      * <br>Retrieve 100 messages from the middle of history. {@literal >}100 message exist in history and the marker is {@literal >}50 messages
      * from the edge of history.
-     * <br>{@code getHistoryAfter(message, 100)} - This will retrieve 100 messages from history sent before the marker.
+     * <br>{@code getHistoryBefore(message, 100)} - This will retrieve 100 messages from history sent before the marker.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1796,7 +1796,7 @@ public interface MessageChannel extends Channel, Formattable
      * @param  message
      *         The message that will act as a marker.
      * @param  limit
-     *         The amount of messages to be retrieved after the marker. Minimum: 1, Max: 100.
+     *         The amount of messages to be retrieved before the marker. Minimum: 1, Max: 100.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
