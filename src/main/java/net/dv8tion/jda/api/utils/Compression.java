@@ -28,7 +28,14 @@ public enum Compression {
     /** Don't use any compression */
     NONE(""),
     /** Use ZLIB transport compression */
-    ZLIB("zlib-stream");
+    ZLIB("zlib-stream"),
+    /**
+     * Use Zstandard transport compression,
+     * this requires you to include a dependency for the Zstandard API,
+     * see <a href="https://github.com/freya022/discord-zstd-java" target="_blank">discord-zstd-java</a>.
+     */
+    ZSTD("zstd-stream"),
+    ;
 
     private final String key;
 

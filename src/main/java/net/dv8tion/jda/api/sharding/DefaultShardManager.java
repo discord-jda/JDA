@@ -506,7 +506,6 @@ public class DefaultShardManager implements ShardManager {
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         MetaConfig metaConfig = new MetaConfig(
-                this.metaConfig.getMaxBufferSize(),
                 this.metaConfig.getContextMap(shardId),
                 this.metaConfig.getCacheFlags(),
                 this.sessionConfig.getFlags());
@@ -586,7 +585,7 @@ public class DefaultShardManager implements ShardManager {
         jda.login(
                 this.gatewayURL,
                 shardInfo,
-                this.metaConfig.getCompression(),
+                this.metaConfig.getDecompressorFactory(),
                 false,
                 shardingConfig.getIntents(),
                 this.metaConfig.getEncoding());

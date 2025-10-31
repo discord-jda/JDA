@@ -83,6 +83,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.compress.DecompressorFactory;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
@@ -201,11 +202,7 @@ public class JDAImpl implements JDA {
         return sessionConfig.getLargeThreshold();
     }
 
-    public int getMaxBufferSize() {
-        return metaConfig.getMaxBufferSize();
-    }
-
-    public boolean chunkGuild(long id) {
+    public boolean chunkGuild(long id){
         try {
             return isIntent(GatewayIntent.GUILD_MEMBERS) && chunkingFilter.filter(id);
         } catch (Exception e) {
@@ -273,23 +270,19 @@ public class JDAImpl implements JDA {
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
     }
 
-    public int login() {
-        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
-    }
-
     public int login(
             ShardInfo shardInfo,
-            Compression compression,
+            DecompressorFactory decompressorFactory,
             boolean validateToken,
             int intents,
             GatewayEncoding encoding) {
-        return login(null, shardInfo, compression, validateToken, intents, encoding);
+        return login(null, shardInfo, decompressorFactory, validateToken, intents, encoding);
     }
 
     public int login(
             String gatewayUrl,
             ShardInfo shardInfo,
-            Compression compression,
+            DecompressorFactory decompressorFactory,
             boolean validateToken,
             int intents,
             GatewayEncoding encoding) {
@@ -323,7 +316,7 @@ public class JDAImpl implements JDA {
             LOG.info("Login Successful!");
         }
 
-        client = new WebSocketClient(this, compression, intents, encoding);
+        client = new WebSocketClient(this, decompressorFactory, intents, encoding);
         // remove our MDC metadata when we exit our code
         if (previousContext != null) {
             previousContext.forEach(MDC::put);

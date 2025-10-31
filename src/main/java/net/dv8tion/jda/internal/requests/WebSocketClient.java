@@ -52,7 +52,7 @@ import net.dv8tion.jda.internal.utils.ShutdownReason;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.compress.Decompressor;
-import net.dv8tion.jda.internal.utils.compress.ZlibDecompressor;
+import net.dv8tion.jda.internal.utils.compress.DecompressorFactory;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -86,7 +86,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
-    protected final Compression compression;
     protected final int gatewayIntents;
     protected final MemberChunkManager chunkManager;
     protected final GatewayEncoding encoding;
@@ -95,7 +94,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected String traceMetadata = null;
     protected volatile String sessionId = null;
     protected final Object readLock = new Object();
-    protected Decompressor decompressor;
+    protected final Decompressor decompressor;
     protected String resumeUrl = null;
 
     protected final ReentrantLock queueLock = new ReentrantLock();
@@ -132,11 +131,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents, GatewayEncoding encoding) {
+    public WebSocketClient(
+            JDAImpl api,
+            DecompressorFactory decompressorFactory,
+            int gatewayIntents,
+            GatewayEncoding encoding) {
         this.api = api;
         this.executor = api.getGatewayPool();
         this.shardInfo = api.getShardInfo();
-        this.compression = compression;
+        this.decompressor = decompressorFactory.create();
         this.gatewayIntents = gatewayIntents;
         this.chunkManager = new MemberChunkManager(this);
         this.encoding = encoding;
@@ -351,19 +354,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try {
             String gatewayUrl = resumeUrl != null ? resumeUrl : api.getGatewayUrl();
-            gatewayUrl = IOUtil.addQuery(
-                    gatewayUrl, "encoding", encoding.name().toLowerCase(), "v", JDAInfo.DISCORD_GATEWAY_VERSION);
-            if (compression != Compression.NONE) {
-                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compression.getKey());
-                switch (compression) {
-                    case ZLIB:
-                        if (decompressor == null || decompressor.getType() != Compression.ZLIB) {
-                            decompressor = new ZlibDecompressor(api.getMaxBufferSize());
-                        }
-                        break;
-                    default:
-                        throw new IllegalStateException("Unknown compression");
-                }
+            gatewayUrl = IOUtil.addQuery(gatewayUrl,
+                "encoding", encoding.name().toLowerCase(),
+                "v", JDAInfo.DISCORD_GATEWAY_VERSION
+            );
+            if (decompressor.getType() != Compression.NONE)
+            {
+                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", decompressor.getType().getKey());
             }
 
             WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
@@ -512,17 +509,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
 
-            if (decompressor != null) {
-                decompressor.shutdown();
-            }
+            decompressor.shutdown();
 
             onShutdown(rawCloseCode);
-        } else {
-            // reset our decompression tools
-            synchronized (readLock) {
-                if (decompressor != null) {
-                    decompressor.reset();
-                }
+        }
+        else
+        {
+            //reset our decompression tools
+            synchronized (readLock)
+            {
+                decompressor.reset();
             }
             if (isInvalidate) {
                 invalidate(); // 1000 means our session is dropped so we cannot resume
@@ -979,12 +975,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     protected DataObject handleBinary(byte[] binary) throws DataFormatException {
-        if (decompressor == null) {
+        if (decompressor.getType() == Compression.NONE) {
             if (encoding == GatewayEncoding.ETF) {
                 return DataObject.fromETF(binary);
             }
             throw new IllegalStateException(
-                    "Cannot decompress binary message due to unknown compression algorithm: " + compression);
+                    "Cannot read binary message due to unknown payload encoding: " + encoding);
         }
         // Scoping allows us to print the json that possibly failed parsing
         byte[] data;

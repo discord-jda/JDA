@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.utils.config.sharding;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.utils.compress.DecompressorFactory;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 
@@ -32,7 +33,7 @@ import javax.annotation.Nullable;
 public class ShardingMetaConfig extends MetaConfig {
     private static final ShardingMetaConfig defaultConfig =
             new ShardingMetaConfig(2048, null, null, ConfigFlag.getDefault(), Compression.ZLIB, GatewayEncoding.JSON);
-    private final Compression compression;
+    private final DecompressorFactory decompressorFactory;
     private final GatewayEncoding encoding;
     private final IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
@@ -43,9 +44,9 @@ public class ShardingMetaConfig extends MetaConfig {
             EnumSet<ConfigFlag> flags,
             Compression compression,
             GatewayEncoding encoding) {
-        super(maxBufferSize, null, cacheFlags, flags);
+        super(null, cacheFlags, flags);
 
-        this.compression = compression;
+        this.decompressorFactory = DecompressorFactory.of(compression, maxBufferSize);
         this.contextProvider = contextProvider;
         this.encoding = encoding;
     }
@@ -55,8 +56,8 @@ public class ShardingMetaConfig extends MetaConfig {
         return contextProvider == null ? null : contextProvider.apply(shardId);
     }
 
-    public Compression getCompression() {
-        return compression;
+    public DecompressorFactory getDecompressorFactory() {
+        return decompressorFactory;
     }
 
     public GatewayEncoding getEncoding() {
