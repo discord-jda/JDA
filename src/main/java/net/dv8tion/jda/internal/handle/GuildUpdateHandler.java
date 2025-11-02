@@ -99,8 +99,6 @@ public class GuildUpdateHandler extends SocketHandler
         Set<String> features;
 
         final int systemChannelFlagBitmask = content.getInt("system_channel_flags", 0);
-        Set<SystemChannelFlag> systemChannelFlags =
-                Collections.unmodifiableSet(SystemChannelFlag.getFlags(systemChannelFlagBitmask));
 
         if (!content.isNull("features"))
         {
@@ -127,9 +125,10 @@ public class GuildUpdateHandler extends SocketHandler
                     guild, oldOwner,
                     oldOwnerId, ownerId));
         }
-        if (!Objects.equals(systemChannelFlags, guild.getSystemChannelFlags()))
+        if (systemChannelFlagBitmask != guild.getSystemChannelFlagsRaw())
         {
             Set<SystemChannelFlag> oldSystemChannelFlags = guild.getSystemChannelFlags();
+            Set<SystemChannelFlag> systemChannelFlags = Collections.unmodifiableSet(SystemChannelFlag.getFlags(systemChannelFlagBitmask));
             guild.setSystemChannelFlags(systemChannelFlagBitmask);
             getJDA().handleEvent(
                     new GuildUpdateSystemChannelFlagsEvent(
