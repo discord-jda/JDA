@@ -1,2 +1,6 @@
-jdk:
-    - openjdk25
+before_install:
+    - sdk install java 25-tem
+    - sdk use java 25-tem
+    - ./gradlew javaToolchains
+install:
+    - ./gradlew publishToMavenLocal
