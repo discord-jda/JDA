@@ -536,7 +536,7 @@ public interface GuildManager extends Manager<GuildManager>
     {
         Checks.noneNull(flags, "System channel flags");
         if(flags.length == 0) return this;
-        return setSystemChannelFlags(EnumSet.copyOf(Arrays.asList(flags)));
+        return setSystemChannelFlags(Arrays.asList(flags));
     }
 
     /**
@@ -576,7 +576,7 @@ public interface GuildManager extends Manager<GuildManager>
     {
         Checks.noneNull(flags, "System channel flags");
         if (flags.length == 0) return this;
-        return enableSystemChannelFlags(EnumSet.copyOf(Arrays.asList(flags)));
+        return enableSystemChannelFlags(Arrays.asList(flags));
     }
 
     /**
@@ -616,7 +616,7 @@ public interface GuildManager extends Manager<GuildManager>
     {
         Checks.noneNull(flags, "System channel flags");
         if(flags.length == 0) return this;
-        return disableSystemChannelFlags(EnumSet.copyOf(Arrays.asList(flags)));
+        return disableSystemChannelFlags(Arrays.asList(flags));
     }
 
     /**
