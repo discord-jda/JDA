@@ -73,6 +73,12 @@ configure<SourceSetContainer> {
     }
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
 
 ////////////////////////////////////
 //                                //
@@ -351,9 +357,7 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     failFast = false
 
-    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_21)) {
-        jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
-    }
+    jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
 }
 
 tasks.test {

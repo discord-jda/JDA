@@ -1,3 +1,5 @@
+import org.gradle.jvm.toolchain.internal.DefaultJvmVendorSpec
+
 /*
  * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
@@ -26,4 +28,14 @@ repositories {
 
 dependencies {
     implementation(gradleApi())
+}
+
+kotlin {
+    jvmToolchain(25)
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
 }
