@@ -259,6 +259,7 @@ val sourcesJar by tasks.registering(Jar::class) {
 }
 
 val javadoc by tasks.getting(Javadoc::class) {
+    val currentJavaVersion = JavaVersion.current().majorVersion
     isFailOnError = projectEnvironment.isGithubAction
 
     (options as? StandardJavadocDocletOptions)?.apply {
@@ -267,7 +268,7 @@ val javadoc by tasks.getting(Javadoc::class) {
 
         author()
         tags("incubating:a:Incubating:")
-        links("https://docs.oracle.com/javase/8/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
+        links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
         addStringOption("-release", "8")
         addBooleanOption("Xdoclint:all,-missing", true)
