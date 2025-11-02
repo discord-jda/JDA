@@ -83,7 +83,13 @@ val testJava8 by sourceSets.creating {
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(25))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
     }
+}
+
+val java8Toolchain = javaToolchains.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(8))
+    vendor.set(JvmVendorSpec.ADOPTIUM)
 }
 
 
@@ -390,9 +396,7 @@ val testJava8Compatibility by tasks.registering(Test::class) {
     testClassesDirs = testJava8.output.classesDirs
     classpath = testJava8.runtimeClasspath
 
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
+    javaLauncher = java8Toolchain.get()
 }
 
 tasks.named("check").configure {
