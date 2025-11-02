@@ -520,13 +520,11 @@ public interface GuildManager extends Manager<GuildManager>
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
-     * @param  flag
-     *         A system channel flag that should be set initially
      * @param  flags
-     *         The remaining system channel flags to set
+     *         The system channel flags to set
      *
      * @throws IllegalArgumentException
-     *         If any of the provided flags are null, or if the array itself is null
+     *         If the array is null
      *
      * @return GuildManager for chaining convenience
      *
@@ -534,10 +532,11 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager setSystemChannelFlags(@Nonnull SystemChannelFlag flag, @Nonnull SystemChannelFlag... flags)
+    default GuildManager setSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
     {
         Checks.noneNull(flags, "System channel flags");
-        return setSystemChannelFlags(EnumSet.of(flag, flags));
+        if(flags.length == 0) return this;
+        return setSystemChannelFlags(EnumSet.copyOf(Arrays.asList(flags)));
     }
 
     /**
