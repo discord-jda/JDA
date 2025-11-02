@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
-import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -33,7 +32,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Specialized abstraction of setters and accumulators for creating messages throughout the API.
@@ -357,20 +355,11 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     default R applyMessage(@Nonnull Message message)
     {
-        Checks.notNull(message, "Message");
-        Checks.check(!message.getType().isSystem(), "Cannot copy a system message");
-        List<MessageEmbed> embeds = message.getEmbeds()
-                .stream()
-                .filter(e -> e.getType() == EmbedType.RICH)
-                .collect(Collectors.toList());
-        return setContent(message.getContentRaw())
-                .setEmbeds(embeds)
-                .setComponents(message.getComponents())
-                .useComponentsV2(message.isUsingComponentsV2())
-                .setTTS(message.isTTS())
-                .setSuppressedNotifications(message.isSuppressedNotifications())
-                .setVoiceMessage(message.isVoiceMessage())
-                .setPoll(message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
+        return MessageRequest.super.applyMessage(message)
+            .setTTS(message.isTTS())
+            .setSuppressedNotifications(message.isSuppressedNotifications())
+            .setVoiceMessage(message.isVoiceMessage())
+            .setPoll(message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
     }
 
     /**
