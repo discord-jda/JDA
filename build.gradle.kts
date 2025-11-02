@@ -141,7 +141,7 @@ dependencies {
 
     // OpenRewrite
     // Import Rewrite's bill of materials.
-    testImplementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.6.1"))
+    testImplementation(platform(libs.openrewrite))
 
     // rewrite-java dependencies only necessary for Java Recipe development
     testImplementation("org.openrewrite:rewrite-java")
@@ -152,6 +152,8 @@ dependencies {
     testRuntimeOnly("org.openrewrite:rewrite-java-8")
     testRuntimeOnly("org.openrewrite:rewrite-java-11")
     testRuntimeOnly("org.openrewrite:rewrite-java-17")
+    testRuntimeOnly("org.openrewrite:rewrite-java-21")
+    testRuntimeOnly("org.openrewrite:rewrite-java-25")
 
     // For authoring tests for any kind of Recipe
     testImplementation("org.openrewrite:rewrite-test")

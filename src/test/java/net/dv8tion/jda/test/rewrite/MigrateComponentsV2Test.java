@@ -158,12 +158,12 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;\n\npublic class Test3 { void x(SelectMenu.Builder<?, ?> component) { component.getId(); } }",
-                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\nimport net.dv8tion.jda.api.components.selections.SelectMenu.Builder;\n\npublic class Test3 { void x(SelectMenu.Builder<?, ?> component) { component.getCustomId(); } }"
+                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\nimport net.dv8tion.jda.api.components.selections.SelectMenu.Builder;\n\npublic class Test3 { void x(Builder<?, ?> component) { component.getCustomId(); } }"
                 ),
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.text.TextInput;\n\npublic class Test4 { void x(TextInput.Builder component) { component.getId(); } }",
-                        "import net.dv8tion.jda.api.components.textinput.TextInput;\nimport net.dv8tion.jda.api.components.textinput.TextInput.Builder;\n\npublic class Test4 { void x(TextInput.Builder component) { component.getCustomId(); } }"
+                        "import net.dv8tion.jda.api.components.textinput.TextInput;\nimport net.dv8tion.jda.api.components.textinput.TextInput.Builder;\n\npublic class Test4 { void x(Builder component) { component.getCustomId(); } }"
                 )
         );
     }
