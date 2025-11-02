@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -1335,6 +1336,39 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     NSFWLevel getNSFWLevel();
+
+    /**
+     * Returns a {@link Set} of {@link SystemChannelFlag} associated to the guild.
+     * <br>For a description of what system channel flags represent, see {@link SystemChannelFlag}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}.
+     *
+     * @return An <b>unmodifiable</b> set of system channel flags of this guild.
+     *
+     * @see    <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
+     *         System Channel Flags API documentation
+     *         </a>
+     */
+    @Nonnull
+    Set<SystemChannelFlag> getSystemChannelFlags();
+
+    /**
+     * Returns the bitmask of the {@linkplain SystemChannelFlag system channel flags} associated
+     * to the guild. This method may be preferable over {@link Guild#getSystemChannelFlags()}
+     * if new flags are introduced to the Discord API and the {@link SystemChannelFlag} enumeration
+     * cannot yet accommodate the new flags.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}.
+     *
+     * @return An integer bitmask of system channel flags of this guild.
+     *
+     * @see    <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
+     *         System Channel Flags API documentation
+     *         </a>
+     */
+    int getSystemChannelFlagsRaw();
 
     /**
      * Gets the Guild specific {@link Member Member} object for the provided
