@@ -86,6 +86,7 @@ java {
 //                                //
 ////////////////////////////////////
 
+val currentJavaVersion = JavaVersion.current().majorVersion
 val mockitoAgent by configurations.creating
 
 repositories {
@@ -153,13 +154,7 @@ dependencies {
     testImplementation("org.openrewrite:rewrite-java")
     testImplementation("org.openrewrite.recipe:rewrite-java-dependencies")
 
-    // This is supposed to only be the version that corresponds to the current Java version,
-    // but as there are no toolchain, we include all, they can coexist safely tho.
-    testRuntimeOnly("org.openrewrite:rewrite-java-8")
-    testRuntimeOnly("org.openrewrite:rewrite-java-11")
-    testRuntimeOnly("org.openrewrite:rewrite-java-17")
-    testRuntimeOnly("org.openrewrite:rewrite-java-21")
-    testRuntimeOnly("org.openrewrite:rewrite-java-25")
+    testRuntimeOnly("org.openrewrite:rewrite-java-${currentJavaVersion}")
 
     // For authoring tests for any kind of Recipe
     testImplementation("org.openrewrite:rewrite-test")
@@ -265,7 +260,6 @@ val sourcesJar by tasks.registering(Jar::class) {
 }
 
 val javadoc by tasks.getting(Javadoc::class) {
-    val currentJavaVersion = JavaVersion.current().majorVersion
     isFailOnError = projectEnvironment.isGithubAction
 
     (options as? StandardJavadocDocletOptions)?.apply {
