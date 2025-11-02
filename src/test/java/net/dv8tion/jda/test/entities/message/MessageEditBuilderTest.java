@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import static net.dv8tion.jda.test.util.MockitoVerifyUtils.*;
-import static net.dv8tion.jda.test.util.MockitoVerifyUtils.getMethodsByPattern;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
