@@ -73,6 +73,13 @@ configure<SourceSetContainer> {
     }
 }
 
+val testJava8 by sourceSets.creating {
+    java.srcDir("src/test-java8/java")
+    resources.srcDir("src/test-java8/resources")
+    compileClasspath += sourceSets["main"].output
+    runtimeClasspath += sourceSets["main"].output
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(25))
@@ -87,7 +94,16 @@ java {
 ////////////////////////////////////
 
 val currentJavaVersion = JavaVersion.current().majorVersion
+
 val mockitoAgent by configurations.creating
+
+val testJava8Implementation by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+
+val testJava8RuntimeOnly by configurations.getting {
+    extendsFrom(configurations.runtimeOnly.get())
+}
 
 repositories {
     mavenCentral()
@@ -141,6 +157,9 @@ dependencies {
     testImplementation(libs.commons.lang3)
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
+
+    testJava8Implementation(libs.bundles.junit)
+    testJava8Implementation(libs.assertj)
 
     mockitoAgent(libs.mockito) {
         isTransitive = false
@@ -347,14 +366,12 @@ tasks.register<Test>("updateTestSnapshots") {
     systemProperty("updateSnapshots", "true")
 }
 
-tasks.withType<Test>().configureEach {
+tasks.test {
     useJUnitPlatform()
     failFast = false
 
     jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
-}
 
-tasks.test {
     testLogging {
         events("passed", "skipped", "failed")
     }
@@ -362,6 +379,24 @@ tasks.test {
         junitXml.required = projectEnvironment.isGithubAction
         html.required = projectEnvironment.isGithubAction
     }
+}
+
+val testJava8Compatibility by tasks.registering(Test::class) {
+    group = "verification"
+
+    useJUnitPlatform()
+    failFast = true
+
+    testClassesDirs = testJava8.output.classesDirs
+    classpath = testJava8.runtimeClasspath
+
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
+tasks.named("check").configure {
+    dependsOn(testJava8Compatibility)
 }
 
 val verifyBytecodeVersion by tasks.registering(VerifyBytecodeVersion::class) {
