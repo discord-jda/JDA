@@ -1,0 +1,27 @@
+{
+  "allowed_mentions" : {
+    "parse" : [ ],
+    "replied_user" : true
+  },
+  "attachments" : [ {
+    "content_type" : "application/octet-stream; charset=utf-8",
+    "description" : "",
+    "filename" : "logo.png",
+    "id" : 0
+  } ],
+  "components" : [ {
+    "components" : [ {
+      "custom_id" : "button",
+      "disabled" : false,
+      "label" : "Click me!",
+      "style" : 1,
+      "type" : 2
+    } ],
+    "type" : 1
+  } ],
+  "content" : "Test content",
+  "embeds" : [ {
+    "description" : "Test embed"
+  } ],
+  "flags" : 0
+}
