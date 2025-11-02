@@ -426,19 +426,19 @@ public enum AuditLogKey
 
     /**
      * Roles added to {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()} with this action
-     * <br>Containing a list of {@link net.dv8tion.jda.api.entities.Role Role} IDs
+     * <br>Containing a list of role objects (maps) with entries for {@code id} and {@code name}
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getRoleById(String) Guild.getRoleById(String)}
      *
-     * <p>Expected type: <b>List{@literal <String>}</b>
+     * <p>Expected type: <b>List{@literal <Map<String, String>>}</b>
      */
     MEMBER_ROLES_ADD("$add"),
 
     /**
      * Roles removed from {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()} with this action
-     * <br>Containing a list of {@link net.dv8tion.jda.api.entities.Role Role} IDs
+     * <br>Containing a list of role objects (maps) with entries for {@code id} and {@code name}
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getRoleById(String) Guild.getRoleById(String)}
      *
-     * <p>Expected type: <b>List{@literal <String>}</b>
+     * <p>Expected type: <b>List{@literal <Map<String, String>>}</b>
      */
     MEMBER_ROLES_REMOVE("$remove"),
 
