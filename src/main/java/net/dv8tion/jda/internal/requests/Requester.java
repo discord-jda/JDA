@@ -27,7 +27,6 @@ import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import okhttp3.internal.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -297,13 +296,13 @@ public class Requester
 
     private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder)
     {
-        String method = apiRequest.getRoute().getMethod().toString();
+        Method method = apiRequest.getRoute().getMethod();
         RequestBody body = apiRequest.getBody();
 
-        if (body == null && HttpMethod.requiresRequestBody(method))
+        if (body == null && method.requiresRequestBody())
             body = EMPTY_BODY;
 
-        builder.method(method, body);
+        builder.method(method.toString(), body);
 
         if (apiRequest.getRawBody() != null)
         {

@@ -27,5 +27,12 @@ public enum Method
     OPTIONS,
     POST,
     PUT,
-    PATCH
+    PATCH;
+
+    public boolean requiresRequestBody() 
+    {
+        return this == POST
+            || this == PUT
+            || this == PATCH;
+    }
 }
