@@ -563,13 +563,11 @@ public interface GuildManager extends Manager<GuildManager>
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
-     * @param  flag
-     *         A system channel flag that should be enabled initially
      * @param  flags
-     *         The remaining system channel flags to enable
+     *         The system channel flags to enable
      *
      * @throws IllegalArgumentException
-     *         If any input flags are null, or if array itself is null
+     *         If the array is null
      *
      * @return GuildManager for chaining convenience
      */
@@ -577,9 +575,9 @@ public interface GuildManager extends Manager<GuildManager>
     @CheckReturnValue
     default GuildManager enableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
     {
-        Checks.notNull(flag, "System channel flag");
         Checks.noneNull(flags, "System channel flags");
-        return enableSystemChannelFlags(EnumSet.of(flag, flags));
+        if (flags.length == 0) return this;
+        return enableSystemChannelFlags(EnumSet.copyOf(Arrays.asList(flags)));
     }
 
     /**
@@ -605,13 +603,11 @@ public interface GuildManager extends Manager<GuildManager>
      * <br>The list of available system channel flags, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
-     * @param  flag
-     *         A system channel flag that should be disabled initially
      * @param  flags
-     *         The remaining system channel flags to disable
+     *         The system channel flags to disable
      *
      * @throws IllegalArgumentException
-     *         If any input flags are null, or if the array itself is null
+     *         If the array is null
      *
      * @return GuildManager for chaining convenience
      */
@@ -619,9 +615,9 @@ public interface GuildManager extends Manager<GuildManager>
     @CheckReturnValue
     default GuildManager disableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
     {
-        Checks.notNull(flag, "System channel flag");
         Checks.noneNull(flags, "System channel flags");
-        return disableSystemChannelFlags(EnumSet.of(flag, flags));
+        if(flags.length == 0) return this;
+        return disableSystemChannelFlags(EnumSet.copyOf(Arrays.asList(flags)));
     }
 
     /**
