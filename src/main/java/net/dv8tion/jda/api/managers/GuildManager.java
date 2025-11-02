@@ -617,7 +617,7 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager disableSystemChannelFlags(@Nonnull SystemChannelFlag flag, @Nonnull SystemChannelFlag... flags)
+    default GuildManager disableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
     {
         Checks.notNull(flag, "System channel flag");
         Checks.noneNull(flags, "System channel flags");
