@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -27,6 +28,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -78,6 +80,8 @@ public interface GuildManager extends Manager<GuildManager>
     long FEATURES = 1 << 15;
     /** Used to rest the safety alerts channel field */
     long SAFETY_ALERTS_CHANNEL = 1 << 16;
+    /** Used to reset the system channel flag fields */
+    long SYSTEM_CHANNEL_FLAGS = 1 << 17;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -99,6 +103,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
      *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
      *     <li>{@link #FEATURES}</li>
+     *     <li>{@link #SYSTEM_CHANNEL_FLAGS}</li>
      * </ul>
      *
      * @param  fields
@@ -130,6 +135,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
      *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
      *     <li>{@link #FEATURES}</li>
+     *     <li>{@link #SYSTEM_CHANNEL_FLAGS}</li>
      * </ul>
      *
      * @param  fields
@@ -478,6 +484,139 @@ public interface GuildManager extends Manager<GuildManager>
     {
         Checks.noneNull(features, "Features");
         return removeFeatures(Arrays.asList(features));
+    }
+
+    /**
+     * Configures the new {@linkplain Guild#getSystemChannelFlags() system channel flags} of the {@link Guild}.
+     * <br>The list of available system channel flags, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * List<SystemChannelFlag> flags = new ArrayList<>(guild.getSystemChannelFlags());
+     * flags.add(SystemChannelFlag.SUPPRESS_JOIN_NOTIFICATIONS);
+     * guild.getManager().setSystemChannelFlags(flags).queue();
+     * }</pre>
+     *
+     * @param  flags
+     *         Collection of the new flags to use, flags not included in the collection
+     *         will be disabled
+     *
+     * @throws IllegalArgumentException
+     *         If any of the flags in the provided collection is null, or if the
+     *         collection itself is null
+     *
+     * @return GuildManager for chaining convenience
+     *
+     * @see    SystemChannelFlag
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
+
+    /**
+     * Configures the new {@linkplain Guild#getSystemChannelFlags() system channel flags} of the {@link Guild}. A system
+     * channel flag in the corresponding guild will be enabled if and only if it is in the method input.
+     * <br>The list of available system channel flags, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  flags
+     *         The system channel flags to set
+     *
+     * @throws IllegalArgumentException
+     *         If the array is null
+     *
+     * @return GuildManager for chaining convenience
+     *
+     * @see    SystemChannelFlag
+     */
+    @Nonnull
+    @CheckReturnValue
+    default GuildManager setSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
+    {
+        Checks.noneNull(flags, "System channel flags");
+        if(flags.length == 0) return this;
+        return setSystemChannelFlags(Arrays.asList(flags));
+    }
+
+    /**
+     * Enables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
+     * <br>The list of available system channel flags, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  flags
+     *         A collection of the system channel flags to enable
+     *
+     * @throws IllegalArgumentException
+     *         If any of the flags in the provided collection are null, or if the
+     *         collection itself is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager enableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
+
+    /**
+     * Enables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
+     * <br>The list of available system channel flags, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  flags
+     *         The system channel flags to enable
+     *
+     * @throws IllegalArgumentException
+     *         If the array is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default GuildManager enableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
+    {
+        Checks.noneNull(flags, "System channel flags");
+        if (flags.length == 0) return this;
+        return enableSystemChannelFlags(Arrays.asList(flags));
+    }
+
+    /**
+     * Disables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
+     * <br>The list of available system channel flags, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  flags
+     *         The system channel flags to disable
+     *
+     * @throws IllegalArgumentException
+     *         If any of the flags in the provided collection are null, or if the
+     *         collection itself is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager disableSystemChannelFlags(@Nonnull Collection<SystemChannelFlag> flags);
+
+    /**
+     * Disables the given {@linkplain Guild#getSystemChannelFlags() system channel flags}.
+     * <br>The list of available system channel flags, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  flags
+     *         The system channel flags to disable
+     *
+     * @throws IllegalArgumentException
+     *         If the array is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default GuildManager disableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
+    {
+        Checks.noneNull(flags, "System channel flags");
+        if(flags.length == 0) return this;
+        return disableSystemChannelFlags(Arrays.asList(flags));
     }
 
     /**

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -96,6 +97,9 @@ public class GuildUpdateHandler extends SocketHandler
         TextChannel safetyAlertsChannel = content.isNull("safety_alerts_channel_id")
                 ? null : guild.getChannelById(TextChannel.class, content.getLong("safety_alerts_channel_id"));
         Set<String> features;
+
+        final int systemChannelFlagBitmask = content.getInt("system_channel_flags", 0);
+
         if (!content.isNull("features"))
         {
             DataArray featureArr = content.getArray("features");
@@ -120,6 +124,16 @@ public class GuildUpdateHandler extends SocketHandler
                     getJDA(), responseNumber,
                     guild, oldOwner,
                     oldOwnerId, ownerId));
+        }
+        if (systemChannelFlagBitmask != guild.getSystemChannelFlagsRaw())
+        {
+            Set<SystemChannelFlag> oldSystemChannelFlags = guild.getSystemChannelFlags();
+            Set<SystemChannelFlag> systemChannelFlags = Collections.unmodifiableSet(SystemChannelFlag.getFlags(systemChannelFlagBitmask));
+            guild.setSystemChannelFlags(systemChannelFlagBitmask);
+            getJDA().handleEvent(
+                    new GuildUpdateSystemChannelFlagsEvent(
+                            getJDA(), responseNumber,
+                            guild, oldSystemChannelFlags, systemChannelFlags));
         }
         if (!Objects.equals(description, guild.getDescription()))
         {
