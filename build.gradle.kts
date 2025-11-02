@@ -17,6 +17,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
+import net.dv8tion.jda.tasks.VerifyBytecodeVersion
 import net.dv8tion.jda.tasks.Version
 import net.dv8tion.jda.tasks.applyAudioExclusions
 import net.dv8tion.jda.tasks.applyOpusExclusions
@@ -327,7 +328,7 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.addAll(args)
 }
 
-tasks.named<JavaCompile>("compileJava").configure {
+val compileJava by tasks.getting(JavaCompile::class) {
     dependsOn(generateJavaSources)
     source = generateJavaSources.get().source
 }
@@ -392,6 +393,17 @@ tasks.test {
         html.required = projectEnvironment.isGithubAction
     }
 }
+
+val verifyBytecodeVersion by tasks.registering(VerifyBytecodeVersion::class) {
+    group = "verification"
+
+    expectedMajorVersion = 52
+    classes.from(compileJava.outputs.files.asFileTree.matching {
+        include("**/*.class")
+    })
+}
+
+compileJava.finalizedBy(verifyBytecodeVersion)
 
 
 ////////////////////////////////////
