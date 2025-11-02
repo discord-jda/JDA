@@ -61,6 +61,8 @@ public class GuildRoleUpdateHandler extends SocketHandler
         int color = rolejson.getInt("color");
         if (color == 0)
             color = Role.DEFAULT_COLOR_RAW;
+        DataObject colors = rolejson.getObject("colors");
+        RoleImpl.RoleColorsImpl roleColors = new RoleImpl.RoleColorsImpl(colors);
         int position = rolejson.getInt("position");
         long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");
@@ -87,6 +89,15 @@ public class GuildRoleUpdateHandler extends SocketHandler
                     new RoleUpdateColorEvent(
                             getJDA(), responseNumber,
                             role, oldColor));
+        }
+        if (!Objects.equals(roleColors, RoleImpl.RoleColorsImpl.EMPTY))
+        {
+            Role.RoleColors oldColors = role.getColors();
+            role.setColors(colors);
+            getJDA().handleEvent(
+                    new RoleUpdateColorsEvent(
+                            getJDA(), responseNumber,
+                            role, oldColors));
         }
         if (!Objects.equals(position, role.getPositionRaw()))
         {
