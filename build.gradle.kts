@@ -17,11 +17,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
-import net.dv8tion.jda.tasks.VerifyBytecodeVersion
-import net.dv8tion.jda.tasks.Version
-import net.dv8tion.jda.tasks.applyAudioExclusions
-import net.dv8tion.jda.tasks.applyOpusExclusions
-import net.dv8tion.jda.tasks.nullableReplacement
+import net.dv8tion.jda.tasks.*
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
@@ -271,7 +267,6 @@ val javadoc by tasks.getting(Javadoc::class) {
         tags("incubating:a:Incubating:")
         links("https://docs.oracle.com/javase/8/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
-        addBooleanOption("html5", true) // Adds search bar
         addStringOption("-release", "8")
         addBooleanOption("Xdoclint:all,-missing", true)
 
