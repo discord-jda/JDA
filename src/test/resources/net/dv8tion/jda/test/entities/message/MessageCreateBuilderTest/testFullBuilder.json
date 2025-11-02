@@ -1,0 +1,49 @@
+{
+  "allowed_mentions" : {
+    "parse" : [ ],
+    "replied_user" : true
+  },
+  "attachments" : [ {
+    "content_type" : "application/octet-stream; charset=utf-8",
+    "description" : "",
+    "filename" : "logo.png",
+    "id" : 0
+  } ],
+  "components" : [ {
+    "components" : [ {
+      "custom_id" : "button",
+      "disabled" : false,
+      "label" : "Click me!",
+      "style" : 1,
+      "type" : 2
+    } ],
+    "type" : 1
+  } ],
+  "content" : "Test content",
+  "embeds" : [ {
+    "description" : "Test embed"
+  } ],
+  "flags" : 4096,
+  "poll" : {
+    "allow_multiselect" : false,
+    "answers" : [ {
+      "answer_id" : 1,
+      "poll_media" : {
+        "emoji" : null,
+        "text" : "Yes"
+      }
+    }, {
+      "answer_id" : 2,
+      "poll_media" : {
+        "emoji" : null,
+        "text" : "No"
+      }
+    } ],
+    "duration" : 24,
+    "layout_type" : 1,
+    "question" : {
+      "text" : "Is this tested?"
+    }
+  },
+  "tts" : true
+}

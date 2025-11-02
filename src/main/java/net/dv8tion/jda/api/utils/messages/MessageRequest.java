@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
+import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -31,10 +32,8 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Abstraction of the common setters used for messages in the API.
@@ -725,5 +724,18 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @return The same instance for chaining
      */
     @Nonnull
-    R applyMessage(@Nonnull Message message);
+    default R applyMessage(@Nonnull Message message)
+    {
+        Checks.notNull(message, "Message");
+        Checks.check(!message.getType().isSystem(), "Cannot copy a system message");
+        List<MessageEmbed> embeds = message.getEmbeds()
+                .stream()
+                .filter(e -> e.getType() == EmbedType.RICH)
+                .collect(Collectors.toList());
+        return setContent(message.getContentRaw())
+                .setEmbeds(embeds)
+                .setComponents(message.getComponents())
+                .useComponentsV2(message.isUsingComponentsV2())
+                .setSuppressEmbeds(message.isSuppressedEmbeds());
+    }
 }

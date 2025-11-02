@@ -1,0 +1,17 @@
+{
+  "afk_channel_id" : "125227483518861312",
+  "afk_timeout" : 0,
+  "banner" : null,
+  "default_message_notifications" : 0,
+  "description" : "test",
+  "explicit_content_filter" : 0,
+  "icon" : null,
+  "name" : "test",
+  "premium_progress_bar_enabled" : true,
+  "public_updates_channel_id" : "125227483518861312",
+  "rules_channel_id" : "125227483518861312",
+  "safety_alerts_channel_id" : "125227483518861312",
+  "splash" : null,
+  "system_channel_id" : "125227483518861312",
+  "verification_level" : 0
+}

@@ -220,8 +220,6 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
     @Nonnull
     default R applyMessage(@Nonnull Message message)
     {
-        Checks.notNull(message, "Message");
-        Checks.check(!message.getType().isSystem(), "Cannot copy a system message");
-        return applyCreateData(MessageCreateData.fromMessage(message));
+        return MessageRequest.super.applyMessage(message).setReplace(true);
     }
 }
