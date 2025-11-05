@@ -22,16 +22,16 @@ public interface DecompressorFactory
 {
     Decompressor create();
 
-    static DecompressorFactory of(Compression compression, int maxBufferSize)
+    static DecompressorFactory of(Compression compression, int bufferSizeHint)
     {
         switch (compression)
         {
         case NONE:
             return NullDecompressorFactory.INSTANCE;
         case ZLIB:
-            return new ZlibDecompressorFactory(maxBufferSize);
+            return new ZlibDecompressorFactory(bufferSizeHint);
         case ZSTD:
-            return new ZstdDecompressorFactory(maxBufferSize);
+            return new ZstdDecompressorFactory(bufferSizeHint);
         default:
             throw new IllegalStateException("Unknown compression");
         }

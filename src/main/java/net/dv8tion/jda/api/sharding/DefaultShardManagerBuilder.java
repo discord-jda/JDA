@@ -72,7 +72,7 @@ public class DefaultShardManagerBuilder {
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
-    protected int maxBufferSize = 2048;
+    protected int bufferSizeHint = -1;
     protected int intents = -1;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
@@ -2133,11 +2133,35 @@ public class DefaultShardManagerBuilder {
      *         If the provided buffer size is negative
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         This was replaced by {@link #setDecompressorBufferSizeHint(int)}
      */
     @Nonnull
+    @Deprecated
     public DefaultShardManagerBuilder setMaxBufferSize(int bufferSize) {
         Checks.notNegative(bufferSize, "The buffer size");
-        this.maxBufferSize = bufferSize;
+        this.bufferSizeHint = bufferSize;
+        return this;
+    }
+
+    /**
+     * Sets a hint for the buffer size of the {@linkplain #setCompression(Compression) selected decompression method},
+     * on which the allowed values depend.
+     *
+     * <p>See the documentation of the corresponding {@link Compression} being used.
+     *
+     * @param  bufferSizeHint
+     *         The size hint for the decompression buffer
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see Compression
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setDecompressorBufferSizeHint(int bufferSizeHint)
+    {
+        this.bufferSizeHint = bufferSizeHint;
         return this;
     }
 
@@ -2219,7 +2243,7 @@ public class DefaultShardManagerBuilder {
                 maxReconnectDelay,
                 largeThreshold);
         ShardingMetaConfig metaConfig =
-                new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
+                new ShardingMetaConfig(bufferSizeHint, contextProvider, cacheFlags, flags, compression, encoding);
         DefaultShardManager manager = new DefaultShardManager(
                 this.token,
                 this.shards,

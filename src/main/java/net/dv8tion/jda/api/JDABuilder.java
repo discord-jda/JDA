@@ -92,7 +92,7 @@ public class JDABuilder {
     protected boolean idle = false;
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
-    protected int maxBufferSize = 2048;
+    protected int bufferSizeHint = -1;
     protected int intents = -1; // don't use intents by default
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
@@ -1679,11 +1679,35 @@ public class JDABuilder {
      *         If the provided buffer size is negative
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         This was replaced by {@link #setDecompressorBufferSizeHint(int)}
      */
     @Nonnull
+    @Deprecated
     public JDABuilder setMaxBufferSize(int bufferSize) {
         Checks.notNegative(bufferSize, "The buffer size");
-        this.maxBufferSize = bufferSize;
+        this.bufferSizeHint = bufferSize;
+        return this;
+    }
+
+    /**
+     * Sets a hint for the buffer size of the {@linkplain #setCompression(Compression) selected decompression method},
+     * of which the allowed values depend.
+     *
+     * <p>See the documentation of the corresponding {@link Compression} being used.
+     *
+     * @param  bufferSizeHint
+     *         The size hint for the decompression buffer
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see Compression
+     */
+    @Nonnull
+    public JDABuilder setDecompressorBufferSizeHint(int bufferSizeHint)
+    {
+        this.bufferSizeHint = bufferSizeHint;
         return this;
     }
 
@@ -1766,7 +1790,7 @@ public class JDABuilder {
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        DecompressorFactory decompressorFactory = DecompressorFactory.of(compression, maxBufferSize);
+        DecompressorFactory decompressorFactory = DecompressorFactory.of(compression, bufferSizeHint);
         jda.login(shardInfo, decompressorFactory, true, intents, encoding);
         return jda;
     }
