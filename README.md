@@ -54,6 +54,10 @@ This library is available on maven central. The latest version is always shown i
 
 The minimum java version supported by JDA is **Java SE 8**. JDA also uses JSR 305 to support solid interoperability with Kotlin out of the box.
 
+> [!NOTE]
+> If you wish to support sending raw audio (and not Opus directly), 
+> you will also have to add the [`JDA-opus-jna`](opus-jna) dependency.
+
 ### Gradle
 
 ```gradle
@@ -63,12 +67,10 @@ repositories {
 
 dependencies {
     implementation("net.dv8tion:JDA:$version") { // replace $version with the latest version
-      // Optionally disable audio natives to reduce jar size by excluding `opus-java` and `tink`
+      // Optionally disable audio natives to reduce jar size by excluding `tink`
       // Gradle DSL:
-      // exclude module: 'opus-java' // required for encoding audio into opus, not needed if audio is already provided in opus encoding
       // exclude module: 'tink' // required for encrypting and decrypting audio
       // Kotlin DSL:
-      // exclude(module="opus-java") // required for encoding audio into opus, not needed if audio is already provided in opus encoding
       // exclude(module="tink") // required for encrypting and decrypting audio
     }
 }
@@ -81,13 +83,8 @@ dependencies {
     <groupId>net.dv8tion</groupId>
     <artifactId>JDA</artifactId>
     <version>$version</version> <!-- replace $version with the latest version -->
-    <!-- Optionally disable audio natives to reduce jar size by excluding `opus-java` and `tink` -->
+    <!-- Optionally disable audio natives to reduce jar size by excluding `tink` -->
     <exclusions>
-        <!-- required for encoding audio into opus, not needed if audio is already provided in opus encoding
-        <exclusion>
-            <groupId>club.minnced</groupId>
-            <artifactId>opus-java</artifactId>
-        </exclusion> -->
         <!-- required for encrypting and decrypting audio
         <exclusion>
             <groupId>com.google.crypto.tink</groupId>

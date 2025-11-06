@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-plugins {
-    `kotlin-dsl`
-    id("java-gradle-plugin")
-}
+package net.dv8tion.jda.internal.audio;
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 
-dependencies {
-    implementation(gradleApi())
-    implementation(libs.jreleaser)
+public interface OpusEncoder
+{
+    @Nullable
+    ByteBuffer encode(@Nonnull ByteBuffer rawAudio);
+
+    void close();
 }

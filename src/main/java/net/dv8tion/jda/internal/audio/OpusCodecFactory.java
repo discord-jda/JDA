@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-plugins {
-    `kotlin-dsl`
-    id("java-gradle-plugin")
-}
+package net.dv8tion.jda.internal.audio;
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-dependencies {
-    implementation(gradleApi())
-    implementation(libs.jreleaser)
+public interface OpusCodecFactory
+{
+    boolean initialize() throws Exception;
+
+    @Nonnull
+    OpusDecoder createDecoder(int ssrc);
+
+    @Nullable
+    OpusEncoder createEncoder();
 }
