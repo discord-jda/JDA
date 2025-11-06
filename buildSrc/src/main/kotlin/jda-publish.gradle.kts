@@ -54,7 +54,7 @@ jreleaser {
                 register("sonatype") {
                     active = Active.RELEASE
                     url = "https://central.sonatype.com/api/v1/publisher"
-                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
+                    stagingRepository(stagingDirectory.asFile.absolutePath)
                 }
             }
         }
