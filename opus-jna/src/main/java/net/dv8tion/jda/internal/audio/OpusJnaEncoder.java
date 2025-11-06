@@ -43,24 +43,29 @@ public class OpusJnaEncoder implements OpusEncoder
     @Override
     public ByteBuffer encode(@Nonnull ByteBuffer rawAudio)
     {
-        if (opusEncoder == null)
-            throw new IllegalStateException("Encoder is closed.");
-
-        ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
+        int result;
         ByteBuffer encoded = ByteBuffer.allocate(4096);
-        for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2)
+        synchronized (this)
         {
-            int firstByte =  (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
-            int secondByte = (0x000000FF & rawAudio.get(i + 1));
+            if (opusEncoder == null)
+                throw new IllegalStateException("Encoder is closed.");
 
-            //Combines the 2 bytes into a short. Opus deals with unsigned shorts, not bytes.
-            short toShort = (short) ((firstByte << 8) | secondByte);
+            ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
+            for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2)
+            {
+                int firstByte =  (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
+                int secondByte = (0x000000FF & rawAudio.get(i + 1));
 
-            nonEncodedBuffer.put(toShort);
+                //Combines the 2 bytes into a short. Opus deals with unsigned shorts, not bytes.
+                short toShort = (short) ((firstByte << 8) | secondByte);
+
+                nonEncodedBuffer.put(toShort);
+            }
+            ((Buffer) nonEncodedBuffer).flip();
+
+            result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
         }
-        ((Buffer) nonEncodedBuffer).flip();
 
-        int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
         if (result <= 0)
         {
             LOG.error("Received error code from opus_encode(...): {}", result);
