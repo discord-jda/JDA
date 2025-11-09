@@ -585,7 +585,7 @@ public class DefaultShardManager implements ShardManager {
         jda.login(
                 this.gatewayURL,
                 shardInfo,
-                this.metaConfig.getDecompressorFactory(),
+                this.metaConfig.getDecompressorFactory(shardId),
                 false,
                 shardingConfig.getIntents(),
                 this.metaConfig.getEncoding());
