@@ -44,14 +44,14 @@ public class ComponentsUtilTest
 {
     private static final UnknownComponentImpl UNKNOWN_COMPONENT = new UnknownComponentImpl(DataObject.empty());
 
-    @MethodSource("testUnknownComponentCannotBeInserted")
+    @MethodSource("testUnknownComponentCannotBeInsertedArguments")
     @ParameterizedTest
     void testUnknownComponentCannotBeInserted(ThrowableAssert.ThrowingCallable callable)
     {
         Assertions.assertThatIllegalArgumentException().isThrownBy(callable);
     }
 
-    static Stream<Arguments> testUnknownComponentCannotBeInserted()
+    static Stream<Arguments> testUnknownComponentCannotBeInsertedArguments()
     {
         // Try everywhere ComponentsUtil is used
         return Stream.of(

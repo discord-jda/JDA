@@ -57,7 +57,7 @@ public class MessageComponentTest
     private static final Container EXAMPLE_CONTAINER = Container.of(EXAMPLE_TEXT_DISPLAY);
     private static final ActionRow EXAMPLE_ROW = ActionRow.of(Button.primary("id", "label"));
 
-    @MethodSource("buildInvalidMessage")
+    @MethodSource("buildInvalidMessageArguments")
     @ParameterizedTest
     void buildInvalidMessage(Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> builderFunction)
     {
@@ -78,7 +78,7 @@ public class MessageComponentTest
         }
     }
 
-    static Stream<Arguments> buildInvalidMessage()
+    static Stream<Arguments> buildInvalidMessageArguments()
     {
         return Stream.of(
                 // Attempt to use V2 components in V1 mode
@@ -106,7 +106,7 @@ public class MessageComponentTest
         );
     }
 
-    @MethodSource("buildValidMessage")
+    @MethodSource("buildValidMessageArguments")
     @ParameterizedTest
     void buildValidMessage(Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> builderFunction)
     {
@@ -127,7 +127,7 @@ public class MessageComponentTest
         }
     }
 
-    static Stream<Arguments> buildValidMessage()
+    static Stream<Arguments> buildValidMessageArguments()
     {
         return Stream.of(
                 // Use V2 components

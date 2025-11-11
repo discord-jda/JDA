@@ -69,7 +69,7 @@ public class ButtonTests
         );
     }
 
-    @MethodSource("testButtonInvalid")
+    @MethodSource("testButtonInvalidArguments")
     @ParameterizedTest
     void testButtonInvalid(ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji)
     {
@@ -77,7 +77,7 @@ public class ButtonTests
         assertThatIllegalArgumentException().isThrownBy(button::checkValid);
     }
 
-    static Stream<Arguments> testButtonInvalid()
+    static Stream<Arguments> testButtonInvalidArguments()
     {
         // The following button configuration will fail when:
         return Stream.of(
