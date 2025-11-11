@@ -202,6 +202,12 @@ tasks.withType<DependencyUpdatesTask> {
 
 versionCatalogUpdate {
     versionSelector(VersionSelectors.STABLE)
+
+    pin {
+        libraries = listOf(
+            libs.tink
+        )
+    }
 }
 
 
