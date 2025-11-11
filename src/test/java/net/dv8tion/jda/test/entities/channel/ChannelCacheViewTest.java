@@ -110,17 +110,16 @@ class ChannelCacheViewTest
 
     private static IThreadContainerUnion getThreadContainer(ChannelType threadType)
     {
-        switch (threadType)
+        return switch (threadType)
         {
-        case GUILD_PRIVATE_THREAD:
-            return mockChannel(IThreadContainerUnion.class, ChannelType.TEXT, "TEXT parent of " + threadType, GuildMessageChannel.class);
-        case GUILD_NEWS_THREAD:
-            return mockChannel(IThreadContainerUnion.class, ChannelType.NEWS, "NEWS parent of " + threadType, GuildMessageChannel.class);
-        case GUILD_PUBLIC_THREAD:
-            return mockChannel(IThreadContainerUnion.class, ChannelType.FORUM, "FORUM parent of " + threadType, IPostContainer.class);
-        default:
-            throw new IllegalStateException("Cannot map unknown thread type " + threadType);
-        }
+            case GUILD_PRIVATE_THREAD ->
+                    mockChannel(IThreadContainerUnion.class, ChannelType.TEXT, "TEXT parent of " + threadType, GuildMessageChannel.class);
+            case GUILD_NEWS_THREAD ->
+                    mockChannel(IThreadContainerUnion.class, ChannelType.NEWS, "NEWS parent of " + threadType, GuildMessageChannel.class);
+            case GUILD_PUBLIC_THREAD ->
+                    mockChannel(IThreadContainerUnion.class, ChannelType.FORUM, "FORUM parent of " + threadType, IPostContainer.class);
+            default -> throw new IllegalStateException("Cannot map unknown thread type " + threadType);
+        };
     }
 
     private static SortedChannelCacheViewImpl<GuildChannel> getMockedGuildCache()

@@ -78,16 +78,11 @@ class ComponentDeserializerTest extends AbstractComponentTest
     @SuppressWarnings("rawtypes")
     private static Class<? extends ComponentTree> getTreeClass(ComponentTree.Type type)
     {
-        switch(type)
+        return switch (type)
         {
-        case ANY:
-            return ComponentTree.class;
-        case MESSAGE:
-            return MessageComponentTree.class;
-        case MODAL:
-            return ModalComponentTree.class;
-        default:
-            return fail("Please update this test with the new component tree type (" + type.name() + "), then update ComponentDeserializer#deserializeAsTree if necessary");
-        }
+            case ANY -> ComponentTree.class;
+            case MESSAGE -> MessageComponentTree.class;
+            case MODAL -> ModalComponentTree.class;
+        };
     }
 }
