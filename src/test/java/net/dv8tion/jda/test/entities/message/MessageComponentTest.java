@@ -160,10 +160,7 @@ public class MessageComponentTest
 
     private static String getMaxContentString()
     {
-        final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < Message.MAX_CONTENT_LENGTH_COMPONENT_V2; i++)
-            builder.append('0');
-        return builder.toString();
+        return "0".repeat(Message.MAX_CONTENT_LENGTH_COMPONENT_V2);
     }
 
     private static Collection<MessageTopLevelComponent> getMaxTopLevelV1()
