@@ -61,18 +61,18 @@ public class ComponentIteratorTests
                 break;
             case ACTION_ROW:
                 final ActionRow row = mock(ActionRow.class);
-                ComponentIterator.createStream(Collections.singleton(row)).collect(Collectors.toList());
+                ComponentIterator.createStream(Collections.singleton(row)).toList();
                 verify(row, times(1)).getComponents();
                 break;
             case SECTION:
                 final Section section = mock(Section.class);
-                ComponentIterator.createStream(Collections.singleton(section)).collect(Collectors.toList());
+                ComponentIterator.createStream(Collections.singleton(section)).toList();
                 verify(section, times(1)).getContentComponents();
                 verify(section, times(1)).getAccessory();
                 break;
             case CONTAINER:
                 final Container container = mock(Container.class);
-                ComponentIterator.createStream(Collections.singleton(container)).collect(Collectors.toList());
+                ComponentIterator.createStream(Collections.singleton(container)).toList();
                 verify(container, times(1)).getComponents();
                 break;
             default:

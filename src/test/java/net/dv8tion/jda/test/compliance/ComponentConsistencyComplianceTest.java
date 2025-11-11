@@ -65,7 +65,7 @@ public class ComponentConsistencyComplianceTest
                         .filter(this::isRootDeclaration)
                         // Methods that return the class they are defined in
                         .filter(m -> m.getRawReturnType().getFullName().equals(m.getOwner().getFullName()))
-                        .collect(Collectors.toList());
+                        .toList();
 
                 // The method may exist but have a diff return type, or it may not be overridden
                 for (JavaMethod supertypeMethodReturningDeclClass : supertypeMethodsReturningDeclClass)
