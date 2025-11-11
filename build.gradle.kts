@@ -202,14 +202,6 @@ tasks.withType<DependencyUpdatesTask> {
 
 versionCatalogUpdate {
     versionSelector(VersionSelectors.STABLE)
-
-    pin {
-        libraries = listOf(
-            libs.tink,
-            libs.junit.java8,
-            libs.junit.launcher.java8,
-        )
-    }
 }
 
 
