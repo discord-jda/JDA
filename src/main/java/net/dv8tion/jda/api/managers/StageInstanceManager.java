@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setTopic("LMAO JOIN FOR FREE NITRO")
  *        .setPrivacyLevel(PrivacyLevel.PUBLIC)
  *        .queue();
@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  *        .setTopic("Talent Show | WINNER GETS FREE NITRO")
  *        .setPrivacyLevel(PrivacyLevel.GUILD_ONLY)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see net.dv8tion.jda.api.entities.StageInstance#getManager()
  */

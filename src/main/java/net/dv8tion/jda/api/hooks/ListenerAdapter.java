@@ -108,22 +108,19 @@ import javax.annotation.Nonnull;
  * for you. You should <b><u>override</u></b> the methods provided by this class for your event listener implementation.
  *
  * <p><b>Example:</b><br>
- * <pre><code>
- * public class MyReadyListener extends ListenerAdapter
- * {
- *    {@literal @Override}
- *     public void onReady(ReadyEvent event)
- *     {
+ * {@snippet lang="java":
+ * public class MyReadyListener extends ListenerAdapter {
+ *     @Override
+ *     public void onReady(ReadyEvent event) {
  *         System.out.println("I am ready to go!");
  *     }
  *
- *    {@literal @Override}
- *     public void onMessageReceived(MessageReceivedEvent event)
- *     {
+ *     @Override
+ *     public void onMessageReceived(MessageReceivedEvent event) {
  *         System.out.printf("[%s]: %s\n", event.getAuthor().getName(), event.getMessage().getContentDisplay());
  *     }
  * }
- * </code></pre>
+ * }
  *
  * @see net.dv8tion.jda.api.hooks.EventListener EventListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager
@@ -658,10 +655,14 @@ public abstract class ListenerAdapter implements EventListener {
     @Override
     public final void onEvent(@Nonnull GenericEvent event) {
         onGenericEvent(event);
-        if (event instanceof UpdateEvent) onGenericUpdate((UpdateEvent<?, ?>) event);
+        if (event instanceof UpdateEvent) {
+            onGenericUpdate((UpdateEvent<?, ?>) event);
+        }
 
         for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class)) {
-            if (unresolved.contains(clazz)) continue;
+            if (unresolved.contains(clazz)) {
+                continue;
+            }
             MethodHandle mh = methods.computeIfAbsent(clazz, ListenerAdapter::findMethod);
             if (mh == null) {
                 unresolved.add(clazz);
@@ -671,8 +672,12 @@ public abstract class ListenerAdapter implements EventListener {
             try {
                 mh.invoke(this, event);
             } catch (Throwable throwable) {
-                if (throwable instanceof RuntimeException) throw (RuntimeException) throwable;
-                if (throwable instanceof Error) throw (Error) throwable;
+                if (throwable instanceof RuntimeException) {
+                    throw (RuntimeException) throwable;
+                }
+                if (throwable instanceof Error) {
+                    throw (Error) throwable;
+                }
                 throw new IllegalStateException(throwable);
             }
         }

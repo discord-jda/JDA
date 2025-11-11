@@ -38,11 +38,11 @@ public interface SectionAccessoryComponentUnion extends SectionAccessoryComponen
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * Button button = union.asButton();
      * Button button2 = (Button) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#BUTTON} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Button</code>
@@ -60,11 +60,11 @@ public interface SectionAccessoryComponentUnion extends SectionAccessoryComponen
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * Thumbnail thumbnail = union.asThumbnail();
      * Thumbnail thumbnail2 = (Thumbnail) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#THUMBNAIL} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Thumbnail</code>

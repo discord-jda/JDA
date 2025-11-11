@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
  *
  * <p><b>Example</b>
  *
- * <pre>{@code
+ * {@snippet lang="java":
  * // Given some arbitrary input string
  * String input = "Hello World";
  *
@@ -44,11 +44,11 @@ import javax.annotation.Nonnull;
  *
  * // ["Hello World"]
  * SplitUtil.split(input, 50, true, Strategy.SPACE);
- * }</pre>
+ * }
  *
  * <p>In a more applied use-case, you can also define a smaller limit so it can fit into codeblocks of a message:
  *
- * <pre>{@code
+ * {@snippet lang="java":
  * public List<String> getRoleNames(Guild guild)
  * {
  *    // Create a newline separated list of role names from the guild
@@ -66,7 +66,7 @@ import javax.annotation.Nonnull;
  *                 .map(block -> "```\n" + block + "```")
  *                 .collect(Collectors.toList());
  * }
- * }</pre>
+ * }
  *
  * @see #split(String, int, Strategy...)
  * @see #split(String, int, boolean, Strategy...)

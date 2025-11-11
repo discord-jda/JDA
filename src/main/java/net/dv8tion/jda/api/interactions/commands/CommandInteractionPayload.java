@@ -338,14 +338,14 @@ public interface CommandInteractionPayload extends Interaction {
      *
      * <p><b>Example</b>
      * <br>You can understand this as a shortcut for these lines of code:
-     * <pre>{@code
+     * {@snippet lang="java":
      * OptionMapping opt = event.getOption("reason");
      * String reason = opt == null ? null : opt.getAsString();
-     * }</pre>
+     * }
      * Which can be written with this resolver as:
-     * <pre>{@code
+     * {@snippet lang="java":
      * String reason = event.getOption("reason", OptionMapping::getAsString);
-     * }</pre>
+     * }
      *
      * @param  name
      *         The option name
@@ -380,14 +380,14 @@ public interface CommandInteractionPayload extends Interaction {
      *
      * <p><b>Example</b>
      * <br>You can understand this as a shortcut for these lines of code:
-     * <pre>{@code
+     * {@snippet lang="java":
      * OptionMapping opt = event.getOption("reason");
      * String reason = opt == null ? "ban by mod" : opt.getAsString();
-     * }</pre>
+     * }
      * Which can be written with this resolver as:
-     * <pre>{@code
+     * {@snippet lang="java":
      * String reason = event.getOption("reason", "ban by mod", OptionMapping::getAsString);
-     * }</pre>
+     * }
      *
      * @param  name
      *         The option name
@@ -431,14 +431,14 @@ public interface CommandInteractionPayload extends Interaction {
      *
      * <p><b>Example</b>
      * <br>You can understand this as a shortcut for these lines of code:
-     * <pre>{@code
+     * {@snippet lang="java":
      * OptionMapping opt = event.getOption("reason");
      * String reason = opt == null ? context.getFallbackReason() : opt.getAsString();
-     * }</pre>
+     * }
      * Which can be written with this resolver as:
-     * <pre>{@code
+     * {@snippet lang="java":
      * String reason = event.getOption("reason", context::getFallbackReason , OptionMapping::getAsString);
-     * }</pre>
+     * }
      *
      * @param  name
      *         The option name

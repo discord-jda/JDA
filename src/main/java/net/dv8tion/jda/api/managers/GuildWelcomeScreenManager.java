@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality to update one or more fields for a {@link GuildWelcomeScreen}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setEnabled(false)
  *        .setDescription(null)
  *        .setWelcomeChannels()
@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
  *                GuildWelcomeScreen.Channel.of(generalChannel, "Go have a chat", Emoji.fromUnicode("U+1F4AC"))
  *        ))
  *        .queue();
- * }</pre>
+ * }
  *
  * @see Guild#modifyWelcomeScreen()
  */

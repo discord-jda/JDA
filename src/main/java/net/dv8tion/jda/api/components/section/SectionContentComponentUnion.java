@@ -36,11 +36,11 @@ public interface SectionContentComponentUnion extends SectionContentComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * TextDisplay textDisplay = union.asTextDisplay();
      * TextDisplay textDisplay2 = (TextDisplay) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#TEXT_DISPLAY} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof TextDisplay</code>

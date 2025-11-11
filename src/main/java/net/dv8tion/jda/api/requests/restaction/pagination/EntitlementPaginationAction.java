@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
  * <br>Default - 100
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * //Fetch all entitlements for a given SKU id
  * public static void fetchEntitlements(JDA api, String skuId, Consumer<List<Entitlement>> callback) {
  *     List<Entitlement> entitlements = new ArrayList<>()
@@ -50,7 +50,7 @@ import javax.annotation.Nullable;
  *           return true; //continues to retrieve all entitlements until there are none left to retrieve
  *     }.thenRun(() -> callback.accept(entitlements));
  * }
- * }</pre>
+ * }
  */
 public interface EntitlementPaginationAction
         extends PaginationAction<Entitlement, EntitlementPaginationAction> {

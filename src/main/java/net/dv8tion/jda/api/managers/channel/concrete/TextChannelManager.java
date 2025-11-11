@@ -29,14 +29,14 @@ import javax.annotation.Nonnull;
  * Manager providing functionality common for all {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannels}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setSlowmode(10)
  *        .queue();
  * manager.reset(ChannelManager.PARENT | ChannelManager.NAME)
  *        .setTopic("nsfw-commits")
  *        .setNSFW(true)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see net.dv8tion.jda.api.entities.channel.concrete.TextChannel#getManager()
  */

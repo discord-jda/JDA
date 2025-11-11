@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  * Manager providing functionality to update one or more fields for a {@link GuildChannel GuildChannel}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("github-log")
  *        .setTopic("logs for github commits")
  *        .setNSFW(false)
@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
  *        .queue();
  * manager.setTopic("Java is to Javascript as wall is to wallet")
  *        .queue();
- * }</pre>
+ * }
  *
  * @see GuildChannel#getManager()
  */

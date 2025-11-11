@@ -52,7 +52,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Here "message" is an instance of the Message interface
      *
      * // Creates a list of the currently attached files of the message, important to get the generic parameter of the list right
@@ -67,7 +67,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * message.editMessage("New content")
      *        .setAttachments(attachments)
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  attachments
      *         The {@link AttachedFile AttachedFiles} to attach to the message,
@@ -95,7 +95,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Here "message" is an instance of the Message interface
      *
      * // Take the first attachment of the message, all others will be removed
@@ -108,7 +108,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      * message.editMessage("New content")
      *        .setAttachments(attachment, file)
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  attachments
      *         The {@link AttachedFile AttachedFiles} to attach to the message,
@@ -142,15 +142,15 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
      *
      * <p><b>Example Default</b><br>
      * A request such as this will only edit the {@code content} of the message, and leave any existing embeds or attachments intact.
-     * <pre>{@code
+     * {@snippet lang="java":
      * message.editMessage("hello").queue();
-     * }</pre>
+     * }
      *
      * <p><b>Example Replace</b><br>
      * A request such as this will replace the entire message, and remove any existing embeds, attachments, components, etc.
-     * <pre>{@code
+     * {@snippet lang="java":
      * message.editMessage("hello").setReplace(true).queue();
-     * }</pre>
+     * }
      *
      * @param  isReplace
      *         True, if only things explicitly set on this request should be present after the message is edited.

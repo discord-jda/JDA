@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
  * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
  *
  * <p><b>Examples</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
  *   if (!event.getName().equals("class")) return;
  *
@@ -58,7 +58,7 @@ import javax.annotation.Nullable;
  *     .addComponents(ActionRow.of(menu))
  *     .queue();
  * }
- * }</pre>
+ * }
  *
  * @see StringSelectInteraction
  * @see EntitySelectMenu

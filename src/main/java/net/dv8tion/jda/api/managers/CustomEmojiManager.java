@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality to update one or more fields for an {@link RichCustomEmoji}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("minn")
  *        .setRoles(null)
  *        .queue();
@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
  *        .setName("dv8")
  *        .setRoles(roles)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see RichCustomEmoji#getManager()
  */

@@ -92,10 +92,10 @@ public interface Activity {
      *
      * <p><b>Example</b><br>
      * Code:
-     * <pre>{@code
+     * {@snippet lang="java":
      * Activity.playing("Trivia")
      *     .withState("Question 20")
-     * }</pre>
+     * }
      * Display:
      * <pre>
      * Playing Trivia

@@ -60,11 +60,11 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * (unless whitelisting via one of the {@code mention*} methods is used).
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Disable EVERYONE and HERE mentions by default (to avoid mass ping)
      * EnumSet<Message.MentionType> deny = EnumSet.of(Message.MentionType.EVERYONE, Message.MentionType.HERE);
      * MessageRequest.setDefaultMentions(EnumSet.complementOf(deny));
-     * }</pre>
+     * }
      *
      * @param  allowedMentions
      *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
@@ -191,7 +191,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <br>You can use {@link Collections#emptyList()} to remove all components from the message.
      *
      * <p><b>Example: Set action rows</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * final List<MessageTopLevelComponent> list = new ArrayList<>();
      * list.add(ActionRow.of(selectMenu); // first row
      * list.add(ActionRow.of(button1, button2)); // second row (shows below the first)
@@ -199,14 +199,14 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * channel.sendMessage("Content here")
      *   .setComponents(list)
      *   .queue();
-     * }</pre>
+     * }
      *
      * <p><b>Example: Remove action rows</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendMessage("Content here")
      *    .setComponents(Collections.emptyList())
      *    .queue();
-     * }</pre>
+     * }
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
@@ -230,20 +230,20 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <br>You can call this method without anything to remove all components from the message.
      *
      * <p><b>Example: Set action rows</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendMessage("Content here")
      *   .setComponents(
      *     ActionRow.of(selectMenu), // first row
      *     ActionRow.of(button1, button2)) // second row (shows below the first)
      *   .queue();
-     * }</pre>
+     * }
      *
      * <p><b>Example: Remove action rows</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendMessage("Content here")
      *   .setComponents()
      *   .queue();
-     * }</pre>
+     * }
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
@@ -378,7 +378,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <p><b>Example</b><br>
      * Create an embed with a custom image, uploaded alongside the message:
-     * <pre>{@code
+     * {@snippet lang="java":
      * MessageEmbed embed = new EmbedBuilder()
      *         .setDescription("Image of a cute cat")
      *         .setImage("attachment://cat.png") // here "cat.png" is the name used in the FileUpload.fromData factory method
@@ -390,7 +390,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * channel.sendMessageEmbeds(embed)
      *        .setFiles(file)
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message,
@@ -416,7 +416,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <p><b>Example</b><br>
      * Create an embed with a custom image, uploaded alongside the message:
-     * <pre>{@code
+     * {@snippet lang="java":
      * MessageEmbed embed = new EmbedBuilder()
      *         .setDescription("Image of a cute cat")
      *         .setImage("attachment://cat.png") // here "cat.png" is the name used in the FileUpload.fromData factory method
@@ -428,7 +428,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * channel.sendMessageEmbeds(embed)
      *        .setFiles(file)
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message,

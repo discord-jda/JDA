@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Role Role}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("Administrator")
  *        .setColor(null)
  *        .queue();
@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
  *        .setName("Traitor")
  *        .setColor(Color.RED)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see net.dv8tion.jda.api.entities.Role#getManager()
  */

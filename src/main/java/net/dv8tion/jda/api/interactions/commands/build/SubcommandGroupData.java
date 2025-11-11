@@ -256,9 +256,9 @@ public class SubcommandGroupData implements SerializableData {
      * Removes all subcommands that evaluate to {@code true} under the provided {@code condition}.
      *
      * <p><b>Example: Remove all subcommands</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * command.removeSubcommands(subcommand -> true);
-     * }</pre>
+     * }
      *
      * @param  condition
      *         The removal condition (must not throw)

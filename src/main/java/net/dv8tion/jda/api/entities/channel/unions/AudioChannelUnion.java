@@ -41,11 +41,11 @@ public interface AudioChannelUnion extends AudioChannel {
      * <br>This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre>{@code
+     * {@snippet lang="java":
      * //These are the same!
      * VoiceChannel channel = union.asVoiceChannel();
      * VoiceChannel channel2 = (VoiceChannel) union;
-     * }</pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#VOICE} to validate
      * whether you can call this method in addition to normal instanceof checks: {@code channel instanceof VoiceChannel}
@@ -63,11 +63,11 @@ public interface AudioChannelUnion extends AudioChannel {
      * <br>This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre>{@code
+     * {@snippet lang="java":
      * //These are the same!
      * StageChannel channel = union.asStageChannel();
      * StageChannel channel2 = (StageChannel) union;
-     * }</pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#STAGE} to validate
      * whether you can call this method in addition to normal instanceof checks: {@code channel instanceof StageChannel}
@@ -85,11 +85,11 @@ public interface AudioChannelUnion extends AudioChannel {
      * <br>This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre>{@code
+     * {@snippet lang="java":
      * //These are the same!
      * GuildMessageChannel channel = union.asGuildMessageChannel();
      * GuildMessageChannel channel2 = (GuildMessageChannel) union;
-     * }</pre>
+     * }
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link GuildMessageChannel}.

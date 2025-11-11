@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
  * <br>Maximum - 100
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * // Clean up all private threads older than 2 weeks
  * public static void cleanupPrivateThreads(TextChannel channel) {
  *     // get 2-week offset
@@ -51,7 +51,7 @@ import javax.annotation.Nonnull;
  *         }
  *     );
  * }
- * }</pre>
+ * }
  *
  * @see    IThreadContainer#retrieveArchivedPublicThreadChannels()
  * @see    IThreadContainer#retrieveArchivedPrivateThreadChannels()

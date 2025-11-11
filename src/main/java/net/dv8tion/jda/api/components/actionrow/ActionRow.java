@@ -88,7 +88,7 @@ public interface ActionRow
      * meaning they will not have mixed component types.
      *
      * <p><b>Example</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * List<ActionRowChildComponent> components = Arrays.asList(
      *   Button.primary("id1", "Hello"),
      *   Button.secondary("id2", "World"),
@@ -98,7 +98,7 @@ public interface ActionRow
      * List<ActionRow> partitioned = ActionRow.partition(components);
      * // partitioned[0] = ActionRow(button, button)
      * // partitioned[1] = ActionRow(selectMenu)
-     * }</pre>
+     * }
      *
      * @param  components
      *         The components to partition
@@ -120,7 +120,7 @@ public interface ActionRow
      * meaning they will not have mixed component types.
      *
      * <p><b>Example</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * List<ActionRowChildComponent> components = Arrays.asList(
      *   Button.primary("id1", "Hello"),
      *   Button.secondary("id2", "World"),
@@ -130,7 +130,7 @@ public interface ActionRow
      * List<ActionRow> partitioned = ActionRow.partition(components);
      * // partitioned[0] = ActionRow(button, button)
      * // partitioned[1] = ActionRow(selectMenu)
-     * }</pre>
+     * }
      *
      * @param  component
      *         The first component to partition

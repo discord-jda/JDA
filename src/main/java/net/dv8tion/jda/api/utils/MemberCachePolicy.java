@@ -40,12 +40,12 @@ import javax.annotation.Nonnull;
  * <p>This can be configured with {@link net.dv8tion.jda.api.JDABuilder#setMemberCachePolicy(MemberCachePolicy) JDABuilder.setMemberCachePolicy(MemberCachePolicy)}.
  *
  * <p><b>Example Policy</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * MemberCachePolicy.VOICE                         // Keep in cache if currently in voice (skip LRU and ONLINE)
  *     .or(MemberCachePolicy.ONLINE)               // Otherwise, only add to cache if online
  *     .and(MemberCachePolicy.lru(1000)            // keep 1000 recently active members
  *         .unloadUnless(MemberCachePolicy.VOICE)) // only unload if they are not in voice/guild owner
- * }</pre>
+ * }
  *
  * @see #DEFAULT
  * @see #NONE
@@ -213,12 +213,12 @@ public interface MemberCachePolicy {
      * Implementation using a Least-Recently-Used (LRU) cache strategy.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * MemberCachePolicy.ONLINE.and( // only cache online members
      *   MemberCachePolicy.lru(1000) // of those online members, track the 1000 most active members
      *     .unloadUnless(MemberCachePolicy.VOICE) // always keep voice members cached regardless of age
      * )
-     * }</pre>
+     * }
      *
      * This policy would add online members into the pool of cached members.
      * The cached members are limited to 1000 active members, which are handled by the LRU policy.

@@ -39,21 +39,18 @@ import javax.annotation.Nullable;
  * <br>Maximum - 100
  *
  * <p><b>Example</b><br>
- * <pre><code>
- * public class Listener extends ListenerAdapter
- * {
- *     {@literal @Override}
- *     public void onRoleCreate(RoleCreateEvent event)
- *     {
- *         {@literal List<TextChannel>} channels = event.getGuild().getTextChannelsByName("logs", true);
+ * {@snippet lang="java":
+ * public class Listener extends ListenerAdapter {
+ *     @Override
+ *     public void onRoleCreate(RoleCreateEvent event) {
+ *         List<TextChannel> channels = event.getGuild().getTextChannelsByName("logs", true);
  *         if (channels.isEmpty()) return; // no log channel
  *         TextChannel channel = channels.get(0); // get first match
  *
  *         AuditLogPaginationAction auditLogs = event.getGuild().retrieveAuditLogs();
  *         auditLogs.type(ActionType.ROLE_CREATE); // only take ROLE_CREATE type
  *         auditLogs.limit(1); // take first
- *         auditLogs.queue( (entries) {@literal ->}
- *         {
+ *         auditLogs.queue((entries) -> {
  *             // callback has a list, this may be empty due to race conditions
  *             if (entries.isEmpty()) return;
  *             AuditLogEntry entry = entries.get(0);
@@ -61,7 +58,7 @@ import javax.annotation.Nullable;
  *         });
  *     }
  * }
- * </code></pre>
+ * }
  *
  * @see    Guild#retrieveAuditLogs()
  */

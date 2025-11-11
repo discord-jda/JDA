@@ -210,13 +210,13 @@ public class SubcommandData implements SerializableData {
      * Removes all options that evaluate to {@code true} under the provided {@code condition}.
      *
      * <p><b>Example: Remove all options</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * command.removeOptions(option -> true);
-     * }</pre>
+     * }
      * <p><b>Example: Remove all options that are required</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * command.removeOptions(option -> option.isRequired());
-     * }</pre>
+     * }
      *
      * @param  condition
      *         The removal condition (must not throw)

@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
  * The id has to be provided by the user and can be used to identify the button in the {@link ButtonInteractionEvent ButtonInteractionEvent}.
  *
  * <p><b>Example Usage</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * public class HelloBot extends ListenerAdapter {
  *   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
  *       if (event.getName().equals("hello")) {
@@ -67,7 +67,7 @@ import javax.annotation.Nullable;
  *       }
  *   }
  * }
- * }</pre>
+ * }
  *
  * To see what each button looks like here is an example cheatsheet:
  * <br>

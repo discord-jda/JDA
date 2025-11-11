@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
  * <br>Maximum - 100
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * // Remove reactions for the specified emoji
  * public static void removeReaction(Message message, String emoji) {
  *     // get paginator
@@ -47,7 +47,7 @@ import javax.annotation.Nonnull;
  *         message.removeReaction(emoji, user).queue()
  *     );
  * }
- * }</pre>
+ * }
  *
  * @see    MessageReaction#retrieveUsers()
  * @see    Message#retrieveReactionUsers(Emoji)

@@ -39,16 +39,14 @@ import javax.annotation.Nonnull;
  *
  * <p>Listeners for this manager do <u>not</u> need to implement {@link net.dv8tion.jda.api.hooks.EventListener EventListener}
  * <br>Example
- * <pre><code>
- * public class Foo
- * {
- *    {@literal @SubscribeEvent}
- *     public void onMsg(MessageReceivedEvent event)
- *     {
+ * {@snippet lang="java":
+ * public class Foo {
+ *     @SubscribeEvent
+ *     public void onMsg(MessageReceivedEvent event) {
  *         System.out.printf("%s: %s\n", event.getAuthor().getName(), event.getMessage().getContentDisplay());
  *     }
  * }
- * </code></pre>
+ * }
  *
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager
  * @see net.dv8tion.jda.api.hooks.IEventManager

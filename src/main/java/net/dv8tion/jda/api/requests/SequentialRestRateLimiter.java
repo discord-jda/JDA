@@ -49,14 +49,14 @@ import javax.annotation.Nonnull;
  * This is done during the queue work iteration so many requests to one endpoint would be moved correctly.
  *
  * <p>For example, the first message sending:
- * <pre>{@code
+ * {@snippet lang="java":
  * public void onReady(ReadyEvent event) {
  *   TextChannel channel = event.getJDA().getTextChannelById("123");
  *   for (int i = 1; i <= 100; i++) {
  *     channel.sendMessage("Message: " + i).queue();
  *   }
  * }
- * }</pre>
+ * }
  *
  * <p>This will send 100 messages on startup. At this point we don't yet know the hash for this route, so we put them all in {@code uninit+POST/channels/{channel.id}/messages:channel_id=123}.
  * The bucket iterates the requests in sync and gets the first response. This response provides the hash for this route, and we create a bucket for it.

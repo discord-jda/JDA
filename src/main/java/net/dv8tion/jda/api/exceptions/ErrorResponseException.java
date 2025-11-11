@@ -247,14 +247,14 @@ public class ErrorResponseException extends RuntimeException {
      * Ignore the specified set of error responses.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
      *     channel.sendMessage(content).queue((message) ->
      *         message.delete().queueAfter(30, SECONDS, null, ignore(EnumSet.of(UNKNOWN_MESSAGE)))
      *     );
      * }
-     * }</pre>
+     * }
      *
      * @param  set
      *         Set of ignored error responses
@@ -274,14 +274,14 @@ public class ErrorResponseException extends RuntimeException {
      * Ignore the specified set of error responses.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
      *     channel.sendMessage(content).queue((message) ->
      *         message.delete().queueAfter(30, SECONDS, null, ignore(UNKNOWN_MESSAGE))
      *     );
      * }
-     * }</pre>
+     * }
      *
      * @param  ignored
      *         Ignored error response
@@ -304,14 +304,14 @@ public class ErrorResponseException extends RuntimeException {
      * Ignore the specified set of error responses.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
      *     channel.sendMessage(content).queue((message) ->
      *         message.delete().queueAfter(30, SECONDS, null, ignore(Throwable::printStackTrace, UNKNOWN_MESSAGE))
      *     );
      * }
-     * }</pre>
+     * }
      *
      * @param  orElse
      *         Behavior to default to if the error response is not ignored
@@ -338,14 +338,14 @@ public class ErrorResponseException extends RuntimeException {
      * Ignore the specified set of error responses.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
      *     channel.sendMessage(content).queue((message) ->
      *         message.delete().queueAfter(30, SECONDS, null, ignore(Throwable::printStackTrace, EnumSet.of(UNKNOWN_MESSAGE)))
      *     );
      * }
-     * }</pre>
+     * }
      *
      * @param  orElse
      *         Behavior to default to if the error response is not ignored

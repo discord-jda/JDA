@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
  * Manager providing functionality to modify a {@link ForumChannel ForumChannel}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("gamer-forum")
  *  .setSlowmode(10)
  *  .setTopic("Welcome to the gamer forum!")
@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
  *  .setName("gamer-forum-nsfw")
  *  .setNSFW(true)
  *  .queue();
- * }</pre>
+ * }
  */
 public interface ForumChannelManager
         extends StandardGuildChannelManager<ForumChannel, ForumChannelManager>,

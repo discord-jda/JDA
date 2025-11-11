@@ -43,23 +43,20 @@ public interface UpdateEvent<E, T> extends GenericEvent {
      * The field name for the updated property
      *
      * <p><b>Example</b><br>
-     * <pre><code>
-     * {@literal @Override}
-     * public void onGenericRoleUpdate(GenericRoleUpdateEvent event)
-     * {
-     *     switch (event.getPropertyIdentifier())
-     *     {
+     * {@snippet lang="java":
+     * @Override
+     * public void onGenericRoleUpdate(GenericRoleUpdateEvent event) {
+     *     switch (event.getPropertyIdentifier()) {
      *     case RoleUpdateColorEvent.IDENTIFIER:
      *         System.out.printf("Updated color for role: %s%n", event);
      *         break;
      *     case RoleUpdatePositionEvent.IDENTIFIER:
      *         RoleUpdatePositionEvent update = (RoleUpdatePositionEvent) event;
-     *         System.out.printf("Updated position for role: %s raw(%s{@literal ->}%s)%n", event, update.getOldPositionRaw(), update.getNewPositionRaw());
+     *         System.out.printf("Updated position for role: %s raw(%s -> %s)%n", event, update.getOldPositionRaw(), update.getNewPositionRaw());
      *         break;
-     *     default: return;
      *     }
      * }
-     * </code></pre>
+     * }
      *
      * @return The name of the updated property
      */

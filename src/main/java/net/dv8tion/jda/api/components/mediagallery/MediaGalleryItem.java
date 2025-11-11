@@ -62,7 +62,7 @@ public interface MediaGalleryItem {
      * </ol>
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * MediaGalleryItem item = MediaGalleryItem.fromUrl("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *     .setDescription("This is a cute car :3");
@@ -74,7 +74,7 @@ public interface MediaGalleryItem {
      *     .setComponents(gallery)
      *     .useComponentsV2()
      *     .queue();
-     * </code></pre>
+     * }
      *
      * @param  url
      *         The URL of the item to display
@@ -101,7 +101,7 @@ public interface MediaGalleryItem {
      * as such you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * // It's recommended to use a more robust HTTP library instead,
      * // such as Java 11+'s HttpClient, or OkHttp (included with JDA), among many other options.
@@ -113,7 +113,7 @@ public interface MediaGalleryItem {
      * channel.sendComponents(section)
      *     .useComponentsV2()
      *     .queue();
-     * </code></pre>
+     * }
      *
      * @param  file
      *         The {@link FileUpload} to display

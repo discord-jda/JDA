@@ -418,14 +418,14 @@ public class Route {
      * </ul>
      *
      * For example, to compose the route to create a message in a channel:
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route route = Route.custom(Method.POST, "channels/{channel_id}/messages");
-     * }</pre>
+     * }
      *
      * <p>To compile the route, use {@link #compile(String...)} with the positional arguments.
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route.CompiledRoute compiled = route.compile(channelId);
-     * }</pre>
+     * }
      *
      * @param  method
      *         The HTTP method
@@ -458,14 +458,14 @@ public class Route {
      * </ul>
      *
      * For example, to compose the route to delete a message in a channel:
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route route = Route.custom(Method.DELETE, "channels/{channel_id}/messages/{message_id}");
-     * }</pre>
+     * }
      *
      * <p>To compile the route, use {@link #compile(String...)} with the positional arguments.
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route.CompiledRoute compiled = route.compile(channelId, messageId);
-     * }</pre>
+     * }
      *
      * @param  route
      *         The route template with valid argument placeholders
@@ -493,14 +493,14 @@ public class Route {
      * </ul>
      *
      * For example, to compose the route to create a message in a channel:
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route route = Route.custom(Method.POST, "channels/{channel_id}/messages");
-     * }</pre>
+     * }
      *
      * <p>To compile the route, use {@link #compile(String...)} with the positional arguments.
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route.CompiledRoute compiled = route.compile(channelId);
-     * }</pre>
+     * }
      *
      * @param  route
      *         The route template with valid argument placeholders
@@ -528,14 +528,14 @@ public class Route {
      * </ul>
      *
      * For example, to compose the route to ban a user in a guild:
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route route = Route.custom(Method.PUT, "guilds/{guild_id}/bans/{user_id}");
-     * }</pre>
+     * }
      *
      * <p>To compile the route, use {@link #compile(String...)} with the positional arguments.
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route.CompiledRoute compiled = route.compile(guildId, userId);
-     * }</pre>
+     * }
      *
      * @param  route
      *         The route template with valid argument placeholders
@@ -563,14 +563,14 @@ public class Route {
      * </ul>
      *
      * For example, to compose the route to edit a message in a channel:
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route route = Route.custom(Method.PATCH, "channels/{channel_id}/messages/{message_id}");
-     * }</pre>
+     * }
      *
      * <p>To compile the route, use {@link #compile(String...)} with the positional arguments.
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route.CompiledRoute compiled = route.compile(channelId, messageId);
-     * }</pre>
+     * }
      *
      * @param  route
      *         The route template with valid argument placeholders
@@ -598,14 +598,14 @@ public class Route {
      * </ul>
      *
      * For example, to compose the route to get a message in a channel:
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route route = Route.custom(Method.GET, "channels/{channel_id}/messages/{message_id}");
-     * }</pre>
+     * }
      *
      * <p>To compile the route, use {@link #compile(String...)} with the positional arguments.
-     * <pre>{@code
+     * {@snippet lang="java":
      * Route.CompiledRoute compiled = route.compile(channelId, messageId);
-     * }</pre>
+     * }
      *
      * @param  route
      *         The route template with valid argument placeholders
@@ -811,7 +811,7 @@ public class Route {
          * for all provided <em>values</em> but not for the keys.
          *
          * <p><b>Example Usage</b><br>
-         * <pre>{@code
+         * {@snippet lang="java":
          * Route.CompiledRoute history = Route.GET_MESSAGE_HISTORY.compile(channelId);
          *
          * // returns a new route
@@ -828,7 +828,7 @@ public class Route {
          *   "limit", 100,
          *   "after", messageId
          * );
-         * }</pre>
+         * }
          *
          * @param  params
          *         The parameters to add as query, alternating key and value (see example)

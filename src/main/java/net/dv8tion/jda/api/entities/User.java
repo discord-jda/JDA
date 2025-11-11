@@ -275,7 +275,7 @@ public interface User extends UserSnowflake {
      * which is rarely useful since the channel id never changes.
      *
      * <p><b>Examples</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Send message without response handling
      * public void sendMessage(User user, String content) {
      *     user.openPrivateChannel()
@@ -290,7 +290,7 @@ public interface User extends UserSnowflake {
      *                .delay(30, TimeUnit.SECONDS) // RestAction<Message> with delayed response
      *                .flatMap(Message::delete); // RestAction<Void> (executed 30 seconds after sending)
      * }
-     * }</pre>
+     * }
      *
      * @throws UnsupportedOperationException
      *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser})

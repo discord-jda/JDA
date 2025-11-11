@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
  * <br>This can be used to build a request and send it to various API endpoints.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * try (FileUpload file = FileUpload.fromData(new File("wave.gif"))) {
  *     MessageCreateData data = new MessageCreateBuilder()
  *       .setContent("Hello guys!")
@@ -54,7 +54,7 @@ import javax.annotation.Nullable;
  *         channel.sendMessage(data).queue();
  *     }
  * } // closes wave.gif if an error occurred
- * }</pre>
+ * }
  *
  * @see MessageChannel#sendMessage(MessageCreateData)
  * @see net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(MessageCreateData) IReplyCallback.reply(data)

@@ -44,7 +44,7 @@ import javax.annotation.Nonnull;
  * This is similar to the ban modal where you can input a ban reason.
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event)
  * {
  *     if (event.getName().equals("modmail"))
@@ -67,7 +67,7 @@ import javax.annotation.Nonnull;
  *
  *         event.replyModal(modal).queue();
  *     }
- * }}</pre>
+ * }}
  *
  * @see    ModalInteractionEvent
  */

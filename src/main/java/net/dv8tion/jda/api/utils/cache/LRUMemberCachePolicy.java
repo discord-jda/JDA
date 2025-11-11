@@ -37,12 +37,12 @@ import javax.annotation.Nonnull;
  * <p>This is implemented using a queue and counter algorithm, to achieve amortized O(1) performance.
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * MemberCachePolicy.ONLINE.and( // only cache online members
  *   MemberCachePolicy.lru(1000) // of those online members, track the 1000 most active members
  *     .unloadUnless(MemberCachePolicy.VOICE) // always keep voice members cached regardless of age
  * )
- * }</pre>
+ * }
  *
  * This policy would add online members into the pool of cached members.
  * The cached members are limited to 1000 active members, which are handled by the LRU policy.

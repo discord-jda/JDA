@@ -118,12 +118,17 @@ public interface CacheView<T> extends Iterable<T> {
      *
      * <p>The stream will be closed once this method returns and cannot be used anymore.
      *
-     * <p><b>Example</b><br>
-     * <code>
-     * {@literal CacheView<User>} view = jda.getUserCache();<br>
-     * long shortNames = view.applyStream(stream {@literal ->} stream.filter(it {@literal ->} it.getName().length() {@literal <} 4).count());<br>
+     * <p><b>Example</b>
+     * {@snippet lang="java":
+     * CacheView<User> view = jda.getUserCache();
+     * long shortNames = view.applyStream(stream ->
+     *     stream
+     *         .filter(it -> it.getName().length() < 4)
+     *         .count()
+     * );
+     *
      * System.out.println(shortNames + " users with less than 4 characters in their name");
-     * </code>
+     * }
      *
      * @param  action
      *         The action to perform on the stream
@@ -154,11 +159,15 @@ public interface CacheView<T> extends Iterable<T> {
      *
      * <p>The stream will be closed once this method returns and cannot be used anymore.
      *
-     * <p><b>Example</b><br>
-     * <code>
-     * {@literal CacheView<TextChannel>} view = guild.getTextChannelCache();<br>
-     * view.acceptStream(stream {@literal ->} stream.filter(it {@literal ->} it.isNSFW()).forEach(it {@literal ->} it.sendMessage("lewd").queue()));
-     * </code>
+     * <p><b>Example</b>
+     * {@snippet lang="java":
+     * CacheView<TextChannel> view = guild.getTextChannelCache();
+     * view.acceptStream(stream ->
+     *     stream
+     *         .filter(it -> it.isNSFW())
+     *         .forEach(it -> it.sendMessage("lewd").queue())
+     * );
+     * }
      *
      * @param  action
      *         The action to perform on the stream

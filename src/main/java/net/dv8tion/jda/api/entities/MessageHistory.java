@@ -375,11 +375,11 @@ public class MessageHistory {
      * <br>Will return a MessageHistory instance with the first 60 messages sent after the provided message ID.
      *
      * <p>Alternatively you can provide an epoch millisecond timestamp using {@link TimeUtil#getDiscordTimestamp(long)}:
-     * <br><pre><code>
+     * <br>{@snippet lang="java":
      * long timestamp = System.currentTimeMillis(); // or any other epoch millis timestamp
      * String discordTimestamp = Long.toUnsignedString(TimeUtil.getDiscordTimestamp(timestamp));
      * MessageHistory history = MessageHistory.getHistoryAfter(channel, discordTimestamp).complete();
-     * </code></pre>
+     * }
      *
      * @param  channel
      *         The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
@@ -422,11 +422,11 @@ public class MessageHistory {
      * <br>Will return a MessageHistory instance with the first 60 messages sent before the provided message ID.
      *
      * <p>Alternatively you can provide an epoch millisecond timestamp using {@link TimeUtil#getDiscordTimestamp(long)}:
-     * <br><pre><code>
+     * <br>{@snippet lang="java":
      * long timestamp = System.currentTimeMillis(); // or any other epoch millis timestamp
      * String discordTimestamp = Long.toUnsignedString(TimeUtil.getDiscordTimestamp(timestamp));
      * MessageHistory history = MessageHistory.getHistoryBefore(channel, discordTimestamp).complete();
-     * </code></pre>
+     * }
      *
      * @param  channel
      *         The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
@@ -469,11 +469,11 @@ public class MessageHistory {
      * <br>Will return a MessageHistory instance with the first 60 messages sent around the provided message ID.
      *
      * <p>Alternatively you can provide an epoch millisecond timestamp using {@link TimeUtil#getDiscordTimestamp(long)}:
-     * <br><pre><code>
+     * <br>{@snippet lang="java":
      * long timestamp = System.currentTimeMillis(); // or any other epoch millis timestamp
      * String discordTimestamp = Long.toUnsignedString(TimeUtil.getDiscordTimestamp(timestamp));
      * MessageHistory history = MessageHistory.getHistoryAround(channel, discordTimestamp).complete();
-     * </code></pre>
+     * }
      *
      * @param  channel
      *         The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}

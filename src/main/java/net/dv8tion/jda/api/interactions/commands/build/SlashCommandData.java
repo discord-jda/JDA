@@ -164,13 +164,13 @@ public interface SlashCommandData extends CommandData {
      * Use {@link SubcommandData#removeOptions(Predicate)} instead.
      *
      * <p><b>Example: Remove all options</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * command.removeOptions(option -> true);
-     * }</pre>
+     * }
      * <p><b>Example: Remove all options that are required</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * command.removeOptions(option -> option.isRequired());
-     * }</pre>
+     * }
      *
      * @param  condition
      *         The removal condition (must not throw)
@@ -202,9 +202,9 @@ public interface SlashCommandData extends CommandData {
      * Use {@link SubcommandGroupData#removeSubcommand(Predicate)} instead.
      *
      * <p><b>Example: Remove all subcommands</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * command.removeSubcommands(subcommand -> true);
-     * }</pre>
+     * }
      *
      * @param  condition
      *         The removal condition (must not throw)
@@ -234,9 +234,9 @@ public interface SlashCommandData extends CommandData {
      * Removes all subcommand groups that evaluate to {@code true} under the provided {@code condition}.
      *
      * <p><b>Example: Remove all subcommand groups</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * command.removeSubcommandGroups(group -> true);
-     * }</pre>
+     * }
      *
      * @param  condition
      *         The removal condition (must not throw)
@@ -454,7 +454,7 @@ public interface SlashCommandData extends CommandData {
      * for the same command, is not supported.
      *
      * <p>Valid command layouts are as follows:
-     * <pre>{@code
+     * {@snippet lang="java":
      * command
      * |-- subcommand
      * |__ subcommand group
@@ -467,7 +467,7 @@ public interface SlashCommandData extends CommandData {
      * command
      * |-- option
      * |__ option
-     * }</pre>
+     * }
      *
      * Having an option and subcommand simultaneously is not allowed.
      *
@@ -490,7 +490,7 @@ public interface SlashCommandData extends CommandData {
      * for the same command, is not supported.
      *
      * <p>Valid command layouts are as follows:
-     * <pre>{@code
+     * {@snippet lang="java":
      * command
      * |-- subcommand
      * |__ subcommand group
@@ -503,7 +503,7 @@ public interface SlashCommandData extends CommandData {
      * command
      * |-- option
      * |__ option
-     * }</pre>
+     * }
      *
      * Having an option and subcommand simultaneously is not allowed.
      *
@@ -530,7 +530,7 @@ public interface SlashCommandData extends CommandData {
      * for the same command, is not supported.
      *
      * <p>Valid command layouts are as follows:
-     * <pre>{@code
+     * {@snippet lang="java":
      * command
      * |-- subcommand
      * |__ subcommand group
@@ -543,7 +543,7 @@ public interface SlashCommandData extends CommandData {
      * command
      * |-- option
      * |__ option
-     * }</pre>
+     * }
      *
      * Having an option and subcommand simultaneously is not allowed.
      *
@@ -566,7 +566,7 @@ public interface SlashCommandData extends CommandData {
      * for the same command, is not supported.
      *
      * <p>Valid command layouts are as follows:
-     * <pre>{@code
+     * {@snippet lang="java":
      * command
      * |-- subcommand
      * |__ subcommand group
@@ -579,7 +579,7 @@ public interface SlashCommandData extends CommandData {
      * command
      * |-- option
      * |__ option
-     * }</pre>
+     * }
      *
      * Having an option and subcommand simultaneously is not allowed.
      *

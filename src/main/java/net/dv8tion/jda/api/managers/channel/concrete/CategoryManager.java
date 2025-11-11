@@ -24,9 +24,9 @@ import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManage
  * Manager providing methods to modify a {@link Category}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("Cool People Only").queue();
- * }</pre>
+ * }
  */
 public interface CategoryManager
         extends IPermissionContainerManager<Category, CategoryManager>,

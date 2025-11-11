@@ -148,11 +148,11 @@ public class RestConfig {
      * This is allowed by JDA, to allow proper use of {@link #setBaseUrl(String)} with any exotic proxy.
      *
      * <p><b>Example</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * setCustomBuilder((request) -> {
      *     request.header("X-My-Header", "MyValue");
      * })
-     * }</pre>
+     * }
      *
      * @param  customBuilder
      *         The request interceptor, or null to disable

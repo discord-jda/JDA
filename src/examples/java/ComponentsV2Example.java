@@ -72,33 +72,31 @@ import java.util.List;
  * <br>For this, you can use {@link IReplaceable#replace(ComponentReplacer)} on component containers and {@link ComponentTree}.
  *
  * <p>For example:
- * <pre>{@code
+ * {@snippet lang="java":
  *     public class MyButtonListener extends ListenerAdapter {
  *         @Override
- *         public void onButtonInteraction(ButtonInteractionEvent event)
- *         {
- *              final MessageComponentTree clickedAsDisabled = event.getMessage()
+ *         public void onButtonInteraction(ButtonInteractionEvent event) {
+ *             MessageComponentTree clickedAsDisabled = event.getMessage()
  *                     .getComponentTree()
  *                     .replace(ComponentReplacer.byId(event.getButton(), event.getButton().asDisabled()));
  *             event.editComponents(clickedAsDisabled).queue();
  *         }
  *     }
- * }</pre>
+ * }
  *
  * You can also easily disable all components:
  *
- * <pre>{@code
+ * {@snippet lang="java":
  *     public class MyButtonListener extends ListenerAdapter {
  *         @Override
- *         public void onButtonInteraction(ButtonInteractionEvent event)
- *         {
- *              final MessageComponentTree everythingAsDisabled = event.getMessage()
+ *         public void onButtonInteraction(ButtonInteractionEvent event) {
+ *             MessageComponentTree everythingAsDisabled = event.getMessage()
  *                     .getComponentTree()
  *                     .asDisabled();
  *             event.editComponents(everythingAsDisabled).queue();
  *         }
  *     }
- * }</pre>
+ * }
  *
  * <p>This is separate from {@linkplain ActionComponent#getCustomId() custom IDs}
  * which you can only find on components that trigger interactions.

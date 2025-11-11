@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
  * Manager providing functionality common for all {@link ThreadChannel ThreadChannels}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setSlowmode(10)
  *        .setArchived(false)
  *        .queue();
@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
  *        .setLocked(false)
  *        .setSlowmode(120)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see ThreadChannel#getManager()
  * @see ThreadChannel

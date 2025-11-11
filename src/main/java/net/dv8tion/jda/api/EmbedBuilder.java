@@ -542,14 +542,14 @@ public class EmbedBuilder {
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setThumbnail("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
      * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
-     * </code></pre>
+     * }
      *
      * @param  url
      *         the url of the thumbnail of the embed
@@ -585,14 +585,14 @@ public class EmbedBuilder {
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
      * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
-     * </code></pre>
+     * }
      *
      * @param  url
      *         the url of the image of the embed
@@ -680,14 +680,14 @@ public class EmbedBuilder {
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setAuthor("Minn", null, "attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
      * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
-     * </code></pre>
+     * }
      *
      * @param  name
      *         the name of the author of the embed. If this is not set, the author will not appear in the embed
@@ -756,14 +756,18 @@ public class EmbedBuilder {
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
+     *
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
-     * embed.setFooter("Cool footer!", "attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *
+     * // we specify this in sendFile as "cat.png"
+     * embed.setFooter("Cool footer!", "attachment://cat.png")
      *      .setDescription("This is a cute cat :3");
+     *
      * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
-     * </code></pre>
+     * }
      *
      * @param  text
      *         the text of the footer of the embed. If this is not set, the footer will not appear in the embed.

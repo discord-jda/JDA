@@ -51,9 +51,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * <p><b>Example</b><br>
      * Sending a message with the content {@code "Hello World!"}:
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendMessage("Hello ").addContent("World!").queue();
-     * }</pre>
+     * }
      *
      * @param  content
      *         The content to append
@@ -72,9 +72,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple embeds:
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendMessageEmbeds(embed1).addEmbeds(embed2).queue();
-     * }</pre>
+     * }
      *
      * @param  embeds
      *         The embeds to add
@@ -93,9 +93,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple embeds:
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendMessageEmbeds(embed1).addEmbeds(embed2).queue();
-     * }</pre>
+     * }
      *
      * @param  embeds
      *         The embeds to add
@@ -116,7 +116,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
-     * <pre>{@code
+     * {@snippet lang="java":
      * final List<MessageTopLevelComponent> list = new ArrayList<>();
      * list.add(ActionRow.of(selectMenu); // first row
      * list.add(ActionRow.of(button1, button2)); // second row (shows below the first)
@@ -124,7 +124,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * channel.sendMessage("Content here")
      *        .addComponents(list)
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to add,
@@ -149,11 +149,11 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendMessageComponents(ActionRow.of(selectMenu))
      *        .addComponents(ActionRow.of(button1, button2))
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to add,
@@ -210,9 +210,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple files:
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendFiles(file1).addFiles(file2).queue();
-     * }</pre>
+     * }
      *
      * @param  files
      *         The files to add
@@ -236,9 +236,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple files:
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.sendFiles(file1).addFiles(file2).queue();
-     * }</pre>
+     * }
      *
      * @param  files
      *         The files to add

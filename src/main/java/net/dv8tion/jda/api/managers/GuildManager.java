@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("Official JDA Guild")
  *        .setIcon(null)
  *        .queue();
@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
  *        .setName("Minn's Meme Den")
  *        .setExplicitContentLevel(Guild.ExplicitContentLevel.HIGH)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see net.dv8tion.jda.api.entities.Guild#getManager()
  */
@@ -391,11 +391,11 @@ public interface GuildManager extends Manager<GuildManager> {
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
      *
      * <p><b>Example</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * List<String> features = new ArrayList<>(guild.getFeatures());
      * features.add("INVITES_DISABLED");
      * guild.getManager().setFeatures(features).queue();
-     * }</pre>
+     * }
      *
      * @param  features
      *         The new features to use
@@ -489,11 +489,11 @@ public interface GuildManager extends Manager<GuildManager> {
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags" target="_blank">Official Discord API Documentation</a>.
      *
      * <p><b>Example</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * List<SystemChannelFlag> flags = new ArrayList<>(guild.getSystemChannelFlags());
      * flags.add(SystemChannelFlag.SUPPRESS_JOIN_NOTIFICATIONS);
      * guild.getManager().setSystemChannelFlags(flags).queue();
-     * }</pre>
+     * }
      *
      * @param  flags
      *         Collection of the new flags to use, flags not included in the collection

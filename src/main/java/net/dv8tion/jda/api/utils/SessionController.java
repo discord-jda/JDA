@@ -44,35 +44,33 @@ import javax.annotation.Nonnull;
  * <p><b>Examples</b><br>
  *
  * <b>Using {@link net.dv8tion.jda.api.JDABuilder JDABuilder}</b>
- * <br>
- * <pre><code>
+ * {@snippet lang="java":
  * JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN);
  * builder.setSessionController(new SessionControllerAdapter() {
- *     {@literal @Override}
+ *     @Override
  *     public void appendSession(SessionConnectNode node) {
  *         System.out.println("[SessionController] Adding SessionConnectNode to Queue!");
  *         super.appendSession(node);
  *     }
  * });
  * builder.addEventListeners(myListener);
- * for (int i = 0; i {@literal <} 10; i++) {
+ * for (int i = 0; i < 10; i++) {
  *     builder.useSharding(i, 10).build();
  * }
- * </code></pre>
+ * }
  *
  * <p><b>Using {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager}</b>
- * <br>
- * <pre><code>
+ * {@snippet lang="java":
  * DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(BOT_TOKEN);
  * builder.setSessionController(new SessionControllerAdapter() {
- *     {@literal @Override}
- *     public {@literal Pair<String, Integer>} getGatewayBot(JDA api) {
+ *     @Override
+ *     public Pair<String, Integer> getGatewayBot(JDA api) {
  *         return Pair.of(getGateway(), 10);
  *     }
  * });
  * builder.addEventListeners(myListener);
  * builder.build();
- * </code></pre>
+ * }
  */
 public interface SessionController {
     /**

@@ -42,12 +42,12 @@ import javax.annotation.Nonnull;
  *
  * <p><b>Example</b><br>
  *
- * <pre>{@code
+ * {@snippet lang="java":
  * TriggerConfig config = TriggerConfig.keywordFilter("discord.gg/*").addAllowList("gateway.discord.gg/*");
  * AutoModRuleData data = AutoModRuleData.onMessage("Invite Block", config);
  * data.addExemptRoles(guild.getRolesByName("Moderator", true));
  * data.putResponse(AutoModResponse.blockMessage());
- * }</pre>
+ * }
  *
  * <ol>
  *   <li>The {@link TriggerConfig} defines under what conditions the rule should be triggered and execute a response.

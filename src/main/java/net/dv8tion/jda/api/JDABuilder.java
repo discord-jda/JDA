@@ -661,7 +661,7 @@ public class JDABuilder {
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public void configureCache(JDABuilder builder) {
      *     // Cache members who are in a voice channel
      *     MemberCachePolicy policy = MemberCachePolicy.VOICE;
@@ -675,7 +675,7 @@ public class JDABuilder {
      *
      *     builder.setMemberCachePolicy(policy);
      * }
-     * }</pre>
+     * }
      *
      * @param  policy
      *         The {@link MemberCachePolicy} or null to use default {@link MemberCachePolicy#ALL}

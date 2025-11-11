@@ -34,10 +34,10 @@ import javax.annotation.Nonnull;
  * Each timestamp can be displayed with different {@link TimeFormat TimeFormats}.
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * channel.sendMessage("Current Time: " + TimeFormat.RELATIVE.now()).queue();
  * channel.sendMessage("Uptime: " + TimeFormat.RELATIVE.format(getStartTime())).queue();
- * }</pre>
+ * }
  */
 public enum TimeFormat {
     /** Formats time as {@code 18:49} or {@code 6:49 PM} */

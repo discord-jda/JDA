@@ -27,13 +27,13 @@ import java.util.Iterator;
  *
  * <p><b>Example</b><br>
  * This can handle any exceptions thrown while iterating and ensures the lock is released correctly.
- * <pre>{@code
+ * {@snippet lang="java":
  * try (ClosableIterator<T> it = cacheView.lockedIterator()) {
  *     while (it.hasNext()) {
  *         consume(it.next());
  *     }
  * }
- * }</pre>
+ * }
  *
  * @param <T>
  *        The element type

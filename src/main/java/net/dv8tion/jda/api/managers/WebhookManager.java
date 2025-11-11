@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("GitHub Webhook")
  *        .setChannel(channel)
  *        .queue();
@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
  *        .setName("Meme Feed")
  *        .setAvatar(null)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see net.dv8tion.jda.api.entities.Webhook#getManager()
  */

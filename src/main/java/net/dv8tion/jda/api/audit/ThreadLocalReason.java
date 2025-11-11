@@ -26,35 +26,35 @@ import javax.annotation.Nullable;
  * when no other reason was set.
  *
  * <p>Note that {@link net.dv8tion.jda.api.requests.RestAction#queue(Consumer) RestAction.queue()} will forward any
- * thread-local reason set through this handle. Thus audit-log reasons done by callbacks will also use the one set
+ * thread-local reason set through this handle. Thus, audit-log reasons done by callbacks will also use the one set
  * from the executing thread.
  *
- * <p><b>Example without closable</b><br>
- * <pre><code>
+ * <p><b>Example without closable</b>
+ * {@snippet lang="java":
  * String previousReason = ThreadLocalReason.getCurrent();
  * ThreadLocalReason.setCurrent("Hello World");
  * try {
- *     guild.ban(user, 0).queue(v -&gt; {
+ *     guild.ban(user, 0).queue(v -> {
  *         guild.unban(user).queue(); // also uses the reason "Hello World"
  *     });
  * } finally {
  *     //Forwarding the reason is not async so resetting it here is fine.
  *     ThreadLocalReason.setCurrent(previousReason);
  * }
- * //This will not use the reason "Hello World" but the previous, or none if none was set previously
+ * // This will not use the reason "Hello World" but the previous, or none if none was set previously
  * guild.kick(user).queue();
- * </code></pre>
+ * }
  *
- * <p><b>Example with closable</b><br>
- * <pre><code>
+ * <p><b>Example with closable</b>
+ * {@snippet lang="java":
  * try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable("Hello World")) {
- *     guild.ban(user, 0).queue(v -&gt; {
+ *     guild.ban(user, 0).queue(v -> {
  *         guild.unban(user).queue(); // also uses the reason "Hello World"
  *     });
  * } // automatically changes reason back
  * //This will not use the reason "Hello World" but the previous, or none if none was set previously
  * guild.kick(user).queue();
- * </code></pre>
+ * }
  *
  * @see net.dv8tion.jda.api.requests.restaction.AuditableRestAction#reason(String) AuditableRestAction.reason(String)
  * @see ThreadLocal
@@ -120,15 +120,15 @@ public final class ThreadLocalReason {
      * Allows to use try-with-resources blocks for setting reasons
      *
      * <p>Example:
-     * <pre><code>
+     * {@snippet lang="java":
      * try (ThreadLocalReason.Closable closable = new ThreadLocalReason.Closable("Massban")) { // calls setCurrent("Massban")
-     *     {@literal List<Member>} mentions = event.getMessage().getMentionedMembers();
+     *     List<Member> mentions = event.getMessage().getMentionedMembers();
      *     Guild guild = event.getGuild();
      *     mentions.stream()
-     *             .map(m -&gt; guild.ban(m, 7))
+     *             .map(m -> guild.ban(m, 7))
      *             .forEach(RestAction::queue);
      * } // calls resetCurrent()
-     * </code></pre>
+     * }
      */
     public static class Closable implements AutoCloseable {
         private final String previous;

@@ -26,10 +26,10 @@ import javax.annotation.Nonnull;
  * Manager providing functionality to update the name field for an {@link ApplicationEmoji}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("minn")
  *        .queue();
- * }</pre>
+ * }
  *
  * @see ApplicationEmoji#getManager()
  */

@@ -235,7 +235,7 @@ public interface WebhookClient<T> extends ISnowflake {
      * </ul>
      *
      * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Make a file upload instance which refers to a local file called "myFile.png"
      * // The second parameter "image.png" is the filename we tell discord to use for the attachment
      * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
@@ -250,7 +250,7 @@ public interface WebhookClient<T> extends ISnowflake {
      * webhook.sendMessageEmbeds(Collections.singleton(embed)) // send the embeds
      *        .addFiles(file) // add the file as attachment
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  embeds
      *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
@@ -286,7 +286,7 @@ public interface WebhookClient<T> extends ISnowflake {
      * </ul>
      *
      * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Make a file upload instance which refers to a local file called "myFile.png"
      * // The second parameter "image.png" is the filename we tell discord to use for the attachment
      * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
@@ -301,7 +301,7 @@ public interface WebhookClient<T> extends ISnowflake {
      * webhook.sendMessageEmbeds(embed) // send the embed
      *        .addFiles(file) // add the file as attachment
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  embed
      *         {@link MessageEmbed} to use
@@ -465,7 +465,7 @@ public interface WebhookClient<T> extends ISnowflake {
      * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Make a file upload instance which refers to a local file called "myFile.png"
      * // The second parameter "image.png" is the filename we tell discord to use for the attachment
      * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
@@ -480,7 +480,7 @@ public interface WebhookClient<T> extends ISnowflake {
      * webhook.sendFiles(Collections.singleton(file)) // send the file upload
      *        .addEmbeds(embed) // add the embed you want to reference the file with
      *        .queue();
-     * }</pre>
+     * }
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -525,7 +525,7 @@ public interface WebhookClient<T> extends ISnowflake {
      * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
      *
      * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Make a file upload instance which refers to a local file called "myFile.png"
      * // The second parameter "image.png" is the filename we tell discord to use for the attachment
      * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
@@ -540,7 +540,7 @@ public interface WebhookClient<T> extends ISnowflake {
      * webhook.sendFiles(file) // send the file upload
      *        .addEmbeds(embed) // add the embed you want to reference the file with
      *        .queue();
-     * }</pre>
+     * }
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>

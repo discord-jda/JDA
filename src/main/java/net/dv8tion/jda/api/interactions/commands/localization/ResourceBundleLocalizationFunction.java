@@ -59,11 +59,11 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
      * <p><b>Example usage:</b>
      * <br>This creates a LocalizationFunction from a French ResourceBundle (MyCommands_fr.properties)
      *
-     * <pre><code>
+     * {@snippet lang="java":
      *     final LocalizationFunction localizationFunction = ResourceBundleLocalizationFunction
      *                 .fromBundle(ResourceBundle.getBundle("MyCommands", Locale.FRENCH), DiscordLocale.FRENCH)
      *                 .build();
-     * </code></pre>
+     * }
      *
      * @param  resourceBundle
      *         The resource bundle to get the localized strings from
@@ -93,11 +93,11 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
      * <p><b>Example usage:</b>
      * <br>This creates a LocalizationFunction from 2 resource bundles, one in Spanish (MyCommands_es_ES.properties) and one in French (MyCommands_fr.properties)
      *
-     * <pre><code>
+     * {@snippet lang="java":
      *     final LocalizationFunction localizationFunction = ResourceBundleLocalizationFunction
      *                         .fromBundles("MyCommands", DiscordLocale.SPANISH, DiscordLocale.FRENCH)
      *                         .build();
-     * </code></pre>
+     * }
      *
      * @param  baseName
      *         The base name of the resource bundle, for example, the base name of {@code "MyBundle_fr_FR.properties"} would be {@code "MyBundle"}

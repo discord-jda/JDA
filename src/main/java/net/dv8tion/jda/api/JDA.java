@@ -264,11 +264,11 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * <br>This will request the current user from the API and calculate the time the response took.
      *
      * <p><b>Example</b><br>
-     * <pre><code>
-     * jda.getRestPing().queue( (time) {@literal ->}
+     * {@snippet lang="java":
+     * jda.getRestPing().queue((time) ->
      *     channel.sendMessageFormat("Ping: %d ms", time).queue()
      * );
-     * </code></pre>
+     * }
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
      *
@@ -382,14 +382,14 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * You can use {@link #shutdownNow()} to cancel all pending requests and immediately shutdown.
      *
      * <p><b>Example</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * jda.shutdown();
      * // Allow at most 10 seconds for remaining requests to finish
      * if (!jda.awaitShutdown(10, TimeUnit.SECONDS)) {
      *     jda.shutdownNow(); // Cancel all remaining requests
      *     jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
      * }
-     * }</pre>
+     * }
      *
      * <p><b>This will not implicitly call {@code shutdown()}, you are responsible to ensure that the shutdown process has started.</b>
      *
@@ -416,14 +416,14 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * You can use {@link #shutdownNow()} to cancel all pending requests and immediately shutdown.
      *
      * <p><b>Example</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * jda.shutdown();
      * // Allow at most 10 seconds for remaining requests to finish
      * if (!jda.awaitShutdown(Duration.ofSeconds(10))) {
      *     jda.shutdownNow(); // Cancel all remaining requests
      *     jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
      * }
-     * }</pre>
+     * }
      *
      * <p><b>This will not implicitly call {@code shutdown()}, you are responsible to ensure that the shutdown process has started.</b>
      *
@@ -453,14 +453,14 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * You can use {@link #shutdownNow()} to cancel all pending requests and immediately shutdown.
      *
      * <p><b>Example</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * jda.shutdown();
      * // Allow at most 10 seconds for remaining requests to finish
      * if (!jda.awaitShutdown(Duration.ofSeconds(10))) {
      *     jda.shutdownNow(); // Cancel all remaining requests
      *     jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
      * }
-     * }</pre>
+     * }
      *
      * <p><b>This will not implicitly call {@code shutdown()}, you are responsible to ensure that the shutdown process has started.</b>
      *
@@ -600,7 +600,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * <p><b>Example:</b>
      *
      * <p>Listening to a message from a channel and a user, after using a slash command:
-     * <pre>{@code
+     * {@snippet lang="java":
      * final Duration timeout = Duration.ofSeconds(5);
      * event.reply("Reply in " + TimeFormat.RELATIVE.after(timeout) + " if you can!")
      *         .setEphemeral(true)
@@ -615,7 +615,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      *         .subscribe(messageEvent -> {
      *             event.getHook().editOriginal("You sent: " + messageEvent.getMessage().getContentRaw()).queue();
      *         });
-     * }</pre>
+     * }
      *
      * @param  eventType
      *         Type of the event to listen to
@@ -758,7 +758,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * <p><b>Examples</b>
      *
      * <p>Set list to 2 commands:
-     * <pre>{@code
+     * {@snippet lang="java":
      * jda.updateCommands()
      *   .addCommands(Commands.slash("ping", "Gives the current ping"))
      *   .addCommands(Commands.slash("ban", "Ban the target user")
@@ -766,12 +766,12 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      *     .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *   .queue();
-     * }</pre>
+     * }
      *
      * <p>Delete all commands:
-     * <pre>{@code
+     * {@snippet lang="java":
      * jda.updateCommands().queue();
-     * }</pre>
+     * }
      *
      * @return {@link CommandListUpdateAction}
      *
@@ -1505,13 +1505,13 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public void sendMessage(JDA jda, long userId, String content) {
      *     jda.openPrivateChannelById(userId)
      *        .flatMap(channel -> channel.sendMessage(content))
      *        .queue();
      * }
-     * }</pre>
+     * }
      *
      * @param  userId
      *         The id of the target user
@@ -1536,13 +1536,13 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public void sendMessage(JDA jda, String userId, String content) {
      *     jda.openPrivateChannelById(userId)
      *        .flatMap(channel -> channel.sendMessage(content))
      *        .queue();
      * }
-     * }</pre>
+     * }
      *
      * @param  userId
      *         The id of the target user
@@ -1873,17 +1873,6 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @see #shutdown()
      */
     void shutdownNow();
-
-    /// **
-    // * Installs an auxiliary cable into the given port of your system.
-    // *
-    // * @param  port
-    // *         The port in which the cable should be installed.
-    // *
-    // * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction
-    // AuditableRestAction}{@literal <}{@link Void}{@literal >}
-    // */
-    // AuditableRestAction<Void> installAuxiliaryCable(int port);
 
     /**
      * Retrieves the {@link ApplicationInfo ApplicationInfo} for

@@ -244,19 +244,19 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p><b>Examples</b>
      *
      * <p>Set list to 2 commands:
-     * <pre>{@code
+     * {@snippet lang="java":
      * guild.updateCommands()
      *   .addCommands(Commands.slash("ping", "Gives the current ping"))
      *   .addCommands(Commands.slash("ban", "Ban the target user")
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *     .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
      *   .queue();
-     * }</pre>
+     * }
      *
      * <p>Delete all commands:
-     * <pre>{@code
+     * {@snippet lang="java":
      * guild.updateCommands().queue();
-     * }</pre>
+     * }
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
@@ -641,7 +641,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session to all {@link Member Members} of this Guild.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Check if the members of this guild have at least 50% bots (bot collection/farm)
      * public void checkBots(Guild guild) {
      *     // Keep in mind: This requires the GUILD_MEMBERS intent which is disabled in createDefault and createLight by default
@@ -659,7 +659,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *          })
      *          .thenRun(guild::pruneMemberCache); // Then prune the cache
      * }
-     * }</pre>
+     * }
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
@@ -2667,7 +2667,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
      *
      * <p><b>Examples</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public void logBan(GuildBanEvent event) {
      *     Guild guild = event.getGuild();
      *     List<TextChannel> modLog = guild.getTextChannelsByName("mod-log", true);
@@ -2684,7 +2684,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             );
      *          });
      * }
-     * }</pre>
+     * }
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account
@@ -2741,11 +2741,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>If the self member has {@link Permission#VOICE_MUTE_OTHERS} this will immediately promote them to speaker.
      *
      * <p>Example:
-     * <pre>{@code
+     * {@snippet lang="java":
      * stageChannel.createStageInstance("Talent Show").queue()
      * guild.requestToSpeak(); // Set request to speak flag
      * guild.getAudioManager().openAudioConnection(stageChannel); // join the channel
-     * }</pre>
+     * }
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
@@ -4063,17 +4063,17 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * <p><b>Examples</b><br>
      * Banning a user without deleting any messages:
-     * <pre>{@code
+     * {@snippet lang="java":
      * guild.ban(user, 0, TimeUnit.SECONDS)
      *      .reason("Banned for rude behavior")
      *      .queue();
-     * }</pre>
+     * }
      * Banning a user and deleting messages from the past hour:
-     * <pre>{@code
+     * {@snippet lang="java":
      * guild.ban(user, 1, TimeUnit.HOURS)
      *      .reason("Banned for spamming")
      *      .queue();
-     * }</pre>
+     * }
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -4594,7 +4594,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>If a role is both in {@code rolesToAdd} and {@code rolesToRemove} it will be removed.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void promote(Member member) {
      *     Guild guild = member.getGuild();
      *     List<Role> pleb = guild.getRolesByName("Pleb", true); // remove all roles named "pleb"
@@ -4602,7 +4602,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     // update roles in single request
      *     guild.modifyMemberRoles(member, knight, pleb).queue();
      * }
-     * }</pre>
+     * }
      *
      * <p><b>Warning</b><br>
      * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
@@ -4611,12 +4611,12 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * by a {@link net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent GenericGuildMemberEvent} targeting the same Member.</b>
      *
      * <p>This is logically equivalent to:
-     * <pre>{@code
+     * {@snippet lang="java":
      * Set<Role> roles = new HashSet<>(member.getRoles());
      * roles.addAll(rolesToAdd);
      * roles.removeAll(rolesToRemove);
      * RestAction<Void> action = guild.modifyMemberRoles(member, roles);
-     * }</pre>
+     * }
      *
      * <p>You can use {@link #addRoleToMember(UserSnowflake, Role)} and {@link #removeRoleFromMember(UserSnowflake, Role)} to make updates
      * independent of the cache.
@@ -4685,13 +4685,13 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void removeRoles(Member member) {
      *     Guild guild = member.getGuild();
      *     // pass no role, this means we set the roles of the member to an empty array.
      *     guild.modifyMemberRoles(member).queue();
      * }
-     * }</pre>
+     * }
      *
      * @param  member
      *         A {@link Member Member} of which to override the Roles of
@@ -4747,7 +4747,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void makeModerator(Member member) {
      *     Guild guild = member.getGuild();
      *     List<Role> roles = new ArrayList<>(member.getRoles()); // modifiable copy
@@ -4756,7 +4756,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     // update the member with new roles
      *     guild.modifyMemberRoles(member, roles).queue();
      * }
-     * }</pre>
+     * }
      *
      * @param  member
      *         A {@link Member Member} of which to override the Roles of
@@ -5502,11 +5502,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * {@link Permission#MANAGE_EVENTS} is required on the guild level in order to create this type of event.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * guild.createScheduledEvent("Cactus Beauty Contest", "Mike's Backyard", OffsetDateTime.now().plusHours(1), OffsetDateTime.now().plusHours(3))
      *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
      *     .queue();
-     * }</pre>
+     * }
      *
      * @param  name
      *         the name for this scheduled event, 1-100 characters
@@ -5571,11 +5571,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ol>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * guild.createScheduledEvent("Cactus Beauty Contest", guild.getGuildChannelById(channelId), OffsetDateTime.now().plusHours(1))
      *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
      *     .queue();
-     * }</pre>
+     * }
      *
      * @param  name
      *         the name for this scheduled event, 1-100 characters

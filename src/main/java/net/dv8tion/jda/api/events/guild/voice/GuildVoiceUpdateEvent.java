@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * <p>Can be used to detect when a Member leaves/joins an AudioChannel.
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * AudioChannelUnion joinedChannel = event.getChannelJoined();
  * AudioChannelUnion leftChannel = event.getChannelLeft();
  *
@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
  * if (joinedChannel != null && leftChannel != null) {
  *   // the member moved between two audio channels in the same guild
  * }
- * }</pre>
+ * }
  *
  * <p><b>Requirements</b><br>
  *

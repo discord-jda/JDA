@@ -46,11 +46,11 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * ActionRow row = union.asActionRow();
      * ActionRow row2 = (ActionRow) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#ACTION_ROW} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof ActionRow</code>
@@ -68,11 +68,11 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * Section section = union.asSection();
      * Section section2 = (Section) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#SECTION} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Section</code>
@@ -90,11 +90,11 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * TextDisplay textDisplay = union.asTextDisplay();
      * TextDisplay textDisplay2 = (TextDisplay) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#TEXT_DISPLAY} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof TextDisplay</code>
@@ -112,11 +112,11 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * MediaGallery mediaGallery = union.asMediaGallery();
      * MediaGallery mediaGallery2 = (MediaGallery) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#MEDIA_GALLERY} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof MediaGallery</code>
@@ -134,11 +134,11 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * Separator separator = union.asSeparator();
      * Separator separator2 = (Separator) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#SEPARATOR} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Separator</code>
@@ -156,11 +156,11 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * FileDisplay fileDisplay = union.asFileDisplay();
      * FileDisplay fileDisplay2 = (FileDisplay) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#FILE_DISPLAY} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof FileDisplay</code>

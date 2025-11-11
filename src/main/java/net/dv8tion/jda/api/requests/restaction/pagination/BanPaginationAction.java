@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
  * <br>Maximum - 1000
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * // Revoke all bans from a guild with a certain reason
  * public static void findBansWithReason(Guild guild, String reason) {
  *     BanPaginationAction bans = guild.retrieveBanList();
@@ -44,7 +44,7 @@ import javax.annotation.Nonnull;
  *         return true; // continues iterating if this returns true
  *     });
  * }
- * }</pre>
+ * }
  *
  * @see Guild#retrieveBanList()
  * @see Guild#retrieveBan(net.dv8tion.jda.api.entities.UserSnowflake)

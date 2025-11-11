@@ -39,12 +39,12 @@ import javax.annotation.Nonnull;
  * </ul>
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * AutoModRuleData rule = AutoModRule.onMessage("Invite Links",
  *   TriggerConfig.keywordFilter("discord.gg/*") // trigger on all invite links
  *     .setAllowList("discord.gg/discord-api")   // except certain whitelisted ones
  * );
- * }</pre>
+ * }
  *
  * @see AutoModRule
  */

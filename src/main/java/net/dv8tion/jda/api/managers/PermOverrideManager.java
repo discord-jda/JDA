@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setDenied(Permission.MESSAGE_SEND)
  *        .setAllowed(Permission.VIEW_CHANNEL)
  *        .queue();
@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
  *        .grant(Permission.MESSAGE_SEND)
  *        .clear(Permission.MESSAGE_MANAGE)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see net.dv8tion.jda.api.entities.PermissionOverride#getManager()
  */

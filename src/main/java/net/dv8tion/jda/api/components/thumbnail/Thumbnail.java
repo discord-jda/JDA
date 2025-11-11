@@ -66,7 +66,7 @@ public interface Thumbnail extends SectionAccessoryComponent {
      * </ol>
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * Thumbnail thumbnail = Thumbnail.fromUrl("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *     .setDescription("This is a cute car :3");
@@ -81,7 +81,7 @@ public interface Thumbnail extends SectionAccessoryComponent {
      *     .setComponents(section)
      *     .useComponentsV2()
      *     .queue();
-     * </code></pre>
+     * }
      *
      * @param  url
      *         The URL of the thumbnail to display
@@ -108,7 +108,7 @@ public interface Thumbnail extends SectionAccessoryComponent {
      * as such, you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * // It's recommended to use a more robust HTTP library instead,
      * // such as Java 11+'s HttpClient, or OkHttp (included with JDA), among many other options.
@@ -123,7 +123,7 @@ public interface Thumbnail extends SectionAccessoryComponent {
      * channel.sendComponents(section)
      *     .useComponentsV2()
      *     .queue();
-     * </code></pre>
+     * }
      *
      * @param  file
      *         The {@link FileUpload} to display

@@ -40,11 +40,11 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * Button button = union.asButton();
      * Button button2 = (Button) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#BUTTON} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Button</code>
@@ -62,11 +62,11 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * StringSelectMenu stringSelectMenu = union.asStringSelectMenu();
      * StringSelectMenu stringSelectMenu2 = (Button) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#STRING_SELECT} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof StringSelectMenu</code>
@@ -84,11 +84,11 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, I
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * EntitySelectMenu entitySelectMenu = union.asEntitySelectMenu();
      * EntitySelectMenu entitySelectMenu2 = (Button) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#MENTIONABLE_SELECT} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof EntitySelectMenu</code>

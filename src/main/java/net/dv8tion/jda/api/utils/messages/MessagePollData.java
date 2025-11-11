@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  * A poll that can be attached to a {@link MessageCreateRequest}.
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * channel.sendMessage("Hello guys! Check my poll:")
  *   .setPoll(
  *     MessagePollData.builder("Which programming language is better?")
@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
  *       .addAnswer("Kotlin", Emoji.fromFormatted("<:kotlin:295940257797636096>"))
  *       .build())
  *   .queue()
- * }</pre>
+ * }
  *
  * @see #builder(String)
  * @see MessageCreateBuilder#setPoll(MessagePollData)

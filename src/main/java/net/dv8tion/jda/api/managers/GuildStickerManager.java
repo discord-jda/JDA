@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality to update one or more fields for {@link GuildSticker}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("catDance")
  *        .setDescription("Cat dancing")
  *        .queue();
@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
  *        .setName("dogDance")
  *        .setTags("dancing", "dog")
  *        .queue();
- * }</pre>
+ * }
  *
  * @see GuildSticker#getManager()
  * @see Guild#editSticker(StickerSnowflake)
