@@ -28,8 +28,7 @@ import javax.annotation.Nullable;
 /**
  * Component which has an associated custom id.
  */
-public interface ICustomId extends Component
-{
+public interface ICustomId extends Component {
     /**
      * An unique component ID or {@code null}.
      * <br>Some components such as link buttons don't have this.

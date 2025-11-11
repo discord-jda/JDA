@@ -71,99 +71,114 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("ConstantConditions")
-public class ChannelUpdateHandler extends SocketHandler
-{
-    public ChannelUpdateHandler(JDAImpl api)
-    {
+public class ChannelUpdateHandler extends SocketHandler {
+    public ChannelUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
-        if (type == ChannelType.GROUP)
-        {
+        if (type == ChannelType.GROUP) {
             WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
             return null;
         }
-        if (!content.isNull("guild_id"))
-        {
+        if (!content.isNull("guild_id")) {
             long guildId = content.getUnsignedLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId)) {
                 return guildId;
+            }
         }
 
         long channelId = content.getUnsignedLong("id");
 
-        //We assume the CHANNEL_UPDATE was for a GuildChannel because PrivateChannels don't emit CHANNEL_UPDATE for 1:1 DMs, only Groups.
-        AbstractGuildChannelImpl<?> channel = (AbstractGuildChannelImpl<?>) getJDA().getGuildChannelById(channelId);
-        if (channel == null)
-        {
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a channel that does not exist. JSON: {}", content);
+        // We assume the CHANNEL_UPDATE was for a GuildChannel because PrivateChannels don't emit
+        // CHANNEL_UPDATE for 1:1 DMs, only Groups.
+        AbstractGuildChannelImpl<?> channel =
+                (AbstractGuildChannelImpl<?>) getJDA().getGuildChannelById(channelId);
+        if (channel == null) {
+            getJDA().getEventCache()
+                    .cache(
+                            EventCache.Type.CHANNEL,
+                            channelId,
+                            responseNumber,
+                            allContent,
+                            this::handle);
+            EventCache.LOG.debug(
+                    "CHANNEL_UPDATE attempted to update a channel that does not exist. JSON: {}",
+                    content);
             return null;
         }
 
-        //Detect if we changed the channel type at all and reconstruct the channel entity if needed
+        // Detect if we changed the channel type at all and reconstruct the channel entity if needed
         channel = handleChannelTypeChange(channel, content, type);
-        if (channel == null)
+        if (channel == null) {
             return null;
+        }
 
-        //Handle shared properties
+        // Handle shared properties
 
         String oldName = channel.getName();
         String name = content.getString("name", oldName);
-        if (!Objects.equals(oldName, name))
-        {
+        if (!Objects.equals(oldName, name)) {
             channel.setName(name);
-            getJDA().handleEvent(
-                new ChannelUpdateNameEvent(
-                    getJDA(), responseNumber,
-                    channel, oldName, name));
+            getJDA().handleEvent(new ChannelUpdateNameEvent(
+                    getJDA(), responseNumber, channel, oldName, name));
         }
 
-        if (channel instanceof ITopicChannelMixin<?>)
+        if (channel instanceof ITopicChannelMixin<?>) {
             handleTopic((ITopicChannelMixin<?>) channel, content.getString("topic", null));
+        }
 
-        if (channel instanceof ISlowmodeChannelMixin<?>)
-            handleSlowmode((ISlowmodeChannelMixin<?>) channel, content.getInt("rate_limit_per_user", 0));
+        if (channel instanceof ISlowmodeChannelMixin<?>) {
+            handleSlowmode(
+                    (ISlowmodeChannelMixin<?>) channel, content.getInt("rate_limit_per_user", 0));
+        }
 
-        if (channel instanceof IAgeRestrictedChannelMixin<?>)
+        if (channel instanceof IAgeRestrictedChannelMixin<?>) {
             handleNsfw((IAgeRestrictedChannelMixin<?>) channel, content.getBoolean("nsfw"));
+        }
 
-        if (channel instanceof ICategorizableChannelMixin<?>)
-            handleParentCategory((ICategorizableChannelMixin<?>) channel, content.getUnsignedLong("parent_id", 0));
+        if (channel instanceof ICategorizableChannelMixin<?>) {
+            handleParentCategory(
+                    (ICategorizableChannelMixin<?>) channel,
+                    content.getUnsignedLong("parent_id", 0));
+        }
 
-        if (channel instanceof IPositionableChannelMixin<?>)
+        if (channel instanceof IPositionableChannelMixin<?>) {
             handlePosition((IPositionableChannelMixin<?>) channel, content.getInt("position", 0));
+        }
 
-        if (channel instanceof IThreadContainerMixin<?>)
+        if (channel instanceof IThreadContainerMixin<?>) {
             handleThreadContainer((IThreadContainerMixin<?>) channel, content);
+        }
 
-        if (channel instanceof AudioChannelMixin<?>)
+        if (channel instanceof AudioChannelMixin<?>) {
             handleAudioChannel((AudioChannelMixin<?>) channel, content);
+        }
 
-        if (channel instanceof IPostContainerMixin<?>)
+        if (channel instanceof IPostContainerMixin<?>) {
             handlePostContainer((IPostContainerMixin<?>) channel, content);
+        }
 
-        //Handle concrete type specific properties
+        // Handle concrete type specific properties
 
-        switch (type)
-        {
+        switch (type) {
             case FORUM:
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
 
-                int layout = content.getInt("default_forum_layout", ((ForumChannelImpl) channel).getRawLayout());
+                int layout = content.getInt(
+                        "default_forum_layout", ((ForumChannelImpl) channel).getRawLayout());
                 int oldLayout = forumChannel.getRawLayout();
 
-                if (oldLayout != layout)
-                {
+                if (oldLayout != layout) {
                     forumChannel.setDefaultLayout(layout);
-                    getJDA().handleEvent(
-                            new ChannelUpdateDefaultLayoutEvent(
-                                    getJDA(), responseNumber,
-                                    forumChannel, ForumChannel.Layout.fromKey(oldLayout), ForumChannel.Layout.fromKey(layout)));
+                    getJDA().handleEvent(new ChannelUpdateDefaultLayoutEvent(
+                            getJDA(),
+                            responseNumber,
+                            forumChannel,
+                            ForumChannel.Layout.fromKey(oldLayout),
+                            ForumChannel.Layout.fromKey(layout)));
                 }
                 break;
             case VOICE:
@@ -173,23 +188,27 @@ public class ChannelUpdateHandler extends SocketHandler
             case CATEGORY:
                 break;
             default:
-                WebSocketClient.LOG.debug("CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
+                WebSocketClient.LOG.debug(
+                        "CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
         }
 
         DataArray permOverwrites = content.getArray("permission_overwrites");
         applyPermissions((IPermissionContainerMixin<?>) channel, permOverwrites);
 
-        boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission(channel, Permission.VIEW_CHANNEL);
-        if (channel instanceof IThreadContainer && !hasAccessToChannel)
+        boolean hasAccessToChannel =
+                channel.getGuild().getSelfMember().hasPermission(channel, Permission.VIEW_CHANNEL);
+        if (channel instanceof IThreadContainer && !hasAccessToChannel) {
             handleHideChildThreads((IThreadContainer) channel);
+        }
 
         return null;
     }
 
-    private AbstractGuildChannelImpl<?> handleChannelTypeChange(AbstractGuildChannelImpl<?> channel, DataObject content, ChannelType newChannelType)
-    {
-        if (channel.getType() == newChannelType)
+    private AbstractGuildChannelImpl<?> handleChannelTypeChange(
+            AbstractGuildChannelImpl<?> channel, DataObject content, ChannelType newChannelType) {
+        if (channel.getType() == newChannelType) {
             return channel;
+        }
 
         EntityBuilder builder = getJDA().getEntityBuilder();
         GuildImpl guild = (GuildImpl) channel.getGuild();
@@ -197,17 +216,18 @@ public class ChannelUpdateHandler extends SocketHandler
         ChannelType oldType = channel.getType();
 
         EnumSet<ChannelType> expectedTypes = EnumSet.complementOf(EnumSet.of(
-            ChannelType.PRIVATE,
-            ChannelType.GROUP,
-            ChannelType.GUILD_NEWS_THREAD,
-            ChannelType.GUILD_PRIVATE_THREAD,
-            ChannelType.GUILD_PUBLIC_THREAD,
-            ChannelType.UNKNOWN
-        ));
+                ChannelType.PRIVATE,
+                ChannelType.GROUP,
+                ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.GUILD_PRIVATE_THREAD,
+                ChannelType.GUILD_PUBLIC_THREAD,
+                ChannelType.UNKNOWN));
 
-        if (!expectedTypes.contains(oldType) || !expectedTypes.contains(newChannelType))
-        {
-            WebSocketClient.LOG.warn("Unexpected channel type change {}->{}, discarding from cache.", channel.getType().getId(), content.getInt("type"));
+        if (!expectedTypes.contains(oldType) || !expectedTypes.contains(newChannelType)) {
+            WebSocketClient.LOG.warn(
+                    "Unexpected channel type change {}->{}, discarding from cache.",
+                    channel.getType().getId(),
+                    content.getInt("type"));
             guild.uncacheChannel(channel, false);
             return null;
         }
@@ -215,84 +235,81 @@ public class ChannelUpdateHandler extends SocketHandler
         guild.uncacheChannel(channel, true);
         Channel newChannel = builder.createGuildChannel(guild, content);
 
-        if (channel instanceof IThreadContainer)
-        {
-            if (newChannel instanceof IThreadContainer)
-            {
+        if (channel instanceof IThreadContainer) {
+            if (newChannel instanceof IThreadContainer) {
                 // Refresh thread parents to avoid keeping strong references to parent channel
                 guild.getThreadChannelCache().forEachUnordered(ThreadChannel::getParentChannel);
-            }
-            else
-            {
+            } else {
                 // Change introduced dangling thread channels (with no parent)
-                WebSocketClient.LOG.error("ThreadContainer channel transitioned into type that is not ThreadContainer? {} -> {}", channel.getType(), newChannel.getType());
+                WebSocketClient.LOG.error(
+                        "ThreadContainer channel transitioned into type that is not ThreadContainer? {} -> {}",
+                        channel.getType(),
+                        newChannel.getType());
             }
         }
 
-        if (newChannel instanceof MessageChannelMixin<?> && channel instanceof MessageChannel)
-        {
+        if (newChannel instanceof MessageChannelMixin<?> && channel instanceof MessageChannel) {
             long latestMessageIdLong = ((MessageChannel) channel).getLatestMessageIdLong();
             ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(latestMessageIdLong);
         }
 
-        getJDA().handleEvent(
-            new ChannelUpdateTypeEvent(
-                getJDA(), responseNumber,
-                newChannel, oldType, newChannelType));
+        getJDA().handleEvent(new ChannelUpdateTypeEvent(
+                getJDA(), responseNumber, newChannel, oldType, newChannelType));
 
         return channel;
     }
 
-    private void applyPermissions(IPermissionContainerMixin<?> channel, DataArray permOverwrites)
-    {
-        TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getPermissionOverrideMap());
+    private void applyPermissions(IPermissionContainerMixin<?> channel, DataArray permOverwrites) {
+        TLongObjectMap<PermissionOverride> currentOverrides =
+                new TLongObjectHashMap<>(channel.getPermissionOverrideMap());
         List<IPermissionHolder> changed = new ArrayList<>(currentOverrides.size());
         Guild guild = channel.getGuild();
-        for (int i = 0; i < permOverwrites.length(); i++)
-        {
+        for (int i = 0; i < permOverwrites.length(); i++) {
             DataObject overrideJson = permOverwrites.getObject(i);
             long id = overrideJson.getUnsignedLong("id", 0);
-            if (handlePermissionOverride(currentOverrides.remove(id), overrideJson, id, channel))
+            if (handlePermissionOverride(currentOverrides.remove(id), overrideJson, id, channel)) {
                 addPermissionHolder(changed, guild, id);
+            }
         }
 
         currentOverrides.forEachValue(override -> {
             channel.getPermissionOverrideMap().remove(override.getIdLong());
             addPermissionHolder(changed, guild, override.getIdLong());
-            api.handleEvent(
-                new PermissionOverrideDeleteEvent(
+            api.handleEvent(new PermissionOverrideDeleteEvent(
                     api, responseNumber,
                     channel, override));
             return true;
         });
     }
 
-    private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id)
-    {
+    private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id) {
         IPermissionHolder holder = guild.getRoleById(id);
-        if (holder == null)
+        if (holder == null) {
             holder = guild.getMemberById(id);
-        if (holder != null) // Members might not be cached
+        }
+        if (holder != null) { // Members might not be cached
             changed.add(holder);
+        }
     }
 
     // True => override status changed (created/deleted/updated)
     // False => nothing changed, ignore
-    private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long overrideId, IPermissionContainerMixin<?> channel)
-    {
-        final long allow = override.getLong("allow");
-        final long deny = override.getLong("deny");
-        final int type = override.getInt("type");
-        final boolean isRole = type == 0;
-        if (!isRole)
-        {
-            if (type != 1)
-            {
-                EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
+    private boolean handlePermissionOverride(
+            PermissionOverride currentOverride,
+            DataObject override,
+            long overrideId,
+            IPermissionContainerMixin<?> channel) {
+        long allow = override.getLong("allow");
+        long deny = override.getLong("deny");
+        int type = override.getInt("type");
+        boolean isRole = type == 0;
+        if (!isRole) {
+            if (type != 1) {
+                EntityBuilder.LOG.debug(
+                        "Ignoring unknown invite of type '{}'. JSON: {}", type, override);
                 return false;
-            }
-            else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES) && overrideId != api.getSelfUser().getIdLong())
-            {
+            } else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES)
+                    && overrideId != api.getSelfUser().getIdLong()) {
                 return false;
             }
         }
@@ -302,15 +319,15 @@ public class ChannelUpdateHandler extends SocketHandler
             long oldAllow = currentOverride.getAllowedRaw();
             long oldDeny = currentOverride.getDeniedRaw();
             PermissionOverrideImpl impl = (PermissionOverrideImpl) currentOverride;
-            if (oldAllow == allow && oldDeny == deny)
+            if (oldAllow == allow && oldDeny == deny) {
                 return false;
+            }
 
-            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L)
-            {
-                // We delete empty overrides for the @everyone role because that's what the client also does, otherwise our sync checks don't work!
+            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L) {
+                // We delete empty overrides for the @everyone role because that's what the client
+                // also does, otherwise our sync checks don't work!
                 channel.getPermissionOverrideMap().remove(overrideId);
-                api.handleEvent(
-                    new PermissionOverrideDeleteEvent(
+                api.handleEvent(new PermissionOverrideDeleteEvent(
                         api, responseNumber,
                         channel, currentOverride));
                 return true;
@@ -318,23 +335,20 @@ public class ChannelUpdateHandler extends SocketHandler
 
             impl.setAllow(allow);
             impl.setDeny(deny);
-            api.handleEvent(
-                new PermissionOverrideUpdateEvent(
-                    api, responseNumber,
-                    channel, currentOverride, oldAllow, oldDeny));
-        }
-        else // New override?
+            api.handleEvent(new PermissionOverrideUpdateEvent(
+                    api, responseNumber, channel, currentOverride, oldAllow, oldDeny));
+        } else // New override?
         {
             // Empty @everyone overrides should be treated as not existing at all
-            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L)
+            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L) {
                 return false;
+            }
             PermissionOverrideImpl impl;
             currentOverride = impl = new PermissionOverrideImpl(channel, overrideId, isRole);
             impl.setAllow(allow);
             impl.setDeny(deny);
             channel.getPermissionOverrideMap().put(overrideId, currentOverride);
-            api.handleEvent(
-                new PermissionOverrideCreateEvent(
+            api.handleEvent(new PermissionOverrideCreateEvent(
                     api, responseNumber,
                     channel, currentOverride));
         }
@@ -342,57 +356,52 @@ public class ChannelUpdateHandler extends SocketHandler
         return true;
     }
 
-    private void handleHideChildThreads(IThreadContainer channel)
-    {
+    private void handleHideChildThreads(IThreadContainer channel) {
         List<ThreadChannel> threads = channel.getThreadChannels();
-        if (threads.isEmpty())
+        if (threads.isEmpty()) {
             return;
+        }
 
-        for (ThreadChannel thread : threads)
-        {
+        for (ThreadChannel thread : threads) {
             GuildImpl guild = (GuildImpl) channel.getGuild();
             ChannelCacheViewImpl<GuildChannel> guildThreadView = guild.getChannelView();
             ChannelCacheViewImpl<Channel> threadView = getJDA().getChannelsView();
-            try (
-                    UnlockHook vlock = guildThreadView.writeLock();
-                    UnlockHook jlock = threadView.writeLock())
-            {
-                //TODO-threads: When we figure out how member chunking is going to work for thread related members
+            try (UnlockHook vlock = guildThreadView.writeLock();
+                    UnlockHook jlock = threadView.writeLock()) {
+                // TODO-threads: When we figure out how member chunking is going to work for thread
+                // related members
                 // we may need to revisit this to ensure they kicked out of the cache if needed.
                 threadView.remove(thread.getType(), thread.getIdLong());
                 guildThreadView.remove(thread);
             }
         }
 
-        //Fire these events outside the write locks
-        for (ThreadChannel thread : threads)
-        {
+        // Fire these events outside the write locks
+        for (ThreadChannel thread : threads) {
             api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
         }
     }
 
-    private void handleTagsUpdate(IPostContainerMixin<?> channel, DataArray tags)
-    {
-        if (!api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
+    private void handleTagsUpdate(IPostContainerMixin<?> channel, DataArray tags) {
+        if (!api.isCacheFlagSet(CacheFlag.FORUM_TAGS)) {
             return;
+        }
         EntityBuilder builder = api.getEntityBuilder();
 
         SortedSnowflakeCacheViewImpl<ForumTag> view = channel.getAvailableTagCache();
 
-        try (UnlockHook hook = view.writeLock())
-        {
+        try (UnlockHook hook = view.writeLock()) {
             TLongObjectMap<ForumTag> cache = view.getMap();
             TLongSet removedTags = new TLongHashSet(cache.keySet());
 
-            for (int i = 0; i < tags.length(); i++)
-            {
+            for (int i = 0; i < tags.length(); i++) {
                 DataObject tagJson = tags.getObject(i);
                 long id = tagJson.getUnsignedLong("id");
-                if (removedTags.remove(id))
-                {
+                if (removedTags.remove(id)) {
                     ForumTagImpl impl = (ForumTagImpl) cache.get(id);
-                    if (impl == null)
+                    if (impl == null) {
                         continue;
+                    }
 
                     String name = tagJson.getString("name");
                     boolean moderated = tagJson.getBoolean("moderated");
@@ -403,23 +412,21 @@ public class ChannelUpdateHandler extends SocketHandler
                     impl.setEmoji(tagJson);
 
                     impl.setPosition(i);
-                    if (!Objects.equals(oldEmoji, impl.getEmoji()))
-                    {
-                        api.handleEvent(new ForumTagUpdateEmojiEvent(api, responseNumber, channel, impl, oldEmoji));
+                    if (!Objects.equals(oldEmoji, impl.getEmoji())) {
+                        api.handleEvent(new ForumTagUpdateEmojiEvent(
+                                api, responseNumber, channel, impl, oldEmoji));
                     }
-                    if (!name.equals(oldName))
-                    {
+                    if (!name.equals(oldName)) {
                         impl.setName(name);
-                        api.handleEvent(new ForumTagUpdateNameEvent(api, responseNumber, channel, impl, oldName));
+                        api.handleEvent(new ForumTagUpdateNameEvent(
+                                api, responseNumber, channel, impl, oldName));
                     }
-                    if (moderated != impl.isModerated())
-                    {
+                    if (moderated != impl.isModerated()) {
                         impl.setModerated(moderated);
-                        api.handleEvent(new ForumTagUpdateModeratedEvent(api, responseNumber, channel, impl, moderated));
+                        api.handleEvent(new ForumTagUpdateModeratedEvent(
+                                api, responseNumber, channel, impl, moderated));
                     }
-                }
-                else
-                {
+                } else {
                     ForumTag tag = builder.createForumTag(channel, tagJson, i);
                     cache.put(id, tag);
                     api.handleEvent(new ForumTagAddEvent(api, responseNumber, channel, tag));
@@ -428,177 +435,151 @@ public class ChannelUpdateHandler extends SocketHandler
 
             removedTags.forEach(id -> {
                 ForumTag tag = cache.remove(id);
-                if (tag != null)
+                if (tag != null) {
                     api.handleEvent(new ForumTagRemoveEvent(api, responseNumber, channel, tag));
+                }
                 return true;
             });
         }
     }
 
-    private void handleTopic(ITopicChannelMixin<?> channel, String topic)
-    {
+    private void handleTopic(ITopicChannelMixin<?> channel, String topic) {
         String oldTopic = channel.getTopic();
-        if (Objects.equals(oldTopic, topic))
+        if (Objects.equals(oldTopic, topic)) {
             return;
+        }
 
         channel.setTopic(topic);
-        api.handleEvent(
-            new ChannelUpdateTopicEvent(
-                api, responseNumber,
-                channel, oldTopic, topic));
+        api.handleEvent(new ChannelUpdateTopicEvent(api, responseNumber, channel, oldTopic, topic));
     }
 
-    private void handleSlowmode(ISlowmodeChannelMixin<?> channel, int slowmode)
-    {
+    private void handleSlowmode(ISlowmodeChannelMixin<?> channel, int slowmode) {
         int oldSlowmode = channel.getSlowmode();
-        if (oldSlowmode == slowmode)
+        if (oldSlowmode == slowmode) {
             return;
+        }
 
         channel.setSlowmode(slowmode);
-        api.handleEvent(
-            new ChannelUpdateSlowmodeEvent(
-                api, responseNumber,
-                channel, oldSlowmode, slowmode));
+        api.handleEvent(new ChannelUpdateSlowmodeEvent(
+                api, responseNumber, channel, oldSlowmode, slowmode));
     }
 
-    private void handleNsfw(IAgeRestrictedChannelMixin<?> channel, boolean nsfw)
-    {
+    private void handleNsfw(IAgeRestrictedChannelMixin<?> channel, boolean nsfw) {
         boolean oldNsfw = channel.isNSFW();
-        if (oldNsfw == nsfw)
+        if (oldNsfw == nsfw) {
             return;
+        }
 
         channel.setNSFW(nsfw);
-        api.handleEvent(
-                new ChannelUpdateNSFWEvent(
-                        api, responseNumber,
-                        channel, oldNsfw, nsfw));
+        api.handleEvent(new ChannelUpdateNSFWEvent(api, responseNumber, channel, oldNsfw, nsfw));
     }
 
-    private void handleParentCategory(ICategorizableChannelMixin<?> channel, long parentId)
-    {
+    private void handleParentCategory(ICategorizableChannelMixin<?> channel, long parentId) {
         long oldParentId = channel.getParentCategoryIdLong();
-        if (oldParentId == parentId)
+        if (oldParentId == parentId) {
             return;
+        }
 
         Category oldParent = channel.getParentCategory();
         channel.setParentCategory(parentId);
         Category newParent = channel.getParentCategory();
 
         api.handleEvent(
-            new ChannelUpdateParentEvent(
-                api, responseNumber,
-                channel, oldParent, newParent));
+                new ChannelUpdateParentEvent(api, responseNumber, channel, oldParent, newParent));
     }
 
-    private void handlePosition(IPositionableChannelMixin<?> channel, int position)
-    {
+    private void handlePosition(IPositionableChannelMixin<?> channel, int position) {
         int oldPosition = channel.getPositionRaw();
-        if (oldPosition == position)
+        if (oldPosition == position) {
             return;
+        }
 
         channel.setPosition(position);
-        api.handleEvent(
-            new ChannelUpdatePositionEvent(
-                api, responseNumber,
-                channel, oldPosition, position));
+        api.handleEvent(new ChannelUpdatePositionEvent(
+                api, responseNumber, channel, oldPosition, position));
     }
 
-    private void handleThreadContainer(IThreadContainerMixin<?> channel, DataObject content)
-    {
+    private void handleThreadContainer(IThreadContainerMixin<?> channel, DataObject content) {
         int oldDefaultThreadSlowmode = channel.getDefaultThreadSlowmode();
         int defaultThreadSlowmode = content.getInt("default_thread_rate_limit_per_user", 0);
-        if (oldDefaultThreadSlowmode != defaultThreadSlowmode)
-        {
+        if (oldDefaultThreadSlowmode != defaultThreadSlowmode) {
             channel.setDefaultThreadSlowmode(defaultThreadSlowmode);
-            api.handleEvent(
-                new ChannelUpdateDefaultThreadSlowmodeEvent(
-                    api, responseNumber,
-                    channel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
+            api.handleEvent(new ChannelUpdateDefaultThreadSlowmodeEvent(
+                    api, responseNumber, channel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
         }
     }
 
-    private void handleAudioChannel(AudioChannelMixin<?> channel, DataObject content)
-    {
+    private void handleAudioChannel(AudioChannelMixin<?> channel, DataObject content) {
         int oldBitrate = channel.getBitrate();
         int bitrate = content.getInt("bitrate");
 
-        if (oldBitrate != bitrate)
-        {
+        if (oldBitrate != bitrate) {
             channel.setBitrate(bitrate);
-            api.handleEvent(
-                new ChannelUpdateBitrateEvent(
-                    api, responseNumber,
-                    channel, oldBitrate, bitrate));
+            api.handleEvent(new ChannelUpdateBitrateEvent(
+                    api, responseNumber, channel, oldBitrate, bitrate));
         }
 
         int userLimit = content.getInt("user_limit");
         int oldLimit = channel.getUserLimit();
 
-        if (oldLimit != userLimit)
-        {
+        if (oldLimit != userLimit) {
             channel.setUserLimit(userLimit);
-            getJDA().handleEvent(
-                new ChannelUpdateUserLimitEvent(
-                    getJDA(), responseNumber,
-                    channel, oldLimit, userLimit));
+            getJDA().handleEvent(new ChannelUpdateUserLimitEvent(
+                    getJDA(), responseNumber, channel, oldLimit, userLimit));
         }
 
         String oldRegion = channel.getRegionRaw();
         String regionRaw = content.getString("rtc_region", null);
 
-        if (!Objects.equals(oldRegion, regionRaw))
-        {
+        if (!Objects.equals(oldRegion, regionRaw)) {
             channel.setRegion(regionRaw);
-            api.handleEvent(
-                new ChannelUpdateRegionEvent(
-                    api, responseNumber,
-                    channel, Region.fromKey(oldRegion), Region.fromKey(regionRaw)));
+            api.handleEvent(new ChannelUpdateRegionEvent(
+                    api,
+                    responseNumber,
+                    channel,
+                    Region.fromKey(oldRegion),
+                    Region.fromKey(regionRaw)));
         }
     }
 
-    private void handlePostContainer(IPostContainerMixin<?> channel, DataObject content)
-    {
-        content.optArray("available_tags").ifPresent(
-            array -> handleTagsUpdate(channel, array)
-        );
+    private void handlePostContainer(IPostContainerMixin<?> channel, DataObject content) {
+        content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(channel, array));
 
-        EmojiUnion defaultReaction =  content.optObject("default_reaction_emoji")
-            .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
-            .orElse(null);
+        EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
+                .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
+                .orElse(null);
         EmojiUnion oldDefaultReaction = channel.getDefaultReaction();
 
-        if (!Objects.equals(oldDefaultReaction, defaultReaction))
-        {
-            channel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
-            getJDA().handleEvent(
-                    new ChannelUpdateDefaultReactionEvent(
-                            getJDA(), responseNumber,
-                            channel, oldDefaultReaction, defaultReaction));
+        if (!Objects.equals(oldDefaultReaction, defaultReaction)) {
+            channel.setDefaultReaction(
+                    content.optObject("default_reaction_emoji").orElse(null));
+            getJDA().handleEvent(new ChannelUpdateDefaultReactionEvent(
+                    getJDA(), responseNumber, channel, oldDefaultReaction, defaultReaction));
         }
-
 
         int sortOrder = content.getInt("default_sort_order", channel.getRawSortOrder());
         int oldSortOrder = channel.getRawSortOrder();
 
-        if (oldSortOrder != sortOrder)
-        {
+        if (oldSortOrder != sortOrder) {
             channel.setDefaultSortOrder(sortOrder);
-            getJDA().handleEvent(
-                new ChannelUpdateDefaultSortOrderEvent(
-                    getJDA(), responseNumber,
-                    channel, IPostContainer.SortOrder.fromKey(oldSortOrder)));
+            getJDA().handleEvent(new ChannelUpdateDefaultSortOrderEvent(
+                    getJDA(),
+                    responseNumber,
+                    channel,
+                    IPostContainer.SortOrder.fromKey(oldSortOrder)));
         }
 
         int newFlags = content.getInt("flags", 0);
         int oldFlags = channel.getRawFlags();
 
-        if (oldFlags != newFlags)
-        {
+        if (oldFlags != newFlags) {
             channel.setFlags(newFlags);
-            getJDA().handleEvent(
-                new ChannelUpdateFlagsEvent(
-                    getJDA(), responseNumber,
-                    channel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(newFlags)));
+            getJDA().handleEvent(new ChannelUpdateFlagsEvent(
+                    getJDA(),
+                    responseNumber,
+                    channel,
+                    ChannelFlag.fromRaw(oldFlags),
+                    ChannelFlag.fromRaw(newFlags)));
         }
     }
 }

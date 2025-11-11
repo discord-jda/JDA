@@ -35,9 +35,10 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.*;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.*;
 
 /**
  * Specialized {@link SelectMenu} for selecting Discord entities.
@@ -72,26 +73,22 @@ import java.util.*;
  * @see EntitySelectInteraction
  * @see StringSelectMenu
  */
-public interface EntitySelectMenu extends SelectMenu
-{
+public interface EntitySelectMenu extends SelectMenu {
     @Nonnull
     @Override
-    default EntitySelectMenu asDisabled()
-    {
+    default EntitySelectMenu asDisabled() {
         return (EntitySelectMenu) SelectMenu.super.asDisabled();
     }
 
     @Nonnull
     @Override
-    default EntitySelectMenu asEnabled()
-    {
+    default EntitySelectMenu asEnabled() {
         return (EntitySelectMenu) SelectMenu.super.asEnabled();
     }
 
     @Nonnull
     @Override
-    default EntitySelectMenu withDisabled(boolean disabled)
-    {
+    default EntitySelectMenu withDisabled(boolean disabled) {
         return createCopy().setDisabled(disabled).build();
     }
 
@@ -142,13 +139,13 @@ public interface EntitySelectMenu extends SelectMenu
     @Nonnull
     @CheckReturnValue
     @Override
-    default Builder createCopy()
-    {
+    default Builder createCopy() {
         //noinspection ConstantConditions
         Builder builder = create(getCustomId(), getEntityTypes());
         EnumSet<ChannelType> channelTypes = getChannelTypes();
-        if (!channelTypes.isEmpty())
+        if (!channelTypes.isEmpty()) {
             builder.setChannelTypes(channelTypes);
+        }
         builder.setRequiredRange(getMinValues(), getMaxValues());
         builder.setPlaceholder(getPlaceholder());
         builder.setDisabled(isDisabled());
@@ -174,8 +171,7 @@ public interface EntitySelectMenu extends SelectMenu
      */
     @Nonnull
     @CheckReturnValue
-    static Builder create(@Nonnull String customId, @Nonnull Collection<SelectTarget> types)
-    {
+    static Builder create(@Nonnull String customId, @Nonnull Collection<SelectTarget> types) {
         return new Builder(customId).setEntityTypes(types);
     }
 
@@ -199,8 +195,8 @@ public interface EntitySelectMenu extends SelectMenu
      */
     @Nonnull
     @CheckReturnValue
-    static Builder create(@Nonnull String customId, @Nonnull SelectTarget type, @Nonnull SelectTarget... types)
-    {
+    static Builder create(
+            @Nonnull String customId, @Nonnull SelectTarget type, @Nonnull SelectTarget... types) {
         Checks.notNull(type, "Type");
         Checks.noneNull(types, "Types");
         return create(customId, EnumSet.of(type, types));
@@ -213,8 +209,7 @@ public interface EntitySelectMenu extends SelectMenu
      * <p>The only combination that is currently supported is {@link #USER} + {@link #ROLE} (often referred to as "mentionables").
      * Combinations such as {@link #ROLE} + {@link #CHANNEL} are currently not supported.
      */
-    enum SelectTarget
-    {
+    enum SelectTarget {
         USER,
         ROLE,
         CHANNEL
@@ -226,13 +221,11 @@ public interface EntitySelectMenu extends SelectMenu
      *
      * <p>The value is represented by the {@link #getId() ID}, corresponding to the entity of that ID.
      */
-    class DefaultValue implements ISnowflake, SerializableData
-    {
+    class DefaultValue implements ISnowflake, SerializableData {
         private final long id;
         private final SelectTarget type;
 
-        protected DefaultValue(long id, @Nonnull SelectTarget type)
-        {
+        protected DefaultValue(long id, @Nonnull SelectTarget type) {
             this.id = id;
             this.type = type;
         }
@@ -249,20 +242,19 @@ public interface EntitySelectMenu extends SelectMenu
          * @return Parsed default value
          */
         @Nonnull
-        public static DefaultValue fromData(@Nonnull DataObject object)
-        {
+        public static DefaultValue fromData(@Nonnull DataObject object) {
             Checks.notNull(object, "DataObject");
             long id = object.getUnsignedLong("id");
-            switch (object.getString("type"))
-            {
-            case "role":
-                return role(id);
-            case "user":
-                return user(id);
-            case "channel":
-                return channel(id);
+            switch (object.getString("type")) {
+                case "role":
+                    return role(id);
+                case "user":
+                    return user(id);
+                case "channel":
+                    return channel(id);
             }
-            throw new IllegalArgumentException("Unknown value type '" + object.getString("type", null) + "'");
+            throw new IllegalArgumentException(
+                    "Unknown value type '" + object.getString("type", null) + "'");
         }
 
         /**
@@ -277,8 +269,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue from(@Nonnull UserSnowflake user)
-        {
+        public static DefaultValue from(@Nonnull UserSnowflake user) {
             Checks.notNull(user, "User");
             return user(user.getIdLong());
         }
@@ -295,8 +286,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue from(@Nonnull Role role)
-        {
+        public static DefaultValue from(@Nonnull Role role) {
             Checks.notNull(role, "Role");
             return role(role.getIdLong());
         }
@@ -313,8 +303,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue from(@Nonnull GuildChannel channel)
-        {
+        public static DefaultValue from(@Nonnull GuildChannel channel) {
             Checks.notNull(channel, "Channel");
             return channel(channel.getIdLong());
         }
@@ -328,8 +317,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue role(long id)
-        {
+        public static DefaultValue role(long id) {
             return new DefaultValue(id, SelectTarget.ROLE);
         }
 
@@ -345,8 +333,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue role(@Nonnull String id)
-        {
+        public static DefaultValue role(@Nonnull String id) {
             return new DefaultValue(MiscUtil.parseSnowflake(id), SelectTarget.ROLE);
         }
 
@@ -359,8 +346,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue user(long id)
-        {
+        public static DefaultValue user(long id) {
             return new DefaultValue(id, SelectTarget.USER);
         }
 
@@ -376,8 +362,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue user(@Nonnull String id)
-        {
+        public static DefaultValue user(@Nonnull String id) {
             return new DefaultValue(MiscUtil.parseSnowflake(id), SelectTarget.USER);
         }
 
@@ -390,8 +375,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue channel(long id)
-        {
+        public static DefaultValue channel(long id) {
             return new DefaultValue(id, SelectTarget.CHANNEL);
         }
 
@@ -407,69 +391,60 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The default value
          */
         @Nonnull
-        public static DefaultValue channel(@Nonnull String id)
-        {
+        public static DefaultValue channel(@Nonnull String id) {
             return new DefaultValue(MiscUtil.parseSnowflake(id), SelectTarget.CHANNEL);
         }
 
         @Override
-        public long getIdLong()
-        {
+        public long getIdLong() {
             return id;
         }
 
         @Nonnull
-        public SelectTarget getType()
-        {
+        public SelectTarget getType() {
             return type;
         }
 
         @Nonnull
         @Override
-        public DataObject toData()
-        {
+        public DataObject toData() {
             return DataObject.empty()
                     .put("type", type.name().toLowerCase(Locale.ROOT))
                     .put("id", getId());
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(type, id);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            if (obj == this)
+        public boolean equals(Object obj) {
+            if (obj == this) {
                 return true;
-            if (!(obj instanceof DefaultValue))
+            }
+            if (!(obj instanceof DefaultValue)) {
                 return false;
+            }
             DefaultValue other = (DefaultValue) obj;
             return id == other.id && type == other.type;
         }
 
         @Override
-        public String toString()
-        {
-            return new EntityString(this)
-                    .setType(type)
-                    .toString();
+        public String toString() {
+            return new EntityString(this).setType(type).toString();
         }
     }
 
     /**
      * A preconfigured builder for the creation of entity select menus.
      */
-    class Builder extends SelectMenu.Builder<EntitySelectMenu, Builder>
-    {
+    class Builder extends SelectMenu.Builder<EntitySelectMenu, Builder> {
         protected Component.Type componentType;
         protected EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
         protected List<DefaultValue> defaultValues = new ArrayList<>();
 
-        protected Builder(@Nonnull String customId)
-        {
+        protected Builder(@Nonnull String customId) {
             super(customId);
         }
 
@@ -485,31 +460,31 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The current Builder instance
          */
         @Nonnull
-        public Builder setEntityTypes(@Nonnull Collection<SelectTarget> types)
-        {
+        public Builder setEntityTypes(@Nonnull Collection<SelectTarget> types) {
             Checks.notEmpty(types, "Types");
             Checks.noneNull(types, "Types");
 
             EnumSet<SelectTarget> set = Helpers.copyEnumSet(SelectTarget.class, types);
-            if (set.size() == 1)
-            {
-                if (set.contains(SelectTarget.CHANNEL))
+            if (set.size() == 1) {
+                if (set.contains(SelectTarget.CHANNEL)) {
                     this.componentType = Component.Type.CHANNEL_SELECT;
-                else if (set.contains(SelectTarget.ROLE))
+                } else if (set.contains(SelectTarget.ROLE)) {
                     this.componentType = Component.Type.ROLE_SELECT;
-                else if (set.contains(SelectTarget.USER))
+                } else if (set.contains(SelectTarget.USER)) {
                     this.componentType = Component.Type.USER_SELECT;
-            }
-            else if (set.size() == 2)
-            {
-                if (set.contains(SelectTarget.USER) && set.contains(SelectTarget.ROLE))
+                }
+            } else if (set.size() == 2) {
+                if (set.contains(SelectTarget.USER) && set.contains(SelectTarget.ROLE)) {
                     this.componentType = Type.MENTIONABLE_SELECT;
-                else
-                    throw new IllegalArgumentException("The provided combination of select targets is not supported. Provided: " + set);
-            }
-            else
-            {
-                throw new IllegalArgumentException("The provided combination of select targets is not supported. Provided: " + set);
+                } else {
+                    throw new IllegalArgumentException(
+                            "The provided combination of select targets is not supported. Provided: "
+                                    + set);
+                }
+            } else {
+                throw new IllegalArgumentException(
+                        "The provided combination of select targets is not supported. Provided: "
+                                + set);
             }
 
             return this;
@@ -529,8 +504,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The current Builder instance
          */
         @Nonnull
-        public Builder setEntityTypes(@Nonnull SelectTarget type, @Nonnull SelectTarget... types)
-        {
+        public Builder setEntityTypes(@Nonnull SelectTarget type, @Nonnull SelectTarget... types) {
             Checks.notNull(type, "Type");
             Checks.noneNull(types, "Types");
             return setEntityTypes(EnumSet.of(type, types));
@@ -549,11 +523,12 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The current Builder instance
          */
         @Nonnull
-        public Builder setChannelTypes(@Nonnull Collection<ChannelType> types)
-        {
+        public Builder setChannelTypes(@Nonnull Collection<ChannelType> types) {
             Checks.noneNull(types, "Types");
-            for (ChannelType type : types)
-                Checks.check(type.isGuild(), "Only guild channel types are allowed! Provided: %s", type);
+            for (ChannelType type : types) {
+                Checks.check(
+                        type.isGuild(), "Only guild channel types are allowed! Provided: %s", type);
+            }
             this.channelTypes = Helpers.copyEnumSet(ChannelType.class, types);
             return this;
         }
@@ -571,8 +546,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The current Builder instance
          */
         @Nonnull
-        public Builder setChannelTypes(@Nonnull ChannelType... types)
-        {
+        public Builder setChannelTypes(@Nonnull ChannelType... types) {
             return setChannelTypes(Arrays.asList(types));
         }
 
@@ -589,8 +563,7 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The current Builder instance
          */
         @Nonnull
-        public Builder setDefaultValues(@Nonnull DefaultValue... values)
-        {
+        public Builder setDefaultValues(@Nonnull DefaultValue... values) {
             Checks.noneNull(values, "Default Values");
             return setDefaultValues(Arrays.asList(values));
         }
@@ -608,30 +581,36 @@ public interface EntitySelectMenu extends SelectMenu
          * @return The current Builder instance
          */
         @Nonnull
-        public Builder setDefaultValues(@Nonnull Collection<? extends DefaultValue> values)
-        {
+        public Builder setDefaultValues(@Nonnull Collection<? extends DefaultValue> values) {
             Checks.noneNull(values, "Default Values");
-            Checks.check(values.size() <= SelectMenu.OPTIONS_MAX_AMOUNT, "Cannot add more than %d default values to a select menu!", SelectMenu.OPTIONS_MAX_AMOUNT);
+            Checks.check(
+                    values.size() <= SelectMenu.OPTIONS_MAX_AMOUNT,
+                    "Cannot add more than %d default values to a select menu!",
+                    SelectMenu.OPTIONS_MAX_AMOUNT);
 
-            for (DefaultValue value : values)
-            {
+            for (DefaultValue value : values) {
                 SelectTarget type = value.getType();
-                String error = "The select menu supports types %s, but provided default value has type SelectTarget.%s!";
+                String error =
+                        "The select menu supports types %s, but provided default value has type SelectTarget.%s!";
 
-                switch (componentType)
-                {
-                case ROLE_SELECT:
-                    Checks.check(type == SelectTarget.ROLE, error, "SelectTarget.ROLE", type);
-                    break;
-                case USER_SELECT:
-                    Checks.check(type == SelectTarget.USER, error, "SelectTarget.USER", type);
-                    break;
-                case CHANNEL_SELECT:
-                    Checks.check(type == SelectTarget.CHANNEL, error, "SelectTarget.CHANNEL", type);
-                    break;
-                case MENTIONABLE_SELECT:
-                    Checks.check(type == SelectTarget.ROLE || type == SelectTarget.USER, error, "SelectTarget.ROLE and SelectTarget.USER", type);
-                    break;
+                switch (componentType) {
+                    case ROLE_SELECT:
+                        Checks.check(type == SelectTarget.ROLE, error, "SelectTarget.ROLE", type);
+                        break;
+                    case USER_SELECT:
+                        Checks.check(type == SelectTarget.USER, error, "SelectTarget.USER", type);
+                        break;
+                    case CHANNEL_SELECT:
+                        Checks.check(
+                                type == SelectTarget.CHANNEL, error, "SelectTarget.CHANNEL", type);
+                        break;
+                    case MENTIONABLE_SELECT:
+                        Checks.check(
+                                type == SelectTarget.ROLE || type == SelectTarget.USER,
+                                error,
+                                "SelectTarget.ROLE and SelectTarget.USER",
+                                type);
+                        break;
                 }
             }
 
@@ -650,12 +629,23 @@ public interface EntitySelectMenu extends SelectMenu
          */
         @Nonnull
         @Override
-        public EntitySelectMenu build()
-        {
+        public EntitySelectMenu build() {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
-            EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
+            EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT
+                    ? this.channelTypes
+                    : EnumSet.noneOf(ChannelType.class);
             List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);
-            return new EntitySelectMenuImpl(customId, uniqueId, placeholder, minValues, maxValues, disabled, componentType, channelTypes, defaultValues, required);
+            return new EntitySelectMenuImpl(
+                    customId,
+                    uniqueId,
+                    placeholder,
+                    minValues,
+                    maxValues,
+                    disabled,
+                    componentType,
+                    channelTypes,
+                    defaultValues,
+                    required);
         }
     }
 }

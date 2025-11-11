@@ -43,8 +43,8 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.entities.channel.middleman.AudioChannel#getManager()
  */
-public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends StandardGuildChannelManager<T, M>
-{
+public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>>
+        extends StandardGuildChannelManager<T, M> {
     /**
      * Sets the <b><u>bitrate</u></b> of the selected {@link AudioChannel}.
      * <br>The default value is {@code 64000}

@@ -30,46 +30,42 @@ import okhttp3.RequestBody;
 import java.util.function.Function;
 
 public class WebhookMessageEditActionImpl<T>
-    extends AbstractWebhookMessageActionImpl<T, WebhookMessageEditActionImpl<T>>
-    implements WebhookMessageEditAction<T>, MessageEditBuilderMixin<WebhookMessageEditAction<T>>
-{
+        extends AbstractWebhookMessageActionImpl<T, WebhookMessageEditActionImpl<T>>
+        implements WebhookMessageEditAction<T>,
+                MessageEditBuilderMixin<WebhookMessageEditAction<T>> {
     private final Function<DataObject, T> transformer;
     private final MessageEditBuilder builder = new MessageEditBuilder();
 
-    public WebhookMessageEditActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
-    {
+    public WebhookMessageEditActionImpl(
+            JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer) {
         super(api, route);
         this.transformer = transformer;
     }
 
     @Override
-    public MessageEditBuilder getBuilder()
-    {
+    public MessageEditBuilder getBuilder() {
         return builder;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
-        try (MessageEditData data = builder.build())
-        {
+    protected RequestBody finalizeData() {
+        try (MessageEditData data = builder.build()) {
             DataObject payload = data.toData();
             return getMultipartBody(data.getAllDistinctFiles(), payload);
         }
     }
 
     @Override
-    protected Route.CompiledRoute finalizeRoute()
-    {
+    protected Route.CompiledRoute finalizeRoute() {
         Route.CompiledRoute route = super.finalizeRoute();
-        if (threadId != null)
+        if (threadId != null) {
             route = route.withQueryParams("thread_id", threadId);
+        }
         return route;
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<T> request)
-    {
+    protected void handleSuccess(Response response, Request<T> request) {
         T message = transformer.apply(response.getObject());
         request.onSuccess(message);
     }

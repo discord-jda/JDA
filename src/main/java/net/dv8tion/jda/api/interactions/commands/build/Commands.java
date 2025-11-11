@@ -22,10 +22,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 /**
  * Provides various static factory methods for building commands of different types.
@@ -34,8 +35,7 @@ import java.util.stream.Collectors;
  * @see #slash(String, String)
  * @see #context(Command.Type, String)
  */
-public class Commands
-{
+public class Commands {
     /**
      * Maximum amount of global or guild slash commands
      */
@@ -69,8 +69,7 @@ public class Commands
      * @return {@link SlashCommandData} builder for slash commands
      */
     @Nonnull
-    public static SlashCommandData slash(@Nonnull String name, @Nonnull String description)
-    {
+    public static SlashCommandData slash(@Nonnull String name, @Nonnull String description) {
         return new CommandDataImpl(name, description);
     }
 
@@ -86,8 +85,7 @@ public class Commands
      * @return {@link CommandData}
      */
     @Nonnull
-    public static CommandData message(@Nonnull String name)
-    {
+    public static CommandData message(@Nonnull String name) {
         return new CommandDataImpl(Command.Type.MESSAGE, name);
     }
 
@@ -103,8 +101,7 @@ public class Commands
      * @return {@link CommandData}
      */
     @Nonnull
-    public static CommandData user(@Nonnull String name)
-    {
+    public static CommandData user(@Nonnull String name) {
         return new CommandDataImpl(Command.Type.USER, name);
     }
 
@@ -124,11 +121,9 @@ public class Commands
      * @return {@link CommandData}
      */
     @Nonnull
-    public static CommandData context(@Nonnull Command.Type type, @Nonnull String name)
-    {
+    public static CommandData context(@Nonnull Command.Type type, @Nonnull String name) {
         return new CommandDataImpl(type, name);
     }
-
 
     /**
      * Parses the provided serialization back into an CommandData instance.
@@ -148,8 +143,7 @@ public class Commands
      * @see    SlashCommandData#fromData(DataObject)
      */
     @Nonnull
-    public static List<CommandData> fromList(@Nonnull DataArray array)
-    {
+    public static List<CommandData> fromList(@Nonnull DataArray array) {
         Checks.notNull(array, "DataArray");
         return array.stream(DataArray::getObject)
                 .map(CommandData::fromData)
@@ -174,8 +168,7 @@ public class Commands
      * @see    SlashCommandData#fromData(DataObject)
      */
     @Nonnull
-    public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection)
-    {
+    public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection) {
         Checks.noneNull(collection, "CommandData");
         return fromList(DataArray.fromCollection(collection));
     }

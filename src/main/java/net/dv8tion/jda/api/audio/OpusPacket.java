@@ -19,21 +19,19 @@ package net.dv8tion.jda.api.audio;
 import net.dv8tion.jda.internal.audio.AudioPacket;
 import net.dv8tion.jda.internal.audio.Decoder;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A raw OPUS packet received from Discord that can be used for lazy decoding.
  *
- * @since  4.0.0
- *
  * @see AudioReceiveHandler#canReceiveEncoded()
  * @see AudioReceiveHandler#handleEncodedAudio(OpusPacket)
  */
-public final class OpusPacket implements Comparable<OpusPacket>
-{
+public final class OpusPacket implements Comparable<OpusPacket> {
     /** (Hz) We want to use the highest of qualities! All the bandwidth! */
     public static final int OPUS_SAMPLE_RATE = 48000;
     /** An opus frame size of 960 at 48000hz represents 20 milliseconds of audio. */
@@ -51,8 +49,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
     private short[] decoded;
     private boolean triedDecode;
 
-    public OpusPacket(@Nonnull AudioPacket packet, long userId, @Nullable Decoder decoder)
-    {
+    public OpusPacket(@Nonnull AudioPacket packet, long userId, @Nullable Decoder decoder) {
         this.rawPacket = packet;
         this.userId = userId;
         this.decoder = decoder;
@@ -70,8 +67,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @see    <a href="http://www.rfcreader.com/#rfc3550_line548" target="_blank">RTP Header</a>
      */
-    public char getSequence()
-    {
+    public char getSequence() {
         return rawPacket.getSequence();
     }
 
@@ -82,8 +78,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @see    <a href="http://www.rfcreader.com/#rfc3550_line548" target="_blank">RTP Header</a>
      */
-    public int getTimestamp()
-    {
+    public int getTimestamp() {
         return rawPacket.getTimestamp();
     }
 
@@ -94,8 +89,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @see    <a href="http://www.rfcreader.com/#rfc3550_line548" target="_blank">RTP Header</a>
      */
-    public int getSSRC()
-    {
+    public int getSSRC() {
         return rawPacket.getSSRC();
     }
 
@@ -104,8 +98,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @return The user id
      */
-    public long getUserId()
-    {
+    public long getUserId() {
         return userId;
     }
 
@@ -114,8 +107,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @return True, if decode is possible.
      */
-    public boolean canDecode()
-    {
+    public boolean canDecode() {
         return decoder != null && decoder.isInOrder(getSequence());
     }
 
@@ -125,9 +117,8 @@ public final class OpusPacket implements Comparable<OpusPacket>
      * @return The raw opus audio
      */
     @Nonnull
-    public byte[] getOpusAudio()
-    {
-        //prevent write access to backing array
+    public byte[] getOpusAudio() {
+        // prevent write access to backing array
         return Arrays.copyOf(opusAudio, opusAudio.length);
     }
 
@@ -147,14 +138,16 @@ public final class OpusPacket implements Comparable<OpusPacket>
      * @see    #getAudioData(double)
      */
     @Nullable
-    public synchronized short[] decode()
-    {
-        if (triedDecode)
+    public synchronized short[] decode() {
+        if (triedDecode) {
             return decoded;
-        if (decoder == null)
+        }
+        if (decoder == null) {
             throw new IllegalStateException("No decoder available");
-        if (!decoder.isInOrder(getSequence()))
+        }
+        if (!decoder.isInOrder(getSequence())) {
             throw new IllegalStateException("Packet is not in order");
+        }
         triedDecode = true;
         return decoded = decoder.decodeFromOpus(rawPacket); // null if failed to decode
     }
@@ -174,8 +167,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      */
     @Nonnull
     @SuppressWarnings("ConstantConditions") // the null case is handled with an exception
-    public byte[] getAudioData(double volume)
-    {
+    public byte[] getAudioData(double volume) {
         return getAudioData(decode(), volume); // throws IllegalArgument if decode failed
     }
 
@@ -196,19 +188,19 @@ public final class OpusPacket implements Comparable<OpusPacket>
      */
     @Nonnull
     @SuppressWarnings("ConstantConditions") // the null case is handled with an exception
-    public static byte[] getAudioData(@Nonnull short[] decoded, double volume)
-    {
-        if (decoded == null)
+    public static byte[] getAudioData(@Nonnull short[] decoded, double volume) {
+        if (decoded == null) {
             throw new IllegalArgumentException("Cannot get audio data from null");
+        }
         int byteIndex = 0;
         byte[] audio = new byte[decoded.length * 2];
-        for (short s : decoded)
-        {
-            if (volume != 1.0)
+        for (short s : decoded) {
+            if (volume != 1.0) {
                 s = (short) (s * volume);
+            }
 
-            byte leftByte  = (byte) ((s >>> 8) & 0xFF);
-            byte rightByte = (byte)  (s        & 0xFF);
+            byte leftByte = (byte) ((s >>> 8) & 0xFF);
+            byte rightByte = (byte) (s & 0xFF);
             audio[byteIndex] = leftByte;
             audio[byteIndex + 1] = rightByte;
             byteIndex += 2;
@@ -217,27 +209,26 @@ public final class OpusPacket implements Comparable<OpusPacket>
     }
 
     @Override
-    public int compareTo(@Nonnull OpusPacket o)
-    {
+    public int compareTo(@Nonnull OpusPacket o) {
         return getSequence() - o.getSequence();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(getSequence(), getTimestamp(), getOpusAudio());
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof OpusPacket))
+        }
+        if (!(obj instanceof OpusPacket)) {
             return false;
+        }
         OpusPacket other = (OpusPacket) obj;
         return getSequence() == other.getSequence()
-            && getTimestamp() == other.getTimestamp()
-            && getSSRC() == other.getSSRC();
+                && getTimestamp() == other.getTimestamp()
+                && getSSRC() == other.getSSRC();
     }
 }

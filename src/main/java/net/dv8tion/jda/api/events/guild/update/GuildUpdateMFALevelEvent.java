@@ -28,12 +28,14 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code mfa_level}
  */
-public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFALevel>
-{
+public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFALevel> {
     public static final String IDENTIFIER = "mfa_level";
 
-    public GuildUpdateMFALevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.MFALevel oldMFALevel)
-    {
+    public GuildUpdateMFALevelEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull Guild.MFALevel oldMFALevel) {
         super(api, responseNumber, guild, oldMFALevel, guild.getRequiredMFALevel(), IDENTIFIER);
     }
 
@@ -43,8 +45,7 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
      * @return The old MFALevel
      */
     @Nonnull
-    public Guild.MFALevel getOldMFALevel()
-    {
+    public Guild.MFALevel getOldMFALevel() {
         return getOldValue();
     }
 
@@ -54,22 +55,19 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
      * @return The new MFALevel
      */
     @Nonnull
-    public Guild.MFALevel getNewMFALevel()
-    {
+    public Guild.MFALevel getNewMFALevel() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Guild.MFALevel getOldValue()
-    {
+    public Guild.MFALevel getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Guild.MFALevel getNewValue()
-    {
+    public Guild.MFALevel getNewValue() {
         return super.getNewValue();
     }
 }

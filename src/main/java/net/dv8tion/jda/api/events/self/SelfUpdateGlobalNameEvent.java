@@ -28,12 +28,10 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code global_name}
  */
-public class SelfUpdateGlobalNameEvent extends GenericSelfUpdateEvent<String>
-{
+public class SelfUpdateGlobalNameEvent extends GenericSelfUpdateEvent<String> {
     public static final String IDENTIFIER = "global_name";
 
-    public SelfUpdateGlobalNameEvent(JDA api, long responseNumber, String oldName)
-    {
+    public SelfUpdateGlobalNameEvent(JDA api, long responseNumber, String oldName) {
         super(api, responseNumber, oldName, api.getSelfUser().getGlobalName(), IDENTIFIER);
     }
 
@@ -43,8 +41,7 @@ public class SelfUpdateGlobalNameEvent extends GenericSelfUpdateEvent<String>
      * @return The old global name
      */
     @Nullable
-    public String getOldGlobalName()
-    {
+    public String getOldGlobalName() {
         return getOldValue();
     }
 
@@ -54,14 +51,12 @@ public class SelfUpdateGlobalNameEvent extends GenericSelfUpdateEvent<String>
      * @return The new global name
      */
     @Nullable
-    public String getNewGlobalName()
-    {
+    public String getNewGlobalName() {
         return getNewValue();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "SelfUpdateGlobalName(" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

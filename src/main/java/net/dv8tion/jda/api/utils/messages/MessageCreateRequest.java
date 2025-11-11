@@ -26,12 +26,13 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.MediaType;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Specialized abstraction of setters and accumulators for creating messages throughout the API.
@@ -43,8 +44,7 @@ import java.util.List;
  * @see   MessageCreateData
  * @see   net.dv8tion.jda.api.requests.restaction.MessageCreateAction MessageCreateAction
  */
-public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends MessageRequest<R>
-{
+public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends MessageRequest<R> {
     /**
      * Appends the content to the currently set content of this request.
      * <br>Use {@link #setContent(String)} instead, to replace the content entirely.
@@ -106,8 +106,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @return The same instance for chaining
      */
     @Nonnull
-    default R addEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default R addEmbeds(@Nonnull MessageEmbed... embeds) {
         return addEmbeds(Arrays.asList(embeds));
     }
 
@@ -171,8 +170,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @return The same instance for chaining
      */
     @Nonnull
-    default R addComponents(@Nonnull MessageTopLevelComponent... components)
-    {
+    default R addComponents(@Nonnull MessageTopLevelComponent... components) {
         return addComponents(Arrays.asList(components));
     }
 
@@ -197,8 +195,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
-    default R addComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
-    {
+    default R addComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         return addComponents(tree.getComponents());
     }
 
@@ -252,8 +249,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @return The same instance for chaining
      */
     @Nonnull
-    default R addFiles(@Nonnull FileUpload... files)
-    {
+    default R addFiles(@Nonnull FileUpload... files) {
         return addFiles(Arrays.asList(files));
     }
 
@@ -332,8 +328,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @return The same instance for chaining
      */
     @Nonnull
-    default R applyData(@Nonnull MessageCreateData data)
-    {
+    default R applyData(@Nonnull MessageCreateData data) {
         Checks.notNull(data, "MessageCreateData");
 
         return setContent(data.getContent())
@@ -353,13 +348,14 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     }
 
     @Nonnull
-    default R applyMessage(@Nonnull Message message)
-    {
-        return MessageRequest.super.applyMessage(message)
-            .setTTS(message.isTTS())
-            .setSuppressedNotifications(message.isSuppressedNotifications())
-            .setVoiceMessage(message.isVoiceMessage())
-            .setPoll(message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
+    default R applyMessage(@Nonnull Message message) {
+        return MessageRequest.super
+                .applyMessage(message)
+                .setTTS(message.isTTS())
+                .setSuppressedNotifications(message.isSuppressedNotifications())
+                .setVoiceMessage(message.isVoiceMessage())
+                .setPoll(
+                        message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
     }
 
     /**
@@ -380,22 +376,22 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      */
     @Nonnull
     @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
-    default R applyEditData(@Nonnull MessageEditData data)
-    {
+    default R applyEditData(@Nonnull MessageEditData data) {
         Checks.notNull(data, "MessageEditData");
-        if (data.isSet(MessageEditBuilder.CONTENT))
+        if (data.isSet(MessageEditBuilder.CONTENT)) {
             setContent(data.getContent());
-        if (data.isSet(MessageEditBuilder.EMBEDS))
+        }
+        if (data.isSet(MessageEditBuilder.EMBEDS)) {
             setEmbeds(data.getEmbeds());
-        if (data.isSet(MessageEditBuilder.COMPONENTS))
-        {
+        }
+        if (data.isSet(MessageEditBuilder.COMPONENTS)) {
             setComponents(data.getComponents());
             useComponentsV2(data.isUsingComponentsV2());
         }
-        if (data.isSet(MessageEditBuilder.ATTACHMENTS))
+        if (data.isSet(MessageEditBuilder.ATTACHMENTS)) {
             setFiles(data.getFiles());
-        if (data.isSet(MessageEditBuilder.MENTIONS))
-        {
+        }
+        if (data.isSet(MessageEditBuilder.MENTIONS)) {
             setAllowedMentions(data.getAllowedMentions());
             mentionUsers(data.getMentionedUsers());
             mentionRoles(data.getMentionedRoles());

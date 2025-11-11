@@ -37,32 +37,37 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class JsonTest
-{
+public class JsonTest {
     private static final String TEST_TIME_STRING = "2024-01-01T12:34:56.789Z";
     private static final OffsetDateTime TEST_TIME = OffsetDateTime.parse(TEST_TIME_STRING);
     private static final String testJson = jsonOf(
-        kv("int", 10),
-        kv("long", 100),
-        kv("boolean", true),
-        kv("string", "test"),
-        kv("double", 4.2),
-        kv("time", TEST_TIME_STRING)
-    );
-    private static final String testJsonArray = Stream
-            .of(10, 100L, true, "\"test\"", 4.2, 5.2f)
+            kv("int", 10),
+            kv("long", 100),
+            kv("boolean", true),
+            kv("string", "test"),
+            kv("double", 4.2),
+            kv("time", TEST_TIME_STRING));
+    private static final String testJsonArray = Stream.of(10, 100L, true, "\"test\"", 4.2, 5.2f)
             .map(String::valueOf)
             .collect(Collectors.joining(",\n", "[", "]"));
 
-    private static final byte[] simpleEtfArray = {-125, 108, 0, 0, 0, 6, 97, 10, 97, 100, 100, 0, 4, 116, 114, 117, 101, 109, 0, 0, 0, 4, 116, 101, 115, 116, 70, 64, 16, -52, -52, -52, -52, -52, -51, 70, 64, 20, -52, -52, -52, -52, -52, -51, 106};
-    private static final byte[] complexEtfArray = {-125, 108, 0, 0, 0, 6, 109, 0, 0, 0, 3, 111, 110, 101, 97, 2, 70, 64, 11, -103, -103, -103, -103, -103, -102, 97, 7, 116, 0, 0, 0, 2, 109, 0, 0, 0, 5, 102, 105, 114, 115, 116, 109, 0, 0, 0, 5, 101, 105, 103, 104, 116, 109, 0, 0, 0, 6, 115, 101, 99, 111, 110, 100, 106, 108, 0, 0, 0, 2, 109, 0, 0, 0, 4, 110, 105, 110, 101, 116, 0, 0, 0, 1, 109, 0, 0, 0, 3, 107, 101, 121, 109, 0, 0, 0, 3, 116, 101, 110, 106, 106};
+    private static final byte[] simpleEtfArray = {
+        -125, 108, 0, 0, 0, 6, 97, 10, 97, 100, 100, 0, 4, 116, 114, 117, 101, 109, 0, 0, 0, 4, 116,
+        101, 115, 116, 70, 64, 16, -52, -52, -52, -52, -52, -51, 70, 64, 20, -52, -52, -52, -52,
+        -52, -51, 106
+    };
+    private static final byte[] complexEtfArray = {
+        -125, 108, 0, 0, 0, 6, 109, 0, 0, 0, 3, 111, 110, 101, 97, 2, 70, 64, 11, -103, -103, -103,
+        -103, -103, -102, 97, 7, 116, 0, 0, 0, 2, 109, 0, 0, 0, 5, 102, 105, 114, 115, 116, 109, 0,
+        0, 0, 5, 101, 105, 103, 104, 116, 109, 0, 0, 0, 6, 115, 101, 99, 111, 110, 100, 106, 108, 0,
+        0, 0, 2, 109, 0, 0, 0, 4, 110, 105, 110, 101, 116, 0, 0, 0, 1, 109, 0, 0, 0, 3, 107, 101,
+        121, 109, 0, 0, 0, 3, 116, 101, 110, 106, 106
+    };
 
     @Nested
-    class DataObjectTest
-    {
+    class DataObjectTest {
         @Test
-        void testParse()
-        {
+        void testParse() {
             DataObject object = DataObject.fromJson(testJson);
             assertThat(object.getInt("int")).isEqualTo(10);
             assertThat(object.getLong("long")).isEqualTo(100);
@@ -73,8 +78,7 @@ public class JsonTest
         }
 
         @Test
-        void testCoerce()
-        {
+        void testCoerce() {
             DataObject data = DataObject.empty()
                     .put("stringified_int", "42")
                     .put("stringified_boolean", "true")
@@ -82,13 +86,13 @@ public class JsonTest
                     .put("stringified_datetime", TEST_TIME_STRING)
                     .put("stringified_double", "123.456");
 
-            assertThat(data.toMap()).containsOnly(
-                entry("stringified_int", "42"),
-                entry("stringified_boolean", "true"),
-                entry("stringified_long", "86699011792191488"),
-                entry("stringified_datetime", TEST_TIME_STRING),
-                entry("stringified_double", "123.456")
-            );
+            assertThat(data.toMap())
+                    .containsOnly(
+                            entry("stringified_int", "42"),
+                            entry("stringified_boolean", "true"),
+                            entry("stringified_long", "86699011792191488"),
+                            entry("stringified_datetime", TEST_TIME_STRING),
+                            entry("stringified_double", "123.456"));
 
             assertThat(data.getInt("stringified_int")).isEqualTo(42);
             assertThat(data.getBoolean("stringified_boolean")).isTrue();
@@ -99,8 +103,7 @@ public class JsonTest
         }
 
         @Test
-        void testFallback()
-        {
+        void testFallback() {
             DataObject data = DataObject.fromJson(jsonOf());
 
             assertThat(data).isEqualTo(DataObject.empty());
@@ -123,8 +126,7 @@ public class JsonTest
         }
 
         @Test
-        void testJsonToString()
-        {
+        void testJsonToString() {
             DataObject object = DataObject.fromJson(testJson);
             String result = object.toString();
             DataObject symmetric = DataObject.fromJson(result);
@@ -132,39 +134,37 @@ public class JsonTest
             assertThat(symmetric.toMap()).isNotSameAs(object.toMap());
             assertThat(symmetric.toMap()).isEqualTo(object.toMap());
             assertThat(symmetric.toMap()).hasSize(6);
-            assertThat(symmetric.toMap()).containsOnly(
-                entry("int", 10),
-                entry("long", 100),
-                entry("boolean", true),
-                entry("string", "test"),
-                entry("double", 4.2),
-                entry("time", TEST_TIME_STRING)
-            );
+            assertThat(symmetric.toMap())
+                    .containsOnly(
+                            entry("int", 10),
+                            entry("long", 100),
+                            entry("boolean", true),
+                            entry("string", "test"),
+                            entry("double", 4.2),
+                            entry("time", TEST_TIME_STRING));
         }
 
         @Test
-        void testFactories()
-        {
+        void testFactories() {
             DataObject reference = DataObject.fromJson(testJson);
 
             assertThat(DataObject.fromJson(testJson.getBytes(StandardCharsets.UTF_8)))
-                .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(reference);
+                    .withRepresentation(new PrettyRepresentation())
+                    .isEqualTo(reference);
             assertThat(DataObject.fromJson(new StringReader(testJson)))
-                .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(reference);
-            assertThat(DataObject.fromJson(new ByteArrayInputStream(testJson.getBytes(StandardCharsets.UTF_8))))
-                .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(reference);
+                    .withRepresentation(new PrettyRepresentation())
+                    .isEqualTo(reference);
+            assertThat(DataObject.fromJson(
+                            new ByteArrayInputStream(testJson.getBytes(StandardCharsets.UTF_8))))
+                    .withRepresentation(new PrettyRepresentation())
+                    .isEqualTo(reference);
         }
     }
 
     @Nested
-    class DataArrayTest
-    {
+    class DataArrayTest {
         @Test
-        void testParse()
-        {
+        void testParse() {
             DataArray object = DataArray.fromJson(testJsonArray);
             assertThat(object.getInt(0)).isEqualTo(10);
             assertThat(object.getLong(1)).isEqualTo(100);
@@ -175,8 +175,7 @@ public class JsonTest
         }
 
         @Test
-        void testCoerce()
-        {
+        void testCoerce() {
             DataArray array = DataArray.empty()
                     .add("42")
                     .add("true")
@@ -184,9 +183,9 @@ public class JsonTest
                     .add(TEST_TIME_STRING)
                     .add("123.456");
 
-            assertThat(array.toList()).containsExactly(
-                "42", "true", "86699011792191488", TEST_TIME_STRING, "123.456"
-            );
+            assertThat(array.toList())
+                    .containsExactly(
+                            "42", "true", "86699011792191488", TEST_TIME_STRING, "123.456");
 
             assertThat(array.getInt(0)).isEqualTo(42);
             assertThat(array.getBoolean(1)).isTrue();
@@ -197,8 +196,7 @@ public class JsonTest
         }
 
         @Test
-        void testFallback()
-        {
+        void testFallback() {
             DataArray data = DataArray.fromJson("[]");
 
             assertThat(data).isEqualTo(DataArray.empty());
@@ -219,8 +217,7 @@ public class JsonTest
         }
 
         @Test
-        void testJsonToString()
-        {
+        void testJsonToString() {
             DataArray object = DataArray.fromJson(testJsonArray);
             String result = object.toString();
             DataArray symmetric = DataArray.fromJson(result);
@@ -228,126 +225,110 @@ public class JsonTest
             assertThat(symmetric.toList()).isNotSameAs(object.toList());
             assertThat(symmetric.toList()).isEqualTo(object.toList());
             assertThat(symmetric.toList()).hasSize(6);
-            assertThat(symmetric.toList()).containsExactly(
-                10, 100, true, "test", 4.2, 5.2
-            );
+            assertThat(symmetric.toList()).containsExactly(10, 100, true, "test", 4.2, 5.2);
         }
 
         @Test
-        void testStream()
-        {
+        void testStream() {
             DataArray intArray = IntStream.range(0, 3).boxed().collect(Helpers.toDataArray());
-            assertThat(intArray.stream(DataArray::getInt))
-                .containsExactly(0, 1, 2);
-            assertThat(intArray.stream(DataArray::getLong))
-                .containsExactly(0L, 1L, 2L);
+            assertThat(intArray.stream(DataArray::getInt)).containsExactly(0, 1, 2);
+            assertThat(intArray.stream(DataArray::getLong)).containsExactly(0L, 1L, 2L);
 
-            DataArray doubleArray = DoubleStream.of(0.1, 0.5, 1.2, 4.2).boxed().collect(Helpers.toDataArray());
+            DataArray doubleArray =
+                    DoubleStream.of(0.1, 0.5, 1.2, 4.2).boxed().collect(Helpers.toDataArray());
             assertThat(doubleArray.stream(DataArray::getDouble))
-                .containsExactly(0.1, 0.5, 1.2, 4.2);
+                    .containsExactly(0.1, 0.5, 1.2, 4.2);
 
             DataArray stringArray = DataArray.empty().add("foo").add("bar");
-            assertThat(stringArray.stream(DataArray::getString))
-                .containsExactly("foo", "bar");
+            assertThat(stringArray.stream(DataArray::getString)).containsExactly("foo", "bar");
 
             DataArray polyTypedArray = DataArray.empty().add(1).add(2.3).add("four");
             assertThatThrownBy(() -> polyTypedArray.stream(DataArray::getInt).toArray())
-                .isInstanceOf(NumberFormatException.class);
+                    .isInstanceOf(NumberFormatException.class);
             assertThatThrownBy(() -> polyTypedArray.stream(DataArray::getDouble).toArray())
-                .isInstanceOf(NumberFormatException.class);
+                    .isInstanceOf(NumberFormatException.class);
             assertThatThrownBy(() -> polyTypedArray.stream(DataArray::getObject).toArray())
-                .isInstanceOf(ParsingException.class)
-                .hasMessage("Cannot parse value for index 0 into type Map: 1 instance of Integer");
+                    .isInstanceOf(ParsingException.class)
+                    .hasMessage(
+                            "Cannot parse value for index 0 into type Map: 1 instance of Integer");
             assertThat(polyTypedArray.stream(DataArray::getString))
-                .containsExactly("1", "2.3", "four");
+                    .containsExactly("1", "2.3", "four");
 
             DataArray objectArray = DataArray.empty()
-                .add(DataObject.empty().put("foo", 1))
-                .add(DataObject.empty().put("foo", 2));
+                    .add(DataObject.empty().put("foo", 1))
+                    .add(DataObject.empty().put("foo", 2));
             assertThat(objectArray.stream(DataArray::getObject).map(obj -> obj.getInt("foo")))
-                .containsExactly(1, 2);
+                    .containsExactly(1, 2);
 
             objectArray.add(DataArray.empty());
-            assertThatThrownBy(() ->
-                objectArray.stream(DataArray::getObject).map(obj -> obj.getInt("foo")).toArray()
-            )
-                .isInstanceOf(ParsingException.class)
-                .hasMessage("Cannot parse value for index 2 into type Map: [] instance of ArrayList");
+            assertThatThrownBy(() -> objectArray.stream(DataArray::getObject)
+                            .map(obj -> obj.getInt("foo"))
+                            .toArray())
+                    .isInstanceOf(ParsingException.class)
+                    .hasMessage(
+                            "Cannot parse value for index 2 into type Map: [] instance of ArrayList");
         }
 
         @Test
-        void testFactories()
-        {
+        void testFactories() {
             assertThat(DataArray.fromJson(new StringReader(testJsonArray)))
-                .withRepresentation(new PrettyRepresentation())
-                .containsExactly(10, 100, true, "test", 4.2, 5.2);
-            assertThat(DataArray.fromJson(new ByteArrayInputStream(testJsonArray.getBytes(StandardCharsets.UTF_8))))
-                .withRepresentation(new PrettyRepresentation())
-                .containsExactly(10, 100, true, "test", 4.2, 5.2);
+                    .withRepresentation(new PrettyRepresentation())
+                    .containsExactly(10, 100, true, "test", 4.2, 5.2);
+            assertThat(DataArray.fromJson(new ByteArrayInputStream(
+                            testJsonArray.getBytes(StandardCharsets.UTF_8))))
+                    .withRepresentation(new PrettyRepresentation())
+                    .containsExactly(10, 100, true, "test", 4.2, 5.2);
             assertThat(DataArray.fromJson(testJsonArray))
-                .withRepresentation(new PrettyRepresentation())
-                .containsExactly(10, 100, true, "test", 4.2, 5.2);
+                    .withRepresentation(new PrettyRepresentation())
+                    .containsExactly(10, 100, true, "test", 4.2, 5.2);
 
             List<?> inputList = Arrays.asList(10, 100L, true, "test", 4.2, 5.2f);
             DataArray array = DataArray.fromCollection(inputList);
             assertThat(array)
-                .withRepresentation(new PrettyRepresentation())
-                .as("Do not lose types from input collections")
-                .containsExactly(10, 100L, true, "test", 4.2, 5.2f);
+                    .withRepresentation(new PrettyRepresentation())
+                    .as("Do not lose types from input collections")
+                    .containsExactly(10, 100L, true, "test", 4.2, 5.2f);
             assertThat(array.toList()).isNotSameAs(inputList);
             assertThat(array.toList()).isEqualTo(inputList);
             assertThat(array.add("foo").toList()).isNotEqualTo(inputList);
 
             assertThat(DataArray.fromETF(simpleEtfArray))
-                .withRepresentation(new PrettyRepresentation())
-                .containsExactly(10, 100, true, "test", 4.2, 5.2);
-            assertThat(DataArray.fromETF(simpleEtfArray).toETF())
-                .isEqualTo(simpleEtfArray);
+                    .withRepresentation(new PrettyRepresentation())
+                    .containsExactly(10, 100, true, "test", 4.2, 5.2);
+            assertThat(DataArray.fromETF(simpleEtfArray).toETF()).isEqualTo(simpleEtfArray);
         }
 
         @Test
-        void testExTerm()
-        {
+        void testExTerm() {
             DataArray array = DataArray.empty()
                     .add("one")
                     .add(2)
                     .add(3.45)
                     .add(7L)
-                    .add(DataObject.empty()
-                        .put("first", "eight")
-                        .put("second", DataArray.empty()))
-                    .add(DataArray.empty()
-                        .add("nine")
-                        .add(DataObject.empty()
-                            .put("key", "ten")));
+                    .add(DataObject.empty().put("first", "eight").put("second", DataArray.empty()))
+                    .add(DataArray.empty().add("nine").add(DataObject.empty().put("key", "ten")));
 
             assertThat(array).hasSize(6);
             assertThat(array.toETF()).isEqualTo(complexEtfArray);
-            assertThat(DataArray.fromETF(complexEtfArray).toETF())
-                .isEqualTo(complexEtfArray);
+            assertThat(DataArray.fromETF(complexEtfArray).toETF()).isEqualTo(complexEtfArray);
             assertThat(DataArray.fromETF(complexEtfArray).toPrettyString())
-                .isEqualToIgnoringWhitespace(array.toPrettyString());
+                    .isEqualToIgnoringWhitespace(array.toPrettyString());
         }
     }
 
-    private static <K, V> Map.Entry<K, V> entry(K key, V value)
-    {
+    private static <K, V> Map.Entry<K, V> entry(K key, V value) {
         return new AbstractMap.SimpleEntry<>(key, value);
     }
 
-    private static String kv(String key, Object value)
-    {
+    private static String kv(String key, Object value) {
         return String.format(Locale.ROOT, "\"%s\": %s", key, value);
     }
 
-    private static String kv(String key, String value)
-    {
+    private static String kv(String key, String value) {
         return String.format(Locale.ROOT, "\"%s\": \"%s\"", key, value);
     }
 
-    private static String jsonOf(String... keyValueMapping)
-    {
-        return Stream.<String>of(keyValueMapping)
-                .collect(Collectors.joining(",\n", "{", "}"));
+    private static String jsonOf(String... keyValueMapping) {
+        return Stream.<String>of(keyValueMapping).collect(Collectors.joining(",\n", "{", "}"));
     }
 }

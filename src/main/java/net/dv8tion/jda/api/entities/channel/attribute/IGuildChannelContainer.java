@@ -30,9 +30,10 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Provides various channel cache getters for Guild channels.
@@ -47,8 +48,7 @@ import java.util.List;
  * <p>For the most efficient usage, it is recommended to use {@link CacheView} getters such as {@link #getTextChannelCache()}.
  * List getters usually require making a snapshot copy of the underlying cache view, which may introduce an undesirable performance hit.
  */
-public interface IGuildChannelContainer<C extends Channel>
-{
+public interface IGuildChannelContainer<C extends Channel> {
     /**
      * Unified cache of all channels associated with this shard or guild.
      *
@@ -86,8 +86,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return The casted channel, if it exists and is assignable to the provided class, or null
      */
     @Nullable
-    default <T extends C> T getChannelById(@Nonnull Class<T> type, @Nonnull String id)
-    {
+    default <T extends C> T getChannelById(@Nonnull Class<T> type, @Nonnull String id) {
         return getChannelById(type, MiscUtil.parseSnowflake(id));
     }
 
@@ -113,8 +112,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return The casted channel, if it exists and is assignable to the provided class, or null
      */
     @Nullable
-    default <T extends C> T getChannelById(@Nonnull Class<T> type, long id)
-    {
+    default <T extends C> T getChannelById(@Nonnull Class<T> type, long id) {
         Checks.notNull(type, "Class");
         return getChannelCache().ofType(type).getElementById(id);
     }
@@ -152,8 +150,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull String id)
-    {
+    default GuildChannel getGuildChannelById(@Nonnull String id) {
         return getGuildChannelById(MiscUtil.parseSnowflake(id));
     }
 
@@ -187,8 +184,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(long id)
-    {
+    default GuildChannel getGuildChannelById(long id) {
         C channel = getChannelCache().getElementById(id);
         return channel instanceof GuildChannel ? (GuildChannel) channel : null;
     }
@@ -232,8 +228,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
-    {
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id) {
         return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
     }
 
@@ -272,15 +267,12 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
-    {
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id) {
         C channel = getChannelCache().getElementById(type, id);
         return channel instanceof GuildChannel ? (GuildChannel) channel : null;
     }
 
-
     // Stages
-
 
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link StageChannel}.
@@ -325,8 +317,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getStageChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -352,8 +343,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link StageChannel StageChannel} with matching id.
      */
     @Nullable
-    default StageChannel getStageChannelById(@Nonnull String id)
-    {
+    default StageChannel getStageChannelById(@Nonnull String id) {
         return (StageChannel) getChannelCache().getElementById(ChannelType.STAGE, id);
     }
 
@@ -377,8 +367,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link StageChannel StageChannel} with matching id.
      */
     @Nullable
-    default StageChannel getStageChannelById(long id)
-    {
+    default StageChannel getStageChannelById(long id) {
         return (StageChannel) getChannelCache().getElementById(ChannelType.STAGE, id);
     }
 
@@ -405,14 +394,11 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<StageChannel> getStageChannels()
-    {
+    default List<StageChannel> getStageChannels() {
         return getStageChannelCache().asList();
     }
 
-
     // Threads
-
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link ThreadChannel}.
@@ -460,8 +446,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<ThreadChannel> getThreadChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<ThreadChannel> getThreadChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getThreadChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -489,9 +474,9 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
      */
     @Nullable
-    default ThreadChannel getThreadChannelById(@Nonnull String id)
-    {
-        return (ThreadChannel) getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
+    default ThreadChannel getThreadChannelById(@Nonnull String id) {
+        return (ThreadChannel)
+                getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
     }
 
     /**
@@ -516,9 +501,9 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
      */
     @Nullable
-    default ThreadChannel getThreadChannelById(long id)
-    {
-        return (ThreadChannel) getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
+    default ThreadChannel getThreadChannelById(long id) {
+        return (ThreadChannel)
+                getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
     }
 
     /**
@@ -545,14 +530,11 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<ThreadChannel> getThreadChannels()
-    {
+    default List<ThreadChannel> getThreadChannels() {
         return getThreadChannelCache().asList();
     }
 
-
     // Categories
-
 
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link Category}.
@@ -599,8 +581,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase) {
         return getCategoryCache().getElementsByName(name, ignoreCase);
     }
 
@@ -626,8 +607,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link Category Category} for the provided ID.
      */
     @Nullable
-    default Category getCategoryById(@Nonnull String id)
-    {
+    default Category getCategoryById(@Nonnull String id) {
         return (Category) getChannelCache().getElementById(ChannelType.CATEGORY, id);
     }
 
@@ -651,8 +631,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link Category Category} for the provided ID.
      */
     @Nullable
-    default Category getCategoryById(long id)
-    {
+    default Category getCategoryById(long id) {
         return (Category) getChannelCache().getElementById(ChannelType.CATEGORY, id);
     }
 
@@ -679,14 +658,11 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<Category> getCategories()
-    {
+    default List<Category> getCategories() {
         return getCategoryCache().asList();
     }
 
-
     // TextChannels
-
 
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link TextChannel}.
@@ -731,8 +707,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<TextChannel> getTextChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<TextChannel> getTextChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getTextChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -758,8 +733,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link TextChannel TextChannel} with matching id.
      */
     @Nullable
-    default TextChannel getTextChannelById(@Nonnull String id)
-    {
+    default TextChannel getTextChannelById(@Nonnull String id) {
         return (TextChannel) getChannelCache().getElementById(ChannelType.TEXT, id);
     }
 
@@ -783,8 +757,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link TextChannel TextChannel} with matching id.
      */
     @Nullable
-    default TextChannel getTextChannelById(long id)
-    {
+    default TextChannel getTextChannelById(long id) {
         return (TextChannel) getChannelCache().getElementById(ChannelType.TEXT, id);
     }
 
@@ -811,14 +784,11 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<TextChannel> getTextChannels()
-    {
+    default List<TextChannel> getTextChannels() {
         return getTextChannelCache().asList();
     }
 
-
     // NewsChannels / AnnouncementChannels
-
 
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link NewsChannel}.
@@ -863,8 +833,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<NewsChannel> getNewsChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<NewsChannel> getNewsChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getNewsChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -890,8 +859,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link NewsChannel NewsChannel} with matching id.
      */
     @Nullable
-    default NewsChannel getNewsChannelById(@Nonnull String id)
-    {
+    default NewsChannel getNewsChannelById(@Nonnull String id) {
         return (NewsChannel) getChannelCache().getElementById(ChannelType.NEWS, id);
     }
 
@@ -915,8 +883,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link NewsChannel NewsChannel} with matching id.
      */
     @Nullable
-    default NewsChannel getNewsChannelById(long id)
-    {
+    default NewsChannel getNewsChannelById(long id) {
         return (NewsChannel) getChannelCache().getElementById(ChannelType.NEWS, id);
     }
 
@@ -943,14 +910,11 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<NewsChannel> getNewsChannels()
-    {
+    default List<NewsChannel> getNewsChannels() {
         return getNewsChannelCache().asList();
     }
 
-
     // VoiceChannels
-
 
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link VoiceChannel}.
@@ -995,8 +959,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<VoiceChannel> getVoiceChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<VoiceChannel> getVoiceChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1022,8 +985,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link VoiceChannel VoiceChannel} with matching id.
      */
     @Nullable
-    default VoiceChannel getVoiceChannelById(@Nonnull String id)
-    {
+    default VoiceChannel getVoiceChannelById(@Nonnull String id) {
         return (VoiceChannel) getChannelCache().getElementById(ChannelType.VOICE, id);
     }
 
@@ -1047,8 +1009,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link VoiceChannel VoiceChannel} with matching id.
      */
     @Nullable
-    default VoiceChannel getVoiceChannelById(long id)
-    {
+    default VoiceChannel getVoiceChannelById(long id) {
         return (VoiceChannel) getChannelCache().getElementById(ChannelType.VOICE, id);
     }
 
@@ -1075,14 +1036,11 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<VoiceChannel> getVoiceChannels()
-    {
+    default List<VoiceChannel> getVoiceChannels() {
         return getVoiceChannelCache().asList();
     }
 
-
     // ForumChannels
-
 
     /**
      * {@link SnowflakeCacheView SnowflakeCacheView} of {@link ForumChannel}.
@@ -1126,8 +1084,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<ForumChannel> getForumChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<ForumChannel> getForumChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getForumChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1153,8 +1110,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link ForumChannel} with matching id.
      */
     @Nullable
-    default ForumChannel getForumChannelById(@Nonnull String id)
-    {
+    default ForumChannel getForumChannelById(@Nonnull String id) {
         return (ForumChannel) getChannelCache().getElementById(ChannelType.FORUM, id);
     }
 
@@ -1178,8 +1134,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link ForumChannel} with matching id.
      */
     @Nullable
-    default ForumChannel getForumChannelById(long id)
-    {
+    default ForumChannel getForumChannelById(long id) {
         return (ForumChannel) getChannelCache().getElementById(ChannelType.FORUM, id);
     }
 
@@ -1205,14 +1160,11 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<ForumChannel> getForumChannels()
-    {
+    default List<ForumChannel> getForumChannels() {
         return getForumChannelCache().asList();
     }
 
-
     // MediaChannels
-
 
     /**
      * {@link SnowflakeCacheView SnowflakeCacheView} of {@link MediaChannel}.
@@ -1256,8 +1208,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<MediaChannel> getMediaChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<MediaChannel> getMediaChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getMediaChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1283,8 +1234,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link MediaChannel} with matching id.
      */
     @Nullable
-    default MediaChannel getMediaChannelById(@Nonnull String id)
-    {
+    default MediaChannel getMediaChannelById(@Nonnull String id) {
         return (MediaChannel) getChannelCache().getElementById(ChannelType.MEDIA, id);
     }
 
@@ -1308,8 +1258,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @return Possibly-null {@link MediaChannel} with matching id.
      */
     @Nullable
-    default MediaChannel getMediaChannelById(long id)
-    {
+    default MediaChannel getMediaChannelById(long id) {
         return (MediaChannel) getChannelCache().getElementById(ChannelType.MEDIA, id);
     }
 
@@ -1335,8 +1284,7 @@ public interface IGuildChannelContainer<C extends Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<MediaChannel> getMediaChannels()
-    {
+    default List<MediaChannel> getMediaChannels() {
         return getMediaChannelCache().asList();
     }
 }

@@ -23,9 +23,10 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Collection;
 
 /**
  * Indicates that a user is typing in an auto-complete interactive field.
@@ -37,25 +38,23 @@ import java.util.Collection;
  * @see IAutoCompleteCallback
  * @see OptionData#setAutoComplete(boolean)
  */
-public class GenericAutoCompleteInteractionEvent extends GenericInteractionCreateEvent implements IAutoCompleteCallback
-{
-    public GenericAutoCompleteInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction)
-    {
+public class GenericAutoCompleteInteractionEvent extends GenericInteractionCreateEvent
+        implements IAutoCompleteCallback {
+    public GenericAutoCompleteInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction) {
         super(api, responseNumber, interaction);
     }
 
     @Nonnull
     @Override
-    public IAutoCompleteCallback getInteraction()
-    {
+    public IAutoCompleteCallback getInteraction() {
         return (IAutoCompleteCallback) super.getInteraction();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
-    {
+    public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices) {
         return getInteraction().replyChoices(choices);
     }
 }

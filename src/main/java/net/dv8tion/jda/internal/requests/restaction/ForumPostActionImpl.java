@@ -44,12 +44,13 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.function.BooleanSupplier;
 
-public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements ForumPostAction, MessageCreateBuilderMixin<ForumPostAction>
-{
+import javax.annotation.Nonnull;
+
+public class ForumPostActionImpl extends RestActionImpl<ForumPost>
+        implements ForumPostAction, MessageCreateBuilderMixin<ForumPostAction> {
     private final MessageCreateBuilder builder;
     private final IPostContainer channel;
     private final TLongSet appliedTags = new TLongHashSet();
@@ -57,8 +58,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
     private ThreadChannel.AutoArchiveDuration autoArchiveDuration;
     protected Integer slowmode = null;
 
-    public ForumPostActionImpl(IPostContainer channel, String name, MessageCreateBuilder builder)
-    {
+    public ForumPostActionImpl(IPostContainer channel, String name, MessageCreateBuilder builder) {
         super(channel.getJDA(), Route.Channels.CREATE_THREAD.compile(channel.getId()));
         this.builder = builder;
         this.channel = channel;
@@ -67,46 +67,45 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
 
     @Nonnull
     @Override
-    public ForumPostAction setCheck(BooleanSupplier checks)
-    {
+    public ForumPostAction setCheck(BooleanSupplier checks) {
         return (ForumPostAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public ForumPostAction addCheck(@Nonnull BooleanSupplier checks)
-    {
+    public ForumPostAction addCheck(@Nonnull BooleanSupplier checks) {
         return (ForumPostAction) super.addCheck(checks);
     }
 
     @Nonnull
     @Override
-    public ForumPostAction deadline(long timestamp)
-    {
+    public ForumPostAction deadline(long timestamp) {
         return (ForumPostAction) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return channel.getGuild();
     }
 
     @Nonnull
     @Override
-    public IPostContainer getChannel()
-    {
+    public IPostContainer getChannel() {
         return channel;
     }
 
     @Nonnull
     @Override
-    public ForumPostAction setTags(@Nonnull Collection<? extends ForumTagSnowflake> tags)
-    {
+    public ForumPostAction setTags(@Nonnull Collection<? extends ForumTagSnowflake> tags) {
         Checks.noneNull(tags, "Tags");
-        Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Provided more than %d tags.", ForumChannel.MAX_POST_TAGS);
-        Checks.check(!channel.isTagRequired() || !tags.isEmpty(), "This forum requires at least one tag per post! See ForumChannel#isRequireTag()");
+        Checks.check(
+                tags.size() <= ForumChannel.MAX_POST_TAGS,
+                "Provided more than %d tags.",
+                ForumChannel.MAX_POST_TAGS);
+        Checks.check(
+                !channel.isTagRequired() || !tags.isEmpty(),
+                "This forum requires at least one tag per post! See ForumChannel#isRequireTag()");
         this.appliedTags.clear();
         tags.forEach(t -> this.appliedTags.add(t.getIdLong()));
         return this;
@@ -114,15 +113,13 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.GUILD_PUBLIC_THREAD;
     }
 
     @Nonnull
     @Override
-    public ForumPostAction setName(@Nonnull String name)
-    {
+    public ForumPostAction setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, Channel.MAX_NAME_LENGTH, "Name");
         this.name = name.trim();
@@ -131,60 +128,68 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
 
     @Nonnull
     @Override
-    public ForumPostAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration)
-    {
+    public ForumPostAction setAutoArchiveDuration(
+            @Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration) {
         Checks.notNull(autoArchiveDuration, "AutoArchiveDuration");
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
     }
-    
+
     @Nonnull
     @Override
-    public ForumPostAction setSlowmode(int slowmode)
-    {
+    public ForumPostAction setSlowmode(int slowmode) {
         Checks.checkSupportedChannelTypes(ChannelUtil.SLOWMODE_SUPPORTED, getType(), "slowmode");
-        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
-        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_THREADS))
-            throw new InsufficientPermissionException(channel, Permission.MANAGE_THREADS, "You must have Permission.MANAGE_THREADS on the parent forum channel to set a slowmode!");
+        Checks.check(
+                slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0,
+                "Slowmode per user must be between 0 and %d (seconds)!",
+                ISlowmodeChannel.MAX_SLOWMODE);
+        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_THREADS)) {
+            throw new InsufficientPermissionException(
+                    channel,
+                    Permission.MANAGE_THREADS,
+                    "You must have Permission.MANAGE_THREADS on the parent forum channel to set a slowmode!");
+        }
         this.slowmode = slowmode;
         return this;
     }
 
     @Override
-    public MessageCreateBuilder getBuilder()
-    {
+    public MessageCreateBuilder getBuilder() {
         return builder;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
-        try (MessageCreateData message = builder.build())
-        {
+    protected RequestBody finalizeData() {
+        try (MessageCreateData message = builder.build()) {
             DataObject json = DataObject.empty();
             json.put("message", message);
             json.put("name", name);
-            if (autoArchiveDuration != null)
+            if (autoArchiveDuration != null) {
                 json.put("auto_archive_duration", autoArchiveDuration.getMinutes());
-            if (slowmode != null)
+            }
+            if (slowmode != null) {
                 json.put("rate_limit_per_user", slowmode);
-            if (!appliedTags.isEmpty())
+            }
+            if (!appliedTags.isEmpty()) {
                 json.put("applied_tags", appliedTags.toArray());
-            else if (getChannel().isTagRequired())
-                throw new IllegalStateException("Cannot create posts without a tag in this forum. Apply at least one tag!");
+            } else if (getChannel().isTagRequired()) {
+                throw new IllegalStateException(
+                        "Cannot create posts without a tag in this forum. Apply at least one tag!");
+            }
             return getMultipartBody(message.getAllDistinctFiles(), json);
         }
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<ForumPost> request)
-    {
+    protected void handleSuccess(Response response, Request<ForumPost> request) {
         DataObject json = response.getObject();
 
         EntityBuilder entityBuilder = api.getEntityBuilder();
 
-        ThreadChannel thread = entityBuilder.createThreadChannel(json, getGuild().getIdLong());
-        Message message = entityBuilder.createMessageWithChannel(json.getObject("message"), thread, false);
+        ThreadChannel thread =
+                entityBuilder.createThreadChannel(json, getGuild().getIdLong());
+        Message message =
+                entityBuilder.createMessageWithChannel(json.getObject("message"), thread, false);
 
         request.onSuccess(new ForumPost(message, thread));
     }

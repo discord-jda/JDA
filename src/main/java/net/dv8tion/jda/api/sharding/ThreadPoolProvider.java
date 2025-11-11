@@ -18,10 +18,11 @@ package net.dv8tion.jda.api.sharding;
 
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.ExecutorService;
 import java.util.function.IntFunction;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Called by {@link DefaultShardManager} when building a JDA instance.
@@ -31,8 +32,7 @@ import java.util.function.IntFunction;
  * @param <T>
  *        The type of executor
  */
-public interface ThreadPoolProvider<T extends ExecutorService>
-{
+public interface ThreadPoolProvider<T extends ExecutorService> {
     /**
      * Provides an instance of the specified executor, or null
      *
@@ -52,8 +52,7 @@ public interface ThreadPoolProvider<T extends ExecutorService>
      *
      * @return True, if the executor should be shutdown by JDA
      */
-    default boolean shouldShutdownAutomatically(int shardId)
-    {
+    default boolean shouldShutdownAutomatically(int shardId) {
         return false;
     }
 
@@ -63,26 +62,22 @@ public interface ThreadPoolProvider<T extends ExecutorService>
      *
      * @param  init
      *         Function to initialize the shared pool, called with the shard total
-     *
      * @param  <T>
      *         The type of executor
      *
      * @return The lazy pool provider
      */
     @Nonnull
-    static <T extends ExecutorService> LazySharedProvider<T> lazy(@Nonnull IntFunction<T> init)
-    {
+    static <T extends ExecutorService> LazySharedProvider<T> lazy(@Nonnull IntFunction<T> init) {
         Checks.notNull(init, "Initializer");
         return new LazySharedProvider<>(init);
     }
 
-    final class LazySharedProvider<T extends ExecutorService> implements ThreadPoolProvider<T>
-    {
+    final class LazySharedProvider<T extends ExecutorService> implements ThreadPoolProvider<T> {
         private final IntFunction<T> initializer;
         private T pool;
 
-        LazySharedProvider(@Nonnull IntFunction<T> initializer)
-        {
+        LazySharedProvider(@Nonnull IntFunction<T> initializer) {
             this.initializer = initializer;
         }
 
@@ -94,19 +89,17 @@ public interface ThreadPoolProvider<T extends ExecutorService>
          * @param shardTotal
          *        The shard total
          */
-        public synchronized void init(int shardTotal)
-        {
-            if (pool == null)
+        public synchronized void init(int shardTotal) {
+            if (pool == null) {
                 pool = initializer.apply(shardTotal);
+            }
         }
 
         /**
          * Shuts down the shared pool and the temporary pool.
          */
-        public synchronized void shutdown()
-        {
-            if (pool != null)
-            {
+        public synchronized void shutdown() {
+            if (pool != null) {
                 pool.shutdown();
                 pool = null;
             }
@@ -122,8 +115,7 @@ public interface ThreadPoolProvider<T extends ExecutorService>
          */
         @Nullable
         @Override
-        public synchronized T provide(int shardId)
-        {
+        public synchronized T provide(int shardId) {
             return pool;
         }
     }

@@ -28,17 +28,13 @@ import javax.annotation.Nonnull;
  * <p><b>To use chunking, the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent must be enabled!
  * Otherwise you <u>must</u> use {@link #NONE}!</b>
  *
- * @since 4.1.0
- *
  * @see   #ALL
  * @see   #NONE
- *
  * @see   net.dv8tion.jda.api.JDABuilder#setChunkingFilter(ChunkingFilter) JDABuilder.setChunkingFilter(ChunkingFilter)
  * @see   net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setChunkingFilter(ChunkingFilter) DefaultShardManagerBuilder.setChunkingFilter(ChunkingFilter)
  */
 @FunctionalInterface
-public interface ChunkingFilter
-{
+public interface ChunkingFilter {
     /** Chunk all guilds */
     ChunkingFilter ALL = (x) -> true;
     /** Do not chunk any guilds (lazy loading) */
@@ -66,16 +62,16 @@ public interface ChunkingFilter
      * @return The resulting filter
      */
     @Nonnull
-    static ChunkingFilter include(@Nonnull long... ids)
-    {
+    static ChunkingFilter include(@Nonnull long... ids) {
         Checks.notNull(ids, "ID array");
-        if (ids.length == 0)
+        if (ids.length == 0) {
             return NONE;
+        }
         return (guild) -> {
-            for (long id : ids)
-            {
-                if (id == guild)
+            for (long id : ids) {
+                if (id == guild) {
                     return true;
+                }
             }
             return false;
         };
@@ -94,16 +90,16 @@ public interface ChunkingFilter
      * @return The resulting filter
      */
     @Nonnull
-    static ChunkingFilter exclude(@Nonnull long... ids)
-    {
+    static ChunkingFilter exclude(@Nonnull long... ids) {
         Checks.notNull(ids, "ID array");
-        if (ids.length == 0)
+        if (ids.length == 0) {
             return ALL;
+        }
         return (guild) -> {
-            for (long id : ids)
-            {
-                if (id == guild)
+            for (long id : ids) {
+                if (id == guild) {
                     return false;
+                }
             }
             return true;
         };

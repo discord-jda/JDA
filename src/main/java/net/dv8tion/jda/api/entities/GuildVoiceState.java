@@ -23,21 +23,21 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.time.OffsetDateTime;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.api.entities.Member Member} in a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
- * 
+ *
  * <p>Voice states are only cached while the member is connected to a channel.
  *
  * @see Member#getVoiceState()
  */
-public interface GuildVoiceState extends ISnowflake
-{
+public interface GuildVoiceState extends ISnowflake {
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this VoiceState
      *

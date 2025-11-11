@@ -41,8 +41,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link MediaChannel}</li>
  * </ul>
  */
-public interface IThreadContainerUnion extends IThreadContainer
-{
+public interface IThreadContainerUnion extends IThreadContainer {
     /**
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.

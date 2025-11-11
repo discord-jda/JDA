@@ -26,10 +26,9 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the deleted StageInstance and its Guild.
  */
-public class StageInstanceDeleteEvent extends GenericStageInstanceEvent
-{
-    public StageInstanceDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)
-    {
+public class StageInstanceDeleteEvent extends GenericStageInstanceEvent {
+    public StageInstanceDeleteEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance) {
         super(api, responseNumber, stageInstance);
     }
 }

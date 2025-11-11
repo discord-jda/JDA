@@ -36,9 +36,11 @@ import javax.annotation.Nullable;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface ICategorizableChannelManager<T extends ICategorizableChannel, M extends ICategorizableChannelManager<T, M>>
-        extends ChannelManager<T, M>, IPermissionContainerManager<T, M>, IPositionableChannelManager<T, M>
-{
+public interface ICategorizableChannelManager<
+                T extends ICategorizableChannel, M extends ICategorizableChannelManager<T, M>>
+        extends ChannelManager<T, M>,
+                IPermissionContainerManager<T, M>,
+                IPositionableChannelManager<T, M> {
     /**
      * Sets the <b><u>{@link Category Parent Category}</u></b>
      * of the selected {@link GuildChannel GuildChannel}.
@@ -52,8 +54,6 @@ public interface ICategorizableChannelManager<T extends ICategorizableChannel, M
      *         If the provided category is not from the same Guild
      *
      * @return ChannelManager for chaining convenience
-     *
-     * @since  3.4.0
      */
     @Nonnull
     @CheckReturnValue
@@ -81,14 +81,16 @@ public interface ICategorizableChannelManager<T extends ICategorizableChannel, M
      */
     @Nonnull
     @CheckReturnValue
-    default M sync()
-    {
-        if (!(getChannel() instanceof ICategorizableChannel))
-            throw new IllegalStateException("sync() requires that the channel be categorizable as it syncs the channel to the parent category.");
+    default M sync() {
+        if (!(getChannel() instanceof ICategorizableChannel)) {
+            throw new IllegalStateException(
+                    "sync() requires that the channel be categorizable as it syncs the channel to the parent category.");
+        }
 
         ICategorizableChannel categorizableChannel = (ICategorizableChannel) getChannel();
-        if (categorizableChannel.getParentCategory() == null)
+        if (categorizableChannel.getParentCategory() == null) {
             throw new IllegalStateException("sync() requires a parent category");
+        }
         return sync(categorizableChannel.getParentCategory());
     }
 

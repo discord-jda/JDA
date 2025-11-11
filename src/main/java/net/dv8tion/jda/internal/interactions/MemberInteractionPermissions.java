@@ -20,24 +20,20 @@ package net.dv8tion.jda.internal.interactions;
  * Represents permissions a {@link net.dv8tion.jda.api.entities.Member Member}
  * has in the interaction's channel.
  */
-public class MemberInteractionPermissions
-{
+public class MemberInteractionPermissions {
     private final long channelId;
     private final long permissions;
 
-    public MemberInteractionPermissions(long channelId, long permissions)
-    {
+    public MemberInteractionPermissions(long channelId, long permissions) {
         this.channelId = channelId;
         this.permissions = permissions;
     }
 
-    public long getChannelId()
-    {
+    public long getChannelId() {
         return channelId;
     }
 
-    public long getPermissions()
-    {
+    public long getPermissions() {
         return permissions;
     }
 }

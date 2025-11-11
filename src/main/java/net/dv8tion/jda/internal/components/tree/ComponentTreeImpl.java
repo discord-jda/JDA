@@ -22,36 +22,32 @@ import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public final class ComponentTreeImpl<E extends Component> extends AbstractComponentTree<E>
-{
+import javax.annotation.Nonnull;
+
+public final class ComponentTreeImpl<E extends Component> extends AbstractComponentTree<E> {
     private final Class<? extends Component> componentType;
 
-    public ComponentTreeImpl(Class<? extends Component> componentType, Collection<E> components)
-    {
+    public ComponentTreeImpl(Class<? extends Component> componentType, Collection<E> components) {
         super(components);
         this.componentType = componentType;
     }
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.ANY;
     }
 
     @Nonnull
     @Override
-    public ComponentTree<E> replace(@Nonnull ComponentReplacer replacer)
-    {
+    public ComponentTree<E> replace(@Nonnull ComponentReplacer replacer) {
         Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(
                 componentType,
                 components,
                 replacer,
-                (newComponents) -> new ComponentTreeImpl<>(componentType, newComponents)
-        );
+                (newComponents) -> new ComponentTreeImpl<>(componentType, newComponents));
     }
 }

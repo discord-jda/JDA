@@ -27,16 +27,16 @@ import net.dv8tion.jda.internal.entities.channel.mixin.concrete.VoiceChannelMixi
 import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
-public class DetachedVoiceChannelImpl extends AbstractStandardGuildChannelImpl<DetachedVoiceChannelImpl>
-    implements
-        VoiceChannel,
-        VoiceChannelMixin<DetachedVoiceChannelImpl>,
-        IInteractionPermissionMixin<DetachedVoiceChannelImpl>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class DetachedVoiceChannelImpl
+        extends AbstractStandardGuildChannelImpl<DetachedVoiceChannelImpl>
+        implements VoiceChannel,
+                VoiceChannelMixin<DetachedVoiceChannelImpl>,
+                IInteractionPermissionMixin<DetachedVoiceChannelImpl> {
     private ChannelInteractionPermissions interactionPermissions;
 
     private String region;
@@ -47,149 +47,128 @@ public class DetachedVoiceChannelImpl extends AbstractStandardGuildChannelImpl<D
     private int slowmode;
     private boolean nsfw;
 
-    public DetachedVoiceChannelImpl(long id, DetachedGuildImpl guild)
-    {
+    public DetachedVoiceChannelImpl(long id, DetachedGuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return true;
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.VOICE;
     }
 
     @Override
-    public int getBitrate()
-    {
+    public int getBitrate() {
         return bitrate;
     }
 
     @Nullable
     @Override
-    public String getRegionRaw()
-    {
+    public String getRegionRaw() {
         return region;
     }
 
     @Override
-    public int getUserLimit()
-    {
+    public int getUserLimit() {
         return userLimit;
     }
 
     @Override
-    public boolean isNSFW()
-    {
+    public boolean isNSFW() {
         return nsfw;
     }
 
     @Override
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return slowmode;
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         return latestMessageId;
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public VoiceChannelManager getManager()
-    {
+    public VoiceChannelManager getManager() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public String getStatus()
-    {
+    public String getStatus() {
         return status;
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifyStatus(@Nonnull String status)
-    {
+    public AuditableRestAction<Void> modifyStatus(@Nonnull String status) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelInteractionPermissions getInteractionPermissions()
-    {
+    public ChannelInteractionPermissions getInteractionPermissions() {
         return interactionPermissions;
     }
 
     @Override
-    public DetachedVoiceChannelImpl setBitrate(int bitrate)
-    {
+    public DetachedVoiceChannelImpl setBitrate(int bitrate) {
         this.bitrate = bitrate;
         return this;
     }
 
     @Override
-    public DetachedVoiceChannelImpl setRegion(String region)
-    {
+    public DetachedVoiceChannelImpl setRegion(String region) {
         this.region = region;
         return this;
     }
 
     @Override
-    public DetachedVoiceChannelImpl setUserLimit(int userLimit)
-    {
+    public DetachedVoiceChannelImpl setUserLimit(int userLimit) {
         this.userLimit = userLimit;
         return this;
     }
 
     @Override
-    public DetachedVoiceChannelImpl setNSFW(boolean nsfw)
-    {
+    public DetachedVoiceChannelImpl setNSFW(boolean nsfw) {
         this.nsfw = nsfw;
         return this;
     }
 
     @Override
-    public DetachedVoiceChannelImpl setSlowmode(int slowmode)
-    {
+    public DetachedVoiceChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
         return this;
     }
 
     @Override
-    public DetachedVoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
-    {
+    public DetachedVoiceChannelImpl setLatestMessageIdLong(long latestMessageId) {
         this.latestMessageId = latestMessageId;
         return this;
     }
 
     @Override
-    public DetachedVoiceChannelImpl setStatus(String status)
-    {
+    public DetachedVoiceChannelImpl setStatus(String status) {
         this.status = status;
         return this;
     }
 
     @Nonnull
     @Override
-    public DetachedVoiceChannelImpl setInteractionPermissions(@Nonnull ChannelInteractionPermissions interactionPermissions)
-    {
+    public DetachedVoiceChannelImpl setInteractionPermissions(
+            @Nonnull ChannelInteractionPermissions interactionPermissions) {
         this.interactionPermissions = interactionPermissions;
         return this;
     }

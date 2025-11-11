@@ -37,13 +37,15 @@ import javax.annotation.Nonnull;
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_INVITES GUILD_INVITES} intent to be enabled.
  * <br>These events will only fire for invite events that occur in channels where you can {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}.
  */
-public class GenericGuildInviteEvent extends GenericGuildEvent
-{
+public class GenericGuildInviteEvent extends GenericGuildEvent {
     private final String code;
     private final GuildChannel channel;
 
-    public GenericGuildInviteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel)
-    {
+    public GenericGuildInviteEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull String code,
+            @Nonnull GuildChannel channel) {
         super(api, responseNumber, channel.getGuild());
         this.code = code;
         this.channel = channel;
@@ -56,8 +58,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @return The invite code
      */
     @Nonnull
-    public String getCode()
-    {
+    public String getCode() {
         return code;
     }
 
@@ -68,8 +69,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @return The invite url
      */
     @Nonnull
-    public String getUrl()
-    {
+    public String getUrl() {
         return "https://discord.gg/" + code;
     }
 
@@ -79,8 +79,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @return {@link GuildChannel}
      */
     @Nonnull
-    public GuildChannelUnion getChannel()
-    {
+    public GuildChannelUnion getChannel() {
         return (GuildChannelUnion) channel;
     }
 
@@ -90,8 +89,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @return {@link ChannelType}
      */
     @Nonnull
-    public ChannelType getChannelType()
-    {
+    public ChannelType getChannelType() {
         return channel.getType();
     }
 }

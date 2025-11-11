@@ -37,94 +37,92 @@ import org.mockito.Mock;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class ThreadCreateActionTest extends IntegrationTest
-{
+public class ThreadCreateActionTest extends IntegrationTest {
     @Mock
     private Guild guild;
+
     @Mock
     private IPostContainer forum;
+
     @Mock
     private TextChannel textChannel;
+
     @Mock
     private SelfMember selfMember;
 
     @BeforeEach
-    void setupMocks()
-    {
+    void setupMocks() {
         mockChannel(forum);
         mockChannel(textChannel);
         when(guild.getSelfMember()).thenReturn(selfMember);
-        when(selfMember.hasPermission(any(GuildChannel.class), any(Permission.class))).thenReturn(true);
+        when(selfMember.hasPermission(any(GuildChannel.class), any(Permission.class)))
+                .thenReturn(true);
     }
 
-    private void mockChannel(GuildChannel channel)
-    {
+    private void mockChannel(GuildChannel channel) {
         when(channel.getId()).thenReturn(Long.toUnsignedString(Constants.CHANNEL_ID));
         when(channel.getJDA()).thenReturn(jda);
         when(channel.getGuild()).thenReturn(guild);
     }
 
     @Test
-    void testMinimalForumPost()
-    {
-        ForumPostActionImpl action = new ForumPostActionImpl(forum, "post title", new MessageCreateBuilder().setContent("test content"));
+    void testMinimalForumPost() {
+        ForumPostActionImpl action = new ForumPostActionImpl(
+                forum, "post title", new MessageCreateBuilder().setContent("test content"));
 
         assertThatRequestFrom(action)
-            .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
-            .hasMethod(Method.POST)
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
+                .hasMethod(Method.POST)
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 
     @Test
-    void testFullForumPost()
-    {
-        ForumPostActionImpl action = new ForumPostActionImpl(forum, "post title", new MessageCreateBuilder());
+    void testFullForumPost() {
+        ForumPostActionImpl action =
+                new ForumPostActionImpl(forum, "post title", new MessageCreateBuilder());
 
         String tagId = randomSnowflake();
 
-        action
-            .setName("post title by setter")
-            .setTags(ForumTagSnowflake.fromId(tagId))
-            .setContent("test message content")
-            .setSlowmode(1337);
+        action.setName("post title by setter")
+                .setTags(ForumTagSnowflake.fromId(tagId))
+                .setContent("test message content")
+                .setSlowmode(1337);
 
         verify(selfMember, times(1)).hasPermission(eq(forum), eq(Permission.MANAGE_THREADS));
 
         assertThatRequestFrom(action)
-            .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
-            .hasMethod(Method.POST)
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
+                .hasMethod(Method.POST)
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 
     @Test
-    void testMinimalStartThread()
-    {
-        ThreadChannelActionImpl action = new ThreadChannelActionImpl(textChannel, "thread title", ChannelType.TEXT);
+    void testMinimalStartThread() {
+        ThreadChannelActionImpl action =
+                new ThreadChannelActionImpl(textChannel, "thread title", ChannelType.TEXT);
 
         assertThatRequestFrom(action)
-            .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
-            .hasMethod(Method.POST)
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
+                .hasMethod(Method.POST)
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 
     @Test
-    void testFullStartThread()
-    {
-        ThreadChannelActionImpl action = new ThreadChannelActionImpl(textChannel, "thread title", ChannelType.TEXT);
+    void testFullStartThread() {
+        ThreadChannelActionImpl action =
+                new ThreadChannelActionImpl(textChannel, "thread title", ChannelType.TEXT);
 
-        action
-            .setName("post title by setter")
-            .setSlowmode(1337);
+        action.setName("post title by setter").setSlowmode(1337);
 
         verify(selfMember, times(1)).hasPermission(eq(textChannel), eq(Permission.MANAGE_THREADS));
 
         assertThatRequestFrom(action)
-            .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
-            .hasMethod(Method.POST)
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
+                .hasMethod(Method.POST)
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 }

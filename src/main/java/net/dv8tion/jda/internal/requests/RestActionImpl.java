@@ -30,29 +30,36 @@ import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public class RestActionImpl<T> implements RestAction<T>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class RestActionImpl<T> implements RestAction<T> {
     public static final Logger LOG = JDALogger.getLog(RestAction.class);
 
     private static Consumer<Object> DEFAULT_SUCCESS = o -> {};
-    private static Consumer<? super Throwable> DEFAULT_FAILURE = t ->
-    {
-        if (t instanceof CancellationException || t instanceof TimeoutException)
+    private static Consumer<? super Throwable> DEFAULT_FAILURE = t -> {
+        if (t instanceof CancellationException || t instanceof TimeoutException) {
             LOG.debug(t.getMessage());
-        else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException))
+        } else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException)) {
             LOG.error("RestAction queue returned failure", t);
-        else if (t.getCause() != null)
-            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage(), t.getCause());
-        else
-            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
+        } else if (t.getCause() != null) {
+            LOG.error(
+                    "RestAction queue returned failure: [{}] {}",
+                    t.getClass().getSimpleName(),
+                    t.getMessage(),
+                    t.getCause());
+        } else {
+            LOG.error(
+                    "RestAction queue returned failure: [{}] {}",
+                    t.getClass().getSimpleName(),
+                    t.getMessage());
+        }
     };
 
     protected static boolean passContext = true;
@@ -70,76 +77,75 @@ public class RestActionImpl<T> implements RestAction<T>
     private Object rawData;
     private BooleanSupplier checks;
 
-    public static void setPassContext(boolean enable)
-    {
+    public static void setPassContext(boolean enable) {
         passContext = enable;
     }
 
-    public static boolean isPassContext()
-    {
+    public static boolean isPassContext() {
         return passContext;
     }
 
-    public static void setDefaultFailure(final Consumer<? super Throwable> callback)
-    {
+    public static void setDefaultFailure(Consumer<? super Throwable> callback) {
         DEFAULT_FAILURE = callback == null ? t -> {} : callback;
     }
 
-    public static void setDefaultSuccess(final Consumer<Object> callback)
-    {
+    public static void setDefaultSuccess(Consumer<Object> callback) {
         DEFAULT_SUCCESS = callback == null ? t -> {} : callback;
     }
 
-    public static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit) {
         Checks.notNull(unit, "TimeUnit");
         defaultTimeout = unit.toMillis(timeout);
     }
 
-    public static long getDefaultTimeout()
-    {
+    public static long getDefaultTimeout() {
         return defaultTimeout;
     }
 
-    public static Consumer<? super Throwable> getDefaultFailure()
-    {
+    public static Consumer<? super Throwable> getDefaultFailure() {
         return DEFAULT_FAILURE;
     }
 
-    public static Consumer<Object> getDefaultSuccess()
-    {
+    public static Consumer<Object> getDefaultSuccess() {
         return DEFAULT_SUCCESS;
     }
 
-    public RestActionImpl(JDA api, Route.CompiledRoute route)
-    {
+    public RestActionImpl(JDA api, Route.CompiledRoute route) {
         this(api, route, (RequestBody) null, null);
     }
 
-    public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data)
-    {
+    public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data) {
         this(api, route, data, null);
     }
 
-    public RestActionImpl(JDA api, Route.CompiledRoute route, RequestBody data)
-    {
+    public RestActionImpl(JDA api, Route.CompiledRoute route, RequestBody data) {
         this(api, route, data, null);
     }
 
-    public RestActionImpl(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler)
-    {
+    public RestActionImpl(
+            JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
         this(api, route, (RequestBody) null, handler);
     }
 
     @SuppressWarnings("deprecation")
-    public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
-    {
-        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()), handler);
+    public RestActionImpl(
+            JDA api,
+            Route.CompiledRoute route,
+            DataObject data,
+            BiFunction<Response, Request<T>, T> handler) {
+        this(
+                api,
+                route,
+                data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()),
+                handler);
         this.rawData = data;
     }
 
-    public RestActionImpl(JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler)
-    {
+    public RestActionImpl(
+            JDA api,
+            Route.CompiledRoute route,
+            RequestBody data,
+            BiFunction<Response, Request<T>, T> handler) {
         Checks.notNull(api, "api");
         this.api = (JDAImpl) api;
         this.route = route;
@@ -147,214 +153,237 @@ public class RestActionImpl<T> implements RestAction<T>
         this.handler = handler;
     }
 
-    public void setErrorMapper(ErrorMapper errorMapper)
-    {
+    public void setErrorMapper(ErrorMapper errorMapper) {
         this.errorMapper = errorMapper;
     }
 
-    public RestActionImpl<T> priority()
-    {
+    public RestActionImpl<T> priority() {
         priority = true;
         return this;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public RestAction<T> setCheck(BooleanSupplier checks)
-    {
+    public RestAction<T> setCheck(BooleanSupplier checks) {
         this.checks = checks;
         return this;
     }
 
     @Nullable
     @Override
-    public BooleanSupplier getCheck()
-    {
+    public BooleanSupplier getCheck() {
         return this.checks;
     }
 
     @Nonnull
     @Override
-    public RestAction<T> deadline(long timestamp)
-    {
+    public RestAction<T> deadline(long timestamp) {
         this.deadline = timestamp;
         return this;
     }
 
     @Override
-    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
-    {
+    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure) {
         Route.CompiledRoute route = finalizeRoute();
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        if (success == null)
+        if (success == null) {
             success = DEFAULT_SUCCESS;
-        if (failure == null)
+        }
+        if (failure == null) {
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, getDeadline(), priority, route, headers));
+        }
+        api.getRequester()
+                .request(new Request<>(
+                        this,
+                        success,
+                        failure,
+                        finisher,
+                        true,
+                        data,
+                        rawData,
+                        getDeadline(),
+                        priority,
+                        route,
+                        headers));
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
+    public CompletableFuture<T> submit(boolean shouldQueue) {
         Route.CompiledRoute route = finalizeRoute();
         Checks.notNull(route, "Route");
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, getDeadline(), priority, route, headers);
+        return new RestFuture<>(
+                this,
+                shouldQueue,
+                finisher,
+                data,
+                rawData,
+                getDeadline(),
+                priority,
+                route,
+                headers);
     }
 
     @Override
-    public T complete(boolean shouldQueue) throws RateLimitedException
-    {
-        if (CallbackContext.isCallbackContext())
-            throw new IllegalStateException("Preventing use of complete() in callback threads! This operation can be a deadlock cause");
-        try
-        {
-            return submit(shouldQueue).join();
+    public T complete(boolean shouldQueue) throws RateLimitedException {
+        if (CallbackContext.isCallbackContext()) {
+            throw new IllegalStateException(
+                    "Preventing use of complete() in callback threads! This operation can be a deadlock cause");
         }
-        catch (CompletionException e)
-        {
-            if (e.getCause() != null)
-            {
+        try {
+            return submit(shouldQueue).join();
+        } catch (CompletionException e) {
+            if (e.getCause() != null) {
                 Throwable cause = e.getCause();
-                if (cause instanceof ErrorResponseException)
-                    throw (ErrorResponseException) cause.fillInStackTrace(); // this method will update the stacktrace to the current thread stack
-                if (cause instanceof RateLimitedException)
+                if (cause instanceof ErrorResponseException) {
+                    throw (ErrorResponseException)
+                            cause.fillInStackTrace(); // this method will update the stacktrace
+                    // to the current thread stack
+                }
+                if (cause instanceof RateLimitedException) {
                     throw (RateLimitedException) cause.fillInStackTrace();
-                if (cause instanceof RuntimeException)
+                }
+                if (cause instanceof RuntimeException) {
                     throw (RuntimeException) cause;
-                if (cause instanceof Error)
+                }
+                if (cause instanceof Error) {
                     throw (Error) cause;
+                }
             }
             throw e;
         }
     }
 
-    protected RequestBody finalizeData() { return data; }
-    protected Route.CompiledRoute finalizeRoute() { return route; }
-    protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
-    protected BooleanSupplier finalizeChecks() { return null; }
+    protected RequestBody finalizeData() {
+        return data;
+    }
 
-    @SuppressWarnings("deprecation")
-    protected RequestBody getRequestBody(DataObject object)
-    {
-        this.rawData = object;
+    protected Route.CompiledRoute finalizeRoute() {
+        return route;
+    }
 
-        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
+    protected CaseInsensitiveMap<String, String> finalizeHeaders() {
+        return null;
+    }
+
+    protected BooleanSupplier finalizeChecks() {
+        return null;
     }
 
     @SuppressWarnings("deprecation")
-    protected RequestBody getRequestBody(DataArray array)
-    {
+    protected RequestBody getRequestBody(DataObject object) {
+        this.rawData = object;
+
+        return object == null
+                ? null
+                : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
+    }
+
+    @SuppressWarnings("deprecation")
+    protected RequestBody getRequestBody(DataArray array) {
         this.rawData = array;
 
         return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson());
     }
 
     @Nonnull
-    protected RequestBody getMultipartBody(@Nonnull Set<? extends AttachedFile> files, @Nonnull DataObject json)
-    {
+    protected RequestBody getMultipartBody(
+            @Nonnull Set<? extends AttachedFile> files, @Nonnull DataObject json) {
         RequestBody payloadJson = getRequestBody(json);
-        if (files.isEmpty())
+        if (files.isEmpty()) {
             return payloadJson;
+        }
         return AttachedFile.createMultipartBody(files, payloadJson).build();
     }
 
-    private CheckWrapper getFinisher()
-    {
+    private CheckWrapper getFinisher() {
         BooleanSupplier pre = finalizeChecks();
         BooleanSupplier wrapped = this.checks;
-        return (pre != null || wrapped != null) ? new CheckWrapper(wrapped, pre) : CheckWrapper.EMPTY;
+        return (pre != null || wrapped != null)
+                ? new CheckWrapper(wrapped, pre)
+                : CheckWrapper.EMPTY;
     }
 
-    public void handleResponse(Response response, Request<T> request)
-    {
-        if (response.isOk())
+    public void handleResponse(Response response, Request<T> request) {
+        if (response.isOk()) {
             handleSuccess(response, request);
-        else if (response.isRateLimit())
+        } else if (response.isRateLimit()) {
             request.onRateLimited(response);
-        else
-        {
-            final ErrorResponseException exception = request.createErrorResponseException(response);
-            final Throwable mappedThrowable = this.errorMapper != null
+        } else {
+            ErrorResponseException exception = request.createErrorResponseException(response);
+            Throwable mappedThrowable = this.errorMapper != null
                     ? this.errorMapper.apply(response, request, exception)
                     : null;
 
-            if (mappedThrowable != null)
+            if (mappedThrowable != null) {
                 request.onFailure(mappedThrowable);
-            else
+            } else {
                 request.onFailure(exception);
+            }
         }
     }
 
-    protected void handleSuccess(Response response, Request<T> request)
-    {
-        if (handler == null)
+    protected void handleSuccess(Response response, Request<T> request) {
+        if (handler == null) {
             request.onSuccess(null);
-        else
+        } else {
             request.onSuccess(handler.apply(response, request));
+        }
     }
 
-    private long getDeadline()
-    {
+    private long getDeadline() {
         return deadline > 0
-            ? deadline
-            : defaultTimeout > 0
-                ? System.currentTimeMillis() + defaultTimeout
-                : 0;
+                ? deadline
+                : defaultTimeout > 0 ? System.currentTimeMillis() + defaultTimeout : 0;
     }
 
     /*
-        useful for final permission checks:
+       useful for final permission checks:
 
-        @Override
-        protected BooleanSupplier finalizeChecks()
-        {
-            // throw exception, if missing perms
-            return () -> hasPermission(Permission.MESSAGE_SEND);
-        }
-     */
-    protected static class CheckWrapper implements BooleanSupplier
-    {
-        public static final CheckWrapper EMPTY = new CheckWrapper(null, null)
-        {
-            public boolean getAsBoolean() { return true; }
+       @Override
+       protected BooleanSupplier finalizeChecks()
+       {
+           // throw exception, if missing perms
+           return () -> hasPermission(Permission.MESSAGE_SEND);
+       }
+    */
+    protected static class CheckWrapper implements BooleanSupplier {
+        public static final CheckWrapper EMPTY = new CheckWrapper(null, null) {
+            public boolean getAsBoolean() {
+                return true;
+            }
         };
 
         protected final BooleanSupplier pre;
         protected final BooleanSupplier wrapped;
 
-        public CheckWrapper(BooleanSupplier wrapped, BooleanSupplier pre)
-        {
+        public CheckWrapper(BooleanSupplier wrapped, BooleanSupplier pre) {
             this.pre = pre;
             this.wrapped = wrapped;
         }
 
-        public boolean pre()
-        {
+        public boolean pre() {
             return pre == null || pre.getAsBoolean();
         }
 
-        public boolean test()
-        {
+        public boolean test() {
             return wrapped == null || wrapped.getAsBoolean();
         }
 
         @Override
-        public boolean getAsBoolean()
-        {
+        public boolean getAsBoolean() {
             return pre() && test();
         }
     }

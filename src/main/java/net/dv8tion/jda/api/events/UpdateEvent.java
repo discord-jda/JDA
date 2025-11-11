@@ -27,8 +27,7 @@ import javax.annotation.Nullable;
  * @param <T>
  *        The value type
  */
-public interface UpdateEvent<E, T> extends GenericEvent
-{
+public interface UpdateEvent<E, T> extends GenericEvent {
     /**
      * Class representation of the affected entity, useful when dealing with refection.
      *
@@ -36,8 +35,7 @@ public interface UpdateEvent<E, T> extends GenericEvent
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    default Class<E> getEntityType()
-    {
+    default Class<E> getEntityType() {
         return (Class<E>) getEntity().getClass();
     }
 

@@ -13,29 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.WidgetUtil;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Represents a guild's widget
- * 
+ *
  * @see WidgetUtil#getWidget(long)
  * @see WidgetUtil#getWidget(String)
  */
-public interface Widget extends ISnowflake
-{
+public interface Widget extends ISnowflake {
 
     /**
      * Shows whether or not the widget for a guild is available. If this
      * method returns false, all other values will be null
-     * 
+     *
      * @return True, if the widget is available, false otherwise
      */
     boolean isAvailable();
@@ -76,7 +77,7 @@ public interface Widget extends ISnowflake
 
     /**
      * Gets a voice channel with the given ID, or null if the voice channel is not found
-     * 
+     *
      * @param  id
      *         the ID of the voice channel
      *
@@ -85,7 +86,7 @@ public interface Widget extends ISnowflake
      * @throws NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return possibly-null VoiceChannel with the given ID. 
+     * @return possibly-null VoiceChannel with the given ID.
      */
     @Nullable
     VoiceChannel getVoiceChannelById(@Nonnull String id);
@@ -117,7 +118,7 @@ public interface Widget extends ISnowflake
 
     /**
      * Gets a member with the given ID, or null if the member is not found
-     * 
+     *
      * @param  id
      *         the ID of the member
      *
@@ -126,7 +127,7 @@ public interface Widget extends ISnowflake
      * @throws IllegalStateException
      *         If the widget is not {@link #isAvailable() available}
      *
-     * @return possibly-null Member with the given ID. 
+     * @return possibly-null Member with the given ID.
      */
     @Nullable
     Member getMemberById(@Nonnull String id);
@@ -147,25 +148,24 @@ public interface Widget extends ISnowflake
 
     /**
      * Represents a member of a guild
-     * 
+     *
      * @see     Widget#getMembers()
      * @see     Widget#getMemberById(long)
      * @see     Widget#getMemberById(String)
      * @see     VoiceChannel#getMembers()
      */
-    public interface Member extends IMentionable
-    {
+    public interface Member extends IMentionable {
 
         /**
          * Returns whether or not the given member is a bot account
-         * 
+         *
          * @return true if the member is a bot, false otherwise
          */
         boolean isBot();
 
         /**
          * Returns the username of the member
-         * 
+         *
          * @return the username of the member
          */
         @Nonnull
@@ -173,7 +173,7 @@ public interface Widget extends ISnowflake
 
         /**
          * Gets the discriminator of the member
-         * 
+         *
          * @return the never-null discriminator of the member
          */
         @Nonnull
@@ -182,7 +182,7 @@ public interface Widget extends ISnowflake
         /**
          * Gets the avatar hash of the member, or null if they do not have
          * an avatar set.
-         * 
+         *
          * @return possibly-null String containing the avatar hash of the
          *         member
          */
@@ -192,7 +192,7 @@ public interface Widget extends ISnowflake
         /**
          * Gets the avatar url of the member, or null if they do not have
          * an avatar set.
-         * 
+         *
          * @return possibly-null String containing the avatar url of the
          *         member
          */
@@ -211,7 +211,7 @@ public interface Widget extends ISnowflake
 
         /**
          * Gets the asset id of the member's default avatar
-         * 
+         *
          * @return never-null String containing the asset id of the member's
          *         default avatar
          */
@@ -220,7 +220,7 @@ public interface Widget extends ISnowflake
 
         /**
          * Gets the url of the member's default avatar
-         * 
+         *
          * @return never-null String containing the url of the member's
          *         default avatar
          */
@@ -241,7 +241,7 @@ public interface Widget extends ISnowflake
          * The URL for the user's avatar image
          * <br>If they do not have an avatar set, this will return the URL of their
          * default avatar
-         * 
+         *
          * @return Never-null String containing the member's effective avatar url.
          */
         @Nonnull
@@ -260,7 +260,7 @@ public interface Widget extends ISnowflake
         /**
          * Gets the nickname of the member. If they do not have a nickname on
          * the guild, this will return null;
-         * 
+         *
          * @return possibly-null String containing the nickname of the member
          */
         @Nullable
@@ -269,7 +269,7 @@ public interface Widget extends ISnowflake
         /**
          * Gets the visible name of the member. If they have a nickname set,
          * this will be their nickname. Otherwise, it will be their username.
-         * 
+         *
          * @return never-null String containing the member's effective (visible) name
          */
         @Nonnull
@@ -278,7 +278,7 @@ public interface Widget extends ISnowflake
         /**
          * Gets the online status of the member. The widget does not show
          * offline members, so this status should never be offline
-         * 
+         *
          * @return the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the member
          */
         @Nonnull
@@ -298,7 +298,7 @@ public interface Widget extends ISnowflake
         /**
          * The current voice state of the member.
          * <br>If the user is not in voice, this will return a VoiceState with a null channel.
-         * 
+         *
          * @return never-null VoiceState of the member
          */
         @Nonnull
@@ -306,33 +306,32 @@ public interface Widget extends ISnowflake
 
         /**
          * Gets the widget that to which this member belongs
-         * 
+         *
          * @return the Widget that holds this member
          */
         @Nonnull
         Widget getWidget();
-
     }
 
     /**
      * Represents a voice channel
-     * 
+     *
      * @see     Widget#getVoiceChannels()
      * @see     Widget#getVoiceChannelById(long)
      * @see     Widget#getVoiceChannelById(String)
      */
-    public interface VoiceChannel extends ISnowflake
-    {
+    public interface VoiceChannel extends ISnowflake {
 
         /**
          * Gets the integer position of the channel
-         * 
+         *
          * @return integer position of the channel
          */
         int getPosition();
 
         /**
-         * Gets the name of the channel	 * 
+         * Gets the name of the channel
+         *
          * @return name of the channel
          */
         @Nonnull
@@ -340,7 +339,7 @@ public interface Widget extends ISnowflake
 
         /**
          * Gets a list of all members in the channel
-         * 
+         *
          * @return never-null, possibly-empty list of members in the channel
          */
         @Nonnull
@@ -348,7 +347,7 @@ public interface Widget extends ISnowflake
 
         /**
          * Gets the Widget to which this voice channel belongs
-         * 
+         *
          * @return the Widget object that holds this voice channel
          */
         @Nonnull
@@ -357,15 +356,14 @@ public interface Widget extends ISnowflake
 
     /**
      * Represents a {@link net.dv8tion.jda.api.entities.Widget.Member Member's} voice state
-     * 
+     *
      * @see     Member#getVoiceState()
      */
-    public interface VoiceState
-    {
+    public interface VoiceState {
 
         /**
          * Gets the channel the member is in
-         * 
+         *
          * @return never-null VoiceChannel
          */
         @Nullable
@@ -374,56 +372,56 @@ public interface Widget extends ISnowflake
         /**
          * Used to determine if the member is currently in a voice channel.
          * <br>If this is false, getChannel() will return null
-         * 
+         *
          * @return True, if the member is in a voice channel
          */
         boolean inVoiceChannel();
 
         /**
          * Whether the member is muted by an admin
-         * 
+         *
          * @return True, if the member is muted
          */
         boolean isGuildMuted();
 
         /**
          * Whether the member is deafened by an admin
-         * 
+         *
          * @return True, if the member is deafened
          */
         boolean isGuildDeafened();
 
         /**
          * Whether the member is suppressed
-         * 
+         *
          * @return True, if the member is suppressed
          */
         boolean isSuppressed();
 
         /**
          * Whether the member is self-muted
-         * 
+         *
          * @return True, if the member is self-muted
          */
         boolean isSelfMuted();
 
         /**
          * Whether the member is self-deafened
-         * 
+         *
          * @return True, if the member is self-deafened
          */
         boolean isSelfDeafened();
 
         /**
          * Whether the member is muted, either by an admin or self-muted
-         * 
+         *
          * @return True, if the member is self-muted or guild-muted
          */
         boolean isMuted();
 
         /**
          * Whether the member is deafened, either by an admin or self-deafened
-         * 
+         *
          * @return True, if the member is self-deafened or guild-deafened
          */
         boolean isDeafened();
@@ -431,7 +429,7 @@ public interface Widget extends ISnowflake
         /**
          * Gets the {@link net.dv8tion.jda.api.entities.Widget.Member Member} to which this
          * VoiceState belongs
-         * 
+         *
          * @return the member
          */
         @Nonnull
@@ -440,7 +438,7 @@ public interface Widget extends ISnowflake
         /**
          * Gets the {@link net.dv8tion.jda.api.entities.Widget Widget} to which the
          * {@link net.dv8tion.jda.api.entities.Widget.Member Member} of this VoiceState belongs
-         * 
+         *
          * @return the widget
          */
         @Nonnull

@@ -32,10 +32,9 @@ import javax.annotation.Nonnull;
  *
  * @see #getEntitlement()
  */
-public class EntitlementUpdateEvent extends GenericEntitlementEvent
-{
-    public EntitlementUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement)
-    {
+public class EntitlementUpdateEvent extends GenericEntitlementEvent {
+    public EntitlementUpdateEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
         super(api, responseNumber, entitlement);
     }
 }

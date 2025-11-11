@@ -21,11 +21,12 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Contract;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This utility class can be used to access nested values within {@link DataObject DataObjects} and {@link DataArray DataArrays}.
@@ -61,8 +62,7 @@ import java.util.regex.Pattern;
  * <pre>{@code String foo = DataPath.getString(root, "array[1]?.foo", "default")}</pre>
  * This will result in {@code foo == "default"}, since the array element 1 is marked as optional, and missing in the actual object.
  */
-public class DataPath
-{
+public class DataPath {
     private static final Pattern INDEX_EXPRESSION = Pattern.compile("^\\[\\d+].*");
     private static final Pattern NAME_EXPRESSION = Pattern.compile("^[^\\[.].*");
 
@@ -71,7 +71,6 @@ public class DataPath
      *
      * @param  <T>
      *         The result type
-     *
      * @param  root
      *         The root data object, which is the top level accessor.
      *         <br>The very first element in the path corresponds to a field of that name within this root object.
@@ -98,8 +97,11 @@ public class DataPath
      *         Possibly null, if the path ends with a "?" operator, or the resolver function returns null.
      */
     @UnknownNullability
-    public static <T> T get(@Nonnull DataObject root, @Nonnull String path, @Nonnull BiFunction<DataObject, String, ? extends T> fromObject, @Nonnull BiFunction<DataArray, Integer, ? extends T> fromArray)
-    {
+    public static <T> T get(
+            @Nonnull DataObject root,
+            @Nonnull String path,
+            @Nonnull BiFunction<DataObject, String, ? extends T> fromObject,
+            @Nonnull BiFunction<DataArray, Integer, ? extends T> fromArray) {
         Checks.notEmpty(path, "Path");
         Checks.matches(path, NAME_EXPRESSION, "Path");
         Checks.notNull(root, "DataObject");
@@ -108,43 +110,47 @@ public class DataPath
         return getUnchecked(root, path, fromObject, fromArray);
     }
 
-    private static <T> T getUnchecked(DataObject root, String path, BiFunction<DataObject, String, ? extends T> fromObject, BiFunction<DataArray, Integer, ? extends T> fromArray)
-    {
+    private static <T> T getUnchecked(
+            DataObject root,
+            String path,
+            BiFunction<DataObject, String, ? extends T> fromObject,
+            BiFunction<DataArray, Integer, ? extends T> fromArray) {
         String[] parts = path.split("\\.", 2);
         String current = parts[0];
         String child = parts.length > 1 ? parts[1] : null;
 
         // if key is array according to index in path
-        if (current.indexOf('[') > -1)
-        {
+        if (current.indexOf('[') > -1) {
             int arrayIndex = current.indexOf('[');
             String key = current.substring(0, arrayIndex);
             path = path.substring(arrayIndex);
 
             // isOptional
-            if (key.endsWith("?"))
-            {
+            if (key.endsWith("?")) {
                 key = key.substring(0, key.length() - 1);
-                if (root.isNull(key))
+                if (root.isNull(key)) {
                     return null;
+                }
             }
 
             return getUnchecked(root.getArray(key), path, fromObject, fromArray);
         }
 
         boolean isOptional = current.endsWith("?");
-        if (isOptional)
+        if (isOptional) {
             current = current.substring(0, current.length() - 1);
+        }
 
-        if (child == null)
-        {
-            if (isOptional && root.isNull(current))
+        if (child == null) {
+            if (isOptional && root.isNull(current)) {
                 return null;
+            }
             return fromObject.apply(root, current);
         }
 
-        if (isOptional && root.isNull(current))
+        if (isOptional && root.isNull(current)) {
             return null;
+        }
 
         return getUnchecked(root.getObject(current), child, fromObject, fromArray);
     }
@@ -154,7 +160,6 @@ public class DataPath
      *
      * @param  <T>
      *         The result type
-     *
      * @param  root
      *         The root data array, which is the top level accessor.
      *         <br>The very first element in the path corresponds to a field of that name within this root object.
@@ -181,8 +186,11 @@ public class DataPath
      *         Possibly null, if the path ends with a "?" operator, or the resolver function returns null.
      */
     @UnknownNullability
-    public static <T> T get(@Nonnull DataArray root, @Nonnull String path, @Nonnull BiFunction<DataObject, String, ? extends T> fromObject, @Nonnull BiFunction<DataArray, Integer, ? extends T> fromArray)
-    {
+    public static <T> T get(
+            @Nonnull DataArray root,
+            @Nonnull String path,
+            @Nonnull BiFunction<DataObject, String, ? extends T> fromObject,
+            @Nonnull BiFunction<DataArray, Integer, ? extends T> fromArray) {
         Checks.notNull(root, "DataArray");
         Checks.notEmpty(path, "Path");
         Checks.matches(path, INDEX_EXPRESSION, "Path");
@@ -191,14 +199,16 @@ public class DataPath
         return getUnchecked(root, path, fromObject, fromArray);
     }
 
-    private static <T> T getUnchecked(DataArray root, String path, BiFunction<DataObject, String, ? extends T> fromObject, BiFunction<DataArray, Integer, ? extends T> fromArray)
-    {
+    private static <T> T getUnchecked(
+            DataArray root,
+            String path,
+            BiFunction<DataObject, String, ? extends T> fromObject,
+            BiFunction<DataArray, Integer, ? extends T> fromArray) {
         byte[] chars = path.getBytes(StandardCharsets.UTF_8);
         int offset = 0;
 
         // This is just to prevent infinite loop if some strange thing happens, should be impossible
-        for (int i = 0; i < chars.length; i++)
-        {
+        for (int i = 0; i < chars.length; i++) {
             int end = indexOf(chars, offset + 1, ']');
             int index = Integer.parseInt(path.substring(offset + 1, end));
 
@@ -206,31 +216,36 @@ public class DataPath
             boolean optional = offset != chars.length && chars[offset] == '?';
 
             boolean isMissing = root.length() <= index || root.isNull(index);
-            if (optional)
-            {
+            if (optional) {
                 offset++;
-                if (isMissing)
+                if (isMissing) {
                     return null;
+                }
             }
 
-            if (offset == chars.length)
+            if (offset == chars.length) {
                 return fromArray.apply(root, index);
+            }
 
-            if (chars[offset] == '[')
+            if (chars[offset] == '[') {
                 root = root.getArray(index);
-            else
-                return getUnchecked(root.getObject(index), path.substring(offset + 1), fromObject, fromArray);
+            } else {
+                return getUnchecked(
+                        root.getObject(index), path.substring(offset + 1), fromObject, fromArray);
+            }
         }
 
-        throw new ParsingException("Array path nesting seems to be way too deep, we went " + chars.length + " arrays deep. Path: " + path);
+        throw new ParsingException("Array path nesting seems to be way too deep, we went "
+                + chars.length + " arrays deep. Path: " + path);
     }
 
-    private static int indexOf(byte[] chars, int offset, char c)
-    {
+    private static int indexOf(byte[] chars, int offset, char c) {
         byte b = (byte) c;
-        for (int i = offset; i < chars.length; i++)
-            if (chars[i] == b)
+        for (int i = offset; i < chars.length; i++) {
+            if (chars[i] == b) {
                 return i;
+            }
+        }
         return -1;
     }
 
@@ -253,8 +268,7 @@ public class DataPath
      *
      * @return The boolean value at the given path, if declared as optional this returns false when the value is missing.
      */
-    public static boolean getBoolean(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static boolean getBoolean(@Nonnull DataObject root, @Nonnull String path) {
         Boolean bool = get(root, path, DataObject::getBoolean, DataArray::getBoolean);
         return bool != null && bool;
     }
@@ -278,9 +292,13 @@ public class DataPath
      *
      * @return The boolean value at the given path, if declared as optional this returns the provided fallback when the value is missing.
      */
-    public static boolean getBoolean(@Nonnull DataObject root, @Nonnull String path, boolean fallback)
-    {
-        Boolean bool = get(root, path, (obj, key) -> obj.getBoolean(key, fallback), (arr, index) -> arr.getBoolean(index, fallback));
+    public static boolean getBoolean(
+            @Nonnull DataObject root, @Nonnull String path, boolean fallback) {
+        Boolean bool = get(
+                root,
+                path,
+                (obj, key) -> obj.getBoolean(key, fallback),
+                (arr, index) -> arr.getBoolean(index, fallback));
         return bool != null ? bool : fallback;
     }
 
@@ -303,8 +321,7 @@ public class DataPath
      *
      * @return The boolean value at the given path, if declared as optional this returns false when the value is missing.
      */
-    public static boolean getBoolean(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static boolean getBoolean(@Nonnull DataArray root, @Nonnull String path) {
         Boolean bool = get(root, path, DataObject::getBoolean, DataArray::getBoolean);
         return bool != null && bool;
     }
@@ -328,9 +345,13 @@ public class DataPath
      *
      * @return The boolean value at the given path, if declared as optional this returns the provided fallback when the value is missing.
      */
-    public static boolean getBoolean(@Nonnull DataArray root, @Nonnull String path, boolean fallback)
-    {
-        Boolean bool = get(root, path, (obj, key) -> obj.getBoolean(key, fallback), (arr, index) -> arr.getBoolean(index, fallback));
+    public static boolean getBoolean(
+            @Nonnull DataArray root, @Nonnull String path, boolean fallback) {
+        Boolean bool = get(
+                root,
+                path,
+                (obj, key) -> obj.getBoolean(key, fallback),
+                (arr, index) -> arr.getBoolean(index, fallback));
         return bool != null ? bool : fallback;
     }
 
@@ -354,11 +375,11 @@ public class DataPath
      *
      * @return The int value at the given path
      */
-    public static int getInt(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static int getInt(@Nonnull DataObject root, @Nonnull String path) {
         Integer integer = get(root, path, DataObject::getInt, DataArray::getInt);
-        if (integer == null)
+        if (integer == null) {
             pathError(path, "int");
+        }
         return integer;
     }
 
@@ -382,9 +403,12 @@ public class DataPath
      *
      * @return The int value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static int getInt(@Nonnull DataObject root, @Nonnull String path, int fallback)
-    {
-        Integer integer = get(root, path, (obj, key) -> obj.getInt(key, fallback), (arr, index) -> arr.getInt(index, fallback));
+    public static int getInt(@Nonnull DataObject root, @Nonnull String path, int fallback) {
+        Integer integer = get(
+                root,
+                path,
+                (obj, key) -> obj.getInt(key, fallback),
+                (arr, index) -> arr.getInt(index, fallback));
         return integer == null ? fallback : integer;
     }
 
@@ -408,11 +432,11 @@ public class DataPath
      *
      * @return The int value at the given path
      */
-    public static int getInt(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static int getInt(@Nonnull DataArray root, @Nonnull String path) {
         Integer integer = get(root, path, DataObject::getInt, DataArray::getInt);
-        if (integer == null)
+        if (integer == null) {
             pathError(path, "int");
+        }
         return integer;
     }
 
@@ -436,9 +460,12 @@ public class DataPath
      *
      * @return The int value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static int getInt(@Nonnull DataArray root, @Nonnull String path, int fallback)
-    {
-        Integer integer = get(root, path, (obj, key) -> obj.getInt(key, fallback), (arr, index) -> arr.getInt(index, fallback));
+    public static int getInt(@Nonnull DataArray root, @Nonnull String path, int fallback) {
+        Integer integer = get(
+                root,
+                path,
+                (obj, key) -> obj.getInt(key, fallback),
+                (arr, index) -> arr.getInt(index, fallback));
         return integer == null ? fallback : integer;
     }
 
@@ -462,11 +489,11 @@ public class DataPath
      *
      * @return The unsigned int value at the given path
      */
-    public static int getUnsignedInt(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static int getUnsignedInt(@Nonnull DataObject root, @Nonnull String path) {
         Integer integer = get(root, path, DataObject::getUnsignedInt, DataArray::getUnsignedInt);
-        if (integer == null)
+        if (integer == null) {
             pathError(path, "unsigned int");
+        }
         return integer;
     }
 
@@ -490,9 +517,12 @@ public class DataPath
      *
      * @return The unsigned int value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static int getUnsignedInt(@Nonnull DataObject root, @Nonnull String path, int fallback)
-    {
-        Integer integer = get(root, path, (obj, key) -> obj.getUnsignedInt(key, fallback), (arr, index) -> arr.getUnsignedInt(index, fallback));
+    public static int getUnsignedInt(@Nonnull DataObject root, @Nonnull String path, int fallback) {
+        Integer integer = get(
+                root,
+                path,
+                (obj, key) -> obj.getUnsignedInt(key, fallback),
+                (arr, index) -> arr.getUnsignedInt(index, fallback));
         return integer == null ? fallback : integer;
     }
 
@@ -516,11 +546,11 @@ public class DataPath
      *
      * @return The unsigned int value at the given path
      */
-    public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path) {
         Integer integer = get(root, path, DataObject::getUnsignedInt, DataArray::getUnsignedInt);
-        if (integer == null)
+        if (integer == null) {
             pathError(path, "unsigned int");
+        }
         return integer;
     }
 
@@ -544,9 +574,12 @@ public class DataPath
      *
      * @return The unsigned int value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path, int fallback)
-    {
-        Integer integer = get(root, path, (obj, key) -> obj.getUnsignedInt(key, fallback), (arr, index) -> arr.getUnsignedInt(index, fallback));
+    public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path, int fallback) {
+        Integer integer = get(
+                root,
+                path,
+                (obj, key) -> obj.getUnsignedInt(key, fallback),
+                (arr, index) -> arr.getUnsignedInt(index, fallback));
         return integer == null ? fallback : integer;
     }
 
@@ -570,11 +603,11 @@ public class DataPath
      *
      * @return The long value at the given path
      */
-    public static long getLong(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static long getLong(@Nonnull DataObject root, @Nonnull String path) {
         Long longValue = get(root, path, DataObject::getLong, DataArray::getLong);
-        if (longValue == null)
+        if (longValue == null) {
             pathError(path, "long");
+        }
         return longValue;
     }
 
@@ -598,9 +631,12 @@ public class DataPath
      *
      * @return The long value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static long getLong(@Nonnull DataObject root, @Nonnull String path, long fallback)
-    {
-        Long longValue = get(root, path, (obj, key) -> obj.getLong(key, fallback), (arr, index) -> arr.getLong(index, fallback));
+    public static long getLong(@Nonnull DataObject root, @Nonnull String path, long fallback) {
+        Long longValue = get(
+                root,
+                path,
+                (obj, key) -> obj.getLong(key, fallback),
+                (arr, index) -> arr.getLong(index, fallback));
         return longValue == null ? fallback : longValue;
     }
 
@@ -624,11 +660,11 @@ public class DataPath
      *
      * @return The long value at the given path
      */
-    public static long getLong(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static long getLong(@Nonnull DataArray root, @Nonnull String path) {
         Long longValue = get(root, path, DataObject::getLong, DataArray::getLong);
-        if (longValue == null)
+        if (longValue == null) {
             pathError(path, "long");
+        }
         return longValue;
     }
 
@@ -652,9 +688,12 @@ public class DataPath
      *
      * @return The long value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static long getLong(@Nonnull DataArray root, @Nonnull String path, long fallback)
-    {
-        Long longValue = get(root, path, (obj, key) -> obj.getLong(key, fallback), (arr, index) -> arr.getLong(index, fallback));
+    public static long getLong(@Nonnull DataArray root, @Nonnull String path, long fallback) {
+        Long longValue = get(
+                root,
+                path,
+                (obj, key) -> obj.getLong(key, fallback),
+                (arr, index) -> arr.getLong(index, fallback));
         return longValue == null ? fallback : longValue;
     }
 
@@ -678,11 +717,11 @@ public class DataPath
      *
      * @return The unsigned long value at the given path
      */
-    public static long getUnsignedLong(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static long getUnsignedLong(@Nonnull DataObject root, @Nonnull String path) {
         Long longValue = get(root, path, DataObject::getUnsignedLong, DataArray::getUnsignedLong);
-        if (longValue == null)
+        if (longValue == null) {
             throw pathError(path, "unsigned long");
+        }
         return longValue;
     }
 
@@ -706,9 +745,13 @@ public class DataPath
      *
      * @return The unsigned long value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static long getUnsignedLong(@Nonnull DataObject root, @Nonnull String path, long fallback)
-    {
-        Long longValue = get(root, path, (obj, key) -> obj.getUnsignedLong(key, fallback), (arr, index) -> arr.getUnsignedLong(index, fallback));
+    public static long getUnsignedLong(
+            @Nonnull DataObject root, @Nonnull String path, long fallback) {
+        Long longValue = get(
+                root,
+                path,
+                (obj, key) -> obj.getUnsignedLong(key, fallback),
+                (arr, index) -> arr.getUnsignedLong(index, fallback));
         return longValue == null ? fallback : longValue;
     }
 
@@ -732,11 +775,11 @@ public class DataPath
      *
      * @return The unsigned long value at the given path
      */
-    public static long getUnsignedLong(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static long getUnsignedLong(@Nonnull DataArray root, @Nonnull String path) {
         Long longValue = get(root, path, DataObject::getUnsignedLong, DataArray::getUnsignedLong);
-        if (longValue == null)
+        if (longValue == null) {
             throw pathError(path, "unsigned long");
+        }
         return longValue;
     }
 
@@ -760,9 +803,13 @@ public class DataPath
      *
      * @return The unsigned long value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static long getUnsignedLong(@Nonnull DataArray root, @Nonnull String path, long fallback)
-    {
-        Long longValue = get(root, path, (obj, key) -> obj.getUnsignedLong(key, fallback), (arr, index) -> arr.getUnsignedLong(index, fallback));
+    public static long getUnsignedLong(
+            @Nonnull DataArray root, @Nonnull String path, long fallback) {
+        Long longValue = get(
+                root,
+                path,
+                (obj, key) -> obj.getUnsignedLong(key, fallback),
+                (arr, index) -> arr.getUnsignedLong(index, fallback));
         return longValue == null ? fallback : longValue;
     }
 
@@ -786,11 +833,11 @@ public class DataPath
      *
      * @return The double value at the given path
      */
-    public static double getDouble(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static double getDouble(@Nonnull DataObject root, @Nonnull String path) {
         Double doubleValue = get(root, path, DataObject::getDouble, DataArray::getDouble);
-        if (doubleValue == null)
+        if (doubleValue == null) {
             pathError(path, "double");
+        }
         return doubleValue;
     }
 
@@ -814,9 +861,13 @@ public class DataPath
      *
      * @return The double value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static double getDouble(@Nonnull DataObject root, @Nonnull String path, double fallback)
-    {
-        Double doubleValue = get(root, path, (obj, key) -> obj.getDouble(key, fallback), (arr, index) -> arr.getDouble(index, fallback));
+    public static double getDouble(
+            @Nonnull DataObject root, @Nonnull String path, double fallback) {
+        Double doubleValue = get(
+                root,
+                path,
+                (obj, key) -> obj.getDouble(key, fallback),
+                (arr, index) -> arr.getDouble(index, fallback));
         return doubleValue == null ? fallback : doubleValue;
     }
 
@@ -840,11 +891,11 @@ public class DataPath
      *
      * @return The double value at the given path
      */
-    public static double getDouble(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static double getDouble(@Nonnull DataArray root, @Nonnull String path) {
         Double doubleValue = get(root, path, DataObject::getDouble, DataArray::getDouble);
-        if (doubleValue == null)
+        if (doubleValue == null) {
             pathError(path, "double");
+        }
         return doubleValue;
     }
 
@@ -868,9 +919,12 @@ public class DataPath
      *
      * @return The double value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static double getDouble(@Nonnull DataArray root, @Nonnull String path, double fallback)
-    {
-        Double doubleValue = get(root, path, (obj, key) -> obj.getDouble(key, fallback), (arr, index) -> arr.getDouble(index, fallback));
+    public static double getDouble(@Nonnull DataArray root, @Nonnull String path, double fallback) {
+        Double doubleValue = get(
+                root,
+                path,
+                (obj, key) -> obj.getDouble(key, fallback),
+                (arr, index) -> arr.getDouble(index, fallback));
         return doubleValue == null ? fallback : doubleValue;
     }
 
@@ -894,11 +948,11 @@ public class DataPath
      * @return The String value at the given path
      */
     @Nonnull
-    public static String getString(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static String getString(@Nonnull DataObject root, @Nonnull String path) {
         String string = get(root, path, DataObject::getString, DataArray::getString);
-        if (string == null)
+        if (string == null) {
             pathError(path, "String");
+        }
         return string;
     }
 
@@ -922,9 +976,13 @@ public class DataPath
      * @return The String value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
     @Contract("_, _, !null -> !null")
-    public static String getString(@Nonnull DataObject root, @Nonnull String path, @Nullable String fallback)
-    {
-        String string = get(root, path, (obj, key) -> obj.getString(key, fallback), (arr, index) -> arr.getString(index, fallback));
+    public static String getString(
+            @Nonnull DataObject root, @Nonnull String path, @Nullable String fallback) {
+        String string = get(
+                root,
+                path,
+                (obj, key) -> obj.getString(key, fallback),
+                (arr, index) -> arr.getString(index, fallback));
         return string == null ? fallback : string;
     }
 
@@ -948,11 +1006,11 @@ public class DataPath
      * @return The String value at the given path
      */
     @Nonnull
-    public static String getString(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static String getString(@Nonnull DataArray root, @Nonnull String path) {
         String string = get(root, path, DataObject::getString, DataArray::getString);
-        if (string == null)
+        if (string == null) {
             pathError(path, "String");
+        }
         return string;
     }
 
@@ -976,9 +1034,13 @@ public class DataPath
      * @return The String value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
     @Contract("_, _, !null -> !null")
-    public static String getString(@Nonnull DataArray root, @Nonnull String path, @Nullable String fallback)
-    {
-        String string = get(root, path, (obj, key) -> obj.getString(key, fallback), (arr, index) -> arr.getString(index, fallback));
+    public static String getString(
+            @Nonnull DataArray root, @Nonnull String path, @Nullable String fallback) {
+        String string = get(
+                root,
+                path,
+                (obj, key) -> obj.getString(key, fallback),
+                (arr, index) -> arr.getString(index, fallback));
         return string == null ? fallback : string;
     }
 
@@ -1002,11 +1064,11 @@ public class DataPath
      * @return The DataObject at the given path
      */
     @Nonnull
-    public static DataObject getObject(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static DataObject getObject(@Nonnull DataObject root, @Nonnull String path) {
         DataObject obj = optObject(root, path);
-        if (obj == null)
+        if (obj == null) {
             pathError(path, "Object");
+        }
         return obj;
     }
 
@@ -1030,10 +1092,10 @@ public class DataPath
      * @return The DataObject at the given path, or null if the path resolves to an optional value that is missing.
      */
     @Nullable
-    public static DataObject optObject(@Nonnull DataObject root, @Nonnull String path)
-    {
-        if (!path.endsWith("?"))
+    public static DataObject optObject(@Nonnull DataObject root, @Nonnull String path) {
+        if (!path.endsWith("?")) {
             path += "?";
+        }
         return get(root, path, DataObject::getObject, DataArray::getObject);
     }
 
@@ -1057,11 +1119,11 @@ public class DataPath
      * @return The DataObject at the given path
      */
     @Nonnull
-    public static DataObject getObject(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static DataObject getObject(@Nonnull DataArray root, @Nonnull String path) {
         DataObject obj = optObject(root, path);
-        if (obj == null)
+        if (obj == null) {
             pathError(path, "Object");
+        }
         return obj;
     }
 
@@ -1085,10 +1147,10 @@ public class DataPath
      * @return The DataObject at the given path, or null if the path resolves to an optional value that is missing.
      */
     @Nullable
-    public static DataObject optObject(@Nonnull DataArray root, @Nonnull String path)
-    {
-        if (!path.endsWith("?"))
+    public static DataObject optObject(@Nonnull DataArray root, @Nonnull String path) {
+        if (!path.endsWith("?")) {
             path += "?";
+        }
         return get(root, path, DataObject::getObject, DataArray::getObject);
     }
 
@@ -1112,11 +1174,11 @@ public class DataPath
      * @return The {@link DataArray} at the given path
      */
     @Nonnull
-    public static DataArray getArray(@Nonnull DataObject root, @Nonnull String path)
-    {
+    public static DataArray getArray(@Nonnull DataObject root, @Nonnull String path) {
         DataArray array = optArray(root, path);
-        if (array == null)
+        if (array == null) {
             pathError(path, "Array");
+        }
         return array;
     }
 
@@ -1140,10 +1202,10 @@ public class DataPath
      * @return The {@link DataArray} at the given path, or null if the path resolves to an optional value that is missing.
      */
     @Nullable
-    public static DataArray optArray(@Nonnull DataObject root, @Nonnull String path)
-    {
-        if (!path.endsWith("?"))
+    public static DataArray optArray(@Nonnull DataObject root, @Nonnull String path) {
+        if (!path.endsWith("?")) {
             path += "?";
+        }
         return get(root, path, DataObject::getArray, DataArray::getArray);
     }
 
@@ -1167,11 +1229,11 @@ public class DataPath
      * @return The {@link DataArray} at the given path
      */
     @Nonnull
-    public static DataArray getArray(@Nonnull DataArray root, @Nonnull String path)
-    {
+    public static DataArray getArray(@Nonnull DataArray root, @Nonnull String path) {
         DataArray array = optArray(root, path);
-        if (array == null)
+        if (array == null) {
             pathError(path, "Array");
+        }
         return array;
     }
 
@@ -1195,15 +1257,15 @@ public class DataPath
      * @return The {@link DataArray} at the given path, or null if the path resolves to an optional value that is missing.
      */
     @Nullable
-    public static DataArray optArray(@Nonnull DataArray root, @Nonnull String path)
-    {
-        if (!path.endsWith("?"))
+    public static DataArray optArray(@Nonnull DataArray root, @Nonnull String path) {
+        if (!path.endsWith("?")) {
             path += "?";
+        }
         return get(root, path, DataObject::getArray, DataArray::getArray);
     }
 
-    private static ParsingException pathError(String path, String type)
-    {
-        throw new ParsingException("Could not resolve value of type " + type + " at path \"" + path + "\"");
+    private static ParsingException pathError(String path, String type) {
+        throw new ParsingException(
+                "Could not resolve value of type " + type + " at path \"" + path + "\"");
     }
 }

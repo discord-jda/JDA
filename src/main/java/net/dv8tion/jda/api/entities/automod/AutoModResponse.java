@@ -22,16 +22,16 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.automod.AutoModResponseImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An automated response to an {@link AutoModRule}.
  */
-public interface AutoModResponse extends SerializableData
-{
+public interface AutoModResponse extends SerializableData {
     /**
      * The maximum length of a custom message. ({@value})
      */
@@ -78,8 +78,7 @@ public interface AutoModResponse extends SerializableData
      * @see    #blockMessage(String)
      */
     @Nonnull
-    static AutoModResponse blockMessage()
-    {
+    static AutoModResponse blockMessage() {
         return blockMessage(null);
     }
 
@@ -95,8 +94,7 @@ public interface AutoModResponse extends SerializableData
      * @return The response instance
      */
     @Nonnull
-    static AutoModResponse blockMessage(@Nullable String customMessage)
-    {
+    static AutoModResponse blockMessage(@Nullable String customMessage) {
         return new AutoModResponseImpl(Type.BLOCK_MESSAGE, customMessage);
     }
 
@@ -112,8 +110,7 @@ public interface AutoModResponse extends SerializableData
      * @return The response instance
      */
     @Nonnull
-    static AutoModResponse sendAlert(@Nonnull GuildMessageChannel channel)
-    {
+    static AutoModResponse sendAlert(@Nonnull GuildMessageChannel channel) {
         Checks.notNull(channel, "Channel");
         return new AutoModResponseImpl(Type.SEND_ALERT_MESSAGE, channel);
     }
@@ -132,8 +129,7 @@ public interface AutoModResponse extends SerializableData
      * @return The response instance
      */
     @Nonnull
-    static AutoModResponse timeoutMember(@Nonnull Duration duration)
-    {
+    static AutoModResponse timeoutMember(@Nonnull Duration duration) {
         Checks.notNull(duration, "Duration");
         Checks.check(!duration.isNegative() && !duration.isZero(), "Duration must be positive");
         return new AutoModResponseImpl(Type.TIMEOUT, duration);
@@ -148,24 +144,34 @@ public interface AutoModResponse extends SerializableData
      */
     @Nonnull
     @Incubating
-    static AutoModResponse blockMemberInteraction()
-    {
+    static AutoModResponse blockMemberInteraction() {
         return new AutoModResponseImpl(Type.BLOCK_MEMBER_INTERACTION);
     }
 
     /**
      * The type of response.
      */
-    enum Type
-    {
+    enum Type {
         /**
          * Blocks the message from being sent.
          */
-        BLOCK_MESSAGE(1, EnumSet.of(AutoModTriggerType.KEYWORD, AutoModTriggerType.KEYWORD_PRESET, AutoModTriggerType.SPAM, AutoModTriggerType.MENTION_SPAM)),
+        BLOCK_MESSAGE(
+                1,
+                EnumSet.of(
+                        AutoModTriggerType.KEYWORD,
+                        AutoModTriggerType.KEYWORD_PRESET,
+                        AutoModTriggerType.SPAM,
+                        AutoModTriggerType.MENTION_SPAM)),
         /**
          * Sends an alert message to the specified channel.
          */
-        SEND_ALERT_MESSAGE(2, EnumSet.of(AutoModTriggerType.KEYWORD, AutoModTriggerType.KEYWORD_PRESET, AutoModTriggerType.SPAM, AutoModTriggerType.MENTION_SPAM)),
+        SEND_ALERT_MESSAGE(
+                2,
+                EnumSet.of(
+                        AutoModTriggerType.KEYWORD,
+                        AutoModTriggerType.KEYWORD_PRESET,
+                        AutoModTriggerType.SPAM,
+                        AutoModTriggerType.MENTION_SPAM)),
         /**
          * Times out the user for the specified duration.
          *
@@ -182,20 +188,17 @@ public interface AutoModResponse extends SerializableData
         /**
          * Placeholder for unknown types.
          */
-        UNKNOWN(-1, EnumSet.noneOf(AutoModTriggerType.class))
-        ;
+        UNKNOWN(-1, EnumSet.noneOf(AutoModTriggerType.class));
 
         private final int key;
         private final EnumSet<AutoModTriggerType> supportedTypes;
 
-        Type(int key)
-        {
+        Type(int key) {
             this.key = key;
             this.supportedTypes = EnumSet.complementOf(EnumSet.of(AutoModTriggerType.UNKNOWN));
         }
 
-        Type(int key, EnumSet<AutoModTriggerType> supportedTypes)
-        {
+        Type(int key, EnumSet<AutoModTriggerType> supportedTypes) {
             this.key = key;
             this.supportedTypes = supportedTypes;
         }
@@ -205,8 +208,7 @@ public interface AutoModResponse extends SerializableData
          *
          * @return The raw value
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -216,8 +218,7 @@ public interface AutoModResponse extends SerializableData
          * @return The supported trigger types
          */
         @Nonnull
-        public EnumSet<AutoModTriggerType> getSupportedTypes()
-        {
+        public EnumSet<AutoModTriggerType> getSupportedTypes() {
             return EnumSet.copyOf(supportedTypes);
         }
 
@@ -232,8 +233,7 @@ public interface AutoModResponse extends SerializableData
          *
          * @return True, if this response supports the provided trigger type
          */
-        public boolean isSupportedTrigger(@Nonnull AutoModTriggerType type)
-        {
+        public boolean isSupportedTrigger(@Nonnull AutoModTriggerType type) {
             Checks.notNull(type, "AutoModTriggerType");
             return supportedTypes.contains(type);
         }
@@ -247,12 +247,11 @@ public interface AutoModResponse extends SerializableData
          * @return The {@link Type} or {@link #UNKNOWN}
          */
         @Nonnull
-        public static Type fromKey(int key)
-        {
-            for (Type type : values())
-            {
-                if (type.key == key)
+        public static Type fromKey(int key) {
+            for (Type type : values()) {
+                if (type.key == key) {
                     return type;
+                }
             }
             return UNKNOWN;
         }

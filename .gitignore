@@ -16,6 +16,7 @@ publishing-keyring.gpg
 /build/
 /.gradle/
 /out/
+/.kotlin/
 
 # eclipse files
 .classpath

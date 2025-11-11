@@ -27,17 +27,14 @@ import net.dv8tion.jda.test.LoadSampleTraits;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class AbstractComponentTest extends AbstractSnapshotTest implements LoadSampleTraits
-{
-    void assertSerialization(ComponentSerializer serializer, List<? extends Component> components, String suffix)
-    {
+class AbstractComponentTest extends AbstractSnapshotTest implements LoadSampleTraits {
+    void assertSerialization(
+            ComponentSerializer serializer, List<? extends Component> components, String suffix) {
         List<DataObject> dataObjects = serializer.serializeAll(components);
         List<FileUpload> fileUploads = serializer.getFileUploads(components);
 
-        List<String> fileNames = fileUploads
-                .stream()
-                .map(FileUpload::getName)
-                .collect(Collectors.toList());
+        List<String> fileNames =
+                fileUploads.stream().map(FileUpload::getName).collect(Collectors.toList());
 
         String actualSuffix = suffix == null ? "" : (suffix + "-");
         assertWithSnapshot(DataArray.fromCollection(dataObjects), actualSuffix + "data");

@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
  * Represents a Discord Forum Tag.
  * <br>These tags can be applied to forum posts to help categorize them.
  */
-public interface ForumTag extends ForumTagSnowflake, Comparable<ForumTag>, BaseForumTag
-{
+public interface ForumTag extends ForumTagSnowflake, Comparable<ForumTag>, BaseForumTag {
     /**
      * The maximum length of a forum tag name ({@value #MAX_NAME_LENGTH})
      */
@@ -40,16 +39,14 @@ public interface ForumTag extends ForumTagSnowflake, Comparable<ForumTag>, BaseF
     int getPosition();
 
     @Override
-    default int compareTo(@Nonnull ForumTag o)
-    {
+    default int compareTo(@Nonnull ForumTag o) {
         Checks.notNull(o, "ForumTag");
         return Integer.compare(getPosition(), o.getPosition());
     }
 
     @Nonnull
     @Override
-    default DataObject toData()
-    {
+    default DataObject toData() {
         return BaseForumTag.super.toData().put("id", getId());
     }
 }

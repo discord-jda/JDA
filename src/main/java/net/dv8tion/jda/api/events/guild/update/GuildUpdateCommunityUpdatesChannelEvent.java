@@ -30,23 +30,30 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code community_updates_channel}
  */
-public class GuildUpdateCommunityUpdatesChannelEvent extends GenericGuildUpdateEvent<TextChannel>
-{
+public class GuildUpdateCommunityUpdatesChannelEvent extends GenericGuildUpdateEvent<TextChannel> {
     public static final String IDENTIFIER = "community_updates_channel";
 
-    public GuildUpdateCommunityUpdatesChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldCommunityUpdatesChannel)
-    {
-        super(api, responseNumber, guild, oldCommunityUpdatesChannel, guild.getCommunityUpdatesChannel(), IDENTIFIER);
+    public GuildUpdateCommunityUpdatesChannelEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nullable TextChannel oldCommunityUpdatesChannel) {
+        super(
+                api,
+                responseNumber,
+                guild,
+                oldCommunityUpdatesChannel,
+                guild.getCommunityUpdatesChannel(),
+                IDENTIFIER);
     }
 
     /**
      * The previous community updates channel.
-     * 
+     *
      * @return The previous community updates channel
      */
     @Nullable
-    public TextChannel getOldCommunityUpdatesChannel()
-    {
+    public TextChannel getOldCommunityUpdatesChannel() {
         return getOldValue();
     }
 
@@ -56,8 +63,7 @@ public class GuildUpdateCommunityUpdatesChannelEvent extends GenericGuildUpdateE
      * @return The new community updates channel
      */
     @Nullable
-    public TextChannel getNewCommunityUpdatesChannel()
-    {
+    public TextChannel getNewCommunityUpdatesChannel() {
         return getNewValue();
     }
 }

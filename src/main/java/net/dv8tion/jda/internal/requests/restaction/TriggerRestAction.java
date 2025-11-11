@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -34,125 +33,127 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class TriggerRestAction<T> extends RestActionImpl<T>
-{
+import javax.annotation.Nonnull;
+
+public class TriggerRestAction<T> extends RestActionImpl<T> {
     private final ReentrantLock mutex = new ReentrantLock();
     private final List<Runnable> callbacks = new LinkedList<>();
     private volatile boolean isReady;
     private volatile Throwable exception;
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route) {
         super(api, route);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, DataObject data)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route, DataObject data) {
         super(api, route, data);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route, RequestBody data) {
         super(api, route, data);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler)
-    {
+    public TriggerRestAction(
+            JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, handler);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
-    {
+    public TriggerRestAction(
+            JDA api,
+            Route.CompiledRoute route,
+            DataObject data,
+            BiFunction<Response, Request<T>, T> handler) {
         super(api, route, data, handler);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler)
-    {
+    public TriggerRestAction(
+            JDA api,
+            Route.CompiledRoute route,
+            RequestBody data,
+            BiFunction<Response, Request<T>, T> handler) {
         super(api, route, data, handler);
     }
 
-    public void run()
-    {
+    public void run() {
         MiscUtil.locked(mutex, () -> {
             isReady = true;
             callbacks.forEach(Runnable::run);
         });
     }
 
-    public void fail(Throwable throwable)
-    {
+    public void fail(Throwable throwable) {
         MiscUtil.locked(mutex, () -> {
             exception = throwable;
             callbacks.forEach(Runnable::run);
         });
     }
 
-    public void onReady(Runnable callback)
-    {
+    public void onReady(Runnable callback) {
         MiscUtil.locked(mutex, () -> {
-            if (isReady || exception != null)
+            if (isReady || exception != null) {
                 callback.run();
-            else
+            } else {
                 callbacks.add(callback);
+            }
         });
     }
 
     @Override
-    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
-    {
-        if (isReady)
-        {
+    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure) {
+        if (isReady) {
             super.queue(success, failure);
             return;
         }
 
         Consumer<? super Throwable> onFailure = wrapContext(failure);
         onReady(() -> {
-            if (this.exception != null)
+            if (this.exception != null) {
                 onFailure.accept(exception);
-            else
+            } else {
                 super.queue(success, onFailure);
+            }
         });
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
-        if (isReady)
+    public CompletableFuture<T> submit(boolean shouldQueue) {
+        if (isReady) {
             return super.submit(shouldQueue);
+        }
         CompletableFuture<T> future = new CompletableFuture<>();
         Consumer<? super Throwable> onFailure = wrapContext(future::completeExceptionally);
 
         onReady(() -> {
-            if (exception != null)
-            {
+            if (exception != null) {
                 onFailure.accept(exception);
                 return;
             }
 
             CompletableFuture<T> handle = super.submit(shouldQueue);
             handle.whenComplete((success, error) -> {
-                if (error != null)
+                if (error != null) {
                     onFailure.accept(error);
-                else
+                } else {
                     future.complete(success);
+                }
             });
 
             // Handle cancel forwarding
             future.whenComplete((r, e) -> {
-                if (future.isCancelled())
+                if (future.isCancelled()) {
                     handle.cancel(false);
+                }
             });
         });
         return future;
     }
 
-    private Consumer<? super Throwable> wrapContext(Consumer<? super Throwable> failure)
-    {
+    private Consumer<? super Throwable> wrapContext(Consumer<? super Throwable> failure) {
         failure = failure == null ? getDefaultFailure() : failure;
-        if (!isPassContext() || (failure instanceof ContextException.ContextConsumer))
+        if (!isPassContext() || (failure instanceof ContextException.ContextConsumer)) {
             return failure;
+        }
         return ContextException.here(failure);
     }
 }

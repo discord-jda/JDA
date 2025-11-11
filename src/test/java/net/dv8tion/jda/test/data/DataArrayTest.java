@@ -24,11 +24,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class DataArrayTest extends AbstractSnapshotTest
-{
+public class DataArrayTest extends AbstractSnapshotTest {
     @Test
-    void testUnexpectedNullException()
-    {
+    void testUnexpectedNullException() {
         DataArray data = DataArray.empty()
                 .add(1)
                 .add(DataObject.empty().put("test", "test value"))
@@ -36,7 +34,8 @@ public class DataArrayTest extends AbstractSnapshotTest
                 .add(null);
 
         assertThatExceptionOfType(DataArrayParsingException.class)
-            .isThrownBy(() -> data.getInt(3))
-            .satisfies(exception -> snapshotHandler.compareWithSnapshot(exception.toString(), null));
+                .isThrownBy(() -> data.getInt(3))
+                .satisfies(exception ->
+                        snapshotHandler.compareWithSnapshot(exception.toString(), null));
     }
 }

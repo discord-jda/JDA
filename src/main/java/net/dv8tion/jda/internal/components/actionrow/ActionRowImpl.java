@@ -32,59 +32,60 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ActionRowImpl
-        extends AbstractComponentImpl
-        implements ActionRow, MessageTopLevelComponentUnion, ContainerChildComponentUnion
-{
+import javax.annotation.Nonnull;
+
+public class ActionRowImpl extends AbstractComponentImpl
+        implements ActionRow, MessageTopLevelComponentUnion, ContainerChildComponentUnion {
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
 
-    public ActionRowImpl(ComponentDeserializer deserializer, DataObject data)
-    {
+    public ActionRowImpl(ComponentDeserializer deserializer, DataObject data) {
         this(
-            deserializer.deserializeAs(ActionRowChildComponentUnion.class, data.getArray("components")).collect(Collectors.toList()),
-            data.getInt("id", -1)
-        );
+                deserializer
+                        .deserializeAs(
+                                ActionRowChildComponentUnion.class, data.getArray("components"))
+                        .collect(Collectors.toList()),
+                data.getInt("id", -1));
     }
 
-    public ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
-    {
+    public ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId) {
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
     }
 
     @Nonnull
-    public static ActionRow validated(@Nonnull Collection<? extends ActionRowChildComponent> components)
-    {
+    public static ActionRow validated(
+            @Nonnull Collection<? extends ActionRowChildComponent> components) {
         return validated(components, -1);
     }
 
     @Nonnull
-    public static ActionRow validated(@Nonnull Collection<? extends ActionRowChildComponent> components, int uniqueId)
-    {
+    public static ActionRow validated(
+            @Nonnull Collection<? extends ActionRowChildComponent> components, int uniqueId) {
         Checks.notEmpty(components, "Row");
         Checks.noneNull(components, "Components");
         checkIsValid(components);
 
         // Don't allow unknown components in user-called methods
-        Collection<ActionRowChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
+        Collection<ActionRowChildComponentUnion> componentUnions =
+                ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
         return new ActionRowImpl(componentUnions, uniqueId);
     }
 
     @Nonnull
-    public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> components)
-    {
+    public static List<ActionRow> partitionOf(
+            @Nonnull Collection<? extends ActionRowChildComponent> components) {
         Checks.noneNull(components, "Components");
         Checks.notEmpty(components, "Components");
         // Don't allow unknown components in user-called methods
-        Collection<ActionRowChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
+        Collection<ActionRowChildComponentUnion> componentUnions =
+                ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
 
         List<ActionRow> rows = new ArrayList<>();
         // The current action row we are building
@@ -92,10 +93,9 @@ public class ActionRowImpl
         // The component types contained in that row (for now it can't have mixed types)
         Component.Type type = null;
 
-        for (ActionRowChildComponentUnion current : componentUnions)
-        {
-            if ((type != null && type != current.getType()) || currentRow.size() == ActionRow.getMaxAllowed(current.getType()))
-            {
+        for (ActionRowChildComponentUnion current : componentUnions) {
+            if ((type != null && type != current.getType())
+                    || currentRow.size() == ActionRow.getMaxAllowed(current.getType())) {
                 rows.add(ActionRow.of(currentRow));
                 currentRow.clear();
             }
@@ -110,86 +110,89 @@ public class ActionRowImpl
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nonnull
     @Override
-    public List<ActionRowChildComponentUnion> getComponents()
-    {
+    public List<ActionRowChildComponentUnion> getComponents() {
         return components;
     }
 
     @Nonnull
     @Override
-    public ActionRow replace(@Nonnull ComponentReplacer replacer)
-    {
+    public ActionRow replace(@Nonnull ComponentReplacer replacer) {
         Checks.notNull(replacer, "ComponentReplacer");
 
         return ComponentsUtil.doReplace(
                 ActionRowChildComponent.class,
                 components,
                 replacer,
-                newComponents -> validated(newComponents, uniqueId)
-        );
+                newComponents -> validated(newComponents, uniqueId));
     }
 
     @Nonnull
     @Override
-    public ActionRowImpl withUniqueId(int uniqueId)
-    {
+    public ActionRowImpl withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
         return new ActionRowImpl(components, uniqueId);
     }
 
     @Nonnull
     @Override
-    public ActionRow withComponents(@Nonnull Collection<? extends ActionRowChildComponent> components)
-    {
+    public ActionRow withComponents(
+            @Nonnull Collection<? extends ActionRowChildComponent> components) {
         Checks.noneNull(components, "Components");
-        return new ActionRowImpl(ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class), uniqueId);
+        return new ActionRowImpl(
+                ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class),
+                uniqueId);
     }
 
     @Nonnull
     @Override
-    public Component.Type getType()
-    {
+    public Component.Type getType() {
         return Component.Type.ACTION_ROW;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        final DataObject json = DataObject.empty()
+    public DataObject toData() {
+        DataObject json = DataObject.empty()
                 .put("type", 1)
                 .put("components", DataArray.fromCollection(components));
-        if (uniqueId >= 0)
+        if (uniqueId >= 0) {
             json.put("id", uniqueId);
+        }
         return json;
     }
 
-    private static void checkIsValid(Collection<? extends ActionRowChildComponent> components)
-    {
-        Map<Component.Type, List<ActionRowChildComponent>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
-        // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
-        if (groups.size() > 1)
-            throw new IllegalArgumentException("Cannot create action row containing different component types! Provided: " + groups.keySet());
+    private static void checkIsValid(Collection<? extends ActionRowChildComponent> components) {
+        Map<Component.Type, List<ActionRowChildComponent>> groups =
+                components.stream().collect(Collectors.groupingBy(Component::getType));
+        // TODO: You can't mix components right now but maybe in the future, we need to check back
+        // on this when that happens
+        if (groups.size() > 1) {
+            throw new IllegalArgumentException(
+                    "Cannot create action row containing different component types! Provided: "
+                            + groups.keySet());
+        }
 
-        for (Map.Entry<Component.Type, List<ActionRowChildComponent>> entry : groups.entrySet())
-        {
+        for (Map.Entry<Component.Type, List<ActionRowChildComponent>> entry : groups.entrySet()) {
             Component.Type type = entry.getKey();
             List<ActionRowChildComponent> list = entry.getValue();
-            final int maxAllowed = ActionRow.getMaxAllowed(type);
-            Checks.check(list.size() <= maxAllowed, "Cannot create an action row with more than %d %s! Provided: %d", maxAllowed, type.name(), list.size());
+            int maxAllowed = ActionRow.getMaxAllowed(type);
+            Checks.check(
+                    list.size() <= maxAllowed,
+                    "Cannot create an action row with more than %d %s! Provided: %d",
+                    maxAllowed,
+                    type.name(),
+                    list.size());
         }
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("id", uniqueId)
                 .addMetadata("components", components)
@@ -197,18 +200,18 @@ public class ActionRowImpl
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return components.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof ActionRowImpl))
+        }
+        if (!(obj instanceof ActionRowImpl)) {
             return false;
+        }
 
         return components.equals(((ActionRowImpl) obj).components);
     }

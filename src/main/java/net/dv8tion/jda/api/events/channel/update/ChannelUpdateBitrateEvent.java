@@ -31,13 +31,16 @@ import javax.annotation.Nonnull;
  * @see AudioChannel#getBitrate()
  * @see ChannelField#BITRATE
  */
-public class ChannelUpdateBitrateEvent extends GenericChannelUpdateEvent<Integer>
-{
+public class ChannelUpdateBitrateEvent extends GenericChannelUpdateEvent<Integer> {
     public static final ChannelField FIELD = ChannelField.BITRATE;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateBitrateEvent(@Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
-    {
+    public ChannelUpdateBitrateEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            Channel channel,
+            Integer oldValue,
+            Integer newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

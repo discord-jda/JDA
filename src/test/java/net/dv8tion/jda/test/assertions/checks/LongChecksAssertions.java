@@ -20,17 +20,14 @@ import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import static net.dv8tion.jda.test.ChecksHelper.notPositiveError;
 
-public class LongChecksAssertions extends AbstractChecksAssertions<Long, LongChecksAssertions>
-{
-    public LongChecksAssertions(String name, ThrowingConsumer<Long> callable)
-    {
+public class LongChecksAssertions extends AbstractChecksAssertions<Long, LongChecksAssertions> {
+    public LongChecksAssertions(String name, ThrowingConsumer<Long> callable) {
         super(name, callable);
     }
 
-    public LongChecksAssertions checksPositive()
-    {
-        throwsFor( 0L, notPositiveError(name));
-        throwsFor( -1L, notPositiveError(name));
+    public LongChecksAssertions checksPositive() {
+        throwsFor(0L, notPositiveError(name));
+        throwsFor(-1L, notPositiveError(name));
         return this;
     }
 }

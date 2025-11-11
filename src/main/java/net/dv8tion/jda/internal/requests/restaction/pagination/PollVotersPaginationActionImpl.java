@@ -32,50 +32,50 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class PollVotersPaginationActionImpl extends PaginationActionImpl<User, PollVotersPaginationAction> implements PollVotersPaginationAction
-{
-    public PollVotersPaginationActionImpl(JDA jda, String channelId, String messageId, long answerId)
-    {
-        super(jda, Route.Messages.GET_POLL_ANSWER_VOTERS.compile(channelId, messageId, Long.toString(answerId)), 1, 100, 100);
+public class PollVotersPaginationActionImpl
+        extends PaginationActionImpl<User, PollVotersPaginationAction>
+        implements PollVotersPaginationAction {
+    public PollVotersPaginationActionImpl(
+            JDA jda, String channelId, String messageId, long answerId) {
+        super(
+                jda,
+                Route.Messages.GET_POLL_ANSWER_VOTERS.compile(
+                        channelId, messageId, Long.toString(answerId)),
+                1,
+                100,
+                100);
         this.order = PaginationOrder.FORWARD;
     }
 
     @NotNull
     @Override
-    public EnumSet<PaginationOrder> getSupportedOrders()
-    {
+    public EnumSet<PaginationOrder> getSupportedOrders() {
         return EnumSet.of(PaginationOrder.FORWARD);
     }
 
     @Override
-    protected long getKey(User it)
-    {
+    protected long getKey(User it) {
         return it.getIdLong();
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<User>> request)
-    {
+    protected void handleSuccess(Response response, Request<List<User>> request) {
         DataArray array = response.getObject().getArray("users");
         List<User> users = new ArrayList<>(array.length());
         EntityBuilder builder = api.getEntityBuilder();
-        for (int i = 0; i < array.length(); i++)
-        {
-            try
-            {
+        for (int i = 0; i < array.length(); i++) {
+            try {
                 DataObject object = array.getObject(i);
                 users.add(builder.createUser(object));
-            }
-            catch(ParsingException | NullPointerException e)
-            {
+            } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered an exception in PollVotersPaginationAction", e);
             }
         }
 
-        if (!users.isEmpty())
-        {
-            if (useCache)
+        if (!users.isEmpty()) {
+            if (useCache) {
                 cached.addAll(users);
+            }
             last = users.get(users.size() - 1);
             lastKey = last.getIdLong();
         }

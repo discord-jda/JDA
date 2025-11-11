@@ -24,9 +24,10 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Collection;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
@@ -44,12 +45,11 @@ import java.util.Collection;
  *
  * @see net.dv8tion.jda.api.entities.PermissionOverride#getManager()
  */
-public interface PermOverrideManager extends Manager<PermOverrideManager>
-{
+public interface PermOverrideManager extends Manager<PermOverrideManager> {
     /** Used to reset the denied field */
-    long DENIED      = 1;
+    long DENIED = 1;
     /** Used to reset the granted field */
-    long ALLOWED     = 1 << 1;
+    long ALLOWED = 1 << 1;
     /** Used to reset <b>all</b> permissions to their original value */
     long PERMISSIONS = ALLOWED | DENIED;
 
@@ -104,8 +104,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getPermissionOverride().getGuild();
     }
 
@@ -117,8 +116,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      * @return The parent {@link GuildChannel GuildChannel}
      */
     @Nonnull
-    default IPermissionContainerUnion getChannel()
-    {
+    default IPermissionContainerUnion getChannel() {
         return getPermissionOverride().getChannel();
     }
 
@@ -160,8 +158,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      */
     @Nonnull
     @CheckReturnValue
-    default PermOverrideManager grant(@Nonnull Permission... permissions)
-    {
+    default PermOverrideManager grant(@Nonnull Permission... permissions) {
         Checks.notNull(permissions, "Permissions");
         return grant(Permission.getRaw(permissions));
     }
@@ -183,8 +180,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      */
     @Nonnull
     @CheckReturnValue
-    default PermOverrideManager grant(@Nonnull Collection<Permission> permissions)
-    {
+    default PermOverrideManager grant(@Nonnull Collection<Permission> permissions) {
         return grant(Permission.getRaw(permissions));
     }
 
@@ -217,8 +213,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      */
     @Nonnull
     @CheckReturnValue
-    default PermOverrideManager deny(@Nonnull Permission... permissions)
-    {
+    default PermOverrideManager deny(@Nonnull Permission... permissions) {
         Checks.notNull(permissions, "Permissions");
         return deny(Permission.getRaw(permissions));
     }
@@ -240,8 +235,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      */
     @Nonnull
     @CheckReturnValue
-    default PermOverrideManager deny(@Nonnull Collection<Permission> permissions)
-    {
+    default PermOverrideManager deny(@Nonnull Collection<Permission> permissions) {
         return deny(Permission.getRaw(permissions));
     }
 
@@ -274,8 +268,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      */
     @Nonnull
     @CheckReturnValue
-    default PermOverrideManager clear(@Nonnull Permission... permissions)
-    {
+    default PermOverrideManager clear(@Nonnull Permission... permissions) {
         Checks.notNull(permissions, "Permissions");
         return clear(Permission.getRaw(permissions));
     }
@@ -298,8 +291,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      */
     @Nonnull
     @CheckReturnValue
-    default PermOverrideManager clear(@Nonnull Collection<Permission> permissions)
-    {
+    default PermOverrideManager clear(@Nonnull Collection<Permission> permissions) {
         return clear(Permission.getRaw(permissions));
     }
 }

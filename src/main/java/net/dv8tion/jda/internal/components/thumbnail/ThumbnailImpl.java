@@ -29,42 +29,38 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents either an external link, an attachment:// link, or an existing item (which is also a link)
  */
-public class ThumbnailImpl
-        extends AbstractComponentImpl
-        implements Thumbnail, SectionAccessoryComponentUnion, FileContainerMixin
-{
+public class ThumbnailImpl extends AbstractComponentImpl
+        implements Thumbnail, SectionAccessoryComponentUnion, FileContainerMixin {
     private final int uniqueId;
     private final String url;
     private final ResolvedMedia media;
     private final String description;
     private final boolean spoiler;
 
-    public ThumbnailImpl(DataObject data)
-    {
+    public ThumbnailImpl(DataObject data) {
         this(
                 data.getInt("id", -1),
                 data.getObject("media").getString("url"),
                 new ResolvedMediaImpl(data.getObject("media")),
                 data.getString("description", null),
-                data.getBoolean("spoiler", false)
-        );
+                data.getBoolean("spoiler", false));
     }
 
-    public ThumbnailImpl(String url)
-    {
+    public ThumbnailImpl(String url) {
         this(-1, url, null, null, false);
     }
 
-    private ThumbnailImpl(int uniqueId, String url, ResolvedMedia media, String description, boolean spoiler)
-    {
+    private ThumbnailImpl(
+            int uniqueId, String url, ResolvedMedia media, String description, boolean spoiler) {
         this.uniqueId = uniqueId;
         this.url = url;
         this.media = media;
@@ -74,25 +70,21 @@ public class ThumbnailImpl
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.THUMBNAIL;
     }
 
     @Nonnull
     @Override
-    public ThumbnailImpl withUniqueId(int uniqueId)
-    {
+    public ThumbnailImpl withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
         return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
     }
 
     @Nonnull
     @Override
-    public Thumbnail withDescription(@Nullable String description)
-    {
-        if (description != null)
-        {
+    public Thumbnail withDescription(@Nullable String description) {
+        if (description != null) {
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
         }
@@ -101,88 +93,87 @@ public class ThumbnailImpl
 
     @Nonnull
     @Override
-    public Thumbnail withSpoiler(boolean spoiler)
-    {
+    public Thumbnail withSpoiler(boolean spoiler) {
         return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nonnull
     @Override
-    public String getUrl()
-    {
+    public String getUrl() {
         return url;
     }
 
     @Nullable
     @Override
-    public ResolvedMedia getResolvedMedia()
-    {
+    public ResolvedMedia getResolvedMedia() {
         return media;
     }
 
     @Override
-    public Stream<FileUpload> getFiles()
-    {
+    public Stream<FileUpload> getFiles() {
         return ComponentsUtil.getFilesFromMedia(media);
     }
 
     @Nullable
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
     @Override
-    public boolean isSpoiler()
-    {
+    public boolean isSpoiler() {
         return spoiler;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        final String outputUrl;
-        if (media != null) // Retain or reupload the entire file, both cases uses attachment://
+    public DataObject toData() {
+        String outputUrl;
+        if (media != null) { // Retain or reupload the entire file, both cases uses attachment://
             outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
-        else // External URL or user-managed attachment
+        } else { // External URL or user-managed attachment
             outputUrl = url;
-        final DataObject json = DataObject.empty()
+        }
+        DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("media", DataObject.empty().put("url", outputUrl))
                 .put("spoiler", spoiler);
-        if (uniqueId >= 0)
+        if (uniqueId >= 0) {
             json.put("id", uniqueId);
-        if (description != null)
+        }
+        if (description != null) {
             json.put("description", description);
+        }
         return json;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof ThumbnailImpl)) return false;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ThumbnailImpl)) {
+            return false;
+        }
         ThumbnailImpl thumbnail = (ThumbnailImpl) o;
-        return uniqueId == thumbnail.uniqueId && spoiler == thumbnail.spoiler && Objects.equals(url, thumbnail.url) && Objects.equals(description, thumbnail.description);
+        return uniqueId == thumbnail.uniqueId
+                && spoiler == thumbnail.spoiler
+                && Objects.equals(url, thumbnail.url)
+                && Objects.equals(description, thumbnail.description);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(uniqueId, url, description, spoiler);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("id", uniqueId)
                 .addMetadata("url", url)

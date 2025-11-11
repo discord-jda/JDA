@@ -54,8 +54,7 @@ import javax.annotation.Nonnull;
  * @see    MessageChannel#retrieveReactionUsersById(long, Emoji)
  * @see    MessageChannel#retrieveReactionUsersById(String, Emoji)
  */
-public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
-{
+public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction> {
     /**
      * The current target {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction}
      *

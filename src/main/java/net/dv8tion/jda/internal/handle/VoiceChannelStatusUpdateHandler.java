@@ -21,39 +21,35 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.VoiceChannelImpl;
 
-public class VoiceChannelStatusUpdateHandler extends SocketHandler
-{
-    public VoiceChannelStatusUpdateHandler(JDAImpl api)
-    {
+public class VoiceChannelStatusUpdateHandler extends SocketHandler {
+    public VoiceChannelStatusUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         long id = content.getUnsignedLong("id");
         VoiceChannelImpl channel = (VoiceChannelImpl) getJDA().getVoiceChannelById(id);
 
-        if (channel == null)
-        {
-            EventCache.LOG.debug("Caching VOICE_CHANNEL_STATUS_UPDATE for uncached channel. ID: {}", id);
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, id, responseNumber, allContent, this::handle);
+        if (channel == null) {
+            EventCache.LOG.debug(
+                    "Caching VOICE_CHANNEL_STATUS_UPDATE for uncached channel. ID: {}", id);
+            getJDA().getEventCache()
+                    .cache(EventCache.Type.CHANNEL, id, responseNumber, allContent, this::handle);
             return null;
         }
 
         String newStatus = content.getString("status", "");
-        if (!newStatus.equals(channel.getStatus()))
-        {
+        if (!newStatus.equals(channel.getStatus())) {
             String oldStatus = channel.getStatus();
             channel.setStatus(newStatus);
-            api.handleEvent(
-                new ChannelUpdateVoiceStatusEvent(
-                    api, responseNumber,
-                    channel, oldStatus, newStatus));
+            api.handleEvent(new ChannelUpdateVoiceStatusEvent(
+                    api, responseNumber, channel, oldStatus, newStatus));
         }
         return null;
     }

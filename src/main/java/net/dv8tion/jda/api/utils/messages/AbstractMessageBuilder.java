@@ -26,9 +26,10 @@ import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.*;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * Abstract builder implementation of {@link MessageRequest}.
@@ -44,34 +45,30 @@ import java.util.*;
  * @see   MessageEditBuilder
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>> implements MessageRequest<R>
-{
+public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>>
+        implements MessageRequest<R> {
     protected static boolean isDefaultUseComponentsV2 = false;
 
     protected final List<MessageEmbed> embeds = new ArrayList<>(Message.MAX_EMBED_COUNT);
-    protected final List<MessageTopLevelComponentUnion> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
+    protected final List<MessageTopLevelComponentUnion> components =
+            new ArrayList<>(Message.MAX_COMPONENT_COUNT);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
     protected AllowedMentionsData mentions = new AllowedMentionsData();
     protected int messageFlags;
 
-    protected AbstractMessageBuilder()
-    {
+    protected AbstractMessageBuilder() {
         useComponentsV2(isDefaultUseComponentsV2);
     }
 
     @Nonnull
     @Override
-    public R setContent(@Nullable String content)
-    {
-        if (content != null)
-        {
+    public R setContent(@Nullable String content) {
+        if (content != null) {
             content = content.trim();
             Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
             this.content.setLength(0);
             this.content.append(content);
-        }
-        else
-        {
+        } else {
             this.content.setLength(0);
         }
         return (R) this;
@@ -79,84 +76,76 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public String getContent()
-    {
+    public String getContent() {
         return content.toString();
     }
 
     @Nonnull
     @Override
-    public R mentionRepliedUser(boolean mention)
-    {
+    public R mentionRepliedUser(boolean mention) {
         mentions.mentionRepliedUser(mention);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public R setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
+    public R setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
         mentions.setAllowedMentions(allowedMentions);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public R mention(@Nonnull Collection<? extends IMentionable> mentions)
-    {
+    public R mention(@Nonnull Collection<? extends IMentionable> mentions) {
         this.mentions.mention(mentions);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public R mentionUsers(@Nonnull Collection<String> userIds)
-    {
+    public R mentionUsers(@Nonnull Collection<String> userIds) {
         this.mentions.mentionUsers(userIds);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public R mentionRoles(@Nonnull Collection<String> roleIds)
-    {
+    public R mentionRoles(@Nonnull Collection<String> roleIds) {
         this.mentions.mentionRoles(roleIds);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public Set<String> getMentionedUsers()
-    {
+    public Set<String> getMentionedUsers() {
         return mentions.getMentionedUsers();
     }
 
     @Nonnull
     @Override
-    public Set<String> getMentionedRoles()
-    {
+    public Set<String> getMentionedRoles() {
         return mentions.getMentionedRoles();
     }
 
     @Nonnull
     @Override
-    public EnumSet<Message.MentionType> getAllowedMentions()
-    {
+    public EnumSet<Message.MentionType> getAllowedMentions() {
         return mentions.getAllowedMentions();
     }
 
     @Override
-    public boolean isMentionRepliedUser()
-    {
+    public boolean isMentionRepliedUser() {
         return mentions.isMentionRepliedUser();
     }
 
     @Nonnull
     @Override
-    public R setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public R setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         Checks.noneNull(embeds, "Embeds");
-        Checks.check(embeds.size() <= Message.MAX_EMBED_COUNT, "Cannot send more than %d embeds in a message!", Message.MAX_EMBED_COUNT);
+        Checks.check(
+                embeds.size() <= Message.MAX_EMBED_COUNT,
+                "Cannot send more than %d embeds in a message!",
+                Message.MAX_EMBED_COUNT);
         this.embeds.clear();
         this.embeds.addAll(embeds);
         return (R) this;
@@ -164,23 +153,21 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public List<MessageEmbed> getEmbeds()
-    {
+    public List<MessageEmbed> getEmbeds() {
         return Collections.unmodifiableList(embeds);
     }
 
     @Nonnull
     @Override
-    public R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    public R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.noneNull(components, "MessageTopLevelComponents");
         Checks.checkComponents(
-            "Provided component is invalid for messages!",
-            components,
-            Component::isMessageCompatible
-        );
+                "Provided component is invalid for messages!",
+                components,
+                Component::isMessageCompatible);
 
-        List<MessageTopLevelComponentUnion> componentsAsUnions = ComponentsUtil.membersToUnion(components, MessageTopLevelComponentUnion.class);
+        List<MessageTopLevelComponentUnion> componentsAsUnions =
+                ComponentsUtil.membersToUnion(components, MessageTopLevelComponentUnion.class);
 
         this.components.clear();
         this.components.addAll(componentsAsUnions);
@@ -190,42 +177,40 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     @Nonnull
     @Override
     public R useComponentsV2(boolean use) {
-        final int flag = Message.MessageFlag.IS_COMPONENTS_V2.getValue();
-        if (use)
+        int flag = Message.MessageFlag.IS_COMPONENTS_V2.getValue();
+        if (use) {
             this.messageFlags |= flag;
-        else
+        } else {
             this.messageFlags &= ~flag;
+        }
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public List<MessageTopLevelComponentUnion> getComponents()
-    {
+    public List<MessageTopLevelComponentUnion> getComponents() {
         return Collections.unmodifiableList(components);
     }
 
     @Override
-    public boolean isUsingComponentsV2()
-    {
+    public boolean isUsingComponentsV2() {
         return (messageFlags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     @Nonnull
     @Override
-    public R setSuppressEmbeds(boolean suppress)
-    {
+    public R setSuppressEmbeds(boolean suppress) {
         int flag = Message.MessageFlag.EMBEDS_SUPPRESSED.getValue();
-        if (suppress)
+        if (suppress) {
             this.messageFlags |= flag;
-        else
+        } else {
             this.messageFlags &= ~flag;
+        }
         return (R) this;
     }
 
     @Override
-    public boolean isSuppressEmbeds()
-    {
+    public boolean isSuppressEmbeds() {
         return (this.messageFlags & Message.MessageFlag.EMBEDS_SUPPRESSED.getValue()) != 0;
     }
 
@@ -234,8 +219,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
      *
      * @return The currently set message flags
      */
-    public long getMessageFlagsRaw()
-    {
+    public long getMessageFlagsRaw() {
         return messageFlags;
     }
 
@@ -291,8 +275,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
      * @return The same builder instance for chaining
      */
     @Nonnull
-    public R clear()
-    {
+    public R clear() {
         this.embeds.clear();
         this.components.clear();
         this.content.setLength(0);

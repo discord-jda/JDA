@@ -24,44 +24,51 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
-public interface RoleMixin<T extends RoleMixin<T>>
-    extends Role,
-        IDetachableEntityMixin
-{
+import javax.annotation.Nonnull;
+
+public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEntityMixin {
     @Nonnull
     @Override
-    default RoleAction createCopy(@Nonnull Guild guild)
-    {
+    default RoleAction createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
         return guild.createRole()
-                    .setColor(getColorRaw())
-                    .setHoisted(isHoisted())
-                    .setMentionable(isMentionable())
-                    .setName(getName())
-                    .setPermissions(getPermissionsRaw())
-                    .setIcon(getIcon() == null ? null : getIcon().getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
+                .setColor(getColorRaw())
+                .setHoisted(isHoisted())
+                .setMentionable(isMentionable())
+                .setName(getName())
+                .setPermissions(getPermissionsRaw())
+                .setIcon(
+                        getIcon() == null
+                                ? null
+                                : getIcon()
+                                        .getEmoji()); // we can only copy the emoji as we don't have
+        // access to the Icon instance
     }
 
     @Override
-    default int compareTo(@Nonnull Role r)
-    {
-        if (this == r)
+    default int compareTo(@Nonnull Role r) {
+        if (this == r) {
             return 0;
+        }
 
-        if (this.getGuild().getIdLong() != r.getGuild().getIdLong())
-            throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
+        if (this.getGuild().getIdLong() != r.getGuild().getIdLong()) {
+            throw new IllegalArgumentException(
+                    "Cannot compare roles that aren't from the same guild!");
+        }
 
-        if (this.getPositionRaw() != r.getPositionRaw())
+        if (this.getPositionRaw() != r.getPositionRaw()) {
             return this.getPositionRaw() - r.getPositionRaw();
+        }
 
         OffsetDateTime thisTime = this.getTimeCreated();
         OffsetDateTime rTime = r.getTimeCreated();
 
-        //We compare the provided role's time to this's time instead of the reverse as one would expect due to how
-        // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy ranking when
+        // We compare the provided role's time to this's time instead of the reverse as one would
+        // expect due to how
+        // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy
+        // ranking when
         // it shares the same position as another role.
         return rTime.compareTo(thisTime);
     }

@@ -21,54 +21,48 @@ import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 
-public class UserSnowflakeImpl implements UserSnowflake
-{
+public class UserSnowflakeImpl implements UserSnowflake {
     protected final long id;
 
-    public UserSnowflakeImpl(long id)
-    {
+    public UserSnowflakeImpl(long id) {
         this.id = id;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return this.id;
     }
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
+    public String getAsMention() {
         return "<@" + getId() + ">";
     }
 
     @Nonnull
     @Override
-    public String getDefaultAvatarId()
-    {
+    public String getDefaultAvatarId() {
         return String.valueOf((id >> 22) % 6);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof UserSnowflakeImpl))
+        }
+        if (!(obj instanceof UserSnowflakeImpl)) {
             return false;
+        }
         return ((UserSnowflakeImpl) obj).getIdLong() == this.id;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this).toString();
     }
 }

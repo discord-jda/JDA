@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
@@ -31,8 +32,7 @@ import javax.annotation.Nullable;
  * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.api.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
  * <br>Adapter implementation: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
  */
-public abstract class Event implements GenericEvent
-{
+public abstract class Event implements GenericEvent {
     protected final JDA api;
     protected final long responseNumber;
     protected final DataObject rawData;
@@ -47,11 +47,12 @@ public abstract class Event implements GenericEvent
      *
      * @see   #Event(net.dv8tion.jda.api.JDA)
      */
-    public Event(@Nonnull JDA api, long responseNumber)
-    {
+    public Event(@Nonnull JDA api, long responseNumber) {
         this.api = api;
         this.responseNumber = responseNumber;
-        this.rawData = api instanceof JDAImpl && ((JDAImpl) api).isEventPassthrough() ? SocketHandler.CURRENT_EVENT.get() : null;
+        this.rawData = api instanceof JDAImpl && ((JDAImpl) api).isEventPassthrough()
+                ? SocketHandler.CURRENT_EVENT.get()
+                : null;
     }
 
     /**
@@ -61,49 +62,43 @@ public abstract class Event implements GenericEvent
      * @param api
      *        Current JDA instance
      */
-    public Event(@Nonnull JDA api)
-    {
+    public Event(@Nonnull JDA api) {
         this(api, api.getResponseTotal());
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Override
-    public long getResponseNumber()
-    {
+    public long getResponseNumber() {
         return responseNumber;
     }
 
     @Nullable
     @Override
-    public DataObject getRawData()
-    {
+    public DataObject getRawData() {
         if (api instanceof JDAImpl) {
-            if (!((JDAImpl) api).isEventPassthrough())
-                throw new IllegalStateException("Event passthrough is not enabled, see JDABuilder#setEventPassthrough(boolean)");
+            if (!((JDAImpl) api).isEventPassthrough()) {
+                throw new IllegalStateException(
+                        "Event passthrough is not enabled, see JDABuilder#setEventPassthrough(boolean)");
+            }
         }
 
         return rawData;
     }
 
     @Override
-    public String toString()
-    {
-        if (this instanceof UpdateEvent<?, ?>)
-        {
-            final UpdateEvent<?, ?> event = (UpdateEvent<?, ?>) this;
+    public String toString() {
+        if (this instanceof UpdateEvent<?, ?>) {
+            UpdateEvent<?, ?> event = (UpdateEvent<?, ?>) this;
             return new EntityString(this)
                     .setType(event.getPropertyIdentifier())
                     .addMetadata(null, event.getOldValue() + " -> " + event.getNewValue())
                     .toString();
-        }
-        else
-        {
+        } else {
             return new EntityString(this).toString();
         }
     }

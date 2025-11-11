@@ -30,13 +30,16 @@ import javax.annotation.Nonnull;
  * @see Channel#getName()
  * @see ChannelField#NAME
  */
-public class ChannelUpdateNameEvent extends GenericChannelUpdateEvent<String>
-{
+public class ChannelUpdateNameEvent extends GenericChannelUpdateEvent<String> {
     public static final ChannelField FIELD = ChannelField.NAME;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateNameEvent(@Nonnull JDA api, long responseNumber, Channel channel, String oldValue, String newValue)
-    {
+    public ChannelUpdateNameEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            Channel channel,
+            String oldValue,
+            String newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

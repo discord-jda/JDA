@@ -23,14 +23,12 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-
 /**
  * Represents a GuildChannel that is capable of being copied.
  *
  * <p>Please see {@link ICopyableChannel#createCopy()} for information on what is copied.
  */
-public interface ICopyableChannel extends GuildChannel
-{
+public interface ICopyableChannel extends GuildChannel {
     /**
      * Creates a copy of the specified {@link GuildChannel GuildChannel}
      * in the specified {@link net.dv8tion.jda.api.entities.Guild Guild}.

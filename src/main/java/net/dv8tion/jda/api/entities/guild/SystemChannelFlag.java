@@ -16,20 +16,18 @@
 
 package net.dv8tion.jda.api.entities.guild;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Flags which configures a {@linkplain net.dv8tion.jda.api.entities.Guild#getSystemChannel() system channel} of a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
- * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
- *      System Channel Flags API documentation
- *      </a>
+ * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">      System Channel Flags API documentation      </a>
  */
-public enum SystemChannelFlag
-{
+public enum SystemChannelFlag {
 
     /**
      * Suppress member join notifications.
@@ -65,8 +63,7 @@ public enum SystemChannelFlag
 
     private final int rawValue;
 
-    SystemChannelFlag(int offset)
-    {
+    SystemChannelFlag(int offset) {
         this.offset = offset;
         this.rawValue = 0b1 << offset;
     }
@@ -80,13 +77,12 @@ public enum SystemChannelFlag
      * @return An {@link EnumSet} of system channel flags represented by the input bitmask.
      */
     @Nonnull
-    public static EnumSet<SystemChannelFlag> getFlags(int raw)
-    {
+    public static EnumSet<SystemChannelFlag> getFlags(int raw) {
         EnumSet<SystemChannelFlag> enumSet = EnumSet.noneOf(SystemChannelFlag.class);
-        for (SystemChannelFlag flag : SystemChannelFlag.values())
-        {
-            if ((flag.rawValue & raw) != 0)
+        for (SystemChannelFlag flag : SystemChannelFlag.values()) {
+            if ((flag.rawValue & raw) != 0) {
                 enumSet.add(flag);
+            }
         }
         return enumSet;
     }
@@ -100,12 +96,11 @@ public enum SystemChannelFlag
      *
      * @return The raw bitmask representing the input flags.
      */
-    public static int getRaw(@Nonnull Collection<SystemChannelFlag> flags)
-    {
+    public static int getRaw(@Nonnull Collection<SystemChannelFlag> flags) {
         int raw = 0;
-        for (SystemChannelFlag flag : flags)
+        for (SystemChannelFlag flag : flags) {
             raw |= flag.rawValue;
+        }
         return raw;
     }
-
 }

@@ -33,8 +33,9 @@ import javax.annotation.Nonnull;
  * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, long)
  * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, String)
  */
-public interface ThreadChannelAction extends AbstractThreadCreateAction<ThreadChannel, ThreadChannelAction>, FluentAuditableRestAction<ThreadChannel, ThreadChannelAction>
-{
+public interface ThreadChannelAction
+        extends AbstractThreadCreateAction<ThreadChannel, ThreadChannelAction>,
+                FluentAuditableRestAction<ThreadChannel, ThreadChannelAction> {
     /**
      * Sets whether this channel allows all members to add new members.
      * <br>When set to false, only moderators and the thread owner can add new members.

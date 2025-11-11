@@ -30,15 +30,15 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AutoModRuleImpl implements AutoModRule
-{
+import javax.annotation.Nonnull;
+
+public class AutoModRuleImpl implements AutoModRule {
     private final long id;
     private Guild guild;
     private long ownerId;
@@ -56,242 +56,211 @@ public class AutoModRuleImpl implements AutoModRule
     private int mentionLimit = -1;
     private boolean isMentionRaidProtectionEnabled = false;
 
-    public AutoModRuleImpl(Guild guild, long id)
-    {
+    public AutoModRuleImpl(Guild guild, long id) {
         this.id = id;
         this.guild = guild;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         Guild realGuild = guild.getJDA().getGuildById(guild.getIdLong());
-        if (realGuild != null)
+        if (realGuild != null) {
             guild = realGuild;
+        }
         return guild;
     }
 
     @Override
-    public long getCreatorIdLong()
-    {
+    public long getCreatorIdLong() {
         return ownerId;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Nonnull
     @Override
-    public AutoModEventType getEventType()
-    {
+    public AutoModEventType getEventType() {
         return eventType;
     }
 
     @Nonnull
     @Override
-    public AutoModTriggerType getTriggerType()
-    {
+    public AutoModTriggerType getTriggerType() {
         return triggerType;
     }
 
     @Override
-    public boolean isEnabled()
-    {
+    public boolean isEnabled() {
         return enabled;
     }
 
     @Nonnull
     @Override
-    public List<Role> getExemptRoles()
-    {
+    public List<Role> getExemptRoles() {
         List<Role> roles = new ArrayList<>(exemptRoles.size());
-        for (int i = 0; i < exemptRoles.size(); i++)
-        {
+        for (int i = 0; i < exemptRoles.size(); i++) {
             long roleId = exemptRoles.get(i);
             Role role = guild.getRoleById(roleId);
-            if (role != null)
+            if (role != null) {
                 roles.add(role);
+            }
         }
         return Collections.unmodifiableList(roles);
     }
 
     @Nonnull
     @Override
-    public List<GuildChannel> getExemptChannels()
-    {
+    public List<GuildChannel> getExemptChannels() {
         List<GuildChannel> channels = new ArrayList<>(exemptChannels.size());
-        for (int i = 0; i < exemptChannels.size(); i++)
-        {
+        for (int i = 0; i < exemptChannels.size(); i++) {
             long channelId = exemptChannels.get(i);
             GuildChannel channel = guild.getGuildChannelById(channelId);
-            if (channel != null)
+            if (channel != null) {
                 channels.add(channel);
+            }
         }
         return Collections.unmodifiableList(channels);
     }
 
     @Nonnull
     @Override
-    public List<AutoModResponse> getActions()
-    {
+    public List<AutoModResponse> getActions() {
         return actions;
     }
 
     @Nonnull
     @Override
-    public List<String> getFilteredKeywords()
-    {
+    public List<String> getFilteredKeywords() {
         return filteredKeywords;
     }
 
     @Nonnull
     @Override
-    public List<String> getFilteredRegex()
-    {
+    public List<String> getFilteredRegex() {
         return filteredRegex;
     }
 
     @Nonnull
     @Override
-    public EnumSet<KeywordPreset> getFilteredPresets()
-    {
+    public EnumSet<KeywordPreset> getFilteredPresets() {
         return Helpers.copyEnumSet(KeywordPreset.class, filteredPresets);
     }
 
     @Nonnull
     @Override
-    public List<String> getAllowlist()
-    {
+    public List<String> getAllowlist() {
         return allowlist;
     }
 
     @Override
-    public int getMentionLimit()
-    {
+    public int getMentionLimit() {
         return mentionLimit;
     }
 
     @Override
-    public boolean isMentionRaidProtectionEnabled()
-    {
+    public boolean isMentionRaidProtectionEnabled() {
         return isMentionRaidProtectionEnabled;
     }
 
-    public AutoModRuleImpl setName(String name)
-    {
+    public AutoModRuleImpl setName(String name) {
         this.name = name;
         return this;
     }
 
-    public AutoModRuleImpl setEnabled(boolean enabled)
-    {
+    public AutoModRuleImpl setEnabled(boolean enabled) {
         this.enabled = enabled;
         return this;
     }
 
-    public AutoModRuleImpl setOwnerId(long ownerId)
-    {
+    public AutoModRuleImpl setOwnerId(long ownerId) {
         this.ownerId = ownerId;
         return this;
     }
 
-    public AutoModRuleImpl setEventType(AutoModEventType eventType)
-    {
+    public AutoModRuleImpl setEventType(AutoModEventType eventType) {
         this.eventType = eventType;
         return this;
     }
 
-    public AutoModRuleImpl setTriggerType(AutoModTriggerType triggerType)
-    {
+    public AutoModRuleImpl setTriggerType(AutoModTriggerType triggerType) {
         this.triggerType = triggerType;
         return this;
     }
 
-    public AutoModRuleImpl setExemptRoles(TLongList exemptRoles)
-    {
+    public AutoModRuleImpl setExemptRoles(TLongList exemptRoles) {
         this.exemptRoles = exemptRoles;
         return this;
     }
 
-    public AutoModRuleImpl setExemptChannels(TLongList exemptChannels)
-    {
+    public AutoModRuleImpl setExemptChannels(TLongList exemptChannels) {
         this.exemptChannels = exemptChannels;
         return this;
     }
 
-    public AutoModRuleImpl setActions(List<AutoModResponse> actions)
-    {
+    public AutoModRuleImpl setActions(List<AutoModResponse> actions) {
         this.actions = actions;
         return this;
     }
 
-    public AutoModRuleImpl setFilteredKeywords(List<String> filteredKeywords)
-    {
+    public AutoModRuleImpl setFilteredKeywords(List<String> filteredKeywords) {
         this.filteredKeywords = filteredKeywords;
         return this;
     }
 
-    public AutoModRuleImpl setFilteredRegex(List<String> filteredRegex)
-    {
+    public AutoModRuleImpl setFilteredRegex(List<String> filteredRegex) {
         this.filteredRegex = filteredRegex;
         return this;
     }
 
-    public AutoModRuleImpl setFilteredPresets(EnumSet<KeywordPreset> filteredPresets)
-    {
+    public AutoModRuleImpl setFilteredPresets(EnumSet<KeywordPreset> filteredPresets) {
         this.filteredPresets = filteredPresets;
         return this;
     }
 
-    public AutoModRuleImpl setAllowlist(List<String> allowlist)
-    {
+    public AutoModRuleImpl setAllowlist(List<String> allowlist) {
         this.allowlist = allowlist;
         return this;
     }
 
-    public AutoModRuleImpl setMentionLimit(int mentionLimit)
-    {
+    public AutoModRuleImpl setMentionLimit(int mentionLimit) {
         this.mentionLimit = mentionLimit;
         return this;
     }
 
-    public AutoModRuleImpl setMentionRaidProtectionEnabled(boolean mentionRaidProtectionEnabled)
-    {
+    public AutoModRuleImpl setMentionRaidProtectionEnabled(boolean mentionRaidProtectionEnabled) {
         isMentionRaidProtectionEnabled = mentionRaidProtectionEnabled;
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof AutoModRuleImpl))
+        }
+        if (!(obj instanceof AutoModRuleImpl)) {
             return false;
+        }
         AutoModRuleImpl oRule = (AutoModRuleImpl) obj;
         return this.id == oRule.id;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setType(triggerType)
                 .setName(name)
@@ -299,60 +268,57 @@ public class AutoModRuleImpl implements AutoModRule
                 .toString();
     }
 
-    public static AutoModRuleImpl fromData(Guild guild, DataObject data)
-    {
+    public static AutoModRuleImpl fromData(Guild guild, DataObject data) {
         long id = data.getUnsignedLong("id");
         AutoModRuleImpl rule = new AutoModRuleImpl(guild, id);
 
         rule.setName(data.getString("name"))
-            .setEnabled(data.getBoolean("enabled", true))
-            .setOwnerId(data.getUnsignedLong("creator_id", 0L))
-            .setEventType(AutoModEventType.fromKey(data.getInt("event_type", -1)))
-            .setTriggerType(AutoModTriggerType.fromKey(data.getInt("trigger_type", -1)));
+                .setEnabled(data.getBoolean("enabled", true))
+                .setOwnerId(data.getUnsignedLong("creator_id", 0L))
+                .setEventType(AutoModEventType.fromKey(data.getInt("event_type", -1)))
+                .setTriggerType(AutoModTriggerType.fromKey(data.getInt("trigger_type", -1)));
 
         data.optArray("exempt_roles").ifPresent(array -> rule.setExemptRoles(parseList(array)));
-        data.optArray("exempt_channels").ifPresent(array -> rule.setExemptChannels(parseList(array)));
+        data.optArray("exempt_channels")
+                .ifPresent(array -> rule.setExemptChannels(parseList(array)));
 
-        data.optArray("actions").ifPresent(array ->
-            rule.setActions(array.stream(DataArray::getObject)
-                .map(obj -> new AutoModResponseImpl(guild, obj))
-                .collect(Helpers.toUnmodifiableList()))
-        );
+        data.optArray("actions")
+                .ifPresent(array -> rule.setActions(array.stream(DataArray::getObject)
+                        .map(obj -> new AutoModResponseImpl(guild, obj))
+                        .collect(Helpers.toUnmodifiableList())));
 
         data.optObject("trigger_metadata").ifPresent(metadata -> {
             // Only for KEYWORD type
-            metadata.optArray("keyword_filter").ifPresent(array ->
-                rule.setFilteredKeywords(array.stream(DataArray::getString)
-                    .collect(Helpers.toUnmodifiableList()))
-            );
-            metadata.optArray("regex_patterns").ifPresent(array ->
-                rule.setFilteredRegex(array.stream(DataArray::getString)
-                    .collect(Helpers.toUnmodifiableList()))
-            );
+            metadata.optArray("keyword_filter")
+                    .ifPresent(array -> rule.setFilteredKeywords(array.stream(DataArray::getString)
+                            .collect(Helpers.toUnmodifiableList())));
+            metadata.optArray("regex_patterns")
+                    .ifPresent(array -> rule.setFilteredRegex(array.stream(DataArray::getString)
+                            .collect(Helpers.toUnmodifiableList())));
             // Both KEYWORD and KEYWORD_PRESET
-            metadata.optArray("allow_list").ifPresent(array ->
-                    rule.setAllowlist(array.stream(DataArray::getString)
-                            .collect(Helpers.toUnmodifiableList()))
-            );
+            metadata.optArray("allow_list")
+                    .ifPresent(array -> rule.setAllowlist(array.stream(DataArray::getString)
+                            .collect(Helpers.toUnmodifiableList())));
             // Only KEYWORD_PRESET
-            metadata.optArray("presets").ifPresent(array ->
-                rule.setFilteredPresets(array.stream(DataArray::getInt)
-                    .map(KeywordPreset::fromKey)
-                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(KeywordPreset.class))))
-            );
+            metadata.optArray("presets")
+                    .ifPresent(array -> rule.setFilteredPresets(array.stream(DataArray::getInt)
+                            .map(KeywordPreset::fromKey)
+                            .collect(Collectors.toCollection(
+                                    () -> EnumSet.noneOf(KeywordPreset.class)))));
             // Only for MENTION type
             rule.setMentionLimit(metadata.getInt("mention_total_limit", 0));
-            rule.setMentionRaidProtectionEnabled(metadata.getBoolean("mention_raid_protection_enabled"));
+            rule.setMentionRaidProtectionEnabled(
+                    metadata.getBoolean("mention_raid_protection_enabled"));
         });
 
         return rule;
     }
 
-    private static TLongList parseList(DataArray array)
-    {
+    private static TLongList parseList(DataArray array) {
         TLongList list = new TLongArrayList(array.length());
-        for (int i = 0; i < array.length(); i++)
+        for (int i = 0; i < array.length(); i++) {
             list.add(array.getUnsignedLong(i));
+        }
         return list;
     }
 }

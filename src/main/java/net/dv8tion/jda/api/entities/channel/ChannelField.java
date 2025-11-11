@@ -29,7 +29,6 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-
 /**
  * This enum represents the attributes of a channel that can be modified by events.
  * <br><b>Most</b> of these changes are tracked and reflected by {@link AuditLogKey Audit Log Entries}.
@@ -39,9 +38,8 @@ import javax.annotation.Nullable;
  * @see net.dv8tion.jda.api.events.channel.GenericChannelEvent
  * @see AuditLogKey
  */
-public enum ChannelField
-{
-    //Generic
+public enum ChannelField {
+    // Generic
 
     /**
      * The {@link ChannelType type} of the channel.
@@ -79,7 +77,7 @@ public enum ChannelField
      * @see net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel#getPosition()
      *
      */
-    POSITION("position", null), //Discord doesn't track Channel position changes in AuditLog.
+    POSITION("position", null), // Discord doesn't track Channel position changes in AuditLog.
 
     /**
      * The default slowmode applied to threads in a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer ThreadContainer}.
@@ -95,7 +93,7 @@ public enum ChannelField
      */
     DEFAULT_REACTION_EMOJI("default_reaction_emoji", AuditLogKey.CHANNEL_DEFAULT_REACTION_EMOJI),
 
-    //Text Specific
+    // Text Specific
     /**
      * The topic of the channel.
      *
@@ -132,8 +130,7 @@ public enum ChannelField
      */
     AVAILABLE_TAGS("available_tags", AuditLogKey.CHANNEL_AVAILABLE_TAGS),
 
-
-    //Voice Specific
+    // Voice Specific
 
     /**
      * The bitrate (in bits per second) of the audio in this channel.
@@ -177,8 +174,7 @@ public enum ChannelField
      */
     VOICE_STATUS("status", AuditLogKey.CHANNEL_VOICE_STATUS),
 
-
-    //Thread Specific
+    // Thread Specific
 
     /**
      * The auto archive duration of this channel.
@@ -266,34 +262,29 @@ public enum ChannelField
      *
      * @see ForumChannel#getDefaultSortOrder()
      */
-    DEFAULT_SORT_ORDER("default_sort_order", AuditLogKey.CHANNEL_DEFAULT_SORT_ORDER)
-    ;
+    DEFAULT_SORT_ORDER("default_sort_order", AuditLogKey.CHANNEL_DEFAULT_SORT_ORDER);
 
     private final String fieldName;
     private final AuditLogKey auditLogKey;
 
-    ChannelField(String fieldName, AuditLogKey auditLogKey)
-    {
+    ChannelField(String fieldName, AuditLogKey auditLogKey) {
         this.fieldName = fieldName;
         this.auditLogKey = auditLogKey;
     }
 
     @Nonnull
-    public String getFieldName()
-    {
+    public String getFieldName() {
         return fieldName;
     }
 
     @Nullable
-    public AuditLogKey getAuditLogKey()
-    {
+    public AuditLogKey getAuditLogKey() {
         return auditLogKey;
     }
 
     @Nonnull
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setType(this)
                 .addMetadata("fieldName", fieldName)

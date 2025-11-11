@@ -36,8 +36,7 @@ import static net.dv8tion.jda.api.requests.Method.GET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class EntitlementPaginationTest extends IntegrationTest
-{
+public class EntitlementPaginationTest extends IntegrationTest {
     protected static final String routeTemplate = "applications/%d/entitlements%s";
 
     @Spy
@@ -45,20 +44,18 @@ public class EntitlementPaginationTest extends IntegrationTest
 
     protected EntitlementPaginationActionImpl action;
 
-    private DataObject fakeEntitlement(String id)
-    {
+    private DataObject fakeEntitlement(String id) {
         return DataObject.empty()
-            .put("id", id)
-            .put("sku_id", randomSnowflake())
-            .put("application_id", randomSnowflake())
-            .put("user_id", randomSnowflake())
-            .put("type", 8)
-            .put("deleted", false);
+                .put("id", id)
+                .put("sku_id", randomSnowflake())
+                .put("application_id", randomSnowflake())
+                .put("user_id", randomSnowflake())
+                .put("type", 8)
+                .put("deleted", false);
     }
 
     @BeforeEach
-    void setupSelfUser()
-    {
+    void setupSelfUser() {
         when(selfUser.getApplicationIdLong()).thenReturn(Constants.BUTLER_USER_ID);
         when(jda.getSelfUser()).thenReturn(selfUser);
 
@@ -66,138 +63,110 @@ public class EntitlementPaginationTest extends IntegrationTest
     }
 
     @Test
-    void testParsingFailure()
-    {
+    void testParsingFailure() {
         assertThatRequestFrom(action)
-            .hasMethod(GET)
-            .hasCompiledRoute(String.format(routeTemplate, Constants.BUTLER_USER_ID, "?limit=100"))
-            .whenQueueCalled();
+                .hasMethod(GET)
+                .hasCompiledRoute(
+                        String.format(routeTemplate, Constants.BUTLER_USER_ID, "?limit=100"))
+                .whenQueueCalled();
 
-        DataArray responseBody = DataArray.empty()
-                .add(DataObject.empty()); // Invalid entitlement object
+        DataArray responseBody =
+                DataArray.empty().add(DataObject.empty()); // Invalid entitlement object
 
-        whenSuccess(action, responseBody, response ->
-            assertThat(response).isEmpty() // Is logged and skipped
-        );
+        whenSuccess(
+                action,
+                responseBody,
+                response -> assertThat(response).isEmpty() // Is logged and skipped
+                );
     }
 
     @Test
-    void testDefaultPagination()
-    {
-        assertThatRequestFrom(action)
-            .hasQueryParams("limit", "100")
-            .whenQueueCalled();
+    void testDefaultPagination() {
+        assertThatRequestFrom(action).hasQueryParams("limit", "100").whenQueueCalled();
 
-        DataArray array = DataArray.empty()
-            .add(fakeEntitlement("2"))
-            .add(fakeEntitlement("1"));
+        DataArray array = DataArray.empty().add(fakeEntitlement("2")).add(fakeEntitlement("1"));
 
-        whenSuccess(action, array, response ->
-            assertThat(response)
+        whenSuccess(action, array, response -> assertThat(response)
                 .hasSize(2)
                 .map(Entitlement::getId)
-                .containsExactly("2", "1")
-        );
+                .containsExactly("2", "1"));
 
         assertThatRequestFrom(action)
-            .hasQueryParams("limit", "100", "before", "1")
-            .whenQueueCalled();
+                .hasQueryParams("limit", "100", "before", "1")
+                .whenQueueCalled();
 
-        whenSuccess(action, DataArray.empty(), response ->
-            assertThat(response)
-                .isEmpty()
-        );
+        whenSuccess(action, DataArray.empty(), response -> assertThat(response).isEmpty());
 
         assertThat(action.cacheSize()).isEqualTo(2);
-        assertThat(action.getCached())
-            .hasSize(2)
-            .map(Entitlement::getId)
-            .containsExactly("2", "1");
-
+        assertThat(action.getCached()).hasSize(2).map(Entitlement::getId).containsExactly("2", "1");
     }
 
     @Test
-    void testReversePagination()
-    {
+    void testReversePagination() {
         assertThatRequestFrom(action.reverse())
-            .hasQueryParams("limit", 100, "after", 0)
-            .whenQueueCalled();
+                .hasQueryParams("limit", 100, "after", 0)
+                .whenQueueCalled();
 
-        DataArray array = DataArray.empty()
-            .add(fakeEntitlement("1"))
-            .add(fakeEntitlement("2"));
+        DataArray array = DataArray.empty().add(fakeEntitlement("1")).add(fakeEntitlement("2"));
 
-        whenSuccess(action, array, response ->
-            assertThat(response)
+        whenSuccess(action, array, response -> assertThat(response)
                 .hasSize(2)
                 .map(Entitlement::getId)
-                .containsExactly("1", "2")
-        );
+                .containsExactly("1", "2"));
 
         assertThatRequestFrom(action)
-            .hasQueryParams("limit", "100", "after", "2")
-            .whenQueueCalled();
+                .hasQueryParams("limit", "100", "after", "2")
+                .whenQueueCalled();
 
-        whenSuccess(action, DataArray.empty(), response ->
-            assertThat(response)
-                .isEmpty()
-        );
+        whenSuccess(action, DataArray.empty(), response -> assertThat(response).isEmpty());
 
         assertThat(action.cacheSize()).isEqualTo(2);
-        assertThat(action.getCached())
-            .hasSize(2)
-            .map(Entitlement::getId)
-            .containsExactly("1", "2");
+        assertThat(action.getCached()).hasSize(2).map(Entitlement::getId).containsExactly("1", "2");
     }
 
     @Test
-    void testSkipTo()
-    {
+    void testSkipTo() {
         long skipId = Math.abs(random.nextLong());
 
         assertThatRequestFrom(action.skipTo(skipId))
-            .hasQueryParams("limit", "100", "before", skipId)
-            .whenQueueCalled();
+                .hasQueryParams("limit", "100", "before", skipId)
+                .whenQueueCalled();
     }
 
     @Nested
-    class Filter
-    {
+    class Filter {
         @Test
-        void byExcludeEnded()
-        {
+        void byExcludeEnded() {
             assertThatRequestFrom(action.excludeEnded(true))
-                .hasQueryParams("limit", "100", "exclude_ended", "true")
-                .whenQueueCalled();
+                    .hasQueryParams("limit", "100", "exclude_ended", "true")
+                    .whenQueueCalled();
         }
 
         @Test
-        void bySkuIds()
-        {
+        void bySkuIds() {
             Set<String> sku = new LinkedHashSet<>();
 
-            for (int i = -5; i < random.nextInt(10); i++)
+            for (int i = -5; i < random.nextInt(10); i++) {
                 sku.add(Long.toUnsignedString(random.nextLong()));
+            }
 
             assertThatRequestFrom(action.skuIds(sku))
-                .hasQueryParams("limit", "100", "sku_ids", String.join(",", sku))
-                .whenQueueCalled();
+                    .hasQueryParams("limit", "100", "sku_ids", String.join(",", sku))
+                    .whenQueueCalled();
         }
 
         @Test
-        void byUserId()
-        {
+        void byUserId() {
             assertThatRequestFrom(action.user(User.fromId(Constants.MINN_USER_ID)))
-                .hasQueryParams( "limit", 100, "user_id", Constants.MINN_USER_ID)
-                .whenQueueCalled();
+                    .hasQueryParams("limit", 100, "user_id", Constants.MINN_USER_ID)
+                    .whenQueueCalled();
         }
 
         @Test
-        void byGuildId()
-        {
+        void byGuildId() {
             assertThatRequestFrom(action.guild(Constants.GUILD_ID))
-                .hasQueryParams("limit", 100, "guild_id", Constants.GUILD_ID)
-                .whenQueueCalled();
+                    .hasQueryParams("limit", 100, "guild_id", Constants.GUILD_ID)
+                    .whenQueueCalled();
         }
     }
 }

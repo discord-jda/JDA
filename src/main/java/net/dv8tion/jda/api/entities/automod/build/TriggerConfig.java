@@ -21,8 +21,9 @@ import net.dv8tion.jda.api.entities.automod.AutoModRule.KeywordPreset;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import javax.annotation.Nonnull;
 
 /**
  * Configuration for {@link AutoModRule}, which defines under what conditions the rule should be triggered.
@@ -47,8 +48,7 @@ import java.util.Collection;
  *
  * @see AutoModRule
  */
-public interface TriggerConfig extends SerializableData
-{
+public interface TriggerConfig extends SerializableData {
     /**
      * The type of trigger for this config.
      *
@@ -69,8 +69,7 @@ public interface TriggerConfig extends SerializableData
      * @return {@link MentionSpamTriggerConfig}
      */
     @Nonnull
-    static MentionSpamTriggerConfig mentionSpam(int mentionLimit)
-    {
+    static MentionSpamTriggerConfig mentionSpam(int mentionLimit) {
         return new MentionSpamTriggerConfig(mentionLimit);
     }
 
@@ -80,8 +79,7 @@ public interface TriggerConfig extends SerializableData
      * @return {@link AntiSpamTriggerConfig}
      */
     @Nonnull
-    static AntiSpamTriggerConfig antiSpam()
-    {
+    static AntiSpamTriggerConfig antiSpam() {
         return new AntiSpamTriggerConfig();
     }
 
@@ -109,8 +107,7 @@ public interface TriggerConfig extends SerializableData
      * @return {@link CustomKeywordTriggerConfig}
      */
     @Nonnull
-    static CustomKeywordTriggerConfig keywordFilter(@Nonnull Collection<String> keywords)
-    {
+    static CustomKeywordTriggerConfig keywordFilter(@Nonnull Collection<String> keywords) {
         return new CustomKeywordTriggerConfig().addKeywords(keywords);
     }
 
@@ -138,8 +135,7 @@ public interface TriggerConfig extends SerializableData
      * @return {@link CustomKeywordTriggerConfig}
      */
     @Nonnull
-    static CustomKeywordTriggerConfig keywordFilter(@Nonnull String... keywords)
-    {
+    static CustomKeywordTriggerConfig keywordFilter(@Nonnull String... keywords) {
         return new CustomKeywordTriggerConfig().addKeywords(keywords);
     }
 
@@ -165,8 +161,7 @@ public interface TriggerConfig extends SerializableData
      * @return {@link CustomKeywordTriggerConfig}
      */
     @Nonnull
-    static CustomKeywordTriggerConfig patternFilter(@Nonnull Collection<String> patterns)
-    {
+    static CustomKeywordTriggerConfig patternFilter(@Nonnull Collection<String> patterns) {
         return new CustomKeywordTriggerConfig().addPatterns(patterns);
     }
 
@@ -192,8 +187,7 @@ public interface TriggerConfig extends SerializableData
      * @return {@link CustomKeywordTriggerConfig}
      */
     @Nonnull
-    static CustomKeywordTriggerConfig patternFilter(@Nonnull String... patterns)
-    {
+    static CustomKeywordTriggerConfig patternFilter(@Nonnull String... patterns) {
         return new CustomKeywordTriggerConfig().addPatterns(patterns);
     }
 
@@ -209,8 +203,8 @@ public interface TriggerConfig extends SerializableData
      * @return {@link PresetKeywordTriggerConfig}
      */
     @Nonnull
-    static PresetKeywordTriggerConfig presetKeywordFilter(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
-    {
+    static PresetKeywordTriggerConfig presetKeywordFilter(
+            @Nonnull Collection<AutoModRule.KeywordPreset> presets) {
         return new PresetKeywordTriggerConfig().enablePresets(presets);
     }
 
@@ -226,8 +220,8 @@ public interface TriggerConfig extends SerializableData
      * @return {@link PresetKeywordTriggerConfig}
      */
     @Nonnull
-    static PresetKeywordTriggerConfig presetKeywordFilter(@Nonnull AutoModRule.KeywordPreset... presets)
-    {
+    static PresetKeywordTriggerConfig presetKeywordFilter(
+            @Nonnull AutoModRule.KeywordPreset... presets) {
         return new PresetKeywordTriggerConfig().enablePresets(presets);
     }
 }

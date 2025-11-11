@@ -27,13 +27,17 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code discriminator}
  */
-public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
-{
+public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String> {
     public static final String IDENTIFIER = "discriminator";
 
-    public SelfUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, @Nonnull String oldDiscriminator)
-    {
-        super(api, responseNumber, oldDiscriminator, api.getSelfUser().getDiscriminator(), IDENTIFIER);
+    public SelfUpdateDiscriminatorEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull String oldDiscriminator) {
+        super(
+                api,
+                responseNumber,
+                oldDiscriminator,
+                api.getSelfUser().getDiscriminator(),
+                IDENTIFIER);
     }
 
     /**
@@ -42,8 +46,7 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
      * @return The old discriminator
      */
     @Nonnull
-    public String getOldDiscriminator()
-    {
+    public String getOldDiscriminator() {
         return getOldValue();
     }
 
@@ -53,22 +56,19 @@ public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
      * @return The new discriminator
      */
     @Nonnull
-    public String getNewDiscriminator()
-    {
+    public String getNewDiscriminator() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

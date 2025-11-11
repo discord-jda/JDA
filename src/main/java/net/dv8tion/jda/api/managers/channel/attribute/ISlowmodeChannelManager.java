@@ -31,9 +31,9 @@ import javax.annotation.Nonnull;
  * @param <M>
  *        The concrete manager type
  */
-public interface ISlowmodeChannelManager<T extends ISlowmodeChannel, M extends ISlowmodeChannelManager<T, M>>
-        extends ChannelManager<T, M>
-{
+public interface ISlowmodeChannelManager<
+                T extends ISlowmodeChannel, M extends ISlowmodeChannelManager<T, M>>
+        extends ChannelManager<T, M> {
     /**
      * Sets the <b><u>slowmode</u></b> of the selected channel.
      * <br>Provide {@code 0} to disable slowmode.

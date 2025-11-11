@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
  *
  * <p>This includes modals and components.
  */
-public interface ICustomIdInteraction
-{
+public interface ICustomIdInteraction {
     /**
      * The relevant custom ID, that has been provided for the component or modal when it was originally created.
      * <br>This value should be used to determine what action to take in regard to this interaction.

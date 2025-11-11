@@ -21,102 +21,93 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public class CompletedRestAction<T> implements AuditableRestAction<T>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class CompletedRestAction<T> implements AuditableRestAction<T> {
     private final JDA api;
     private final T value;
     private final Throwable error;
 
-    public CompletedRestAction(JDA api, T value, Throwable error)
-    {
+    public CompletedRestAction(JDA api, T value, Throwable error) {
         this.api = api;
         this.value = value;
         this.error = error;
     }
 
-    public CompletedRestAction(JDA api, T value)
-    {
+    public CompletedRestAction(JDA api, T value) {
         this(api, value, null);
     }
 
-    public CompletedRestAction(JDA api, Throwable error)
-    {
+    public CompletedRestAction(JDA api, Throwable error) {
         this(api, null, error);
     }
 
-
     @Nonnull
     @Override
-    public AuditableRestAction<T> reason(@Nullable String reason)
-    {
+    public AuditableRestAction<T> reason(@Nullable String reason) {
         return this;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks)
-    {
+    public AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks) {
         return this;
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit) {
         return this;
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<T> deadline(long timestamp)
-    {
+    public AuditableRestAction<T> deadline(long timestamp) {
         return this;
     }
 
     @Override
-    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
-    {
-        if (error == null)
-        {
-            if (success == null)
+    public void queue(
+            @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
+        if (error == null) {
+            if (success == null) {
                 RestAction.getDefaultSuccess().accept(value);
-            else
+            } else {
                 success.accept(value);
-        }
-        else
-        {
-            if (failure == null)
+            }
+        } else {
+            if (failure == null) {
                 RestAction.getDefaultFailure().accept(error);
-            else
+            } else {
                 failure.accept(error);
+            }
         }
     }
 
     @Override
-    public T complete(boolean shouldQueue) throws RateLimitedException
-    {
-        if (error != null)
-        {
-            if (error instanceof RateLimitedException)
+    public T complete(boolean shouldQueue) throws RateLimitedException {
+        if (error != null) {
+            if (error instanceof RateLimitedException) {
                 throw (RateLimitedException) error;
-            if (error instanceof RuntimeException)
+            }
+            if (error instanceof RuntimeException) {
                 throw (RuntimeException) error;
-            if (error instanceof Error)
+            }
+            if (error instanceof Error) {
                 throw (Error) error;
+            }
             throw new IllegalStateException(error);
         }
         return value;
@@ -124,13 +115,13 @@ public class CompletedRestAction<T> implements AuditableRestAction<T>
 
     @Nonnull
     @Override
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
+    public CompletableFuture<T> submit(boolean shouldQueue) {
         CompletableFuture<T> future = new CompletableFuture<>();
-        if (error != null)
+        if (error != null) {
             future.completeExceptionally(error);
-        else
+        } else {
             future.complete(value);
+        }
         return future;
     }
 }

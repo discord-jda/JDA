@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.test.util;
 
-
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import okio.BufferedSink;
@@ -37,87 +36,58 @@ import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SnapshotHandler
-{
+public class SnapshotHandler {
     private final TestInfo testInfo;
     private final Logger logger;
 
-    public SnapshotHandler(TestInfo testInfo)
-    {
+    public SnapshotHandler(TestInfo testInfo) {
         this.testInfo = testInfo;
         this.logger = LoggerFactory.getLogger(SnapshotHandler.class);
     }
 
-    public void compareWithSnapshot(String actual, String suffix)
-    {
-        compareWithSnapshot(
-                actual,
-                suffix,
-                "txt"
-        );
+    public void compareWithSnapshot(String actual, String suffix) {
+        compareWithSnapshot(actual, suffix, "txt");
     }
 
-    public void compareWithSnapshot(Collection<?> actual, String suffix)
-    {
-        compareWithSnapshot(
-                DataArray.fromCollection(actual).toPrettyString(),
-                suffix,
-                "json"
-        );
+    public void compareWithSnapshot(Collection<?> actual, String suffix) {
+        compareWithSnapshot(DataArray.fromCollection(actual).toPrettyString(), suffix, "json");
     }
 
-    public void compareWithSnapshot(DataObject actual, String suffix)
-    {
-        compareWithSnapshot(
-                actual.toPrettyString(),
-                suffix,
-                "json"
-        );
+    public void compareWithSnapshot(DataObject actual, String suffix) {
+        compareWithSnapshot(actual.toPrettyString(), suffix, "json");
     }
 
-    public void compareWithSnapshot(DataArray actual, String suffix)
-    {
-        compareWithSnapshot(
-                actual.toPrettyString(),
-                suffix,
-                "json"
-        );
+    public void compareWithSnapshot(DataArray actual, String suffix) {
+        compareWithSnapshot(actual.toPrettyString(), suffix, "json");
     }
 
-    private void compareWithSnapshot(String actual, String suffix, String extension)
-    {
+    private void compareWithSnapshot(String actual, String suffix, String extension) {
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
         String filePath = getFilePath(suffix, extension);
 
-        try (InputStream stream = currentClass.getResourceAsStream(filePath))
-        {
-            assertThat(stream).as("Loading sample from resource file '%s'", filePath).isNotNull();
+        try (InputStream stream = currentClass.getResourceAsStream(filePath)) {
+            assertThat(stream)
+                    .as("Loading sample from resource file '%s'", filePath)
+                    .isNotNull();
             BufferedSource fileBuffer = Okio.buffer(Okio.source(stream));
             assertThat(fileBuffer.readUtf8()).isEqualToNormalizingNewlines(actual);
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new UncheckedIOException(e);
-        }
-        catch (AssertionError e)
-        {
-            try
-            {
+        } catch (AssertionError e) {
+            try {
                 updateOrCreateIfNecessary(actual, suffix, extension);
-            }
-            catch (Exception exception)
-            {
+            } catch (Exception exception) {
                 e.addSuppressed(exception);
             }
             throw e;
         }
     }
 
-
-    private void updateOrCreateIfNecessary(String actual, String suffix, String extension) throws IOException
-    {
-        if (System.getProperty("updateSnapshots") == null)
+    private void updateOrCreateIfNecessary(String actual, String suffix, String extension)
+            throws IOException {
+        if (System.getProperty("updateSnapshots") == null) {
             return;
+        }
 
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
         String filePath = getFilePath(suffix, extension);
@@ -126,34 +96,33 @@ public class SnapshotHandler
         String path = currentClass.getPackage().getName().replace(".", "/") + "/" + filePath;
 
         Path fileLocation = Path.get(workingDirectory, true)
-            .resolve("src/test/resources", true)
-            .resolve(path, true);
+                .resolve("src/test/resources", true)
+                .resolve(path, true);
 
         File file = fileLocation.toFile();
-        if (!file.exists())
-        {
+        if (!file.exists()) {
             logger.info("Creating snapshot {}", file);
             file.getParentFile().mkdirs();
             assertThat(file.createNewFile()).isTrue();
         }
 
-        try (BufferedSink sink = Okio.buffer(Okio.sink(file)))
-        {
+        try (BufferedSink sink = Okio.buffer(Okio.sink(file))) {
             logger.info("Updating snapshot {}", file);
             sink.writeString(actual, StandardCharsets.UTF_8);
         }
     }
 
-    private String getFilePath(String suffix, String extension)
-    {
+    private String getFilePath(String suffix, String extension) {
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
         Class<?> enclosingClass = currentClass.getEnclosingClass();
         Method testMethod = testInfo.getTestMethod().orElseThrow(AssertionError::new);
         String fileName = currentClass.getSimpleName() + "/" + testMethod.getName();
-        if (enclosingClass != null)
+        if (enclosingClass != null) {
             fileName = enclosingClass.getSimpleName() + "/" + fileName;
-        if (suffix != null && !suffix.isEmpty())
+        }
+        if (suffix != null && !suffix.isEmpty()) {
             fileName += "_" + suffix;
+        }
         fileName += "." + extension;
         return fileName;
     }

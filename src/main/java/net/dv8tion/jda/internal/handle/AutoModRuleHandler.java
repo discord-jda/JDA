@@ -25,51 +25,47 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.automod.AutoModRuleImpl;
 
-public class AutoModRuleHandler extends SocketHandler
-{
+public class AutoModRuleHandler extends SocketHandler {
     private final String type;
 
-    public AutoModRuleHandler(JDAImpl api, String type)
-    {
+    public AutoModRuleHandler(JDAImpl api, String type) {
         super(api);
         this.type = type;
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id");
-        if (api.getGuildSetupController().isLocked(guildId))
+        if (api.getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
         Guild guild = api.getGuildById(guildId);
-        if (guild == null)
-        {
-            api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received a AUTO_MODERATION_RULE_{} for a guild that is not yet cached. JSON: {}", type, content);
+        if (guild == null) {
+            api.getEventCache()
+                    .cache(
+                            EventCache.Type.GUILD,
+                            guildId,
+                            responseNumber,
+                            allContent,
+                            this::handle);
+            EventCache.LOG.debug(
+                    "Received a AUTO_MODERATION_RULE_{} for a guild that is not yet cached. JSON: {}",
+                    type,
+                    content);
             return null;
         }
 
         AutoModRule rule = AutoModRuleImpl.fromData(guild, content);
-        switch (type)
-        {
-        case "CREATE":
-            api.handleEvent(
-                new AutoModRuleCreateEvent(
-                    api, responseNumber,
-                    rule));
-            break;
-        case "UPDATE":
-            api.handleEvent(
-                new AutoModRuleUpdateEvent(
-                    api, responseNumber,
-                    rule));
-            break;
-        case "DELETE":
-            api.handleEvent(
-                new AutoModRuleDeleteEvent(
-                    api, responseNumber,
-                    rule));
-            break;
+        switch (type) {
+            case "CREATE":
+                api.handleEvent(new AutoModRuleCreateEvent(api, responseNumber, rule));
+                break;
+            case "UPDATE":
+                api.handleEvent(new AutoModRuleUpdateEvent(api, responseNumber, rule));
+                break;
+            case "DELETE":
+                api.handleEvent(new AutoModRuleDeleteEvent(api, responseNumber, rule));
+                break;
         }
         return null;
     }

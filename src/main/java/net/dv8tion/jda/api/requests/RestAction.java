@@ -28,9 +28,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
 import org.jetbrains.annotations.Blocking;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -40,6 +37,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -152,13 +153,10 @@ import java.util.stream.Collectors;
  * @param <T>
  *        The generic response type for this RestAction
  *
- * @since 3.0
- *
  * @see   net.dv8tion.jda.api.exceptions.ErrorHandler
  * @see   net.dv8tion.jda.api.exceptions.ErrorResponseException
  */
-public interface RestAction<T>
-{
+public interface RestAction<T> {
     /**
      * If enabled this will pass a {@link net.dv8tion.jda.api.exceptions.ContextException ContextException}
      * as root-cause to all failure consumers.
@@ -169,8 +167,7 @@ public interface RestAction<T>
      * @param  enable
      *         True, if context should be passed to all failure consumers
      */
-    static void setPassContext(boolean enable)
-    {
+    static void setPassContext(boolean enable) {
         RestActionImpl.setPassContext(enable);
     }
 
@@ -183,8 +180,7 @@ public interface RestAction<T>
      *
      * @see    #setPassContext(boolean)
      */
-    static boolean isPassContext()
-    {
+    static boolean isPassContext() {
         return RestActionImpl.isPassContext();
     }
 
@@ -194,8 +190,7 @@ public interface RestAction<T>
      * @param callback
      *        The fallback to use, or null to ignore failures (not recommended)
      */
-    static void setDefaultFailure(@Nullable final Consumer<? super Throwable> callback)
-    {
+    static void setDefaultFailure(@Nullable Consumer<? super Throwable> callback) {
         RestActionImpl.setDefaultFailure(callback);
     }
 
@@ -205,8 +200,7 @@ public interface RestAction<T>
      * @param callback
      *        The fallback to use, or null to ignore success
      */
-    static void setDefaultSuccess(@Nullable final Consumer<Object> callback)
-    {
+    static void setDefaultSuccess(@Nullable Consumer<Object> callback) {
         RestActionImpl.setDefaultSuccess(callback);
     }
 
@@ -225,8 +219,7 @@ public interface RestAction<T>
      * @throws IllegalArgumentException
      *         If the provided unit is null
      */
-    static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit) {
         RestActionImpl.setDefaultTimeout(timeout, unit);
     }
 
@@ -238,8 +231,7 @@ public interface RestAction<T>
      *
      * @return The default timeout in milliseconds, or 0
      */
-    static long getDefaultTimeout()
-    {
+    static long getDefaultTimeout() {
         return RestActionImpl.getDefaultTimeout();
     }
 
@@ -249,8 +241,7 @@ public interface RestAction<T>
      * @return The fallback consumer
      */
     @Nonnull
-    static Consumer<? super Throwable> getDefaultFailure()
-    {
+    static Consumer<? super Throwable> getDefaultFailure() {
         return RestActionImpl.getDefaultFailure();
     }
 
@@ -260,8 +251,7 @@ public interface RestAction<T>
      * @return The fallback consumer
      */
     @Nonnull
-    static Consumer<Object> getDefaultSuccess()
-    {
+    static Consumer<Object> getDefaultSuccess() {
         return RestActionImpl.getDefaultSuccess();
     }
 
@@ -284,14 +274,12 @@ public interface RestAction<T>
      *
      * @see    #and(RestAction, BiFunction)
      * @see    #zip(RestAction, RestAction[])
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @SafeVarargs
     @CheckReturnValue
-    static <E> RestAction<List<E>> allOf(@Nonnull RestAction<? extends E> first, @Nonnull RestAction<? extends E>... others)
-    {
+    static <E> RestAction<List<E>> allOf(
+            @Nonnull RestAction<? extends E> first, @Nonnull RestAction<? extends E>... others) {
         Checks.notNull(first, "RestAction");
         Checks.noneNull(others, "RestAction");
         List<RestAction<? extends E>> list = new ArrayList<>(others.length + 1);
@@ -317,13 +305,11 @@ public interface RestAction<T>
      *
      * @see    #and(RestAction, BiFunction)
      * @see    #zip(RestAction, RestAction[])
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    static <E> RestAction<List<E>> allOf(@Nonnull Collection<? extends RestAction<? extends E>> actions)
-    {
+    static <E> RestAction<List<E>> allOf(
+            @Nonnull Collection<? extends RestAction<? extends E>> actions) {
         return accumulate(actions, Collectors.toList());
     }
 
@@ -350,13 +336,12 @@ public interface RestAction<T>
      *
      * @see    #and(RestAction, BiFunction)
      * @see    #zip(RestAction, RestAction[])
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    static <E, A, O> RestAction<O> accumulate(@Nonnull Collection<? extends RestAction<? extends E>> actions, @Nonnull Collector<? super E, A, ? extends O> collector)
-    {
+    static <E, A, O> RestAction<O> accumulate(
+            @Nonnull Collection<? extends RestAction<? extends E>> actions,
+            @Nonnull Collector<? super E, A, ? extends O> collector) {
         Checks.noneNull(actions, "RestAction");
         Checks.notEmpty(actions, "RestActions");
         Checks.notNull(collector, "Collector");
@@ -372,8 +357,7 @@ public interface RestAction<T>
             return list;
         });
 
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             RestAction<? extends E> next = iterator.next();
             result = result.and(next, (list, b) -> {
                 add.accept(list, b);
@@ -415,12 +399,9 @@ public interface RestAction<T>
      * @return The current checks, or null if none were set
      *
      * @see    #setCheck(BooleanSupplier)
-     *
-     * @since  4.2.1
      */
     @Nullable
-    default BooleanSupplier getCheck()
-    {
+    default BooleanSupplier getCheck() {
         return null;
     }
 
@@ -436,13 +417,10 @@ public interface RestAction<T>
      * @return The current RestAction for chaining convenience
      *
      * @see    #setCheck(BooleanSupplier)
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> addCheck(@Nonnull BooleanSupplier checks)
-    {
+    default RestAction<T> addCheck(@Nonnull BooleanSupplier checks) {
         Checks.notNull(checks, "Checks");
         BooleanSupplier check = getCheck();
         return setCheck(() -> (check == null || check.getAsBoolean()) && checks.getAsBoolean());
@@ -475,8 +453,7 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    default RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit) {
         Checks.notNull(unit, "TimeUnit");
         return deadline(timeout <= 0 ? 0 : System.currentTimeMillis() + unit.toMillis(timeout));
     }
@@ -505,8 +482,7 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> deadline(long timestamp)
-    {
+    default RestAction<T> deadline(long timestamp) {
         throw new UnsupportedOperationException();
     }
 
@@ -538,8 +514,7 @@ public interface RestAction<T>
      * @see #queue(java.util.function.Consumer) queue(Consumer)
      * @see #queue(java.util.function.Consumer, java.util.function.Consumer) queue(Consumer, Consumer)
      */
-    default void queue()
-    {
+    default void queue() {
         queue(null);
     }
 
@@ -563,17 +538,16 @@ public interface RestAction<T>
      * }
      * }</pre>
      *
-     * @throws java.util.concurrent.RejectedExecutionException
-     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
-     *
      * @param  success
      *         The success callback that will be called at a convenient time
      *         for the API. (can be null)
      *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
+     *
      * @see    #queue(java.util.function.Consumer, java.util.function.Consumer) queue(Consumer, Consumer)
      */
-    default void queue(@Nullable Consumer<? super T> success)
-    {
+    default void queue(@Nullable Consumer<? super T> success) {
         queue(success, null);
     }
 
@@ -601,9 +575,6 @@ public interface RestAction<T>
      * }
      * }</pre>
      *
-     * @throws java.util.concurrent.RejectedExecutionException
-     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
-     *
      * @param  success
      *         The success callback that will be called at a convenient time
      *         for the API. (can be null to use default)
@@ -611,10 +582,14 @@ public interface RestAction<T>
      *         The failure callback that will be called if the Request
      *         encounters an exception at its execution point. (can be null to use default)
      *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
+     *
      * @see    #submit()
      * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
-    void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure);
+    void queue(
+            @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure);
 
     /**
      * Blocks the current Thread and awaits the completion
@@ -632,17 +607,14 @@ public interface RestAction<T>
      */
     @Blocking
     @UnknownNullability
-    default T complete()
-    {
-        try
-        {
+    default T complete() {
+        try {
             return complete(true);
-        }
-        catch (RateLimitedException e)
-        {
-            //This is so beyond impossible, but on the off chance that the laws of nature are rewritten
+        } catch (RateLimitedException e) {
+            // This is so beyond impossible, but on the off chance that the laws of nature are
+            // rewritten
             // after the writing of this code, I'm placing this here.
-            //Better safe than sorry?
+            // Better safe than sorry?
             throw new AssertionError(e);
         }
     }
@@ -698,8 +670,7 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<T> submit()
-    {
+    default CompletableFuture<T> submit() {
         return submit(true);
     }
 
@@ -708,11 +679,11 @@ public interface RestAction<T>
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
      *
-     * @throws java.util.concurrent.RejectedExecutionException
-     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
-     *
      * @param  shouldQueue
      *         Whether the Request should automatically handle rate limitations. (default true)
+     *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      *
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} task representing the completion promise
      */
@@ -733,13 +704,10 @@ public interface RestAction<T>
      * You should use {@link Result#onFailure(Consumer)}, {@link Result#getFailure()}, or {@link Result#expect(Predicate)}!
      *
      * @return RestAction - Type: {@link Result}
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Result<T>> mapToResult()
-    {
+    default RestAction<Result<T>> mapToResult() {
         return map(Result::success).onErrorMap(Result::failure);
     }
 
@@ -759,18 +727,14 @@ public interface RestAction<T>
      *
      * @param  map
      *         The mapping function to apply to the action result
-     *
      * @param  <O>
      *         The target output type
      *
      * @return RestAction for the mapped type
-     *
-     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
-    default <O> RestAction<O> map(@Nonnull Function<? super T, ? extends O> map)
-    {
+    default <O> RestAction<O> map(@Nonnull Function<? super T, ? extends O> map) {
         Checks.notNull(map, "Function");
         return new MapRestAction<>(this, map);
     }
@@ -805,8 +769,7 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer)
-    {
+    default RestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer) {
         Checks.notNull(consumer, "Consumer");
         return map(result -> {
             consumer.accept(result);
@@ -837,13 +800,10 @@ public interface RestAction<T>
      *         If the mapping function is null
      *
      * @return RestAction with fallback handling
-     *
-     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> onErrorMap(@Nonnull Function<? super Throwable, ? extends T> map)
-    {
+    default RestAction<T> onErrorMap(@Nonnull Function<? super Throwable, ? extends T> map) {
         return onErrorMap(null, map);
     }
 
@@ -875,13 +835,12 @@ public interface RestAction<T>
      *
      * @see    ErrorResponse#test(Throwable)
      * @see    ErrorResponse#test(ErrorResponse...)
-     *
-     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> onErrorMap(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends T> map)
-    {
+    default RestAction<T> onErrorMap(
+            @Nullable Predicate<? super Throwable> condition,
+            @Nonnull Function<? super Throwable, ? extends T> map) {
         Checks.notNull(map, "Function");
         return new MapErrorRestAction<>(this, condition == null ? (x) -> true : condition, map);
     }
@@ -910,13 +869,11 @@ public interface RestAction<T>
      *         If the mapping function is null
      *
      * @return RestAction with fallback handling
-     *
-     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> onErrorFlatMap(@Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
-    {
+    default RestAction<T> onErrorFlatMap(
+            @Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map) {
         return onErrorFlatMap(null, map);
     }
 
@@ -949,13 +906,12 @@ public interface RestAction<T>
      *
      * @see    ErrorResponse#test(Throwable)
      * @see    ErrorResponse#test(ErrorResponse...)
-     *
-     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> onErrorFlatMap(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
-    {
+    default RestAction<T> onErrorFlatMap(
+            @Nullable Predicate<? super Throwable> condition,
+            @Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map) {
         Checks.notNull(map, "Function");
         return new FlatMapErrorRestAction<>(this, condition == null ? (x) -> true : condition, map);
     }
@@ -981,18 +937,15 @@ public interface RestAction<T>
      *
      * @param  flatMap
      *         The mapping function to apply to the action result, must return a RestAction
-     *
      * @param  <O>
      *         The target output type
      *
      * @return RestAction for the mapped type
-     *
-     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
-    default <O> RestAction<O> flatMap(@Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
-    {
+    default <O> RestAction<O> flatMap(
+            @Nonnull Function<? super T, ? extends RestAction<O>> flatMap) {
         return flatMap(null, flatMap);
     }
 
@@ -1024,7 +977,6 @@ public interface RestAction<T>
      *         A condition predicate that decides whether to apply the flat map operator or not
      * @param  flatMap
      *         The mapping function to apply to the action result, must return a RestAction
-     *
      * @param  <O>
      *         The target output type
      *
@@ -1032,13 +984,12 @@ public interface RestAction<T>
      *
      * @see    #flatMap(Function)
      * @see    #map(Function)
-     *
-     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
-    default <O> RestAction<O> flatMap(@Nullable Predicate<? super T> condition, @Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
-    {
+    default <O> RestAction<O> flatMap(
+            @Nullable Predicate<? super T> condition,
+            @Nonnull Function<? super T, ? extends RestAction<O>> flatMap) {
         Checks.notNull(flatMap, "Function");
         return new FlatMapRestAction<>(this, condition, flatMap);
     }
@@ -1063,13 +1014,12 @@ public interface RestAction<T>
      *         If null is provided or you tried to combine an action with itself
      *
      * @return Combined RestAction
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default <U, O> RestAction<O> and(@Nonnull RestAction<U> other, @Nonnull BiFunction<? super T, ? super U, ? extends O> accumulator)
-    {
+    default <U, O> RestAction<O> and(
+            @Nonnull RestAction<U> other,
+            @Nonnull BiFunction<? super T, ? super U, ? extends O> accumulator) {
         Checks.notNull(other, "RestAction");
         Checks.notNull(accumulator, "Accumulator");
         return new CombineRestAction<>(this, other, accumulator);
@@ -1090,13 +1040,10 @@ public interface RestAction<T>
      *         If null is provided or you tried to combine an action with itself
      *
      * @return Combined RestAction with empty result
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default <U> RestAction<Void> and(@Nonnull RestAction<U> other)
-    {
+    default <U> RestAction<Void> and(@Nonnull RestAction<U> other) {
         return and(other, (a, b) -> null);
     }
 
@@ -1118,14 +1065,12 @@ public interface RestAction<T>
      *
      * @see    #allOf(RestAction, RestAction[])
      * @see    #and(RestAction, BiFunction)
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked")
-    default RestAction<List<T>> zip(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other)
-    {
+    default RestAction<List<T>> zip(
+            @Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other) {
         Checks.notNull(first, "RestAction");
         Checks.noneNull(other, "RestAction");
         List<RestAction<? extends T>> list = new ArrayList<>();
@@ -1157,13 +1102,10 @@ public interface RestAction<T>
      * @return RestAction with delay
      *
      * @see    #queueAfter(long, TimeUnit)
-     *
-     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> delay(@Nonnull Duration duration)
-    {
+    default RestAction<T> delay(@Nonnull Duration duration) {
         return delay(duration, null);
     }
 
@@ -1191,13 +1133,11 @@ public interface RestAction<T>
      * @return RestAction with delay
      *
      * @see    #queueAfter(long, TimeUnit, ScheduledExecutorService)
-     *
-     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> delay(@Nonnull Duration duration, @Nullable ScheduledExecutorService scheduler)
-    {
+    default RestAction<T> delay(
+            @Nonnull Duration duration, @Nullable ScheduledExecutorService scheduler) {
         Checks.notNull(duration, "Duration");
         return new DelayRestAction<>(this, TimeUnit.MILLISECONDS, duration.toMillis(), scheduler);
     }
@@ -1226,13 +1166,10 @@ public interface RestAction<T>
      * @return RestAction with delay
      *
      * @see    #queueAfter(long, TimeUnit)
-     *
-     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> delay(long delay, @Nonnull TimeUnit unit)
-    {
+    default RestAction<T> delay(long delay, @Nonnull TimeUnit unit) {
         return delay(delay, unit, null);
     }
 
@@ -1262,13 +1199,11 @@ public interface RestAction<T>
      * @return RestAction with delay
      *
      * @see    #queueAfter(long, TimeUnit, ScheduledExecutorService)
-     *
-     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> delay(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService scheduler)
-    {
+    default RestAction<T> delay(
+            long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService scheduler) {
         Checks.notNull(unit, "TimeUnit");
         return new DelayRestAction<>(this, unit, delay, scheduler);
     }
@@ -1298,8 +1233,7 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit)
-    {
+    default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit) {
         return submitAfter(delay, unit, null);
     }
 
@@ -1329,20 +1263,21 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor)
-    {
+    default DelayedCompletableFuture<T> submitAfter(
+            long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor) {
         Checks.notNull(unit, "TimeUnit");
-        if (executor == null)
+        if (executor == null) {
             executor = getJDA().getRateLimitPool();
-        return DelayedCompletableFuture.make(executor, delay, unit,
-                (task) -> {
-                    final Consumer<? super Throwable> onFailure;
-                    if (isPassContext())
-                        onFailure = ContextException.here(task::completeExceptionally);
-                    else
-                        onFailure = task::completeExceptionally;
-                    return new ContextRunnable<T>(() -> queue(task::complete, onFailure));
-                });
+        }
+        return DelayedCompletableFuture.make(executor, delay, unit, (task) -> {
+            Consumer<? super Throwable> onFailure;
+            if (isPassContext()) {
+                onFailure = ContextException.here(task::completeExceptionally);
+            } else {
+                onFailure = task::completeExceptionally;
+            }
+            return new ContextRunnable<T>(() -> queue(task::complete, onFailure));
+        });
     }
 
     /**
@@ -1365,16 +1300,12 @@ public interface RestAction<T>
      */
     @Blocking
     @UnknownNullability
-    default T completeAfter(long delay, @Nonnull TimeUnit unit)
-    {
+    default T completeAfter(long delay, @Nonnull TimeUnit unit) {
         Checks.notNull(unit, "TimeUnit");
-        try
-        {
+        try {
             unit.sleep(delay);
             return complete();
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -1403,8 +1334,7 @@ public interface RestAction<T>
      *         representing the delayed operation
      */
     @Nonnull
-    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit)
-    {
+    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit) {
         return queueAfter(delay, unit, null, null, null);
     }
 
@@ -1435,8 +1365,8 @@ public interface RestAction<T>
      *         representing the delayed operation
      */
     @Nonnull
-    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success)
-    {
+    default ScheduledFuture<?> queueAfter(
+            long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success) {
         return queueAfter(delay, unit, success, null, null);
     }
 
@@ -1469,8 +1399,11 @@ public interface RestAction<T>
      * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
     @Nonnull
-    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
-    {
+    default ScheduledFuture<?> queueAfter(
+            long delay,
+            @Nonnull TimeUnit unit,
+            @Nullable Consumer<? super T> success,
+            @Nullable Consumer<? super Throwable> failure) {
         return queueAfter(delay, unit, success, failure, null);
     }
 
@@ -1500,8 +1433,8 @@ public interface RestAction<T>
      *         representing the delayed operation
      */
     @Nonnull
-    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor)
-    {
+    default ScheduledFuture<?> queueAfter(
+            long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor) {
         return queueAfter(delay, unit, null, null, executor);
     }
 
@@ -1534,8 +1467,11 @@ public interface RestAction<T>
      *         representing the delayed operation
      */
     @Nonnull
-    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable ScheduledExecutorService executor)
-    {
+    default ScheduledFuture<?> queueAfter(
+            long delay,
+            @Nonnull TimeUnit unit,
+            @Nullable Consumer<? super T> success,
+            @Nullable ScheduledExecutorService executor) {
         return queueAfter(delay, unit, success, null, executor);
     }
 
@@ -1570,17 +1506,23 @@ public interface RestAction<T>
      * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
     @Nonnull
-    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure, @Nullable ScheduledExecutorService executor)
-    {
+    default ScheduledFuture<?> queueAfter(
+            long delay,
+            @Nonnull TimeUnit unit,
+            @Nullable Consumer<? super T> success,
+            @Nullable Consumer<? super Throwable> failure,
+            @Nullable ScheduledExecutorService executor) {
         Checks.notNull(unit, "TimeUnit");
-        if (executor == null)
+        if (executor == null) {
             executor = getJDA().getRateLimitPool();
+        }
 
-        final Consumer<? super Throwable> onFailure;
-        if (isPassContext())
+        Consumer<? super Throwable> onFailure;
+        if (isPassContext()) {
             onFailure = ContextException.here(failure == null ? getDefaultFailure() : failure);
-        else
+        } else {
             onFailure = failure;
+        }
 
         Runnable task = new ContextRunnable<Void>(() -> queue(success, onFailure));
         return executor.schedule(task, delay, unit);

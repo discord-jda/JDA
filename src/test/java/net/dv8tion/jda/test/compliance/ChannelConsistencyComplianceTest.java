@@ -32,31 +32,31 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-public class ChannelConsistencyComplianceTest
-{
-    private static Set<String> getMethodNames(Class<?> clazz)
-    {
-        return Arrays.stream(clazz.getDeclaredMethods()).map(Method::getName).collect(Collectors.toSet());
+public class ChannelConsistencyComplianceTest {
+    private static Set<String> getMethodNames(Class<?> clazz) {
+        return Arrays.stream(clazz.getDeclaredMethods())
+                .map(Method::getName)
+                .collect(Collectors.toSet());
     }
 
-    private static String getChannelName(ChannelType type)
-    {
+    private static String getChannelName(ChannelType type) {
         return type.name().charAt(0) + type.name().substring(1).toLowerCase(Locale.ROOT);
     }
 
     @Test
-    void checkCreateChannelMethods()
-    {
+    void checkCreateChannelMethods() {
         Set<String> guildMethods = getMethodNames(Guild.class);
 
         EnumSet<ChannelType> creatable = EnumSet.complementOf(EnumSet.of(
-            ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
-            ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
-            ChannelType.UNKNOWN
-        ));
+                ChannelType.PRIVATE,
+                ChannelType.GROUP,
+                ChannelType.CATEGORY,
+                ChannelType.GUILD_PUBLIC_THREAD,
+                ChannelType.GUILD_PRIVATE_THREAD,
+                ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.UNKNOWN));
 
-        for (ChannelType type : creatable)
-        {
+        for (ChannelType type : creatable) {
             String channelName = getChannelName(type);
             String methodName = "create" + channelName + "Channel";
             assertThat(guildMethods).contains(methodName);
@@ -64,8 +64,7 @@ public class ChannelConsistencyComplianceTest
 
         Set<String> categoryMethods = getMethodNames(Category.class);
 
-        for (ChannelType type : creatable)
-        {
+        for (ChannelType type : creatable) {
             String channelName = getChannelName(type);
             String methodName = "create" + channelName + "Channel";
             assertThat(categoryMethods).contains(methodName);
@@ -73,19 +72,20 @@ public class ChannelConsistencyComplianceTest
     }
 
     @Test
-    void checkCacheAccessMethods()
-    {
+    void checkCacheAccessMethods() {
         Set<String> jdaMethods = getMethodNames(IGuildChannelContainer.class);
         Set<String> categoryMethods = getMethodNames(Category.class);
 
         EnumSet<ChannelType> cacheable = EnumSet.complementOf(EnumSet.of(
-            ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
-            ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
-            ChannelType.UNKNOWN
-        ));
+                ChannelType.PRIVATE,
+                ChannelType.GROUP,
+                ChannelType.CATEGORY,
+                ChannelType.GUILD_PUBLIC_THREAD,
+                ChannelType.GUILD_PRIVATE_THREAD,
+                ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.UNKNOWN));
 
-        for (ChannelType type : cacheable)
-        {
+        for (ChannelType type : cacheable) {
             String channelName = getChannelName(type);
 
             String methodName = "get" + channelName + "ChannelCache";
@@ -104,21 +104,23 @@ public class ChannelConsistencyComplianceTest
     }
 
     @Test
-    void checkManagerExists()
-    {
+    void checkManagerExists() {
         EnumSet<ChannelType> editable = EnumSet.complementOf(EnumSet.of(
-            ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
-            ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
-            ChannelType.UNKNOWN
-        ));
+                ChannelType.PRIVATE,
+                ChannelType.GROUP,
+                ChannelType.CATEGORY,
+                ChannelType.GUILD_PUBLIC_THREAD,
+                ChannelType.GUILD_PRIVATE_THREAD,
+                ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.UNKNOWN));
 
-        for (ChannelType type : editable)
-        {
+        for (ChannelType type : editable) {
             String channelName = getChannelName(type);
 
-            assertThatCode(() ->
-                Class.forName("net.dv8tion.jda.api.managers.channel.concrete." + channelName + "ChannelManager")
-            ).as("Missing manager interface for ChannelType." + type).doesNotThrowAnyException();
+            assertThatCode(() -> Class.forName("net.dv8tion.jda.api.managers.channel.concrete."
+                            + channelName + "ChannelManager"))
+                    .as("Missing manager interface for ChannelType." + type)
+                    .doesNotThrowAnyException();
         }
     }
 }

@@ -43,8 +43,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link Category}</li>
  * </ul>
  */
-public interface ChannelUnion extends Channel
-{
+public interface ChannelUnion extends Channel {
     /**
      * Casts this union to a {@link PrivateChannel}.
      * This method exists for developer discoverability.

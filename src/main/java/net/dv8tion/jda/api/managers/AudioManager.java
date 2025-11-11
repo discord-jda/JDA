@@ -31,12 +31,12 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * AudioManager deals with creating, managing and severing audio connections to
@@ -44,8 +44,7 @@ import java.util.EnumSet;
  *
  * @see Guild#getAudioManager()
  */
-public interface AudioManager
-{
+public interface AudioManager {
     long DEFAULT_CONNECTION_TIMEOUT = 10000;
     Logger LOG = JDALogger.getLog(AudioManager.class);
 
@@ -96,10 +95,10 @@ public interface AudioManager
      * @throws IllegalArgumentException
      *         If the provided collection is null or empty
      *
-     * @incubating Discord has not officially confirmed that this feature will be available to bots
-     *
      * @see    #getSpeakingMode()
      * @see    #setSpeakingMode(SpeakingMode...)
+     *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
      */
     @Incubating
     void setSpeakingMode(@Nonnull Collection<SpeakingMode> mode);
@@ -115,13 +114,12 @@ public interface AudioManager
      * @throws IllegalArgumentException
      *         If the provided array is null or empty
      *
-     * @incubating Discord has not officially confirmed that this feature will be available to bots
-     *
      * @see    #getSpeakingMode()
+     *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
      */
     @Incubating
-    default void setSpeakingMode(@Nonnull SpeakingMode... mode)
-    {
+    default void setSpeakingMode(@Nonnull SpeakingMode... mode) {
         Checks.notNull(mode, "Speaking Mode");
         setSpeakingMode(Arrays.asList(mode));
     }
@@ -133,9 +131,9 @@ public interface AudioManager
      *
      * @return The current speaking mode, represented in an {@link EnumSet}
      *
-     * @incubating Discord has not officially confirmed that this feature will be available to bots
-     *
      * @see    #setSpeakingMode(Collection)
+     *
+     * @incubating Discord has not officially confirmed that this feature will be available to bots
      */
     @Nonnull
     @Incubating

@@ -23,27 +23,32 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 
-public class ScheduledEventCreateHandler extends SocketHandler
-{
-    public ScheduledEventCreateHandler(JDAImpl api)
-    {
+public class ScheduledEventCreateHandler extends SocketHandler {
+    public ScheduledEventCreateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
+    protected Long handleInternally(DataObject content) {
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) {
             return null;
+        }
         long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
-            EventCache.LOG.debug("Caching SCHEDULED_EVENT_CREATE for uncached guild with id {}", guildId);
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+        if (guild == null) {
+            EventCache.LOG.debug(
+                    "Caching SCHEDULED_EVENT_CREATE for uncached guild with id {}", guildId);
+            getJDA().getEventCache()
+                    .cache(
+                            EventCache.Type.GUILD,
+                            guildId,
+                            responseNumber,
+                            allContent,
+                            this::handle);
             return null;
         }
 

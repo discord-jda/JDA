@@ -23,13 +23,11 @@ import javax.annotation.Nonnull;
 /**
  * Represents a packet of User specific audio.
  */
-public class UserAudio
-{
+public class UserAudio {
     protected User user;
     protected short[] audioData;
 
-    public UserAudio(@Nonnull User user, @Nonnull short[] audioData)
-    {
+    public UserAudio(@Nonnull User user, @Nonnull short[] audioData) {
         this.user = user;
         this.audioData = audioData;
     }
@@ -40,8 +38,7 @@ public class UserAudio
      * @return Never-null {@link net.dv8tion.jda.api.entities.User User} object.
      */
     @Nonnull
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 
@@ -58,8 +55,7 @@ public class UserAudio
      * @return Never-null byte array of PCM data defined by {@link net.dv8tion.jda.api.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioReceiveHandler.OUTPUT_FORMAT}
      */
     @Nonnull
-    public byte[] getAudioData(double volume)
-    {
+    public byte[] getAudioData(double volume) {
         return OpusPacket.getAudioData(audioData, volume);
     }
 }

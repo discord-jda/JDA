@@ -35,16 +35,20 @@ import javax.annotation.Nullable;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public abstract class GenericGuildStickerUpdateEvent<T> extends GenericGuildStickerEvent implements UpdateEvent<GuildSticker, T>
-{
+public abstract class GenericGuildStickerUpdateEvent<T> extends GenericGuildStickerEvent
+        implements UpdateEvent<GuildSticker, T> {
     protected final String identifier;
     protected final T previous;
     protected final T next;
 
-    public GenericGuildStickerUpdateEvent(@Nonnull JDA api, long responseNumber,
-                                          @Nonnull Guild guild, @Nonnull GuildSticker sticker,
-                                          @Nonnull String identifier, T oldValue, T newValue)
-    {
+    public GenericGuildStickerUpdateEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull GuildSticker sticker,
+            @Nonnull String identifier,
+            T oldValue,
+            T newValue) {
         super(api, responseNumber, guild, sticker);
         this.identifier = identifier;
         this.previous = oldValue;
@@ -53,29 +57,25 @@ public abstract class GenericGuildStickerUpdateEvent<T> extends GenericGuildStic
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nonnull
     @Override
-    public GuildSticker getEntity()
-    {
+    public GuildSticker getEntity() {
         return getSticker();
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 }

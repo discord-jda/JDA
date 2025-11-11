@@ -32,22 +32,19 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ComponentSerializerTest extends AbstractComponentTest
-{
+public class ComponentSerializerTest extends AbstractComponentTest {
     @MethodSource("getSerializerTestCases")
     @ParameterizedTest
-    void testSerializer(Component component)
-    {
+    void testSerializer(Component component) {
         ComponentSerializer serializer = new ComponentSerializer();
 
         DataObject dataObject = serializer.serialize(component);
         List<FileUpload> fileUploads = serializer.getFileUploads(component);
 
         assertSerialization(
-            serializer,
-            Collections.singletonList(component),
-            component.getType().name()
-        );
+                serializer,
+                Collections.singletonList(component),
+                component.getType().name());
 
         ComponentDeserializer deserializer = new ComponentDeserializer(fileUploads);
         Component deserialized = deserializer.deserializeAs(Component.class, dataObject);
@@ -57,15 +54,13 @@ public class ComponentSerializerTest extends AbstractComponentTest
 
     @MethodSource("getSerializerTestCases")
     @ParameterizedTest
-    void testToStringMethods(Component component)
-    {
+    void testToStringMethods(Component component) {
         assertWithSnapshot(component.toString(), component.getType().toString());
     }
 
-    static Stream<Arguments> getSerializerTestCases()
-    {
+    static Stream<Arguments> getSerializerTestCases() {
         return Arrays.stream(Component.Type.values())
-            .map(type -> ComponentTestData.getMinimalComponent(Component.class, type))
-            .map(Arguments::of);
+                .map(type -> ComponentTestData.getMinimalComponent(Component.class, type))
+                .map(Arguments::of);
     }
 }

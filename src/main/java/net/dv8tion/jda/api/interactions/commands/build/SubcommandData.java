@@ -28,20 +28,21 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+
 /**
  * Builder for a Slash-Command subcommand.
  */
-public class SubcommandData implements SerializableData
-{
+public class SubcommandData implements SerializableData {
     protected final List<OptionData> options = new ArrayList<>(CommandData.MAX_OPTIONS);
     protected String name, description;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
+    private final LocalizationMap descriptionLocalizations =
+            new LocalizationMap(this::checkDescription);
     private boolean allowRequired = true;
 
     /**
@@ -59,21 +60,18 @@ public class SubcommandData implements SerializableData
      *             <li>The description must be 1-100 characters long</li>
      *         </ul>
      */
-    public SubcommandData(@Nonnull String name, @Nonnull String description)
-    {
+    public SubcommandData(@Nonnull String name, @Nonnull String description) {
         setName(name);
         setDescription(description);
     }
 
-    protected void checkName(@Nonnull String name)
-    {
+    protected void checkName(@Nonnull String name) {
         Checks.inRange(name, 1, 32, "Name");
         Checks.isLowercase(name, "Name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
     }
 
-    protected void checkDescription(@Nonnull String description)
-    {
+    protected void checkDescription(@Nonnull String description) {
         Checks.inRange(description, 1, 100, "Description");
     }
 
@@ -89,8 +87,7 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData setName(@Nonnull String name)
-    {
+    public SubcommandData setName(@Nonnull String name) {
         checkName(name);
         this.name = name;
         return this;
@@ -101,7 +98,6 @@ public class SubcommandData implements SerializableData
      *
      * @param  locale
      *         The locale to associate the translated name with
-     *
      * @param  name
      *         The translated name to put
      *
@@ -116,9 +112,8 @@ public class SubcommandData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
-    {
-        //Checks are done in LocalizationMap
+    public SubcommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
+        // Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
         return this;
     }
@@ -139,9 +134,8 @@ public class SubcommandData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
-    {
-        //Checks are done in LocalizationMap
+    public SubcommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map) {
+        // Checks are done in LocalizationMap
         nameLocalizations.setTranslations(map);
         return this;
     }
@@ -158,8 +152,7 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData setDescription(@Nonnull String description)
-    {
+    public SubcommandData setDescription(@Nonnull String description) {
         checkDescription(description);
         this.description = description;
         return this;
@@ -170,7 +163,6 @@ public class SubcommandData implements SerializableData
      *
      * @param  locale
      *         The locale to associate the translated description with
-     *
      * @param  description
      *         The translated description to put
      *
@@ -185,9 +177,9 @@ public class SubcommandData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
-    {
-        //Checks are done in LocalizationMap
+    public SubcommandData setDescriptionLocalization(
+            @Nonnull DiscordLocale locale, @Nonnull String description) {
+        // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
         return this;
     }
@@ -208,9 +200,8 @@ public class SubcommandData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
-    {
-        //Checks are done in LocalizationMap
+    public SubcommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map) {
+        // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(map);
         return this;
     }
@@ -235,8 +226,7 @@ public class SubcommandData implements SerializableData
      *
      * @return True, if any options were removed
      */
-    public boolean removeOptions(@Nonnull Predicate<? super OptionData> condition)
-    {
+    public boolean removeOptions(@Nonnull Predicate<? super OptionData> condition) {
         Checks.notNull(condition, "Condition");
         return options.removeIf(condition);
     }
@@ -249,8 +239,7 @@ public class SubcommandData implements SerializableData
      *
      * @return True, if any options were removed
      */
-    public boolean removeOptionByName(@Nonnull String name)
-    {
+    public boolean removeOptionByName(@Nonnull String name) {
         return removeOptions(option -> option.getName().equals(name));
     }
 
@@ -273,22 +262,33 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData addOptions(@Nonnull OptionData... options)
-    {
+    public SubcommandData addOptions(@Nonnull OptionData... options) {
         Checks.noneNull(options, "Option");
-        Checks.check(options.length + this.options.size() <= CommandData.MAX_OPTIONS, "Cannot have more than %d options for a subcommand!", CommandData.MAX_OPTIONS);
+        Checks.check(
+                options.length + this.options.size() <= CommandData.MAX_OPTIONS,
+                "Cannot have more than %d options for a subcommand!",
+                CommandData.MAX_OPTIONS);
         boolean allowRequired = this.allowRequired;
-        for (OptionData option : options)
-        {
-            Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand to a subcommand!");
-            Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group to a subcommand!");
-            Checks.check(allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
-            allowRequired = option.isRequired(); // prevent adding required options after non-required options
+        for (OptionData option : options) {
+            Checks.check(
+                    option.getType() != OptionType.SUB_COMMAND,
+                    "Cannot add a subcommand to a subcommand!");
+            Checks.check(
+                    option.getType() != OptionType.SUB_COMMAND_GROUP,
+                    "Cannot add a subcommand group to a subcommand!");
+            Checks.check(
+                    allowRequired || !option.isRequired(),
+                    "Cannot add required options after non-required options!");
+            allowRequired =
+                    option.isRequired(); // prevent adding required options after non-required
+            // options
         }
 
-        Checks.checkUnique(Stream.concat(getOptions().stream(), Arrays.stream(options)).map(OptionData::getName),
-            "Cannot have multiple options with the same name. Name: \"%s\" appeared %d times!",
-            (count, value) -> new Object[]{ value, count });
+        Checks.checkUnique(
+                Stream.concat(getOptions().stream(), Arrays.stream(options))
+                        .map(OptionData::getName),
+                "Cannot have multiple options with the same name. Name: \"%s\" appeared %d times!",
+                (count, value) -> new Object[] {value, count});
 
         this.allowRequired = allowRequired;
         this.options.addAll(Arrays.asList(options));
@@ -315,8 +315,7 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData addOptions(@Nonnull Collection<? extends OptionData> options)
-    {
+    public SubcommandData addOptions(@Nonnull Collection<? extends OptionData> options) {
         Checks.noneNull(options, "Options");
         return addOptions(options.toArray(new OptionData[0]));
     }
@@ -350,8 +349,12 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required, boolean autoComplete)
-    {
+    public SubcommandData addOption(
+            @Nonnull OptionType type,
+            @Nonnull String name,
+            @Nonnull String description,
+            boolean required,
+            boolean autoComplete) {
         return addOptions(new OptionData(type, name, description)
                 .setRequired(required)
                 .setAutoComplete(autoComplete));
@@ -382,8 +385,11 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
-    {
+    public SubcommandData addOption(
+            @Nonnull OptionType type,
+            @Nonnull String name,
+            @Nonnull String description,
+            boolean required) {
         return addOption(type, name, description, required, false);
     }
 
@@ -411,8 +417,8 @@ public class SubcommandData implements SerializableData
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
-    {
+    public SubcommandData addOption(
+            @Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         return addOption(type, name, description, false);
     }
 
@@ -423,8 +429,7 @@ public class SubcommandData implements SerializableData
      */
     @Nonnull
     @Unmodifiable
-    public List<OptionData> getOptions()
-    {
+    public List<OptionData> getOptions() {
         return Collections.unmodifiableList(options);
     }
 
@@ -434,8 +439,7 @@ public class SubcommandData implements SerializableData
      * @return The name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -445,8 +449,7 @@ public class SubcommandData implements SerializableData
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
     @Nonnull
-    public LocalizationMap getNameLocalizations()
-    {
+    public LocalizationMap getNameLocalizations() {
         return nameLocalizations;
     }
 
@@ -456,8 +459,7 @@ public class SubcommandData implements SerializableData
      * @return The description
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -467,15 +469,13 @@ public class SubcommandData implements SerializableData
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */
     @Nonnull
-    public LocalizationMap getDescriptionLocalizations()
-    {
+    public LocalizationMap getDescriptionLocalizations() {
         return descriptionLocalizations;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty()
                 .put("type", OptionType.SUB_COMMAND.getKey())
                 .put("name", name)
@@ -500,18 +500,16 @@ public class SubcommandData implements SerializableData
      * @return The parsed SubcommandData instance, which can be further configured through setters
      */
     @Nonnull
-    public static SubcommandData fromData(@Nonnull DataObject json)
-    {
+    public static SubcommandData fromData(@Nonnull DataObject json) {
         String name = json.getString("name");
         String description = json.getString("description");
         SubcommandData sub = new SubcommandData(name, description);
-        json.optArray("options").ifPresent(arr ->
-                arr.stream(DataArray::getObject)
-                        .map(OptionData::fromData)
-                        .forEach(sub::addOptions)
-        );
+        json.optArray("options").ifPresent(arr -> arr.stream(DataArray::getObject)
+                .map(OptionData::fromData)
+                .forEach(sub::addOptions));
         sub.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
-        sub.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
+        sub.setDescriptionLocalizations(
+                LocalizationUtils.mapFromProperty(json, "description_localizations"));
 
         return sub;
     }
@@ -528,16 +526,13 @@ public class SubcommandData implements SerializableData
      * @return An instance of SubCommandData
      */
     @Nonnull
-    public static SubcommandData fromSubcommand(@Nonnull Command.Subcommand subcommand)
-    {
+    public static SubcommandData fromSubcommand(@Nonnull Command.Subcommand subcommand) {
         Checks.notNull(subcommand, "Subcommand");
         SubcommandData data = new SubcommandData(subcommand.getName(), subcommand.getDescription());
         data.setNameLocalizations(subcommand.getNameLocalizations().toMap());
-        data.setDescriptionLocalizations(subcommand.getDescriptionLocalizations().toMap());
-        subcommand.getOptions()
-                .stream()
-                .map(OptionData::fromOption)
-                .forEach(data::addOptions);
+        data.setDescriptionLocalizations(
+                subcommand.getDescriptionLocalizations().toMap());
+        subcommand.getOptions().stream().map(OptionData::fromOption).forEach(data::addOptions);
         return data;
     }
 }

@@ -23,8 +23,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.*;
+
+import javax.annotation.Nonnull;
 
 /**
  * An implementation of a Least-Recently-Used cache.
@@ -53,8 +54,7 @@ import java.util.*;
  *
  * @see MemberCachePolicy#lru(int)
  */
-public class LRUMemberCachePolicy implements MemberCachePolicy
-{
+public class LRUMemberCachePolicy implements MemberCachePolicy {
     private static final long EPOCH_SECONDS = System.currentTimeMillis() / 1000;
 
     private final int maxMembers;
@@ -78,13 +78,11 @@ public class LRUMemberCachePolicy implements MemberCachePolicy
      * @throws IllegalArgumentException
      *         If the provided maximum is not positive
      */
-    public LRUMemberCachePolicy(int maxMembers)
-    {
+    public LRUMemberCachePolicy(int maxMembers) {
         this(maxMembers, MemberCachePolicy.NONE);
     }
 
-    private LRUMemberCachePolicy(int maxMembers, @Nonnull MemberCachePolicy subPolicy)
-    {
+    private LRUMemberCachePolicy(int maxMembers, @Nonnull MemberCachePolicy subPolicy) {
         Checks.positive(maxMembers, "Max members");
         Checks.notNull(subPolicy, "MemberCachePolicy");
         this.maxMembers = maxMembers;
@@ -110,22 +108,19 @@ public class LRUMemberCachePolicy implements MemberCachePolicy
      * @return The same cache policy instance, with the new sub-policy
      */
     @Nonnull
-    public LRUMemberCachePolicy unloadUnless(@Nonnull MemberCachePolicy subPolicy)
-    {
+    public LRUMemberCachePolicy unloadUnless(@Nonnull MemberCachePolicy subPolicy) {
         Checks.notNull(subPolicy, "MemberCachePolicy");
         this.subPolicy = subPolicy;
         return this;
     }
 
     @Nonnull
-    public synchronized LRUMemberCachePolicy withActiveMemberCache(boolean enabled)
-    {
+    public synchronized LRUMemberCachePolicy withActiveMemberCache(boolean enabled) {
         return withActiveMemberCache(enabled ? this.maxMembers / 10 : 0);
     }
 
     @Nonnull
-    public synchronized LRUMemberCachePolicy withActiveMemberCache(int activityCount)
-    {
+    public synchronized LRUMemberCachePolicy withActiveMemberCache(int activityCount) {
         this.useActiveMemberCache = activityCount;
 
         if (this.useActiveMemberCache < 1) // disabled if 0
@@ -133,7 +128,8 @@ public class LRUMemberCachePolicy implements MemberCachePolicy
             // Move them all into the low activity cache
             Set<Member> moved = this.activeMemberCache.keySet();
 
-            // Add them in insertion order to the queue, since the insertion order represents oldest to newest
+            // Add them in insertion order to the queue, since the insertion order represents oldest
+            // to newest
             moved.forEach(this::cacheMember);
         }
 
@@ -143,24 +139,21 @@ public class LRUMemberCachePolicy implements MemberCachePolicy
     }
 
     @Override
-    public synchronized boolean cacheMember(@Nonnull Member member)
-    {
+    public synchronized boolean cacheMember(@Nonnull Member member) {
         int currentCount = this.counters.adjustOrPutValue(member, 1, 1);
 
-        if (this.useActiveMemberCache > 0)
-        {
+        if (this.useActiveMemberCache > 0) {
             // Check if this member is a high activity member or low activity member
 
             // If the active member cache already tracks this member, update their timestamp
-            if (this.activeMemberCache.containsKey(member))
-            {
+            if (this.activeMemberCache.containsKey(member)) {
                 this.activeMemberCache.put(member, now());
                 return true;
             }
 
-            // If the member is not tracked yet, promote them to high activity cache if they take up 10% of the queue
-            if (currentCount > this.useActiveMemberCache)
-            {
+            // If the member is not tracked yet, promote them to high activity cache if they take up
+            // 10% of the queue
+            if (currentCount > this.useActiveMemberCache) {
                 // This step has O(n) time complexity because it needs to iterate the entire queue
                 // Worst-case: 10 x maxMembers operations
                 this.queue.removeIf((node) -> member.equals(node.member));
@@ -169,7 +162,6 @@ public class LRUMemberCachePolicy implements MemberCachePolicy
                 return true;
             }
         }
-
 
         // Otherwise use the queue, which has O(1) time complexity
         this.queue.add(new MemberNode(member));
@@ -183,37 +175,32 @@ public class LRUMemberCachePolicy implements MemberCachePolicy
     /**
      * Removes the head of the queue, with a counter equal to 1.
      */
-    private void evictOldest()
-    {
+    private void evictOldest() {
         Member unloadable = null;
-        while (this.counters.size() + this.activeMemberCache.size() > this.maxMembers)
-        {
-            Iterator<Map.Entry<Member, Integer>> activeMemberIterator = this.activeMemberCache.entrySet().iterator();
-            Map.Entry<Member, Integer> oldestActive = activeMemberIterator.hasNext() ? activeMemberIterator.next() : null;
+        while (this.counters.size() + this.activeMemberCache.size() > this.maxMembers) {
+            Iterator<Map.Entry<Member, Integer>> activeMemberIterator =
+                    this.activeMemberCache.entrySet().iterator();
+            Map.Entry<Member, Integer> oldestActive =
+                    activeMemberIterator.hasNext() ? activeMemberIterator.next() : null;
 
             MemberNode removed = this.queue.poll();
-            if (removed == null || oldestActive != null && oldestActive.getValue() < removed.insertionTime)
-            {
+            if (removed == null
+                    || oldestActive != null && oldestActive.getValue() < removed.insertionTime) {
                 activeMemberIterator.remove();
                 unloadable = oldestActive.getKey();
-                if (removed != null)
+                if (removed != null) {
                     this.queue.addFirst(removed);
-            }
-            else
-            {
-                if (this.counters.get(removed.member) <= 1)
-                {
+                }
+            } else {
+                if (this.counters.get(removed.member) <= 1) {
                     this.counters.remove(removed.member);
                     unloadable = removed.member;
-                }
-                else
-                {
+                } else {
                     this.counters.adjustValue(removed.member, -1);
                 }
             }
 
-            if (unloadable != null && !this.subPolicy.cacheMember(unloadable))
-            {
+            if (unloadable != null && !this.subPolicy.cacheMember(unloadable)) {
                 unloadable.getGuild().unloadMember(unloadable.getIdLong());
             }
         }
@@ -222,35 +209,27 @@ public class LRUMemberCachePolicy implements MemberCachePolicy
     /**
      * Trims the queue by removing all elements with a count higher than 1.
      */
-    private void trimQueue()
-    {
-        while (!this.queue.isEmpty())
-        {
+    private void trimQueue() {
+        while (!this.queue.isEmpty()) {
             MemberNode head = this.queue.peek();
-            if (this.counters.get(head) > 1)
-            {
+            if (this.counters.get(head) > 1) {
                 this.counters.adjustValue(head.member, -1);
                 this.queue.poll();
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
     }
 
-    private static int now()
-    {
+    private static int now() {
         return (int) (System.currentTimeMillis() / 1000 - EPOCH_SECONDS);
     }
 
-    private static class MemberNode
-    {
+    private static class MemberNode {
         public final int insertionTime;
         public final Member member;
 
-        private MemberNode(Member member)
-        {
+        private MemberNode(Member member) {
             this.member = member;
             this.insertionTime = now();
         }

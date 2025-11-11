@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  * ActionTypes for {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntry} instances
  * <br>Found via {@link net.dv8tion.jda.api.audit.AuditLogEntry#getType() AuditLogEntry.getType()}
  */
-public enum ActionType
-{
+public enum ActionType {
     /**
      * An Administrator updated {@link net.dv8tion.jda.api.entities.Guild Guild} information.
      *
@@ -51,7 +50,6 @@ public enum ActionType
      * </ul>
      */
     GUILD_UPDATE(1, TargetType.GUILD),
-
 
     /**
      * An Administrator created a {@link GuildChannel GuildChannel}
@@ -154,11 +152,10 @@ public enum ActionType
      */
     CHANNEL_OVERRIDE_DELETE(15, TargetType.CHANNEL),
 
-
     /**
      * An Administrator has kicked a member.
      */
-    KICK( 20, TargetType.MEMBER),
+    KICK(20, TargetType.MEMBER),
 
     /**
      * An Administrator has pruned members for inactivity.
@@ -174,13 +171,12 @@ public enum ActionType
     /**
      * An Administrator has banned a user.
      */
-    BAN(  22, TargetType.MEMBER),
+    BAN(22, TargetType.MEMBER),
 
     /**
      * An Administrator has unbanned a user.
      */
     UNBAN(23, TargetType.MEMBER),
-
 
     /**
      * A {@link net.dv8tion.jda.api.entities.Member Member} was either updated by an administrator or
@@ -191,7 +187,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#MEMBER_NICK MEMBER_NICK}</li>
      * </ul>
      */
-    MEMBER_UPDATE(     24, TargetType.MEMBER),
+    MEMBER_UPDATE(24, TargetType.MEMBER),
 
     /**
      * An Administrator updated the roles of a member.
@@ -274,7 +270,6 @@ public enum ActionType
      */
     ROLE_DELETE(32, TargetType.ROLE),
 
-
     /**
      * Someone has created an {@link net.dv8tion.jda.api.entities.Invite Invite}.
      *
@@ -309,7 +304,6 @@ public enum ActionType
      * </ul>
      */
     INVITE_DELETE(42, TargetType.INVITE),
-
 
     /**
      * An Administrator has created a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
@@ -349,7 +343,6 @@ public enum ActionType
      * </ul>
      */
     WEBHOOK_REMOVE(52, TargetType.WEBHOOK),
-
 
     /**
      * An Administrator created an {@link RichCustomEmoji Custom Emoji}.
@@ -625,7 +618,7 @@ public enum ActionType
      *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
      * </ul>
      */
-    AUTO_MODERATION_FLAG_TO_CHANNEL(   144, TargetType.MEMBER),
+    AUTO_MODERATION_FLAG_TO_CHANNEL(144, TargetType.MEMBER),
 
     /**
      * An automod rule put a user in {@link Member#isTimedOut() timeout}
@@ -636,7 +629,7 @@ public enum ActionType
      *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
      * </ul>
      */
-    AUTO_MODERATION_MEMBER_TIMEOUT(    145, TargetType.MEMBER),
+    AUTO_MODERATION_MEMBER_TIMEOUT(145, TargetType.MEMBER),
 
     /**
      * A user updated the {@link IVoiceStatusChannel#getStatus() status} of a voice channel.
@@ -664,8 +657,7 @@ public enum ActionType
     private final int key;
     private final TargetType target;
 
-    ActionType(int key, TargetType target)
-    {
+    ActionType(int key, TargetType target) {
         this.key = key;
         this.target = target;
     }
@@ -675,8 +667,7 @@ public enum ActionType
      *
      * @return Raw key for this ActionType
      */
-    public int getKey()
-    {
+    public int getKey() {
         return key;
     }
 
@@ -687,18 +678,16 @@ public enum ActionType
      * @return {@link net.dv8tion.jda.api.audit.TargetType TargetType}
      */
     @Nonnull
-    public TargetType getTargetType()
-    {
+    public TargetType getTargetType() {
         return target;
     }
 
     @Nonnull
-    public static ActionType from(int key)
-    {
-        for (ActionType type : values())
-        {
-            if (type.key == key)
+    public static ActionType from(int key) {
+        for (ActionType type : values()) {
+            if (type.key == key) {
                 return type;
+            }
         }
         return UNKNOWN;
     }

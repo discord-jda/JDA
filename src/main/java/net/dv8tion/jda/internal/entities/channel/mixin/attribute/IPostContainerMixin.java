@@ -29,16 +29,16 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
 
-public interface IPostContainerMixin<T extends IPostContainerMixin<T>> extends IPostContainer, IThreadContainerMixin<T>
-{
+public interface IPostContainerMixin<T extends IPostContainerMixin<T>>
+        extends IPostContainer, IThreadContainerMixin<T> {
     @Nonnull
     @Override
     SortedSnowflakeCacheViewImpl<ForumTag> getAvailableTagCache();
 
     @Nonnull
     @Override
-    default ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message)
-    {
+    default ForumPostAction createForumPost(
+            @Nonnull String name, @Nonnull MessageCreateData message) {
         checkAttached();
         checkPermission(Permission.MESSAGE_SEND);
         return new ForumPostActionImpl(this, name, new MessageCreateBuilder().applyData(message));
@@ -46,22 +46,26 @@ public interface IPostContainerMixin<T extends IPostContainerMixin<T>> extends I
 
     @Nonnull
     @Override
-    default ThreadChannelAction createThreadChannel(@Nonnull String name)
-    {
-        throw new UnsupportedOperationException("You cannot create threads without a message payload in forum/media channels! Use createForumPost(...) instead.");
+    default ThreadChannelAction createThreadChannel(@Nonnull String name) {
+        throw new UnsupportedOperationException(
+                "You cannot create threads without a message payload in forum/media channels! Use createForumPost(...) instead.");
     }
 
     @Nonnull
     @Override
-    default ThreadChannelAction createThreadChannel(@Nonnull String name, @Nonnull String messageId)
-    {
-        throw new UnsupportedOperationException("You cannot create threads without a message payload in forum/media channels! Use createForumPost(...) instead.");
+    default ThreadChannelAction createThreadChannel(
+            @Nonnull String name, @Nonnull String messageId) {
+        throw new UnsupportedOperationException(
+                "You cannot create threads without a message payload in forum/media channels! Use createForumPost(...) instead.");
     }
 
     T setDefaultReaction(DataObject emoji);
+
     T setDefaultSortOrder(int defaultSortOrder);
+
     T setFlags(int flags);
 
     int getRawSortOrder();
+
     int getRawFlags();
 }

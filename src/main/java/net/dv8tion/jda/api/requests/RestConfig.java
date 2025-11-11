@@ -21,10 +21,11 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.Request;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Configuration for REST-request handling.
@@ -32,23 +33,25 @@ import java.util.function.Function;
  * <p>This can be used to replace the {@link #setRateLimiterFactory(Function) rate-limit handling}
  * or to use a different {@link #setBaseUrl(String) base url} for requests, e.g. for mocked HTTP responses or proxies.
  */
-public class RestConfig
-{
+public class RestConfig {
     /**
      * The User-Agent used by JDA for all REST-api requests.
      */
-    public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final String USER_AGENT =
+            "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     /**
      * The default base url used by JDA for all REST-api requests.
      * This URL uses the API version defined by {@link JDAInfo#DISCORD_REST_VERSION} (v{@value JDAInfo#DISCORD_REST_VERSION}).
      */
-    public static final String DEFAULT_BASE_URL = "https://discord.com/api/v" + JDAInfo.DISCORD_REST_VERSION + "/";
+    public static final String DEFAULT_BASE_URL =
+            "https://discord.com/api/v" + JDAInfo.DISCORD_REST_VERSION + "/";
 
     private String userAgent = USER_AGENT;
     private String baseUrl = DEFAULT_BASE_URL;
     private boolean relativeRateLimit = true;
     private Consumer<? super Request.Builder> customBuilder;
-    private Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> rateLimiter = SequentialRestRateLimiter::new;
+    private Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter>
+            rateLimiter = SequentialRestRateLimiter::new;
 
     /**
      * Whether to use {@code X-RateLimit-Reset-After} to determine the rate-limit backoff.
@@ -60,8 +63,7 @@ public class RestConfig
      * @return The current RestConfig for chaining convenience
      */
     @Nonnull
-    public RestConfig setRelativeRateLimit(boolean relativeRateLimit)
-    {
+    public RestConfig setRelativeRateLimit(boolean relativeRateLimit) {
         this.relativeRateLimit = relativeRateLimit;
         return this;
     }
@@ -79,8 +81,10 @@ public class RestConfig
      * @return The current RestConfig for chaining convenience
      */
     @Nonnull
-    public RestConfig setRateLimiterFactory(@Nonnull Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> rateLimiter)
-    {
+    public RestConfig setRateLimiterFactory(
+            @Nonnull
+                    Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter>
+                            rateLimiter) {
         Checks.notNull(rateLimiter, "RateLimiter");
         this.rateLimiter = rateLimiter;
         return this;
@@ -105,14 +109,16 @@ public class RestConfig
      * @return The current RestConfig for chaining convenience
      */
     @Nonnull
-    public RestConfig setBaseUrl(@Nonnull String baseUrl)
-    {
+    public RestConfig setBaseUrl(@Nonnull String baseUrl) {
         Checks.notEmpty(baseUrl, "URL");
-        Checks.check(baseUrl.length() > 4 && baseUrl.substring(0, 4).equalsIgnoreCase("http"), "URL must be HTTP");
-        if (baseUrl.endsWith("/"))
+        Checks.check(
+                baseUrl.length() > 4 && baseUrl.substring(0, 4).equalsIgnoreCase("http"),
+                "URL must be HTTP");
+        if (baseUrl.endsWith("/")) {
             this.baseUrl = baseUrl;
-        else
+        } else {
             this.baseUrl = baseUrl + "/";
+        }
         return this;
     }
 
@@ -127,12 +133,12 @@ public class RestConfig
      * @return The current RestConfig for chaining convenience
      */
     @Nonnull
-    public RestConfig setUserAgentSuffix(@Nullable String suffix)
-    {
-        if (suffix == null || Helpers.isBlank(suffix))
+    public RestConfig setUserAgentSuffix(@Nullable String suffix) {
+        if (suffix == null || Helpers.isBlank(suffix)) {
             this.userAgent = USER_AGENT;
-        else
+        } else {
             this.userAgent = USER_AGENT + " " + suffix;
+        }
         return this;
     }
 
@@ -154,8 +160,7 @@ public class RestConfig
      * @return The current RestConfig for chaining convenience
      */
     @Nonnull
-    public RestConfig setCustomBuilder(@Nullable Consumer<? super Request.Builder> customBuilder)
-    {
+    public RestConfig setCustomBuilder(@Nullable Consumer<? super Request.Builder> customBuilder) {
         this.customBuilder = customBuilder;
         return this;
     }
@@ -166,8 +171,7 @@ public class RestConfig
      * @return The user-agent
      */
     @Nonnull
-    public String getUserAgent()
-    {
+    public String getUserAgent() {
         return userAgent;
     }
 
@@ -177,8 +181,7 @@ public class RestConfig
      * @return The base-url
      */
     @Nonnull
-    public String getBaseUrl()
-    {
+    public String getBaseUrl() {
         return baseUrl;
     }
 
@@ -188,8 +191,8 @@ public class RestConfig
      * @return The rate-limiter
      */
     @Nonnull
-    public Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> getRateLimiterFactory()
-    {
+    public Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter>
+            getRateLimiterFactory() {
         return rateLimiter;
     }
 
@@ -199,8 +202,7 @@ public class RestConfig
      * @return The custom interceptor, or null if none is configured
      */
     @Nullable
-    public Consumer<? super Request.Builder> getCustomBuilder()
-    {
+    public Consumer<? super Request.Builder> getCustomBuilder() {
         return customBuilder;
     }
 
@@ -210,8 +212,7 @@ public class RestConfig
      *
      * @return True, if relative reset after is enabled
      */
-    public boolean isRelativeRateLimit()
-    {
+    public boolean isRelativeRateLimit() {
         return relativeRateLimit;
     }
 }

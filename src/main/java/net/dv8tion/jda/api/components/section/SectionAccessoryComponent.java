@@ -29,8 +29,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link Thumbnail}</li>
  * </ul>
  */
-public interface SectionAccessoryComponent extends Component
-{
+public interface SectionAccessoryComponent extends Component {
     @Nonnull
     @Override
     SectionAccessoryComponent withUniqueId(int uniqueId);

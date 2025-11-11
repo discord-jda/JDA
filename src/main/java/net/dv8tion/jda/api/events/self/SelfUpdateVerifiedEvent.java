@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code verified}
  */
-public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean>
-{
+public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "verified";
 
-    public SelfUpdateVerifiedEvent(@Nonnull JDA api, long responseNumber, boolean wasVerified)
-    {
+    public SelfUpdateVerifiedEvent(@Nonnull JDA api, long responseNumber, boolean wasVerified) {
         super(api, responseNumber, wasVerified, !wasVerified, IDENTIFIER);
     }
 
@@ -41,22 +39,19 @@ public class SelfUpdateVerifiedEvent extends GenericSelfUpdateEvent<Boolean>
      *
      * @return True, if this account was previously verified
      */
-    public boolean wasVerified()
-    {
+    public boolean wasVerified() {
         return getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue()
-    {
+    public Boolean getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue()
-    {
+    public Boolean getNewValue() {
         return super.getNewValue();
     }
 }

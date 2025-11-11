@@ -26,32 +26,33 @@ import static net.dv8tion.jda.internal.utils.Helpers.durationToString;
 import static net.dv8tion.jda.test.ChecksHelper.isNegativeError;
 import static net.dv8tion.jda.test.ChecksHelper.notPositiveError;
 
-public class DurationChecksAssertions extends AbstractChecksAssertions<Duration, DurationChecksAssertions>
-{
-    public DurationChecksAssertions(String name, ThrowingConsumer<Duration> callable)
-    {
+public class DurationChecksAssertions
+        extends AbstractChecksAssertions<Duration, DurationChecksAssertions> {
+    public DurationChecksAssertions(String name, ThrowingConsumer<Duration> callable) {
         super(name, callable);
     }
 
-    public DurationChecksAssertions checksNotNegative()
-    {
+    public DurationChecksAssertions checksNotNegative() {
         throwsFor(Duration.ofSeconds(-1), isNegativeError(name));
         return this;
     }
 
-    public DurationChecksAssertions checksPositive()
-    {
+    public DurationChecksAssertions checksPositive() {
         throwsFor(Duration.ofSeconds(-1), notPositiveError(name));
         throwsFor(Duration.ZERO, notPositiveError(name));
         return this;
     }
 
-    public DurationChecksAssertions checksNotLonger(Duration maxDuration, TimeUnit resolution)
-    {
+    public DurationChecksAssertions checksNotLonger(Duration maxDuration, TimeUnit resolution) {
         Duration input = maxDuration.plusSeconds(resolution.toSeconds(1));
-        throwsFor(input,
-            String.format(Locale.ROOT, "%s may not be longer than %s. Provided: %s",
-                name, durationToString(maxDuration, resolution), durationToString(input, resolution)));
+        throwsFor(
+                input,
+                String.format(
+                        Locale.ROOT,
+                        "%s may not be longer than %s. Provided: %s",
+                        name,
+                        durationToString(maxDuration, resolution),
+                        durationToString(input, resolution)));
         return this;
     }
 }

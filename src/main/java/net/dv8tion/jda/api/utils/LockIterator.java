@@ -20,10 +20,11 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.locks.Lock;
+
+import javax.annotation.Nonnull;
 
 /**
  * Simple implementation of a {@link ClosableIterator} that uses a lock.
@@ -46,55 +47,50 @@ import java.util.concurrent.locks.Lock;
  *
  * @param <T>
  *        The element type for this iterator
- *
- * @since  4.0.0
  */
-public class LockIterator<T> implements ClosableIterator<T>
-{
-    private final static Logger log = JDALogger.getLog(ClosableIterator.class);
+public class LockIterator<T> implements ClosableIterator<T> {
+    private static final Logger log = JDALogger.getLog(ClosableIterator.class);
     private final Iterator<? extends T> it;
     private Lock lock;
 
-    public LockIterator(@Nonnull Iterator<? extends T> it, Lock lock)
-    {
+    public LockIterator(@Nonnull Iterator<? extends T> it, Lock lock) {
         this.it = it;
         this.lock = lock;
     }
 
     @Override
-    public void close()
-    {
-        if (lock != null)
+    public void close() {
+        if (lock != null) {
             lock.unlock();
+        }
         lock = null;
     }
 
     @Override
-    public boolean hasNext()
-    {
-        if (lock == null)
+    public boolean hasNext() {
+        if (lock == null) {
             return false;
+        }
         boolean hasNext = it.hasNext();
-        if (!hasNext)
+        if (!hasNext) {
             close();
+        }
         return hasNext;
     }
 
     @Nonnull
     @Override
-    public T next()
-    {
-        if (lock == null)
+    public T next() {
+        if (lock == null) {
             throw new NoSuchElementException();
+        }
         return it.next();
     }
 
     @Override
-    @Deprecated //Deprecated in Java 9 because the finalization system is being changed/removed
-    protected void finalize()
-    {
-        if (lock != null)
-        {
+    @Deprecated // Deprecated in Java 9 because the finalization system is being changed/removed
+    protected void finalize() {
+        if (lock != null) {
             log.error("Finalizing without closing, performing force close on lock");
             close();
         }

@@ -24,22 +24,21 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * Interaction on a {@link Button} component.
  *
  * @see ButtonInteractionEvent
  */
-public interface ButtonInteraction extends ComponentInteraction
-{
+public interface ButtonInteraction extends ComponentInteraction {
     @Nonnull
     @Override
-    default Button getComponent()
-    {
+    default Button getComponent() {
         return getButton();
     }
 
@@ -66,18 +65,20 @@ public interface ButtonInteraction extends ComponentInteraction
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> editButton(@Nullable Button newButton)
-    {
-        final Message message = getMessage();
-        final MessageComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byUniqueId(getButton(), newButton));
+    default RestAction<Void> editButton(@Nullable Button newButton) {
+        Message message = getMessage();
+        MessageComponentTree newTree = message.getComponentTree()
+                .replace(ComponentReplacer.byUniqueId(getButton(), newButton));
 
-        if (isAcknowledged())
-            return getHook().editMessageComponentsById(message.getId(), newTree.getComponents())
+        if (isAcknowledged()) {
+            return getHook()
+                    .editMessageComponentsById(message.getId(), newTree.getComponents())
                     .useComponentsV2(message.isUsingComponentsV2())
                     .map(it -> null);
-        else
+        } else {
             return editComponents(newTree.getComponents())
                     .useComponentsV2(message.isUsingComponentsV2())
                     .map(it -> null);
+        }
     }
 }

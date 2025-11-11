@@ -33,12 +33,11 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public abstract class GenericEmojiEvent extends Event
-{
+public abstract class GenericEmojiEvent extends Event {
     protected final RichCustomEmoji emoji;
 
-    public GenericEmojiEvent(@Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji)
-    {
+    public GenericEmojiEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji) {
         super(api, responseNumber);
         this.emoji = emoji;
     }
@@ -49,8 +48,7 @@ public abstract class GenericEmojiEvent extends Event
      * @return The origin Guild
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return emoji.getGuild();
     }
 
@@ -60,8 +58,7 @@ public abstract class GenericEmojiEvent extends Event
      * @return The emoji
      */
     @Nonnull
-    public RichCustomEmoji getEmoji()
-    {
+    public RichCustomEmoji getEmoji() {
         return emoji;
     }
 
@@ -70,8 +67,7 @@ public abstract class GenericEmojiEvent extends Event
      *
      * @return True, if this emoji is managed by an integration
      */
-    public boolean isManaged()
-    {
+    public boolean isManaged() {
         return emoji.isManaged();
     }
 }

@@ -21,8 +21,9 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Activity Activity} order of a {@link net.dv8tion.jda.api.entities.User User} changes.
@@ -42,43 +43,42 @@ import java.util.List;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent
-{
+public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Activity>>
+        implements GenericUserPresenceEvent {
     public static final String IDENTIFIER = "activity_order";
 
     private final Member member;
 
-    public UserUpdateActivityOrderEvent(@Nonnull JDA api, long responseNumber, @Nonnull List<Activity> previous, @Nonnull Member member)
-    {
+    public UserUpdateActivityOrderEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull List<Activity> previous,
+            @Nonnull Member member) {
         super(api, responseNumber, member.getUser(), previous, member.getActivities(), IDENTIFIER);
         this.member = member;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return member.getGuild();
     }
 
     @Nonnull
     @Override
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 
     @Nonnull
     @Override
-    public List<Activity> getOldValue()
-    {
+    public List<Activity> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Activity> getNewValue()
-    {
+    public List<Activity> getNewValue() {
         return super.getNewValue();
     }
 }

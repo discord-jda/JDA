@@ -39,12 +39,11 @@ import javax.annotation.Nullable;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdatePrimaryGuildEvent extends GenericUserUpdateEvent<User.PrimaryGuild>
-{
+public class UserUpdatePrimaryGuildEvent extends GenericUserUpdateEvent<User.PrimaryGuild> {
     public static final String IDENTIFIER = "primary_guild";
 
-    public UserUpdatePrimaryGuildEvent(JDA api, long responseNumber, User user, User.PrimaryGuild oldPrimaryGuild)
-    {
+    public UserUpdatePrimaryGuildEvent(
+            JDA api, long responseNumber, User user, User.PrimaryGuild oldPrimaryGuild) {
         super(api, responseNumber, user, oldPrimaryGuild, user.getPrimaryGuild(), IDENTIFIER);
     }
 
@@ -54,8 +53,7 @@ public class UserUpdatePrimaryGuildEvent extends GenericUserUpdateEvent<User.Pri
      * @return The old primary guild
      */
     @Nullable
-    public User.PrimaryGuild getOldPrimaryGuild()
-    {
+    public User.PrimaryGuild getOldPrimaryGuild() {
         return getOldValue();
     }
 
@@ -65,8 +63,7 @@ public class UserUpdatePrimaryGuildEvent extends GenericUserUpdateEvent<User.Pri
      * @return The new primary guild
      */
     @Nullable
-    public User.PrimaryGuild getNewPrimaryGuild()
-    {
+    public User.PrimaryGuild getNewPrimaryGuild() {
         return getNewValue();
     }
 }

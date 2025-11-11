@@ -29,94 +29,83 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ActivityTest
-{
-    private static DataObject formatActivity(int type, String name, String state)
-    {
-        DataObject json = DataObject.empty()
-                .put("type", type);
+public class ActivityTest {
+    private static DataObject formatActivity(int type, String name, String state) {
+        DataObject json = DataObject.empty().put("type", type);
 
-        if (state != null)
+        if (state != null) {
             json.put("state", state);
-        if (name != null)
+        }
+        if (name != null) {
             json.put("name", name);
+        }
 
         return json;
     }
 
-    private static void assertEquals(DataObject expected, DataObject actual)
-    {
-        assertThat(actual)
-            .withRepresentation(new PrettyRepresentation())
-            .isEqualTo(expected);
+    private static void assertEquals(DataObject expected, DataObject actual) {
+        assertThat(actual).withRepresentation(new PrettyRepresentation()).isEqualTo(expected);
     }
 
     @Test
-    void activitySerializationTest()
-    {
+    void activitySerializationTest() {
         assertEquals(
-            formatActivity(0, "playing test", null),
-            PresenceImpl.getGameJson(Activity.playing("playing test"))
-        );
+                formatActivity(0, "playing test", null),
+                PresenceImpl.getGameJson(Activity.playing("playing test")));
         assertEquals(
-            formatActivity(0, "playing test", "playing state"),
-            PresenceImpl.getGameJson(Activity.playing("playing test").withState("playing state"))
-        );
+                formatActivity(0, "playing test", "playing state"),
+                PresenceImpl.getGameJson(
+                        Activity.playing("playing test").withState("playing state")));
 
         assertEquals(
-            formatActivity(1, "streaming test", null).put("url", "https://twitch.tv/discord"),
-            PresenceImpl.getGameJson(Activity.streaming("streaming test", "https://twitch.tv/discord"))
-        );
+                formatActivity(1, "streaming test", null).put("url", "https://twitch.tv/discord"),
+                PresenceImpl.getGameJson(
+                        Activity.streaming("streaming test", "https://twitch.tv/discord")));
         assertEquals(
-            formatActivity(1, "streaming test", "streaming state").put("url", "https://twitch.tv/discord"),
-            PresenceImpl.getGameJson(Activity.streaming("streaming test", "https://twitch.tv/discord").withState("streaming state"))
-        );
+                formatActivity(1, "streaming test", "streaming state")
+                        .put("url", "https://twitch.tv/discord"),
+                PresenceImpl.getGameJson(
+                        Activity.streaming("streaming test", "https://twitch.tv/discord")
+                                .withState("streaming state")));
 
         assertEquals(
-            formatActivity(2, "listening test", null),
-            PresenceImpl.getGameJson(Activity.listening("listening test"))
-        );
+                formatActivity(2, "listening test", null),
+                PresenceImpl.getGameJson(Activity.listening("listening test")));
         assertEquals(
-            formatActivity(2, "listening test", "listening state"),
-            PresenceImpl.getGameJson(Activity.listening("listening test").withState("listening state"))
-        );
+                formatActivity(2, "listening test", "listening state"),
+                PresenceImpl.getGameJson(
+                        Activity.listening("listening test").withState("listening state")));
 
         assertEquals(
-            formatActivity(3, "watching test", null),
-            PresenceImpl.getGameJson(Activity.watching("watching test"))
-        );
+                formatActivity(3, "watching test", null),
+                PresenceImpl.getGameJson(Activity.watching("watching test")));
         assertEquals(
-            formatActivity(3, "watching test", "watching state"),
-            PresenceImpl.getGameJson(Activity.watching("watching test").withState("watching state"))
-        );
+                formatActivity(3, "watching test", "watching state"),
+                PresenceImpl.getGameJson(
+                        Activity.watching("watching test").withState("watching state")));
 
         assertEquals(
-            formatActivity(4, "Custom Status", "custom status test"),
-            PresenceImpl.getGameJson(Activity.customStatus("custom status test"))
-        );
+                formatActivity(4, "Custom Status", "custom status test"),
+                PresenceImpl.getGameJson(Activity.customStatus("custom status test")));
         assertEquals(
-            formatActivity(4, "Custom Status", "custom status test"),
-            PresenceImpl.getGameJson(Activity.customStatus("custom status test").withState("should be ignored"))
-        );
+                formatActivity(4, "Custom Status", "custom status test"),
+                PresenceImpl.getGameJson(Activity.customStatus("custom status test")
+                        .withState("should be ignored")));
 
         assertEquals(
-            formatActivity(5, "competing test", null),
-            PresenceImpl.getGameJson(Activity.competing("competing test"))
-        );
+                formatActivity(5, "competing test", null),
+                PresenceImpl.getGameJson(Activity.competing("competing test")));
         assertEquals(
-            formatActivity(5, "competing test", "competing state"),
-            PresenceImpl.getGameJson(Activity.competing("competing test").withState("competing state"))
-        );
+                formatActivity(5, "competing test", "competing state"),
+                PresenceImpl.getGameJson(
+                        Activity.competing("competing test").withState("competing state")));
     }
 
     @Test
-    void activityBasicDeserializationTest()
-    {
-        Activity activity = EntityBuilder.createActivity(
-            DataObject.empty()
+    void activityBasicDeserializationTest() {
+        Activity activity = EntityBuilder.createActivity(DataObject.empty()
                 .put("type", 0) // playing
-                .put("name", "Games")
-        );
+                .put("name", "Games"));
 
         assertThat(activity.isRich()).isFalse();
         assertThat(activity.getType()).isEqualTo(Activity.ActivityType.PLAYING);
@@ -126,41 +115,41 @@ public class ActivityTest
     }
 
     @Test
-    void activityRichDeserializationTest()
-    {
-        Activity activity = EntityBuilder.createActivity(
-            DataObject.empty()
+    void activityRichDeserializationTest() {
+        Activity activity = EntityBuilder.createActivity(DataObject.empty()
                 .put("type", 0) // playing
                 .put("name", "Games")
-                .put("state", "Active")
-        );
+                .put("state", "Active"));
 
         assertThat(activity.isRich()).isFalse();
         assertThat(activity.getType()).isEqualTo(Activity.ActivityType.PLAYING);
-        assertThat(activity.getName()).isEqualTo("Games");;
+        assertThat(activity.getName()).isEqualTo("Games");
+        ;
         assertThat(activity.getState()).isEqualTo("Active");
         assertThat(activity.getUrl()).isNull();
 
-        activity = EntityBuilder.createActivity(
-            DataObject.empty()
+        activity = EntityBuilder.createActivity(DataObject.empty()
                 .put("type", 0) // playing
                 .put("name", "The Best Game Ever")
                 .put("state", "In a Group")
                 .put("details", "Playing 3v3 Control Point")
-                .put("party", DataObject.empty()
-                    .put("id", "1234")
-                    .put("size", DataArray.fromCollection(Arrays.asList(3, 6))))
-                .put("timestamps", DataObject.empty()
-                    .put("start", 1507665886)
-                    .put("end", 1507666000))
-                .put("assets", DataObject.empty()
-                    .put("large_image", "canary-large")
-                    .put("small_text", "Small icon")
-                    .put("small_image", "ptb-large"))
+                .put(
+                        "party",
+                        DataObject.empty()
+                                .put("id", "1234")
+                                .put("size", DataArray.fromCollection(Arrays.asList(3, 6))))
+                .put(
+                        "timestamps",
+                        DataObject.empty().put("start", 1507665886).put("end", 1507666000))
+                .put(
+                        "assets",
+                        DataObject.empty()
+                                .put("large_image", "canary-large")
+                                .put("small_text", "Small icon")
+                                .put("small_image", "ptb-large"))
                 .put("instance", true)
                 .put("session_id", "4b2fdce12f639de8bfa7e3591b71a0d679d7c93f")
-                .put("sync_id", "e7eb30d2ee025ed05c71ea495f770b76454ee4e0")
-        );
+                .put("sync_id", "e7eb30d2ee025ed05c71ea495f770b76454ee4e0"));
 
         RichPresence rich = activity.asRichPresence();
         assertThat(rich).isNotNull();

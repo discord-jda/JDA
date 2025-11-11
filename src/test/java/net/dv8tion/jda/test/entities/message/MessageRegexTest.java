@@ -22,29 +22,28 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MessageRegexTest
-{
+public class MessageRegexTest {
     @ParameterizedTest
-    @ValueSource(strings = {
-        "discord.gg/jda",
-        "discord.com/invite/jda",
-        "discord.com/invite\\jda",
-    })
-    void testValidInviteLinks(String link)
-    {
+    @ValueSource(
+            strings = {
+                "discord.gg/jda",
+                "discord.com/invite/jda",
+                "discord.com/invite\\jda",
+            })
+    void testValidInviteLinks(String link) {
         assertThat(Message.INVITE_PATTERN.matcher(link).matches()).isTrue();
         assertThat(Message.INVITE_PATTERN.matcher("https://" + link).matches()).isTrue();
         assertThat(Message.INVITE_PATTERN.matcher("http://" + link).matches()).isTrue();
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {
-        "discord.gg\\jda",
-        "discord.com\\invite",
-        "discord.com\\invite/jda",
-    })
-    void testInvalidInviteLinks(String link)
-    {
+    @ValueSource(
+            strings = {
+                "discord.gg\\jda",
+                "discord.com\\invite",
+                "discord.com\\invite/jda",
+            })
+    void testInvalidInviteLinks(String link) {
         assertThat(Message.INVITE_PATTERN.matcher(link).matches()).isFalse();
         assertThat(Message.INVITE_PATTERN.matcher("https://" + link).matches()).isFalse();
         assertThat(Message.INVITE_PATTERN.matcher("http://" + link).matches()).isFalse();

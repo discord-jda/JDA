@@ -28,48 +28,49 @@ import static net.dv8tion.jda.test.ChecksHelper.*;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
-public class MessagePollDataTest
-{
+public class MessagePollDataTest {
     @Test
-    void testInvalidInputs()
-    {
+    void testInvalidInputs() {
         assertStringChecks("Title", MessagePollBuilder::new)
-            .checksNotNull()
-            .checksNotBlank()
-            .checksNotLonger(300);
+                .checksNotNull()
+                .checksNotBlank()
+                .checksNotLonger(300);
 
         MessagePollBuilder builder = new MessagePollBuilder("test title");
 
         assertEnumChecks("Layout", builder::setLayout)
-            .checksNotNull()
-            .checkIsNot(MessagePoll.LayoutType.UNKNOWN);
+                .checksNotNull()
+                .checkIsNot(MessagePoll.LayoutType.UNKNOWN);
 
         assertDurationChecks("Duration", builder::setDuration)
-            .checksNotNull()
-            .checksPositive()
-            .checksNotLonger(Duration.ofHours(7 * 24), TimeUnit.HOURS);
+                .checksNotNull()
+                .checksPositive()
+                .checksNotLonger(Duration.ofHours(7 * 24), TimeUnit.HOURS);
 
         ChecksHelper.<TimeUnit>assertChecks("TimeUnit", (unit) -> builder.setDuration(1, unit))
-            .checksNotNull();
+                .checksNotNull();
 
         assertLongChecks("Duration", (duration) -> builder.setDuration(duration, TimeUnit.SECONDS))
-            .checksPositive()
-            .throwsFor(TimeUnit.DAYS.toSeconds(8), "Duration may not be longer than 168 hours (7 days). Provided: 192 hours (8 days)");
+                .checksPositive()
+                .throwsFor(
+                        TimeUnit.DAYS.toSeconds(8),
+                        "Duration may not be longer than 168 hours (7 days). Provided: 192 hours (8 days)");
 
         assertStringChecks("Answer title", builder::addAnswer)
-            .checksNotNull()
-            .checksNotBlank()
-            .checksNotLonger(55);
+                .checksNotNull()
+                .checksNotBlank()
+                .checksNotLonger(55);
 
         assertThatIllegalStateException()
-            .isThrownBy(builder::build)
-            .withMessage("Cannot build a poll without answers");
+                .isThrownBy(builder::build)
+                .withMessage("Cannot build a poll without answers");
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++) {
             builder.addAnswer("Answer " + i);
+        }
 
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.addAnswer("Answer " + 10))
-            .withMessage("Poll cannot have more than 10 answers");
+                .isThrownBy(() -> builder.addAnswer("Answer " + 10))
+                .withMessage("Poll cannot have more than 10 answers");
     }
 }

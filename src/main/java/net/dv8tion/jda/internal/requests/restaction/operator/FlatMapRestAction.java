@@ -19,53 +19,53 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class FlatMapRestAction<I, O> extends RestActionOperator<I, O> {
     private final Function<? super I, ? extends RestAction<O>> function;
     private final Predicate<? super I> condition;
 
-    public FlatMapRestAction(RestAction<I> action, Predicate<? super I> condition,
-                             Function<? super I, ? extends RestAction<O>> function)
-    {
+    public FlatMapRestAction(
+            RestAction<I> action,
+            Predicate<? super I> condition,
+            Function<? super I, ? extends RestAction<O>> function) {
         super(action);
         this.function = function;
         this.condition = condition;
     }
 
-    private RestAction<O> supply(I input)
-    {
+    private RestAction<O> supply(I input) {
         return applyContext(function.apply(input));
     }
 
     @Override
-    public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
-    {
+    public void queue(
+            @Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure) {
         Consumer<? super Throwable> catcher = contextWrap(failure);
         handle(action, catcher, (result) -> {
-            if (condition != null && !condition.test(result))
+            if (condition != null && !condition.test(result)) {
                 return;
+            }
             RestAction<O> then = supply(result);
-            if (then == null) // caught by handle try/catch abstraction
+            if (then == null) { // caught by handle try/catch abstraction
                 throw new IllegalStateException("FlatMap operand is null");
+            }
             then.queue(success, catcher);
         });
     }
 
     @Override
-    public O complete(boolean shouldQueue) throws RateLimitedException
-    {
+    public O complete(boolean shouldQueue) throws RateLimitedException {
         I complete = action.complete(shouldQueue);
 
-        if (this.condition != null && !this.condition.test(complete))
-        {
+        if (this.condition != null && !this.condition.test(complete)) {
             throw new CancellationException("FlatMap condition failed");
         }
         return supply(complete).complete(shouldQueue);
@@ -73,19 +73,15 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
 
     @Nonnull
     @Override
-    public CompletableFuture<O> submit(boolean shouldQueue)
-    {
-        return action.submit(shouldQueue)
-                .thenCompose((result) ->
-                {
-                    if (condition != null && !condition.test(result))
-                    {
-                        CompletableFuture<O> future = new CompletableFuture<>();
-                        future.cancel(true);
+    public CompletableFuture<O> submit(boolean shouldQueue) {
+        return action.submit(shouldQueue).thenCompose((result) -> {
+            if (condition != null && !condition.test(result)) {
+                CompletableFuture<O> future = new CompletableFuture<>();
+                future.cancel(true);
 
-                        return future;
-                    }
-                    return supply(result).submit(shouldQueue);
-                });
+                return future;
+            }
+            return supply(result).submit(shouldQueue);
+        });
     }
 }

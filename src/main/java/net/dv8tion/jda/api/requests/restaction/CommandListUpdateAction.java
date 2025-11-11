@@ -22,14 +22,15 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Specialized {@link RestAction} used to replace existing commands of a guild or globally.
@@ -37,8 +38,7 @@ import java.util.function.BooleanSupplier;
  *
  * <p>This operation is idempotent. Commands will persist between restarts of your bot, you only have to create a command once.
  */
-public interface CommandListUpdateAction extends RestAction<List<Command>>
-{
+public interface CommandListUpdateAction extends RestAction<List<Command>> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -111,8 +111,7 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandListUpdateAction addCommands(@Nonnull CommandData... commands)
-    {
+    default CommandListUpdateAction addCommands(@Nonnull CommandData... commands) {
         Checks.noneNull(commands, "Command");
         return addCommands(Arrays.asList(commands));
     }

@@ -27,8 +27,7 @@ import javax.annotation.Nonnull;
  * Channel with a modifiable voice status.
  * <br>This can be used to indicate what is going on to people outside the channel.
  */
-public interface IVoiceStatusChannel extends Channel
-{
+public interface IVoiceStatusChannel extends Channel {
     /** The maximum length of a voice status {@value} */
     int MAX_STATUS_LENGTH = 500;
 

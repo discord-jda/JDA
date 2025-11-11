@@ -22,10 +22,11 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the application entitlements endpoint.
@@ -51,8 +52,8 @@ import java.util.Collection;
  * }
  * }</pre>
  */
-public interface EntitlementPaginationAction extends PaginationAction<Entitlement, EntitlementPaginationAction>
-{
+public interface EntitlementPaginationAction
+        extends PaginationAction<Entitlement, EntitlementPaginationAction> {
     /**
      * Filter {@link Entitlement Entitlement}s to retrieve by the given user ID
      *
@@ -133,8 +134,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      */
     @Nonnull
     @CheckReturnValue
-    default EntitlementPaginationAction guild(@Nonnull String guildId)
-    {
+    default EntitlementPaginationAction guild(@Nonnull String guildId) {
         Checks.notNull(guildId, "guildId");
         Checks.isSnowflake(guildId, "guildId");
         return guild(Long.parseUnsignedLong(guildId));
@@ -153,8 +153,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      */
     @Nonnull
     @CheckReturnValue
-    default EntitlementPaginationAction guild(@Nonnull Guild guild)
-    {
+    default EntitlementPaginationAction guild(@Nonnull Guild guild) {
         Checks.notNull(guild, "guild");
         return guild(guild.getIdLong());
     }

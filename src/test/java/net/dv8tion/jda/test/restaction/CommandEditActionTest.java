@@ -29,21 +29,19 @@ import org.mockito.Mock;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-public class CommandEditActionTest extends IntegrationTest
-{
+public class CommandEditActionTest extends IntegrationTest {
     @Mock
     private SelfUser selfUser;
 
     @BeforeEach
-    void setupMocks()
-    {
+    void setupMocks() {
         when(jda.getSelfUser()).thenReturn(selfUser);
-        when(selfUser.getApplicationId()).thenReturn(Long.toUnsignedString(Constants.BUTLER_USER_ID));
+        when(selfUser.getApplicationId())
+                .thenReturn(Long.toUnsignedString(Constants.BUTLER_USER_ID));
     }
 
     @Test
-    void testEditSlashCommandById()
-    {
+    void testEditSlashCommandById() {
         String id = randomSnowflake();
         CommandEditActionImpl action = new CommandEditActionImpl(jda, Command.Type.SLASH, id);
 
@@ -53,48 +51,49 @@ public class CommandEditActionTest extends IntegrationTest
             action.setNSFW(true);
         });
 
-        assertThatIllegalArgumentException().isThrownBy(() -> action.setName("updated name with space"));
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> action.setName("updated name with space"));
 
         assertThatRequestFrom(action)
-            .hasMethod(Method.PATCH)
-            .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasMethod(Method.PATCH)
+                .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 
     @Test
-    void testEditMessageCommandById()
-    {
+    void testEditMessageCommandById() {
         String id = randomSnowflake();
         CommandEditActionImpl action = new CommandEditActionImpl(jda, Command.Type.MESSAGE, id);
 
         assertThatNoException().isThrownBy(() -> action.setName("updated name with space"));
-        assertThatIllegalStateException().isThrownBy(() -> action.setDescription("Updated description"));
+        assertThatIllegalStateException()
+                .isThrownBy(() -> action.setDescription("Updated description"));
 
         action.setNSFW(true);
 
         assertThatRequestFrom(action)
-            .hasMethod(Method.PATCH)
-            .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasMethod(Method.PATCH)
+                .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 
     @Test
-    void testEditUserCommandById()
-    {
+    void testEditUserCommandById() {
         String id = randomSnowflake();
         CommandEditActionImpl action = new CommandEditActionImpl(jda, Command.Type.USER, id);
 
         assertThatNoException().isThrownBy(() -> action.setName("updated name with space"));
-        assertThatIllegalStateException().isThrownBy(() -> action.setDescription("Updated description"));
+        assertThatIllegalStateException()
+                .isThrownBy(() -> action.setDescription("Updated description"));
 
         action.setNSFW(true);
 
         assertThatRequestFrom(action)
-            .hasMethod(Method.PATCH)
-            .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasMethod(Method.PATCH)
+                .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 }

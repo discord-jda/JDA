@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Enum representing the flags in a {@link net.dv8tion.jda.api.entities.RichPresence RichPresence}
  */
-public enum ActivityFlag
-{
+public enum ActivityFlag {
     INSTANCE(0),
     JOIN(1),
     SPECTATE(2),
@@ -34,8 +34,7 @@ public enum ActivityFlag
     private final int offset;
     private final int raw;
 
-    ActivityFlag(int offset)
-    {
+    ActivityFlag(int offset) {
         this.offset = offset;
         this.raw = 1 << offset;
     }
@@ -45,8 +44,7 @@ public enum ActivityFlag
      *
      * @return The offset
      */
-    public int getOffset()
-    {
+    public int getOffset() {
         return offset;
     }
 
@@ -55,8 +53,7 @@ public enum ActivityFlag
      *
      * @return The raw bitmask
      */
-    public int getRaw()
-    {
+    public int getRaw() {
         return raw;
     }
 
@@ -72,15 +69,15 @@ public enum ActivityFlag
      * @see    EnumSet EnumSet
      */
     @Nonnull
-    public static EnumSet<ActivityFlag> getFlags(int raw)
-    {
+    public static EnumSet<ActivityFlag> getFlags(int raw) {
         EnumSet<ActivityFlag> set = EnumSet.noneOf(ActivityFlag.class);
-        if (raw == 0)
+        if (raw == 0) {
             return set;
-        for (ActivityFlag flag : values())
-        {
-            if ((flag.getRaw() & raw) == flag.getRaw())
+        }
+        for (ActivityFlag flag : values()) {
+            if ((flag.getRaw() & raw) == flag.getRaw()) {
                 set.add(flag);
+            }
         }
         return set;
     }

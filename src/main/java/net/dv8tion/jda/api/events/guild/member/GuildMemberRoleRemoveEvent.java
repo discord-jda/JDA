@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.member;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that one or more {@link net.dv8tion.jda.api.entities.Role Roles} were removed from a {@link net.dv8tion.jda.api.entities.Member Member}.
@@ -39,12 +41,14 @@ import java.util.List;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
-{
+public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent {
     private final List<Role> removedRoles;
 
-    public GuildMemberRoleRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull List<Role> removedRoles)
-    {
+    public GuildMemberRoleRemoveEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Member member,
+            @Nonnull List<Role> removedRoles) {
         super(api, responseNumber, member);
         this.removedRoles = Collections.unmodifiableList(removedRoles);
     }
@@ -55,8 +59,7 @@ public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
      * @return The removed roles
      */
     @Nonnull
-    public List<Role> getRoles()
-    {
+    public List<Role> getRoles() {
         return removedRoles;
     }
 }

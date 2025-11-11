@@ -22,20 +22,16 @@ package net.dv8tion.jda.api.exceptions;
  * @see net.dv8tion.jda.api.utils.data.DataObject
  * @see net.dv8tion.jda.api.utils.data.DataArray
  */
-public class ParsingException extends IllegalStateException
-{
-    public ParsingException(String message, Exception cause)
-    {
+public class ParsingException extends IllegalStateException {
+    public ParsingException(String message, Exception cause) {
         super(message, cause);
     }
 
-    public ParsingException(String message)
-    {
+    public ParsingException(String message) {
         super(message);
     }
 
-    public ParsingException(Exception cause)
-    {
+    public ParsingException(Exception cause) {
         super(cause);
     }
 }

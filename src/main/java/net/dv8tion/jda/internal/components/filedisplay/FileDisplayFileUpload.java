@@ -27,26 +27,26 @@ import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class FileDisplayFileUpload
-        extends AbstractComponentImpl
-        implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class FileDisplayFileUpload extends AbstractComponentImpl
+        implements FileDisplay,
+                MessageTopLevelComponentUnion,
+                ContainerChildComponentUnion,
+                FileContainerMixin {
     private final int uniqueId;
     private final FileUpload file;
     private final boolean spoiler;
 
-    public FileDisplayFileUpload(FileUpload file)
-    {
+    public FileDisplayFileUpload(FileUpload file) {
         this(-1, file, false);
     }
 
-    public FileDisplayFileUpload(int uniqueId, FileUpload file, boolean spoiler)
-    {
+    public FileDisplayFileUpload(int uniqueId, FileUpload file, boolean spoiler) {
         this.uniqueId = uniqueId;
         this.file = file;
         this.spoiler = spoiler;
@@ -54,89 +54,84 @@ public class FileDisplayFileUpload
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.FILE_DISPLAY;
     }
 
     @Nonnull
     @Override
-    public FileDisplayFileUpload withUniqueId(int uniqueId)
-    {
+    public FileDisplayFileUpload withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
         return new FileDisplayFileUpload(uniqueId, file, spoiler);
     }
 
     @Nonnull
     @Override
-    public FileDisplay withSpoiler(boolean spoiler)
-    {
+    public FileDisplay withSpoiler(boolean spoiler) {
         return new FileDisplayFileUpload(uniqueId, file, spoiler);
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nonnull
     @Override
-    public String getUrl()
-    {
+    public String getUrl() {
         return "attachment://" + file.getName();
     }
 
     @Override
-    public Stream<FileUpload> getFiles()
-    {
+    public Stream<FileUpload> getFiles() {
         return Stream.of(file);
     }
 
     @Nullable
     @Override
-    public ResolvedMedia getResolvedMedia()
-    {
+    public ResolvedMedia getResolvedMedia() {
         return null;
     }
 
     @Override
-    public boolean isSpoiler()
-    {
+    public boolean isSpoiler() {
         return spoiler;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        final DataObject json = DataObject.empty()
+    public DataObject toData() {
+        DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("file", DataObject.empty().put("url", getUrl()))
                 .put("spoiler", spoiler);
-        if (uniqueId >= 0)
+        if (uniqueId >= 0) {
             json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof FileDisplayFileUpload)) return false;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof FileDisplayFileUpload)) {
+            return false;
+        }
         FileDisplayFileUpload fileDisplay = (FileDisplayFileUpload) o;
-        return uniqueId == fileDisplay.uniqueId && spoiler == fileDisplay.spoiler && Objects.equals(file, fileDisplay.file);
+        return uniqueId == fileDisplay.uniqueId
+                && spoiler == fileDisplay.spoiler
+                && Objects.equals(file, fileDisplay.file);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(uniqueId, file, spoiler);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("id", uniqueId)
                 .addMetadata("file", file)

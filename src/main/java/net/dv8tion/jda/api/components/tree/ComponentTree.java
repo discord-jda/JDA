@@ -27,13 +27,14 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a tree of components, in which you can find, replace or remove components recursively.
@@ -42,8 +43,7 @@ import java.util.stream.Collectors;
  *
  * @param <E> Type of components contained by this tree
  */
-public interface ComponentTree<E extends Component>
-{
+public interface ComponentTree<E extends Component> {
     /**
      * Creates a {@link ComponentTree} from the given components,
      * and checks their compatibility.
@@ -59,12 +59,14 @@ public interface ComponentTree<E extends Component>
      * @return A {@link ComponentTree} containing the given components
      */
     @Nonnull
-    static <E extends Component, T extends IComponentUnion> ComponentTree<T> of(@Nonnull Class<T> unionType, @Nonnull Collection<E> components)
-    {
+    static <E extends Component, T extends IComponentUnion> ComponentTree<T> of(
+            @Nonnull Class<T> unionType, @Nonnull Collection<E> components) {
         Checks.notNull(unionType, "Component union type");
         Checks.noneNull(components, "Components");
-        // We don't care if there are unknown components, they will be unpacked and checked when sending
-        return new ComponentTreeImpl<>(unionType, ComponentsUtil.membersToUnionWithUnknownType(components, unionType));
+        // We don't care if there are unknown components, they will be unpacked and checked when
+        // sending
+        return new ComponentTreeImpl<>(
+                unionType, ComponentsUtil.membersToUnionWithUnknownType(components, unionType));
     }
 
     /**
@@ -79,10 +81,11 @@ public interface ComponentTree<E extends Component>
      * @return A {@link ComponentTree} containing the given components
      */
     @Nonnull
-    static ComponentTree<IComponentUnion> of(@Nonnull Collection<? extends Component> components)
-    {
+    static ComponentTree<IComponentUnion> of(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
-        return new ComponentTreeImpl<>(IComponentUnion.class, ComponentsUtil.membersToUnionWithUnknownType(components, IComponentUnion.class));
+        return new ComponentTreeImpl<>(
+                IComponentUnion.class,
+                ComponentsUtil.membersToUnionWithUnknownType(components, IComponentUnion.class));
     }
 
     /**
@@ -98,8 +101,8 @@ public interface ComponentTree<E extends Component>
      * @return A {@link MessageComponentTree} containing the given components
      */
     @Nonnull
-    static MessageComponentTree forMessage(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    static MessageComponentTree forMessage(
+            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         return MessageComponentTree.of(components);
     }
 
@@ -116,8 +119,8 @@ public interface ComponentTree<E extends Component>
      * @return A {@link ModalComponentTree} containing the given components
      */
     @Nonnull
-    static ModalComponentTree forModal(@Nonnull Collection<? extends ModalTopLevelComponent> components)
-    {
+    static ModalComponentTree forModal(
+            @Nonnull Collection<? extends ModalTopLevelComponent> components) {
         return ModalComponentTree.of(components);
     }
 
@@ -151,8 +154,7 @@ public interface ComponentTree<E extends Component>
      * @return A modifiable list of components with the specified type
      */
     @Nonnull
-    default <T extends Component> List<T> findAll(@Nonnull Class<T> type)
-    {
+    default <T extends Component> List<T> findAll(@Nonnull Class<T> type) {
         return findAll(type, c -> true);
     }
 
@@ -170,8 +172,8 @@ public interface ComponentTree<E extends Component>
      * @return A modifiable list of components satisfying the type and filter
      */
     @Nonnull
-    default <T extends Component> List<T> findAll(@Nonnull Class<T> type, @Nonnull Predicate<? super T> filter)
-    {
+    default <T extends Component> List<T> findAll(
+            @Nonnull Class<T> type, @Nonnull Predicate<? super T> filter) {
         Checks.notNull(type, "Component type");
         Checks.notNull(filter, "Component filter");
 
@@ -196,8 +198,8 @@ public interface ComponentTree<E extends Component>
      * @return An {@link Optional} possibly containing a component satisfying the type and filter
      */
     @Nonnull
-    default <T extends Component> Optional<T> find(@Nonnull Class<T> type, @Nonnull Predicate<? super T> filter)
-    {
+    default <T extends Component> Optional<T> find(
+            @Nonnull Class<T> type, @Nonnull Predicate<? super T> filter) {
         Checks.notNull(type, "Component type");
         Checks.notNull(filter, "Component filter");
 
@@ -244,8 +246,7 @@ public interface ComponentTree<E extends Component>
      */
     @Nonnull
     @CheckReturnValue
-    default ComponentTree<E> asDisabled()
-    {
+    default ComponentTree<E> asDisabled() {
         return withDisabled(true);
     }
 
@@ -257,16 +258,14 @@ public interface ComponentTree<E extends Component>
      */
     @Nonnull
     @CheckReturnValue
-    default ComponentTree<E> asEnabled()
-    {
+    default ComponentTree<E> asEnabled() {
         return withDisabled(false);
     }
 
     /**
      * Represents the type of component tree.
      */
-    enum Type
-    {
+    enum Type {
         /**
          * A component tree of no specific type,
          * this includes ones made with {@link ComponentTree#of(Collection)} or {@link ComponentTree#of(Class, Collection)}.

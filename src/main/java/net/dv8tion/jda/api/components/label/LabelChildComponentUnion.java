@@ -34,8 +34,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link AttachmentUpload}</li>
  * </ul>
  */
-public interface LabelChildComponentUnion extends LabelChildComponent, IComponentUnion
-{
+public interface LabelChildComponentUnion extends LabelChildComponent, IComponentUnion {
     /**
      * Casts this union to a {@link TextInput}.
      * This method exists for developer discoverability.

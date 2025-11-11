@@ -40,8 +40,9 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.entities.channel.concrete.TextChannel#getManager()
  */
-public interface TextChannelManager extends StandardGuildMessageChannelManager<TextChannel, TextChannelManager>, ISlowmodeChannelManager<TextChannel, TextChannelManager>
-{
+public interface TextChannelManager
+        extends StandardGuildMessageChannelManager<TextChannel, TextChannelManager>,
+                ISlowmodeChannelManager<TextChannel, TextChannelManager> {
     /**
      * Converts the selected channel to a different {@link ChannelType}.
      *

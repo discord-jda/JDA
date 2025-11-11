@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  *
  * @see   #getTarget()
  */
-public interface ContextInteraction<T> extends CommandInteraction
-{
+public interface ContextInteraction<T> extends CommandInteraction {
     /**
      * The target type of this context interaction
      *
@@ -49,8 +48,8 @@ public interface ContextInteraction<T> extends CommandInteraction
     /**
      * The target type, of a context interaction.
      */
-    enum ContextTarget
-    {
-        USER, MESSAGE
+    enum ContextTarget {
+        USER,
+        MESSAGE
     }
 }

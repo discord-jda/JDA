@@ -20,19 +20,16 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
-public class DataObjectParsingException extends ParsingException
-{
+public class DataObjectParsingException extends ParsingException {
     private final DataObject data;
 
-    public DataObjectParsingException(@Nonnull DataObject data, @Nonnull String message)
-    {
+    public DataObjectParsingException(@Nonnull DataObject data, @Nonnull String message) {
         super(message + "\n" + data.toShallowString());
         this.data = data;
     }
 
     @Nonnull
-    public DataObject getData()
-    {
+    public DataObject getData() {
         return data;
     }
 }

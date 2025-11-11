@@ -20,21 +20,25 @@ import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
-public class StickerPackImpl implements StickerPack
-{
+import javax.annotation.Nonnull;
+
+public class StickerPackImpl implements StickerPack {
     private final long id;
     private final List<StandardSticker> stickers;
     private final String name, description;
     private final long coverId, bannerId, skuId;
 
-    public StickerPackImpl(long id, List<StandardSticker> stickers,
-                           String name, String description,
-                           long coverId, long bannerId, long skuId)
-    {
+    public StickerPackImpl(
+            long id,
+            List<StandardSticker> stickers,
+            String name,
+            String description,
+            long coverId,
+            long bannerId,
+            long skuId) {
         this.id = id;
         this.stickers = Collections.unmodifiableList(stickers);
         this.name = name;
@@ -45,71 +49,61 @@ public class StickerPackImpl implements StickerPack
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public List<StandardSticker> getStickers()
-    {
+    public List<StandardSticker> getStickers() {
         return stickers;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Nonnull
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
     @Override
-    public long getCoverIdLong()
-    {
+    public long getCoverIdLong() {
         return coverId;
     }
 
     @Override
-    public long getBannerIdLong()
-    {
+    public long getBannerIdLong() {
         return bannerId;
     }
 
     @Override
-    public long getSkuIdLong()
-    {
+    public long getSkuIdLong() {
         return skuId;
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setName(name)
-                .toString();
+    public String toString() {
+        return new EntityString(this).setName(name).toString();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof StickerPackImpl))
+        }
+        if (!(obj instanceof StickerPackImpl)) {
             return false;
+        }
         StickerPackImpl other = (StickerPackImpl) obj;
         return id == other.id;
     }

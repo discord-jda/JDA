@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.entities.Icon;
@@ -27,8 +28,6 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,11 +37,13 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
 /**
  * A utility class to download files.
  */
-public class FileProxy
-{
+public class FileProxy {
     private static volatile OkHttpClient defaultHttpClient;
 
     private final String url;
@@ -57,8 +58,7 @@ public class FileProxy
      * @throws IllegalArgumentException
      *         If the provided URL is null
      */
-    public FileProxy(@Nonnull String url)
-    {
+    public FileProxy(@Nonnull String url) {
         Checks.notNull(url, "URL");
         this.url = url;
     }
@@ -73,8 +73,7 @@ public class FileProxy
      * @throws IllegalArgumentException
      *         If the provided {@link OkHttpClient} is null
      */
-    public static void setDefaultHttpClient(@Nonnull OkHttpClient httpClient)
-    {
+    public static void setDefaultHttpClient(@Nonnull OkHttpClient httpClient) {
         Checks.notNull(httpClient, "Default OkHttpClient");
         FileProxy.defaultHttpClient = httpClient;
     }
@@ -86,8 +85,7 @@ public class FileProxy
      * @return The URL of the file.
      */
     @Nonnull
-    public String getUrl()
-    {
+    public String getUrl() {
         return url;
     }
 
@@ -103,38 +101,34 @@ public class FileProxy
      * @return This proxy for chaining convenience.
      */
     @Nonnull
-    public FileProxy withClient(@Nonnull OkHttpClient customHttpClient)
-    {
+    public FileProxy withClient(@Nonnull OkHttpClient customHttpClient) {
         Checks.notNull(customHttpClient, "Custom HTTP client");
         this.customHttpClient = customHttpClient;
         return this;
     }
 
-
     // INTERNAL DOWNLOAD METHODS
 
-    protected OkHttpClient getHttpClient()
-    {
+    protected OkHttpClient getHttpClient() {
         // Return custom HTTP client if set
-        if (customHttpClient != null)
+        if (customHttpClient != null) {
             return customHttpClient;
+        }
 
         // Otherwise, see if a default one has been assigned
         //  If there is no client then create a default one
-        if (defaultHttpClient == null)
-        {
-            synchronized (this)
-            {
-                if (defaultHttpClient == null)
+        if (defaultHttpClient == null) {
+            synchronized (this) {
+                if (defaultHttpClient == null) {
                     defaultHttpClient = new OkHttpClient();
+                }
             }
         }
 
         return defaultHttpClient;
     }
 
-    protected Request getRequest(String url)
-    {
+    protected Request getRequest(String url) {
         return new Request.Builder()
                 .url(url)
                 .addHeader("user-agent", RestConfig.USER_AGENT)
@@ -144,60 +138,59 @@ public class FileProxy
 
     @Nonnull
     @CheckReturnValue
-    protected CompletableFuture<InputStream> download(String url)
-    {
-        // We need to apply a pattern of CompletableFuture as shown here https://discord.com/channels/125227483518861312/942488867167146005/942492134446088203
-        // This CompletableFuture is going to be passed to the user / other proxy methods and must not be overridden with other "completion stages" (see CF#exceptionally return type)
-        // This is done in order to make cancelling these downloads actually cancel all the tasks that depends on the previous ones.
-        //    If we did not do this, CF#cancel would have only cancelled the *last* CompletableFuture, so the download would still have occurred for example
-        // So since we return a completely different future, we need to use #complete / #completeExceptionally manually,
-        //     i.e. When the underlying CompletableFuture (the actual download task) has completed in any state
-        final DownloadTask downloadTask = downloadInternal(url);
+    protected CompletableFuture<InputStream> download(String url) {
+        // We need to apply a pattern of CompletableFuture as shown here
+        // https://discord.com/channels/125227483518861312/942488867167146005/942492134446088203
+        // This CompletableFuture is going to be passed to the user / other proxy methods and must
+        // not be overridden with other "completion stages" (see CF#exceptionally return type)
+        // This is done in order to make cancelling these downloads actually cancel all the tasks
+        // that depends on the previous ones.
+        //    If we did not do this, CF#cancel would have only cancelled the *last*
+        // CompletableFuture, so the download would still have occurred for example
+        // So since we return a completely different future, we need to use #complete /
+        // #completeExceptionally manually,
+        //     i.e. When the underlying CompletableFuture (the actual download task) has completed
+        // in any state
+        DownloadTask downloadTask = downloadInternal(url);
 
-        return FutureUtil.thenApplyCancellable(downloadTask.getFuture(), Function.identity(), downloadTask::cancelCall);
+        return FutureUtil.thenApplyCancellable(
+                downloadTask.getFuture(), Function.identity(), downloadTask::cancelCall);
     }
 
-    private DownloadTask downloadInternal(String url)
-    {
-        final CompletableFuture<InputStream> future = new CompletableFuture<>();
+    private DownloadTask downloadInternal(String url) {
+        CompletableFuture<InputStream> future = new CompletableFuture<>();
 
-        final Request req = getRequest(url);
-        final OkHttpClient httpClient = getHttpClient();
-        final Call newCall = httpClient.newCall(req);
+        Request req = getRequest(url);
+        OkHttpClient httpClient = getHttpClient();
+        Call newCall = httpClient.newCall(req);
 
-        newCall.enqueue(FunctionalCallback
-                .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
-                .onSuccess((call, response) ->
-                {
-                    if (response.isSuccessful())
-                    {
+        newCall.enqueue(FunctionalCallback.onFailure(
+                        (call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
+                .onSuccess((call, response) -> {
+                    if (response.isSuccessful()) {
                         InputStream body = IOUtil.getBody(response);
-                        if (!future.complete(body))
+                        if (!future.complete(body)) {
                             IOUtil.silentClose(response);
-                    }
-                    else
-                    {
-                        future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
+                        }
+                    } else {
+                        future.completeExceptionally(
+                                new HttpException(response.code() + ": " + response.message()));
                         IOUtil.silentClose(response);
                     }
-                }).build());
+                })
+                .build());
 
         return new DownloadTask(newCall, future);
     }
 
     @Nonnull
     @CheckReturnValue
-    protected CompletableFuture<Icon> downloadAsIcon(String url)
-    {
-        final CompletableFuture<InputStream> downloadFuture = download(url);
-        return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
-        {
-            try (final InputStream ignored = stream)
-            {
+    protected CompletableFuture<Icon> downloadAsIcon(String url) {
+        CompletableFuture<InputStream> downloadFuture = download(url);
+        return FutureUtil.thenApplyCancellable(downloadFuture, stream -> {
+            try (InputStream ignored = stream) {
                 return Icon.from(stream);
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         });
@@ -205,62 +198,65 @@ public class FileProxy
 
     @Nonnull
     @CheckReturnValue
-    protected CompletableFuture<Path> downloadToPath(String url)
-    {
-        final HttpUrl parsedUrl = HttpUrl.parse(url);
+    protected CompletableFuture<Path> downloadToPath(String url) {
+        HttpUrl parsedUrl = HttpUrl.parse(url);
         Checks.check(parsedUrl != null, "URL '%s' is invalid", url);
 
-        final List<String> segments = parsedUrl.pathSegments();
-        final String fileName = segments.get(segments.size() - 1);
+        List<String> segments = parsedUrl.pathSegments();
+        String fileName = segments.get(segments.size() - 1);
 
-        //Download to a file named the same as the last segment of the URL
+        // Download to a file named the same as the last segment of the URL
         return downloadToPath(Paths.get(fileName));
     }
 
     @Nonnull
     @CheckReturnValue
-    protected CompletableFuture<Path> downloadToPath(String url, Path path)
-    {
-        //Turn this into an absolute path so we can check the parent folder
-        final Path absolute = path.toAbsolutePath();
-        //Check if the parent path, the folder, exists
-        final Path parent = absolute.getParent();
-        Checks.check(parent != null && Files.exists(parent), "Parent folder of the file '%s' does not exist.", absolute);
-        if (Files.exists(absolute))
-        {
-            Checks.check(Files.isRegularFile(absolute), "Path '%s' is not a regular file.", absolute);
+    protected CompletableFuture<Path> downloadToPath(String url, Path path) {
+        // Turn this into an absolute path so we can check the parent folder
+        Path absolute = path.toAbsolutePath();
+        // Check if the parent path, the folder, exists
+        Path parent = absolute.getParent();
+        Checks.check(
+                parent != null && Files.exists(parent),
+                "Parent folder of the file '%s' does not exist.",
+                absolute);
+        if (Files.exists(absolute)) {
+            Checks.check(
+                    Files.isRegularFile(absolute), "Path '%s' is not a regular file.", absolute);
             Checks.check(Files.isWritable(absolute), "File at '%s' is not writable.", absolute);
         }
 
-        final DownloadTask downloadTask = downloadInternal(url);
+        DownloadTask downloadTask = downloadInternal(url);
 
-        return FutureUtil.thenApplyCancellable(downloadTask.getFuture(), stream -> {
-            try
-            {
-                //Temporary file follows this pattern: filename + random_number + ".part"
-                // The random number is generated until a filename becomes valid, until no file with the same name exists in the tmp directory
-                final Path tmpPath = Files.createTempFile(absolute.getFileName().toString(), ".part");
-                //A user might use a file's presence as an indicator of something being successfully downloaded,
-                //This might prevent a file from being partial, say, if the user shuts down its bot while it's downloading something
-                //Meanwhile, the time window to "corrupt" a file is very small when moving it
-                //This is why we copy the file into a temporary file and then move it.
-                Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
-                Files.move(tmpPath, absolute, StandardCopyOption.REPLACE_EXISTING);
-                return absolute;
-            }
-            catch (IOException e)
-            {
-                throw new UncheckedIOException(e);
-            }
-            finally
-            {
-                IOUtil.silentClose(stream);
-            }
-        }, downloadTask::cancelCall);
+        return FutureUtil.thenApplyCancellable(
+                downloadTask.getFuture(),
+                stream -> {
+                    try {
+                        // Temporary file follows this pattern: filename + random_number + ".part"
+                        // The random number is generated until a filename becomes valid, until no
+                        // file with the same name exists in the tmp directory
+                        Path tmpPath =
+                                Files.createTempFile(absolute.getFileName().toString(), ".part");
+                        // A user might use a file's presence as an indicator of something being
+                        // successfully downloaded,
+                        // This might prevent a file from being partial, say, if the user shuts down
+                        // its bot while it's downloading something
+                        // Meanwhile, the time window to "corrupt" a file is very small when moving
+                        // it
+                        // This is why we copy the file into a temporary file and then move it.
+                        Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
+                        Files.move(tmpPath, absolute, StandardCopyOption.REPLACE_EXISTING);
+                        return absolute;
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    } finally {
+                        IOUtil.silentClose(stream);
+                    }
+                },
+                downloadTask::cancelCall);
     }
 
-
-    //API DOWNLOAD METHOD
+    // API DOWNLOAD METHOD
 
     /**
      * Retrieves the {@link InputStream} of this file
@@ -269,8 +265,7 @@ public class FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<InputStream> download()
-    {
+    public CompletableFuture<InputStream> download() {
         return download(url);
     }
 
@@ -284,8 +279,7 @@ public class FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Path> downloadToPath()
-    {
+    public CompletableFuture<Path> downloadToPath() {
         return downloadToPath(url);
     }
 
@@ -311,11 +305,10 @@ public class FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<File> downloadToFile(@Nonnull File file)
-    {
+    public CompletableFuture<File> downloadToFile(@Nonnull File file) {
         Checks.notNull(file, "File");
 
-        final CompletableFuture<Path> downloadToPathFuture = downloadToPath(url, file.toPath());
+        CompletableFuture<Path> downloadToPathFuture = downloadToPath(url, file.toPath());
         return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
     }
 
@@ -342,8 +335,7 @@ public class FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Path> downloadToPath(@Nonnull Path path)
-    {
+    public CompletableFuture<Path> downloadToPath(@Nonnull Path path) {
         Checks.notNull(path, "Path");
 
         return downloadToPath(url, path);
@@ -362,35 +354,30 @@ public class FileProxy
      * @return {@link FileUpload} from this attachment.
      */
     @Nonnull
-    public FileUpload downloadAsFileUpload(@Nonnull String name)
-    {
-        return FileUpload.fromStreamSupplier(name, () ->
-        {
-            // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+    public FileUpload downloadAsFileUpload(@Nonnull String name) {
+        return FileUpload.fromStreamSupplier(name, () -> {
+            // Blocking is fine on the elastic rate limit thread pool
+            // [[JDABuilder#setRateLimitElastic]]
             return download().join();
         });
     }
 
-    protected static class DownloadTask
-    {
+    protected static class DownloadTask {
         private final Call call;
         private final CompletableFuture<InputStream> future;
 
-        public DownloadTask(Call call, CompletableFuture<InputStream> future)
-        {
+        public DownloadTask(Call call, CompletableFuture<InputStream> future) {
             this.call = call;
             this.future = future;
         }
 
-        protected void cancelCall()
-        {
+        protected void cancelCall() {
             call.cancel();
         }
 
         @Nonnull
         @CheckReturnValue
-        protected CompletableFuture<InputStream> getFuture()
-        {
+        protected CompletableFuture<InputStream> getFuture() {
             return future;
         }
     }

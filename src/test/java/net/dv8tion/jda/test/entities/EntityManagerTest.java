@@ -35,57 +35,54 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class EntityManagerTest extends IntegrationTest
-{
+class EntityManagerTest extends IntegrationTest {
     @Mock
     private GuildImpl guild;
 
     @Test
-    void createTextChannelWhileInvalidatingCache()
-    {
+    void createTextChannelWhileInvalidatingCache() {
         EntityBuilder entityBuilder = new EntityBuilder(jda);
 
-        ChannelCacheViewImpl<Channel> globalChannelCache = new ChannelCacheViewImpl<>(Channel.class);
-        SortedChannelCacheViewImpl<GuildChannel> guildChannelCache = new SortedChannelCacheViewImpl<>(GuildChannel.class);
+        ChannelCacheViewImpl<Channel> globalChannelCache =
+                new ChannelCacheViewImpl<>(Channel.class);
+        SortedChannelCacheViewImpl<GuildChannel> guildChannelCache =
+                new SortedChannelCacheViewImpl<>(GuildChannel.class);
 
         when(guild.getJDA()).thenReturn(jda);
         when(guild.getChannelView()).thenReturn(guildChannelCache);
         when(jda.getChannelsView()).thenReturn(globalChannelCache);
-        when(jda.getTextChannelById(eq(Constants.CHANNEL_ID))).then(
-            invocation -> globalChannelCache.getElementById(Constants.CHANNEL_ID)
-        );
-        when(guild.getTextChannelById(eq(Constants.CHANNEL_ID))).then(
-            invocation -> guildChannelCache.getElementById(Constants.CHANNEL_ID)
-        );
+        when(jda.getTextChannelById(eq(Constants.CHANNEL_ID)))
+                .then(invocation -> globalChannelCache.getElementById(Constants.CHANNEL_ID));
+        when(guild.getTextChannelById(eq(Constants.CHANNEL_ID)))
+                .then(invocation -> guildChannelCache.getElementById(Constants.CHANNEL_ID));
         when(jda.getEventCache()).thenReturn(mock(EventCache.class));
 
         entityBuilder.createTextChannel(guild, TestData.CHANNEL_CREATE, Constants.GUILD_ID);
 
         GuildImpl newGuild = mock(GuildImpl.class);
         when(newGuild.getJDA()).thenReturn(jda);
-        when(newGuild.getChannelView()).thenReturn(new SortedChannelCacheViewImpl<>(GuildChannel.class));
-        when(newGuild.getTextChannelById(eq(Constants.CHANNEL_ID))).then(
-            invocation -> newGuild.getChannelView().getElementById(Constants.CHANNEL_ID)
-        );
+        when(newGuild.getChannelView())
+                .thenReturn(new SortedChannelCacheViewImpl<>(GuildChannel.class));
+        when(newGuild.getTextChannelById(eq(Constants.CHANNEL_ID)))
+                .then(invocation -> newGuild.getChannelView().getElementById(Constants.CHANNEL_ID));
 
-        TextChannel createdChannel = entityBuilder.createTextChannel(newGuild, TestData.CHANNEL_CREATE, Constants.GUILD_ID);
+        TextChannel createdChannel = entityBuilder.createTextChannel(
+                newGuild, TestData.CHANNEL_CREATE, Constants.GUILD_ID);
 
-        assertThat(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID)).isNotNull();
+        assertThat(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID))
+                .isNotNull();
         assertThat(createdChannel)
-            .isSameAs(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID));
-
+                .isSameAs(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID));
 
         reset(jda);
 
         when(jda.getGuildById(eq(Constants.GUILD_ID))).thenReturn(newGuild);
-        assertThat(createdChannel.getGuild())
-            .isSameAs(newGuild);
+        assertThat(createdChannel.getGuild()).isSameAs(newGuild);
 
         verify(jda, times(1)).getGuildById(anyLong());
     }
 
-    static class TestData
-    {
+    static class TestData {
         static final DataObject CHANNEL_CREATE = DataObject.empty()
                 .put("id", Constants.CHANNEL_ID)
                 .put("name", "test-channel")

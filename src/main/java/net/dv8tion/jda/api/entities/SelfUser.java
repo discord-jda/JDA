@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
@@ -26,8 +27,7 @@ import javax.annotation.Nonnull;
  *
  * @see JDA#getSelfUser()
  */
-public interface SelfUser extends User
-{
+public interface SelfUser extends User {
     /**
      * The associated application id for the bot account.
      * <br>For most bots this is identical to the user id.
@@ -43,11 +43,9 @@ public interface SelfUser extends User
      * @return The application id
      */
     @Nonnull
-    default String getApplicationId()
-    {
+    default String getApplicationId() {
         return Long.toUnsignedString(getApplicationIdLong());
     }
-
 
     /**
      * The status of this account's verification.
@@ -69,9 +67,9 @@ public interface SelfUser extends User
     /**
      * Returns the maximum size for files that can be uploaded with this account.
      * <br>Returns {@value net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE} for bots.
-     * 
+     *
      * @return The maximum size for files that can be uploaded with this account
-     * 
+     *
      * @see net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE
      */
     long getAllowedFileSize();

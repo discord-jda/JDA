@@ -35,20 +35,21 @@ import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
-import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class DetachedMediaChannelImpl extends AbstractGuildChannelImpl<DetachedMediaChannelImpl>
-    implements
-        MediaChannel,
-        GuildChannelUnion,
-        MediaChannelMixin<DetachedMediaChannelImpl>,
-        IInteractionPermissionMixin<DetachedMediaChannelImpl>
-{
+        implements MediaChannel,
+                GuildChannelUnion,
+                MediaChannelMixin<DetachedMediaChannelImpl>,
+                IInteractionPermissionMixin<DetachedMediaChannelImpl> {
     private ChannelInteractionPermissions interactionPermissions;
-    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache =
+            new SortedSnowflakeCacheViewImpl<>(
+                    ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
 
     private Emoji defaultReaction;
     private String topic;
@@ -60,191 +61,166 @@ public class DetachedMediaChannelImpl extends AbstractGuildChannelImpl<DetachedM
     private int defaultSortOrder;
     protected int defaultThreadSlowmode;
 
-    public DetachedMediaChannelImpl(long id, DetachedGuildImpl guild)
-    {
+    public DetachedMediaChannelImpl(long id, DetachedGuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return true;
     }
 
     @Nonnull
     @Override
-    public MediaChannelManager getManager()
-    {
+    public MediaChannelManager getManager() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public EnumSet<ChannelFlag> getFlags()
-    {
+    public EnumSet<ChannelFlag> getFlags() {
         return ChannelFlag.fromRaw(flags);
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheViewImpl<ForumTag> getAvailableTagCache()
-    {
+    public SortedSnowflakeCacheViewImpl<ForumTag> getAvailableTagCache() {
         return tagCache;
     }
 
     @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelInteractionPermissions getInteractionPermissions()
-    {
+    public ChannelInteractionPermissions getInteractionPermissions() {
         return interactionPermissions;
     }
 
     @Override
-    public boolean isNSFW()
-    {
+    public boolean isNSFW() {
         return nsfw;
     }
 
     @Override
-    public int getPositionRaw()
-    {
+    public int getPositionRaw() {
         return position;
     }
 
     @Override
-    public long getParentCategoryIdLong()
-    {
+    public long getParentCategoryIdLong() {
         return parentCategoryId;
     }
 
     @Override
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return slowmode;
     }
 
     @Override
-    public String getTopic()
-    {
+    public String getTopic() {
         return topic;
     }
 
     @Override
-    public EmojiUnion getDefaultReaction()
-    {
+    public EmojiUnion getDefaultReaction() {
         return (EmojiUnion) defaultReaction;
     }
 
     @Override
-    public int getDefaultThreadSlowmode()
-    {
+    public int getDefaultThreadSlowmode() {
         return defaultThreadSlowmode;
     }
 
     @Nonnull
     @Override
-    public SortOrder getDefaultSortOrder()
-    {
+    public SortOrder getDefaultSortOrder() {
         return SortOrder.fromKey(defaultSortOrder);
     }
 
-    public int getRawFlags()
-    {
+    public int getRawFlags() {
         return flags;
     }
 
-    public int getRawSortOrder()
-    {
+    public int getRawSortOrder() {
         return defaultSortOrder;
     }
 
     // Setters
 
     @Override
-    public DetachedMediaChannelImpl setParentCategory(long parentCategoryId)
-    {
+    public DetachedMediaChannelImpl setParentCategory(long parentCategoryId) {
         this.parentCategoryId = parentCategoryId;
         return this;
     }
 
     @Override
-    public DetachedMediaChannelImpl setPosition(int position)
-    {
+    public DetachedMediaChannelImpl setPosition(int position) {
         this.position = position;
         return this;
     }
 
     @Override
-    public DetachedMediaChannelImpl setDefaultThreadSlowmode(int defaultThreadSlowmode)
-    {
+    public DetachedMediaChannelImpl setDefaultThreadSlowmode(int defaultThreadSlowmode) {
         this.defaultThreadSlowmode = defaultThreadSlowmode;
         return this;
     }
 
     @Override
-    public DetachedMediaChannelImpl setNSFW(boolean nsfw)
-    {
+    public DetachedMediaChannelImpl setNSFW(boolean nsfw) {
         this.nsfw = nsfw;
         return this;
     }
 
     @Override
-    public DetachedMediaChannelImpl setSlowmode(int slowmode)
-    {
+    public DetachedMediaChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
         return this;
     }
 
     @Override
-    public DetachedMediaChannelImpl setTopic(String topic)
-    {
+    public DetachedMediaChannelImpl setTopic(String topic) {
         this.topic = topic;
         return this;
     }
 
     @Override
-    public DetachedMediaChannelImpl setFlags(int flags)
-    {
+    public DetachedMediaChannelImpl setFlags(int flags) {
         this.flags = flags;
         return this;
     }
 
     @Override
-    public DetachedMediaChannelImpl setDefaultReaction(DataObject emoji)
-    {
-        if (emoji != null && !emoji.isNull("emoji_id"))
-            this.defaultReaction = new CustomEmojiImpl("", emoji.getUnsignedLong("emoji_id"), false);
-        else if (emoji != null && !emoji.isNull("emoji_name"))
+    public DetachedMediaChannelImpl setDefaultReaction(DataObject emoji) {
+        if (emoji != null && !emoji.isNull("emoji_id")) {
+            this.defaultReaction =
+                    new CustomEmojiImpl("", emoji.getUnsignedLong("emoji_id"), false);
+        } else if (emoji != null && !emoji.isNull("emoji_name")) {
             this.defaultReaction = Emoji.fromUnicode(emoji.getString("emoji_name"));
-        else
+        } else {
             this.defaultReaction = null;
+        }
         return this;
     }
 
     @Override
-    public DetachedMediaChannelImpl setDefaultSortOrder(int defaultSortOrder)
-    {
+    public DetachedMediaChannelImpl setDefaultSortOrder(int defaultSortOrder) {
         this.defaultSortOrder = defaultSortOrder;
         return this;
     }
 
     @Nonnull
     @Override
-    public DetachedMediaChannelImpl setInteractionPermissions(@Nonnull ChannelInteractionPermissions interactionPermissions)
-    {
+    public DetachedMediaChannelImpl setInteractionPermissions(
+            @Nonnull ChannelInteractionPermissions interactionPermissions) {
         this.interactionPermissions = interactionPermissions;
         return this;
     }

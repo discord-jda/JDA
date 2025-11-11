@@ -27,8 +27,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link TextDisplay}</li>
  * </ul>
  */
-public interface SectionContentComponent extends Component
-{
+public interface SectionContentComponent extends Component {
     @Nonnull
     @Override
     SectionContentComponent withUniqueId(int uniqueId);

@@ -31,45 +31,39 @@ import static net.dv8tion.jda.api.components.replacer.ComponentReplacer.byUnique
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-public class SectionTest
-{
+public class SectionTest {
     private static final SectionAccessoryComponentUnion EXAMPLE_BUTTON =
             (SectionAccessoryComponentUnion) Button.primary("id", "label").withUniqueId(1);
     private static final SectionContentComponentUnion EXAMPLE_TEXT_DISPLAY =
             (SectionContentComponentUnion) TextDisplay.of("content").withUniqueId(2);
 
     @Test
-    void testEmptyContainerThrows()
-    {
+    void testEmptyContainerThrows() {
         ChecksHelper.<SectionContentComponentUnion>assertCollectionChecks(
-                        "Components",
-                        coll -> Section.of(EXAMPLE_BUTTON, coll)
-                )
+                        "Components", coll -> Section.of(EXAMPLE_BUTTON, coll))
                 .checksNotNull()
                 .checksNotEmpty();
     }
 
     @Test
-    void testContainerWithNoAccessoryThrows()
-    {
+    void testContainerWithNoAccessoryThrows() {
         ChecksHelper.<SectionAccessoryComponentUnion>assertChecks(
                         "Accessory",
-                        accessory -> Section.of(accessory, Collections.singletonList(EXAMPLE_TEXT_DISPLAY))
-                )
+                        accessory -> Section.of(
+                                accessory, Collections.singletonList(EXAMPLE_TEXT_DISPLAY)))
                 .checksNotNull();
     }
 
-
     @Test
-    void testReplacerWithValidReplacement()
-    {
+    void testReplacerWithValidReplacement() {
         Section container = Section.of(EXAMPLE_BUTTON, EXAMPLE_TEXT_DISPLAY);
 
         TextDisplay replacedText = TextDisplay.of("Replaced");
-        Section replaced = container.replace(byUniqueId(EXAMPLE_TEXT_DISPLAY.getUniqueId(), replacedText));
+        Section replaced =
+                container.replace(byUniqueId(EXAMPLE_TEXT_DISPLAY.getUniqueId(), replacedText));
 
         assertThat(replaced.getContentComponents())
-            .containsExactly((SectionContentComponentUnion) replacedText);
+                .containsExactly((SectionContentComponentUnion) replacedText);
 
         Button replacedButton = Button.secondary("replaced", "Replaced Button");
         replaced = container.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), replacedButton));
@@ -78,14 +72,15 @@ public class SectionTest
     }
 
     @Test
-    void testReplacerWithEmptyingReplacement()
-    {
+    void testReplacerWithEmptyingReplacement() {
         Section container = Section.of(EXAMPLE_BUTTON, EXAMPLE_TEXT_DISPLAY);
 
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> container.replace(byUniqueId(EXAMPLE_TEXT_DISPLAY.getUniqueId(), (Component) null)));
+                .isThrownBy(() -> container.replace(
+                        byUniqueId(EXAMPLE_TEXT_DISPLAY.getUniqueId(), (Component) null)));
 
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> container.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), (Component) null)));
+                .isThrownBy(() -> container.replace(
+                        byUniqueId(EXAMPLE_BUTTON.getUniqueId(), (Component) null)));
     }
 }

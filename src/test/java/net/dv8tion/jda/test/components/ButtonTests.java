@@ -35,8 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class ButtonTests
-{
+public class ButtonTests {
     private static final String EXAMPLE_ID = "id";
     private static final String EXAMPLE_URL = "https://example.com";
     private static final UnicodeEmoji EXAMPLE_EMOJI = Emoji.fromUnicode("🤔");
@@ -45,15 +44,14 @@ public class ButtonTests
 
     @MethodSource("validButtons")
     @ParameterizedTest
-    void testButtonValid(ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji)
-    {
+    void testButtonValid(
+            ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
         ButtonImpl button = new ButtonImpl(id, label, style, url, sku, false, emoji);
         assertDoesNotThrow(button::checkValid);
         assertDoesNotThrow(button::toData);
     }
 
-    static Stream<Arguments> validButtons()
-    {
+    static Stream<Arguments> validButtons() {
         // The following button configurations are valid:
         return Stream.of(
                 // Normal button; id, either label, emoji, label+emoji
@@ -65,20 +63,18 @@ public class ButtonTests
                 arguments(LINK, null, EXAMPLE_LABEL, EXAMPLE_URL, null, EXAMPLE_EMOJI),
                 arguments(LINK, null, null, EXAMPLE_URL, null, EXAMPLE_EMOJI),
                 // Premium button doesn't have anything
-                arguments(PREMIUM, null, null, null, EXAMPLE_SKU, null)
-        );
+                arguments(PREMIUM, null, null, null, EXAMPLE_SKU, null));
     }
 
     @MethodSource("testButtonInvalidArguments")
     @ParameterizedTest
-    void testButtonInvalid(ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji)
-    {
+    void testButtonInvalid(
+            ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
         ButtonImpl button = new ButtonImpl(id, label, style, url, sku, false, emoji);
         assertThatIllegalArgumentException().isThrownBy(button::checkValid);
     }
 
-    static Stream<Arguments> testButtonInvalidArguments()
-    {
+    static Stream<Arguments> testButtonInvalidArguments() {
         // The following button configuration will fail when:
         return Stream.of(
                 // Normal button; has no id, has neither label/emoji, has url, has sku
@@ -95,143 +91,131 @@ public class ButtonTests
                 arguments(PREMIUM, "id", "", null, EXAMPLE_SKU, null),
                 arguments(PREMIUM, null, "", "url", EXAMPLE_SKU, null),
                 arguments(PREMIUM, null, EXAMPLE_LABEL, null, EXAMPLE_SKU, null),
-                arguments(PREMIUM, null, "", null, EXAMPLE_SKU, EXAMPLE_EMOJI)
-        );
+                arguments(PREMIUM, null, "", null, EXAMPLE_SKU, EXAMPLE_EMOJI));
     }
-
 
     @MethodSource
     @ParameterizedTest
-    void testWithId(Button button, boolean shouldThrow)
-    {
-        if (shouldThrow)
+    void testWithId(Button button, boolean shouldThrow) {
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withCustomId("valid-id"));
-        else
+        } else {
             assertDoesNotThrow(() -> button.withCustomId("valid-id"));
+        }
     }
 
-    static Stream<Arguments> testWithId()
-    {
+    static Stream<Arguments> testWithId() {
         return Stream.of(
-            arguments(Button.primary(EXAMPLE_ID, "Primary"), false),
-            arguments(Button.link(EXAMPLE_URL, "Link"), true),
-            arguments(Button.premium(EXAMPLE_SKU), true)
-        );
+                arguments(Button.primary(EXAMPLE_ID, "Primary"), false),
+                arguments(Button.link(EXAMPLE_URL, "Link"), true),
+                arguments(Button.premium(EXAMPLE_SKU), true));
     }
 
     @MethodSource
     @ParameterizedTest
-    void testWithUrl(Button button, boolean shouldThrow)
-    {
-        if (shouldThrow)
+    void testWithUrl(Button button, boolean shouldThrow) {
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withUrl(EXAMPLE_URL));
-        else
+        } else {
             assertDoesNotThrow(() -> button.withUrl(EXAMPLE_URL));
+        }
     }
 
-    static Stream<Arguments> testWithUrl()
-    {
+    static Stream<Arguments> testWithUrl() {
         return Stream.of(
-            arguments(Button.primary(EXAMPLE_ID, "Primary"), true),
-            arguments(Button.link(EXAMPLE_URL, "Link"), false),
-            arguments(Button.premium(EXAMPLE_SKU), true)
-        );
+                arguments(Button.primary(EXAMPLE_ID, "Primary"), true),
+                arguments(Button.link(EXAMPLE_URL, "Link"), false),
+                arguments(Button.premium(EXAMPLE_SKU), true));
     }
 
     @MethodSource
     @ParameterizedTest
-    void testWithSku(Button button, boolean shouldThrow)
-    {
-        if (shouldThrow)
+    void testWithSku(Button button, boolean shouldThrow) {
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withSku(EXAMPLE_SKU));
-        else
+        } else {
             assertDoesNotThrow(() -> button.withSku(EXAMPLE_SKU));
+        }
     }
 
-    static Stream<Arguments> testWithSku()
-    {
+    static Stream<Arguments> testWithSku() {
         return Stream.of(
-            arguments(Button.primary(EXAMPLE_ID, "Primary"), true),
-            arguments(Button.link(EXAMPLE_URL, "Link"), true),
-            arguments(Button.premium(EXAMPLE_SKU), false)
-        );
+                arguments(Button.primary(EXAMPLE_ID, "Primary"), true),
+                arguments(Button.link(EXAMPLE_URL, "Link"), true),
+                arguments(Button.premium(EXAMPLE_SKU), false));
     }
 
     @MethodSource
     @ParameterizedTest
-    void testWithLabel(Button button, boolean shouldThrow)
-    {
-        if (shouldThrow)
+    void testWithLabel(Button button, boolean shouldThrow) {
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withLabel(EXAMPLE_LABEL));
-        else
+        } else {
             assertDoesNotThrow(() -> button.withLabel(EXAMPLE_LABEL));
+        }
     }
 
-    static Stream<Arguments> testWithLabel()
-    {
+    static Stream<Arguments> testWithLabel() {
         return Stream.of(
-            arguments(Button.primary(EXAMPLE_ID, "Primary"), false),
-            arguments(Button.link(EXAMPLE_URL, "Link"), false),
-            arguments(Button.premium(EXAMPLE_SKU), true)
-        );
+                arguments(Button.primary(EXAMPLE_ID, "Primary"), false),
+                arguments(Button.link(EXAMPLE_URL, "Link"), false),
+                arguments(Button.premium(EXAMPLE_SKU), true));
     }
 
     @MethodSource
     @ParameterizedTest
-    void testWithEmoji(Button button, boolean shouldThrow)
-    {
-        if (shouldThrow)
+    void testWithEmoji(Button button, boolean shouldThrow) {
+        if (shouldThrow) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withEmoji(EXAMPLE_EMOJI));
-        else
+        } else {
             assertDoesNotThrow(() -> button.withEmoji(EXAMPLE_EMOJI));
+        }
     }
 
-    static Stream<Arguments> testWithEmoji()
-    {
+    static Stream<Arguments> testWithEmoji() {
         return Stream.of(
-            arguments(Button.primary(EXAMPLE_ID, "Primary"), false),
-            arguments(Button.link(EXAMPLE_URL, "Link"), false),
-            arguments(Button.premium(EXAMPLE_SKU), true)
-        );
+                arguments(Button.primary(EXAMPLE_ID, "Primary"), false),
+                arguments(Button.link(EXAMPLE_URL, "Link"), false),
+                arguments(Button.premium(EXAMPLE_SKU), true));
     }
 
     @EnumSource
     @ParameterizedTest
-    void testWithStyleLinkToOther(ButtonStyle style)
-    {
+    void testWithStyleLinkToOther(ButtonStyle style) {
         Button button = Button.link(EXAMPLE_URL, "Label");
-        if (style == LINK)
+        if (style == LINK) {
             assertDoesNotThrow(() -> button.withStyle(style));
-        else
+        } else {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withStyle(style));
+        }
     }
 
     @EnumSource
     @ParameterizedTest
-    void testWithStylePremiumToOther(ButtonStyle style)
-    {
+    void testWithStylePremiumToOther(ButtonStyle style) {
         Button button = Button.premium(EXAMPLE_SKU);
-        if (style == PREMIUM)
+        if (style == PREMIUM) {
             assertDoesNotThrow(() -> button.withStyle(style));
-        else
+        } else {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withStyle(style));
+        }
     }
 
     @EnumSource
     @ParameterizedTest
-    void testWithStyleColorToOther(ButtonStyle style)
-    {
+    void testWithStyleColorToOther(ButtonStyle style) {
         Button button = Button.primary(EXAMPLE_ID, EXAMPLE_LABEL);
-        if (style == PREMIUM || style == LINK || style == UNKNOWN)
+        if (style == PREMIUM || style == LINK || style == UNKNOWN) {
             assertThatIllegalArgumentException().isThrownBy(() -> button.withStyle(style));
-        else
+        } else {
             assertDoesNotThrow(() -> button.withStyle(style));
+        }
     }
 
     @MethodSource("validButtons")
     @ParameterizedTest
-    void testWithDisabled(ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji)
-    {
+    void testWithDisabled(
+            ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
         Button button = new ButtonImpl(id, label, style, url, sku, false, emoji);
         assertDoesNotThrow(() -> button.withDisabled(true));
         assertDoesNotThrow(() -> button.withDisabled(false));

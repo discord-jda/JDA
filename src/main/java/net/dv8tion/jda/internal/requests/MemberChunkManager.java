@@ -33,45 +33,43 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 
-public class MemberChunkManager
-{
+public class MemberChunkManager {
     private static final long MAX_CHUNK_AGE = 10 * 1000; // 10 seconds
     private final WebSocketClient client;
     private final ReentrantLock lock = new ReentrantLock();
     private final TLongObjectMap<ChunkRequest> requests = new TLongObjectHashMap<>();
     private Future<?> timeoutHandle;
 
-    public MemberChunkManager(WebSocketClient client)
-    {
+    public MemberChunkManager(WebSocketClient client) {
         this.client = client;
     }
 
-    public static boolean isLastChunk(DataObject chunk)
-    {
+    public static boolean isLastChunk(DataObject chunk) {
         return chunk.getInt("chunk_index") + 1 == chunk.getInt("chunk_count");
     }
 
-    public void clear()
-    {
+    public void clear() {
         MiscUtil.locked(lock, requests::clear);
     }
 
-    private void init()
-    {
+    private void init() {
         MiscUtil.locked(lock, () -> {
-            if (timeoutHandle == null)
-                timeoutHandle = client.getJDA().getGatewayPool().scheduleAtFixedRate(new TimeoutHandler(), 5, 5, TimeUnit.SECONDS);
+            if (timeoutHandle == null) {
+                timeoutHandle = client.getJDA()
+                        .getGatewayPool()
+                        .scheduleAtFixedRate(new TimeoutHandler(), 5, 5, TimeUnit.SECONDS);
+            }
         });
     }
 
-    public void shutdown()
-    {
-        if (timeoutHandle != null)
+    public void shutdown() {
+        if (timeoutHandle != null) {
             timeoutHandle.cancel(false);
+        }
     }
 
-    public ChunkRequest chunkGuild(GuildImpl guild, boolean presence, BiConsumer<Boolean, List<Member>> handler)
-    {
+    public ChunkRequest chunkGuild(
+            GuildImpl guild, boolean presence, BiConsumer<Boolean, List<Member>> handler) {
         init();
         DataObject request = DataObject.empty()
                 .put("guild_id", guild.getId())
@@ -84,8 +82,8 @@ public class MemberChunkManager
         return chunkRequest;
     }
 
-    public ChunkRequest chunkGuild(GuildImpl guild, String query, int limit, BiConsumer<Boolean, List<Member>> handler)
-    {
+    public ChunkRequest chunkGuild(
+            GuildImpl guild, String query, int limit, BiConsumer<Boolean, List<Member>> handler) {
         init();
         DataObject request = DataObject.empty()
                 .put("guild_id", guild.getId())
@@ -97,8 +95,11 @@ public class MemberChunkManager
         return chunkRequest;
     }
 
-    public ChunkRequest chunkGuild(GuildImpl guild, boolean presence, long[] userIds, BiConsumer<Boolean, List<Member>> handler)
-    {
+    public ChunkRequest chunkGuild(
+            GuildImpl guild,
+            boolean presence,
+            long[] userIds,
+            BiConsumer<Boolean, List<Member>> handler) {
         init();
         DataObject request = DataObject.empty()
                 .put("guild_id", guild.getId())
@@ -110,21 +111,21 @@ public class MemberChunkManager
         return chunkRequest;
     }
 
-    public boolean handleChunk(long guildId, DataObject response)
-    {
+    public boolean handleChunk(long guildId, DataObject response) {
         return MiscUtil.locked(lock, () -> {
             String nonce = response.getString("nonce", null);
-            if (nonce == null || nonce.isEmpty())
+            if (nonce == null || nonce.isEmpty()) {
                 return false;
+            }
             long key = Long.parseLong(nonce);
             ChunkRequest request = requests.get(key);
-            if (request == null)
+            if (request == null) {
                 return false;
+            }
 
             boolean lastChunk = isLastChunk(response);
             request.handleChunk(lastChunk, response);
-            if (lastChunk || request.isCancelled())
-            {
+            if (lastChunk || request.isCancelled()) {
                 requests.remove(key);
                 request.complete(null);
             }
@@ -132,28 +133,24 @@ public class MemberChunkManager
         });
     }
 
-    public void cancelRequest(ChunkRequest request)
-    {
+    public void cancelRequest(ChunkRequest request) {
         MiscUtil.locked(lock, () -> {
             requests.remove(request.nonce);
         });
     }
 
-    private void makeRequest(ChunkRequest request)
-    {
+    private void makeRequest(ChunkRequest request) {
         MiscUtil.locked(lock, () -> {
             requests.put(request.nonce, request);
             sendChunkRequest(request.getRequest());
         });
     }
 
-    private void sendChunkRequest(DataObject request)
-    {
+    private void sendChunkRequest(DataObject request) {
         client.sendChunkRequest(request);
     }
 
-    public class ChunkRequest extends CompletableFuture<Void>
-    {
+    public class ChunkRequest extends CompletableFuture<Void> {
         private final BiConsumer<Boolean, List<Member>> handler;
         private final GuildImpl guild;
         private final DataObject request;
@@ -161,56 +158,49 @@ public class MemberChunkManager
         private long startTime;
         private long timeout = MAX_CHUNK_AGE;
 
-        public ChunkRequest(BiConsumer<Boolean, List<Member>> handler, GuildImpl guild, DataObject request)
-        {
+        public ChunkRequest(
+                BiConsumer<Boolean, List<Member>> handler, GuildImpl guild, DataObject request) {
             this.handler = handler;
             this.guild = guild;
             this.nonce = ThreadLocalRandom.current().nextLong() & ~1;
             this.request = request.put("nonce", getNonce());
         }
 
-        public ChunkRequest setTimeout(long timeout)
-        {
+        public ChunkRequest setTimeout(long timeout) {
             this.timeout = timeout;
             return this;
         }
 
-        public boolean isNonce(String nonce)
-        {
+        public boolean isNonce(String nonce) {
             return this.nonce == Long.parseLong(nonce);
         }
 
-        public String getNonce()
-        {
+        public String getNonce() {
             return String.valueOf(nonce);
         }
 
-        public long getAge()
-        {
+        public long getAge() {
             return startTime <= 0 ? 0 : System.currentTimeMillis() - startTime;
         }
 
-        public boolean isExpired()
-        {
+        public boolean isExpired() {
             return getAge() > timeout;
         }
 
-        public DataObject getRequest()
-        {
+        public DataObject getRequest() {
             startTime = System.currentTimeMillis();
             return request;
         }
 
-        private List<Member> toMembers(DataObject chunk)
-        {
+        private List<Member> toMembers(DataObject chunk) {
             EntityBuilder builder = guild.getJDA().getEntityBuilder();
             DataArray memberArray = chunk.getArray("members");
-            TLongObjectMap<DataObject> presences = chunk.optArray("presences").map(it ->
-                Helpers.convertToMap(o -> o.getObject("user").getUnsignedLong("id"), it)
-            ).orElseGet(TLongObjectHashMap::new);
+            TLongObjectMap<DataObject> presences = chunk.optArray("presences")
+                    .map(it -> Helpers.convertToMap(
+                            o -> o.getObject("user").getUnsignedLong("id"), it))
+                    .orElseGet(TLongObjectHashMap::new);
             List<Member> collect = new ArrayList<>(memberArray.length());
-            for (int i = 0; i < memberArray.length(); i++)
-            {
+            for (int i = 0; i < memberArray.length(); i++) {
                 DataObject json = memberArray.getObject(i);
                 long userId = json.getObject("user").getUnsignedLong("id");
                 DataObject presence = presences.get(userId);
@@ -221,40 +211,35 @@ public class MemberChunkManager
             return collect;
         }
 
-        public void handleChunk(boolean last, DataObject chunk)
-        {
-            try
-            {
-                if (!isDone())
+        public void handleChunk(boolean last, DataObject chunk) {
+            try {
+                if (!isDone()) {
                     handler.accept(last, toMembers(chunk));
-            }
-            catch (Throwable ex)
-            {
+                }
+            } catch (Throwable ex) {
                 completeExceptionally(ex);
-                if (ex instanceof Error)
+                if (ex instanceof Error) {
                     throw (Error) ex;
+                }
             }
         }
 
         @Override
-        public boolean cancel(boolean mayInterruptIfRunning)
-        {
+        public boolean cancel(boolean mayInterruptIfRunning) {
             client.cancelChunkRequest(getNonce());
             cancelRequest(this);
             return super.cancel(mayInterruptIfRunning);
         }
     }
 
-    private class TimeoutHandler implements Runnable
-    {
+    private class TimeoutHandler implements Runnable {
         @Override
-        public void run()
-        {
-            MiscUtil.locked(lock, () ->
-            {
+        public void run() {
+            MiscUtil.locked(lock, () -> {
                 requests.forEachValue(request -> {
-                    if (request.isExpired())
+                    if (request.isExpired()) {
                         request.completeExceptionally(new TimeoutException());
+                    }
                     return true;
                 });
                 requests.valueCollection().removeIf(ChunkRequest::isDone);

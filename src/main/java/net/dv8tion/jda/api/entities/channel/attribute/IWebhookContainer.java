@@ -23,17 +23,17 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Represents a {@link GuildChannel} that is capable of utilizing <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks" target="_blank">webhooks</a>.
  *
  * <p>Webhooks can be used to integrate third-party systems into Discord by way of sending information via messages.
  */
-public interface IWebhookContainer extends GuildChannel
-{
+public interface IWebhookContainer extends GuildChannel {
     /**
      * Retrieves the {@link net.dv8tion.jda.api.entities.Webhook Webhooks} attached to this channel.
      *

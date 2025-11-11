@@ -22,11 +22,12 @@ import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * {@link net.dv8tion.jda.api.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.api.requests.RestAction}
@@ -34,8 +35,7 @@ import java.util.function.BooleanSupplier;
  *
  * @see TextChannel#createWebhook(String)
  */
-public interface WebhookAction extends AuditableRestAction<Webhook>
-{
+public interface WebhookAction extends AuditableRestAction<Webhook> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -65,8 +65,7 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
      * @return The guild
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getChannel().getGuild();
     }
 

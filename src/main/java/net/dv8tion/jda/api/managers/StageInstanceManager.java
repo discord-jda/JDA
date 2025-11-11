@@ -38,10 +38,9 @@ import javax.annotation.Nullable;
  *
  * @see net.dv8tion.jda.api.entities.StageInstance#getManager()
  */
-public interface StageInstanceManager extends Manager<StageInstanceManager>
-{
+public interface StageInstanceManager extends Manager<StageInstanceManager> {
     /** Used to reset the topic field */
-    long TOPIC         = 1;
+    long TOPIC = 1;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.

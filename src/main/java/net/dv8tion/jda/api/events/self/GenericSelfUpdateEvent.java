@@ -30,16 +30,17 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect any SelfUserEvent.
  */
-public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateEvent<SelfUser, T>
-{
+public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateEvent<SelfUser, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
     public GenericSelfUpdateEvent(
-            @Nonnull JDA api, long responseNumber,
-            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
-    {
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nullable T previous,
+            @Nullable T next,
+            @Nonnull String identifier) {
         super(api, responseNumber);
         this.previous = previous;
         this.next = next;
@@ -52,36 +53,31 @@ public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateE
      * @return The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}
      */
     @Nonnull
-    public SelfUser getSelfUser()
-    {
+    public SelfUser getSelfUser() {
         return api.getSelfUser();
     }
 
     @Nonnull
     @Override
-    public SelfUser getEntity()
-    {
+    public SelfUser getEntity() {
         return getSelfUser();
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 }

@@ -26,73 +26,67 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.AutoCompleteCallbackActionImpl;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public class CommandAutoCompleteInteractionImpl extends InteractionImpl implements CommandInteractionPayloadMixin, CommandAutoCompleteInteraction
-{
+import javax.annotation.Nonnull;
+
+public class CommandAutoCompleteInteractionImpl extends InteractionImpl
+        implements CommandInteractionPayloadMixin, CommandAutoCompleteInteraction {
     private final CommandInteractionPayload payload;
     private AutoCompleteQuery focused;
 
-    public CommandAutoCompleteInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public CommandAutoCompleteInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         this.payload = new CommandInteractionPayloadImpl(jda, data);
 
         DataArray options = data.getObject("data").getArray("options");
         findFocused(options);
 
-        if (focused == null)
-            throw new IllegalStateException("Failed to get focused option for auto complete interaction");
+        if (focused == null) {
+            throw new IllegalStateException(
+                    "Failed to get focused option for auto complete interaction");
+        }
     }
 
-    private void findFocused(DataArray options)
-    {
-        for (int i = 0; i < options.length(); i++)
-        {
+    private void findFocused(DataArray options) {
+        for (int i = 0; i < options.length(); i++) {
             DataObject option = options.getObject(i);
-            switch (OptionType.fromKey(option.getInt("type")))
-            {
-            case SUB_COMMAND:
-            case SUB_COMMAND_GROUP:
-                findFocused(option.getArray("options"));
-                break;
-            default:
-                if (option.getBoolean("focused"))
-                {
-                    OptionMapping opt = getOption(option.getString("name"));
-                    focused = new AutoCompleteQuery(opt);
+            switch (OptionType.fromKey(option.getInt("type"))) {
+                case SUB_COMMAND:
+                case SUB_COMMAND_GROUP:
+                    findFocused(option.getArray("options"));
                     break;
-                }
+                default:
+                    if (option.getBoolean("focused")) {
+                        OptionMapping opt = getOption(option.getString("name"));
+                        focused = new AutoCompleteQuery(opt);
+                        break;
+                    }
             }
         }
     }
 
     @Nonnull
     @Override
-    public AutoCompleteQuery getFocusedOption()
-    {
+    public AutoCompleteQuery getFocusedOption() {
         return focused;
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return (MessageChannelUnion) super.getChannel();
     }
 
     @Override
-    public CommandInteractionPayload getCommandPayload()
-    {
+    public CommandInteractionPayload getCommandPayload() {
         return payload;
     }
 
     @Nonnull
     @Override
-    public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
-    {
+    public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices) {
         return new AutoCompleteCallbackActionImpl(this, focused.getType()).addChoices(choices);
     }
 }

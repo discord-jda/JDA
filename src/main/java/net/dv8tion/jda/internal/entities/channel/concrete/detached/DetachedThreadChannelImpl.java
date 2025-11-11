@@ -37,18 +37,17 @@ import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<DetachedThreadChannelImpl>
-    implements
-        ThreadChannel,
-        ThreadChannelMixin<DetachedThreadChannelImpl>,
-        IInteractionPermissionMixin<DetachedThreadChannelImpl>
-{
+        implements ThreadChannel,
+                ThreadChannelMixin<DetachedThreadChannelImpl>,
+                IInteractionPermissionMixin<DetachedThreadChannelImpl> {
     private final ChannelType type;
     private ChannelInteractionPermissions interactionPermissions;
 
@@ -66,329 +65,288 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
     private int slowmode;
     private int flags;
 
-    public DetachedThreadChannelImpl(long id, DetachedGuildImpl guild, ChannelType type)
-    {
+    public DetachedThreadChannelImpl(long id, DetachedGuildImpl guild, ChannelType type) {
         super(id, guild);
         this.type = type;
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return true;
     }
 
     @Nonnull
     @Override
-    public EnumSet<ChannelFlag> getFlags()
-    {
+    public EnumSet<ChannelFlag> getFlags() {
         return ChannelFlag.fromRaw(flags);
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return type;
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         return latestMessageId;
     }
 
     @Override
-    public int getMessageCount()
-    {
+    public int getMessageCount() {
         return messageCount;
     }
 
     @Override
-    public int getTotalMessageCount()
-    {
+    public int getTotalMessageCount() {
         return totalMessageCount;
     }
 
     @Override
-    public int getMemberCount()
-    {
+    public int getMemberCount() {
         return memberCount;
     }
 
     @Override
-    public boolean isLocked()
-    {
+    public boolean isLocked() {
         return locked;
     }
 
     @Override
-    public boolean canTalk(@Nonnull Member member)
-    {
+    public boolean canTalk(@Nonnull Member member) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public IThreadContainerUnion getParentChannel()
-    {
+    public IThreadContainerUnion getParentChannel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public List<ForumTag> getAppliedTags()
-    {
+    public List<ForumTag> getAppliedTags() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveParentMessage()
-    {
+    public RestAction<Message> retrieveParentMessage() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveStartMessage()
-    {
+    public RestAction<Message> retrieveStartMessage() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public IPermissionContainer getPermissionContainer()
-    {
+    public IPermissionContainer getPermissionContainer() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public List<ThreadMember> getThreadMembers()
-    {
+    public List<ThreadMember> getThreadMembers() {
         throw detachedException();
     }
 
     @Nullable
     @Override
-    public ThreadMember getThreadMemberById(long id)
-    {
+    public ThreadMember getThreadMemberById(long id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<ThreadMember> retrieveThreadMemberById(long id)
-    {
+    public CacheRestAction<ThreadMember> retrieveThreadMemberById(long id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ThreadMemberPaginationAction retrieveThreadMembers()
-    {
+    public ThreadMemberPaginationAction retrieveThreadMembers() {
         throw detachedException();
     }
 
     @Override
-    public long getOwnerIdLong()
-    {
+    public long getOwnerIdLong() {
         return ownerId;
     }
 
     @Override
-    public boolean isArchived()
-    {
+    public boolean isArchived() {
         return archived;
     }
 
     @Override
-    public boolean isInvitable()
-    {
-        if (type != ChannelType.GUILD_PRIVATE_THREAD)
-            throw new UnsupportedOperationException("Only private threads support the concept of invitable.");
+    public boolean isInvitable() {
+        if (type != ChannelType.GUILD_PRIVATE_THREAD) {
+            throw new UnsupportedOperationException(
+                    "Only private threads support the concept of invitable.");
+        }
 
         return invitable;
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getTimeArchiveInfoLastModified()
-    {
+    public OffsetDateTime getTimeArchiveInfoLastModified() {
         return Helpers.toOffset(archiveTimestamp);
     }
 
     @Nonnull
     @Override
-    public AutoArchiveDuration getAutoArchiveDuration()
-    {
+    public AutoArchiveDuration getAutoArchiveDuration() {
         return autoArchiveDuration;
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getTimeCreated()
-    {
-        return creationTimestamp == 0 ? TimeUtil.getTimeCreated(getIdLong()) : Helpers.toOffset(creationTimestamp);
+    public OffsetDateTime getTimeCreated() {
+        return creationTimestamp == 0
+                ? TimeUtil.getTimeCreated(getIdLong())
+                : Helpers.toOffset(creationTimestamp);
     }
 
     @Override
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return slowmode;
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> join()
-    {
+    public RestAction<Void> join() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> leave()
-    {
+    public RestAction<Void> leave() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> addThreadMemberById(long id)
-    {
+    public RestAction<Void> addThreadMemberById(long id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeThreadMemberById(long id)
-    {
+    public RestAction<Void> removeThreadMemberById(long id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ThreadChannelManager getManager()
-    {
+    public ThreadChannelManager getManager() {
         throw detachedException();
     }
 
     @Override
-    public void checkCanManage()
-    {
+    public void checkCanManage() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelInteractionPermissions getInteractionPermissions()
-    {
+    public ChannelInteractionPermissions getInteractionPermissions() {
         return interactionPermissions;
     }
 
     @Override
-    public DetachedThreadChannelImpl setLatestMessageIdLong(long latestMessageId)
-    {
+    public DetachedThreadChannelImpl setLatestMessageIdLong(long latestMessageId) {
         this.latestMessageId = latestMessageId;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setAutoArchiveDuration(AutoArchiveDuration autoArchiveDuration)
-    {
+    public DetachedThreadChannelImpl setAutoArchiveDuration(
+            AutoArchiveDuration autoArchiveDuration) {
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setLocked(boolean locked)
-    {
+    public DetachedThreadChannelImpl setLocked(boolean locked) {
         this.locked = locked;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setArchived(boolean archived)
-    {
+    public DetachedThreadChannelImpl setArchived(boolean archived) {
         this.archived = archived;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setInvitable(boolean invitable)
-    {
+    public DetachedThreadChannelImpl setInvitable(boolean invitable) {
         this.invitable = invitable;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setArchiveTimestamp(long archiveTimestamp)
-    {
+    public DetachedThreadChannelImpl setArchiveTimestamp(long archiveTimestamp) {
         this.archiveTimestamp = archiveTimestamp;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setCreationTimestamp(long creationTimestamp)
-    {
+    public DetachedThreadChannelImpl setCreationTimestamp(long creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setOwnerId(long ownerId)
-    {
+    public DetachedThreadChannelImpl setOwnerId(long ownerId) {
         this.ownerId = ownerId;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setMessageCount(int messageCount)
-    {
+    public DetachedThreadChannelImpl setMessageCount(int messageCount) {
         this.messageCount = messageCount;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setTotalMessageCount(int messageCount)
-    {
-        this.totalMessageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
+    public DetachedThreadChannelImpl setTotalMessageCount(int messageCount) {
+        this.totalMessageCount =
+                Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setMemberCount(int memberCount)
-    {
+    public DetachedThreadChannelImpl setMemberCount(int memberCount) {
         this.memberCount = memberCount;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setSlowmode(int slowmode)
-    {
+    public DetachedThreadChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
         return this;
     }
 
     @Override
-    public DetachedThreadChannelImpl setFlags(int flags)
-    {
+    public DetachedThreadChannelImpl setFlags(int flags) {
         this.flags = flags;
         return this;
     }
 
     @Nonnull
     @Override
-    public DetachedThreadChannelImpl setInteractionPermissions(@Nonnull ChannelInteractionPermissions interactionPermissions)
-    {
+    public DetachedThreadChannelImpl setInteractionPermissions(
+            @Nonnull ChannelInteractionPermissions interactionPermissions) {
         this.interactionPermissions = interactionPermissions;
         return this;
     }

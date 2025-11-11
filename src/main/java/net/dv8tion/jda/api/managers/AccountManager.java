@@ -37,12 +37,11 @@ import javax.annotation.Nullable;
  * @see net.dv8tion.jda.api.JDA#getSelfUser() JDA.getSelfUser()
  * @see net.dv8tion.jda.api.entities.SelfUser#getManager()
  */
-public interface AccountManager extends Manager<AccountManager>
-{
+public interface AccountManager extends Manager<AccountManager> {
     /**
      * Used to reset the name field
      */
-    long NAME   = 1;
+    long NAME = 1;
     /** Used to reset the avatar field */
     long AVATAR = 1 << 1;
     /** Used to reset the banner field */

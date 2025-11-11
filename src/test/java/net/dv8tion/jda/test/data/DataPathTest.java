@@ -24,13 +24,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class DataPathTest
-{
+public class DataPathTest {
     @Test
-    void testSimple()
-    {
-        DataObject object = DataObject.empty()
-                .put("foo", "10"); // string to also test parsing
+    void testSimple() {
+        DataObject object = DataObject.empty().put("foo", "10"); // string to also test parsing
 
         assertThat(DataPath.getInt(object, "foo")).isEqualTo(10);
 
@@ -39,26 +36,24 @@ public class DataPathTest
     }
 
     @Test
-    void testSimpleMissing()
-    {
+    void testSimpleMissing() {
         DataObject object = DataObject.empty();
 
         assertThat(DataPath.getLong(object, "foo?", 0)).isEqualTo(0L);
         assertThatThrownBy(() -> DataPath.getLong(object, "foo"))
-            .hasMessage("Missing value for key 'foo' with expected type long\n{}")
-            .isInstanceOf(ParsingException.class);
+                .hasMessage("Missing value for key 'foo' with expected type long\n{}")
+                .isInstanceOf(ParsingException.class);
 
         DataArray array = DataArray.empty();
 
         assertThat(DataPath.getBoolean(array, "[0]?", true)).isTrue();
         assertThatThrownBy(() -> DataPath.getObject(array, "[0]"))
-            .hasMessage("Could not resolve value of type Object at path \"[0]\"")
-            .isInstanceOf(ParsingException.class);
+                .hasMessage("Could not resolve value of type Object at path \"[0]\"")
+                .isInstanceOf(ParsingException.class);
     }
 
     @Test
-    void testObjectInArray()
-    {
+    void testObjectInArray() {
         DataObject object = DataObject.empty().put("foo", 10.0);
         DataArray array = DataArray.empty().add(object);
 
@@ -66,52 +61,53 @@ public class DataPathTest
         assertThat(DataPath.getDouble(array, "[1]?.foo", 20.0)).isEqualTo(20.0);
 
         assertThatIndexOutOfBoundsException()
-            .isThrownBy(() -> DataPath.getDouble(array, "[1].foo"));
+                .isThrownBy(() -> DataPath.getDouble(array, "[1].foo"));
     }
 
     @Test
-    void testArrayInObject()
-    {
+    void testArrayInObject() {
         DataArray array = DataArray.empty().add("hello");
         DataObject object = DataObject.empty().put("foo", array);
 
         assertThat(DataPath.getString(object, "foo[0]")).isEqualTo("hello");
         assertThat(DataPath.getString(object, "foo[1]?", "world")).isEqualTo("world");
         assertThatIndexOutOfBoundsException()
-            .isThrownBy(() -> DataPath.getString(object, "foo[1]"));
+                .isThrownBy(() -> DataPath.getString(object, "foo[1]"));
     }
 
     @Test
-    void testArrayInArray()
-    {
+    void testArrayInArray() {
         DataArray array = DataArray.empty().add(DataArray.empty().add("10"));
 
         assertThat(DataPath.getUnsignedInt(array, "[0][0]")).isEqualTo(10);
         assertThat(DataPath.getUnsignedInt(array, "[0][1]?", 20)).isEqualTo(20);
         assertThat(DataPath.getUnsignedInt(array, "[1]?[0]", 20)).isEqualTo(20);
-        assertThatIndexOutOfBoundsException().isThrownBy(() -> DataPath.getUnsignedInt(array, "[0][1]"));
-        assertThatIndexOutOfBoundsException().isThrownBy(() -> DataPath.getUnsignedInt(array, "[1][0]"));
+        assertThatIndexOutOfBoundsException()
+                .isThrownBy(() -> DataPath.getUnsignedInt(array, "[0][1]"));
+        assertThatIndexOutOfBoundsException()
+                .isThrownBy(() -> DataPath.getUnsignedInt(array, "[1][0]"));
         assertThatThrownBy(() -> DataPath.getUnsignedInt(array, "[0][1]?"))
-            .hasMessage("Could not resolve value of type unsigned int at path \"[0][1]?\"")
-            .isInstanceOf(ParsingException.class);
+                .hasMessage("Could not resolve value of type unsigned int at path \"[0][1]?\"")
+                .isInstanceOf(ParsingException.class);
         assertThatThrownBy(() -> DataPath.getUnsignedInt(array, "[1]?[0]"))
-            .hasMessage("Could not resolve value of type unsigned int at path \"[1]?[0]\"")
-            .isInstanceOf(ParsingException.class);
+                .hasMessage("Could not resolve value of type unsigned int at path \"[1]?[0]\"")
+                .isInstanceOf(ParsingException.class);
     }
 
     @Test
-    void testComplex()
-    {
+    void testComplex() {
         DataObject object = DataObject.empty()
-                .put("array", DataArray.empty()
-                    .add(DataObject.empty()
-                        .put("foo", DataObject.empty()
-                            .put("bar", "hello"))));
+                .put(
+                        "array",
+                        DataArray.empty()
+                                .add(DataObject.empty()
+                                        .put("foo", DataObject.empty().put("bar", "hello"))));
 
         assertThat(DataPath.getString(object, "array[0].foo.bar")).isEqualTo("hello");
         assertThat(DataPath.getString(object, "array[0].wrong?.bar", "world")).isEqualTo("world");
         assertThatThrownBy(() -> DataPath.getString(object, "array[0].wrong?.bar"))
-            .hasMessage("Could not resolve value of type String at path \"array[0].wrong?.bar\"")
-            .isInstanceOf(ParsingException.class);
+                .hasMessage(
+                        "Could not resolve value of type String at path \"array[0].wrong?.bar\"")
+                .isInstanceOf(ParsingException.class);
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.Message;
@@ -25,96 +26,85 @@ import net.dv8tion.jda.internal.managers.AccountManagerImpl;
 
 import javax.annotation.Nonnull;
 
-public class SelfUserImpl extends UserImpl implements SelfUser
-{
+public class SelfUserImpl extends UserImpl implements SelfUser {
     private boolean verified;
     private boolean mfaEnabled;
     private long applicationId;
 
-    public SelfUserImpl(long id, JDAImpl api)
-    {
+    public SelfUserImpl(long id, JDAImpl api) {
         super(id, api);
-        this.applicationId = id; // configured later by EntityBuilder#createSelfUser when handling the ready event payload
+        this.applicationId =
+                id; // configured later by EntityBuilder#createSelfUser when handling the ready
+        // event payload
     }
 
     @Override
-    public boolean hasPrivateChannel()
-    {
+    public boolean hasPrivateChannel() {
         return false;
     }
 
     @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
+    public PrivateChannel getPrivateChannel() {
+        throw new UnsupportedOperationException(
+                "You cannot get a PrivateChannel with yourself (SelfUser)");
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<PrivateChannel> openPrivateChannel()
-    {
-        throw new UnsupportedOperationException("You cannot open a PrivateChannel with yourself (SelfUser)");
+    public CacheRestAction<PrivateChannel> openPrivateChannel() {
+        throw new UnsupportedOperationException(
+                "You cannot open a PrivateChannel with yourself (SelfUser)");
     }
 
     @Override
-    public long getApplicationIdLong()
-    {
+    public long getApplicationIdLong() {
         return applicationId;
     }
 
     @Override
-    public boolean isVerified()
-    {
+    public boolean isVerified() {
         return verified;
     }
 
     @Override
-    public boolean isMfaEnabled()
-    {
+    public boolean isMfaEnabled() {
         return mfaEnabled;
     }
 
     @Override
-    public long getAllowedFileSize()
-    {
+    public long getAllowedFileSize() {
         return Message.MAX_FILE_SIZE;
     }
 
     @Nonnull
     @Override
-    public AccountManager getManager()
-    {
+    public AccountManager getManager() {
         return new AccountManagerImpl(this);
     }
 
-    public SelfUserImpl setVerified(boolean verified)
-    {
+    public SelfUserImpl setVerified(boolean verified) {
         this.verified = verified;
         return this;
     }
 
-    public SelfUserImpl setMfaEnabled(boolean enabled)
-    {
+    public SelfUserImpl setMfaEnabled(boolean enabled) {
         this.mfaEnabled = enabled;
         return this;
     }
 
-    public SelfUserImpl setApplicationId(long id)
-    {
+    public SelfUserImpl setApplicationId(long id) {
         this.applicationId = id;
         return this;
     }
 
-    public static SelfUserImpl copyOf(SelfUserImpl other, JDAImpl jda)
-    {
+    public static SelfUserImpl copyOf(SelfUserImpl other, JDAImpl jda) {
         SelfUserImpl selfUser = new SelfUserImpl(other.id, jda);
         selfUser.setName(other.name)
                 .setGlobalName(other.globalName)
                 .setAvatarId(other.avatarId)
                 .setDiscriminator(other.getDiscriminatorInt())
                 .setBot(other.bot);
-        return selfUser
-                .setVerified(other.verified)
+        return selfUser.setVerified(other.verified)
                 .setMfaEnabled(other.mfaEnabled)
                 .setApplicationId(other.applicationId);
     }

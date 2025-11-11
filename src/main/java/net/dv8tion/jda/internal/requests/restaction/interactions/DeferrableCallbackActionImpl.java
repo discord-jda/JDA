@@ -24,23 +24,22 @@ import net.dv8tion.jda.internal.interactions.response.InteractionCallbackRespons
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 
-public abstract class DeferrableCallbackActionImpl extends InteractionCallbackImpl<InteractionHook>
-{
+public abstract class DeferrableCallbackActionImpl
+        extends InteractionCallbackImpl<InteractionHook> {
     protected final InteractionHookImpl hook;
 
-    public DeferrableCallbackActionImpl(InteractionHookImpl hook)
-    {
+    public DeferrableCallbackActionImpl(InteractionHookImpl hook) {
         super(hook.getInteraction());
         this.hook = hook;
     }
 
-    //Here we intercept the responses and forward this information to our followup hook
-    // Using this, we can make nice cascading exceptions which fail all followup messages simultaneously.
+    // Here we intercept the responses and forward this information to our followup hook
+    // Using this, we can make nice cascading exceptions which fail all followup messages
+    // simultaneously.
 
     @Override
-    protected void handleSuccess(Response response, Request<InteractionHook> request)
-    {
-        //releaseHook would be called by the super class's handling of this success, however
+    protected void handleSuccess(Response response, Request<InteractionHook> request) {
+        // releaseHook would be called by the super class's handling of this success, however
         // we also need to provide the hook itself to the success callback of the RestAction,
         // so we override this functionality
         interaction.releaseHook(true);
@@ -48,22 +47,23 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
         request.onSuccess(hook);
     }
 
-    private void parseOptionalBody(Response response)
-    {
+    private void parseOptionalBody(Response response) {
         okhttp3.Response rawResponse = response.getRawResponse();
-        if (rawResponse == null)
+        if (rawResponse == null) {
             return;
+        }
 
         ResponseBody body = rawResponse.body();
-        if (body == null)
+        if (body == null) {
             return;
+        }
 
         MediaType mediaType = body.contentType();
-        if (mediaType != null && mediaType.toString().startsWith("application/json"))
-        {
+        if (mediaType != null && mediaType.toString().startsWith("application/json")) {
             response.optObject()
-                .flatMap(obj -> obj.optObject("resource"))
-                .ifPresent(resource -> hook.setCallbackResponse(new InteractionCallbackResponseImpl(hook, resource)));
+                    .flatMap(obj -> obj.optObject("resource"))
+                    .ifPresent(resource -> hook.setCallbackResponse(
+                            new InteractionCallbackResponseImpl(hook, resource)));
         }
     }
 }

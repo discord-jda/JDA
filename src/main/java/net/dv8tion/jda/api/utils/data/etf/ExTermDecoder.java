@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.utils.data.etf;
 
-import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -26,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.InflaterOutputStream;
 
+import javax.annotation.Nonnull;
+
 import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
 
 /**
@@ -34,11 +35,8 @@ import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
  * @see #unpack(ByteBuffer)
  * @see #unpackMap(ByteBuffer)
  * @see #unpackList(ByteBuffer)
- *
- * @since  4.2.1
  */
-public class ExTermDecoder
-{
+public class ExTermDecoder {
     /**
      * Unpacks the provided term into a java object.
      *
@@ -62,10 +60,10 @@ public class ExTermDecoder
      * @return The java object
      */
     @Nonnull
-    public static Object unpack(@Nonnull ByteBuffer buffer)
-    {
-        if (buffer.get() != -125)
+    public static Object unpack(@Nonnull ByteBuffer buffer) {
+        if (buffer.get() != -125) {
             throw new IllegalArgumentException("Failed header check");
+        }
 
         return unpack0(buffer);
     }
@@ -94,11 +92,11 @@ public class ExTermDecoder
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> unpackMap(@Nonnull ByteBuffer buffer)
-    {
+    public static Map<String, Object> unpackMap(@Nonnull ByteBuffer buffer) {
         byte tag = buffer.get(1);
-        if (tag != MAP)
+        if (tag != MAP) {
             throw new IllegalArgumentException("Cannot unpack map from tag " + tag);
+        }
         return (Map<String, Object>) unpack(buffer);
     }
 
@@ -126,53 +124,63 @@ public class ExTermDecoder
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public static List<Object> unpackList(@Nonnull ByteBuffer buffer)
-    {
+    public static List<Object> unpackList(@Nonnull ByteBuffer buffer) {
         byte tag = buffer.get(1);
-        if (tag != LIST)
+        if (tag != LIST) {
             throw new IllegalArgumentException("Cannot unpack list from tag " + tag);
+        }
 
         return (List<Object>) unpack(buffer);
     }
 
-    private static Object unpack0(@Nonnull ByteBuffer buffer)
-    {
+    private static Object unpack0(@Nonnull ByteBuffer buffer) {
         int tag = buffer.get();
         switch (tag) {
-        case COMPRESSED: return unpackCompressed(buffer);
-        case SMALL_INT: return unpackSmallInt(buffer);
-        case SMALL_BIGINT: return unpackSmallBigint(buffer);
-        case INT: return unpackInt(buffer);
+            case COMPRESSED:
+                return unpackCompressed(buffer);
+            case SMALL_INT:
+                return unpackSmallInt(buffer);
+            case SMALL_BIGINT:
+                return unpackSmallBigint(buffer);
+            case INT:
+                return unpackInt(buffer);
 
-        case FLOAT: return unpackOldFloat(buffer);
-        case NEW_FLOAT: return unpackFloat(buffer);
+            case FLOAT:
+                return unpackOldFloat(buffer);
+            case NEW_FLOAT:
+                return unpackFloat(buffer);
 
-        case SMALL_ATOM_UTF8: return unpackSmallAtom(buffer, StandardCharsets.UTF_8);
-        case SMALL_ATOM: return unpackSmallAtom(buffer, StandardCharsets.ISO_8859_1);
-        case ATOM_UTF8: return unpackAtom(buffer, StandardCharsets.UTF_8);
-        case ATOM: return unpackAtom(buffer, StandardCharsets.ISO_8859_1);
+            case SMALL_ATOM_UTF8:
+                return unpackSmallAtom(buffer, StandardCharsets.UTF_8);
+            case SMALL_ATOM:
+                return unpackSmallAtom(buffer, StandardCharsets.ISO_8859_1);
+            case ATOM_UTF8:
+                return unpackAtom(buffer, StandardCharsets.UTF_8);
+            case ATOM:
+                return unpackAtom(buffer, StandardCharsets.ISO_8859_1);
 
-        case MAP: return unpackMap0(buffer);
-        case LIST: return unpackList0(buffer);
-        case NIL: return Collections.emptyList();
+            case MAP:
+                return unpackMap0(buffer);
+            case LIST:
+                return unpackList0(buffer);
+            case NIL:
+                return Collections.emptyList();
 
-        case STRING: return unpackString(buffer);
-        case BINARY: return unpackBinary(buffer);
-        default:
-            throw new IllegalArgumentException("Unknown tag " + tag);
+            case STRING:
+                return unpackString(buffer);
+            case BINARY:
+                return unpackBinary(buffer);
+            default:
+                throw new IllegalArgumentException("Unknown tag " + tag);
         }
     }
 
-    private static Object unpackCompressed(@Nonnull ByteBuffer buffer)
-    {
+    private static Object unpackCompressed(@Nonnull ByteBuffer buffer) {
         int size = buffer.getInt();
         ByteArrayOutputStream decompressed = new ByteArrayOutputStream(size);
-        try (InflaterOutputStream inflater = new InflaterOutputStream(decompressed))
-        {
+        try (InflaterOutputStream inflater = new InflaterOutputStream(decompressed)) {
             inflater.write(buffer.array(), buffer.position(), buffer.remaining());
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
 
@@ -180,25 +188,21 @@ public class ExTermDecoder
         return unpack0(buffer);
     }
 
-    private static double unpackOldFloat(@Nonnull ByteBuffer buffer)
-    {
+    private static double unpackOldFloat(@Nonnull ByteBuffer buffer) {
         String bytes = getString(buffer, StandardCharsets.ISO_8859_1, 31);
         return Double.parseDouble(bytes);
     }
 
-    private static double unpackFloat(@Nonnull ByteBuffer buffer)
-    {
+    private static double unpackFloat(@Nonnull ByteBuffer buffer) {
         return buffer.getDouble();
     }
 
-    private static long unpackSmallBigint(@Nonnull ByteBuffer buffer)
-    {
+    private static long unpackSmallBigint(@Nonnull ByteBuffer buffer) {
         int arity = Byte.toUnsignedInt(buffer.get());
         int sign = Byte.toUnsignedInt(buffer.get());
         long sum = 0;
         long offset = 0;
-        while (arity-- > 0)
-        {
+        while (arity-- > 0) {
             sum += Byte.toUnsignedLong(buffer.get()) << offset;
             offset += 8;
         }
@@ -206,82 +210,77 @@ public class ExTermDecoder
         return sign == 0 ? sum : -sum;
     }
 
-    private static int unpackSmallInt(@Nonnull ByteBuffer buffer)
-    {
+    private static int unpackSmallInt(@Nonnull ByteBuffer buffer) {
         return Byte.toUnsignedInt(buffer.get());
     }
 
-    private static int unpackInt(@Nonnull ByteBuffer buffer)
-    {
+    private static int unpackInt(@Nonnull ByteBuffer buffer) {
         return buffer.getInt();
     }
 
-    private static List<Object> unpackString(@Nonnull ByteBuffer buffer)
-    {
+    private static List<Object> unpackString(@Nonnull ByteBuffer buffer) {
         int length = Short.toUnsignedInt(buffer.getShort());
         List<Object> bytes = new ArrayList<>(length);
-        while (length-- > 0)
+        while (length-- > 0) {
             bytes.add(buffer.get());
+        }
         return bytes;
     }
 
-    private static String unpackBinary(@Nonnull ByteBuffer buffer)
-    {
+    private static String unpackBinary(@Nonnull ByteBuffer buffer) {
         int length = buffer.getInt();
         return getString(buffer, StandardCharsets.UTF_8, length);
     }
 
-    private static Object unpackSmallAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset)
-    {
+    private static Object unpackSmallAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset) {
         int length = Byte.toUnsignedInt(buffer.get());
         return unpackAtom(buffer, charset, length);
     }
 
-    private static Object unpackAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset)
-    {
+    private static Object unpackAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset) {
         int length = Short.toUnsignedInt(buffer.getShort());
         return unpackAtom(buffer, charset, length);
     }
 
-    private static Object unpackAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length)
-    {
+    private static Object unpackAtom(
+            @Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length) {
         String value = getString(buffer, charset, length);
-        switch (value)
-        {
-        case "true": return true;
-        case "false": return false;
-        case "nil": return null;
-        default: return value.intern();
+        switch (value) {
+            case "true":
+                return true;
+            case "false":
+                return false;
+            case "nil":
+                return null;
+            default:
+                return value.intern();
         }
     }
 
-    private static String getString(@Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length)
-    {
+    private static String getString(
+            @Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length) {
         byte[] array = new byte[length];
         buffer.get(array);
         return new String(array, charset);
     }
 
-    private static List<Object> unpackList0(@Nonnull ByteBuffer buffer)
-    {
+    private static List<Object> unpackList0(@Nonnull ByteBuffer buffer) {
         int length = buffer.getInt();
         List<Object> list = new ArrayList<>(length);
-        while (length-- > 0)
-        {
+        while (length-- > 0) {
             list.add(unpack0(buffer));
         }
         Object tail = unpack0(buffer);
-        if (tail != Collections.emptyList())
+        if (tail != Collections.emptyList()) {
             throw new IllegalArgumentException("Unexpected tail " + tail);
+        }
         return list;
     }
 
-    private static Map<String, Object> unpackMap0(@Nonnull ByteBuffer buffer)
-    {
+    private static Map<String, Object> unpackMap0(@Nonnull ByteBuffer buffer) {
         Map<String, Object> map = new HashMap<>();
         int arity = buffer.getInt();
-        while (arity-- > 0)
-        {
+        while (arity-- > 0) {
             Object rawKey = unpack0(buffer);
             String key = String.valueOf(rawKey);
             Object value = unpack0(buffer);

@@ -30,9 +30,6 @@ import okhttp3.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
@@ -46,8 +43,11 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
 
-public class Requester
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.net.ssl.SSLPeerUnverifiedException;
+
+public class Requester {
     private static final int[] RETRY_ERROR_CODES = {
         502, // bad gateway
         503, // service temporarily unavailable
@@ -61,10 +61,14 @@ public class Requester
     };
 
     public static final Logger LOG = JDALogger.getLog(Requester.class);
+
     @SuppressWarnings("deprecation")
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[0]);
-    public static final MediaType MEDIA_TYPE_JSON  = MediaType.parse("application/json; charset=utf-8");
-    public static final MediaType MEDIA_TYPE_OCTET = MediaType.parse("application/octet-stream; charset=utf-8");
+
+    public static final MediaType MEDIA_TYPE_JSON =
+            MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_OCTET =
+            MediaType.parse("application/octet-stream; charset=utf-8");
     public static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     public static final MediaType MEDIA_TYPE_GIF = MediaType.parse("image/gif");
 
@@ -77,16 +81,21 @@ public class Requester
 
     private final OkHttpClient httpClient;
 
-    //when we actually set the shard info we can also set the mdc context map, before it makes no sense
+    // when we actually set the shard info we can also set the mdc context map, before it makes no
+    // sense
     private boolean isContextReady = false;
     private ConcurrentMap<String, String> contextMap = null;
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api, AuthorizationConfig authConfig, RestConfig config, RestRateLimiter rateLimiter)
-    {
-        if (authConfig == null)
+    public Requester(
+            JDA api,
+            AuthorizationConfig authConfig,
+            RestConfig config,
+            RestRateLimiter rateLimiter) {
+        if (authConfig == null) {
             throw new NullPointerException("Provided config was null!");
+        }
 
         this.authConfig = authConfig;
         this.api = (JDAImpl) api;
@@ -97,45 +106,44 @@ public class Requester
         this.httpClient = this.api.getHttpClient();
     }
 
-    public void setContextReady(boolean ready)
-    {
+    public void setContextReady(boolean ready) {
         this.isContextReady = ready;
     }
 
-    public void setContext()
-    {
-        if (!isContextReady)
+    public void setContext() {
+        if (!isContextReady) {
             return;
-        if (contextMap == null)
+        }
+        if (contextMap == null) {
             contextMap = api.getContextMap();
+        }
         contextMap.forEach(MDC::put);
     }
 
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return api;
     }
 
-    public <T> void request(Request<T> apiRequest)
-    {
-        if (rateLimiter.isStopped())
-            throw new RejectedExecutionException("The Requester has been stopped! No new requests can be requested!");
+    public <T> void request(Request<T> apiRequest) {
+        if (rateLimiter.isStopped()) {
+            throw new RejectedExecutionException(
+                    "The Requester has been stopped! No new requests can be requested!");
+        }
 
-        if (apiRequest.shouldQueue())
+        if (apiRequest.shouldQueue()) {
             rateLimiter.enqueue(new WorkTask(apiRequest));
-        else
+        } else {
             execute(new WorkTask(apiRequest), true);
+        }
     }
 
-    private static boolean isRetry(Throwable e)
-    {
-        return e instanceof SocketException             // Socket couldn't be created or access failed
-            || e instanceof SocketTimeoutException      // Connection timed out
-            || e instanceof SSLPeerUnverifiedException; // SSL Certificate was wrong
+    private static boolean isRetry(Throwable e) {
+        return e instanceof SocketException // Socket couldn't be created or access failed
+                || e instanceof SocketTimeoutException // Connection timed out
+                || e instanceof SSLPeerUnverifiedException; // SSL Certificate was wrong
     }
 
-    public okhttp3.Response execute(WorkTask task)
-    {
+    public okhttp3.Response execute(WorkTask task) {
         return execute(task, false);
     }
 
@@ -151,13 +159,11 @@ public class Requester
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public okhttp3.Response execute(WorkTask task, boolean handleOnRateLimit)
-    {
+    public okhttp3.Response execute(WorkTask task, boolean handleOnRateLimit) {
         return execute(task, false, handleOnRateLimit);
     }
 
-    public okhttp3.Response execute(WorkTask task, boolean retried, boolean handleOnRatelimit)
-    {
+    public okhttp3.Response execute(WorkTask task, boolean retried, boolean handleOnRatelimit) {
         Route.CompiledRoute route = task.getRoute();
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
@@ -169,14 +175,10 @@ public class Requester
 
         applyBody(apiRequest, builder);
         applyHeaders(apiRequest, builder);
-        if (customBuilder != null)
-        {
-            try
-            {
+        if (customBuilder != null) {
+            try {
                 customBuilder.accept(builder);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 LOG.error("Custom request builder caused exception", e);
             }
         }
@@ -186,269 +188,249 @@ public class Requester
         Set<String> rays = new LinkedHashSet<>();
         okhttp3.Response[] responses = new okhttp3.Response[4];
         // we have an array of all responses to later close them all at once
-        //the response below this comment is used as the first successful response from the server
+        // the response below this comment is used as the first successful response from the server
         okhttp3.Response lastResponse = null;
-        try
-        {
+        try {
             LOG.trace("Executing request {} {}", task.getRoute().getMethod(), url);
             int code = 0;
-            for (int attempt = 0; attempt < responses.length; attempt++)
-            {
-                if (apiRequest.isSkipped())
+            for (int attempt = 0; attempt < responses.length; attempt++) {
+                if (apiRequest.isSkipped()) {
                     return null;
+                }
 
                 Call call = httpClient.newCall(request);
                 lastResponse = call.execute();
                 code = lastResponse.code();
                 responses[attempt] = lastResponse;
                 String cfRay = lastResponse.header("CF-RAY");
-                if (cfRay != null)
+                if (cfRay != null) {
                     rays.add(cfRay);
+                }
 
                 // Retry a few specific server errors that are related to server issues
-                if (!shouldRetry(code))
+                if (!shouldRetry(code)) {
                     break;
-
-                LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
-                        apiRequest.getRoute().getMethod(),
-                        url, code, attempt + 1);
-                try
-                {
-                    Thread.sleep(500 << attempt);
                 }
-                catch (InterruptedException ignored)
-                {
+
+                LOG.debug(
+                        "Requesting {} -> {} returned status {}... retrying (attempt {})",
+                        apiRequest.getRoute().getMethod(),
+                        url,
+                        code,
+                        attempt + 1);
+                try {
+                    Thread.sleep(500 << attempt);
+                } catch (InterruptedException ignored) {
                     break;
                 }
             }
 
-            LOG.trace("Finished Request {} {} with code {}", route.getMethod(), lastResponse.request().url(), code);
+            LOG.trace(
+                    "Finished Request {} {} with code {}",
+                    route.getMethod(),
+                    lastResponse.request().url(),
+                    code);
 
-            if (shouldRetry(code))
-            {
-                //Epic failure from other end. Attempted 4 times.
+            if (shouldRetry(code)) {
+                // Epic failure from other end. Attempted 4 times.
                 task.handleResponse(lastResponse, -1, rays);
                 return null;
             }
 
-            if (!rays.isEmpty())
+            if (!rays.isEmpty()) {
                 LOG.debug("Received response with following cf-rays: {}", rays);
+            }
 
-            if (handleOnRatelimit && code == 429)
-            {
+            if (handleOnRatelimit && code == 429) {
                 long retryAfter = parseRetry(lastResponse);
                 task.handleResponse(lastResponse, retryAfter, rays);
-            }
-            else if (code != 429)
-            {
+            } else if (code != 429) {
                 task.handleResponse(lastResponse, rays);
-            }
-            else if (getContentType(lastResponse).startsWith("application/json")) // potentially not json when cloudflare does 429
+            } else if (getContentType(lastResponse)
+                    .startsWith(
+                            "application/json")) // potentially not json when cloudflare does 429
             {
                 // On 429, replace the retry-after header if its wrong (discord moment)
                 // We just pick whichever is bigger between body and header
-                try (InputStream body = IOUtil.getBody(lastResponse))
-                {
-                    long retryAfterBody = (long) Math.ceil(DataObject.fromJson(body).getDouble("retry_after", 0));
-                    long retryAfterHeader = Long.parseLong(lastResponse.header(RestRateLimiter.RETRY_AFTER_HEADER));
-                    lastResponse = lastResponse.newBuilder()
-                            .header(RestRateLimiter.RETRY_AFTER_HEADER, Long.toString(Math.max(retryAfterHeader, retryAfterBody)))
+                try (InputStream body = IOUtil.getBody(lastResponse)) {
+                    long retryAfterBody =
+                            (long) Math.ceil(DataObject.fromJson(body).getDouble("retry_after", 0));
+                    long retryAfterHeader =
+                            Long.parseLong(lastResponse.header(RestRateLimiter.RETRY_AFTER_HEADER));
+                    lastResponse = lastResponse
+                            .newBuilder()
+                            .header(
+                                    RestRateLimiter.RETRY_AFTER_HEADER,
+                                    Long.toString(Math.max(retryAfterHeader, retryAfterBody)))
                             .build();
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     LOG.warn("Failed to parse retry-after response body", e);
                 }
             }
 
             return lastResponse;
-        }
-        catch (UnknownHostException e)
-        {
+        } catch (UnknownHostException e) {
             LOG.error("DNS resolution failed: {}", e.getMessage());
             task.handleResponse(e, rays);
             return null;
-        }
-        catch (IOException e)
-        {
-            if (retryOnTimeout && !retried && isRetry(e))
+        } catch (IOException e) {
+            if (retryOnTimeout && !retried && isRetry(e)) {
                 return execute(task, true, handleOnRatelimit);
+            }
             LOG.error("There was an I/O error while executing a REST request: {}", e.getMessage());
             task.handleResponse(e, rays);
             return null;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LOG.error("There was an unexpected error while executing a REST request", e);
             task.handleResponse(e, rays);
             return null;
-        }
-        finally
-        {
-            for (okhttp3.Response r : responses)
-            {
-                if (r == null)
+        } finally {
+            for (okhttp3.Response r : responses) {
+                if (r == null) {
                     break;
+                }
                 r.close();
             }
         }
     }
 
-    private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder)
-    {
+    private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder) {
         Method method = apiRequest.getRoute().getMethod();
         RequestBody body = apiRequest.getBody();
 
-        if (body == null && method.requiresRequestBody())
+        if (body == null && method.requiresRequestBody()) {
             body = EMPTY_BODY;
+        }
 
         builder.method(method.toString(), body);
 
-        if (apiRequest.getRawBody() != null)
-        {
-            LOG.trace("Sending request on route {}/{} with body\n{}",
-                method,
-                apiRequest.getRoute().getCompiledRoute(),
-                apiRequest.getRawBody()
-            );
+        if (apiRequest.getRawBody() != null) {
+            LOG.trace(
+                    "Sending request on route {}/{} with body\n{}",
+                    method,
+                    apiRequest.getRoute().getCompiledRoute(),
+                    apiRequest.getRawBody());
         }
     }
 
-    private void applyHeaders(Request<?> apiRequest, okhttp3.Request.Builder builder)
-    {
+    private void applyHeaders(Request<?> apiRequest, okhttp3.Request.Builder builder) {
         builder.header("user-agent", userAgent)
-               .header("accept-encoding", "gzip")
-               .header("authorization", authConfig.getToken())
-               .header("x-ratelimit-precision", "millisecond"); // still sending this in case of regressions
+                .header("accept-encoding", "gzip")
+                .header("authorization", authConfig.getToken())
+                .header(
+                        "x-ratelimit-precision",
+                        "millisecond"); // still sending this in case of regressions
 
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing
-        if (apiRequest.getHeaders() != null)
-        {
-            for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
+        if (apiRequest.getHeaders() != null) {
+            for (Entry<String, String> header : apiRequest.getHeaders().entrySet()) {
                 builder.header(header.getKey(), header.getValue());
+            }
         }
     }
 
-    public OkHttpClient getHttpClient()
-    {
+    public OkHttpClient getHttpClient() {
         return this.httpClient;
     }
 
-    public RestRateLimiter getRateLimiter()
-    {
+    public RestRateLimiter getRateLimiter() {
         return rateLimiter;
     }
 
-    public void setRetryOnTimeout(boolean retryOnTimeout)
-    {
+    public void setRetryOnTimeout(boolean retryOnTimeout) {
         this.retryOnTimeout = retryOnTimeout;
     }
 
-    public void stop(boolean shutdown, Runnable callback)
-    {
+    public void stop(boolean shutdown, Runnable callback) {
         rateLimiter.stop(shutdown, callback);
     }
 
-    private static boolean shouldRetry(int code)
-    {
-        if (code < RETRY_ERROR_CODES[0] || code > RETRY_ERROR_CODES[RETRY_ERROR_CODES.length - 1])
+    private static boolean shouldRetry(int code) {
+        if (code < RETRY_ERROR_CODES[0] || code > RETRY_ERROR_CODES[RETRY_ERROR_CODES.length - 1]) {
             return false;
-        for (int retryCode : RETRY_ERROR_CODES)
-        {
-            if (retryCode == code)
+        }
+        for (int retryCode : RETRY_ERROR_CODES) {
+            if (retryCode == code) {
                 return true;
+            }
         }
         return false;
     }
 
-    private long parseRetry(okhttp3.Response response)
-    {
+    private long parseRetry(okhttp3.Response response) {
         String retryAfter = response.header(RestRateLimiter.RETRY_AFTER_HEADER, "0");
         return (long) (Double.parseDouble(retryAfter) * 1000);
     }
 
-    private static String getContentType(okhttp3.Response response)
-    {
+    private static String getContentType(okhttp3.Response response) {
         String type = response.header("content-type");
         return type == null ? "" : type.toLowerCase(Locale.ROOT);
     }
 
-    private class WorkTask implements RestRateLimiter.Work
-    {
+    private class WorkTask implements RestRateLimiter.Work {
         private final Request<?> request;
         private boolean done;
 
-        private WorkTask(Request<?> request)
-        {
+        private WorkTask(Request<?> request) {
             this.request = request;
         }
 
         @Nonnull
         @Override
-        public Route.CompiledRoute getRoute()
-        {
+        public Route.CompiledRoute getRoute() {
             return request.getRoute();
         }
 
         @Nonnull
         @Override
-        public JDA getJDA()
-        {
+        public JDA getJDA() {
             return request.getJDA();
         }
 
         @Nullable
         @Override
-        public okhttp3.Response execute()
-        {
+        public okhttp3.Response execute() {
             return Requester.this.execute(this);
         }
 
         @Override
-        public boolean isSkipped()
-        {
+        public boolean isSkipped() {
             return request.isSkipped();
         }
 
         @Override
-        public boolean isDone()
-        {
+        public boolean isDone() {
             return isSkipped() || done;
         }
 
         @Override
-        public boolean isPriority()
-        {
+        public boolean isPriority() {
             return request.isPriority();
         }
 
         @Override
-        public boolean isCancelled()
-        {
+        public boolean isCancelled() {
             return request.isCancelled();
         }
 
         @Override
-        public void cancel()
-        {
+        public void cancel() {
             request.cancel();
         }
 
-        private void handleResponse(okhttp3.Response response, Set<String> rays)
-        {
+        private void handleResponse(okhttp3.Response response, Set<String> rays) {
             done = true;
             request.handleResponse(new Response(response, -1, rays));
         }
 
-        private void handleResponse(Exception error, Set<String> rays)
-        {
+        private void handleResponse(Exception error, Set<String> rays) {
             done = true;
             request.handleResponse(new Response(error, rays));
         }
 
-        private void handleResponse(okhttp3.Response response, long retryAfter, Set<String> cfRays)
-        {
+        private void handleResponse(
+                okhttp3.Response response, long retryAfter, Set<String> cfRays) {
             done = true;
             request.handleResponse(new Response(response, retryAfter, cfRays));
         }

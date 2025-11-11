@@ -18,9 +18,10 @@ package net.dv8tion.jda.api.audit;
 
 import net.dv8tion.jda.internal.utils.EntityString;
 
+import java.util.Objects;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 /**
  * Plain-Old-Java-Object (POJO) representing a single
@@ -28,14 +29,12 @@ import java.util.Objects;
  * <br>This object holds the {@link #getOldValue() old-} and {@link #getNewValue() new value} for the
  * updated field. The field is specified by the {@link #getKey() key}.
  */
-public class AuditLogChange
-{
+public class AuditLogChange {
     protected final Object oldValue;
     protected final Object newValue;
     protected final String key;
 
-    public AuditLogChange(Object oldValue, Object newValue, String key)
-    {
+    public AuditLogChange(Object oldValue, Object newValue, String key) {
         this.oldValue = oldValue;
         this.newValue = newValue;
         this.key = key;
@@ -55,8 +54,7 @@ public class AuditLogChange
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T getOldValue()
-    {
+    public <T> T getOldValue() {
         return (T) oldValue;
     }
 
@@ -74,8 +72,7 @@ public class AuditLogChange
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T getNewValue()
-    {
+    public <T> T getNewValue() {
         return (T) newValue;
     }
 
@@ -86,22 +83,20 @@ public class AuditLogChange
      * @return The key
      */
     @Nonnull
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(key, oldValue, newValue);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (!(obj instanceof AuditLogChange))
+    public boolean equals(Object obj) {
+        if (!(obj instanceof AuditLogChange)) {
             return false;
+        }
         AuditLogChange other = (AuditLogChange) obj;
         return other.key.equals(key)
                 && Objects.equals(other.oldValue, oldValue)
@@ -109,8 +104,7 @@ public class AuditLogChange
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setName(key)
                 .addMetadata(null, oldValue + " -> " + newValue)

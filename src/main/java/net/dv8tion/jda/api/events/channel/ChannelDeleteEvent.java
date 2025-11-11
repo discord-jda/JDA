@@ -24,10 +24,8 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link Channel} was deleted.
  */
-public class ChannelDeleteEvent extends GenericChannelEvent
-{
-    public ChannelDeleteEvent(@Nonnull JDA api, long responseNumber, Channel channel)
-    {
+public class ChannelDeleteEvent extends GenericChannelEvent {
+    public ChannelDeleteEvent(@Nonnull JDA api, long responseNumber, Channel channel) {
         super(api, responseNumber, channel);
     }
 }

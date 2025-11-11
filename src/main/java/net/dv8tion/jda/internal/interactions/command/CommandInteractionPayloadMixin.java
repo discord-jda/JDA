@@ -20,58 +20,51 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
-public interface CommandInteractionPayloadMixin extends CommandInteractionPayload
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public interface CommandInteractionPayloadMixin extends CommandInteractionPayload {
     CommandInteractionPayload getCommandPayload();
 
     @Nonnull
     @Override
-    default Command.Type getCommandType()
-    {
+    default Command.Type getCommandType() {
         return getCommandPayload().getCommandType();
     }
 
     @Nonnull
     @Override
-    default String getName()
-    {
+    default String getName() {
         return getCommandPayload().getName();
     }
 
     @Nullable
     @Override
-    default String getSubcommandName()
-    {
+    default String getSubcommandName() {
         return getCommandPayload().getSubcommandName();
     }
 
     @Nullable
     @Override
-    default String getSubcommandGroup()
-    {
+    default String getSubcommandGroup() {
         return getCommandPayload().getSubcommandGroup();
     }
 
     @Override
-    default long getCommandIdLong()
-    {
+    default long getCommandIdLong() {
         return getCommandPayload().getCommandIdLong();
     }
 
     @Nonnull
     @Override
-    default List<OptionMapping> getOptions()
-    {
+    default List<OptionMapping> getOptions() {
         return getCommandPayload().getOptions();
     }
 
     @Override
-    default boolean isGuildCommand()
-    {
+    default boolean isGuildCommand() {
         return getCommandPayload().isGuildCommand();
     }
 }

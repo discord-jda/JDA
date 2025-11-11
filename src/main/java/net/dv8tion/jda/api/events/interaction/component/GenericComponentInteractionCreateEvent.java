@@ -40,92 +40,81 @@ import javax.annotation.Nonnull;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class GenericComponentInteractionCreateEvent extends GenericInteractionCreateEvent implements ComponentInteraction
-{
+public class GenericComponentInteractionCreateEvent extends GenericInteractionCreateEvent
+        implements ComponentInteraction {
     private final ComponentInteraction interaction;
 
-    public GenericComponentInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull ComponentInteraction interaction)
-    {
+    public GenericComponentInteractionCreateEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull ComponentInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public ComponentInteraction getInteraction()
-    {
+    public ComponentInteraction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return interaction.getChannel();
     }
 
     @Nonnull
     @Override
-    public String getComponentId()
-    {
+    public String getComponentId() {
         return interaction.getComponentId();
     }
 
     @Nonnull
     @Override
-    public ActionComponent getComponent()
-    {
+    public ActionComponent getComponent() {
         return interaction.getComponent();
     }
 
     @Nonnull
     @Override
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return interaction.getMessage();
     }
 
     @Override
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return interaction.getMessageIdLong();
     }
 
     @Nonnull
     @Override
-    public Component.Type getComponentType()
-    {
+    public Component.Type getComponentType() {
         return interaction.getComponentType();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public MessageEditCallbackAction deferEdit()
-    {
+    public MessageEditCallbackAction deferEdit() {
         return interaction.deferEdit();
     }
 
     @Nonnull
     @Override
-    public InteractionHook getHook()
-    {
+    public InteractionHook getHook() {
         return interaction.getHook();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ReplyCallbackAction deferReply()
-    {
+    public ReplyCallbackAction deferReply() {
         return interaction.deferReply();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ModalCallbackAction replyModal(@Nonnull Modal modal)
-    {
+    public ModalCallbackAction replyModal(@Nonnull Modal modal) {
         return interaction.replyModal(modal);
     }
 }

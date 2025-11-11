@@ -19,9 +19,10 @@ package net.dv8tion.jda.api.events.guild.member.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 
+import java.time.OffsetDateTime;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} had their time out changed.
@@ -42,12 +43,14 @@ import java.time.OffsetDateTime;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberUpdateTimeOutEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime>
-{
+public class GuildMemberUpdateTimeOutEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime> {
     public static final String IDENTIFIER = "timeout_time";
 
-    public GuildMemberUpdateTimeOutEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
-    {
+    public GuildMemberUpdateTimeOutEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Member member,
+            @Nullable OffsetDateTime previous) {
         super(api, responseNumber, member, previous, member.getTimeOutEnd(), IDENTIFIER);
     }
 
@@ -57,8 +60,7 @@ public class GuildMemberUpdateTimeOutEvent extends GenericGuildMemberUpdateEvent
      * @return The old end of the time out
      */
     @Nullable
-    public OffsetDateTime getOldTimeOutEnd()
-    {
+    public OffsetDateTime getOldTimeOutEnd() {
         return getOldValue();
     }
 
@@ -68,8 +70,7 @@ public class GuildMemberUpdateTimeOutEvent extends GenericGuildMemberUpdateEvent
      * @return The new end of the time out
      */
     @Nullable
-    public OffsetDateTime getNewTimeOutEnd()
-    {
+    public OffsetDateTime getNewTimeOutEnd() {
         return getNewValue();
     }
 }

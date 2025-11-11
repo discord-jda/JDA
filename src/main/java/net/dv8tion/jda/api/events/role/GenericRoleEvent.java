@@ -29,12 +29,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any RoleEvent.
  */
-public abstract class GenericRoleEvent extends Event
-{
+public abstract class GenericRoleEvent extends Event {
     protected final Role role;
 
-    public GenericRoleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role)
-    {
+    public GenericRoleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role) {
         super(api, responseNumber);
         this.role = role;
     }
@@ -45,8 +43,7 @@ public abstract class GenericRoleEvent extends Event
      * @return The role for this event
      */
     @Nonnull
-    public Role getRole()
-    {
+    public Role getRole() {
         return role;
     }
 
@@ -56,8 +53,7 @@ public abstract class GenericRoleEvent extends Event
      * @return The guild of the role
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return role.getGuild();
     }
 }

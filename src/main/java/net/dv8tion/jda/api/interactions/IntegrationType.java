@@ -18,16 +18,16 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents how an app was installed, or where a command can be used.
  *
  * @see <a target="_blank" href="https://discord.com/developers/docs/interactions/application-commands#installation-context">Discord docs</a>
  */
-public enum IntegrationType
-{
+public enum IntegrationType {
     UNKNOWN("-1"),
     /**
      * Allows commands to be added to a guild by a {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER server manager},
@@ -50,12 +50,12 @@ public enum IntegrationType
     /**
      * Contains all integration types.
      */
-    public static final Set<IntegrationType> ALL = Helpers.unmodifiableEnumSet(GUILD_INSTALL, USER_INSTALL);
+    public static final Set<IntegrationType> ALL =
+            Helpers.unmodifiableEnumSet(GUILD_INSTALL, USER_INSTALL);
 
     private final String key;
 
-    IntegrationType(String key)
-    {
+    IntegrationType(String key) {
         this.key = key;
     }
 
@@ -65,8 +65,7 @@ public enum IntegrationType
      * @return The raw value
      */
     @Nonnull
-    public String getType()
-    {
+    public String getType() {
         return key;
     }
 
@@ -80,12 +79,11 @@ public enum IntegrationType
      * @return The integration type corresponding to the key
      */
     @Nonnull
-    public static IntegrationType fromKey(@Nonnull String key)
-    {
-        for (IntegrationType value : values())
-        {
-            if (value.key.equals(key))
+    public static IntegrationType fromKey(@Nonnull String key) {
+        for (IntegrationType value : values()) {
+            if (value.key.equals(key)) {
                 return value;
+            }
         }
         return UNKNOWN;
     }

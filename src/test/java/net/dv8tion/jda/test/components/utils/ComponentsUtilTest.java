@@ -40,50 +40,44 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ComponentsUtilTest
-{
-    private static final UnknownComponentImpl UNKNOWN_COMPONENT = new UnknownComponentImpl(DataObject.empty());
+public class ComponentsUtilTest {
+    private static final UnknownComponentImpl UNKNOWN_COMPONENT =
+            new UnknownComponentImpl(DataObject.empty());
 
     @MethodSource("testUnknownComponentCannotBeInsertedArguments")
     @ParameterizedTest
-    void testUnknownComponentCannotBeInserted(ThrowableAssert.ThrowingCallable callable)
-    {
+    void testUnknownComponentCannotBeInserted(ThrowableAssert.ThrowingCallable callable) {
         Assertions.assertThatIllegalArgumentException().isThrownBy(callable);
     }
 
-    static Stream<Arguments> testUnknownComponentCannotBeInsertedArguments()
-    {
+    static Stream<Arguments> testUnknownComponentCannotBeInsertedArguments() {
         // Try everywhere ComponentsUtil is used
         return Stream.of(
                 Arguments.of(run(() -> Section.of(UNKNOWN_COMPONENT, TextDisplay.of("0")))),
-                Arguments.of(run(() -> Section.of(Button.primary("id", "label"), UNKNOWN_COMPONENT))),
-                Arguments.of(run(() -> Modal.create("id", "title").addComponents(UNKNOWN_COMPONENT))),
+                Arguments.of(
+                        run(() -> Section.of(Button.primary("id", "label"), UNKNOWN_COMPONENT))),
+                Arguments.of(
+                        run(() -> Modal.create("id", "title").addComponents(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> new MessageEditBuilder().setComponents(UNKNOWN_COMPONENT))),
-                Arguments.of(run(() -> new MessageCreateBuilder().addComponents(UNKNOWN_COMPONENT))),
+                Arguments.of(
+                        run(() -> new MessageCreateBuilder().addComponents(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> ActionRow.of(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> ActionRow.partitionOf(UNKNOWN_COMPONENT))),
-                Arguments.of(run(() -> Container.of(UNKNOWN_COMPONENT)))
-        );
+                Arguments.of(run(() -> Container.of(UNKNOWN_COMPONENT))));
     }
 
-    private static ThrowableAssert.ThrowingCallable run(ThrowableAssert.ThrowingCallable runnable)
-    {
+    private static ThrowableAssert.ThrowingCallable run(ThrowableAssert.ThrowingCallable runnable) {
         return runnable;
     }
 
     @Test
-    void testRemoveComponentFromRow()
-    {
-        final Button button2 = Button.secondary("button2", "test").withUniqueId(2);
+    void testRemoveComponentFromRow() {
+        Button button2 = Button.secondary("button2", "test").withUniqueId(2);
         MessageComponentTree tree = MessageComponentTree.of(
-                ActionRow.of(
-                        Button.primary("button1", "test").withUniqueId(1),
-                        button2
-                )
-        );
+                ActionRow.of(Button.primary("button1", "test").withUniqueId(1), button2));
 
         MessageComponentTree newTree = tree.replace(ComponentReplacer.byUniqueId(1, (Button) null));
-        final ActionRow row = newTree.getComponents().getFirst().asActionRow();
+        ActionRow row = newTree.getComponents().getFirst().asActionRow();
         assertThat(row.getComponents()).hasSize(1);
         assertThat(row.getComponents()).contains((ActionRowChildComponentUnion) button2);
     }

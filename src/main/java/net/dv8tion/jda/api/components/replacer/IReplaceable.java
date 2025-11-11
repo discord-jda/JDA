@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
  * <p>This is equivalent to {@link net.dv8tion.jda.api.components.tree.ComponentTree#replace(ComponentReplacer) ComponentTree.replace(ComponentReplacer)},
  * but on a smaller scope.
  */
-public interface IReplaceable
-{
+public interface IReplaceable {
     /**
      * Replaces and/or removes children components using the provided {@link ComponentReplacer},
      * and construct a new component from the result.

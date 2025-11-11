@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
@@ -35,13 +36,13 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class AudioManagerImpl implements AudioManager
-{
+import javax.annotation.Nonnull;
+
+public class AudioManagerImpl implements AudioManager {
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
     protected final ListenerProxy connectionListener = new ListenerProxy();
@@ -59,49 +60,51 @@ public class AudioManagerImpl implements AudioManager
 
     protected long timeout = DEFAULT_CONNECTION_TIMEOUT;
 
-    public AudioManagerImpl(GuildImpl guild)
-    {
+    public AudioManagerImpl(GuildImpl guild) {
         this.guild = guild;
     }
 
-    public AudioConnection getAudioConnection()
-    {
+    public AudioConnection getAudioConnection() {
         return audioConnection;
     }
 
     @Override
-    public void openAudioConnection(@Nonnull AudioChannel channel)
-    {
+    public void openAudioConnection(@Nonnull AudioChannel channel) {
         Checks.notNull(channel, "Provided AudioChannel");
 
-        if (!getGuild().equals(channel.getGuild()))
-            throw new IllegalArgumentException("The provided AudioChannel is not a part of the Guild that this AudioManager handles." +
-                    "Please provide a AudioChannel from the proper Guild");
-        final Member self = getGuild().getSelfMember();
-        //if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
+        if (!getGuild().equals(channel.getGuild())) {
+            throw new IllegalArgumentException(
+                    "The provided AudioChannel is not a part of the Guild that this AudioManager handles."
+                            + "Please provide a AudioChannel from the proper Guild");
+        }
+        Member self = getGuild().getSelfMember();
+        // if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
         //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
-        //If we are already connected to this AudioChannel, then do nothing.
-        if (audioConnection != null && channel.equals(audioConnection.getChannel()))
+        // If we are already connected to this AudioChannel, then do nothing.
+        if (audioConnection != null && channel.equals(audioConnection.getChannel())) {
             return;
+        }
 
         checkChannel(channel, self);
 
         getJDA().getDirectAudioController().connect(channel);
-        if (audioConnection != null)
+        if (audioConnection != null) {
             audioConnection.setChannel(channel);
+        }
     }
 
-    private void checkChannel(AudioChannel channel, Member self)
-    {
-        EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), self));
-        if (!perms.contains(Permission.VOICE_CONNECT))
+    private void checkChannel(AudioChannel channel, Member self) {
+        EnumSet<Permission> perms = Permission.getPermissions(
+                PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), self));
+        if (!perms.contains(Permission.VOICE_CONNECT)) {
             throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
+        }
 
         // if userLimit is 0 if no limit is set!
-        final int userLimit = channel instanceof VoiceChannel ? ((VoiceChannel) channel).getUserLimit() : 0;
-        if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR))
-        {
+        int userLimit =
+                channel instanceof VoiceChannel ? ((VoiceChannel) channel).getUserLimit() : 0;
+        if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR)) {
             // Check if we can actually join this channel
             // - If there is a userlimit
             // - If that userlimit is reached
@@ -109,202 +112,181 @@ public class AudioManagerImpl implements AudioManager
             // VOICE_MOVE_OTHERS allows access because you would be able to move people out to
             // open up a slot anyway
             if (userLimit <= channel.getMembers().size()
-                && !perms.contains(Permission.VOICE_MOVE_OTHERS))
-            {
-                throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS,
-                    "Unable to connect to AudioChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
+                    && !perms.contains(Permission.VOICE_MOVE_OTHERS)) {
+                throw new InsufficientPermissionException(
+                        channel,
+                        Permission.VOICE_MOVE_OTHERS,
+                        "Unable to connect to AudioChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
         }
     }
 
     @Override
-    public void closeAudioConnection()
-    {
+    public void closeAudioConnection() {
         getJDA().getAudioLifeCyclePool().execute(() -> {
             getJDA().setContext();
             closeAudioConnection(ConnectionStatus.NOT_CONNECTED);
         });
     }
 
-    public void closeAudioConnection(ConnectionStatus reason)
-    {
-        MiscUtil.locked(CONNECTION_LOCK, () ->
-        {
-            if (audioConnection != null)
+    public void closeAudioConnection(ConnectionStatus reason) {
+        MiscUtil.locked(CONNECTION_LOCK, () -> {
+            if (audioConnection != null) {
                 this.audioConnection.close(reason);
-            else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
+            } else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD) {
                 getJDA().getDirectAudioController().disconnect(getGuild());
+            }
             this.audioConnection = null;
         });
     }
 
     @Override
-    public void setSpeakingMode(@Nonnull Collection<SpeakingMode> mode)
-    {
+    public void setSpeakingMode(@Nonnull Collection<SpeakingMode> mode) {
         Checks.notEmpty(mode, "Speaking Mode");
         this.speakingModes = EnumSet.copyOf(mode);
-        if (audioConnection != null)
+        if (audioConnection != null) {
             audioConnection.setSpeakingMode(this.speakingModes);
+        }
     }
 
     @Nonnull
     @Override
-    public EnumSet<SpeakingMode> getSpeakingMode()
-    {
+    public EnumSet<SpeakingMode> getSpeakingMode() {
         return EnumSet.copyOf(this.speakingModes);
     }
 
     @Nonnull
     @Override
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return getGuild().getJDA();
     }
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         return guild;
     }
 
     @Override
-    public AudioChannelUnion getConnectedChannel()
-    {
+    public AudioChannelUnion getConnectedChannel() {
         return audioConnection == null ? null : (AudioChannelUnion) audioConnection.getChannel();
     }
 
     @Override
-    public boolean isConnected()
-    {
+    public boolean isConnected() {
         return audioConnection != null;
     }
 
     @Override
-    public void setConnectTimeout(long timeout)
-    {
+    public void setConnectTimeout(long timeout) {
         this.timeout = timeout;
     }
 
     @Override
-    public long getConnectTimeout()
-    {
+    public long getConnectTimeout() {
         return timeout;
     }
 
     @Override
-    public void setSendingHandler(AudioSendHandler handler)
-    {
+    public void setSendingHandler(AudioSendHandler handler) {
         sendHandler = handler;
-        if (audioConnection != null)
+        if (audioConnection != null) {
             audioConnection.setSendingHandler(handler);
+        }
     }
 
     @Override
-    public AudioSendHandler getSendingHandler()
-    {
+    public AudioSendHandler getSendingHandler() {
         return sendHandler;
     }
 
     @Override
-    public void setReceivingHandler(AudioReceiveHandler handler)
-    {
+    public void setReceivingHandler(AudioReceiveHandler handler) {
         receiveHandler = handler;
-        if (audioConnection != null)
+        if (audioConnection != null) {
             audioConnection.setReceivingHandler(handler);
+        }
     }
 
     @Override
-    public AudioReceiveHandler getReceivingHandler()
-    {
+    public AudioReceiveHandler getReceivingHandler() {
         return receiveHandler;
     }
 
     @Override
-    public void setConnectionListener(ConnectionListener listener)
-    {
+    public void setConnectionListener(ConnectionListener listener) {
         this.connectionListener.setListener(listener);
     }
 
     @Override
-    public ConnectionListener getConnectionListener()
-    {
+    public ConnectionListener getConnectionListener() {
         return connectionListener.getListener();
     }
 
     @Nonnull
     @Override
-    public ConnectionStatus getConnectionStatus()
-    {
-        if (audioConnection != null)
+    public ConnectionStatus getConnectionStatus() {
+        if (audioConnection != null) {
             return audioConnection.getConnectionStatus();
-        else
+        } else {
             return ConnectionStatus.NOT_CONNECTED;
+        }
     }
 
     @Override
-    public void setAutoReconnect(boolean shouldReconnect)
-    {
+    public void setAutoReconnect(boolean shouldReconnect) {
         this.shouldReconnect = shouldReconnect;
-        if (audioConnection != null)
+        if (audioConnection != null) {
             audioConnection.setAutoReconnect(shouldReconnect);
+        }
     }
 
     @Override
-    public boolean isAutoReconnect()
-    {
+    public boolean isAutoReconnect() {
         return shouldReconnect;
     }
 
     @Override
-    public void setSelfMuted(boolean muted)
-    {
-        if (selfMuted != muted)
-        {
+    public void setSelfMuted(boolean muted) {
+        if (selfMuted != muted) {
             this.selfMuted = muted;
             updateVoiceState();
         }
     }
 
     @Override
-    public boolean isSelfMuted()
-    {
+    public boolean isSelfMuted() {
         return selfMuted;
     }
 
     @Override
-    public void setSelfDeafened(boolean deafened)
-    {
-        if (selfDeafened != deafened)
-        {
+    public void setSelfDeafened(boolean deafened) {
+        if (selfDeafened != deafened) {
             this.selfDeafened = deafened;
             updateVoiceState();
         }
-
     }
 
     @Override
-    public boolean isSelfDeafened()
-    {
+    public boolean isSelfDeafened() {
         return selfDeafened;
     }
 
-    public ConnectionListener getListenerProxy()
-    {
+    public ConnectionListener getListenerProxy() {
         return connectionListener;
     }
 
-    public void setAudioConnection(AudioConnection audioConnection)
-    {
-        if (audioConnection == null)
-        {
+    public void setAudioConnection(AudioConnection audioConnection) {
+        if (audioConnection == null) {
             this.audioConnection = null;
             return;
         }
 
-        // This will set the audioConnection to null, which we then immediately override with the new connection
-        if (this.audioConnection != null)
+        // This will set the audioConnection to null, which we then immediately override with the
+        // new connection
+        if (this.audioConnection != null) {
             closeAudioConnection(ConnectionStatus.AUDIO_REGION_CHANGE);
+        }
         this.audioConnection = audioConnection;
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
@@ -312,36 +294,35 @@ public class AudioManagerImpl implements AudioManager
         audioConnection.setSpeakingMode(speakingModes);
     }
 
-    public void setConnectedChannel(AudioChannel channel)
-    {
-        if (audioConnection != null)
+    public void setConnectedChannel(AudioChannel channel) {
+        if (audioConnection != null) {
             audioConnection.setChannel(channel);
+        }
     }
 
-    public void setQueueTimeout(long queueTimeout)
-    {
+    public void setQueueTimeout(long queueTimeout) {
         this.queueTimeout = queueTimeout;
-        if (audioConnection != null)
+        if (audioConnection != null) {
             audioConnection.setQueueTimeout(queueTimeout);
+        }
     }
 
-    protected void updateVoiceState()
-    {
+    protected void updateVoiceState() {
         AudioChannel channel = getConnectedChannel();
-        if (channel != null)
-        {
-            //This is technically equivalent to an audio open/move packet.
+        if (channel != null) {
+            // This is technically equivalent to an audio open/move packet.
             getJDA().getDirectAudioController().connect(channel);
         }
     }
 
     @Override
-    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
-    protected void finalize()
-    {
-        if (audioConnection != null)
-        {
-            LOG.warn("Finalized AudioManager with active audio connection. GuildId: {}", getGuild().getId());
+    @SuppressWarnings(
+            "deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
+    protected void finalize() {
+        if (audioConnection != null) {
+            LOG.warn(
+                    "Finalized AudioManager with active audio connection. GuildId: {}",
+                    getGuild().getId());
             audioConnection.close(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
         }
         audioConnection = null;

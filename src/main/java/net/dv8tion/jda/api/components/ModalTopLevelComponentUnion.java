@@ -29,8 +29,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
-public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, IComponentUnion
-{
+public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, IComponentUnion {
     /**
      * Casts this union to a {@link Label}.
      * This method exists for developer discoverability.

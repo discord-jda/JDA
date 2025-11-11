@@ -23,40 +23,37 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Class which contains a mapping from {@link DiscordLocale} to a translated String, similar to a {@code Map<DiscordLocale, String>}.
  * <br>This is used for command, option, and choice localization.
  */
-public class LocalizationMap implements SerializableData
-{
+public class LocalizationMap implements SerializableData {
     public static final Logger LOG = JDALogger.getLog(LocalizationMap.class);
 
     protected final Map<DiscordLocale, String> map = new HashMap<>();
     private final Consumer<String> checkConsumer;
 
-    public LocalizationMap(@Nonnull Consumer<String> checkConsumer)
-    {
+    public LocalizationMap(@Nonnull Consumer<String> checkConsumer) {
         this.checkConsumer = checkConsumer;
     }
 
-    private void putTranslation(DiscordLocale locale, String translation)
-    {
+    private void putTranslation(DiscordLocale locale, String translation) {
         Checks.check(locale != DiscordLocale.UNKNOWN, "Cannot put an 'UNKNOWN' DiscordLocale");
         this.map.put(locale, translation);
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        final DataObject data = DataObject.empty();
+    public DataObject toData() {
+        DataObject data = DataObject.empty();
         map.forEach((locale, localizedString) -> data.put(locale.getLocale(), localizedString));
         return data;
     }
@@ -66,7 +63,6 @@ public class LocalizationMap implements SerializableData
      *
      * @param  locale
      *         The locale on which to apply the localized string
-     *
      * @param  localizedString
      *         The localized string to use
      *
@@ -78,8 +74,7 @@ public class LocalizationMap implements SerializableData
      *             <li>If the localized string does not pass the corresponding attribute check</li>
      *         </ul>
      */
-    public void setTranslation(@Nonnull DiscordLocale locale, @Nonnull String localizedString)
-    {
+    public void setTranslation(@Nonnull DiscordLocale locale, @Nonnull String localizedString) {
         Checks.notNull(locale, "Locale");
         Checks.notNull(localizedString, "Localized string");
 
@@ -100,12 +95,10 @@ public class LocalizationMap implements SerializableData
      *             <li>If the map contains a localized string which does not pass the corresponding attribute check</li>
      *         </ul>
      */
-    public void setTranslations(@Nonnull Map<DiscordLocale, String> map)
-    {
+    public void setTranslations(@Nonnull Map<DiscordLocale, String> map) {
         Checks.notNull(map, "Map");
 
-        map.forEach((discordLocale, localizedString) ->
-        {
+        map.forEach((discordLocale, localizedString) -> {
             checkConsumer.accept(localizedString);
             putTranslation(discordLocale, localizedString);
         });
@@ -120,8 +113,7 @@ public class LocalizationMap implements SerializableData
      * @return Possibly-null localized string
      */
     @Nullable
-    public String get(@Nonnull DiscordLocale locale)
-    {
+    public String get(@Nonnull DiscordLocale locale) {
         Checks.notNull(locale, "Locale");
 
         return map.get(locale);
@@ -134,8 +126,7 @@ public class LocalizationMap implements SerializableData
      * @return The unmodifiable map of this LocalizationMap
      */
     @Nonnull
-    public Map<DiscordLocale, String> toMap()
-    {
+    public Map<DiscordLocale, String> toMap() {
         return Collections.unmodifiableMap(map);
     }
 }

@@ -22,62 +22,59 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T>> extends ChannelCacheViewImpl<T> implements SortedChannelCacheView<T>
-{
-    public SortedChannelCacheViewImpl(Class<T> type)
-    {
+import javax.annotation.Nonnull;
+
+public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T>>
+        extends ChannelCacheViewImpl<T> implements SortedChannelCacheView<T> {
+    public SortedChannelCacheViewImpl(Class<T> type) {
         super(type);
     }
 
     @Nonnull
     @Override
-    public <C extends T> SortedFilteredCacheView<C> ofType(@Nonnull Class<C> type)
-    {
+    public <C extends T> SortedFilteredCacheView<C> ofType(@Nonnull Class<C> type) {
         return new SortedFilteredCacheView<>(type);
     }
 
     @Nonnull
     @Override
-    public List<T> asList()
-    {
+    public List<T> asList() {
         List<T> list = getCachedList();
-        if (list == null)
+        if (list == null) {
             list = cache(new ArrayList<>(asSet()));
+        }
         return list;
     }
 
     @Nonnull
     @Override
-    public NavigableSet<T> asSet()
-    {
+    public NavigableSet<T> asSet() {
         NavigableSet<T> set = (NavigableSet<T>) getCachedSet();
-        if (set == null)
-            set = cache((NavigableSet<T>) applyStream(stream -> stream.collect(Collectors.toCollection(TreeSet::new))));
+        if (set == null) {
+            set = cache((NavigableSet<T>)
+                    applyStream(stream -> stream.collect(Collectors.toCollection(TreeSet::new))));
+        }
         return set;
     }
 
     @Override
-    public void forEachUnordered(@Nonnull Consumer<? super T> action)
-    {
+    public void forEachUnordered(@Nonnull Consumer<? super T> action) {
         super.forEach(action);
     }
 
     @Override
-    public void forEach(@Nonnull Consumer<? super T> action)
-    {
+    public void forEach(@Nonnull Consumer<? super T> action) {
         asSet().forEach(action);
     }
 
     @Nonnull
     @Override
-    public List<T> getElementsByName(@Nonnull String name)
-    {
+    public List<T> getElementsByName(@Nonnull String name) {
         List<T> elements = super.getElementsByName(name);
         elements.sort(Comparator.naturalOrder());
         return elements;
@@ -85,108 +82,88 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
 
     @Nonnull
     @Override
-    public Stream<T> streamUnordered()
-    {
-        try (UnlockHook hook = readLock())
-        {
-            return caches.values().stream().flatMap(cache -> cache.valueCollection().stream()).collect(Collectors.toList()).stream();
+    public Stream<T> streamUnordered() {
+        try (UnlockHook hook = readLock()) {
+            return caches.values().stream()
+                    .flatMap(cache -> cache.valueCollection().stream())
+                    .collect(Collectors.toList())
+                    .stream();
         }
     }
 
     @Nonnull
     @Override
-    public Stream<T> parallelStreamUnordered()
-    {
+    public Stream<T> parallelStreamUnordered() {
         return streamUnordered().parallel();
     }
 
     @Override
-    public Spliterator<T> spliterator()
-    {
+    public Spliterator<T> spliterator() {
         return asSet().spliterator();
     }
 
     @Nonnull
     @Override
-    public Iterator<T> iterator()
-    {
+    public Iterator<T> iterator() {
         return asSet().iterator();
     }
 
-    public class SortedFilteredCacheView<C extends T> extends FilteredCacheView<C> implements SortedChannelCacheView<C>
-    {
-        protected SortedFilteredCacheView(Class<C> type)
-        {
+    public class SortedFilteredCacheView<C extends T> extends FilteredCacheView<C>
+            implements SortedChannelCacheView<C> {
+        protected SortedFilteredCacheView(Class<C> type) {
             super(type);
         }
 
         @Nonnull
         @Override
-        public List<C> asList()
-        {
-            return applyStream(stream ->
-                stream
-                    .sorted()
-                    .collect(Helpers.toUnmodifiableList())
-            );
+        public List<C> asList() {
+            return applyStream(stream -> stream.sorted().collect(Helpers.toUnmodifiableList()));
         }
 
         @Nonnull
         @Override
-        public NavigableSet<C> asSet()
-        {
-            return applyStream(stream ->
-                stream.collect(
-                    Collectors.collectingAndThen(
-                        Collectors.toCollection(TreeSet::new),
-                        Collections::unmodifiableNavigableSet))
-            );
+        public NavigableSet<C> asSet() {
+            return applyStream(stream -> stream.collect(Collectors.collectingAndThen(
+                    Collectors.toCollection(TreeSet::new), Collections::unmodifiableNavigableSet)));
         }
 
         @Nonnull
         @Override
-        public List<C> getElementsByName(@Nonnull String name, boolean ignoreCase)
-        {
+        public List<C> getElementsByName(@Nonnull String name, boolean ignoreCase) {
             Checks.notEmpty(name, "Name");
-            return applyStream(stream ->
-                stream
-                    .filter(it -> Helpers.equals(name, it.getName(), ignoreCase))
-                    .sorted()
-                    .collect(Helpers.toUnmodifiableList())
-            );
+            return applyStream(
+                    stream -> stream.filter(it -> Helpers.equals(name, it.getName(), ignoreCase))
+                            .sorted()
+                            .collect(Helpers.toUnmodifiableList()));
         }
 
         @Nonnull
         @Override
-        public Stream<C> streamUnordered()
-        {
-            List<C> elements = applyStream(stream -> stream.filter(type::isInstance).collect(Collectors.toList()));
+        public Stream<C> streamUnordered() {
+            List<C> elements = applyStream(
+                    stream -> stream.filter(type::isInstance).collect(Collectors.toList()));
             return elements.stream();
         }
 
         @Nonnull
         @Override
-        public Stream<C> parallelStreamUnordered()
-        {
+        public Stream<C> parallelStreamUnordered() {
             return stream().parallel();
         }
 
         @Nonnull
         @Override
-        public <C1 extends C> SortedChannelCacheView<C1> ofType(@Nonnull Class<C1> type)
-        {
+        public <C1 extends C> SortedChannelCacheView<C1> ofType(@Nonnull Class<C1> type) {
             return SortedChannelCacheViewImpl.this.ofType(type);
         }
 
         @Override
-        public void forEachUnordered(@Nonnull Consumer<? super C> action)
-        {
+        public void forEachUnordered(@Nonnull Consumer<? super C> action) {
             super.forEach(action);
         }
 
         @Override
-        public void forEach(Consumer<? super C> action)
-        {
+        public void forEach(Consumer<? super C> action) {
             stream().forEach(action);
         }
     }

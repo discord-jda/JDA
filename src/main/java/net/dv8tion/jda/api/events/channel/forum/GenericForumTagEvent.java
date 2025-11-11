@@ -22,8 +22,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.events.Event;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import javax.annotation.Nonnull;
 
 /**
  * Abstraction of all tags relating to {@link ForumTag} changes (excluding {@link ThreadChannel#getAppliedTags()}).
@@ -32,13 +33,15 @@ import java.util.Collection;
  * This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String, Collection) JDABuilder.createLight(...)} disables this by default.
  */
-public abstract class GenericForumTagEvent extends Event
-{
+public abstract class GenericForumTagEvent extends Event {
     protected final IPostContainer channel;
     protected final ForumTag tag;
 
-    public GenericForumTagEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag)
-    {
+    public GenericForumTagEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull IPostContainer channel,
+            @Nonnull ForumTag tag) {
         super(api, responseNumber);
         this.channel = channel;
         this.tag = tag;
@@ -50,8 +53,7 @@ public abstract class GenericForumTagEvent extends Event
      * @return The {@link IPostContainer}
      */
     @Nonnull
-    public IPostContainer getChannel()
-    {
+    public IPostContainer getChannel() {
         return channel;
     }
 
@@ -61,8 +63,7 @@ public abstract class GenericForumTagEvent extends Event
      * @return The {@link ForumTag}
      */
     @Nonnull
-    public ForumTag getTag()
-    {
+    public ForumTag getTag() {
         return tag;
     }
 }

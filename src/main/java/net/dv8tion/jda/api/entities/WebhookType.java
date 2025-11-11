@@ -21,8 +21,7 @@ import javax.annotation.Nonnull;
 /**
  * Types of webhooks.
  */
-public enum WebhookType
-{
+public enum WebhookType {
     /** Placeholder for unsupported types */
     UNKNOWN(-1),
     /** Normal webhooks that can be used for sending messages */
@@ -32,8 +31,7 @@ public enum WebhookType
 
     private final int key;
 
-    WebhookType(int key)
-    {
+    WebhookType(int key) {
         this.key = key;
     }
 
@@ -42,8 +40,7 @@ public enum WebhookType
      *
      * @return The api key, or -1 for {@link #UNKNOWN}
      */
-    public int getKey()
-    {
+    public int getKey() {
         return key;
     }
 
@@ -56,12 +53,11 @@ public enum WebhookType
      * @return The WebhookType or {@link #UNKNOWN}
      */
     @Nonnull
-    public static WebhookType fromKey(int key)
-    {
-        for (WebhookType type : values())
-        {
-            if (type.key == key)
+    public static WebhookType fromKey(int key) {
+        for (WebhookType type : values()) {
+            if (type.key == key) {
                 return type;
+            }
         }
         return UNKNOWN;
     }

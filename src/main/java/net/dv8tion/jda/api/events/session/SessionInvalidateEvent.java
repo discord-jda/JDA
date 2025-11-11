@@ -24,10 +24,8 @@ import javax.annotation.Nonnull;
  * Indicates that the JDA cache has been invalidated.
  * <br>Any previously acquired entities will no longer be updated and instead new entities will be allocated.
  */
-public class SessionInvalidateEvent extends GenericSessionEvent
-{
-    public SessionInvalidateEvent(@Nonnull JDA api)
-    {
+public class SessionInvalidateEvent extends GenericSessionEvent {
+    public SessionInvalidateEvent(@Nonnull JDA api) {
         super(api, SessionState.INVALIDATED);
     }
 }

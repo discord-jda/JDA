@@ -23,10 +23,11 @@ import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * Represents a select menu in a message.
@@ -44,8 +45,7 @@ import java.util.Collection;
  * @see EntitySelectMenu
  * @see SelectMenuInteraction
  */
-public interface SelectMenu extends ActionComponent, ActionRowChildComponent, LabelChildComponent
-{
+public interface SelectMenu extends ActionComponent, ActionRowChildComponent, LabelChildComponent {
     /**
      * The maximum length a select menu id can have
      */
@@ -67,15 +67,13 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
 
     @Nonnull
     @Override
-    default SelectMenu asDisabled()
-    {
+    default SelectMenu asDisabled() {
         return (SelectMenu) ActionComponent.super.asDisabled();
     }
 
     @Nonnull
     @Override
-    default SelectMenu asEnabled()
-    {
+    default SelectMenu asEnabled() {
         return (SelectMenu) ActionComponent.super.asEnabled();
     }
 
@@ -140,8 +138,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
      *        The builder type (used for fluent interface)
      */
     @SuppressWarnings("unchecked")
-    abstract class Builder<T extends SelectMenu, B extends Builder<T, B>>
-    {
+    abstract class Builder<T extends SelectMenu, B extends Builder<T, B>> {
         protected String customId;
         protected int uniqueId = -1;
         protected String placeholder;
@@ -149,8 +146,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
         protected boolean disabled = false;
         protected Boolean required = null;
 
-        protected Builder(@Nonnull String customId)
-        {
+        protected Builder(@Nonnull String customId) {
             setCustomId(customId);
         }
 
@@ -166,8 +162,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setCustomId(@Nonnull String customId)
-        {
+        public B setCustomId(@Nonnull String customId) {
             Checks.notEmpty(customId, "Component ID");
             Checks.notLonger(customId, ID_MAX_LENGTH, "Component ID");
             this.customId = customId;
@@ -186,8 +181,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setUniqueId(int uniqueId)
-        {
+        public B setUniqueId(int uniqueId) {
             Checks.positive(uniqueId, "Unique ID");
             this.uniqueId = uniqueId;
             return (B) this;
@@ -205,10 +199,8 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setPlaceholder(@Nullable String placeholder)
-        {
-            if (placeholder != null)
-            {
+        public B setPlaceholder(@Nullable String placeholder) {
+            if (placeholder != null) {
                 Checks.notEmpty(placeholder, "Placeholder");
                 Checks.notLonger(placeholder, PLACEHOLDER_MAX_LENGTH, "Placeholder");
             }
@@ -231,10 +223,13 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setMinValues(int minValues)
-        {
+        public B setMinValues(int minValues) {
             Checks.notNegative(minValues, "Min Values");
-            Checks.check(minValues <= OPTIONS_MAX_AMOUNT, "Min Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, minValues);
+            Checks.check(
+                    minValues <= OPTIONS_MAX_AMOUNT,
+                    "Min Values may not be greater than %d! Provided: %d",
+                    OPTIONS_MAX_AMOUNT,
+                    minValues);
             this.minValues = minValues;
             return (B) this;
         }
@@ -254,10 +249,13 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setMaxValues(int maxValues)
-        {
+        public B setMaxValues(int maxValues) {
             Checks.positive(maxValues, "Max Values");
-            Checks.check(maxValues <= OPTIONS_MAX_AMOUNT, "Max Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, maxValues);
+            Checks.check(
+                    maxValues <= OPTIONS_MAX_AMOUNT,
+                    "Max Values may not be greater than %d! Provided: %d",
+                    OPTIONS_MAX_AMOUNT,
+                    maxValues);
             this.maxValues = maxValues;
             return (B) this;
         }
@@ -279,9 +277,12 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setRequiredRange(int min, int max)
-        {
-            Checks.check(min <= max, "Min Values should be less than or equal to Max Values! Provided: [%d, %d]", min, max);
+        public B setRequiredRange(int min, int max) {
+            Checks.check(
+                    min <= max,
+                    "Min Values should be less than or equal to Max Values! Provided: [%d, %d]",
+                    min,
+                    max);
             return setMinValues(min).setMaxValues(max);
         }
 
@@ -295,8 +296,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setDisabled(boolean disabled)
-        {
+        public B setDisabled(boolean disabled) {
             this.disabled = disabled;
             return (B) this;
         }
@@ -317,8 +317,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setRequired(@Nullable Boolean required)
-        {
+        public B setRequired(@Nullable Boolean required) {
             this.required = required;
             return (B) this;
         }
@@ -329,8 +328,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The custom id
          */
         @Nonnull
-        public String getCustomId()
-        {
+        public String getCustomId() {
             return customId;
         }
 
@@ -339,8 +337,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          *
          * @return The numeric id
          */
-        public int getUniqueId()
-        {
+        public int getUniqueId() {
             return uniqueId;
         }
 
@@ -350,8 +347,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return The placeholder or null
          */
         @Nullable
-        public String getPlaceholder()
-        {
+        public String getPlaceholder() {
             return placeholder;
         }
 
@@ -360,8 +356,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          *
          * @return The min values
          */
-        public int getMinValues()
-        {
+        public int getMinValues() {
             return minValues;
         }
 
@@ -370,8 +365,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          *
          * @return The max values
          */
-        public int getMaxValues()
-        {
+        public int getMaxValues() {
             return maxValues;
         }
 
@@ -380,8 +374,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          *
          * @return True if this menu is disabled
          */
-        public boolean isDisabled()
-        {
+        public boolean isDisabled() {
             return disabled;
         }
 
@@ -395,8 +388,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * @return Whether this menu must be populated, or null
          */
         @Nullable
-        public Boolean isRequired()
-        {
+        public Boolean isRequired() {
             return required;
         }
 

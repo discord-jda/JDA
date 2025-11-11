@@ -25,10 +25,11 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.api.requests.RestAction RestAction}
@@ -36,8 +37,7 @@ import java.util.stream.Collectors;
  *
  * @see net.dv8tion.jda.api.exceptions.ErrorHandler
  */
-public class ErrorResponseException extends RuntimeException
-{
+public class ErrorResponseException extends RuntimeException {
     private final ErrorResponse errorResponse;
     private final Response response;
     private final String meaning;
@@ -53,22 +53,31 @@ public class ErrorResponseException extends RuntimeException
      * @param response
      *        The Discord Response causing the ErrorResponse
      */
-    private ErrorResponseException(ErrorResponse errorResponse, Response response, int code, String meaning, List<SchemaError> schemaErrors)
-    {
-        super(code + ": " + meaning + (schemaErrors.isEmpty() ? ""
-            : "\n" + schemaErrors.stream().map(SchemaError::toString).collect(Collectors.joining("\n"))));
+    private ErrorResponseException(
+            ErrorResponse errorResponse,
+            Response response,
+            int code,
+            String meaning,
+            List<SchemaError> schemaErrors) {
+        super(code + ": " + meaning
+                + (schemaErrors.isEmpty()
+                        ? ""
+                        : "\n"
+                                + schemaErrors.stream()
+                                        .map(SchemaError::toString)
+                                        .collect(Collectors.joining("\n"))));
 
         this.response = response;
-        if (response != null && response.getException() != null)
+        if (response != null && response.getException() != null) {
             initCause(response.getException());
+        }
         this.errorResponse = errorResponse;
         this.code = code;
         this.meaning = meaning;
         this.schemaErrors = Collections.unmodifiableList(schemaErrors);
     }
 
-    private ErrorResponseException(String message, ErrorResponseException cause)
-    {
+    private ErrorResponseException(String message, ErrorResponseException cause) {
         super(cause.code + ": " + message, cause);
 
         this.response = cause.response;
@@ -84,8 +93,7 @@ public class ErrorResponseException extends RuntimeException
      * @return True, if this is an internal server error
      *         {@link net.dv8tion.jda.api.requests.ErrorResponse#SERVER_ERROR ErrorResponse.SERVER_ERROR}
      */
-    public boolean isServerError()
-    {
+    public boolean isServerError() {
         return errorResponse == ErrorResponse.SERVER_ERROR;
     }
 
@@ -96,8 +104,7 @@ public class ErrorResponseException extends RuntimeException
      * @return Never-null meaning of this error.
      */
     @Nonnull
-    public String getMeaning()
-    {
+    public String getMeaning() {
         return meaning;
     }
 
@@ -108,8 +115,7 @@ public class ErrorResponseException extends RuntimeException
      *
      * @see <a href="https://discord.com/developers/docs/topics/opcodes-and-status-codes#json-json-error-codes" target="_blank">Discord Error Codes</a>
      */
-    public int getErrorCode()
-    {
+    public int getErrorCode() {
         return code;
     }
 
@@ -120,8 +126,7 @@ public class ErrorResponseException extends RuntimeException
      * @return {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}
      */
     @Nonnull
-    public ErrorResponse getErrorResponse()
-    {
+    public ErrorResponse getErrorResponse() {
         return errorResponse;
     }
 
@@ -131,8 +136,7 @@ public class ErrorResponseException extends RuntimeException
      * @return {@link net.dv8tion.jda.api.requests.Response Response}
      */
     @Nonnull
-    public Response getResponse()
-    {
+    public Response getResponse() {
         return response;
     }
 
@@ -143,100 +147,88 @@ public class ErrorResponseException extends RuntimeException
      * @return Possibly-empty list of {@link SchemaError SchemaError}
      */
     @Nonnull
-    public List<SchemaError> getSchemaErrors()
-    {
+    public List<SchemaError> getSchemaErrors() {
         return schemaErrors;
     }
 
     @Nonnull
-    public static ErrorResponseException create(@Nonnull String message, @Nonnull ErrorResponseException cause)
-    {
+    public static ErrorResponseException create(
+            @Nonnull String message, @Nonnull ErrorResponseException cause) {
         return new ErrorResponseException(message, cause);
     }
 
     @Nonnull
-    public static ErrorResponseException create(@Nonnull ErrorResponse errorResponse, @Nonnull Response response)
-    {
+    public static ErrorResponseException create(
+            @Nonnull ErrorResponse errorResponse, @Nonnull Response response) {
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
         List<SchemaError> schemaErrors = new ArrayList<>();
-        try
-        {
+        try {
             Optional<DataObject> optObj = response.optObject();
-            if (response.isError() && response.getException() != null)
-            {
+            if (response.isError() && response.getException() != null) {
                 // this generally means that an exception occurred trying to
-                //make an http request. e.g.:
-                //SocketTimeoutException/ UnknownHostException
+                // make an http request. e.g.:
+                // SocketTimeoutException/ UnknownHostException
                 code = response.code;
                 meaning = response.getException().getClass().getName();
-            }
-            else if (optObj.isPresent())
-            {
+            } else if (optObj.isPresent()) {
                 DataObject obj = optObj.get();
-                if (!obj.isNull("code") || !obj.isNull("message"))
-                {
-                    if (!obj.isNull("code"))
+                if (!obj.isNull("code") || !obj.isNull("message")) {
+                    if (!obj.isNull("code")) {
                         code = obj.getInt("code");
-                    if (!obj.isNull("message"))
+                    }
+                    if (!obj.isNull("message")) {
                         meaning = obj.getString("message");
-                }
-                else
-                {
+                    }
+                } else {
                     // This means that neither code or message is provided
-                    //In that case we simply put the raw response in place!
+                    // In that case we simply put the raw response in place!
                     code = response.code;
                     meaning = obj.toString();
                 }
 
                 obj.optObject("errors").ifPresent(schema -> parseSchema(schemaErrors, "", schema));
-            }
-            else
-            {
+            } else {
                 // error response body is not JSON
                 code = response.code;
                 meaning = response.getString();
             }
-        }
-        catch (Exception e)
-        {
-            JDALogger.getLog(ErrorResponseException.class).error("Failed to parse parts of error response. Body: {}", response.getString(), e);
+        } catch (Exception e) {
+            JDALogger.getLog(ErrorResponseException.class)
+                    .error(
+                            "Failed to parse parts of error response. Body: {}",
+                            response.getString(),
+                            e);
         }
 
         return new ErrorResponseException(errorResponse, response, code, meaning, schemaErrors);
     }
 
-    private static void parseSchema(List<SchemaError> schemaErrors, String currentLocation, DataObject errors)
-    {
+    private static void parseSchema(
+            List<SchemaError> schemaErrors, String currentLocation, DataObject errors) {
         // check what kind of errors we are dealing with
-        for (String name : errors.keys())
-        {
-            if (name.equals("_errors"))
-            {
+        for (String name : errors.keys()) {
+            if (name.equals("_errors")) {
                 schemaErrors.add(parseSchemaError(currentLocation, errors));
                 continue;
             }
             DataObject schemaError = errors.getObject(name);
-            if (!schemaError.isNull("_errors"))
-            {
+            if (!schemaError.isNull("_errors")) {
                 // We are dealing with an Object Error
                 schemaErrors.add(parseSchemaError(currentLocation + name, schemaError));
-            }
-            else if (schemaError.keys().stream().allMatch(Helpers::isNumeric))
-            {
+            } else if (schemaError.keys().stream().allMatch(Helpers::isNumeric)) {
                 // We have an Array Error
-                for (String index : schemaError.keys())
-                {
+                for (String index : schemaError.keys()) {
                     DataObject properties = schemaError.getObject(index);
                     String location = String.format("%s%s[%s].", currentLocation, name, index);
-                    if (properties.hasKey("_errors"))
-                        schemaErrors.add(parseSchemaError(location.substring(0, location.length()-1), properties));
-                    else
+                    if (properties.hasKey("_errors")) {
+                        schemaErrors.add(parseSchemaError(
+                                location.substring(0, location.length() - 1), properties));
+                    } else {
                         parseSchema(schemaErrors, location, properties);
+                    }
                 }
-            }
-            else
-            {
+            } else {
                 // We have a nested schema error, use recursion!
                 String location = String.format("%s%s.", currentLocation, name);
                 parseSchema(schemaErrors, location, schemaError);
@@ -244,10 +236,8 @@ public class ErrorResponseException extends RuntimeException
         }
     }
 
-    private static SchemaError parseSchemaError(String location, DataObject obj)
-    {
-        List<ErrorCode> codes = obj.getArray("_errors")
-                .stream(DataArray::getObject)
+    private static SchemaError parseSchemaError(String location, DataObject obj) {
+        List<ErrorCode> codes = obj.getArray("_errors").stream(DataArray::getObject)
                 .map(json -> new ErrorCode(json.getString("code"), json.getString("message")))
                 .collect(Collectors.toList());
         return new SchemaError(location, codes);
@@ -276,8 +266,7 @@ public class ErrorResponseException extends RuntimeException
      *         which ignores the specified {@link ErrorResponse ErrorResponses}
      */
     @Nonnull
-    public static Consumer<Throwable> ignore(@Nonnull Collection<ErrorResponse> set)
-    {
+    public static Consumer<Throwable> ignore(@Nonnull Collection<ErrorResponse> set) {
         return ignore(RestAction.getDefaultFailure(), set);
     }
 
@@ -306,8 +295,8 @@ public class ErrorResponseException extends RuntimeException
      *         which ignores the specified {@link ErrorResponse ErrorResponses}
      */
     @Nonnull
-    public static Consumer<Throwable> ignore(@Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses)
-    {
+    public static Consumer<Throwable> ignore(
+            @Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses) {
         return ignore(RestAction.getDefaultFailure(), ignored, errorResponses);
     }
 
@@ -338,8 +327,10 @@ public class ErrorResponseException extends RuntimeException
      *         which ignores the specified {@link ErrorResponse ErrorResponses}
      */
     @Nonnull
-    public static Consumer<Throwable> ignore(@Nonnull Consumer<? super Throwable> orElse, @Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses)
-    {
+    public static Consumer<Throwable> ignore(
+            @Nonnull Consumer<? super Throwable> orElse,
+            @Nonnull ErrorResponse ignored,
+            @Nonnull ErrorResponse... errorResponses) {
         return ignore(orElse, EnumSet.of(ignored, errorResponses));
     }
 
@@ -368,12 +359,12 @@ public class ErrorResponseException extends RuntimeException
      *         which ignores the specified {@link ErrorResponse ErrorResponses}
      */
     @Nonnull
-    public static Consumer<Throwable> ignore(@Nonnull Consumer<? super Throwable> orElse, @Nonnull Collection<ErrorResponse> set)
-    {
+    public static Consumer<Throwable> ignore(
+            @Nonnull Consumer<? super Throwable> orElse, @Nonnull Collection<ErrorResponse> set) {
         Checks.notNull(orElse, "Callback");
         Checks.notEmpty(set, "Ignored collection");
         // Make an enum set copy (for performance, memory efficiency, and thread-safety)
-        final EnumSet<ErrorResponse> ignored = EnumSet.copyOf(set);
+        EnumSet<ErrorResponse> ignored = EnumSet.copyOf(set);
         return new ErrorHandler(orElse).ignore(ignored);
     }
 
@@ -381,13 +372,11 @@ public class ErrorResponseException extends RuntimeException
      * An error for a {@link SchemaError}.
      * <br>This provides the machine parsable error code name and the human readable message.
      */
-    public static class ErrorCode
-    {
+    public static class ErrorCode {
         private final String code;
         private final String message;
 
-        ErrorCode(String code, String message)
-        {
+        ErrorCode(String code, String message) {
             this.code = code;
             this.message = message;
         }
@@ -398,8 +387,7 @@ public class ErrorResponseException extends RuntimeException
          * @return The error code
          */
         @Nonnull
-        public String getCode()
-        {
+        public String getCode() {
             return code;
         }
 
@@ -409,14 +397,12 @@ public class ErrorResponseException extends RuntimeException
          * @return The message
          */
         @Nonnull
-        public String getMessage()
-        {
+        public String getMessage() {
             return message;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return code + ": " + message;
         }
     }
@@ -425,13 +411,11 @@ public class ErrorResponseException extends RuntimeException
      * Schema error which supplies more context to a ErrorResponse.
      * <br>This provides a list of {@link ErrorCode ErrorCodes} and a {@link #getLocation() location} for the errors.
      */
-    public static class SchemaError
-    {
+    public static class SchemaError {
         private final String location;
         private final List<ErrorCode> errors;
 
-        private SchemaError(String location, List<ErrorCode> codes)
-        {
+        private SchemaError(String location, List<ErrorCode> codes) {
             this.location = location;
             this.errors = codes;
         }
@@ -445,8 +429,7 @@ public class ErrorResponseException extends RuntimeException
          * @return The JSON-path location
          */
         @Nonnull
-        public String getLocation()
-        {
+        public String getLocation() {
             return location;
         }
 
@@ -456,15 +439,14 @@ public class ErrorResponseException extends RuntimeException
          * @return The error codes
          */
         @Nonnull
-        public List<ErrorCode> getErrors()
-        {
+        public List<ErrorCode> getErrors() {
             return errors;
         }
 
         @Override
-        public String toString()
-        {
-            return (location.isEmpty() ? "" : location+"\n") + "\t- " + errors.stream().map(Object::toString).collect(Collectors.joining("\n\t- "));
+        public String toString() {
+            return (location.isEmpty() ? "" : location + "\n") + "\t- "
+                    + errors.stream().map(Object::toString).collect(Collectors.joining("\n\t- "));
         }
     }
 }

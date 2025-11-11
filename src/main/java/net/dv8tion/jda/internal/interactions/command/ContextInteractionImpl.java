@@ -23,13 +23,12 @@ import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
 
-public abstract class ContextInteractionImpl<T> extends CommandInteractionImpl implements ContextInteraction<T>, CommandInteractionPayloadMixin
-{
+public abstract class ContextInteractionImpl<T> extends CommandInteractionImpl
+        implements ContextInteraction<T>, CommandInteractionPayloadMixin {
     private final T target;
     private final CommandInteractionPayloadImpl payload;
 
-    public ContextInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public ContextInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         this.payload = new CommandInteractionPayloadImpl(jda, data);
         this.target = parse(data, data.getObject("data").getObject("resolved"));
@@ -38,15 +37,13 @@ public abstract class ContextInteractionImpl<T> extends CommandInteractionImpl i
     protected abstract T parse(DataObject interactionData, DataObject resolved);
 
     @Override
-    public CommandInteractionPayload getCommandPayload()
-    {
+    public CommandInteractionPayload getCommandPayload() {
         return payload;
     }
 
     @Nonnull
     @Override
-    public T getTarget()
-    {
+    public T getTarget() {
         return target;
     }
 }

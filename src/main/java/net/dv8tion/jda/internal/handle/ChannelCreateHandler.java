@@ -24,31 +24,29 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class ChannelCreateHandler extends SocketHandler
-{
-    public ChannelCreateHandler(JDAImpl api)
-    {
+public class ChannelCreateHandler extends SocketHandler {
+    public ChannelCreateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
         long guildId = 0;
         JDAImpl jda = getJDA();
-        if (type.isGuild())
-        {
+        if (type.isGuild()) {
             guildId = content.getLong("guild_id");
-            if (jda.getGuildSetupController().isLocked(guildId))
+            if (jda.getGuildSetupController().isLocked(guildId)) {
                 return guildId;
+            }
         }
 
         Channel channel = buildChannel(type, content, guildId);
-        if (channel == null)
-        {
-            WebSocketClient.LOG.debug("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: {}", content);
+        if (channel == null) {
+            WebSocketClient.LOG.debug(
+                    "Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: {}",
+                    content);
             return null;
         }
 
@@ -57,18 +55,23 @@ public class ChannelCreateHandler extends SocketHandler
         return null;
     }
 
-    private Channel buildChannel(ChannelType type, DataObject content, long guildId)
-    {
+    private Channel buildChannel(ChannelType type, DataObject content, long guildId) {
         EntityBuilder builder = getJDA().getEntityBuilder();
-        switch (type)
-        {
-            case TEXT: return builder.createTextChannel(content, guildId);
-            case NEWS: return builder.createNewsChannel(content, guildId);
-            case VOICE: return builder.createVoiceChannel(content, guildId);
-            case STAGE: return builder.createStageChannel(content, guildId);
-            case CATEGORY: return builder.createCategory(content, guildId);
-            case FORUM: return builder.createForumChannel(content, guildId);
-            case MEDIA: return builder.createMediaChannel(content, guildId);
+        switch (type) {
+            case TEXT:
+                return builder.createTextChannel(content, guildId);
+            case NEWS:
+                return builder.createNewsChannel(content, guildId);
+            case VOICE:
+                return builder.createVoiceChannel(content, guildId);
+            case STAGE:
+                return builder.createStageChannel(content, guildId);
+            case CATEGORY:
+                return builder.createCategory(content, guildId);
+            case FORUM:
+                return builder.createForumChannel(content, guildId);
+            case MEDIA:
+                return builder.createMediaChannel(content, guildId);
 
             default:
                 return null;

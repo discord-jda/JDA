@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -24,57 +25,68 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class MessageDeleteHandler extends SocketHandler
-{
+public class MessageDeleteHandler extends SocketHandler {
 
-    public MessageDeleteHandler(JDAImpl api)
-    {
+    public MessageDeleteHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         Guild guild = null;
-        if (!content.isNull("guild_id"))
-        {
+        if (!content.isNull("guild_id")) {
             long guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId)) {
                 return guildId;
+            }
 
             guild = getJDA().getGuildById(guildId);
-            if (guild == null)
-            {
-                getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
-                EventCache.LOG.debug("Got message delete for a guild that is not yet cached. GuildId: {}", guildId);
+            if (guild == null) {
+                getJDA().getEventCache()
+                        .cache(
+                                EventCache.Type.GUILD,
+                                guildId,
+                                responseNumber,
+                                allContent,
+                                this::handle);
+                EventCache.LOG.debug(
+                        "Got message delete for a guild that is not yet cached. GuildId: {}",
+                        guildId);
                 return null;
             }
         }
 
-        final long messageId = content.getLong("id");
-        final long channelId = content.getLong("channel_id");
+        long messageId = content.getLong("id");
+        long channelId = content.getLong("channel_id");
 
         MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
-        if (channel == null)
-        {
-            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
-            if (guild != null)
-            {
+        if (channel == null) {
+            // If discord adds message support for unexpected types in the future, drop the event
+            // instead of caching it
+            if (guild != null) {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
-                if (actual != null)
-                {
-                    WebSocketClient.LOG.debug("Dropping MESSAGE_DELETE for unexpected channel of type {}", actual.getType());
+                if (actual != null) {
+                    WebSocketClient.LOG.debug(
+                            "Dropping MESSAGE_DELETE for unexpected channel of type {}",
+                            actual.getType());
                     return null;
                 }
             }
 
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: {}", channelId);
+            getJDA().getEventCache()
+                    .cache(
+                            EventCache.Type.CHANNEL,
+                            channelId,
+                            responseNumber,
+                            allContent,
+                            this::handle);
+            EventCache.LOG.debug(
+                    "Got message delete for a channel/group that is not yet cached. ChannelId: {}",
+                    channelId);
             return null;
         }
 
-        if (channel.getType().isThread())
-        {
+        if (channel.getType().isThread()) {
             ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
 
             gThread.setMessageCount(Math.max(0, gThread.getMessageCount() - 1));

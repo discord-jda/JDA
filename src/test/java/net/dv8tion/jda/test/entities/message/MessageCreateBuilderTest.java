@@ -40,62 +40,55 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.*;
 
-public class MessageCreateBuilderTest extends AbstractSnapshotTest
-{
+public class MessageCreateBuilderTest extends AbstractSnapshotTest {
     @Test
-    void testEmptyBuilder_fromMessage()
-    {
+    void testEmptyBuilder_fromMessage() {
         Message message = mock(Message.class);
         when(message.getType()).thenReturn(MessageType.DEFAULT);
 
         MessageCreateBuilder builder = spy(new MessageCreateBuilder());
         builder.applyMessage(message);
         assertThat(builder)
-            .usingRecursiveComparison()
-            .isEqualTo(MessageCreateBuilder.fromMessage(message));
+                .usingRecursiveComparison()
+                .isEqualTo(MessageCreateBuilder.fromMessage(message));
 
         Set<String> expectedCalls = getMessageCreateBuilderSetters();
 
-        Arrays.asList("setFiles", "setAllowedMentions").forEach(
-            expectedCalls::remove
-        );
+        Arrays.asList("setFiles", "setAllowedMentions").forEach(expectedCalls::remove);
 
         assertInteractionsContainMethods(builder, expectedCalls);
         assertThatIllegalStateException().isThrownBy(builder::build);
     }
 
     @Test
-    void testFullBuilder()
-    {
+    void testFullBuilder() {
         MessageCreateBuilder builder = spy(new MessageCreateBuilder());
 
-        builder
-            .setContent("Test content")
-            .setEmbeds(new EmbedBuilder().setDescription("Test embed").build())
-            .setComponents(ComponentTestData.getMinimalComponent(ActionRow.class, Component.Type.ACTION_ROW))
-            .useComponentsV2(false)
-            .setFiles(Collections.emptyList())
-            .setAllowedMentions(Collections.emptyList())
-            .setFiles(TestResourceUtil.getFileUpload(Resources.LOGO_PNG))
-            .setPoll(MessagePollData.builder("Is this tested?")
+        builder.setContent("Test content")
+                .setEmbeds(new EmbedBuilder().setDescription("Test embed").build())
+                .setComponents(ComponentTestData.getMinimalComponent(
+                        ActionRow.class, Component.Type.ACTION_ROW))
+                .useComponentsV2(false)
+                .setFiles(Collections.emptyList())
+                .setAllowedMentions(Collections.emptyList())
+                .setFiles(TestResourceUtil.getFileUpload(Resources.LOGO_PNG))
+                .setPoll(MessagePollData.builder("Is this tested?")
                         .addAnswer("Yes")
                         .addAnswer("No")
                         .build())
-            .setTTS(true)
-            .setVoiceMessage(false)
-            .setSuppressEmbeds(false)
-            .setSuppressedNotifications(true);
+                .setTTS(true)
+                .setVoiceMessage(false)
+                .setSuppressEmbeds(false)
+                .setSuppressedNotifications(true);
 
         assertInteractionsContainMethods(builder, getMessageCreateBuilderSetters());
 
-        try (MessageCreateData data = builder.build())
-        {
+        try (MessageCreateData data = builder.build()) {
             assertWithSnapshot(data);
         }
     }
 
-    private static Set<String> getMessageCreateBuilderSetters()
-    {
+    private static Set<String> getMessageCreateBuilderSetters() {
         return getMethodsByPattern(MessageCreateBuilder.class, "^(set|use).+$");
     }
 }

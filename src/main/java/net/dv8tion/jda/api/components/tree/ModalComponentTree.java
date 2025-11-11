@@ -21,10 +21,11 @@ import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.internal.components.tree.ModalComponentTreeImpl;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Specialization of {@link ComponentTree} for {@link ModalTopLevelComponentUnion top-level modal components}
@@ -34,8 +35,7 @@ import java.util.Collection;
  *
  * @see ComponentTree
  */
-public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponentUnion>
-{
+public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponentUnion> {
     @Nonnull
     @Override
     ModalComponentTree replace(@Nonnull ComponentReplacer replacer);
@@ -48,16 +48,14 @@ public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponent
     @Nonnull
     @Override
     @CheckReturnValue
-    default ModalComponentTree asDisabled()
-    {
+    default ModalComponentTree asDisabled() {
         return (ModalComponentTree) ComponentTree.super.asDisabled();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default ModalComponentTree asEnabled()
-    {
+    default ModalComponentTree asEnabled() {
         return (ModalComponentTree) ComponentTree.super.asEnabled();
     }
 
@@ -73,8 +71,7 @@ public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponent
      * @return A {@link ModalComponentTree} containing the given components
      */
     @Nonnull
-    static ModalComponentTree of(@Nonnull Collection<? extends ModalTopLevelComponent> components)
-    {
+    static ModalComponentTree of(@Nonnull Collection<? extends ModalTopLevelComponent> components) {
         return ModalComponentTreeImpl.of(components);
     }
 
@@ -90,8 +87,7 @@ public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponent
      * @return A {@link ModalComponentTree} containing the given components
      */
     @Nonnull
-    static ModalComponentTree of(@Nonnull ModalTopLevelComponent... components)
-    {
+    static ModalComponentTree of(@Nonnull ModalTopLevelComponent... components) {
         return of(Arrays.asList(components));
     }
 }

@@ -26,14 +26,15 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Helper class to listen to an event, once.
@@ -42,8 +43,7 @@ import java.util.function.Predicate;
  *
  * @see   JDA#listenOnce(Class)
  */
-public class Once<E extends GenericEvent> implements EventListener
-{
+public class Once<E extends GenericEvent> implements EventListener {
     private static final Logger LOG = JDALogger.getLog(Once.class);
 
     private final JDA jda;
@@ -54,8 +54,13 @@ public class Once<E extends GenericEvent> implements EventListener
     private final ScheduledFuture<?> timeoutFuture;
     private final Runnable timeoutCallback;
 
-    protected Once(JDA jda, Class<E> eventType, List<Predicate<? super E>> filters, Runnable timeoutCallback, Duration timeout, ScheduledExecutorService timeoutPool)
-    {
+    protected Once(
+            JDA jda,
+            Class<E> eventType,
+            List<Predicate<? super E>> filters,
+            Runnable timeoutCallback,
+            Duration timeout,
+            ScheduledExecutorService timeoutPool) {
         this.jda = jda;
         this.eventType = eventType;
         this.filters = new ArrayList<>(filters);
@@ -67,74 +72,76 @@ public class Once<E extends GenericEvent> implements EventListener
     }
 
     @Nonnull
-    private GatewayTask<E> createTask()
-    {
-        final GatewayTask<E> task = new GatewayTask<>(future, () ->
-        {
+    private GatewayTask<E> createTask() {
+        GatewayTask<E> task = new GatewayTask<>(future, () -> {
             // On cancellation, throw cancellation exception and cancel timeout
             jda.removeEventListener(this);
             future.completeExceptionally(new CancellationException());
-            if (timeoutFuture != null)
+            if (timeoutFuture != null) {
                 timeoutFuture.cancel(false);
+            }
         });
-        task.onSetTimeout(e ->
-        {
-            throw new UnsupportedOperationException("You must set the timeout on Once.Builder#timeout");
+        task.onSetTimeout(e -> {
+            throw new UnsupportedOperationException(
+                    "You must set the timeout on Once.Builder#timeout");
         });
         return task;
     }
 
     @Nullable
-    private ScheduledFuture<?> scheduleTimeout(@Nullable Duration timeout, @Nullable ScheduledExecutorService timeoutPool)
-    {
-        if (timeout == null) return null;
-        if (timeoutPool == null) timeoutPool = jda.getGatewayPool();
+    private ScheduledFuture<?> scheduleTimeout(
+            @Nullable Duration timeout, @Nullable ScheduledExecutorService timeoutPool) {
+        if (timeout == null) {
+            return null;
+        }
+        if (timeoutPool == null) {
+            timeoutPool = jda.getGatewayPool();
+        }
 
-        return timeoutPool.schedule(() ->
-        {
-            // On timeout, throw timeout exception and run timeout callback
-            jda.removeEventListener(this);
-            if (!future.completeExceptionally(new TimeoutException()))
-                return;
-            if (timeoutCallback != null)
-            {
-                try
-                {
-                    timeoutCallback.run();
-                }
-                catch (Throwable e)
-                {
-                    LOG.error("An error occurred while running the timeout callback", e);
-                    if (e instanceof Error)
-                        throw (Error) e;
-                }
-            }
-        }, timeout.toMillis(), TimeUnit.MILLISECONDS);
+        return timeoutPool.schedule(
+                () -> {
+                    // On timeout, throw timeout exception and run timeout callback
+                    jda.removeEventListener(this);
+                    if (!future.completeExceptionally(new TimeoutException())) {
+                        return;
+                    }
+                    if (timeoutCallback != null) {
+                        try {
+                            timeoutCallback.run();
+                        } catch (Throwable e) {
+                            LOG.error("An error occurred while running the timeout callback", e);
+                            if (e instanceof Error) {
+                                throw (Error) e;
+                            }
+                        }
+                    }
+                },
+                timeout.toMillis(),
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
     @SubscribeEvent
-    public void onEvent(@Nonnull GenericEvent event)
-    {
-        if (!eventType.isInstance(event))
+    public void onEvent(@Nonnull GenericEvent event) {
+        if (!eventType.isInstance(event)) {
             return;
-        final E casted = eventType.cast(event);
-        try
-        {
-            if (filters.stream().allMatch(p -> p.test(casted)))
-            {
-                if (timeoutFuture != null)
+        }
+        E casted = eventType.cast(event);
+        try {
+            if (filters.stream().allMatch(p -> p.test(casted))) {
+                if (timeoutFuture != null) {
                     timeoutFuture.cancel(false);
+                }
                 event.getJDA().removeEventListener(this);
                 future.complete(casted);
             }
-        }
-        catch (Throwable e)
-        {
-            if (future.completeExceptionally(e))
+        } catch (Throwable e) {
+            if (future.completeExceptionally(e)) {
                 event.getJDA().removeEventListener(this);
-            if (e instanceof Error)
+            }
+            if (e instanceof Error) {
                 throw (Error) e;
+            }
         }
     }
 
@@ -143,8 +150,7 @@ public class Once<E extends GenericEvent> implements EventListener
      *
      * @param <E> Type of the event listened to
      */
-    public static class Builder<E extends GenericEvent>
-    {
+    public static class Builder<E extends GenericEvent> {
         private final JDA jda;
         private final Class<E> eventType;
         private final List<Predicate<? super E>> filters = new ArrayList<>();
@@ -164,8 +170,7 @@ public class Once<E extends GenericEvent> implements EventListener
          * @throws IllegalArgumentException
          *         If any of the parameters is null
          */
-        public Builder(@Nonnull JDA jda, @Nonnull Class<E> eventType)
-        {
+        public Builder(@Nonnull JDA jda, @Nonnull Class<E> eventType) {
             Checks.notNull(jda, "JDA");
             Checks.notNull(eventType, "Event type");
             this.jda = jda;
@@ -186,8 +191,7 @@ public class Once<E extends GenericEvent> implements EventListener
          * @return This instance for chaining convenience
          */
         @Nonnull
-        public Builder<E> filter(@Nonnull Predicate<? super E> filter)
-        {
+        public Builder<E> filter(@Nonnull Predicate<? super E> filter) {
             Checks.notNull(filter, "Filter");
             filters.add(filter);
             return this;
@@ -205,8 +209,7 @@ public class Once<E extends GenericEvent> implements EventListener
          * @return This instance for chaining convenience
          */
         @Nonnull
-        public Builder<E> timeout(@Nonnull Duration timeout)
-        {
+        public Builder<E> timeout(@Nonnull Duration timeout) {
             return timeout(timeout, null);
         }
 
@@ -225,8 +228,7 @@ public class Once<E extends GenericEvent> implements EventListener
          * @return This instance for chaining convenience
          */
         @Nonnull
-        public Builder<E> timeout(@Nonnull Duration timeout, @Nullable Runnable timeoutCallback)
-        {
+        public Builder<E> timeout(@Nonnull Duration timeout, @Nullable Runnable timeoutCallback) {
             Checks.notNull(timeout, "Timeout");
             this.timeout = timeout;
             this.timeoutCallback = timeoutCallback;
@@ -247,8 +249,7 @@ public class Once<E extends GenericEvent> implements EventListener
          * @return This instance for chaining convenience
          */
         @Nonnull
-        public Builder<E> setTimeoutPool(@Nonnull ScheduledExecutorService timeoutPool)
-        {
+        public Builder<E> setTimeoutPool(@Nonnull ScheduledExecutorService timeoutPool) {
             Checks.notNull(timeoutPool, "Timeout pool");
             this.timeoutPool = timeoutPool;
             return this;
@@ -275,9 +276,9 @@ public class Once<E extends GenericEvent> implements EventListener
          * @see Task#get()
          */
         @Nonnull
-        public Task<E> subscribe(@Nonnull Consumer<E> callback)
-        {
-            final Once<E> once = new Once<>(jda, eventType, filters, timeoutCallback, timeout, timeoutPool);
+        public Task<E> subscribe(@Nonnull Consumer<E> callback) {
+            Once<E> once =
+                    new Once<>(jda, eventType, filters, timeoutCallback, timeout, timeoutPool);
             jda.addEventListener(once);
             return once.task.onSuccess(callback);
         }

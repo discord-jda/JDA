@@ -32,11 +32,12 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public class GuildStickerAddedEvent extends GenericGuildStickerEvent
-{
-    public GuildStickerAddedEvent(@Nonnull JDA api, long responseNumber,
-                                  @Nonnull Guild guild, @Nonnull GuildSticker sticker)
-    {
+public class GuildStickerAddedEvent extends GenericGuildStickerEvent {
+    public GuildStickerAddedEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull GuildSticker sticker) {
         super(api, responseNumber, guild, sticker);
     }
 }

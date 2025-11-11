@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  *
  * @see <a href="https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-optional-audit-entry-info" target="_blank">Optional Audit Entry Info</a>
  */
-public enum AuditLogOption
-{
+public enum AuditLogOption {
     /**
      * Possible detail for
      * <ul>
@@ -131,8 +130,7 @@ public enum AuditLogOption
 
     private final String key;
 
-    AuditLogOption(String key)
-    {
+    AuditLogOption(String key) {
         this.key = key;
     }
 
@@ -142,17 +140,12 @@ public enum AuditLogOption
      * @return Key for this option
      */
     @Nonnull
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setType(this)
-                .addMetadata("key", key)
-                .toString();
+    public String toString() {
+        return new EntityString(this).setType(this).addMetadata("key", key).toString();
     }
 }

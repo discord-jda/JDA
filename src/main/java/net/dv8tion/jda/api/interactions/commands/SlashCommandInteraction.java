@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Interaction with a slash command
  */
-public interface SlashCommandInteraction extends CommandInteraction
-{
+public interface SlashCommandInteraction extends CommandInteraction {
     /**
      * The respective {@link MessageChannelUnion} for this interaction.
      *
@@ -37,8 +36,7 @@ public interface SlashCommandInteraction extends CommandInteraction
 
     @Nonnull
     @Override
-    default GuildMessageChannelUnion getGuildChannel()
-    {
+    default GuildMessageChannelUnion getGuildChannel() {
         return (GuildMessageChannelUnion) CommandInteraction.super.getGuildChannel();
     }
 }

@@ -37,8 +37,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link FileDisplay}</li>
  * </ul>
  */
-public interface ContainerChildComponent extends Component
-{
+public interface ContainerChildComponent extends Component {
     @Nonnull
     @Override
     ContainerChildComponent withUniqueId(int uniqueId);

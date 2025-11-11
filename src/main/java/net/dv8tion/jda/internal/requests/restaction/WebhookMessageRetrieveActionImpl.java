@@ -25,19 +25,22 @@ import net.dv8tion.jda.api.requests.restaction.WebhookMessageRetrieveAction;
 
 import java.util.function.BiFunction;
 
-public class WebhookMessageRetrieveActionImpl extends AbstractWebhookMessageActionImpl<Message, WebhookMessageRetrieveActionImpl> implements WebhookMessageRetrieveAction
-{
-    public WebhookMessageRetrieveActionImpl(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<Message>, Message> handler)
-    {
+public class WebhookMessageRetrieveActionImpl
+        extends AbstractWebhookMessageActionImpl<Message, WebhookMessageRetrieveActionImpl>
+        implements WebhookMessageRetrieveAction {
+    public WebhookMessageRetrieveActionImpl(
+            JDA api,
+            Route.CompiledRoute route,
+            BiFunction<Response, Request<Message>, Message> handler) {
         super(api, route, handler);
     }
 
     @Override
-    protected Route.CompiledRoute finalizeRoute()
-    {
+    protected Route.CompiledRoute finalizeRoute() {
         Route.CompiledRoute route = super.finalizeRoute();
-        if (threadId != null)
+        if (threadId != null) {
             route = route.withQueryParams("thread_id", threadId);
+        }
         return route;
     }
 }

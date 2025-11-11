@@ -21,9 +21,10 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 
+import java.util.Collection;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * Indicates that the {@link ForumTag#getEmoji() emoji} of a {@link ForumTag} changed.
@@ -34,12 +35,15 @@ import java.util.Collection;
  *
  * <p>Identifier: {@code emoji}
  */
-public class ForumTagUpdateEmojiEvent extends GenericForumTagUpdateEvent<EmojiUnion>
-{
+public class ForumTagUpdateEmojiEvent extends GenericForumTagUpdateEvent<EmojiUnion> {
     public static final String IDENTIFIER = "emoji";
 
-    public ForumTagUpdateEmojiEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag, @Nullable EmojiUnion previous)
-    {
+    public ForumTagUpdateEmojiEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull IPostContainer channel,
+            @Nonnull ForumTag tag,
+            @Nullable EmojiUnion previous) {
         super(api, responseNumber, channel, tag, previous, tag.getEmoji(), IDENTIFIER);
     }
 
@@ -49,8 +53,7 @@ public class ForumTagUpdateEmojiEvent extends GenericForumTagUpdateEvent<EmojiUn
      * @return The old {@link EmojiUnion}
      */
     @Nullable
-    public EmojiUnion getOldEmoji()
-    {
+    public EmojiUnion getOldEmoji() {
         return getOldValue();
     }
 
@@ -60,8 +63,7 @@ public class ForumTagUpdateEmojiEvent extends GenericForumTagUpdateEvent<EmojiUn
      * @return The new {@link EmojiUnion}
      */
     @Nullable
-    public EmojiUnion getNewEmoji()
-    {
+    public EmojiUnion getNewEmoji() {
         return getNewValue();
     }
 }

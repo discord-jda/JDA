@@ -41,26 +41,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class GuildStickersUpdateHandler extends SocketHandler
-{
-    public GuildStickersUpdateHandler(JDAImpl api)
-    {
+public class GuildStickersUpdateHandler extends SocketHandler {
+    public GuildStickersUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        if (!getJDA().isCacheFlagSet(CacheFlag.STICKER))
+    protected Long handleInternally(DataObject content) {
+        if (!getJDA().isCacheFlagSet(CacheFlag.STICKER)) {
             return null;
-        final long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId))
+        }
+        long guildId = content.getLong("guild_id");
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+        if (guild == null) {
+            getJDA().getEventCache()
+                    .cache(
+                            EventCache.Type.GUILD,
+                            guildId,
+                            responseNumber,
+                            allContent,
+                            this::handle);
             return null;
         }
 
@@ -68,26 +72,23 @@ public class GuildStickersUpdateHandler extends SocketHandler
         List<GuildSticker> oldStickers, newStickers;
         SnowflakeCacheViewImpl<GuildSticker> stickersView = guild.getStickersView();
         EntityBuilder builder = api.getEntityBuilder();
-        try (UnlockHook hook = stickersView.writeLock())
-        {
+        try (UnlockHook hook = stickersView.writeLock()) {
             TLongObjectMap<GuildSticker> stickersMap = stickersView.getMap();
-            oldStickers = new ArrayList<>(stickersMap.valueCollection()); //snapshot of sticker cache
+            oldStickers =
+                    new ArrayList<>(stickersMap.valueCollection()); // snapshot of sticker cache
             newStickers = new ArrayList<>();
-            for (int i = 0; i < array.length(); i++)
-            {
+            for (int i = 0; i < array.length(); i++) {
                 DataObject current = array.getObject(i);
-                final long stickerId = current.getLong("id");
+                long stickerId = current.getLong("id");
                 GuildStickerImpl sticker = (GuildStickerImpl) stickersMap.get(stickerId);
                 GuildStickerImpl oldSticker = null;
 
-                if (sticker == null)
-                {
+                if (sticker == null) {
                     sticker = (GuildStickerImpl) builder.createRichSticker(current);
                     newStickers.add(sticker);
-                }
-                else
-                {
-                    // sticker is in our cache which is why we don't want to remove it in cleanup later
+                } else {
+                    // sticker is in our cache which is why we don't want to remove it in cleanup
+                    // later
                     oldStickers.remove(sticker);
                     oldSticker = sticker.copy();
                 }
@@ -102,64 +103,46 @@ public class GuildStickersUpdateHandler extends SocketHandler
                 // check for updated fields and fire events
                 handleReplace(guild, oldSticker, sticker);
             }
-            for (GuildSticker e : oldStickers)
+            for (GuildSticker e : oldStickers) {
                 stickersMap.remove(e.getIdLong());
+            }
         }
-        //cleanup old stickers that don't exist anymore
-        for (GuildSticker e : oldStickers)
-        {
-            getJDA().handleEvent(
-                new GuildStickerRemovedEvent(
-                    getJDA(), responseNumber,
-                    guild, e));
+        // cleanup old stickers that don't exist anymore
+        for (GuildSticker e : oldStickers) {
+            getJDA().handleEvent(new GuildStickerRemovedEvent(getJDA(), responseNumber, guild, e));
         }
 
-        for (GuildSticker e : newStickers)
-        {
-            getJDA().handleEvent(
-                new GuildStickerAddedEvent(
-                    getJDA(), responseNumber,
-                    guild, e));
+        for (GuildSticker e : newStickers) {
+            getJDA().handleEvent(new GuildStickerAddedEvent(getJDA(), responseNumber, guild, e));
         }
 
         return null;
     }
 
-    private void handleReplace(Guild guild, GuildStickerImpl oldSticker, GuildStickerImpl newSticker)
-    {
-        if (oldSticker == null || newSticker == null) return;
-
-        if (!Objects.equals(oldSticker.getName(), newSticker.getName()))
-        {
-            getJDA().handleEvent(
-                new GuildStickerUpdateNameEvent(
-                    getJDA(), responseNumber,
-                    guild, newSticker, oldSticker.getName()));
+    private void handleReplace(
+            Guild guild, GuildStickerImpl oldSticker, GuildStickerImpl newSticker) {
+        if (oldSticker == null || newSticker == null) {
+            return;
         }
 
-        if (!Objects.equals(oldSticker.getDescription(), newSticker.getDescription()))
-        {
-            getJDA().handleEvent(
-                new GuildStickerUpdateDescriptionEvent(
-                    getJDA(), responseNumber,
-                    guild, newSticker, oldSticker.getDescription()));
+        if (!Objects.equals(oldSticker.getName(), newSticker.getName())) {
+            getJDA().handleEvent(new GuildStickerUpdateNameEvent(
+                    getJDA(), responseNumber, guild, newSticker, oldSticker.getName()));
         }
 
-        if (oldSticker.isAvailable() != newSticker.isAvailable())
-        {
-            getJDA().handleEvent(
-                new GuildStickerUpdateAvailableEvent(
-                    getJDA(), responseNumber,
-                    guild, newSticker, oldSticker.isAvailable()));
+        if (!Objects.equals(oldSticker.getDescription(), newSticker.getDescription())) {
+            getJDA().handleEvent(new GuildStickerUpdateDescriptionEvent(
+                    getJDA(), responseNumber, guild, newSticker, oldSticker.getDescription()));
         }
 
-        if (!CollectionUtils.isEqualCollection(oldSticker.getTags(), newSticker.getTags()))
-        {
-            getJDA().handleEvent(
-                new GuildStickerUpdateTagsEvent(
-                    getJDA(), responseNumber,
-                    guild, newSticker, oldSticker.getTags()));
+        if (oldSticker.isAvailable() != newSticker.isAvailable()) {
+            getJDA().handleEvent(new GuildStickerUpdateAvailableEvent(
+                    getJDA(), responseNumber, guild, newSticker, oldSticker.isAvailable()));
         }
 
+        if (!CollectionUtils.isEqualCollection(oldSticker.getTags(), newSticker.getTags())) {
+            getJDA().handleEvent(new GuildStickerUpdateTagsEvent(
+                    getJDA(), responseNumber, guild, newSticker, oldSticker.getTags()));
+        }
     }
 }

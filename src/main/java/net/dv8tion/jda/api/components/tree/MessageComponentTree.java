@@ -21,10 +21,11 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.internal.components.tree.MessageComponentTreeImpl;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Specialization of {@link ComponentTree} for {@link MessageTopLevelComponentUnion top-level message components}.
@@ -34,8 +35,7 @@ import java.util.Collection;
  *
  * @see ComponentTree
  */
-public interface MessageComponentTree extends ComponentTree<MessageTopLevelComponentUnion>
-{
+public interface MessageComponentTree extends ComponentTree<MessageTopLevelComponentUnion> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -49,16 +49,14 @@ public interface MessageComponentTree extends ComponentTree<MessageTopLevelCompo
     @Nonnull
     @Override
     @CheckReturnValue
-    default MessageComponentTree asDisabled()
-    {
+    default MessageComponentTree asDisabled() {
         return (MessageComponentTree) ComponentTree.super.asDisabled();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default MessageComponentTree asEnabled()
-    {
+    default MessageComponentTree asEnabled() {
         return (MessageComponentTree) ComponentTree.super.asEnabled();
     }
 
@@ -74,8 +72,8 @@ public interface MessageComponentTree extends ComponentTree<MessageTopLevelCompo
      * @return A {@link MessageComponentTree} containing the given components
      */
     @Nonnull
-    static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    static MessageComponentTree of(
+            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         return MessageComponentTreeImpl.of(components);
     }
 
@@ -91,8 +89,7 @@ public interface MessageComponentTree extends ComponentTree<MessageTopLevelCompo
      * @return A {@link MessageComponentTree} containing the given components
      */
     @Nonnull
-    static MessageComponentTree of(@Nonnull MessageTopLevelComponent... components)
-    {
+    static MessageComponentTree of(@Nonnull MessageTopLevelComponent... components) {
         return of(Arrays.asList(components));
     }
 }

@@ -35,8 +35,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link StageChannel}</li>
  * </ul>
  */
-public interface AudioChannelUnion extends AudioChannel
-{
+public interface AudioChannelUnion extends AudioChannel {
     /**
      * Casts this union to a {@link VoiceChannel}.
      * <br>This method exists for developer discoverability.

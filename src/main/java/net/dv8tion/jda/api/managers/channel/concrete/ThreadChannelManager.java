@@ -23,10 +23,11 @@ import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Manager providing functionality common for all {@link ThreadChannel ThreadChannels}.
@@ -46,8 +47,9 @@ import java.util.Collection;
  * @see ThreadChannel#getManager()
  * @see ThreadChannel
  */
-public interface ThreadChannelManager extends ChannelManager<ThreadChannel, ThreadChannelManager>, ISlowmodeChannelManager<ThreadChannel, ThreadChannelManager>
-{
+public interface ThreadChannelManager
+        extends ChannelManager<ThreadChannel, ThreadChannelManager>,
+                ISlowmodeChannelManager<ThreadChannel, ThreadChannelManager> {
     /**
      * Sets the inactive time before autoarchiving of this ThreadChannel.
      *
@@ -62,7 +64,8 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      */
     @Nonnull
     @CheckReturnValue
-    ThreadChannelManager setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
+    ThreadChannelManager setAutoArchiveDuration(
+            @Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
 
     /**
      * Sets the archived state of this ThreadChannel.
@@ -111,7 +114,6 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      *
      * @throws IllegalStateException
      *         If the selected {@link ThreadChannel} is not a private ThreadChannel
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account is not the thread owner or does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS MANAGE_THREADS} permission.
      *
@@ -189,8 +191,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
      */
     @Nonnull
     @CheckReturnValue
-    default ThreadChannelManager setAppliedTags(@Nonnull ForumTagSnowflake... tags)
-    {
+    default ThreadChannelManager setAppliedTags(@Nonnull ForumTagSnowflake... tags) {
         Checks.noneNull(tags, "Tags");
         return setAppliedTags(Arrays.asList(tags));
     }

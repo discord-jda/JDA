@@ -34,13 +34,16 @@ import javax.annotation.Nonnull;
  * @see ICategorizableChannel#getParentCategory()
  * @see ChannelField#PARENT
  */
-public class ChannelUpdateParentEvent extends GenericChannelUpdateEvent<Category>
-{
+public class ChannelUpdateParentEvent extends GenericChannelUpdateEvent<Category> {
     public static final ChannelField FIELD = ChannelField.PARENT;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateParentEvent(@Nonnull JDA api, long responseNumber, Channel channel, Category oldValue, Category newValue)
-    {
+    public ChannelUpdateParentEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            Channel channel,
+            Category oldValue,
+            Category newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

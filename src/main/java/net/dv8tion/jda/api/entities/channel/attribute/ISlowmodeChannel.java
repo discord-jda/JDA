@@ -27,8 +27,7 @@ import javax.annotation.Nonnull;
 /**
  * Channels which support slowmode.
  */
-public interface ISlowmodeChannel extends GuildChannel
-{
+public interface ISlowmodeChannel extends GuildChannel {
     /**
      * The maximum duration of slowmode in seconds
      */

@@ -22,20 +22,21 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import javax.annotation.Nonnull;
+
 /**
  * Configuration for a {@link AutoModTriggerType#KEYWORD_PRESET KEYWORD_PRESET} trigger.
  */
-public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<PresetKeywordTriggerConfig>
-{
-    private final EnumSet<AutoModRule.KeywordPreset> presets = EnumSet.noneOf(AutoModRule.KeywordPreset.class);
+public class PresetKeywordTriggerConfig
+        extends AbstractKeywordTriggerConfig<PresetKeywordTriggerConfig> {
+    private final EnumSet<AutoModRule.KeywordPreset> presets =
+            EnumSet.noneOf(AutoModRule.KeywordPreset.class);
 
-    protected PresetKeywordTriggerConfig()
-    {
+    protected PresetKeywordTriggerConfig() {
         super(AutoModTriggerType.KEYWORD_PRESET);
     }
 
@@ -51,11 +52,11 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public PresetKeywordTriggerConfig enablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
-    {
+    public PresetKeywordTriggerConfig enablePresets(@Nonnull AutoModRule.KeywordPreset... presets) {
         Checks.notNull(presets, "Presets");
-        for (AutoModRule.KeywordPreset preset : presets)
+        for (AutoModRule.KeywordPreset preset : presets) {
             checkKnown(preset);
+        }
         Collections.addAll(this.presets, presets);
         return this;
     }
@@ -72,8 +73,8 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public PresetKeywordTriggerConfig enablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
-    {
+    public PresetKeywordTriggerConfig enablePresets(
+            @Nonnull Collection<AutoModRule.KeywordPreset> presets) {
         Checks.notNull(presets, "Presets");
         presets.forEach(PresetKeywordTriggerConfig::checkKnown);
         this.presets.addAll(presets);
@@ -92,11 +93,12 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public PresetKeywordTriggerConfig disablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
-    {
+    public PresetKeywordTriggerConfig disablePresets(
+            @Nonnull AutoModRule.KeywordPreset... presets) {
         Checks.noneNull(presets, "Presets");
-        for (AutoModRule.KeywordPreset preset : presets)
+        for (AutoModRule.KeywordPreset preset : presets) {
             this.presets.remove(preset);
+        }
         return this;
     }
 
@@ -112,31 +114,32 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public PresetKeywordTriggerConfig disablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
-    {
+    public PresetKeywordTriggerConfig disablePresets(
+            @Nonnull Collection<AutoModRule.KeywordPreset> presets) {
         Checks.noneNull(presets, "Presets");
         this.presets.removeAll(presets);
         return this;
     }
 
     @Override
-    protected int maxAllowListAmount()
-    {
+    protected int maxAllowListAmount() {
         return AutoModRule.MAX_ALLOWLIST_PRESET_AMOUNT;
     }
 
-    private static void checkKnown(AutoModRule.KeywordPreset preset)
-    {
+    private static void checkKnown(AutoModRule.KeywordPreset preset) {
         Checks.notNull(preset, "Presets");
         Checks.check(preset != AutoModRule.KeywordPreset.UNKNOWN, "Cannot use unknown preset");
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject data = super.toData();
-        data.put("presets", presets.stream().map(AutoModRule.KeywordPreset::getKey).collect(Helpers.toDataArray()));
+        data.put(
+                "presets",
+                presets.stream()
+                        .map(AutoModRule.KeywordPreset::getKey)
+                        .collect(Helpers.toDataArray()));
         return data;
     }
 }

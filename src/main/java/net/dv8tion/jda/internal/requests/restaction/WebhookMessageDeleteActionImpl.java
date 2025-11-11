@@ -20,19 +20,19 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
 
-public class WebhookMessageDeleteActionImpl extends AbstractWebhookMessageActionImpl<Void, WebhookMessageDeleteActionImpl> implements WebhookMessageDeleteAction
-{
-    public WebhookMessageDeleteActionImpl(JDA api, Route.CompiledRoute route)
-    {
+public class WebhookMessageDeleteActionImpl
+        extends AbstractWebhookMessageActionImpl<Void, WebhookMessageDeleteActionImpl>
+        implements WebhookMessageDeleteAction {
+    public WebhookMessageDeleteActionImpl(JDA api, Route.CompiledRoute route) {
         super(api, route);
     }
 
     @Override
-    protected Route.CompiledRoute finalizeRoute()
-    {
+    protected Route.CompiledRoute finalizeRoute() {
         Route.CompiledRoute route = super.finalizeRoute();
-        if (threadId != null)
+        if (threadId != null) {
             route = route.withQueryParams("thread_id", threadId);
+        }
         return route;
     }
 }

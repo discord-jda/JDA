@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
-public interface SectionAccessoryComponentUnion extends SectionAccessoryComponent, IComponentUnion
-{
+public interface SectionAccessoryComponentUnion extends SectionAccessoryComponent, IComponentUnion {
     /**
      * Casts this union to a {@link Button}.
      * This method exists for developer discoverability.

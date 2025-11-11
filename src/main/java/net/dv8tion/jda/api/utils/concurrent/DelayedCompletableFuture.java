@@ -16,10 +16,11 @@
 
 package net.dv8tion.jda.api.utils.concurrent;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.concurrent.*;
 import java.util.function.Function;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Specialized {@link CompletableFuture} used in combination with a scheduler.
@@ -27,13 +28,11 @@ import java.util.function.Function;
  * @param <T>
  *        The result type
  *
- * @since  4.0.0
- *
  * @see    CompletableFuture
  * @see    Delayed
  */
-public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements ScheduledFuture<T>
-{
+public class DelayedCompletableFuture<T> extends CompletableFuture<T>
+        implements ScheduledFuture<T> {
     private ScheduledFuture<?> future;
 
     private DelayedCompletableFuture() {}
@@ -56,8 +55,11 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
      */
     @Nonnull
     @CheckReturnValue
-    public static <E> DelayedCompletableFuture<E> make(@Nonnull ScheduledExecutorService executor, long delay, @Nonnull TimeUnit unit, @Nonnull Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping)
-    {
+    public static <E> DelayedCompletableFuture<E> make(
+            @Nonnull ScheduledExecutorService executor,
+            long delay,
+            @Nonnull TimeUnit unit,
+            @Nonnull Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping) {
         DelayedCompletableFuture<E> handle = new DelayedCompletableFuture<>();
         ScheduledFuture<?> future = executor.schedule(mapping.apply(handle), delay, unit);
         handle.initProxy(future);
@@ -76,31 +78,29 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
      * @throws IllegalStateException
      *         If this was already initialized
      */
-    private void initProxy(ScheduledFuture<?> future)
-    {
-        if (this.future == null)
+    private void initProxy(ScheduledFuture<?> future) {
+        if (this.future == null) {
             this.future = future;
-        else
+        } else {
             throw new IllegalStateException("Cannot initialize twice");
+        }
     }
 
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning)
-    {
-        if (future != null && !future.isDone())
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        if (future != null && !future.isDone()) {
             future.cancel(mayInterruptIfRunning);
+        }
         return super.cancel(mayInterruptIfRunning);
     }
 
     @Override
-    public long getDelay(@Nonnull TimeUnit unit)
-    {
+    public long getDelay(@Nonnull TimeUnit unit) {
         return future.getDelay(unit);
     }
 
     @Override
-    public int compareTo(@Nonnull Delayed o)
-    {
+    public int compareTo(@Nonnull Delayed o) {
         return future.compareTo(o);
     }
 }

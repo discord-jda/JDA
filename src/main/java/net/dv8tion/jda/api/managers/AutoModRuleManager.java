@@ -24,10 +24,11 @@ import net.dv8tion.jda.api.entities.automod.build.TriggerConfig;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Manager providing functionality to update one or more fields for an {@link AutoModRule}.
@@ -47,18 +48,17 @@ import java.util.Collection;
  * @see Guild#modifyAutoModRuleById(String)
  * @see AutoModRule#getManager()
  */
-public interface AutoModRuleManager extends Manager<AutoModRuleManager>
-{
+public interface AutoModRuleManager extends Manager<AutoModRuleManager> {
     /** Used to reset the name field. */
-    long NAME             = 1;
+    long NAME = 1;
     /** Used to reset the enabled field. */
-    long ENABLED          = 1 << 1;
+    long ENABLED = 1 << 1;
     /** Used to reset the response field. */
-    long RESPONSE         = 1 << 2;
+    long RESPONSE = 1 << 2;
     /** Used to reset the exempt roles field. */
-    long EXEMPT_ROLES     = 1 << 3;
+    long EXEMPT_ROLES = 1 << 3;
     /** Used to reset the exempt channels field. */
-    long EXEMPT_CHANNELS  = 1 << 4;
+    long EXEMPT_CHANNELS = 1 << 4;
     /** Used to reset the trigger metadata field. */
     long TRIGGER_METADATA = 1 << 5;
 
@@ -143,9 +143,9 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
     @CheckReturnValue
     AutoModRuleManager setEnabled(boolean enabled);
 
-//    @Nonnull
-//    @CheckReturnValue
-//    AutoModRuleManager setEventType(@Nonnull AutoModEventType type);
+    //    @Nonnull
+    //    @CheckReturnValue
+    //    AutoModRuleManager setEventType(@Nonnull AutoModEventType type);
 
     /**
      * Sets what the rule should do upon triggering.
@@ -187,8 +187,7 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default AutoModRuleManager setResponses(@Nonnull AutoModResponse... responses)
-    {
+    default AutoModRuleManager setResponses(@Nonnull AutoModResponse... responses) {
         Checks.noneNull(responses, "Responses");
         return setResponses(Arrays.asList(responses));
     }
@@ -225,8 +224,7 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default AutoModRuleManager setExemptRoles(@Nonnull Role... roles)
-    {
+    default AutoModRuleManager setExemptRoles(@Nonnull Role... roles) {
         Checks.noneNull(roles, "Roles");
         return setExemptRoles(Arrays.asList(roles));
     }
@@ -263,8 +261,7 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default AutoModRuleManager setExemptChannels(@Nonnull GuildChannel... channels)
-    {
+    default AutoModRuleManager setExemptChannels(@Nonnull GuildChannel... channels) {
         Checks.noneNull(channels, "Channels");
         return setExemptChannels(Arrays.asList(channels));
     }

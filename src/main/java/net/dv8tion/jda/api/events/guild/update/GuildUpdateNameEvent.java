@@ -28,12 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code name}
  */
-public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String>
-{
+public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "name";
 
-    public GuildUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull String oldName)
-    {
+    public GuildUpdateNameEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull String oldName) {
         super(api, responseNumber, guild, oldName, guild.getName(), IDENTIFIER);
     }
 
@@ -43,8 +42,7 @@ public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String>
      * @return The old name
      */
     @Nonnull
-    public String getOldName()
-    {
+    public String getOldName() {
         return getOldValue();
     }
 
@@ -54,22 +52,19 @@ public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String>
      * @return The new name
      */
     @Nonnull
-    public String getNewName()
-    {
+    public String getNewName() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

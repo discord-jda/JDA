@@ -39,13 +39,16 @@ import javax.annotation.Nullable;
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
-public class GuildMemberRemoveEvent extends GenericGuildEvent
-{
+public class GuildMemberRemoveEvent extends GenericGuildEvent {
     private final User user;
     private final Member member;
 
-    public GuildMemberRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user, @Nullable Member member)
-    {
+    public GuildMemberRemoveEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull User user,
+            @Nullable Member member) {
         super(api, responseNumber, guild);
         this.user = user;
         this.member = member;
@@ -57,8 +60,7 @@ public class GuildMemberRemoveEvent extends GenericGuildEvent
      * @return The user who was removed
      */
     @Nonnull
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 
@@ -69,8 +71,7 @@ public class GuildMemberRemoveEvent extends GenericGuildEvent
      * @return Possibly-null member
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 }

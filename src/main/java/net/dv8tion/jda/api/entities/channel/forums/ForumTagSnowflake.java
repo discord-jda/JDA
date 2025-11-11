@@ -21,15 +21,15 @@ import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.ForumTagSnowflakeImpl;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import javax.annotation.Nonnull;
 
 /**
  * Minimal representation for a forum tag.
  * <br>This is primarily useful for creating posts with {@link ForumPostAction#setTags(Collection)}.
  */
-public interface ForumTagSnowflake extends ISnowflake
-{
+public interface ForumTagSnowflake extends ISnowflake {
     /**
      * Wraps the provided id into a ForumTagSnowflake instance.
      *
@@ -39,8 +39,7 @@ public interface ForumTagSnowflake extends ISnowflake
      * @return ForumTagSnowflake instance for the provided id
      */
     @Nonnull
-    static ForumTagSnowflake fromId(long id)
-    {
+    static ForumTagSnowflake fromId(long id) {
         return new ForumTagSnowflakeImpl(id);
     }
 
@@ -56,8 +55,7 @@ public interface ForumTagSnowflake extends ISnowflake
      * @return ForumTagSnowflake instance for the provided id
      */
     @Nonnull
-    static ForumTagSnowflake fromId(@Nonnull String id)
-    {
+    static ForumTagSnowflake fromId(@Nonnull String id) {
         return new ForumTagSnowflakeImpl(MiscUtil.parseSnowflake(id));
     }
 }

@@ -36,8 +36,7 @@ import javax.annotation.Nullable;
  * @see JDA#retrieveApplicationEmojiById(long)
  * @see JDA#retrieveApplicationEmojis()
  */
-public interface ApplicationEmoji extends CustomEmoji
-{
+public interface ApplicationEmoji extends CustomEmoji {
     /**
      * Maximum number of emojis that can be registered on an application.
      */

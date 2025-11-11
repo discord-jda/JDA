@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
-public class EntitlementImpl implements Entitlement
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class EntitlementImpl implements Entitlement {
     private final JDA api;
     private long id;
     private long skuId;
@@ -41,8 +41,18 @@ public class EntitlementImpl implements Entitlement
     private OffsetDateTime endsAt;
     private boolean consumed;
 
-    public EntitlementImpl(JDA api, long id, long skuId, long applicationId, long userId, long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt, boolean consumed)
-    {
+    public EntitlementImpl(
+            JDA api,
+            long id,
+            long skuId,
+            long applicationId,
+            long userId,
+            long guildId,
+            EntitlementType type,
+            boolean deleted,
+            @Nullable OffsetDateTime startsAt,
+            @Nullable OffsetDateTime endsAt,
+            boolean consumed) {
         this.api = api;
         this.id = id;
         this.skuId = skuId;
@@ -57,76 +67,67 @@ public class EntitlementImpl implements Entitlement
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public long getSkuIdLong()
-    {
+    public long getSkuIdLong() {
         return skuId;
     }
 
     @Override
-    public long getApplicationIdLong()
-    {
+    public long getApplicationIdLong() {
         return applicationId;
     }
 
     @Override
-    public long getUserIdLong()
-    {
+    public long getUserIdLong() {
         return userId;
     }
 
     @Override
-    public long getGuildIdLong()
-    {
+    public long getGuildIdLong() {
         return guildId;
     }
 
     @Nonnull
     @Override
-    public EntitlementType getType()
-    {
+    public EntitlementType getType() {
         return type;
     }
 
     @Override
-    public boolean isDeleted()
-    {
+    public boolean isDeleted() {
         return deleted;
     }
 
     @Nullable
     @Override
-    public OffsetDateTime getTimeStarting()
-    {
+    public OffsetDateTime getTimeStarting() {
         return startsAt;
     }
 
     @Nullable
     @Override
-    public OffsetDateTime getTimeEnding()
-    {
+    public OffsetDateTime getTimeEnding() {
         return endsAt;
     }
 
     @Override
-    public boolean isConsumed()
-    {
+    public boolean isConsumed() {
         return consumed;
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> consume()
-    {
-        if (consumed)
+    public RestAction<Void> consume() {
+        if (consumed) {
             return new CompletedRestAction<>(api, null);
+        }
 
-        Route.CompiledRoute route = Route.Applications.CONSUME_ENTITLEMENT.compile(getApplicationId(), getId());
+        Route.CompiledRoute route =
+                Route.Applications.CONSUME_ENTITLEMENT.compile(getApplicationId(), getId());
         return new RestActionImpl<>(api, route);
     }
 }

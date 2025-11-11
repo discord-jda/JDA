@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.stream.Stream;
 
-public interface FileContainerMixin
-{
+public interface FileContainerMixin {
     Stream<FileUpload> getFiles();
 }

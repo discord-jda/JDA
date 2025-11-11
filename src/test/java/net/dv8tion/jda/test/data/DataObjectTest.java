@@ -24,31 +24,30 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class DataObjectTest extends AbstractSnapshotTest
-{
+public class DataObjectTest extends AbstractSnapshotTest {
     @Test
-    void testMissingKeyException()
-    {
+    void testMissingKeyException() {
         DataObject data = DataObject.empty()
                 .put("foo", 1)
                 .put("nested_object", DataObject.empty().put("test", "test value"))
                 .put("nested_array", DataArray.empty().add("test value"));
 
         assertThatExceptionOfType(DataObjectParsingException.class)
-            .isThrownBy(() -> data.get("bar"))
-            .satisfies(exception -> snapshotHandler.compareWithSnapshot(exception.toString(), null));
+                .isThrownBy(() -> data.get("bar"))
+                .satisfies(exception ->
+                        snapshotHandler.compareWithSnapshot(exception.toString(), null));
     }
 
     @Test
-    void testUnexpectedNullException()
-    {
+    void testUnexpectedNullException() {
         DataObject data = DataObject.empty()
                 .put("foo", null)
                 .put("nested_object", DataObject.empty().put("test", "test value"))
                 .put("nested_array", DataArray.empty().add("test value"));
 
         assertThatExceptionOfType(DataObjectParsingException.class)
-            .isThrownBy(() -> data.getInt("foo"))
-            .satisfies(exception -> snapshotHandler.compareWithSnapshot(exception.toString(), null));
+                .isThrownBy(() -> data.getInt("foo"))
+                .satisfies(exception ->
+                        snapshotHandler.compareWithSnapshot(exception.toString(), null));
     }
 }

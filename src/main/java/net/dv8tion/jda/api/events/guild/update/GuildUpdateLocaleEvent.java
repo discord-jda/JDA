@@ -28,30 +28,28 @@ import javax.annotation.Nonnull;
  * <p>Can be used to detect when a Locale changes and retrieve the old one
  *
  * <p>Identifier: {@code locale}
- *
- * @since  4.2.1
  */
 @SuppressWarnings("ConstantConditions")
-public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<DiscordLocale>
-{
+public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<DiscordLocale> {
     public static final String IDENTIFIER = "locale";
 
-    public GuildUpdateLocaleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull DiscordLocale previous)
-    {
+    public GuildUpdateLocaleEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull DiscordLocale previous) {
         super(api, responseNumber, guild, previous, guild.getLocale(), IDENTIFIER);
     }
 
     @Nonnull
     @Override
-    public DiscordLocale getOldValue()
-    {
+    public DiscordLocale getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public DiscordLocale getNewValue()
-    {
+    public DiscordLocale getNewValue() {
         return super.getNewValue();
     }
 }

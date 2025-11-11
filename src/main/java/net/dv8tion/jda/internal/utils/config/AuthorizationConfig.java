@@ -20,25 +20,21 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
-public final class AuthorizationConfig
-{
+public final class AuthorizationConfig {
     private String token;
 
-    public AuthorizationConfig(@Nonnull String token)
-    {
+    public AuthorizationConfig(@Nonnull String token) {
         Checks.notEmpty(token, "Token");
         Checks.noWhitespace(token, "Token");
         setToken(token);
     }
 
     @Nonnull
-    public String getToken()
-    {
+    public String getToken() {
         return token;
     }
 
-    public void setToken(@Nonnull String token)
-    {
+    public void setToken(@Nonnull String token) {
         this.token = "Bot " + token;
     }
 }

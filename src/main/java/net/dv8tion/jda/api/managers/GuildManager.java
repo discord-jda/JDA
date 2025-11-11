@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -46,34 +46,33 @@ import java.util.EnumSet;
  *
  * @see net.dv8tion.jda.api.entities.Guild#getManager()
  */
-public interface GuildManager extends Manager<GuildManager>
-{
+public interface GuildManager extends Manager<GuildManager> {
     /** Used to reset the name field */
-    long NAME   = 1;
+    long NAME = 1;
     /** Used to reset the icon field */
-    long ICON   = 1 << 1;
+    long ICON = 1 << 1;
     /** Used to reset the splash field */
     long SPLASH = 1 << 2;
     /** Used to reset the afk channel field */
-    long AFK_CHANNEL    = 1 << 3;
+    long AFK_CHANNEL = 1 << 3;
     /** Used to reset the afk timeout field */
-    long AFK_TIMEOUT    = 1 << 4;
+    long AFK_TIMEOUT = 1 << 4;
     /** Used to reset the system channel field */
     long SYSTEM_CHANNEL = 1 << 5;
     /** Used to reset the default notification level field */
-    long NOTIFICATION_LEVEL     = 1 << 7;
+    long NOTIFICATION_LEVEL = 1 << 7;
     /** Used to reset the explicit content level field */
     long EXPLICIT_CONTENT_LEVEL = 1 << 8;
     /** Used to reset the verification level field */
-    long VERIFICATION_LEVEL     = 1 << 9;
+    long VERIFICATION_LEVEL = 1 << 9;
     /** Used to reset the banner field */
-    long BANNER                 = 1 << 10;
+    long BANNER = 1 << 10;
     /** Used to reset the description field */
-    long DESCRIPTION                = 1 << 11;
+    long DESCRIPTION = 1 << 11;
     /** Used to reset the rules channel field */
-    long RULES_CHANNEL              = 1 << 12;
+    long RULES_CHANNEL = 1 << 12;
     /** Used to reset the community updates channel field */
-    long COMMUNITY_UPDATES_CHANNEL  = 1 << 13;
+    long COMMUNITY_UPDATES_CHANNEL = 1 << 13;
     /** Used to reset the premium progress bar enabled field */
     long BOOST_PROGRESS_BAR_ENABLED = 1 << 14;
     /** Used to add or remove modifiable features (such as {@code "INVITES_DISABLED"}) */
@@ -442,8 +441,7 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager addFeatures(@Nonnull String... features)
-    {
+    default GuildManager addFeatures(@Nonnull String... features) {
         Checks.noneNull(features, "Features");
         return addFeatures(Arrays.asList(features));
     }
@@ -480,8 +478,7 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager removeFeatures(@Nonnull String... features)
-    {
+    default GuildManager removeFeatures(@Nonnull String... features) {
         Checks.noneNull(features, "Features");
         return removeFeatures(Arrays.asList(features));
     }
@@ -532,10 +529,11 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager setSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
-    {
+    default GuildManager setSystemChannelFlags(@Nonnull SystemChannelFlag... flags) {
         Checks.noneNull(flags, "System channel flags");
-        if(flags.length == 0) return this;
+        if (flags.length == 0) {
+            return this;
+        }
         return setSystemChannelFlags(Arrays.asList(flags));
     }
 
@@ -572,10 +570,11 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager enableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
-    {
+    default GuildManager enableSystemChannelFlags(@Nonnull SystemChannelFlag... flags) {
         Checks.noneNull(flags, "System channel flags");
-        if (flags.length == 0) return this;
+        if (flags.length == 0) {
+            return this;
+        }
         return enableSystemChannelFlags(Arrays.asList(flags));
     }
 
@@ -612,10 +611,11 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager disableSystemChannelFlags(@Nonnull SystemChannelFlag... flags)
-    {
+    default GuildManager disableSystemChannelFlags(@Nonnull SystemChannelFlag... flags) {
         Checks.noneNull(flags, "System channel flags");
-        if(flags.length == 0) return this;
+        if (flags.length == 0) {
+            return this;
+        }
         return disableSystemChannelFlags(Arrays.asList(flags));
     }
 
@@ -630,10 +630,10 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildManager setInvitesDisabled(boolean disabled)
-    {
-        if (disabled)
+    default GuildManager setInvitesDisabled(boolean disabled) {
+        if (disabled) {
             return addFeatures("INVITES_DISABLED");
+        }
         return removeFeatures("INVITES_DISABLED");
     }
 }

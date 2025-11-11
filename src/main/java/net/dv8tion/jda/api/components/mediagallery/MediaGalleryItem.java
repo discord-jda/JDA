@@ -23,16 +23,16 @@ import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemFileUplo
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.io.InputStream;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.InputStream;
 
 /**
  * A singular item (not a component) of a {@link MediaGallery}, you can mark it as a spoiler and set a description.
  */
-public interface MediaGalleryItem
-{
+public interface MediaGalleryItem {
     /**
      * The maximum number of characters an item's description can have. ({@value})
      */
@@ -85,8 +85,7 @@ public interface MediaGalleryItem
      * @return The new {@link MediaGalleryItem}
      */
     @Nonnull
-    static MediaGalleryItem fromUrl(@Nonnull String url)
-    {
+    static MediaGalleryItem fromUrl(@Nonnull String url) {
         Checks.notBlank(url, "URL");
         return new MediaGalleryItemImpl(url);
     }
@@ -125,8 +124,7 @@ public interface MediaGalleryItem
      * @return The new {@link MediaGalleryItem}
      */
     @Nonnull
-    static MediaGalleryItem fromFile(@Nonnull FileUpload file)
-    {
+    static MediaGalleryItem fromFile(@Nonnull FileUpload file) {
         Checks.notNull(file, "FileUpload");
         return new MediaGalleryItemFileUpload(file);
     }

@@ -25,7 +25,6 @@ import java.io.IOException;
  * @param <R> The type of the second argument
  */
 @FunctionalInterface
-public interface IOBiConsumer<T, R>
-{
+public interface IOBiConsumer<T, R> {
     void accept(T a, R b) throws IOException;
 }

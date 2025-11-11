@@ -25,38 +25,34 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 
-public class ThreadDeleteHandler extends SocketHandler
-{
-    public ThreadDeleteHandler(JDAImpl api)
-    {
+public class ThreadDeleteHandler extends SocketHandler {
+    public ThreadDeleteHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        final long threadId = content.getLong("id");
+        long threadId = content.getLong("id");
 
         ChannelCacheViewImpl<Channel> channelsView = getJDA().getChannelsView();
         ThreadChannel thread = channelsView.ofType(ThreadChannel.class).getElementById(threadId);
-        if (thread == null || guild == null)
-        {
-            WebSocketClient.LOG.debug("THREAD_DELETE attempted to delete a thread that is not yet cached. JSON: {}", content);
+        if (thread == null || guild == null) {
+            WebSocketClient.LOG.debug(
+                    "THREAD_DELETE attempted to delete a thread that is not yet cached. JSON: {}",
+                    content);
             return null;
         }
 
         channelsView.remove(thread.getType(), threadId);
         guild.getChannelView().remove(thread);
 
-        getJDA().handleEvent(
-            new ChannelDeleteEvent(
-                getJDA(), responseNumber,
-                thread));
+        getJDA().handleEvent(new ChannelDeleteEvent(getJDA(), responseNumber, thread));
 
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, threadId);
         return null;

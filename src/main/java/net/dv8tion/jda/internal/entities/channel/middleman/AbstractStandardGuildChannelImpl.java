@@ -23,57 +23,51 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildChannelMixin;
 
-public abstract class AbstractStandardGuildChannelImpl<T extends AbstractStandardGuildChannelImpl<T>> extends AbstractGuildChannelImpl<T>
-        implements StandardGuildChannelMixin<T>
-{
+public abstract class AbstractStandardGuildChannelImpl<
+                T extends AbstractStandardGuildChannelImpl<T>>
+        extends AbstractGuildChannelImpl<T> implements StandardGuildChannelMixin<T> {
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     protected long parentCategoryId;
     protected int position;
 
-    public AbstractStandardGuildChannelImpl(long id, Guild guild)
-    {
+    public AbstractStandardGuildChannelImpl(long id, Guild guild) {
         super(id, guild);
     }
 
     @Override
-    public long getParentCategoryIdLong()
-    {
+    public long getParentCategoryIdLong() {
         return parentCategoryId;
     }
 
     @Override
-    public int getPositionRaw()
-    {
+    public int getPositionRaw() {
         return position;
     }
 
     @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap() {
         return overrides;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T setParentCategory(long parentCategoryId)
-    {
+    public T setParentCategory(long parentCategoryId) {
         this.parentCategoryId = parentCategoryId;
         return (T) this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public T setPosition(int position)
-    {
+    public T setPosition(int position) {
         onPositionChange();
         this.position = position;
         return (T) this;
     }
 
-    protected final void onPositionChange()
-    {
-        if (!isDetached())
+    protected final void onPositionChange() {
+        if (!isDetached()) {
             ((GuildImpl) getGuild()).getChannelView().clearCachedLists();
+        }
     }
 }

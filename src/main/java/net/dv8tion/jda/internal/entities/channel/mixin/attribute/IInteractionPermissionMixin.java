@@ -21,9 +21,8 @@ import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 
 import javax.annotation.Nonnull;
 
-public interface IInteractionPermissionMixin<T extends IInteractionPermissionMixin<T>> extends
-        GuildChannelMixin<T>
-{
+public interface IInteractionPermissionMixin<T extends IInteractionPermissionMixin<T>>
+        extends GuildChannelMixin<T> {
     @Nonnull
     ChannelInteractionPermissions getInteractionPermissions();
 

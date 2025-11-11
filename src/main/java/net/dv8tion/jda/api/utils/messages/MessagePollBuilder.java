@@ -21,20 +21,20 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Builder for {@link MessagePollData}
  *
  * @see MessageCreateBuilder#setPoll(MessagePollData)
  */
-public class MessagePollBuilder
-{
+public class MessagePollBuilder {
     private final List<MessagePoll.Answer> answers = new ArrayList<>(MessagePoll.MAX_ANSWERS);
     private MessagePoll.LayoutType layout = MessagePoll.LayoutType.DEFAULT;
     private String title;
@@ -50,8 +50,7 @@ public class MessagePollBuilder
      * @throws IllegalArgumentException
      *         If the title is blank or longer than {@link MessagePoll#MAX_QUESTION_TEXT_LENGTH} characters
      */
-    public MessagePollBuilder(@Nonnull String title)
-    {
+    public MessagePollBuilder(@Nonnull String title) {
         this.setTitle(title);
     }
 
@@ -64,14 +63,14 @@ public class MessagePollBuilder
      * @throws IllegalArgumentException
      *         If null is provided
      */
-    public MessagePollBuilder(@Nonnull MessagePoll poll)
-    {
+    public MessagePollBuilder(@Nonnull MessagePoll poll) {
         Checks.notNull(poll, "Poll");
         this.title = poll.getQuestion().getText();
         this.isMultiAnswer = poll.isMultiAnswer();
         this.layout = poll.getLayout();
-        for (MessagePoll.Answer answer : poll.getAnswers())
+        for (MessagePoll.Answer answer : poll.getAnswers()) {
             addAnswer(answer.getText(), answer.getEmoji());
+        }
     }
 
     /**
@@ -86,8 +85,7 @@ public class MessagePollBuilder
      * @return The updated builder
      */
     @Nonnull
-    public MessagePollBuilder setLayout(@Nonnull MessagePoll.LayoutType layout)
-    {
+    public MessagePollBuilder setLayout(@Nonnull MessagePoll.LayoutType layout) {
         Checks.notNull(layout, "Layout");
         Checks.check(layout != MessagePoll.LayoutType.UNKNOWN, "Layout cannot be UNKNOWN");
 
@@ -107,8 +105,7 @@ public class MessagePollBuilder
      * @return The updated builder
      */
     @Nonnull
-    public MessagePollBuilder setTitle(@Nonnull String title)
-    {
+    public MessagePollBuilder setTitle(@Nonnull String title) {
         Checks.notBlank(title, "Title");
         title = title.trim();
         Checks.notLonger(title, MessagePoll.MAX_QUESTION_TEXT_LENGTH, "Title");
@@ -132,11 +129,14 @@ public class MessagePollBuilder
      * @return The updated builder
      */
     @Nonnull
-    public MessagePollBuilder setDuration(@Nonnull Duration duration)
-    {
+    public MessagePollBuilder setDuration(@Nonnull Duration duration) {
         Checks.notNull(duration, "Duration");
         Checks.positive(duration.toHours(), "Duration");
-        Checks.notLonger(duration, Duration.ofHours(MessagePoll.MAX_DURATION_HOURS), TimeUnit.HOURS, "Duration");
+        Checks.notLonger(
+                duration,
+                Duration.ofHours(MessagePoll.MAX_DURATION_HOURS),
+                TimeUnit.HOURS,
+                "Duration");
 
         this.duration = duration;
         return this;
@@ -159,8 +159,7 @@ public class MessagePollBuilder
      * @return The updated builder
      */
     @Nonnull
-    public MessagePollBuilder setDuration(long duration, @Nonnull TimeUnit unit)
-    {
+    public MessagePollBuilder setDuration(long duration, @Nonnull TimeUnit unit) {
         Checks.notNull(unit, "TimeUnit");
         return setDuration(Duration.ofHours(unit.toHours(duration)));
     }
@@ -175,8 +174,7 @@ public class MessagePollBuilder
      * @return The updated builder
      */
     @Nonnull
-    public MessagePollBuilder setMultiAnswer(boolean multiAnswer)
-    {
+    public MessagePollBuilder setMultiAnswer(boolean multiAnswer) {
         isMultiAnswer = multiAnswer;
         return this;
     }
@@ -193,8 +191,7 @@ public class MessagePollBuilder
      * @return The updated builder
      */
     @Nonnull
-    public MessagePollBuilder addAnswer(@Nonnull String title)
-    {
+    public MessagePollBuilder addAnswer(@Nonnull String title) {
         return addAnswer(title, null);
     }
 
@@ -212,14 +209,17 @@ public class MessagePollBuilder
      * @return The updated builder
      */
     @Nonnull
-    public MessagePollBuilder addAnswer(@Nonnull String title, @Nullable Emoji emoji)
-    {
+    public MessagePollBuilder addAnswer(@Nonnull String title, @Nullable Emoji emoji) {
         Checks.notBlank(title, "Answer title");
         title = title.trim();
         Checks.notLonger(title, MessagePoll.MAX_ANSWER_TEXT_LENGTH, "Answer title");
-        Checks.check(this.answers.size() < MessagePoll.MAX_ANSWERS, "Poll cannot have more than %d answers", MessagePoll.MAX_ANSWERS);
+        Checks.check(
+                this.answers.size() < MessagePoll.MAX_ANSWERS,
+                "Poll cannot have more than %d answers",
+                MessagePoll.MAX_ANSWERS);
 
-        this.answers.add(new MessagePoll.Answer(this.answers.size() + 1, title, (EmojiUnion) emoji, 0, false));
+        this.answers.add(new MessagePoll.Answer(
+                this.answers.size() + 1, title, (EmojiUnion) emoji, 0, false));
         return this;
     }
 
@@ -232,16 +232,15 @@ public class MessagePollBuilder
      * @return {@link MessagePollData}
      */
     @Nonnull
-    public MessagePollData build()
-    {
-        if (answers.isEmpty())
+    public MessagePollData build() {
+        if (answers.isEmpty()) {
             throw new IllegalStateException("Cannot build a poll without answers");
+        }
         return new MessagePollData(
-            layout,
-            new MessagePoll.Question(title, null),
-            new ArrayList<>(answers),
-            duration,
-            isMultiAnswer
-        );
+                layout,
+                new MessagePoll.Question(title, null),
+                new ArrayList<>(answers),
+                duration,
+                isMultiAnswer);
     }
 }

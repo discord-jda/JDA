@@ -24,68 +24,61 @@ import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl implements MessageEditCallbackAction, MessageEditBuilderMixin<MessageEditCallbackAction>
-{
+import javax.annotation.Nonnull;
+
+public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl
+        implements MessageEditCallbackAction, MessageEditBuilderMixin<MessageEditCallbackAction> {
     private final MessageEditBuilder builder = new MessageEditBuilder();
 
-    public MessageEditCallbackActionImpl(InteractionHookImpl hook)
-    {
+    public MessageEditCallbackActionImpl(InteractionHookImpl hook) {
         super(hook);
     }
 
     @Override
-    public MessageEditBuilder getBuilder()
-    {
+    public MessageEditBuilder getBuilder() {
         return builder;
     }
 
     @Nonnull
     @Override
-    public MessageEditCallbackActionImpl setCheck(BooleanSupplier checks)
-    {
+    public MessageEditCallbackActionImpl setCheck(BooleanSupplier checks) {
         return (MessageEditCallbackActionImpl) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public MessageEditCallbackActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public MessageEditCallbackActionImpl timeout(long timeout, @Nonnull TimeUnit unit) {
         return (MessageEditCallbackActionImpl) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public MessageEditCallbackActionImpl deadline(long timestamp)
-    {
+    public MessageEditCallbackActionImpl deadline(long timestamp) {
         return (MessageEditCallbackActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public MessageEditCallbackActionImpl closeResources()
-    {
+    public MessageEditCallbackActionImpl closeResources() {
         builder.closeFiles();
         return this;
     }
 
-    private boolean isEmpty()
-    {
+    private boolean isEmpty() {
         return builder.isEmpty();
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject json = DataObject.empty();
-        if (isEmpty())
+        if (isEmpty()) {
             return getRequestBody(json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw()));
+        }
         json.put("type", ResponseType.MESSAGE_UPDATE.getRaw());
-        try (MessageEditData data = builder.build())
-        {
+        try (MessageEditData data = builder.build()) {
             json.put("data", data);
             return getMultipartBody(data.getAllDistinctFiles(), json);
         }

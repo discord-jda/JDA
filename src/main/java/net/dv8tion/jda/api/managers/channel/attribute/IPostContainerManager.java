@@ -23,10 +23,11 @@ import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Manager abstraction to configure settings related to forum post containers, such as {@link ForumChannel}.
@@ -34,8 +35,9 @@ import java.util.List;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface IPostContainerManager<T extends IPostContainer, M extends IPostContainerManager<T, M>> extends IThreadContainerManager<T, M>, IPermissionContainerManager<T, M>
-{
+public interface IPostContainerManager<
+                T extends IPostContainer, M extends IPostContainerManager<T, M>>
+        extends IThreadContainerManager<T, M>, IPermissionContainerManager<T, M> {
     /**
      * Sets the tag requirement state of this {@link IPostContainer}.
      * <br>If true, all new posts must have at least one tag.

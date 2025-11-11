@@ -37,60 +37,53 @@ import static net.dv8tion.jda.test.util.MockitoVerifyUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class MessageEditBuilderTest extends AbstractSnapshotTest
-{
+public class MessageEditBuilderTest extends AbstractSnapshotTest {
     @Test
-    void testEmptyBuilder_fromMessage()
-    {
+    void testEmptyBuilder_fromMessage() {
         Message message = mock(Message.class);
         when(message.getType()).thenReturn(MessageType.DEFAULT);
 
         MessageEditBuilder builder = spy(new MessageEditBuilder());
         builder.applyMessage(message);
         assertThat(builder)
-            .usingRecursiveComparison()
-            .isEqualTo(MessageEditBuilder.fromMessage(message));
+                .usingRecursiveComparison()
+                .isEqualTo(MessageEditBuilder.fromMessage(message));
 
         Set<String> expectedCalls = getMessageEditBuilderSetters();
 
-        Arrays.asList("setFiles", "setAttachments", "setAllowedMentions").forEach(
-            expectedCalls::remove
-        );
+        Arrays.asList("setFiles", "setAttachments", "setAllowedMentions")
+                .forEach(expectedCalls::remove);
 
         assertInteractionsContainMethods(builder, expectedCalls);
 
-        try (MessageEditData data = builder.build())
-        {
+        try (MessageEditData data = builder.build()) {
             assertWithSnapshot(data);
         }
     }
 
     @Test
-    void testFullBuilder()
-    {
+    void testFullBuilder() {
         MessageEditBuilder builder = spy(new MessageEditBuilder());
 
-        builder
-            .setContent("Test content")
-            .setEmbeds(new EmbedBuilder().setDescription("Test embed").build())
-            .setComponents(ComponentTestData.getMinimalComponent(ActionRow.class, Component.Type.ACTION_ROW))
-            .useComponentsV2(false)
-            .setAttachments(Collections.emptyList())
-            .setReplace(true)
-            .setSuppressEmbeds(false)
-            .setAllowedMentions(Collections.emptyList())
-            .setFiles(TestResourceUtil.getFileUpload(Resources.LOGO_PNG));
+        builder.setContent("Test content")
+                .setEmbeds(new EmbedBuilder().setDescription("Test embed").build())
+                .setComponents(ComponentTestData.getMinimalComponent(
+                        ActionRow.class, Component.Type.ACTION_ROW))
+                .useComponentsV2(false)
+                .setAttachments(Collections.emptyList())
+                .setReplace(true)
+                .setSuppressEmbeds(false)
+                .setAllowedMentions(Collections.emptyList())
+                .setFiles(TestResourceUtil.getFileUpload(Resources.LOGO_PNG));
 
         assertInteractionsContainMethods(builder, getMessageEditBuilderSetters());
 
-        try (MessageEditData data = builder.build())
-        {
+        try (MessageEditData data = builder.build()) {
             assertWithSnapshot(data);
         }
     }
 
-    private static Set<String> getMessageEditBuilderSetters()
-    {
+    private static Set<String> getMessageEditBuilderSetters() {
         return getMethodsByPattern(MessageEditBuilder.class, "^(set|use).+$");
     }
 }

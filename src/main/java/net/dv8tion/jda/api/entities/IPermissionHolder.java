@@ -21,23 +21,21 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Marker for entities that hold Permissions within JDA
  *
- * @since 3.0
- *
  * @see Role
  * @see Member
  */
-public interface IPermissionHolder extends ISnowflake
-{
+public interface IPermissionHolder extends ISnowflake {
     /**
      * The Guild to which this PermissionHolder is related
-     * 
+     *
      * @return A never-null Guild to which this PermissionHolder is linked
      */
     @Nonnull
@@ -147,8 +145,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @see    java.util.EnumSet EnumSet
      */
-    default boolean hasPermission(@Nonnull Collection<Permission> permissions)
-    {
+    default boolean hasPermission(@Nonnull Collection<Permission> permissions) {
         Checks.notNull(permissions, "Permission Collection");
         return hasPermission(permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
@@ -196,8 +193,8 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
-    default boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
-    {
+    default boolean hasPermission(
+            @Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions) {
         Checks.notNull(permissions, "Permission Collection");
         return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
@@ -220,8 +217,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if the PermissionHolder has access
      */
-    default boolean hasAccess(@Nonnull GuildChannel channel)
-    {
+    default boolean hasAccess(@Nonnull GuildChannel channel) {
         Checks.notNull(channel, "Channel");
         return channel.getType().isAudio()
                 ? hasPermission(channel, Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL)
@@ -247,7 +243,8 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if the channels can be synced
      */
-    boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource);
+    boolean canSync(
+            @Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource);
 
     /**
      * Whether the permissions of this PermissionHolder are good enough to sync the target channel with any other channel.

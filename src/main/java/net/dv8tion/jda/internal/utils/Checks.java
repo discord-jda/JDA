@@ -39,104 +39,104 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Checks
-{
-    public static final Pattern ALPHANUMERIC_WITH_DASH = Pattern.compile("[\\w-]+", Pattern.UNICODE_CHARACTER_CLASS);
-    public static final Pattern ALPHANUMERIC = Pattern.compile("\\w+", Pattern.UNICODE_CHARACTER_CLASS);
+public class Checks {
+    public static final Pattern ALPHANUMERIC_WITH_DASH =
+            Pattern.compile("[\\w-]+", Pattern.UNICODE_CHARACTER_CLASS);
+    public static final Pattern ALPHANUMERIC =
+            Pattern.compile("\\w+", Pattern.UNICODE_CHARACTER_CLASS);
     public static final Pattern LOWERCASE_ASCII_ALPHANUMERIC = Pattern.compile("[a-z0-9_]+");
 
     @Contract("null -> fail")
-    public static void isSnowflake(final String snowflake)
-    {
+    public static void isSnowflake(String snowflake) {
         isSnowflake(snowflake, snowflake);
     }
 
     @Contract("null, _ -> fail")
-    public static void isSnowflake(final String snowflake, final String message)
-    {
+    public static void isSnowflake(String snowflake, String message) {
         notNull(snowflake, message);
-        if (snowflake.length() > 20 || !Helpers.isNumeric(snowflake))
-            throw new IllegalArgumentException(message + " is not a valid snowflake value! Provided: \"" + snowflake + "\"");
+        if (snowflake.length() > 20 || !Helpers.isNumeric(snowflake)) {
+            throw new IllegalArgumentException(
+                    message + " is not a valid snowflake value! Provided: \"" + snowflake + "\"");
+        }
     }
 
     @Contract("false, _ -> fail")
-    public static void check(final boolean expression, final String message)
-    {
-        if (!expression)
+    public static void check(boolean expression, String message) {
+        if (!expression) {
             throw new IllegalArgumentException(message);
+        }
     }
 
     @Contract("false, _, _ -> fail")
-    public static void check(final boolean expression, @PrintFormat final String message, final Object... args)
-    {
-        if (!expression)
+    public static void check(boolean expression, @PrintFormat String message, Object... args) {
+        if (!expression) {
             throw new IllegalArgumentException(String.format(message, args));
+        }
     }
 
     @Contract("false, _, _ -> fail")
-    public static void check(final boolean expression, @PrintFormat final String message, final Object arg)
-    {
-        if (!expression)
+    public static void check(boolean expression, @PrintFormat String message, Object arg) {
+        if (!expression) {
             throw new IllegalArgumentException(String.format(message, arg));
+        }
     }
 
     @Contract("null, _ -> fail")
-    public static void notNull(final Object argument, final String name)
-    {
-        if (argument == null)
+    public static void notNull(Object argument, String name) {
+        if (argument == null) {
             throw new IllegalArgumentException(name + " may not be null");
+        }
     }
 
     @Contract("null, _ -> fail")
-    public static void notEmpty(final CharSequence argument, final String name)
-    {
+    public static void notEmpty(CharSequence argument, String name) {
         notNull(argument, name);
-        if (Helpers.isEmpty(argument))
+        if (Helpers.isEmpty(argument)) {
             throw new IllegalArgumentException(name + " may not be empty");
+        }
     }
 
     @Contract("null, _ -> fail")
-    public static void notBlank(final CharSequence argument, final String name)
-    {
+    public static void notBlank(CharSequence argument, String name) {
         notNull(argument, name);
-        if (Helpers.isBlank(argument))
+        if (Helpers.isBlank(argument)) {
             throw new IllegalArgumentException(name + " may not be blank");
+        }
     }
 
     @Contract("null, _ -> fail")
-    public static void noWhitespace(final CharSequence argument, final String name)
-    {
+    public static void noWhitespace(CharSequence argument, String name) {
         notNull(argument, name);
-        if (Helpers.containsWhitespace(argument))
-            throw new IllegalArgumentException(name + " may not contain blanks. Provided: \"" + argument + "\"");
+        if (Helpers.containsWhitespace(argument)) {
+            throw new IllegalArgumentException(
+                    name + " may not contain blanks. Provided: \"" + argument + "\"");
+        }
     }
 
     @Contract("null, _ -> fail")
-    public static void notEmpty(final Collection<?> argument, final String name)
-    {
+    public static void notEmpty(Collection<?> argument, String name) {
         notNull(argument, name);
-        if (argument.isEmpty())
+        if (argument.isEmpty()) {
             throw new IllegalArgumentException(name + " may not be empty");
+        }
     }
 
     @Contract("null, _ -> fail")
-    public static void notEmpty(final Object[] argument, final String name)
-    {
+    public static void notEmpty(Object[] argument, String name) {
         notNull(argument, name);
-        if (argument.length == 0)
+        if (argument.length == 0) {
             throw new IllegalArgumentException(name + " may not be empty");
+        }
     }
 
     @Contract("null, _ -> fail")
-    public static void noneNull(final Collection<?> argument, final String name)
-    {
+    public static void noneNull(Collection<?> argument, String name) {
         notNull(argument, name);
         argument.forEach(it -> notNull(it, name));
     }
 
     @Contract("null, _ -> fail")
-    public static void noneNull(final Object[] argument, final String name)
-    {
+    public static void noneNull(Object[] argument, String name) {
         notNull(argument, name);
         for (Object it : argument) {
             notNull(it, name);
@@ -144,156 +144,180 @@ public class Checks
     }
 
     @Contract("null, _ -> fail")
-    public static <T extends CharSequence> void noneEmpty(final Collection<T> argument, final String name)
-    {
+    public static <T extends CharSequence> void noneEmpty(Collection<T> argument, String name) {
         notNull(argument, name);
         argument.forEach(it -> notEmpty(it, name));
     }
 
     @Contract("null, _ -> fail")
-    public static <T extends CharSequence> void noneBlank(final Collection<T> argument, final String name)
-    {
+    public static <T extends CharSequence> void noneBlank(Collection<T> argument, String name) {
         notNull(argument, name);
         argument.forEach(it -> notBlank(it, name));
     }
 
     @Contract("null, _ -> fail")
-    public static <T extends CharSequence> void noneContainBlanks(final Collection<T> argument, final String name)
-    {
+    public static <T extends CharSequence> void noneContainBlanks(
+            Collection<T> argument, String name) {
         notNull(argument, name);
         argument.forEach(it -> noWhitespace(it, name));
     }
 
-    public static void inRange(final String input, final int min, final int max, final String name)
-    {
+    public static void inRange(String input, int min, int max, String name) {
         notNull(input, name);
         int length = Helpers.codePointLength(input);
-        check(min <= length && length <= max,
+        check(
+                min <= length && length <= max,
                 "%s must be between %d and %d characters long! Provided: \"%s\"",
-                name, min, max, input);
+                name,
+                min,
+                max,
+                input);
     }
 
-    public static void notLonger(final String input, final int length, final String name)
-    {
+    public static void notLonger(String input, int length, String name) {
         notNull(input, name);
-        check(Helpers.codePointLength(input) <= length, "%s may not be longer than %d characters! Provided: \"%s\"", name, length, input);
+        check(
+                Helpers.codePointLength(input) <= length,
+                "%s may not be longer than %d characters! Provided: \"%s\"",
+                name,
+                length,
+                input);
     }
 
-    public static void matches(final String input, final Pattern pattern, final String name)
-    {
+    public static void matches(String input, Pattern pattern, String name) {
         notNull(input, name);
-        check(pattern.matcher(input).matches(), "%s must match regex ^%s$. Provided: \"%s\"", name, pattern.pattern(), input);
+        check(
+                pattern.matcher(input).matches(),
+                "%s must match regex ^%s$. Provided: \"%s\"",
+                name,
+                pattern.pattern(),
+                input);
     }
 
-    public static void isLowercase(final String input, final String name)
-    {
+    public static void isLowercase(String input, String name) {
         notNull(input, name);
-        check(input.toLowerCase(Locale.ROOT).equals(input), "%s must be lowercase only! Provided: \"%s\"", name, input);
+        check(
+                input.toLowerCase(Locale.ROOT).equals(input),
+                "%s must be lowercase only! Provided: \"%s\"",
+                name,
+                input);
     }
 
-    public static void positive(final int n, final String name)
-    {
-        if (n <= 0)
+    public static void positive(int n, String name) {
+        if (n <= 0) {
             throw new IllegalArgumentException(name + " may not be negative or zero");
+        }
     }
 
-    public static void positive(final long n, final String name)
-    {
-        if (n <= 0)
+    public static void positive(long n, String name) {
+        if (n <= 0) {
             throw new IllegalArgumentException(name + " may not be negative or zero");
+        }
     }
 
-    public static void notNegative(final int n, final String name)
-    {
-        if (n < 0)
+    public static void notNegative(int n, String name) {
+        if (n < 0) {
             throw new IllegalArgumentException(name + " may not be negative");
+        }
     }
 
-    public static void notNegative(final long n, final String name)
-    {
-        if (n < 0)
+    public static void notNegative(long n, String name) {
+        if (n < 0) {
             throw new IllegalArgumentException(name + " may not be negative");
+        }
     }
 
-    public static void notLonger(final Duration duration, final Duration maxDuration, final TimeUnit resolutionUnit, final String name)
-    {
+    public static void notLonger(
+            Duration duration, Duration maxDuration, TimeUnit resolutionUnit, String name) {
         notNull(duration, name);
         check(
-            duration.compareTo(maxDuration) <= 0,
-           "%s may not be longer than %s. Provided: %s",
-            name,
-            JDALogger.getLazyString(() -> Helpers.durationToString(maxDuration, resolutionUnit)),
-            JDALogger.getLazyString(() -> Helpers.durationToString(duration, resolutionUnit))
-        );
+                duration.compareTo(maxDuration) <= 0,
+                "%s may not be longer than %s. Provided: %s",
+                name,
+                JDALogger.getLazyString(
+                        () -> Helpers.durationToString(maxDuration, resolutionUnit)),
+                JDALogger.getLazyString(() -> Helpers.durationToString(duration, resolutionUnit)));
     }
 
     // Unique streams checks
 
-    public static <T> void checkUnique(Stream<T> stream, String format, BiFunction<Long, T, Object[]> getArgs)
-    {
-        Map<T, Long> counts = stream.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        for (Map.Entry<T, Long> entry : counts.entrySet())
-        {
-            if (entry.getValue() > 1)
-            {
+    public static <T> void checkUnique(
+            Stream<T> stream, String format, BiFunction<Long, T, Object[]> getArgs) {
+        Map<T, Long> counts =
+                stream.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        for (Map.Entry<T, Long> entry : counts.entrySet()) {
+            if (entry.getValue() > 1) {
                 Object[] args = getArgs.apply(entry.getValue(), entry.getKey());
                 throw new IllegalArgumentException(Helpers.format(format, args));
             }
         }
     }
 
-    public static void checkComponents(String errorMessage, Collection<? extends Component> components, Predicate<Component> predicate)
-    {
+    public static void checkComponents(
+            String errorMessage,
+            Collection<? extends Component> components,
+            Predicate<Component> predicate) {
         StringBuilder sb = new StringBuilder();
 
         ComponentPathIterator.createStream("root", components)
                 .filter(c -> !predicate.test(c.getComponent()))
                 .forEach(c -> sb.append(" - ").append(c.getPath()).append("\n"));
 
-        if (sb.length() > 0)
-            throw new IllegalArgumentException(errorMessage + "\n" + sb.toString().trim());
+        if (sb.length() > 0) {
+            throw new IllegalArgumentException(
+                    errorMessage + "\n" + sb.toString().trim());
+        }
     }
 
-    public static void checkComponents(String errorMessage, Component[] components, Predicate<Component> predicate)
-    {
+    public static void checkComponents(
+            String errorMessage, Component[] components, Predicate<Component> predicate) {
         checkComponents(errorMessage, Arrays.asList(components), predicate);
     }
 
-    public static void checkComponentType(Class<? extends Component> expectedChildrenType, Component originalComponent, Component newComponent)
-    {
+    public static void checkComponentType(
+            Class<? extends Component> expectedChildrenType,
+            Component originalComponent,
+            Component newComponent) {
         Checks.check(
                 expectedChildrenType.isInstance(newComponent),
                 "%s was replaced by an incompatible component (%s), this layout only supports components of type %s",
-                originalComponent, newComponent, expectedChildrenType.getSimpleName()
-        );
+                originalComponent,
+                newComponent,
+                expectedChildrenType.getSimpleName());
     }
 
     // Permission checks
 
-    public static void checkAccess(IPermissionHolder issuer, GuildChannel channel)
-    {
-        if (issuer.hasAccess(channel))
+    public static void checkAccess(IPermissionHolder issuer, GuildChannel channel) {
+        if (issuer.hasAccess(channel)) {
             return;
+        }
 
         EnumSet<Permission> perms = issuer.getPermissionsExplicit(channel);
-        if (channel instanceof AudioChannel && !perms.contains(Permission.VOICE_CONNECT))
+        if (channel instanceof AudioChannel && !perms.contains(Permission.VOICE_CONNECT)) {
             throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+        }
         throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
     }
 
     // Attach checks
 
-    public static void checkAttached(IDetachableEntity entity)
-    {
-        if (entity.isDetached())
+    public static void checkAttached(IDetachableEntity entity) {
+        if (entity.isDetached()) {
             throw new DetachedEntityException();
+        }
     }
 
     // Type checks
 
-    public static void checkSupportedChannelTypes(EnumSet<ChannelType> supported, ChannelType type, String what)
-    {
-        Checks.check(supported.contains(type), "Can only configure %s for channels of types %s", what,
-                     JDALogger.getLazyString(() -> supported.stream().map(ChannelType::name).collect(Collectors.joining(", "))));
+    public static void checkSupportedChannelTypes(
+            EnumSet<ChannelType> supported, ChannelType type, String what) {
+        Checks.check(
+                supported.contains(type),
+                "Can only configure %s for channels of types %s",
+                what,
+                JDALogger.getLazyString(() -> supported.stream()
+                        .map(ChannelType::name)
+                        .collect(Collectors.joining(", "))));
     }
 }

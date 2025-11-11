@@ -27,10 +27,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect that a Guild stopped responding.
  */
-public class GuildUnavailableEvent extends GenericGuildEvent
-{
-    public GuildUnavailableEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
-    {
+public class GuildUnavailableEvent extends GenericGuildEvent {
+    public GuildUnavailableEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild) {
         super(api, responseNumber, guild);
     }
 }

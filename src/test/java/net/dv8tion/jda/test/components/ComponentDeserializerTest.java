@@ -35,20 +35,17 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.junit.jupiter.api.Assertions.fail;
 
-class ComponentDeserializerTest extends AbstractComponentTest
-{
+class ComponentDeserializerTest extends AbstractComponentTest {
     @Test
-    void testDeserializeMessageComponentTree() throws Exception
-    {
+    void testDeserializeMessageComponentTree() throws Exception {
         ComponentDeserializer deserializer = new ComponentDeserializer(Collections.emptyList());
         ComponentSerializer serializer = new ComponentSerializer();
-        try (InputStream sample = loadSample("exampleMessageTree.json"))
-        {
+        try (InputStream sample = loadSample("exampleMessageTree.json")) {
             DataArray data = DataArray.fromJson(sample);
 
-            MessageComponentTree tree = deserializer.deserializeAsTree(MessageComponentTree.class, data);
+            MessageComponentTree tree =
+                    deserializer.deserializeAsTree(MessageComponentTree.class, data);
 
             assertThat(tree).isNotNull();
 
@@ -60,26 +57,22 @@ class ComponentDeserializerTest extends AbstractComponentTest
     @EnumSource
     @ParameterizedTest
     @SuppressWarnings("rawtypes")
-    void testParseTreeIsUpdated(ComponentTree.Type type)
-    {
+    void testParseTreeIsUpdated(ComponentTree.Type type) {
         ComponentDeserializer deserializer = new ComponentDeserializer(Collections.emptyList());
 
         Class<? extends ComponentTree> treeClass = getTreeClass(type);
 
         // We only want to test that [[Components#parseTree]] recognizes the tree type,
         // don't construct a real tree as that may throw on empty trees
-        try (MockedStatic<?> ignored = Mockito.mockStatic(treeClass))
-        {
-            assertThatNoException().isThrownBy(
-                () -> deserializer.deserializeAsTree(treeClass, DataArray.empty()));
+        try (MockedStatic<?> ignored = Mockito.mockStatic(treeClass)) {
+            assertThatNoException()
+                    .isThrownBy(() -> deserializer.deserializeAsTree(treeClass, DataArray.empty()));
         }
     }
 
     @SuppressWarnings("rawtypes")
-    private static Class<? extends ComponentTree> getTreeClass(ComponentTree.Type type)
-    {
-        return switch (type)
-        {
+    private static Class<? extends ComponentTree> getTreeClass(ComponentTree.Type type) {
+        return switch (type) {
             case ANY -> ComponentTree.class;
             case MESSAGE -> MessageComponentTree.class;
             case MODAL -> ModalComponentTree.class;

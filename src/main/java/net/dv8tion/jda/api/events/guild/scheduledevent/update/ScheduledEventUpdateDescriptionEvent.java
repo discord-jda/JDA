@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
@@ -39,13 +40,21 @@ import javax.annotation.Nullable;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateDescriptionEvent extends GenericScheduledEventUpdateEvent<String>
-{
+public class ScheduledEventUpdateDescriptionEvent extends GenericScheduledEventUpdateEvent<String> {
     public static final String IDENTIFIER = "description";
 
-    public ScheduledEventUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nullable String previous)
-    {
-        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getDescription(), IDENTIFIER);
+    public ScheduledEventUpdateDescriptionEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ScheduledEvent scheduledEvent,
+            @Nullable String previous) {
+        super(
+                api,
+                responseNumber,
+                scheduledEvent,
+                previous,
+                scheduledEvent.getDescription(),
+                IDENTIFIER);
     }
 
     /**
@@ -54,8 +63,7 @@ public class ScheduledEventUpdateDescriptionEvent extends GenericScheduledEventU
      * @return The old description, or {@code null} if no description was previously set.
      */
     @Nullable
-    public String getOldDescription()
-    {
+    public String getOldDescription() {
         return getOldValue();
     }
 
@@ -65,8 +73,7 @@ public class ScheduledEventUpdateDescriptionEvent extends GenericScheduledEventU
      * @return The new description, or {@code null} if the description was removed.
      */
     @Nullable
-    public String getNewDescription()
-    {
+    public String getNewDescription() {
         return getNewValue();
     }
 }

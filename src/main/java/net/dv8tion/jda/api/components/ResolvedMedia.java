@@ -25,8 +25,7 @@ import javax.annotation.Nullable;
  * A media resolved by Discord including some metadata,
  * typically comes from {@linkplain net.dv8tion.jda.api.entities.Message.MessageFlag#IS_COMPONENTS_V2 V2 Components}.
  */
-public interface ResolvedMedia
-{
+public interface ResolvedMedia {
     /**
      * The ID of the attachment represented by this resolved media,
      * may return {@code null} if this media was created from an external link.
@@ -43,9 +42,8 @@ public interface ResolvedMedia
      * @return The ID of the attachment, or {@code null}
      */
     @Nullable
-    default Long getAttachmentIdLong()
-    {
-        final String attachmentId = getAttachmentId();
+    default Long getAttachmentIdLong() {
+        String attachmentId = getAttachmentId();
         return attachmentId != null ? Long.parseUnsignedLong(attachmentId) : null;
     }
 

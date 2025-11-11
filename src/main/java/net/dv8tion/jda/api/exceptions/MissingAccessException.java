@@ -28,18 +28,14 @@ import javax.annotation.Nonnull;
  * in addition to {@link Permission#VOICE_CONNECT VOICE_CONNECT} permission if {@link Channel#getType()} is an {@link ChannelType#isAudio() audio} type.
  *
  * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasAccess(GuildChannel)
- *
- * @since 4.2.1
  */
-public class MissingAccessException extends InsufficientPermissionException
-{
-    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission)
-    {
+public class MissingAccessException extends InsufficientPermissionException {
+    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission) {
         super(channel, permission);
     }
 
-    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason)
-    {
+    public MissingAccessException(
+            @Nonnull GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason) {
         super(channel, permission, reason);
     }
 }

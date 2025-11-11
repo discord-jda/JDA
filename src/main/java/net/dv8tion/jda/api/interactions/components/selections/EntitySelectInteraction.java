@@ -28,8 +28,8 @@ import javax.annotation.Nonnull;
  *
  * @see EntitySelectInteractionEvent
  */
-public interface EntitySelectInteraction extends SelectMenuInteraction<IMentionable, EntitySelectMenu>
-{
+public interface EntitySelectInteraction
+        extends SelectMenuInteraction<IMentionable, EntitySelectMenu> {
     /**
      * The resolved {@link Mentions} for this selection.
      * <br>This supports {@link Mentions#getRoles() roles}, {@link Mentions#getUsers() users}, and {@link Mentions#getChannels() channels}.

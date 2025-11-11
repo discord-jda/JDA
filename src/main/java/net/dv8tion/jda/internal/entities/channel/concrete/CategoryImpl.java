@@ -34,145 +34,124 @@ import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
 
-public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> implements
-        Category,
-        CategoryMixin<CategoryImpl>
-{
+public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl>
+        implements Category, CategoryMixin<CategoryImpl> {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     private int position;
 
-    public CategoryImpl(long id, GuildImpl guild)
-    {
+    public CategoryImpl(long id, GuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return false;
     }
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.CATEGORY;
     }
 
     @Override
-    public int getPositionRaw()
-    {
+    public int getPositionRaw() {
         return position;
     }
 
     @Nonnull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
-    {
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name) {
         ChannelAction<TextChannel> action = getGuild().createTextChannel(name, this);
         return trySync(action);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name)
-    {
+    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name) {
         ChannelAction<NewsChannel> action = getGuild().createNewsChannel(name, this);
         return trySync(action);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
-    {
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name) {
         ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
         return trySync(action);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
-    {
+    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name) {
         ChannelAction<StageChannel> action = getGuild().createStageChannel(name, this);
         return trySync(action);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name)
-    {
+    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name) {
         ChannelAction<ForumChannel> action = getGuild().createForumChannel(name, this);
         return trySync(action);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name)
-    {
+    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name) {
         ChannelAction<MediaChannel> action = getGuild().createMediaChannel(name, this);
         return trySync(action);
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction modifyTextChannelPositions()
-    {
+    public CategoryOrderAction modifyTextChannelPositions() {
         return getGuild().modifyTextChannelPositions(this);
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction modifyVoiceChannelPositions()
-    {
+    public CategoryOrderAction modifyVoiceChannelPositions() {
         return getGuild().modifyVoiceChannelPositions(this);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<Category> createCopy()
-    {
+    public ChannelAction<Category> createCopy() {
         return createCopy(getGuild());
     }
 
     @Nonnull
     @Override
-    public CategoryManager getManager()
-    {
+    public CategoryManager getManager() {
         return new CategoryManagerImpl(this);
     }
 
     @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap() {
         return overrides;
     }
 
     @Override
-    public CategoryImpl setPosition(int position)
-    {
+    public CategoryImpl setPosition(int position) {
         this.position = position;
         return this;
     }
 
-    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
-    {
+    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action) {
         Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.canSync(this))
-        {
+        if (!selfMember.canSync(this)) {
             long botPerms = PermissionUtil.getEffectivePermission(this, selfMember);
-            for (PermissionOverride override : getPermissionOverrides())
-            {
+            for (PermissionOverride override : getPermissionOverrides()) {
                 long perms = override.getDeniedRaw() | override.getAllowedRaw();
-                if ((perms & ~botPerms) != 0)
+                if ((perms & ~botPerms) != 0) {
                     return action;
+                }
             }
         }
         return action.syncPermissionOverrides();

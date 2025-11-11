@@ -21,6 +21,4 @@ package net.dv8tion.jda.api.entities.sticker;
  *
  * <p>These types contain the minimal required information to display the sticker in the discord client.
  */
-public interface StickerItem extends Sticker
-{
-}
+public interface StickerItem extends Sticker {}

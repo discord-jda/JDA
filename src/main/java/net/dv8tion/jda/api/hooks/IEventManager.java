@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * An interface for JDA's EventManager system.
@@ -43,8 +45,7 @@ import java.util.List;
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager
  * @see net.dv8tion.jda.api.hooks.AnnotatedEventManager
  */
-public interface IEventManager
-{
+public interface IEventManager {
     /**
      * Registers the specified listener
      * <br>Accepted types may be specified by implementations

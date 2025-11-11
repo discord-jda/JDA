@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -22,13 +23,14 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.Nonnull;
 
 /**
  * Implementation for {@link net.dv8tion.jda.api.hooks.IEventManager IEventManager}
@@ -52,40 +54,35 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see net.dv8tion.jda.api.hooks.IEventManager
  * @see net.dv8tion.jda.api.hooks.SubscribeEvent
  */
-public class AnnotatedEventManager implements IEventManager
-{
+public class AnnotatedEventManager implements IEventManager {
     private static final Logger LOGGER = JDALogger.getLog(AnnotatedEventManager.class);
     private final Set<Object> listeners = ConcurrentHashMap.newKeySet();
     private final Map<Class<?>, Map<Object, List<Method>>> methods = new ConcurrentHashMap<>();
 
     @Override
-    public void register(@Nonnull Object listener)
-    {
-        if (listener.getClass().isArray())
-        {
-            for (Object o : ((Object[]) listener))
+    public void register(@Nonnull Object listener) {
+        if (listener.getClass().isArray()) {
+            for (Object o : ((Object[]) listener)) {
                 register(o);
+            }
             return;
         }
 
-        if (listeners.add(listener))
-        {
+        if (listeners.add(listener)) {
             registerListenerMethods(listener);
         }
     }
 
     @Override
-    public void unregister(@Nonnull Object listener)
-    {
-        if (listener.getClass().isArray())
-        {
-            for (Object o : ((Object[]) listener))
+    public void unregister(@Nonnull Object listener) {
+        if (listener.getClass().isArray()) {
+            for (Object o : ((Object[]) listener)) {
                 unregister(o);
+            }
             return;
         }
 
-        if (listeners.remove(listener))
-        {
+        if (listeners.remove(listener)) {
             updateMethods();
         }
     }
@@ -93,67 +90,60 @@ public class AnnotatedEventManager implements IEventManager
     @Nonnull
     @Override
     @Unmodifiable
-    public List<Object> getRegisteredListeners()
-    {
+    public List<Object> getRegisteredListeners() {
         return Collections.unmodifiableList(new ArrayList<>(listeners));
     }
 
     @Override
-    public void handle(@Nonnull GenericEvent event)
-    {
-        for (Class<?> eventClass : ClassWalker.walk(event.getClass()))
-        {
+    public void handle(@Nonnull GenericEvent event) {
+        for (Class<?> eventClass : ClassWalker.walk(event.getClass())) {
             Map<Object, List<Method>> listeners = methods.get(eventClass);
-            if (listeners != null)
-            {
-                listeners.forEach((key, value) -> value.forEach(method ->
-                {
-                    try
-                    {
+            if (listeners != null) {
+                listeners.forEach((key, value) -> value.forEach(method -> {
+                    try {
                         method.setAccessible(true);
                         method.invoke(key, event);
-                    }
-                    catch (IllegalAccessException | InvocationTargetException e1)
-                    {
+                    } catch (IllegalAccessException | InvocationTargetException e1) {
                         JDAImpl.LOG.error("Couldn't access annotated EventListener method", e1);
-                    }
-                    catch (Throwable throwable)
-                    {
-                        JDAImpl.LOG.error("One of the EventListeners had an uncaught exception", throwable);
-                        if (throwable instanceof Error)
+                    } catch (Throwable throwable) {
+                        JDAImpl.LOG.error(
+                                "One of the EventListeners had an uncaught exception", throwable);
+                        if (throwable instanceof Error) {
                             throw (Error) throwable;
+                        }
                     }
                 }));
             }
         }
     }
 
-    private void updateMethods()
-    {
+    private void updateMethods() {
         methods.clear();
-        for (Object listener : listeners)
-        {
+        for (Object listener : listeners) {
             registerListenerMethods(listener);
         }
     }
 
-    private void registerListenerMethods(Object listener)
-    {
+    private void registerListenerMethods(Object listener) {
         boolean isClass = listener instanceof Class;
         Class<?> c = isClass ? (Class<?>) listener : listener.getClass();
         Method[] allMethods = c.getDeclaredMethods();
-        for (Method m : allMethods)
-        {
-            if (!m.isAnnotationPresent(SubscribeEvent.class))
+        for (Method m : allMethods) {
+            if (!m.isAnnotationPresent(SubscribeEvent.class)) {
                 continue;
-            //Skip member methods if listener is a Class
-            if (isClass && !Modifier.isStatic(m.getModifiers()))
+            }
+            // Skip member methods if listener is a Class
+            if (isClass && !Modifier.isStatic(m.getModifiers())) {
                 continue;
+            }
 
-            final Class<?>[] parameterTypes = m.getParameterTypes();
-            if (parameterTypes.length != 1 || !GenericEvent.class.isAssignableFrom(parameterTypes[0]))
-            {
-                LOGGER.warn("Method '{}' annotated with @{} must have at most 1 parameter, which implements GenericEvent", m, SubscribeEvent.class.getSimpleName());
+            Class<?>[] parameterTypes = m.getParameterTypes();
+            if (parameterTypes.length != 1
+                    || !GenericEvent.class.isAssignableFrom(parameterTypes[0])) {
+                LOGGER.warn(
+                        "Method '{}' annotated with @{} must have at most 1 parameter, which implements GenericEvent",
+                        m,
+                        SubscribeEvent.class.getSimpleName());
                 continue;
             }
 

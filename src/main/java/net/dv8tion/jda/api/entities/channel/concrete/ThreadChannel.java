@@ -35,13 +35,14 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents Discord Message Threads of all kinds.
@@ -61,8 +62,7 @@ import java.util.List;
  * @see Guild#getThreadChannelById(long)
  * @see Guild#getThreadChannelCache()
  */
-public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, ISlowmodeChannel
-{
+public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, ISlowmodeChannel {
     /**
      * Whether this thread is public or not.
      *
@@ -70,8 +70,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return true if this thread is public, false otherwise.
      */
-    default boolean isPublic()
-    {
+    default boolean isPublic() {
         ChannelType type = getType();
         return type == ChannelType.GUILD_PUBLIC_THREAD || type == ChannelType.GUILD_NEWS_THREAD;
     }
@@ -109,8 +108,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return true if the self member has joined this thread, false otherwise.
      */
-    default boolean isJoined()
-    {
+    default boolean isJoined() {
         return getSelfThreadMember() != null;
     }
 
@@ -148,8 +146,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return True, if this is a pinned forum post.
      */
-    default boolean isPinned()
-    {
+    default boolean isPinned() {
         return getFlags().contains(ChannelFlag.PINNED);
     }
 
@@ -178,12 +175,13 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @return The parent channel of this thread, as a {@link GuildMessageChannelUnion}.
      */
     @Nonnull
-    default GuildMessageChannelUnion getParentMessageChannel()
-    {
-        if (getParentChannel() instanceof GuildMessageChannel)
+    default GuildMessageChannelUnion getParentMessageChannel() {
+        if (getParentChannel() instanceof GuildMessageChannel) {
             return (GuildMessageChannelUnion) getParentChannel();
+        }
 
-        throw new UnsupportedOperationException("Parent of this thread is not a MessageChannel. Parent: " + getParentChannel());
+        throw new UnsupportedOperationException(
+                "Parent of this thread is not a MessageChannel. Parent: " + getParentChannel());
     }
 
     /**
@@ -298,11 +296,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #isJoined()
      */
     @Nullable
-    default ThreadMember getSelfThreadMember()
-    {
+    default ThreadMember getSelfThreadMember() {
         return getThreadMember(getJDA().getSelfUser());
     }
-
 
     /**
      * Gets a List of all cached {@link ThreadMember members} of this thread.
@@ -351,8 +347,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #retrieveThreadMember(Member)
      */
     @Nullable
-    default ThreadMember getThreadMember(@Nonnull Member member)
-    {
+    default ThreadMember getThreadMember(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return getThreadMemberById(member.getId());
     }
@@ -378,8 +373,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #retrieveThreadMember(Member)
      */
     @Nullable
-    default ThreadMember getThreadMember(@Nonnull User user)
-    {
+    default ThreadMember getThreadMember(@Nonnull User user) {
         Checks.notNull(user, "User");
         return getThreadMemberById(user.getId());
     }
@@ -405,8 +399,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #retrieveThreadMember(Member)
      */
     @Nullable
-    default ThreadMember getThreadMemberById(@Nonnull String id)
-    {
+    default ThreadMember getThreadMemberById(@Nonnull String id) {
         return getThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
@@ -449,8 +442,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default CacheRestAction<ThreadMember> retrieveThreadMember(@Nonnull Member member)
-    {
+    default CacheRestAction<ThreadMember> retrieveThreadMember(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return retrieveThreadMemberById(member.getIdLong());
     }
@@ -473,8 +465,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default CacheRestAction<ThreadMember> retrieveThreadMember(@Nonnull User user)
-    {
+    default CacheRestAction<ThreadMember> retrieveThreadMember(@Nonnull User user) {
         Checks.notNull(user, "User");
         return retrieveThreadMemberById(user.getIdLong());
     }
@@ -499,8 +490,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default CacheRestAction<ThreadMember> retrieveThreadMemberById(@Nonnull String id)
-    {
+    default CacheRestAction<ThreadMember> retrieveThreadMemberById(@Nonnull String id) {
         return retrieveThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
@@ -542,8 +532,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return true if the self account is the owner of this thread, false otherwise.
      */
-    default boolean isOwner()
-    {
+    default boolean isOwner() {
         return getJDA().getSelfUser().getIdLong() == getOwnerIdLong();
     }
 
@@ -560,8 +549,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @return The {@link User} of the member who created this thread as a String.
      */
     @Nonnull
-    default String getOwnerId()
-    {
+    default String getOwnerId() {
         return Long.toUnsignedString(getOwnerIdLong());
     }
 
@@ -580,8 +568,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    Guild#retrieveMemberById(long)
      */
     @Nullable
-    default Member getOwner()
-    {
+    default Member getOwner() {
         return getGuild().getMemberById(getOwnerIdLong());
     }
 
@@ -601,8 +588,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #getThreadMemberById(long)
      */
     @Nullable
-    default ThreadMember getOwnerThreadMember()
-    {
+    default ThreadMember getOwnerThreadMember() {
         return getThreadMemberById(getOwnerIdLong());
     }
 
@@ -813,8 +799,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addThreadMemberById(@Nonnull String id)
-    {
+    default RestAction<Void> addThreadMemberById(@Nonnull String id) {
         return addThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
@@ -858,8 +843,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addThreadMember(@Nonnull User user)
-    {
+    default RestAction<Void> addThreadMember(@Nonnull User user) {
         Checks.notNull(user, "User");
         return addThreadMemberById(user.getIdLong());
     }
@@ -904,8 +888,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addThreadMember(@Nonnull Member member)
-    {
+    default RestAction<Void> addThreadMember(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return addThreadMemberById(member.getIdLong());
     }
@@ -986,8 +969,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeThreadMemberById(@Nonnull String id)
-    {
+    default RestAction<Void> removeThreadMemberById(@Nonnull String id) {
         return removeThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
@@ -1023,8 +1005,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeThreadMember(@Nonnull User user)
-    {
+    default RestAction<Void> removeThreadMember(@Nonnull User user) {
         Checks.notNull(user, "User");
         return removeThreadMemberById(user.getId());
     }
@@ -1061,8 +1042,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeThreadMember(@Nonnull Member member)
-    {
+    default RestAction<Void> removeThreadMember(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return removeThreadMemberById(member.getIdLong());
     }
@@ -1073,17 +1053,18 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
     ThreadChannelManager getManager();
 
     @Override
-    default void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
-        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+    default void formatTo(Formatter formatter, int flags, int width, int precision) {
+        boolean leftJustified =
+                (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         String out;
 
-        if (alt)
+        if (alt) {
             out = "#" + (upper ? getName().toUpperCase(formatter.locale()) : getName());
-        else
+        } else {
             out = getAsMention();
+        }
 
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
     }
@@ -1097,8 +1078,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @see ChannelField#AUTO_ARCHIVE_DURATION
      */
-    enum AutoArchiveDuration
-    {
+    enum AutoArchiveDuration {
         TIME_1_HOUR(60),
         TIME_24_HOURS(1440),
         TIME_3_DAYS(4320),
@@ -1106,8 +1086,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
 
         private final int minutes;
 
-        AutoArchiveDuration(int minutes)
-        {
+        AutoArchiveDuration(int minutes) {
             this.minutes = minutes;
         }
 
@@ -1116,8 +1095,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
          *
          * @return The number of minutes
          */
-        public int getMinutes()
-        {
+        public int getMinutes() {
             return minutes;
         }
 
@@ -1133,14 +1111,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
          * @return The corresponding enum constant.
          */
         @Nonnull
-        public static AutoArchiveDuration fromKey(int minutes)
-        {
-            for (AutoArchiveDuration duration : values())
-            {
-                if (duration.getMinutes() == minutes)
+        public static AutoArchiveDuration fromKey(int minutes) {
+            for (AutoArchiveDuration duration : values()) {
+                if (duration.getMinutes() == minutes) {
                     return duration;
+                }
             }
-            throw new IllegalArgumentException("Provided key was not recognized. Minutes: " + minutes);
+            throw new IllegalArgumentException(
+                    "Provided key was not recognized. Minutes: " + minutes);
         }
     }
 }

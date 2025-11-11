@@ -55,12 +55,10 @@ import javax.annotation.Nonnull;
  * }
  * </code></pre>
  *
- * @since  3.1
- *
  * @see    MessageChannel#getIterableHistory()
  */
-public interface MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
-{
+public interface MessagePaginationAction
+        extends PaginationAction<Message, MessagePaginationAction> {
     /**
      * The {@link ChannelType ChannelType} of
      * the targeted {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
@@ -68,8 +66,7 @@ public interface MessagePaginationAction extends PaginationAction<Message, Messa
      * @return {@link ChannelType ChannelType}
      */
     @Nonnull
-    default ChannelType getType()
-    {
+    default ChannelType getType() {
         return getChannel().getType();
     }
 

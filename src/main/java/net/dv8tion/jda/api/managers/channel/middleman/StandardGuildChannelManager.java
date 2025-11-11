@@ -36,9 +36,8 @@ import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManage
  *
  * @see StandardGuildChannel#getManager()
  */
-public interface StandardGuildChannelManager<T extends StandardGuildChannel, M extends StandardGuildChannelManager<T, M>>
+public interface StandardGuildChannelManager<
+                T extends StandardGuildChannel, M extends StandardGuildChannelManager<T, M>>
         extends IPermissionContainerManager<T, M>,
-        IPositionableChannelManager<T, M>,
-        ICategorizableChannelManager<T, M>
-{
-}
+                IPositionableChannelManager<T, M>,
+                ICategorizableChannelManager<T, M> {}

@@ -30,12 +30,14 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code splash}
  */
-public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
-{
+public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "splash";
 
-    public GuildUpdateSplashEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldSplashId)
-    {
+    public GuildUpdateSplashEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nullable String oldSplashId) {
         super(api, responseNumber, guild, oldSplashId, guild.getSplashId(), IDENTIFIER);
     }
 
@@ -45,8 +47,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @return The old splash id, or null
      */
     @Nullable
-    public String getOldSplashId()
-    {
+    public String getOldSplashId() {
         return getOldValue();
     }
 
@@ -56,8 +57,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @return The url of the old splash, or null
      */
     @Nullable
-    public String getOldSplashUrl()
-    {
+    public String getOldSplashUrl() {
         return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
     }
 
@@ -71,9 +71,8 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @see    #getOldSplashUrl() ()
      */
     @Nullable
-    public ImageProxy getOldSplash()
-    {
-        final String oldSplashUrl = getOldSplashUrl();
+    public ImageProxy getOldSplash() {
+        String oldSplashUrl = getOldSplashUrl();
         return oldSplashUrl == null ? null : new ImageProxy(oldSplashUrl);
     }
 
@@ -83,8 +82,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @return The new splash id, or null
      */
     @Nullable
-    public String getNewSplashId()
-    {
+    public String getNewSplashId() {
         return getNewValue();
     }
 
@@ -94,8 +92,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @return The url of the new splash, or null
      */
     @Nullable
-    public String getNewSplashUrl()
-    {
+    public String getNewSplashUrl() {
         return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
     }
 
@@ -107,9 +104,8 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @see    #getNewSplashUrl()
      */
     @Nullable
-    public ImageProxy getNewSplash()
-    {
-        final String newSplashUrl = getNewSplashUrl();
+    public ImageProxy getNewSplash() {
+        String newSplashUrl = getNewSplashUrl();
         return newSplashUrl == null ? null : new ImageProxy(newSplashUrl);
     }
 }

@@ -29,13 +29,12 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code avatar}
  */
-public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
-{
+public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
     public static final String IDENTIFIER = "avatar";
     private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s%s";
 
-    public SelfUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nullable String oldAvatarId)
-    {
+    public SelfUpdateAvatarEvent(
+            @Nonnull JDA api, long responseNumber, @Nullable String oldAvatarId) {
         super(api, responseNumber, oldAvatarId, api.getSelfUser().getAvatarId(), IDENTIFIER);
     }
 
@@ -45,8 +44,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      * @return The old avatar id
      */
     @Nullable
-    public String getOldAvatarId()
-    {
+    public String getOldAvatarId() {
         return getOldValue();
     }
 
@@ -56,9 +54,14 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      * @return  The old avatar url
      */
     @Nullable
-    public String getOldAvatarUrl()
-    {
-        return previous == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), previous, previous.startsWith("a_") ? ".gif" : ".png");
+    public String getOldAvatarUrl() {
+        return previous == null
+                ? null
+                : String.format(
+                        AVATAR_URL,
+                        getSelfUser().getId(),
+                        previous,
+                        previous.startsWith("a_") ? ".gif" : ".png");
     }
 
     /**
@@ -71,9 +74,8 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      * @see    #getOldAvatarUrl()
      */
     @Nullable
-    public ImageProxy getOldAvatar()
-    {
-        final String oldAvatarUrl = getOldAvatarUrl();
+    public ImageProxy getOldAvatar() {
+        String oldAvatarUrl = getOldAvatarUrl();
         return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
     }
 
@@ -83,8 +85,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      * @return The new avatar id
      */
     @Nullable
-    public String getNewAvatarId()
-    {
+    public String getNewAvatarId() {
         return getNewValue();
     }
 
@@ -94,9 +95,14 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      * @return  The new avatar url
      */
     @Nullable
-    public String getNewAvatarUrl()
-    {
-        return next == null ? null : String.format(AVATAR_URL, getSelfUser().getId(), next, next.startsWith("a_") ? ".gif" : ".png");
+    public String getNewAvatarUrl() {
+        return next == null
+                ? null
+                : String.format(
+                        AVATAR_URL,
+                        getSelfUser().getId(),
+                        next,
+                        next.startsWith("a_") ? ".gif" : ".png");
     }
 
     /**
@@ -107,9 +113,8 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String>
      * @see    #getNewAvatarUrl()
      */
     @Nullable
-    public ImageProxy getNewAvatar()
-    {
-        final String newAvatarUrl = getNewAvatarUrl();
+    public ImageProxy getNewAvatar() {
+        String newAvatarUrl = getNewAvatarUrl();
         return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);
     }
 }

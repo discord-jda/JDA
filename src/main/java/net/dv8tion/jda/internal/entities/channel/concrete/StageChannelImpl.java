@@ -36,16 +36,15 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.List;
 
-public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChannelImpl> implements
-        StageChannel,
-        StageChannelMixin<StageChannelImpl>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChannelImpl>
+        implements StageChannel, StageChannelMixin<StageChannelImpl> {
     private StageInstance instance;
     private String region;
     private int bitrate;
@@ -54,133 +53,126 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     private boolean ageRestricted;
     private long latestMessageId;
 
-    public StageChannelImpl(long id, GuildImpl guild)
-    {
+    public StageChannelImpl(long id, GuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return false;
     }
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         return (GuildImpl) super.getGuild();
     }
-    
+
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.STAGE;
     }
 
     @Override
-    public int getBitrate()
-    {
+    public int getBitrate() {
         return bitrate;
     }
 
     @Override
-    public int getUserLimit()
-    {
+    public int getUserLimit() {
         return userlimit;
     }
 
     @Nullable
     @Override
-    public String getRegionRaw()
-    {
+    public String getRegionRaw() {
         return region;
     }
 
     @Nullable
     @Override
-    public StageInstance getStageInstance()
-    {
+    public StageInstance getStageInstance() {
         return instance;
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         return getGuild().getConnectedMembers(this);
     }
 
     @Nonnull
     @Override
-    public StageInstanceAction createStageInstance(@Nonnull String topic)
-    {
+    public StageInstanceAction createStageInstance(@Nonnull String topic) {
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
-        EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
-        for (Permission perm : required)
-        {
-            if (!permissions.contains(perm))
-                throw new InsufficientPermissionException(this, perm, "You must be a stage moderator to create a stage instance! Missing Permission: " + perm);
+        EnumSet<Permission> required = EnumSet.of(
+                Permission.MANAGE_CHANNEL,
+                Permission.VOICE_MUTE_OTHERS,
+                Permission.VOICE_MOVE_OTHERS);
+        for (Permission perm : required) {
+            if (!permissions.contains(perm)) {
+                throw new InsufficientPermissionException(
+                        this,
+                        perm,
+                        "You must be a stage moderator to create a stage instance! Missing Permission: "
+                                + perm);
+            }
         }
 
         return new StageInstanceActionImpl(this).setTopic(topic);
     }
 
     @Override
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return slowmode;
     }
 
     @Override
-    public boolean isNSFW()
-    {
+    public boolean isNSFW() {
         return ageRestricted;
     }
 
     @Override
-    public boolean canTalk(@Nonnull Member member)
-    {
+    public boolean canTalk(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return member.hasPermission(this, Permission.MESSAGE_SEND);
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         return latestMessageId;
     }
 
     @Nonnull
     @Override
-    public StageChannelManager getManager()
-    {
+    public StageChannelManager getManager() {
         return new StageChannelManagerImpl(this);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> requestToSpeak()
-    {
+    public RestAction<Void> requestToSpeak() {
         Guild guild = getGuild();
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
         DataObject body = DataObject.empty().put("channel_id", getId());
         // Stage moderators can bypass the request queue by just unsuppressing
-        if (guild.getSelfMember().hasPermission(this, Permission.VOICE_MUTE_OTHERS))
+        if (guild.getSelfMember().hasPermission(this, Permission.VOICE_MUTE_OTHERS)) {
             body.putNull("request_to_speak_timestamp").put("suppress", false);
-        else
+        } else {
             body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
+        }
 
-        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel()))
-            throw new IllegalStateException("Cannot request to speak without being connected to the stage channel!");
+        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel())) {
+            throw new IllegalStateException(
+                    "Cannot request to speak without being connected to the stage channel!");
+        }
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> cancelRequestToSpeak()
-    {
+    public RestAction<Void> cancelRequestToSpeak() {
         Guild guild = getGuild();
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
         DataObject body = DataObject.empty()
@@ -188,55 +180,50 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
                 .put("suppress", true)
                 .put("channel_id", getId());
 
-        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel()))
-            throw new IllegalStateException("Cannot cancel request to speak without being connected to the stage channel!");
+        if (!this.equals(guild.getSelfMember().getVoiceState().getChannel())) {
+            throw new IllegalStateException(
+                    "Cannot cancel request to speak without being connected to the stage channel!");
+        }
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
     @Override
-    public StageChannelImpl setBitrate(int bitrate)
-    {
+    public StageChannelImpl setBitrate(int bitrate) {
         this.bitrate = bitrate;
         return this;
     }
 
     @Override
-    public StageChannelImpl setUserLimit(int userlimit)
-    {
+    public StageChannelImpl setUserLimit(int userlimit) {
         this.userlimit = userlimit;
         return this;
     }
 
     @Override
-    public StageChannelImpl setRegion(String region)
-    {
+    public StageChannelImpl setRegion(String region) {
         this.region = region;
         return this;
     }
 
-    public StageChannelImpl setStageInstance(StageInstance instance)
-    {
+    public StageChannelImpl setStageInstance(StageInstance instance) {
         this.instance = instance;
         return this;
     }
 
     @Override
-    public StageChannelImpl setNSFW(boolean ageRestricted)
-    {
+    public StageChannelImpl setNSFW(boolean ageRestricted) {
         this.ageRestricted = ageRestricted;
         return this;
     }
 
     @Override
-    public StageChannelImpl setSlowmode(int slowmode)
-    {
+    public StageChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
         return this;
     }
 
     @Override
-    public StageChannelImpl setLatestMessageIdLong(long latestMessageId)
-    {
+    public StageChannelImpl setLatestMessageIdLong(long latestMessageId) {
         this.latestMessageId = latestMessageId;
         return this;
     }

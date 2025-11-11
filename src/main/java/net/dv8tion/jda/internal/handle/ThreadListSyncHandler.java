@@ -23,35 +23,32 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
-public class ThreadListSyncHandler extends SocketHandler
-{
-    public ThreadListSyncHandler(JDAImpl api)
-    {
+public class ThreadListSyncHandler extends SocketHandler {
+    public ThreadListSyncHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getLong("guild_id");
-        if (api.getGuildSetupController().isLocked(guildId))
+        if (api.getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         EntityBuilder entityBuilder = api.getEntityBuilder();
         DataArray threadsArrayJson = content.getArray("threads");
-        for (int i = 0; i < threadsArrayJson.length(); i++)
-        {
+        for (int i = 0; i < threadsArrayJson.length(); i++) {
             DataObject threadJson = threadsArrayJson.getObject(i);
-            try
-            {
+            try {
                 ThreadChannel thread = entityBuilder.createThreadChannel(threadJson, guildId);
                 api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
-            }
-            catch (IllegalArgumentException ex)
-            {
-                if (!EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage()))
+            } catch (IllegalArgumentException ex) {
+                if (!EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage())) {
                     throw ex;
-                EntityBuilder.LOG.debug("Discarding thread on sync because of missing parent channel cache. JSON: {}", threadJson);
+                }
+                EntityBuilder.LOG.debug(
+                        "Discarding thread on sync because of missing parent channel cache. JSON: {}",
+                        threadJson);
             }
         }
 

@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
  *
  * <p>This is a specialization of {@link AttachmentProxy}, which is aware of the file name of the attachment.
  */
-public class NamedAttachmentProxy extends AttachmentProxy
-{
+public class NamedAttachmentProxy extends AttachmentProxy {
     private final String fileName;
 
     /**
@@ -39,8 +38,7 @@ public class NamedAttachmentProxy extends AttachmentProxy
      * @throws IllegalArgumentException
      *         If the provided URL is null
      */
-    public NamedAttachmentProxy(@Nonnull String url, @Nonnull String fileName)
-    {
+    public NamedAttachmentProxy(@Nonnull String url, @Nonnull String fileName) {
         super(url);
         this.fileName = fileName;
     }
@@ -51,8 +49,7 @@ public class NamedAttachmentProxy extends AttachmentProxy
      * @return The file name
      */
     @Nonnull
-    public String getFileName()
-    {
+    public String getFileName() {
         return fileName;
     }
 
@@ -79,8 +76,7 @@ public class NamedAttachmentProxy extends AttachmentProxy
      * @return {@link FileUpload} from this attachment.
      */
     @Nonnull
-    public FileUpload downloadAsFileUpload(int width, int height)
-    {
+    public FileUpload downloadAsFileUpload(int width, int height) {
         return downloadAsFileUpload(fileName, width, height);
     }
 }

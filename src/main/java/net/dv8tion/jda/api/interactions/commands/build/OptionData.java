@@ -30,25 +30,27 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Builder for a Slash-Command option.
  */
-public class OptionData implements SerializableData
-{
+public class OptionData implements SerializableData {
     /**
      * The highest positive amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
-    public static final double MAX_POSITIVE_NUMBER = (1L << 53) - 1; // 1L << 53 is non-inclusive for Discord
+    public static final double MAX_POSITIVE_NUMBER =
+            (1L << 53) - 1; // 1L << 53 is non-inclusive for Discord
 
     /**
      * The largest negative amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
-    public static final double MIN_NEGATIVE_NUMBER = -(1L << 53) + 1; // 1L << 53 is non-inclusive for Discord
+    public static final double MIN_NEGATIVE_NUMBER =
+            -(1L << 53) + 1; // 1L << 53 is non-inclusive for Discord
 
     /**
      * The maximum length the name of an option can be.
@@ -83,7 +85,8 @@ public class OptionData implements SerializableData
     private final OptionType type;
     private String name, description;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
+    private final LocalizationMap descriptionLocalizations =
+            new LocalizationMap(this::checkDescription);
     private boolean isRequired, isAutoComplete;
     private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
     private Number minValue;
@@ -111,8 +114,7 @@ public class OptionData implements SerializableData
      *             <li>If {@code description} is not between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *         </ul>
      */
-    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
-    {
+    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         this(type, name, description, false);
     }
 
@@ -137,8 +139,11 @@ public class OptionData implements SerializableData
      *             <li>If {@code description} is not between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *         </ul>
      */
-    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired)
-    {
+    public OptionData(
+            @Nonnull OptionType type,
+            @Nonnull String name,
+            @Nonnull String description,
+            boolean isRequired) {
         this(type, name, description, isRequired, false);
     }
 
@@ -166,32 +171,39 @@ public class OptionData implements SerializableData
      *             <li>If {@link OptionType#canSupportChoices()} is false and {@code isAutoComplete} is true</li>
      *         </ul>
      */
-    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired, boolean isAutoComplete)
-    {
+    public OptionData(
+            @Nonnull OptionType type,
+            @Nonnull String name,
+            @Nonnull String description,
+            boolean isRequired,
+            boolean isAutoComplete) {
         Checks.notNull(type, "Type");
         Checks.check(type != OptionType.UNKNOWN, "Cannot make option of unknown type!");
-        Checks.check(type != OptionType.SUB_COMMAND, "Cannot make a subcommand group with OptionData. Use addSubcommands(...) instead!");
-        Checks.check(type != OptionType.SUB_COMMAND_GROUP, "Cannot make a subcommand group with OptionData. Use addSubcommandGroups(...) instead!");
+        Checks.check(
+                type != OptionType.SUB_COMMAND,
+                "Cannot make a subcommand group with OptionData. Use addSubcommands(...) instead!");
+        Checks.check(
+                type != OptionType.SUB_COMMAND_GROUP,
+                "Cannot make a subcommand group with OptionData. Use addSubcommandGroups(...) instead!");
         this.type = type;
 
         setName(name);
         setDescription(description);
         setRequired(isRequired);
-        if (type.canSupportChoices())
+        if (type.canSupportChoices()) {
             choices = new ArrayList<>();
+        }
         setAutoComplete(isAutoComplete);
     }
 
-    protected void checkName(@Nonnull String name)
-    {
+    protected void checkName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
         Checks.isLowercase(name, "Name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
     }
 
-    protected void checkDescription(@Nonnull String description)
-    {
+    protected void checkDescription(@Nonnull String description) {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
     }
@@ -202,8 +214,7 @@ public class OptionData implements SerializableData
      * @return The {@link OptionType}
      */
     @Nonnull
-    public OptionType getType()
-    {
+    public OptionType getType() {
         return type;
     }
 
@@ -213,8 +224,7 @@ public class OptionData implements SerializableData
      * @return The name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -224,8 +234,7 @@ public class OptionData implements SerializableData
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
     @Nonnull
-    public LocalizationMap getNameLocalizations()
-    {
+    public LocalizationMap getNameLocalizations() {
         return nameLocalizations;
     }
 
@@ -235,8 +244,7 @@ public class OptionData implements SerializableData
      * @return The description
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -246,8 +254,7 @@ public class OptionData implements SerializableData
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */
     @Nonnull
-    public LocalizationMap getDescriptionLocalizations()
-    {
+    public LocalizationMap getDescriptionLocalizations() {
         return descriptionLocalizations;
     }
 
@@ -259,8 +266,7 @@ public class OptionData implements SerializableData
      *
      * @return True, if this option is required
      */
-    public boolean isRequired()
-    {
+    public boolean isRequired() {
         return isRequired;
     }
 
@@ -270,8 +276,7 @@ public class OptionData implements SerializableData
      *
      * @return True, if this option supports auto-complete
      */
-    public boolean isAutoComplete()
-    {
+    public boolean isAutoComplete() {
         return isAutoComplete;
     }
 
@@ -282,8 +287,7 @@ public class OptionData implements SerializableData
      * @return {@link EnumSet} of {@link ChannelType}
      */
     @Nonnull
-    public EnumSet<ChannelType> getChannelTypes()
-    {
+    public EnumSet<ChannelType> getChannelTypes() {
         return channelTypes;
     }
 
@@ -295,8 +299,7 @@ public class OptionData implements SerializableData
      * @return The minimum value for this option
      */
     @Nullable
-    public Number getMinValue()
-    {
+    public Number getMinValue() {
         return minValue;
     }
 
@@ -308,8 +311,7 @@ public class OptionData implements SerializableData
      * @return The maximum value for this option
      */
     @Nullable
-    public Number getMaxValue()
-    {
+    public Number getMaxValue() {
         return maxValue;
     }
 
@@ -321,8 +323,7 @@ public class OptionData implements SerializableData
      * @return The minimum length for strings for this option or {@code null}
      */
     @Nullable
-    public Integer getMinLength()
-    {
+    public Integer getMinLength() {
         return minLength;
     }
 
@@ -334,8 +335,7 @@ public class OptionData implements SerializableData
      * @return The maximum length for strings for this option or {@code null}
      */
     @Nullable
-    public Integer getMaxLength()
-    {
+    public Integer getMaxLength() {
         return maxLength;
     }
 
@@ -350,10 +350,10 @@ public class OptionData implements SerializableData
      */
     @Nonnull
     @Unmodifiable
-    public List<Command.Choice> getChoices()
-    {
-        if (choices == null || choices.isEmpty())
+    public List<Command.Choice> getChoices() {
+        if (choices == null || choices.isEmpty()) {
             return Collections.emptyList();
+        }
         return Collections.unmodifiableList(choices);
     }
 
@@ -370,8 +370,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setName(@Nonnull String name)
-    {
+    public OptionData setName(@Nonnull String name) {
         checkName(name);
         this.name = name;
         return this;
@@ -382,7 +381,6 @@ public class OptionData implements SerializableData
      *
      * @param  locale
      *         The locale to associate the translated name with
-     *
      * @param  name
      *         The translated name to put
      *
@@ -397,9 +395,8 @@ public class OptionData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public OptionData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
-    {
-        //Checks are done in LocalizationMap
+    public OptionData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
+        // Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
         return this;
     }
@@ -420,9 +417,8 @@ public class OptionData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public OptionData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
-    {
-        //Checks are done in LocalizationMap
+    public OptionData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map) {
+        // Checks are done in LocalizationMap
         nameLocalizations.setTranslations(map);
         return this;
     }
@@ -439,8 +435,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setDescription(@Nonnull String description)
-    {
+    public OptionData setDescription(@Nonnull String description) {
         checkDescription(description);
         this.description = description;
         return this;
@@ -451,7 +446,6 @@ public class OptionData implements SerializableData
      *
      * @param  locale
      *         The locale to associate the translated description with
-     *
      * @param  description
      *         The translated description to put
      *
@@ -466,9 +460,9 @@ public class OptionData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public OptionData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
-    {
-        //Checks are done in LocalizationMap
+    public OptionData setDescriptionLocalization(
+            @Nonnull DiscordLocale locale, @Nonnull String description) {
+        // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
         return this;
     }
@@ -489,9 +483,8 @@ public class OptionData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public OptionData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
-    {
-        //Checks are done in LocalizationMap
+    public OptionData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map) {
+        // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(map);
         return this;
     }
@@ -506,8 +499,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setRequired(boolean required)
-    {
+    public OptionData setRequired(boolean required) {
         this.isRequired = required;
         return this;
     }
@@ -527,14 +519,16 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setAutoComplete(boolean autoComplete)
-    {
-        if (autoComplete)
-        {
-            if (choices == null || !type.canSupportChoices())
-                throw new IllegalStateException("Cannot enable auto-complete for options of type " + type);
-            if (!choices.isEmpty())
-                throw new IllegalStateException("Cannot enable auto-complete for options with choices");
+    public OptionData setAutoComplete(boolean autoComplete) {
+        if (autoComplete) {
+            if (choices == null || !type.canSupportChoices()) {
+                throw new IllegalStateException(
+                        "Cannot enable auto-complete for options of type " + type);
+            }
+            if (!choices.isEmpty()) {
+                throw new IllegalStateException(
+                        "Cannot enable auto-complete for options with choices");
+            }
         }
 
         isAutoComplete = autoComplete;
@@ -559,8 +553,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setChannelTypes(@Nonnull ChannelType... channelTypes)
-    {
+    public OptionData setChannelTypes(@Nonnull ChannelType... channelTypes) {
         Checks.noneNull(channelTypes, "ChannelTypes");
         return setChannelTypes(Arrays.asList(channelTypes));
     }
@@ -584,17 +577,20 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setChannelTypes(@Nonnull Collection<ChannelType> channelTypes)
-    {
-        if (type != OptionType.CHANNEL)
-            throw new IllegalArgumentException("Can only apply channel type restriction to options of type CHANNEL");
+    public OptionData setChannelTypes(@Nonnull Collection<ChannelType> channelTypes) {
+        if (type != OptionType.CHANNEL) {
+            throw new IllegalArgumentException(
+                    "Can only apply channel type restriction to options of type CHANNEL");
+        }
         Checks.notNull(channelTypes, "ChannelType collection");
         Checks.noneNull(channelTypes, "ChannelType");
 
-        for (ChannelType channelType : channelTypes)
-        {
-            if (!channelType.isGuild())
-                throw new IllegalArgumentException("Provided channel type is not a guild channel type. Provided: " + channelType);
+        for (ChannelType channelType : channelTypes) {
+            if (!channelType.isGuild()) {
+                throw new IllegalArgumentException(
+                        "Provided channel type is not a guild channel type. Provided: "
+                                + channelType);
+            }
         }
         this.channelTypes.clear();
         this.channelTypes.addAll(channelTypes);
@@ -606,6 +602,7 @@ public class OptionData implements SerializableData
      *
      * @param  value
      *         The minimal value which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}</li>
@@ -615,11 +612,15 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setMinValue(long value)
-    {
-        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
-        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be less than %f", MIN_NEGATIVE_NUMBER);
+    public OptionData setMinValue(long value) {
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER) {
+            throw new IllegalArgumentException(
+                    "Can only set min and max long value for options of type INTEGER or NUMBER");
+        }
+        Checks.check(
+                value >= MIN_NEGATIVE_NUMBER,
+                "Long value may not be less than %f",
+                MIN_NEGATIVE_NUMBER);
         this.minValue = value;
         return this;
     }
@@ -629,6 +630,7 @@ public class OptionData implements SerializableData
      *
      * @param  value
      *         The minimal value which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#NUMBER NUMBER}</li>
@@ -638,11 +640,15 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setMinValue(double value)
-    {
-        if (type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set min double value for options of type NUMBER");
-        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be less than %f", MIN_NEGATIVE_NUMBER);
+    public OptionData setMinValue(double value) {
+        if (type != OptionType.NUMBER) {
+            throw new IllegalArgumentException(
+                    "Can only set min double value for options of type NUMBER");
+        }
+        Checks.check(
+                value >= MIN_NEGATIVE_NUMBER,
+                "Double value may not be less than %f",
+                MIN_NEGATIVE_NUMBER);
         this.minValue = value;
         return this;
     }
@@ -652,6 +658,7 @@ public class OptionData implements SerializableData
      *
      * @param  value
      *         The maximal value which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}</li>
@@ -661,11 +668,15 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setMaxValue(long value)
-    {
-        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
-        Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be greater than %f", MAX_POSITIVE_NUMBER);
+    public OptionData setMaxValue(long value) {
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER) {
+            throw new IllegalArgumentException(
+                    "Can only set min and max long value for options of type INTEGER or NUMBER");
+        }
+        Checks.check(
+                value <= MAX_POSITIVE_NUMBER,
+                "Long value may not be greater than %f",
+                MAX_POSITIVE_NUMBER);
         this.maxValue = value;
         return this;
     }
@@ -675,6 +686,7 @@ public class OptionData implements SerializableData
      *
      * @param  value
      *         The maximal value which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#NUMBER NUMBER}</li>
@@ -684,11 +696,15 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setMaxValue(double value)
-    {
-        if (type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set max double value for options of type NUMBER");
-        Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be greater than %f", MAX_POSITIVE_NUMBER);
+    public OptionData setMaxValue(double value) {
+        if (type != OptionType.NUMBER) {
+            throw new IllegalArgumentException(
+                    "Can only set max double value for options of type NUMBER");
+        }
+        Checks.check(
+                value <= MAX_POSITIVE_NUMBER,
+                "Double value may not be greater than %f",
+                MAX_POSITIVE_NUMBER);
         this.maxValue = value;
         return this;
     }
@@ -700,6 +716,7 @@ public class OptionData implements SerializableData
      *         The minimal value which can be provided for this option.
      * @param  maxValue
      *         The maximal value which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#INTEGER INTEGER} or {@link OptionType#NUMBER NUMBER}</li>
@@ -710,12 +727,19 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setRequiredRange(long minValue, long maxValue)
-    {
-        if (type != OptionType.INTEGER && type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set min and max long value for options of type INTEGER or NUMBER");
-        Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Long value may not be less than %f", MIN_NEGATIVE_NUMBER);
-        Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Long value may not be greater than %f", MAX_POSITIVE_NUMBER);
+    public OptionData setRequiredRange(long minValue, long maxValue) {
+        if (type != OptionType.INTEGER && type != OptionType.NUMBER) {
+            throw new IllegalArgumentException(
+                    "Can only set min and max long value for options of type INTEGER or NUMBER");
+        }
+        Checks.check(
+                minValue >= MIN_NEGATIVE_NUMBER,
+                "Long value may not be less than %f",
+                MIN_NEGATIVE_NUMBER);
+        Checks.check(
+                maxValue <= MAX_POSITIVE_NUMBER,
+                "Long value may not be greater than %f",
+                MAX_POSITIVE_NUMBER);
         this.minValue = minValue;
         this.maxValue = maxValue;
         return this;
@@ -728,6 +752,7 @@ public class OptionData implements SerializableData
      *         The minimal value which can be provided for this option.
      * @param  maxValue
      *         The maximal value which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#NUMBER NUMBER}</li>
@@ -738,12 +763,19 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setRequiredRange(double minValue, double maxValue)
-    {
-        if (type != OptionType.NUMBER)
-            throw new IllegalArgumentException("Can only set min and max double value for options of type NUMBER");
-        Checks.check(minValue >= MIN_NEGATIVE_NUMBER, "Double value may not be less than %f", MIN_NEGATIVE_NUMBER);
-        Checks.check(maxValue <= MAX_POSITIVE_NUMBER, "Double value may not be greater than %f", MAX_POSITIVE_NUMBER);
+    public OptionData setRequiredRange(double minValue, double maxValue) {
+        if (type != OptionType.NUMBER) {
+            throw new IllegalArgumentException(
+                    "Can only set min and max double value for options of type NUMBER");
+        }
+        Checks.check(
+                minValue >= MIN_NEGATIVE_NUMBER,
+                "Double value may not be less than %f",
+                MIN_NEGATIVE_NUMBER);
+        Checks.check(
+                maxValue <= MAX_POSITIVE_NUMBER,
+                "Double value may not be greater than %f",
+                MAX_POSITIVE_NUMBER);
         this.minValue = minValue;
         this.maxValue = maxValue;
         return this;
@@ -754,6 +786,7 @@ public class OptionData implements SerializableData
      *
      * @param  minLength
      *         The minimum length for strings which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#STRING STRING}</li>
@@ -763,10 +796,11 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setMinLength(int minLength)
-    {
-        if (type != OptionType.STRING)
-            throw new IllegalArgumentException("Can only set min length for options of type STRING");
+    public OptionData setMinLength(int minLength) {
+        if (type != OptionType.STRING) {
+            throw new IllegalArgumentException(
+                    "Can only set min length for options of type STRING");
+        }
         Checks.positive(minLength, "Min length");
         this.minLength = minLength;
         return this;
@@ -777,6 +811,7 @@ public class OptionData implements SerializableData
      *
      * @param  maxLength
      *         The maximum length for strings which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#STRING STRING}</li>
@@ -786,12 +821,17 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setMaxLength(int maxLength)
-    {
-        if (type != OptionType.STRING)
-            throw new IllegalArgumentException("Can only set max length for options of type STRING");
+    public OptionData setMaxLength(int maxLength) {
+        if (type != OptionType.STRING) {
+            throw new IllegalArgumentException(
+                    "Can only set max length for options of type STRING");
+        }
         Checks.positive(maxLength, "Max length");
-        Checks.check(maxLength <= MAX_STRING_OPTION_LENGTH, "Max length must not be greater than %d. Provided: %d", MAX_STRING_OPTION_LENGTH, maxLength);
+        Checks.check(
+                maxLength <= MAX_STRING_OPTION_LENGTH,
+                "Max length must not be greater than %d. Provided: %d",
+                MAX_STRING_OPTION_LENGTH,
+                maxLength);
         this.maxLength = maxLength;
         return this;
     }
@@ -803,6 +843,7 @@ public class OptionData implements SerializableData
      *         The minimum length for strings which can be provided for this option.
      * @param  maxLength
      *         The maximum length for strings which can be provided for this option.
+     *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@link OptionType type of this option} is not {@link OptionType#STRING STRING}</li>
@@ -812,11 +853,16 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setRequiredLength(int minLength, int maxLength)
-    {
-        if (type != OptionType.STRING)
-            throw new IllegalArgumentException("Can only set min and max length for options of type STRING");
-        Checks.check(minLength <= maxLength, "Min length must not be greater than max length. Provided: %d > %d", minLength, maxLength);
+    public OptionData setRequiredLength(int minLength, int maxLength) {
+        if (type != OptionType.STRING) {
+            throw new IllegalArgumentException(
+                    "Can only set min and max length for options of type STRING");
+        }
+        Checks.check(
+                minLength <= maxLength,
+                "Min length must not be greater than max length. Provided: %d > %d",
+                minLength,
+                maxLength);
         this.setMinLength(minLength);
         this.setMaxLength(maxLength);
         return this;
@@ -844,17 +890,25 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoice(@Nonnull String name, double value)
-    {
+    public OptionData addChoice(@Nonnull String name, double value) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
-        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be less than %f", MIN_NEGATIVE_NUMBER);
-        Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be greater than %f", MAX_POSITIVE_NUMBER);
-        if (isAutoComplete)
+        Checks.check(
+                value >= MIN_NEGATIVE_NUMBER,
+                "Double value may not be less than %f",
+                MIN_NEGATIVE_NUMBER);
+        Checks.check(
+                value <= MAX_POSITIVE_NUMBER,
+                "Double value may not be greater than %f",
+                MAX_POSITIVE_NUMBER);
+        if (isAutoComplete) {
             throw new IllegalStateException("Cannot add choices to auto-complete options");
-        if (type != OptionType.NUMBER)
+        }
+        if (type != OptionType.NUMBER) {
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        }
+        Checks.check(
+                choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
         return this;
     }
@@ -880,17 +934,25 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoice(@Nonnull String name, long value)
-    {
+    public OptionData addChoice(@Nonnull String name, long value) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
-        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be less than %f", MIN_NEGATIVE_NUMBER);
-        Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be greater than %f", MAX_POSITIVE_NUMBER);
-        if (isAutoComplete)
+        Checks.check(
+                value >= MIN_NEGATIVE_NUMBER,
+                "Long value may not be less than %f",
+                MIN_NEGATIVE_NUMBER);
+        Checks.check(
+                value <= MAX_POSITIVE_NUMBER,
+                "Long value may not be greater than %f",
+                MAX_POSITIVE_NUMBER);
+        if (isAutoComplete) {
             throw new IllegalStateException("Cannot add choices to auto-complete options");
-        if (type != OptionType.INTEGER)
+        }
+        if (type != OptionType.INTEGER) {
             throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        }
+        Checks.check(
+                choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
         return this;
     }
@@ -916,17 +978,19 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoice(@Nonnull String name, @Nonnull String value)
-    {
+    public OptionData addChoice(@Nonnull String name, @Nonnull String value) {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
-        if (isAutoComplete)
+        if (isAutoComplete) {
             throw new IllegalStateException("Cannot add choices to auto-complete options");
-        if (type != OptionType.STRING)
+        }
+        if (type != OptionType.STRING) {
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
+        }
+        Checks.check(
+                choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
         return this;
     }
@@ -950,8 +1014,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoices(@Nonnull Command.Choice... choices)
-    {
+    public OptionData addChoices(@Nonnull Command.Choice... choices) {
         Checks.noneNull(choices, "Choices");
         return addChoices(Arrays.asList(choices));
     }
@@ -976,59 +1039,65 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices)
-    {
+    public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices) {
         Checks.notNull(choices, "Choices");
-        if (choices.size() == 0)
+        if (choices.size() == 0) {
             return this;
-        if (this.choices == null || !type.canSupportChoices())
+        }
+        if (this.choices == null || !type.canSupportChoices()) {
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
+        }
         Checks.noneNull(choices, "Choices");
-        if (isAutoComplete)
+        if (isAutoComplete) {
             throw new IllegalStateException("Cannot add choices to auto-complete options");
-        Checks.check(choices.size() + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
+        }
+        Checks.check(
+                choices.size() + this.choices.size() <= MAX_CHOICES,
+                "Cannot have more than 25 choices for one option!");
         this.choices.addAll(choices);
         return this;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
                 .put("name_localizations", nameLocalizations)
                 .put("description", description)
                 .put("description_localizations", descriptionLocalizations);
-        if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
-        {
+        if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP) {
             json.put("required", isRequired);
             json.put("autocomplete", isAutoComplete);
         }
-        if (choices != null && !choices.isEmpty())
-        {
-            json.put("choices", DataArray.fromCollection(
-                    choices.stream()
+        if (choices != null && !choices.isEmpty()) {
+            json.put(
+                    "choices",
+                    DataArray.fromCollection(choices.stream()
                             .map(choice -> choice.toData(type))
-                            .collect(Collectors.toList())
-            ));
+                            .collect(Collectors.toList())));
         }
-        if (type == OptionType.CHANNEL && !channelTypes.isEmpty())
-            json.put("channel_types", channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
-        if (type == OptionType.INTEGER || type == OptionType.NUMBER)
-        {
-            if (minValue != null)
+        if (type == OptionType.CHANNEL && !channelTypes.isEmpty()) {
+            json.put(
+                    "channel_types",
+                    channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList()));
+        }
+        if (type == OptionType.INTEGER || type == OptionType.NUMBER) {
+            if (minValue != null) {
                 json.put("min_value", minValue);
-            if (maxValue != null)
+            }
+            if (maxValue != null) {
                 json.put("max_value", maxValue);
+            }
         }
-        if (type == OptionType.STRING)
-        {
-            if (minLength != null)
+        if (type == OptionType.STRING) {
+            if (minLength != null) {
                 json.put("min_length", minLength);
-            if (maxLength != null)
+            }
+            if (maxLength != null) {
                 json.put("max_length", maxLength);
+            }
         }
         return json;
     }
@@ -1048,52 +1117,51 @@ public class OptionData implements SerializableData
      * @return The parsed OptionData instance, which can be further configured through setters
      */
     @Nonnull
-    public static OptionData fromData(@Nonnull DataObject json)
-    {
+    public static OptionData fromData(@Nonnull DataObject json) {
         String name = json.getString("name");
         String description = json.getString("description");
         OptionType type = OptionType.fromKey(json.getInt("type"));
         OptionData option = new OptionData(type, name, description);
         option.setRequired(json.getBoolean("required"));
         option.setAutoComplete(json.getBoolean("autocomplete"));
-        if (type == OptionType.INTEGER || type == OptionType.NUMBER)
-        {
-            if (!json.isNull("min_value"))
-            {
-                if (json.isType("min_value", DataType.INT))
+        if (type == OptionType.INTEGER || type == OptionType.NUMBER) {
+            if (!json.isNull("min_value")) {
+                if (json.isType("min_value", DataType.INT)) {
                     option.setMinValue(json.getLong("min_value"));
-                else if (json.isType("min_value", DataType.FLOAT))
+                } else if (json.isType("min_value", DataType.FLOAT)) {
                     option.setMinValue(json.getDouble("min_value"));
+                }
             }
-            if (!json.isNull("max_value"))
-            {
-                if (json.isType("max_value", DataType.INT))
+            if (!json.isNull("max_value")) {
+                if (json.isType("max_value", DataType.INT)) {
                     option.setMaxValue(json.getLong("max_value"));
-                else if (json.isType("max_value", DataType.FLOAT))
+                } else if (json.isType("max_value", DataType.FLOAT)) {
                     option.setMaxValue(json.getDouble("max_value"));
+                }
             }
         }
-        if (type == OptionType.CHANNEL)
-        {
+        if (type == OptionType.CHANNEL) {
             option.setChannelTypes(json.optArray("channel_types")
-                    .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
+                    .map(it -> it.stream(DataArray::getInt)
+                            .map(ChannelType::fromId)
+                            .collect(Collectors.toSet()))
                     .orElse(Collections.emptySet()));
         }
-        if (type == OptionType.STRING)
-        {
-            if (!json.isNull("min_length"))
+        if (type == OptionType.STRING) {
+            if (!json.isNull("min_length")) {
                 option.setMinLength(json.getInt("min_length"));
-            if (!json.isNull("max_length"))
+            }
+            if (!json.isNull("max_length")) {
                 option.setMaxLength(json.getInt("max_length"));
+            }
         }
-        json.optArray("choices").ifPresent(choices1 ->
-                option.addChoices(choices1.stream(DataArray::getObject)
+        json.optArray("choices")
+                .ifPresent(choices1 -> option.addChoices(choices1.stream(DataArray::getObject)
                         .map(Command.Choice::new)
-                        .collect(Collectors.toList())
-                )
-        );
+                        .collect(Collectors.toList())));
         option.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
-        option.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
+        option.setDescriptionLocalizations(
+                LocalizationUtils.mapFromProperty(json, "description_localizations"));
         return option;
     }
 
@@ -1109,10 +1177,10 @@ public class OptionData implements SerializableData
      * @return An instance of OptionData
      */
     @Nonnull
-    public static OptionData fromOption(@Nonnull Command.Option option)
-    {
+    public static OptionData fromOption(@Nonnull Command.Option option) {
         Checks.notNull(option, "Option");
-        OptionData data = new OptionData(option.getType(), option.getName(), option.getDescription());
+        OptionData data =
+                new OptionData(option.getType(), option.getName(), option.getDescription());
         data.setRequired(option.isRequired());
         data.setAutoComplete(option.isAutoComplete());
         data.addChoices(option.getChoices());
@@ -1120,29 +1188,34 @@ public class OptionData implements SerializableData
         data.setDescriptionLocalizations(option.getDescriptionLocalizations().toMap());
         Number min = option.getMinValue(), max = option.getMaxValue();
         Integer minLength = option.getMinLength(), maxLength = option.getMaxLength();
-        switch (option.getType())
-        {
-        case CHANNEL:
-            data.setChannelTypes(option.getChannelTypes());
-            break;
-        case NUMBER:
-            if (min != null)
-                data.setMinValue(min.doubleValue());
-            if (max != null)
-                data.setMaxValue(max.doubleValue());
-            break;
-        case INTEGER:
-            if (min != null)
-                data.setMinValue(min.longValue());
-            if (max != null)
-                data.setMaxValue(max.longValue());
-            break;
-        case STRING:
-            if (minLength != null)
-                data.setMinLength(minLength);
-            if (maxLength != null)
-                data.setMaxLength(maxLength);
-            break;
+        switch (option.getType()) {
+            case CHANNEL:
+                data.setChannelTypes(option.getChannelTypes());
+                break;
+            case NUMBER:
+                if (min != null) {
+                    data.setMinValue(min.doubleValue());
+                }
+                if (max != null) {
+                    data.setMaxValue(max.doubleValue());
+                }
+                break;
+            case INTEGER:
+                if (min != null) {
+                    data.setMinValue(min.longValue());
+                }
+                if (max != null) {
+                    data.setMaxValue(max.longValue());
+                }
+                break;
+            case STRING:
+                if (minLength != null) {
+                    data.setMinLength(minLength);
+                }
+                if (maxLength != null) {
+                    data.setMaxLength(maxLength);
+                }
+                break;
         }
         return data;
     }

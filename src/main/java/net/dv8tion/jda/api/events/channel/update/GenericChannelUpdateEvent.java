@@ -31,16 +31,22 @@ import javax.annotation.Nullable;
  *
  * @param <T>
  *        The value type of the field that has been updated.
+ *
  * @see ChannelField
  */
-public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements UpdateEvent<Channel, T>
-{
+public class GenericChannelUpdateEvent<T> extends GenericChannelEvent
+        implements UpdateEvent<Channel, T> {
     protected final ChannelField channelField;
     protected final T oldValue;
     protected final T newValue;
 
-    public GenericChannelUpdateEvent(@Nonnull JDA api, long responseNumber, Channel channel, ChannelField channelField, T oldValue, T newValue)
-    {
+    public GenericChannelUpdateEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            Channel channel,
+            ChannelField channelField,
+            T oldValue,
+            T newValue) {
         super(api, responseNumber, channel);
 
         this.channelField = channelField;
@@ -55,8 +61,7 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
      */
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return channelField.getFieldName();
     }
 
@@ -68,8 +73,7 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
      */
     @Nonnull
     @Override
-    public Channel getEntity()
-    {
+    public Channel getEntity() {
         return getChannel();
     }
 
@@ -80,8 +84,7 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
      */
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return oldValue;
     }
 
@@ -92,8 +95,7 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
      */
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return newValue;
     }
 }

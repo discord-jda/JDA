@@ -27,36 +27,36 @@ import static net.dv8tion.jda.api.components.replacer.ComponentReplacer.byUnique
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-public class ContainerTest
-{
-    private static final TextDisplay EXAMPLE_TEXT = TextDisplay.of("Test display").withUniqueId(1);
+public class ContainerTest {
+    private static final TextDisplay EXAMPLE_TEXT =
+            TextDisplay.of("Test display").withUniqueId(1);
 
     @Test
-    void testEmptyContainerThrows()
-    {
-        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks("Components", Container::of)
+    void testEmptyContainerThrows() {
+        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks(
+                        "Components", Container::of)
                 .checksNotNull()
                 .checksNotEmpty();
     }
 
     @Test
-    void testReplacerWithValidReplacement()
-    {
+    void testReplacerWithValidReplacement() {
         Container container = Container.of(EXAMPLE_TEXT);
 
         TextDisplay replacedText = TextDisplay.of("Replaced");
-        Container replaced = container.replace(byUniqueId(EXAMPLE_TEXT.getUniqueId(), replacedText));
+        Container replaced =
+                container.replace(byUniqueId(EXAMPLE_TEXT.getUniqueId(), replacedText));
 
         assertThat(replaced.getComponents())
-            .containsExactly((ContainerChildComponentUnion) replacedText);
+                .containsExactly((ContainerChildComponentUnion) replacedText);
     }
 
     @Test
-    void testReplacerWithEmptyingReplacement()
-    {
+    void testReplacerWithEmptyingReplacement() {
         Container container = Container.of(EXAMPLE_TEXT);
 
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> container.replace(byUniqueId(EXAMPLE_TEXT.getUniqueId(), (Component) null)));
+                .isThrownBy(() -> container.replace(
+                        byUniqueId(EXAMPLE_TEXT.getUniqueId(), (Component) null)));
     }
 }

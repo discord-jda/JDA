@@ -28,12 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code max_members}
  */
-public class GuildUpdateMaxMembersEvent extends GenericGuildUpdateEvent<Integer>
-{
+public class GuildUpdateMaxMembersEvent extends GenericGuildUpdateEvent<Integer> {
     public static final String IDENTIFIER = "max_members";
 
-    public GuildUpdateMaxMembersEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, int previous)
-    {
+    public GuildUpdateMaxMembersEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, int previous) {
         super(api, responseNumber, guild, previous, guild.getMaxMembers(), IDENTIFIER);
     }
 
@@ -42,8 +41,7 @@ public class GuildUpdateMaxMembersEvent extends GenericGuildUpdateEvent<Integer>
      *
      * @return The old max members for this guild
      */
-    public int getOldMaxMembers()
-    {
+    public int getOldMaxMembers() {
         return getOldValue();
     }
 
@@ -52,22 +50,19 @@ public class GuildUpdateMaxMembersEvent extends GenericGuildUpdateEvent<Integer>
      *
      * @return The new max members for this guild
      */
-    public int getNewMaxMembers()
-    {
+    public int getNewMaxMembers() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Integer getOldValue()
-    {
+    public Integer getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Integer getNewValue()
-    {
+    public Integer getNewValue() {
         return super.getNewValue();
     }
 }

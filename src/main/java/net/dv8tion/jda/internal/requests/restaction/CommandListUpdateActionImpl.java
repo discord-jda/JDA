@@ -31,7 +31,6 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,84 +39,85 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> implements CommandListUpdateAction
-{
+import javax.annotation.Nonnull;
+
+public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>>
+        implements CommandListUpdateAction {
     private final List<CommandData> commands = new ArrayList<>();
     private final GuildImpl guild;
     private int slash, user, message;
 
-    public CommandListUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route)
-    {
+    public CommandListUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route) {
         super(api, route);
         this.guild = guild;
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit) {
         return (CommandListUpdateAction) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks)
-    {
+    public CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks) {
         return (CommandListUpdateAction) super.addCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction setCheck(BooleanSupplier checks)
-    {
+    public CommandListUpdateAction setCheck(BooleanSupplier checks) {
         return (CommandListUpdateAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction deadline(long timestamp)
-    {
+    public CommandListUpdateAction deadline(long timestamp) {
         return (CommandListUpdateAction) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
-    {
+    public CommandListUpdateAction addCommands(
+            @Nonnull Collection<? extends CommandData> commands) {
         Checks.noneNull(commands, "Command");
         int newSlash = 0, newUser = 0, newMessage = 0;
-        for (CommandData command : commands)
-        {
-            switch (command.getType())
-            {
-            case SLASH:
-                newSlash++;
-                break;
-            case MESSAGE:
-                newMessage++;
-                break;
-            case USER:
-                newUser++;
-                break;
+        for (CommandData command : commands) {
+            switch (command.getType()) {
+                case SLASH:
+                    newSlash++;
+                    break;
+                case MESSAGE:
+                    newMessage++;
+                    break;
+                case USER:
+                    newUser++;
+                    break;
             }
         }
 
-        Checks.check(slash + newSlash <= Commands.MAX_SLASH_COMMANDS,
-                "Cannot have more than %d slash commands! Try using subcommands instead.", Commands.MAX_SLASH_COMMANDS);
-        Checks.check(user + newUser <= Commands.MAX_USER_COMMANDS,
-                "Cannot have more than %d user context commands!", Commands.MAX_USER_COMMANDS);
-        Checks.check(message + newMessage <= Commands.MAX_MESSAGE_COMMANDS,
-                "Cannot have more than %d message context commands!", Commands.MAX_MESSAGE_COMMANDS);
+        Checks.check(
+                slash + newSlash <= Commands.MAX_SLASH_COMMANDS,
+                "Cannot have more than %d slash commands! Try using subcommands instead.",
+                Commands.MAX_SLASH_COMMANDS);
+        Checks.check(
+                user + newUser <= Commands.MAX_USER_COMMANDS,
+                "Cannot have more than %d user context commands!",
+                Commands.MAX_USER_COMMANDS);
+        Checks.check(
+                message + newMessage <= Commands.MAX_MESSAGE_COMMANDS,
+                "Cannot have more than %d message context commands!",
+                Commands.MAX_MESSAGE_COMMANDS);
 
         Checks.checkUnique(
-            Stream.concat(commands.stream(), this.commands.stream()).map(c -> c.getType() + " " + c.getName()),
-            "Cannot have multiple commands of the same type with identical names. " +
-            "Name: \"%s\" with type %s appeared %d times!",
-            (count, value) -> {
-                String[] tuple = value.split(" ", 2);
-                return new Object[] { tuple[1], tuple[0], count };
-            }
-        );
+                Stream.concat(commands.stream(), this.commands.stream())
+                        .map(c -> c.getType() + " " + c.getName()),
+                "Cannot have multiple commands of the same type with identical names. "
+                        + "Name: \"%s\" with type %s appeared %d times!",
+                (count, value) -> {
+                    String[] tuple = value.split(" ", 2);
+                    return new Object[] {tuple[1], tuple[0], count};
+                });
 
         slash += newSlash;
         user += newUser;
@@ -128,16 +128,14 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataArray json = DataArray.empty();
         json.addAll(commands);
         return getRequestBody(json);
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<Command>> request)
-    {
+    protected void handleSuccess(Response response, Request<List<Command>> request) {
         List<Command> commands = response.getArray().stream(DataArray::getObject)
                 .map(obj -> new CommandImpl(api, guild, obj))
                 .collect(Collectors.toList());

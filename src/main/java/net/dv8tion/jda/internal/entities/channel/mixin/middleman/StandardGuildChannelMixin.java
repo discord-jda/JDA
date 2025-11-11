@@ -22,11 +22,9 @@ import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInviteContaine
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPositionableChannelMixin;
 
-public interface StandardGuildChannelMixin<T extends StandardGuildChannelMixin<T>> extends
-        StandardGuildChannel,
-        ICategorizableChannelMixin<T>,
-        IPositionableChannelMixin<T>,
-        IPermissionContainerMixin<T>,
-        IInviteContainerMixin<T>
-{
-}
+public interface StandardGuildChannelMixin<T extends StandardGuildChannelMixin<T>>
+        extends StandardGuildChannel,
+                ICategorizableChannelMixin<T>,
+                IPositionableChannelMixin<T>,
+                IPermissionContainerMixin<T>,
+                IInviteContainerMixin<T> {}

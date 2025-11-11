@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.user;
 
 import net.dv8tion.jda.api.JDA;
@@ -27,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any UserEvent.
  */
-public abstract class GenericUserEvent extends Event
-{
+public abstract class GenericUserEvent extends Event {
     private final User user;
 
-    public GenericUserEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user)
-    {
+    public GenericUserEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user) {
         super(api, responseNumber);
         this.user = user;
     }
@@ -43,8 +42,7 @@ public abstract class GenericUserEvent extends Event
      * @return The user instance related to this event
      */
     @Nonnull
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 }

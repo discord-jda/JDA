@@ -23,53 +23,49 @@ import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public class MessageComponentTreeImpl
-        extends AbstractComponentTree<MessageTopLevelComponentUnion>
-        implements MessageComponentTree
-{
-    private MessageComponentTreeImpl(Collection<MessageTopLevelComponentUnion> components)
-    {
+import javax.annotation.Nonnull;
+
+public class MessageComponentTreeImpl extends AbstractComponentTree<MessageTopLevelComponentUnion>
+        implements MessageComponentTree {
+    private MessageComponentTreeImpl(Collection<MessageTopLevelComponentUnion> components) {
         super(components);
     }
 
     @Nonnull
-    public static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    public static MessageComponentTree of(
+            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         // Empty trees are allowed (messages can contain no components)
         Checks.noneNull(components, "Components");
 
         // Allow unknown components so [[Message#getComponentTree]] works
-        final Collection<MessageTopLevelComponentUnion> componentUnions = ComponentsUtil.membersToUnionWithUnknownType(components, MessageTopLevelComponentUnion.class);
+        Collection<MessageTopLevelComponentUnion> componentUnions =
+                ComponentsUtil.membersToUnionWithUnknownType(
+                        components, MessageTopLevelComponentUnion.class);
         return new MessageComponentTreeImpl(componentUnions);
     }
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.MESSAGE;
     }
 
     @Nonnull
     @Override
-    public MessageComponentTree replace(@Nonnull ComponentReplacer replacer)
-    {
+    public MessageComponentTree replace(@Nonnull ComponentReplacer replacer) {
         Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(
                 MessageTopLevelComponent.class,
                 components,
                 replacer,
-                MessageComponentTreeImpl::new
-        );
+                MessageComponentTreeImpl::new);
     }
 
     @Nonnull
     @Override
-    public MessageComponentTree withDisabled(boolean disabled)
-    {
+    public MessageComponentTree withDisabled(boolean disabled) {
         return (MessageComponentTree) super.withDisabled(disabled);
     }
 }

@@ -21,10 +21,7 @@ import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChanne
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildMessageChannelMixin;
 
 public interface ThreadChannelMixin<T extends ThreadChannelMixin<T>>
-    extends ThreadChannel,
-        GuildMessageChannelMixin<T>,
-        ISlowmodeChannelMixin<T>
-{
+        extends ThreadChannel, GuildMessageChannelMixin<T>, ISlowmodeChannelMixin<T> {
     T setAutoArchiveDuration(AutoArchiveDuration autoArchiveDuration);
 
     T setLocked(boolean locked);

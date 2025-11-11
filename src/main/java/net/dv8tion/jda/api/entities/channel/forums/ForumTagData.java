@@ -22,17 +22,17 @@ import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Data class used to create or update existing forum tags.
  *
  * @see ForumChannelManager#setAvailableTags(List)
  */
-public class ForumTagData implements BaseForumTag
-{
+public class ForumTagData implements BaseForumTag {
     private String name;
     private Emoji emoji;
     private boolean moderated;
@@ -47,8 +47,7 @@ public class ForumTagData implements BaseForumTag
      * @throws IllegalArgumentException
      *         If the provided name is null or not between 1 and  {@value ForumTag#MAX_NAME_LENGTH} characters long
      */
-    public ForumTagData(@Nonnull String name)
-    {
+    public ForumTagData(@Nonnull String name) {
         setName(name);
     }
 
@@ -65,14 +64,14 @@ public class ForumTagData implements BaseForumTag
      * @return The new {@link ForumTagData} instance
      */
     @Nonnull
-    public static ForumTagData from(@Nonnull BaseForumTag tag)
-    {
+    public static ForumTagData from(@Nonnull BaseForumTag tag) {
         Checks.notNull(tag, "Tag");
         ForumTagData data = new ForumTagData(tag.getName())
                 .setEmoji(tag.getEmoji())
                 .setModerated(tag.isModerated());
-        if (tag instanceof ForumTagSnowflake)
+        if (tag instanceof ForumTagSnowflake) {
             data.id = ((ForumTagSnowflake) tag).getIdLong();
+        }
         return data;
     }
 
@@ -88,8 +87,7 @@ public class ForumTagData implements BaseForumTag
      * @return The updated ForumTagData instance
      */
     @Nonnull
-    public ForumTagData setName(@Nonnull String name)
-    {
+    public ForumTagData setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, ForumTag.MAX_NAME_LENGTH, "Name");
         this.name = name;
@@ -107,8 +105,7 @@ public class ForumTagData implements BaseForumTag
      * @see    #isModerated()
      */
     @Nonnull
-    public ForumTagData setModerated(boolean moderated)
-    {
+    public ForumTagData setModerated(boolean moderated) {
         this.moderated = moderated;
         return this;
     }
@@ -123,45 +120,40 @@ public class ForumTagData implements BaseForumTag
      * @return The updated ForumTagData instance
      */
     @Nonnull
-    public ForumTagData setEmoji(@Nullable Emoji emoji)
-    {
+    public ForumTagData setEmoji(@Nullable Emoji emoji) {
         this.emoji = emoji;
         return this;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public boolean isModerated()
-    {
+    public boolean isModerated() {
         return moderated;
     }
 
     @Nullable
     @Override
-    public EmojiUnion getEmoji()
-    {
+    public EmojiUnion getEmoji() {
         return (EmojiUnion) emoji;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject json = BaseForumTag.super.toData();
-        if (id != 0)
+        if (id != 0) {
             json.put("id", Long.toUnsignedString(id));
+        }
         return json;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return toData().toString();
     }
 }

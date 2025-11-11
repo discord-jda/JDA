@@ -29,78 +29,75 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class MediaGalleryImpl
-        extends AbstractComponentImpl
-        implements MediaGallery, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin
-{
+import javax.annotation.Nonnull;
+
+public class MediaGalleryImpl extends AbstractComponentImpl
+        implements MediaGallery,
+                MessageTopLevelComponentUnion,
+                ContainerChildComponentUnion,
+                FileContainerMixin {
     private final int uniqueId;
     private final List<MediaGalleryItem> items;
 
-    private MediaGalleryImpl(Collection<? extends MediaGalleryItem> items)
-    {
+    private MediaGalleryImpl(Collection<? extends MediaGalleryItem> items) {
         this(-1, items);
     }
 
-    public MediaGalleryImpl(int uniqueId, Collection<? extends MediaGalleryItem> items)
-    {
+    public MediaGalleryImpl(int uniqueId, Collection<? extends MediaGalleryItem> items) {
         this.uniqueId = uniqueId;
         this.items = Helpers.copyAsUnmodifiableList(items);
     }
 
     @Nonnull
-    public static MediaGallery validated(@Nonnull Collection<? extends MediaGalleryItem> items)
-    {
+    public static MediaGallery validated(@Nonnull Collection<? extends MediaGalleryItem> items) {
         Checks.noneNull(items, "Items");
         Checks.notEmpty(items, "Items");
-        Checks.check(items.size() <= MAX_ITEMS, "A media gallery can only contain %d items, provided: %d", MAX_ITEMS, items.size());
+        Checks.check(
+                items.size() <= MAX_ITEMS,
+                "A media gallery can only contain %d items, provided: %d",
+                MAX_ITEMS,
+                items.size());
         return new MediaGalleryImpl(items);
     }
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.MEDIA_GALLERY;
     }
 
     @Nonnull
     @Override
-    public MediaGalleryImpl withUniqueId(int uniqueId)
-    {
+    public MediaGalleryImpl withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
         return new MediaGalleryImpl(uniqueId, items);
     }
 
     @Nonnull
     @Override
-    public MediaGalleryImpl withItems(@Nonnull Collection<? extends MediaGalleryItem> items)
-    {
+    public MediaGalleryImpl withItems(@Nonnull Collection<? extends MediaGalleryItem> items) {
         Checks.noneNull(items, "Items");
         return new MediaGalleryImpl(uniqueId, items);
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nonnull
     @Override
-    public List<MediaGalleryItem> getItems()
-    {
+    public List<MediaGalleryItem> getItems() {
         return items;
     }
 
     @Override
-    public Stream<FileUpload> getFiles()
-    {
+    public Stream<FileUpload> getFiles() {
         return items.stream()
                 .filter(FileContainerMixin.class::isInstance)
                 .map(FileContainerMixin.class::cast)
@@ -109,34 +106,35 @@ public class MediaGalleryImpl
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        final DataObject json = DataObject.empty()
+    public DataObject toData() {
+        DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("items", DataArray.fromCollection(getItems()));
-        if (uniqueId >= 0)
+        if (uniqueId >= 0) {
             json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof MediaGalleryImpl)) return false;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MediaGalleryImpl)) {
+            return false;
+        }
         MediaGalleryImpl that = (MediaGalleryImpl) o;
         return uniqueId == that.uniqueId && Objects.equals(items, that.items);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(uniqueId, items);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("id", uniqueId)
                 .addMetadata("items", items)

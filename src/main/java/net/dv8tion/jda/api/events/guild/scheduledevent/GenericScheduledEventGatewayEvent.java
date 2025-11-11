@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.scheduledevent;
 
 import net.dv8tion.jda.api.JDA;
@@ -39,12 +40,11 @@ import javax.annotation.Nonnull;
  * <p>This class may be used to check if a gateway event is related to a {@link ScheduledEvent}
  * as all gateway events in the {@link net.dv8tion.jda.api.events.guild.scheduledevent} package extend this class.
  */
-public abstract class GenericScheduledEventGatewayEvent extends GenericGuildEvent
-{
+public abstract class GenericScheduledEventGatewayEvent extends GenericGuildEvent {
     protected final ScheduledEvent scheduledEvent;
 
-    public GenericScheduledEventGatewayEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent)
-    {
+    public GenericScheduledEventGatewayEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent) {
         super(api, responseNumber, scheduledEvent.getGuild());
         this.scheduledEvent = scheduledEvent;
     }
@@ -55,8 +55,7 @@ public abstract class GenericScheduledEventGatewayEvent extends GenericGuildEven
      * @return The Scheduled Event
      */
     @Nonnull
-    public ScheduledEvent getScheduledEvent()
-    {
+    public ScheduledEvent getScheduledEvent() {
         return scheduledEvent;
     }
 }

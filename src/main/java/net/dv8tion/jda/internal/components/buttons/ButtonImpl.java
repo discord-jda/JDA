@@ -29,14 +29,13 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class ButtonImpl
-        extends AbstractComponentImpl
-        implements Button, ActionRowChildComponentUnion, SectionAccessoryComponentUnion
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ButtonImpl extends AbstractComponentImpl
+        implements Button, ActionRowChildComponentUnion, SectionAccessoryComponentUnion {
     private final String customId;
     private final int uniqueId;
     private final String label;
@@ -46,31 +45,43 @@ public class ButtonImpl
     private final boolean disabled;
     private final EmojiUnion emoji;
 
-    public ButtonImpl(DataObject data)
-    {
+    public ButtonImpl(DataObject data) {
         this(
-            data.getString("custom_id", null),
-            data.getInt("id", -1),
-            data.getString("label", ""),
-            ButtonStyle.fromKey(data.getInt("style")),
-            data.getString("url", null),
-            data.hasKey("sku_id") ? SkuSnowflake.fromId(data.getLong("sku_id")) : null,
-            data.getBoolean("disabled"),
-            data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
+                data.getString("custom_id", null),
+                data.getInt("id", -1),
+                data.getString("label", ""),
+                ButtonStyle.fromKey(data.getInt("style")),
+                data.getString("url", null),
+                data.hasKey("sku_id") ? SkuSnowflake.fromId(data.getLong("sku_id")) : null,
+                data.getBoolean("disabled"),
+                data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
-    public ButtonImpl(String customId, String label, ButtonStyle style, boolean disabled, Emoji emoji)
-    {
+    public ButtonImpl(
+            String customId, String label, ButtonStyle style, boolean disabled, Emoji emoji) {
         this(customId, label, style, null, null, disabled, emoji);
     }
 
-    public ButtonImpl(String customId, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
-    {
+    public ButtonImpl(
+            String customId,
+            String label,
+            ButtonStyle style,
+            String url,
+            SkuSnowflake sku,
+            boolean disabled,
+            Emoji emoji) {
         this(customId, -1, label, style, url, sku, disabled, emoji);
     }
 
-    public ButtonImpl(String customId, int uniqueId, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
-    {
+    public ButtonImpl(
+            String customId,
+            int uniqueId,
+            String label,
+            ButtonStyle style,
+            String url,
+            SkuSnowflake sku,
+            boolean disabled,
+            Emoji emoji) {
         this.customId = customId;
         this.uniqueId = uniqueId;
         this.label = label == null ? "" : label;
@@ -81,39 +92,41 @@ public class ButtonImpl
         this.emoji = (EmojiUnion) emoji;
     }
 
-    public ButtonImpl checkValid()
-    {
+    public ButtonImpl checkValid() {
         Checks.notNull(style, "Style");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
 
-        switch (style)
-        {
-        case PRIMARY:
-        case SECONDARY:
-        case SUCCESS:
-        case DANGER:
-            Checks.check(url == null, "Cannot set an URL on action buttons");
-            Checks.check(sku == null, "Cannot set an SKU on action buttons");
-            Checks.check(emoji != null || !label.isEmpty(), "Action buttons must have either an emoji or label");
-            Checks.notEmpty(customId, "Id");
-            Checks.notLonger(customId, ID_MAX_LENGTH, "Id");
-            break;
-        case LINK:
-            Checks.check(customId == null, "Cannot set an ID on link buttons");
-            Checks.check(url != null, "You must set an URL on link buttons");
-            Checks.check(sku == null, "Cannot set an SKU on link buttons");
-            Checks.check(emoji != null || !label.isEmpty(), "Link buttons must have either an emoji or label");
-            Checks.notEmpty(url, "URL");
-            Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-            break;
-        case PREMIUM:
-            Checks.check(customId == null, "Cannot set an ID on premium buttons");
-            Checks.check(url == null, "Cannot set an URL on premium buttons");
-            Checks.check(emoji == null, "Cannot set an emoji on premium buttons");
-            Checks.check(label.isEmpty(), "Cannot set a label on premium buttons");
-            Checks.notNull(sku, "SKU");
-            break;
+        switch (style) {
+            case PRIMARY:
+            case SECONDARY:
+            case SUCCESS:
+            case DANGER:
+                Checks.check(url == null, "Cannot set an URL on action buttons");
+                Checks.check(sku == null, "Cannot set an SKU on action buttons");
+                Checks.check(
+                        emoji != null || !label.isEmpty(),
+                        "Action buttons must have either an emoji or label");
+                Checks.notEmpty(customId, "Id");
+                Checks.notLonger(customId, ID_MAX_LENGTH, "Id");
+                break;
+            case LINK:
+                Checks.check(customId == null, "Cannot set an ID on link buttons");
+                Checks.check(url != null, "You must set an URL on link buttons");
+                Checks.check(sku == null, "Cannot set an SKU on link buttons");
+                Checks.check(
+                        emoji != null || !label.isEmpty(),
+                        "Link buttons must have either an emoji or label");
+                Checks.notEmpty(url, "URL");
+                Checks.notLonger(url, URL_MAX_LENGTH, "URL");
+                break;
+            case PREMIUM:
+                Checks.check(customId == null, "Cannot set an ID on premium buttons");
+                Checks.check(url == null, "Cannot set an URL on premium buttons");
+                Checks.check(emoji == null, "Cannot set an emoji on premium buttons");
+                Checks.check(label.isEmpty(), "Cannot set a label on premium buttons");
+                Checks.notNull(sku, "SKU");
+                break;
         }
 
         return this;
@@ -121,128 +134,124 @@ public class ButtonImpl
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.BUTTON;
     }
 
     @Nonnull
     @Override
-    public ButtonImpl withUniqueId(int uniqueId)
-    {
+    public ButtonImpl withUniqueId(int uniqueId) {
         return (ButtonImpl) Button.super.withUniqueId(uniqueId);
     }
 
     @Nullable
     @Override
-    public String getCustomId()
-    {
+    public String getCustomId() {
         return customId;
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nonnull
     @Override
-    public String getLabel()
-    {
+    public String getLabel() {
         return label;
     }
 
     @Nonnull
     @Override
-    public ButtonStyle getStyle()
-    {
+    public ButtonStyle getStyle() {
         return style;
     }
 
     @Nullable
     @Override
-    public String getUrl()
-    {
+    public String getUrl() {
         return url;
     }
 
     @Nullable
     @Override
-    public SkuSnowflake getSku()
-    {
+    public SkuSnowflake getSku() {
         return sku;
     }
 
     @Nullable
     @Override
-    public EmojiUnion getEmoji()
-    {
+    public EmojiUnion getEmoji() {
         return emoji;
     }
 
     @Override
-    public boolean isDisabled()
-    {
+    public boolean isDisabled() {
         return disabled;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject json = DataObject.empty();
         json.put("type", 2);
-        if (!label.isEmpty())
+        if (!label.isEmpty()) {
             json.put("label", label);
+        }
         json.put("style", style.getKey());
         json.put("disabled", disabled);
-        if (emoji != null)
+        if (emoji != null) {
             json.put("emoji", emoji);
-        if (url != null)
+        }
+        if (url != null) {
             json.put("url", url);
-        else if (customId != null)
+        } else if (customId != null) {
             json.put("custom_id", customId);
-        else
+        } else {
             json.put("sku_id", sku.getId());
-        if (uniqueId >= 0)
+        }
+        if (uniqueId >= 0) {
             json.put("id", uniqueId);
+        }
         return json;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(customId, label, style, url, sku, disabled, emoji);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this) return true;
-        if (!(obj instanceof ButtonImpl)) return false;
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ButtonImpl)) {
+            return false;
+        }
         ButtonImpl other = (ButtonImpl) obj;
         return Objects.equals(other.customId, customId)
-            && Objects.equals(other.label, label)
-            && Objects.equals(other.url, url)
-            && Objects.equals(other.sku, sku)
-            && Objects.equals(other.emoji, emoji)
-            && other.disabled == disabled
-            && other.style == style;
+                && Objects.equals(other.label, label)
+                && Objects.equals(other.url, url)
+                && Objects.equals(other.sku, sku)
+                && Objects.equals(other.emoji, emoji)
+                && other.disabled == disabled
+                && other.style == style;
     }
 
     @Override
-    public String toString()
-    {
-        final EntityString entityString = new EntityString(this)
-                .setName(label)
-                .addMetadata("id", uniqueId);
-        if (customId != null)
+    public String toString() {
+        EntityString entityString =
+                new EntityString(this).setName(label).addMetadata("id", uniqueId);
+        if (customId != null) {
             entityString.addMetadata("custom id", customId);
-        if (url != null)
+        }
+        if (url != null) {
             entityString.addMetadata("url", url);
-        if (sku != null)
+        }
+        if (sku != null) {
             entityString.addMetadata("sku", sku.getId());
+        }
 
         return entityString.toString();
     }
