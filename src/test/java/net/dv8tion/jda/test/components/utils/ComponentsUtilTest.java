@@ -44,14 +44,14 @@ public class ComponentsUtilTest
 {
     private static final UnknownComponentImpl UNKNOWN_COMPONENT = new UnknownComponentImpl(DataObject.empty());
 
-    @MethodSource("testUnknownComponentCannotBeInserted")
+    @MethodSource("testUnknownComponentCannotBeInsertedArguments")
     @ParameterizedTest
     void testUnknownComponentCannotBeInserted(ThrowableAssert.ThrowingCallable callable)
     {
         Assertions.assertThatIllegalArgumentException().isThrownBy(callable);
     }
 
-    static Stream<Arguments> testUnknownComponentCannotBeInserted()
+    static Stream<Arguments> testUnknownComponentCannotBeInsertedArguments()
     {
         // Try everywhere ComponentsUtil is used
         return Stream.of(
@@ -83,7 +83,7 @@ public class ComponentsUtilTest
         );
 
         MessageComponentTree newTree = tree.replace(ComponentReplacer.byUniqueId(1, (Button) null));
-        final ActionRow row = newTree.getComponents().get(0).asActionRow();
+        final ActionRow row = newTree.getComponents().getFirst().asActionRow();
         assertThat(row.getComponents()).hasSize(1);
         assertThat(row.getComponents()).contains((ActionRowChildComponentUnion) button2);
     }

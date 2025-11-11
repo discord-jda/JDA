@@ -73,6 +73,25 @@ configure<SourceSetContainer> {
     }
 }
 
+val testJava8 by sourceSets.creating {
+    java.srcDir("src/test-java8/java")
+    resources.srcDir("src/test-java8/resources")
+    compileClasspath += sourceSets["main"].output
+    runtimeClasspath += sourceSets["main"].output
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+        vendor.set(JvmVendorSpec.ADOPTIUM)
+    }
+}
+
+val java8Toolchain = javaToolchains.launcherFor {
+    languageVersion.set(JavaLanguageVersion.of(8))
+    vendor.set(JvmVendorSpec.ADOPTIUM)
+}
+
 
 ////////////////////////////////////
 //                                //
@@ -80,7 +99,17 @@ configure<SourceSetContainer> {
 //                                //
 ////////////////////////////////////
 
+val currentJavaVersion = JavaVersion.current().majorVersion
+
 val mockitoAgent by configurations.creating
+
+val testJava8Implementation by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+
+val testJava8RuntimeOnly by configurations.getting {
+    extendsFrom(configurations.runtimeOnly.get())
+}
 
 repositories {
     mavenCentral()
@@ -135,23 +164,22 @@ dependencies {
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
 
+    testJava8Implementation(libs.bundles.junit.java8)
+    testJava8Implementation(libs.assertj)
+
     mockitoAgent(libs.mockito) {
         isTransitive = false
     }
 
     // OpenRewrite
     // Import Rewrite's bill of materials.
-    testImplementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.6.1"))
+    testImplementation(platform(libs.openrewrite))
 
     // rewrite-java dependencies only necessary for Java Recipe development
     testImplementation("org.openrewrite:rewrite-java")
     testImplementation("org.openrewrite.recipe:rewrite-java-dependencies")
 
-    // This is supposed to only be the version that corresponds to the current Java version,
-    // but as there are no toolchain, we include all, they can coexist safely tho.
-    testRuntimeOnly("org.openrewrite:rewrite-java-8")
-    testRuntimeOnly("org.openrewrite:rewrite-java-11")
-    testRuntimeOnly("org.openrewrite:rewrite-java-17")
+    testRuntimeOnly("org.openrewrite:rewrite-java-${currentJavaVersion}")
 
     // For authoring tests for any kind of Recipe
     testImplementation("org.openrewrite:rewrite-test")
@@ -265,7 +293,7 @@ val javadoc by tasks.getting(Javadoc::class) {
 
         author()
         tags("incubating:a:Incubating:")
-        links("https://docs.oracle.com/javase/8/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
+        links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
         addStringOption("-release", "8")
         addBooleanOption("Xdoclint:all,-missing", true)
@@ -293,13 +321,18 @@ tasks.withType<JavaCompile> {
 
     val args = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
 
-    options.release = 8
     options.compilerArgs.addAll(args)
 }
 
 val compileJava by tasks.getting(JavaCompile::class) {
     dependsOn(generateJavaSources)
     source = generateJavaSources.get().source
+
+    options.release = 8
+}
+
+tasks.named<JavaCompile>("compileTestJava8Java") {
+    options.release = 8
 }
 
 tasks.build.configure {
@@ -344,23 +377,35 @@ tasks.register<Test>("updateTestSnapshots") {
     systemProperty("updateSnapshots", "true")
 }
 
-tasks.withType<Test>().configureEach {
+tasks.test {
     useJUnitPlatform()
     failFast = false
 
-    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_21)) {
-        jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
-    }
-}
+    jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
 
-tasks.test {
     testLogging {
-        events("passed", "skipped", "failed")
+        events("failed")
     }
     reports {
         junitXml.required = projectEnvironment.isGithubAction
-        html.required = projectEnvironment.isGithubAction
+        html.required = true
     }
+}
+
+val testJava8Compatibility by tasks.registering(Test::class) {
+    group = "verification"
+
+    useJUnitPlatform()
+    failFast = true
+
+    testClassesDirs = testJava8.output.classesDirs
+    classpath = testJava8.runtimeClasspath
+
+    javaLauncher = java8Toolchain.get()
+}
+
+tasks.named("check").configure {
+    dependsOn(testJava8Compatibility)
 }
 
 val verifyBytecodeVersion by tasks.registering(VerifyBytecodeVersion::class) {

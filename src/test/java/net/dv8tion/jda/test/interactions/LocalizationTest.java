@@ -204,6 +204,6 @@ public class LocalizationTest
         assertThat(results)
             .withRepresentation(new PrettyRepresentation())
             .hasSize(1);
-        return results.get(0);
+        return results.getFirst();
     }
 }
