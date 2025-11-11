@@ -23,9 +23,9 @@ import java.util.function.Function;
 
 public class SnowflakeCacheViewImpl<T extends ISnowflake> extends AbstractCacheView<T> implements SnowflakeCacheView<T>
 {
-    public SnowflakeCacheViewImpl(Class<T> type, Function<T, String> nameMapper)
+    public SnowflakeCacheViewImpl(Class<T> type, T[] emptyArray, Function<T, String> nameMapper)
     {
-        super(type, nameMapper);
+        super(type, emptyArray, nameMapper);
     }
 
     @Override

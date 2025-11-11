@@ -48,7 +48,7 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest
     void setupMocks()
     {
         when(guild.getJDA()).thenReturn(jda);
-        when(jda.getUsersView()).thenReturn(new SnowflakeCacheViewImpl<>(User.class, User::getName));
+        when(jda.getUsersView()).thenReturn(new SnowflakeCacheViewImpl<>(User.class, new User[0], User::getName));
         channel = new TextChannelImpl(Constants.CHANNEL_ID, guild);
     }
 
@@ -58,17 +58,17 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest
         PinnedMessagePaginationActionImpl action = new PinnedMessagePaginationActionImpl(channel);
 
         assertThatRequestFrom(action)
-            .hasMethod(Method.GET)
-            .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/messages/pins?limit=50")
-            .whenQueueCalled();
+                .hasMethod(Method.GET)
+                .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/messages/pins?limit=50")
+                .whenQueueCalled();
 
         assertThat(captureListCallback(PinnedMessage.class, action, DataObject.empty().put("items", DataArray.empty())))
-            .isEmpty();
+                .isEmpty();
 
         assertThatRequestFrom(action)
-            .hasMethod(Method.GET)
-            .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/messages/pins?limit=50")
-            .whenQueueCalled();
+                .hasMethod(Method.GET)
+                .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/messages/pins?limit=50")
+                .whenQueueCalled();
     }
 
     @Test
@@ -83,38 +83,38 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest
         {
             timeStamp = timeStamp.plusSeconds(1);
             items.add(DataObject.empty()
-                .put("pinned_at", timeStamp)
-                .put("message", getTestMessage()));
+                    .put("pinned_at", timeStamp)
+                    .put("message", getTestMessage()));
         }
 
         OffsetDateTime lastTimestamp = timeStamp;
 
         assertThat(captureListCallback(PinnedMessage.class, action, DataObject.empty().put("items", items)))
-            .hasSize(50)
-            .last().matches(pinned -> pinned.getTimePinned().equals(lastTimestamp));
+                .hasSize(50)
+                .last().matches(pinned -> pinned.getTimePinned().equals(lastTimestamp));
 
         assertThatRequestFrom(action)
-            .hasMethod(Method.GET)
-            .hasQueryParams("limit", 50, "before", lastTimestamp)
-            .whenQueueCalled();
+                .hasMethod(Method.GET)
+                .hasQueryParams("limit", 50, "before", lastTimestamp)
+                .whenQueueCalled();
     }
 
     private DataObject getTestMessage()
     {
         return DataObject.empty()
-            .put("type", 0)
-            .put("id", randomSnowflake())
-            .put("channel_id", Constants.CHANNEL_ID)
-            .put("content", "test content")
-            .put("embeds", DataArray.empty())
-            .put("attachments", DataArray.empty())
-            .put("components", DataArray.empty())
-            .put("mentions", DataArray.empty())
-            .put("mention_roles", DataArray.empty())
-            .put("author", DataObject.empty()
-                .put("id", Constants.MINN_USER_ID)
-                .put("username", "minn")
-                .put("discriminator", "0")
-                .put("avatar", null));
+                .put("type", 0)
+                .put("id", randomSnowflake())
+                .put("channel_id", Constants.CHANNEL_ID)
+                .put("content", "test content")
+                .put("embeds", DataArray.empty())
+                .put("attachments", DataArray.empty())
+                .put("components", DataArray.empty())
+                .put("mentions", DataArray.empty())
+                .put("mention_roles", DataArray.empty())
+                .put("author", DataObject.empty()
+                        .put("id", Constants.MINN_USER_ID)
+                        .put("username", "minn")
+                        .put("discriminator", "0")
+                        .put("avatar", null));
     }
 }

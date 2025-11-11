@@ -28,7 +28,6 @@ import net.dv8tion.jda.internal.utils.UnlockHook;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
@@ -44,11 +43,11 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
     protected final Class<T> type;
 
     @SuppressWarnings("unchecked")
-    protected AbstractCacheView(Class<T> type, Function<T, String> nameMapper)
+    protected AbstractCacheView(Class<T> type, T[] emptyArray, Function<T, String> nameMapper)
     {
         this.nameMapper = nameMapper;
         this.type = type;
-        this.emptyArray = (T[]) Array.newInstance(type, 0);
+        this.emptyArray = emptyArray;
     }
 
     public void clear()
