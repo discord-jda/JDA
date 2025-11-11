@@ -392,11 +392,11 @@ tasks.test {
     jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
 
     testLogging {
-        events("passed", "skipped", "failed")
+        events("failed")
     }
     reports {
         junitXml.required = projectEnvironment.isGithubAction
-        html.required = projectEnvironment.isGithubAction
+        html.required = true
     }
 }
 
