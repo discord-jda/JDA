@@ -164,7 +164,7 @@ dependencies {
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
 
-    testJava8Implementation(libs.bundles.junit)
+    testJava8Implementation(libs.bundles.junit.java8)
     testJava8Implementation(libs.assertj)
 
     mockitoAgent(libs.mockito) {
@@ -205,7 +205,9 @@ versionCatalogUpdate {
 
     pin {
         libraries = listOf(
-            libs.tink
+            libs.tink,
+            libs.junit.java8,
+            libs.junit.launcher.java8,
         )
     }
 }
@@ -327,13 +329,18 @@ tasks.withType<JavaCompile> {
 
     val args = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
 
-    options.release = 8
     options.compilerArgs.addAll(args)
 }
 
 val compileJava by tasks.getting(JavaCompile::class) {
     dependsOn(generateJavaSources)
     source = generateJavaSources.get().source
+
+    options.release = 8
+}
+
+tasks.named<JavaCompile>("compileTestJava8Java") {
+    options.release = 8
 }
 
 tasks.build.configure {

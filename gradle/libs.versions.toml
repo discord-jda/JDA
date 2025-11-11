@@ -11,12 +11,14 @@ jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jetbrains-annotations = "org.jetbrains:annotations:26.0.2-1"
 jna = "net.java.dev.jna:jna:5.18.1"
-junit = "org.junit.jupiter:junit-jupiter:5.14.0"
-junit-launcher = "org.junit.platform:junit-platform-launcher:1.14.0"
-logback-classic = "ch.qos.logback:logback-classic:1.5.20"
+junit = "org.junit.jupiter:junit-jupiter:6.0.1"
+junit-java8 = "org.junit.jupiter:junit-jupiter:5.14.0"
+junit-launcher = "org.junit.platform:junit-platform-launcher:6.0.1"
+junit-launcher-java8 = "org.junit.platform:junit-platform-launcher:1.14.0"
+logback-classic = "ch.qos.logback:logback-classic:1.5.21"
 mockito = "org.mockito:mockito-core:5.20.0"
 okhttp = "com.squareup.okhttp3:okhttp-jvm:5.3.0"
-openrewrite = "org.openrewrite.recipe:rewrite-recipe-bom:3.17.0"
+openrewrite = "org.openrewrite.recipe:rewrite-recipe-bom:3.18.0"
 opus = "club.minnced:opus-java:1.1.1"
 reflections = "org.reflections:reflections:0.10.2"
 slf4j = "org.slf4j:slf4j-api:2.0.17"
@@ -32,6 +34,10 @@ jackson = [
 junit = [
     "junit",
     "junit-launcher",
+]
+junit-java8 = [
+    "junit-java8",
+    "junit-launcher-java8",
 ]
 
 [plugins]
