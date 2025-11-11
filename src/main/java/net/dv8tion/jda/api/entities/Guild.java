@@ -1302,7 +1302,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return An <b>unmodifiable</b> set of system channel flags of this guild.
      *
-     * @see    <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">         System Channel Flags API documentation         </a>
+     * @see    <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
+     *         System Channel Flags API documentation
+     *         </a>
      */
     @Nonnull
     Set<SystemChannelFlag> getSystemChannelFlags();
@@ -1318,7 +1320,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return An integer bitmask of system channel flags of this guild.
      *
-     * @see    <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">         System Channel Flags API documentation         </a>
+     * @see    <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
+     *         System Channel Flags API documentation
+     *         </a>
      */
     int getSystemChannelFlagsRaw();
 

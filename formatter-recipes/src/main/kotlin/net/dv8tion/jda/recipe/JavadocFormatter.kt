@@ -130,9 +130,7 @@ class JavadocFormatVisitor : JavaIsoVisitor<ExecutionContext>() {
                     docs.add(space())
 
                     if (element is Javadoc.See) {
-                        val reference = element.reference.toMutableList()
-                        reference.removeIf { it is Javadoc.LineBreak }
-                        docs.add(element.withReference(reference))
+                        docs.add(reformatSeeAlsoSection(element))
                     } else {
                         docs.add(element)
                     }
@@ -183,6 +181,13 @@ class JavadocFormatVisitor : JavaIsoVisitor<ExecutionContext>() {
             is Javadoc.Text -> comment.text.isBlank()
             else -> false
         }
+    }
+
+    fun reformatSeeAlsoSection(see: Javadoc.See): Javadoc.See {
+        var reference = see.reference
+        reference = reference.dropWhile { it is Javadoc.LineBreak }
+        reference = reference.dropLastWhile { it is Javadoc.LineBreak }
+        return see.withReference(reference)
     }
 }
 

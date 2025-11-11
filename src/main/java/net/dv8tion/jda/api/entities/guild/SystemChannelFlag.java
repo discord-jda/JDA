@@ -25,7 +25,9 @@ import javax.annotation.Nonnull;
  * Flags which configures a {@linkplain net.dv8tion.jda.api.entities.Guild#getSystemChannel() system channel} of a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
- * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">      System Channel Flags API documentation      </a>
+ * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
+ *     System Channel Flags API documentation
+ *     </a>
  */
 public enum SystemChannelFlag {
 
