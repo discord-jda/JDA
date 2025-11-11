@@ -130,8 +130,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
     @Override
     public int cancelRequests() {
         return MiscUtil.locked(lock, () -> {
-            // Empty buckets will be removed by the cleanup worker, which also checks for rate limit
-            // parameters
+            // Empty buckets will be removed by the cleanup worker,
+            // which also checks for rate limit parameters
             int cancelled = (int) buckets.values().stream()
                     .map(Bucket::getRequests)
                     .flatMap(Collection::stream)
@@ -156,10 +156,10 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
     }
 
     private void cleanup() {
-        // This will remove buckets that are no longer needed every 30 seconds to avoid memory
-        // leakage
-        // We will keep the hashes in memory since they are very limited (by the amount of possible
-        // routes)
+        // This will remove buckets that are no longer needed every 30 seconds
+        // to avoid memory leakage
+        // We will keep the hashes in memory since they are very limited
+        // (by the amount of possible routes)
         MiscUtil.locked(lock, () -> {
             int size = buckets.size();
             Iterator<Map.Entry<String, Bucket>> entries = buckets.entrySet().iterator();
@@ -301,8 +301,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                         config.getGlobalRateLimit().setClassic(now + retryAfter);
                         log.error("Encountered global rate limit! Retry-After: {} ms Scope: {}", retryAfter, scope);
                     }
-                    // Handle cloudflare rate limits, this applies to all routes and uses seconds
-                    // for retry-after
+                    // Handle cloudflare rate limits,
+                    // this applies to all routes and uses seconds for retry-after
                     else if (cloudflare) {
                         config.getGlobalRateLimit().setCloudflare(now + retryAfter);
                         log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter / 1000);
@@ -313,8 +313,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                         // Update the bucket to the new information
                         bucket.remaining = 0;
                         bucket.reset = now + retryAfter;
-                        // don't log warning if we hit the rate limit for the first time, likely due
-                        // to initialization of the bucket
+                        // don't log warning if we hit the rate limit for the first time,
+                        // likely due to initialization of the bucket
                         // unless its a long retry-after delay (more than a minute)
                         if (firstHit) {
                             log.debug(
@@ -422,8 +422,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                 remaining = 1;
             }
 
-            // If there are remaining requests we don't need to do anything, otherwise return
-            // backoff in milliseconds
+            // If there are remaining requests we don't need to do anything,
+            // otherwise return backoff in milliseconds
             return Math.max(global, remaining < 1 ? reset - now : 0L);
         }
 
@@ -487,8 +487,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             while (!requests.isEmpty()) {
                 long rateLimit = getRateLimit();
                 if (rateLimit > 0L) {
-                    // We need to backoff since we ran out of remaining uses or hit the global rate
-                    // limit
+                    // We need to backoff since we ran out of remaining uses
+                    // or hit the global rate limit
                     Work request = requests.peekFirst(); // this *should* not be null
                     String baseRoute =
                             request != null ? request.getRoute().getBaseRoute().toString() : "N/A";

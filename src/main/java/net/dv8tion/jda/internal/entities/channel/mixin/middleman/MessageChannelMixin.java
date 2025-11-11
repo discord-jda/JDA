@@ -115,8 +115,8 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
                     toDelete.add(Long.toUnsignedString(bulk.pollLast()));
                 }
 
-                // If we only had 1 in the bulk collection then use the standard deleteMessageById
-                // request
+                // If we only had 1 in the bulk collection
+                // then use the standard deleteMessageById request
                 // as you cannot bulk delete a single message
                 if (toDelete.size() == 1) {
                     list.add(deleteMessageById(toDelete.get(0)).submit());

@@ -232,8 +232,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     // Creates a message with the resolved channel context from the interaction
     // Sometimes we can't resolve the channel and report an unknown type
     // Currently known cases where channels can't be resolved:
-    //  - InteractionHook created using id/token factory, has no interaction object to use as
-    // context
+    //  - InteractionHook created using id/token factory,
+    //    has no interaction object to use as context
     public Message buildMessage(DataObject json) {
         JDAImpl jda = (JDAImpl) api;
         MessageChannel channel = null;

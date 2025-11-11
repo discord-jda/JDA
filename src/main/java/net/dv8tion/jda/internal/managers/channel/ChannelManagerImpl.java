@@ -61,8 +61,8 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("unchecked") // We do a lot of (M) and (T) casting that we know is correct but the compiler
-// warns about.
+// We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
+@SuppressWarnings("unchecked")
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M>
         implements ChannelManager<T, M> {
     protected T channel;
@@ -267,17 +267,15 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR)) {
             if (!selfMember.hasPermission(channel, Permission.MANAGE_ROLES)) {
-                throw new InsufficientPermissionException(
-                        channel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
-
-                // Check on channel level to make sure we are actually able to set all the
-                // permissions!
+                // We can't manage permissions at all!
+                throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
             }
+
+            // Check on channel level to make sure we are actually able to set all the permissions!
             long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
-            if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue())
-                    == 0) // This implies we can only set permissions the bot also has in the
-            // channel!
-            {
+
+            // This implies we can only set permissions the bot also has in the channel!
+            if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
                 // You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as
                 // an override on the channel
                 // That is why we explicitly exclude it here!
@@ -414,8 +412,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         this.type = type;
 
-        // If we've just set the type to be what the channel type already is, then treat it as a
-        // reset, not a set.
+        // If we've just set the type to be what the channel type already is,
+        // then treat it as a reset, not a set.
         if (this.type == this.channel.getType()) {
             reset(TYPE);
         } else {

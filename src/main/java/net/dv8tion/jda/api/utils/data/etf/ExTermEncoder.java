@@ -67,8 +67,8 @@ public class ExTermEncoder {
         buffer.put((byte) 131);
 
         ByteBuffer packed = pack(buffer, data);
-        // This cast prevents issues with backwards compatibility in the ABI (java 11 made breaking
-        // changes)
+        // This cast prevents issues with backwards compatibility in the ABI
+        // (java 11 made breaking changes)
         ((Buffer) packed).flip();
         return packed;
     }
@@ -137,8 +137,8 @@ public class ExTermEncoder {
         }
 
         ByteBuffer allocated = ByteBuffer.allocate((buffer.position() + length) << 1);
-        // This cast prevents issues with backwards compatibility in the ABI (java 11 made breaking
-        // changes)
+        // This cast prevents issues with backwards compatibility in the ABI
+        // (java 11 made breaking changes)
         ((Buffer) buffer).flip();
         allocated.put(buffer);
         return allocated;

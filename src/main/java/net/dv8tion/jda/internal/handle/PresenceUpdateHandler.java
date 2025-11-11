@@ -62,8 +62,8 @@ public class PresenceUpdateHandler extends SocketHandler {
             return null;
         }
 
-        // Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently
-        // locked or not cached.
+        // Do a pre-check to see if this is for a Guild, and if it is,
+        // if the guild is currently locked or not cached.
         long guildId = content.getUnsignedLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId)) {
             return guildId;
@@ -99,8 +99,8 @@ public class PresenceUpdateHandler extends SocketHandler {
             }
         }
 
-        // Now that we've update the User's info, lets see if we need to set the specific Presence
-        // information.
+        // Now that we've update the User's info,
+        // lets see if we need to set the specific Presence information.
         // This is stored in the Member objects.
         // We set the activities to null to prevent parsing if the cache was disabled
         DataArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.ACTIVITY) || content.isNull("activities")

@@ -76,8 +76,8 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Nonnull
     @Override
     public User getUser() {
-        // Load user from cache if one exists, ideally two members with the same id should wrap the
-        // same user object
+        // Load user from cache if one exists,
+        // ideally two members with the same id should wrap the same user object
         User realUser = getJDA().getUserById(user.getIdLong());
         if (realUser != null) {
             this.user = realUser;
@@ -275,8 +275,8 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
             return false; // We can't manage permissions at all!
         }
         long channelPermissions = PermissionUtil.getExplicitPermission(targetChannel, this, false);
-        // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
-        // permission on the channel
+        // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS
+        // then it can also set any other permission on the channel
         boolean hasLocalAdmin = ((userPerms & Permission.ADMINISTRATOR.getRawValue())
                         | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
                 != 0;
@@ -294,8 +294,8 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
                 allow ^= existing.getAllowedRaw();
                 deny ^= existing.getDeniedRaw();
             }
-            // If any permissions changed that the user doesn't have in the channel, they can't sync
-            // it :(
+            // If any permissions changed that the user doesn't have in the channel,
+            // they can't sync it :(
             if (((allow | deny) & ~userPerms) != 0) {
                 return false;
             }
@@ -312,8 +312,8 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
             return false; // We can't manage permissions at all!
         }
         long channelPermissions = PermissionUtil.getExplicitPermission(channel, this, false);
-        // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
-        // permission on the channel
+        // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS
+        // then it can also set any other permission on the channel
         return ((userPerms & Permission.ADMINISTRATOR.getRawValue())
                         | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
                 != 0;

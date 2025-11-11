@@ -73,8 +73,8 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
         detachedGuild.setLocale(DiscordLocale.from(locale));
         detachedGuild.setFeatures(featuresArray
                 .map(array -> array.stream(DataArray::getString)
-                        .map(String::intern) // Prevent allocating the same feature string over
-                        // and over
+                        // Prevent allocating the same feature string over and over
+                        .map(String::intern)
                         .collect(Collectors.toSet()))
                 .orElse(Collections.emptySet()));
 
@@ -259,8 +259,8 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
             if (api.getSelfUser().getIdLong() == recipientObj.getLong("id")) {
                 channel = new PrivateChannelImpl(getJDA(), channelId, interactionUser);
             } else {
-                // This still needs to be detached, as there is no open channel between the bot and
-                // the friend,
+                // This still needs to be detached,
+                // as there is no open channel between the bot and the friend,
                 channel = new DetachedPrivateChannelImpl(getJDA(), channelId, entityBuilder.createUser(recipientObj));
             }
         } else {

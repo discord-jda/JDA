@@ -73,8 +73,8 @@ public class GuildEmojisUpdateHandler extends SocketHandler {
                     emoji = new RichCustomEmojiImpl(emojiId, guild);
                     newEmojis.add(emoji);
                 } else {
-                    // emoji is in our cache which is why we don't want to remove it in cleanup
-                    // later
+                    // emoji is in our cache
+                    // which is why we don't want to remove it in cleanup later
                     oldEmojis.remove(emoji);
                     oldEmoji = emoji.copy();
                 }

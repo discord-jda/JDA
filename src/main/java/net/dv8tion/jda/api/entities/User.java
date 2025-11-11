@@ -91,9 +91,10 @@ public interface User extends UserSnowflake {
     /** Template for {@link PrimaryGuild#getBadgeUrl()} */
     String TAG_BADGE_URL = "https://cdn.discordapp.com/guild-tag-badges/%s/%s.png";
 
+    // java.awt.Color fills the MSB with FF,
+    // we just use 1F to provide better consistency
     /** Used to keep consistency between color values used in the API */
-    int DEFAULT_ACCENT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better
-    // consistency
+    int DEFAULT_ACCENT_COLOR_RAW = 0x1FFFFFFF;
 
     /**
      * Creates a User instance which only wraps an ID.

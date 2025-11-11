@@ -664,8 +664,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
             createPresence(member, presence);
         }
 
-        // Make sure the voice states always have the latest member reference, even when member is
-        // uncached
+        // Make sure the voice states always have the latest member reference,
+        // even when member is uncached
         guild.updateCacheVoiceStateMember(member);
         return member;
     }
@@ -713,8 +713,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
     }
 
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles) {
-        // If newRoles is null that means that we didn't find a role that was in the array and was
-        // cached this event
+        // If newRoles is null that means that we didn't find a role
+        // that was in the array and was cached this event
         long responseNumber = getJDA().getResponseTotal();
         if (newRoles != null) {
             updateMemberRoles(member, newRoles, responseNumber);
@@ -1442,8 +1442,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
         if (recipient != null) {
             recipient.setPrivateChannel(channel);
         }
-        // only add channels to the cache when they come from an event, otherwise we would never
-        // remove the channel
+        // only add channels to the cache when they come from an event,
+        // otherwise we would never remove the channel
         cachePrivateChannel(channel);
         api.usedPrivateChannel(channelId);
         return channel;
@@ -1482,8 +1482,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
             try {
                 createPermissionOverride(overrides.getObject(i), channel);
             } catch (NoSuchElementException e) {
-                // Caused by Discord not properly clearing PermissionOverrides when a Member leaves
-                // a Guild.
+                // Caused by Discord not properly clearing PermissionOverrides
+                // when a Member leaves a Guild.
                 LOG.debug("{}. Ignoring PermissionOverride.", e.getMessage());
             } catch (IllegalArgumentException e) {
                 // Missing handling for a type
@@ -1554,8 +1554,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
         if (guild == null) {
             return createMessage0(json, createPrivateChannelByMessage(json), null, modifyCache);
         }
-        // If we know that the message was sent in a guild, we can use the guild to resolve the
-        // channel directly
+        // If we know that the message was sent in a guild,
+        // we can use the guild to resolve the channel directly
         MessageChannel channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id"));
         //        if (channel == null)
         //            throw new IllegalArgumentException(MISSING_CHANNEL);
@@ -1572,15 +1572,15 @@ public class EntityBuilder extends AbstractEntityBuilder {
         if (channel == null) {
             DataObject channelData = DataObject.empty().put("id", channelId);
 
-            // if we see an author that isn't us, we can assume that is the other side of this
-            // private channel
+            // if we see an author that isn't us,
+            // we can assume that is the other side of this private channel
             // if the author is us, we learn no information about the user at the other end
             if (isRecipient) {
                 channelData.put("recipient", author);
             }
 
-            // even without knowing the user at the other end, we can still construct a minimal
-            // channel
+            // even without knowing the user at the other end,
+            // we can still construct a minimal channel
             channel = (PrivateChannelImpl) createPrivateChannel(channelData);
         } else if (channel.getUser() == null && isRecipient) {
             // In this situation, we already know the channel
@@ -1716,9 +1716,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
 
         List<MessageSnapshot> snapshots = Collections.emptyList();
         MessageReference messageReference = null;
-        if (!jsonObject.isNull("message_reference")) // always contains the channel + message id for a referenced
-        // message
-        { // used for when referenced_message is not provided
+
+        if (!jsonObject.isNull("message_reference")) {
             DataObject messageReferenceJson = jsonObject.getObject("message_reference");
 
             messageReference = new MessageReference(

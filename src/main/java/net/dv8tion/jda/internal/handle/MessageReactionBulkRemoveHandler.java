@@ -53,8 +53,8 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler {
 
         MessageChannel channel = jda.getChannelById(MessageChannel.class, channelId);
         if (channel == null) {
-            // If discord adds message support for unexpected types in the future, drop the event
-            // instead of caching it
+            // If discord adds message support for unexpected types in the future,
+            // drop the event instead of caching it
             if (guild != null) {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null) {

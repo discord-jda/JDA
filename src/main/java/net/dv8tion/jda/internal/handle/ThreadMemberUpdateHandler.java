@@ -45,10 +45,8 @@ public class ThreadMemberUpdateHandler extends SocketHandler {
         }
 
         // Based on the docs it is expected that we will only ever receive THREAD_MEMBER_UPDATE when
-        // Discord needs to inform
-        // us that we are a member of a ThreadChannels that we might not have in memory. Currently
-        // this only happens
-        // for ThreadChannels that get unarchived.
+        // Discord needs to inform us that we are a member of a ThreadChannels that we might not have in memory.
+        // Currently this only happens for ThreadChannels that get unarchived.
         // Details available at:
         // https://discord.com/developers/docs/topics/threads#unarchiving-a-thread
         long userId = content.getLong("user_id");

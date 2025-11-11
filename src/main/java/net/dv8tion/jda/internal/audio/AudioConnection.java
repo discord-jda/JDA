@@ -388,8 +388,8 @@ public class AudioConnection {
                                 continue;
                             }
                             short[] decodedAudio = opusPacket.decode();
-                            // If decodedAudio is null, then the Opus decode failed, so throw away
-                            // the packet.
+                            // If decodedAudio is null, then the Opus decode failed,
+                            // so throw away the packet.
                             if (decodedAudio == null) {
                                 // decoder error logged in method
                                 continue;
@@ -414,8 +414,8 @@ public class AudioConnection {
                         // properly shutdown the loop.
                     } catch (SocketException e) {
                         // The socket was closed while we were listening for the next packet.
-                        // This is expected. Ignore the exception. The thread will exit during the
-                        // next while
+                        // This is expected. Ignore the exception.
+                        // The thread will exit during the next while
                         // iteration because the udpSocket.isClosed() will return true.
                     } catch (Exception e) {
                         LOG.error("There was some random exception while waiting for udp packets", e);
@@ -509,8 +509,8 @@ public class AudioConnection {
                                     }
                                     receiveHandler.handleCombinedAudio(new CombinedAudio(users, mix));
                                 } else {
-                                    // No audio to mix, provide 20 MS of silence. (960 PCM samples
-                                    // for each channel)
+                                    // No audio to mix, provide 20 MS of silence.
+                                    // (960 PCM samples for each channel)
                                     receiveHandler.handleCombinedAudio(
                                             new CombinedAudio(Collections.emptyList(), new short[1920]));
                                 }

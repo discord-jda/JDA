@@ -45,8 +45,8 @@ public class ThreadChannelPaginationActionImpl
     protected final IThreadContainer channel;
 
     // Whether IDs or ISO8601 timestamps shall be provided for all pagination requests.
-    // Some thread pagination endpoints require this odd and singular behavior throughout the
-    // discord api.
+    // Some thread pagination endpoints require this odd and singular behavior
+    // throughout the discord api.
     protected final boolean useID;
 
     public ThreadChannelPaginationActionImpl(
@@ -77,14 +77,12 @@ public class ThreadChannelPaginationActionImpl
         }
 
         if (order == PaginationOrder.FORWARD && lastId == 0) {
-            // first second of 2015 aka discords epoch, hard coding something older makes no sense
-            // to me
+            // first second of 2015 aka discords epoch
             return "2015-01-01T00:00:00.000";
         }
 
-        // this should be redundant, due to calling this with PaginationAction#getLast() as last
-        // param,
-        // but let's have this here.
+        // this should be redundant, due to calling this with PaginationAction#getLast()
+        // as last param, but let's have this here.
         if (last == null) {
             return OffsetDateTime.now(ZoneOffset.UTC).toString();
         }
@@ -111,9 +109,8 @@ public class ThreadChannelPaginationActionImpl
                 DataObject selfThreadMemberObj = selfThreadMemberMap.get(threadObj.getLong("id", 0));
 
                 if (selfThreadMemberObj != null) {
-                    // Combine the thread and self thread-member into a single object to model what
-                    // we get from
-                    // thread payloads (like from Gateway, etc)
+                    // Combine the thread and self thread-member into a single object
+                    // to model what we get from thread payloads (like from Gateway, etc)
                     threadObj.put("member", selfThreadMemberObj);
                 }
 

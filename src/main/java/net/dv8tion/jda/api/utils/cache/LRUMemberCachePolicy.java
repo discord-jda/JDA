@@ -123,13 +123,13 @@ public class LRUMemberCachePolicy implements MemberCachePolicy {
     public synchronized LRUMemberCachePolicy withActiveMemberCache(int activityCount) {
         this.useActiveMemberCache = activityCount;
 
-        if (this.useActiveMemberCache < 1) // disabled if 0
-        {
+        // disabled if 0
+        if (this.useActiveMemberCache < 1) {
             // Move them all into the low activity cache
             Set<Member> moved = this.activeMemberCache.keySet();
 
-            // Add them in insertion order to the queue, since the insertion order represents oldest
-            // to newest
+            // Add them in insertion order to the queue,
+            // since the insertion order represents oldest to newest
             moved.forEach(this::cacheMember);
         }
 
@@ -151,8 +151,8 @@ public class LRUMemberCachePolicy implements MemberCachePolicy {
                 return true;
             }
 
-            // If the member is not tracked yet, promote them to high activity cache if they take up
-            // 10% of the queue
+            // If the member is not tracked yet,
+            // promote them to high activity cache if they take up 10% of the queue
             if (currentCount > this.useActiveMemberCache) {
                 // This step has O(n) time complexity because it needs to iterate the entire queue
                 // Worst-case: 10 x maxMembers operations

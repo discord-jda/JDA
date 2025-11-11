@@ -383,8 +383,8 @@ public class PermissionUtil {
             return ALL_PERMISSIONS;
         }
 
-        // MANAGE_CHANNEL allows to delete channels within a category (this is undocumented
-        // behavior)
+        // MANAGE_CHANNEL allows to delete channels within a category
+        // (this is undocumented behavior)
         if (channel instanceof ICategorizableChannel) {
             ICategorizableChannel categorizableChannel = (ICategorizableChannel) channel;
             if (categorizableChannel.getParentCategory() != null

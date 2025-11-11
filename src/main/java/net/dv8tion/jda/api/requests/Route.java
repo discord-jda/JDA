@@ -286,9 +286,7 @@ public class Route {
     }
 
     public static class Messages {
-        public static final Route EDIT_MESSAGE =
-                new Route(PATCH, "channels/{channel_id}/messages/{message_id}"); // requires special handling, same
-        // bucket but different endpoints
+        public static final Route EDIT_MESSAGE = new Route(PATCH, "channels/{channel_id}/messages/{message_id}");
         public static final Route SEND_MESSAGE = new Route(POST, "channels/{channel_id}/messages");
         public static final Route GET_MESSAGE_PINS = new Route(GET, "channels/{channel_id}/messages/pins");
         public static final Route PIN_MESSAGE = new Route(PUT, "channels/{channel_id}/messages/pins/{message_id}");
@@ -669,8 +667,8 @@ public class Route {
                 String name = element.substring(1, element.length() - 1);
                 String value = params[paramIndex++];
                 if (MAJOR_PARAMETER_NAMES.contains(name)) {
-                    if (value.length() > 30) { // probably a long interaction_token, hash it to keep logs clean
-                        // (not useful anyway)
+                    if (value.length() > 30) {
+                        // probably a long interaction_token, hash it to keep logs clean (not useful anyway)
                         major.add(name + "=" + Integer.toUnsignedString(value.hashCode()));
                     } else {
                         major.add(name + "=" + value);

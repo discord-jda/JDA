@@ -72,8 +72,8 @@ public class Response implements Closeable {
 
         if (response == null) {
             this.body = null;
-        } else { // weird compatibility issue, thinks some final isn't initialized if we return
-            // pre-maturely
+        } else {
+            // weird compatibility issue, thinks some final isn't initialized if we return pre-maturely
             try {
                 this.body = IOUtil.getBody(response);
             } catch (Exception e) {

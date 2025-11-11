@@ -51,8 +51,8 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         }
     }
 
-    // Store all threads under the same channel type, makes it easier because the interface is
-    // shared
+    // Store all threads under the same channel type,
+    // makes it easier because the interface is shared
     protected ChannelType normalizeKey(ChannelType type) {
         return type.isThread() ? ChannelType.GUILD_PUBLIC_THREAD : type;
     }

@@ -608,10 +608,6 @@ public interface RestAction<T> {
         try {
             return complete(true);
         } catch (RateLimitedException e) {
-            // This is so beyond impossible, but on the off chance that the laws of nature are
-            // rewritten
-            // after the writing of this code, I'm placing this here.
-            // Better safe than sorry?
             throw new AssertionError(e);
         }
     }

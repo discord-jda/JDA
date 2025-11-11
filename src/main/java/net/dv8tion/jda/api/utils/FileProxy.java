@@ -236,8 +236,8 @@ public class FileProxy {
                         // successfully downloaded,
                         // This might prevent a file from being partial, say, if the user shuts down
                         // its bot while it's downloading something
-                        // Meanwhile, the time window to "corrupt" a file is very small when moving
-                        // it
+                        // Meanwhile, the time window to "corrupt" a file
+                        // is very small when moving it
                         // This is why we copy the file into a temporary file and then move it.
                         Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
                         Files.move(tmpPath, absolute, StandardCopyOption.REPLACE_EXISTING);

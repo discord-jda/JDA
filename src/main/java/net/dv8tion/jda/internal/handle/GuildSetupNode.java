@@ -316,9 +316,8 @@ public class GuildSetupNode {
             for (TLongObjectIterator<DataObject> it = members.iterator(); it.hasNext(); ) {
                 it.advance();
                 long userId = it.key();
-                if (!getController()
-                        .containsMember(userId, this)) { // if no other setup node contains this userId we clear it
-                    // here
+                if (!getController().containsMember(userId, this)) {
+                    // if no other setup node contains this userId we clear it here
                     eventCache.clear(EventCache.Type.USER, userId);
                 }
             }

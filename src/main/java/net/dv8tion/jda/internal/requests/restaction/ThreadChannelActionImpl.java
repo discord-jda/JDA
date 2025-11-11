@@ -160,8 +160,8 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
         object.put("name", name);
 
-        // The type is selected by discord itself if we are using a parent message, so don't send
-        // it.
+        // The type is selected by discord itself if we are using a parent message,
+        // so don't send it.
         if (parentMessageId == null) {
             object.put("type", type.getId());
         }

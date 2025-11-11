@@ -238,8 +238,6 @@ public class IOUtil {
      *
      * @return InputStream representing the body of this response
      */
-    @SuppressWarnings("ConstantConditions") // methods here don't return null despite the annotations on them,
-    // read the docs
     public static InputStream getBody(okhttp3.Response response) throws IOException {
         String encoding = response.header("content-encoding", "");
         InputStream data = new BufferedInputStream(response.body().byteStream());

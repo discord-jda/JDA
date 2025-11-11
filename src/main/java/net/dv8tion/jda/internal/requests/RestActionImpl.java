@@ -225,8 +225,9 @@ public class RestActionImpl<T> implements RestAction<T> {
             if (e.getCause() != null) {
                 Throwable cause = e.getCause();
                 if (cause instanceof ErrorResponseException) {
-                    throw (ErrorResponseException) cause.fillInStackTrace(); // this method will update the stacktrace
+                    // this method will update the stacktrace
                     // to the current thread stack
+                    throw (ErrorResponseException) cause.fillInStackTrace();
                 }
                 if (cause instanceof RateLimitedException) {
                     throw (RateLimitedException) cause.fillInStackTrace();

@@ -54,15 +54,16 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
                         doFailure(failure, new IllegalStateException("FlatMapError operand is null", error));
                         // No contextFailure because error already has context
                     } else {
-                        then.queue(success, contextFailure); // Use contextFailure here to apply new context to
-                        // new errors
+                        // Use contextFailure here to apply new context to new errors
+                        then.queue(success, contextFailure);
                     }
                 } else {
-                    doFailure(failure, error); // No contextFailure because error already has context
+                    // No contextFailure because error already has context
+                    doFailure(failure, error);
                 }
             } catch (Throwable e) {
-                doFailure(
-                        failure, Helpers.appendCause(e, error)); // No contextFailure because error already has context
+                // No contextFailure because error already has context
+                doFailure(failure, Helpers.appendCause(e, error));
             }
         }));
     }

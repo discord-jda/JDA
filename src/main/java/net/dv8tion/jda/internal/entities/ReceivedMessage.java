@@ -369,8 +369,8 @@ public class ReceivedMessage implements Message {
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         }
 
-        // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
-        // we can safely remove that
+        // check if the passed user is the SelfUser,
+        // then the ChannelType doesn't matter and we can safely remove that
         if (user.equals(getJDA().getSelfUser())) {
             return removeReaction(emoji);
         }

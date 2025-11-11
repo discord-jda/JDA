@@ -99,8 +99,8 @@ public class CommandImpl implements Command {
                     .map(InteractionContextType::fromKey)
                     .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class));
         }
-        // If the command is in a guild, it can only be guild, otherwise up to the dm_permission
-        // flag
+        // If the command is in a guild, it can only be guild,
+        // otherwise up to the dm_permission flag
         else if (guildId != 0L) {
             this.contexts = Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
         } else {

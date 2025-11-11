@@ -338,9 +338,8 @@ public class DefaultShardManager implements ShardManager {
 
         if (this.shards != null) {
             executor.execute(() -> {
-                synchronized (queue) // this makes sure we also get shards that were starting when
-                // shutdown is called
-                {
+                // this makes sure we also get shards that were starting when shutdown is called
+                synchronized (queue) {
                     this.shards.forEach(jda -> {
                         if (shardingConfig.isUseShutdownNow()) {
                             jda.shutdownNow();
@@ -541,8 +540,8 @@ public class DefaultShardManager implements ShardManager {
         jda.addEventListener(this.eventConfig.getListeners().toArray());
         this.eventConfig.getListenerProviders().forEach(provider -> jda.addEventListener(provider.apply(shardId)));
 
-        // Set the presence information before connecting to have the correct information ready when
-        // sending IDENTIFY
+        // Set the presence information before connecting
+        // to have the correct information ready when sending IDENTIFY
         PresenceImpl presence = ((PresenceImpl) jda.getPresence());
         if (presenceConfig.getActivityProvider() != null) {
             presence.setCacheActivity(presenceConfig.getActivityProvider().apply(shardId));
@@ -580,8 +579,9 @@ public class DefaultShardManager implements ShardManager {
         }
 
         jda.setSelfUser(selfUser);
-        jda.setStatus(JDA.Status.INITIALIZED); // This is already set by JDA internally, but this is to make
-        // sure the listeners catch it.
+        // This is already set by JDA internally,
+        // but this is to make sure the listeners catch it.
+        jda.setStatus(JDA.Status.INITIALIZED);
 
         jda.login(
                 this.gatewayURL,

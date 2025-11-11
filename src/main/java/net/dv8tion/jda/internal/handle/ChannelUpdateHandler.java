@@ -351,9 +351,6 @@ public class ChannelUpdateHandler extends SocketHandler {
             ChannelCacheViewImpl<Channel> threadView = getJDA().getChannelsView();
             try (UnlockHook vlock = guildThreadView.writeLock();
                     UnlockHook jlock = threadView.writeLock()) {
-                // TODO-threads: When we figure out how member chunking is going to work for thread
-                // related members
-                // we may need to revisit this to ensure they kicked out of the cache if needed.
                 threadView.remove(thread.getType(), thread.getIdLong());
                 guildThreadView.remove(thread);
             }

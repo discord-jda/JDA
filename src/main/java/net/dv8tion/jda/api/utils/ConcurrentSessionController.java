@@ -117,8 +117,8 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
             try {
                 while (!queue.isEmpty()) {
                     processQueue();
-                    // We always sleep here because its possible that we get a new session request
-                    // before the rate limit expires
+                    // We always sleep here because its possible
+                    // that we get a new session request before the rate limit expires
                     TimeUnit.SECONDS.sleep(SessionController.IDENTIFY_DELAY);
                 }
             } catch (InterruptedException ex) {
@@ -133,8 +133,9 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
             try {
                 node = queue.remove();
                 log.debug("Running connect node for shard {}", node.getShardInfo());
-                node.run(false); // we don't use isLast anymore because it can be a problem with many
-                // reconnecting shards
+                // we don't use isLast anymore
+                // because it can be a problem with many reconnecting shards
+                node.run(false);
             } catch (NoSuchElementException ignored) {
                 /* This means the node was removed before we started it */
             } catch (InterruptedException e) {

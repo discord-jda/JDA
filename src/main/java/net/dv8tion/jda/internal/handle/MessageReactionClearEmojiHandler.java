@@ -48,8 +48,8 @@ public class MessageReactionClearEmojiHandler extends SocketHandler {
         long channelId = content.getUnsignedLong("channel_id");
         GuildMessageChannel channel = guild.getChannelById(GuildMessageChannel.class, channelId);
         if (channel == null) {
-            // If discord adds message support for unexpected types in the future, drop the event
-            // instead of caching it
+            // If discord adds message support for unexpected types in the future,
+            // drop the event instead of caching it
             GuildChannel actual = guild.getGuildChannelById(channelId);
             if (actual != null) {
                 WebSocketClient.LOG.debug(

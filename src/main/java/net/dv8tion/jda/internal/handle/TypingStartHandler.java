@@ -77,10 +77,10 @@ public class TypingStartHandler extends SocketHandler {
         }
 
         if (user == null) {
-            return null; // Just like in the comment above, if for some reason we don't have the
-            // user
+            // Just like in the comment above,
+            // if for some reason we don't have the user
             // then we will just throw the event away.
-
+            return null;
         }
         OffsetDateTime timestamp =
                 Instant.ofEpochSecond(content.getInt("timestamp")).atOffset(ZoneOffset.UTC);

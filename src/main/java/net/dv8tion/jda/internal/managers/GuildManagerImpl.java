@@ -422,8 +422,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("system_channel_flags", SystemChannelFlag.getRaw(systemChannelFlags));
         }
 
-        reset(); // now that we've built our JSON object, reset the manager back to the non-modified
-        // state
+        reset();
         return getRequestBody(body);
     }
 

@@ -477,14 +477,17 @@ public class MarkdownSanitizer {
                     "Found illegal region for strategy ESCAPE '" + region + "' with no known format token!");
         }
         if (region == UNDERLINE) {
-            token = "_\\_"; // UNDERLINE needs special handling because the client thinks its
-            // ITALICS_U if you only escape once
+            // UNDERLINE needs special handling because the client thinks
+            // its ITALICS_U if you only escape once
+            token = "_\\_";
         } else if (region == BOLD) {
-            token = "*\\*"; // BOLD needs special handling because the client thinks its ITALICS_A
-            // if you only escape once
+            // BOLD needs special handling because the client thinks
+            // its ITALICS_A if you only escape once
+            token = "*\\*";
         } else if (region == (BOLD | ITALICS_A)) {
-            token = "*\\*\\*"; // BOLD | ITALICS_A needs special handling because the client thinks
+            // BOLD | ITALICS_A needs special handling because the client thinks
             // its BOLD if you only escape once
+            token = "*\\*\\*";
         }
         builder.append("\\").append(token).append(seq).append("\\").append(token);
     }

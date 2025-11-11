@@ -45,22 +45,18 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
     public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
         action.queue(
                 success,
-                contextWrap(
-                        (error) -> // Use contextWrap so error has a context cause
-                        {
-                            try {
-                                if (check.test(error)) { // Check condition
-                                    doSuccess(success, map.apply(error));
-                                    // Then apply fallback function
-                                } else { // Fallback downstream
-                                    doFailure(failure, error); // error already has context so no contextWrap
-                                    // needed
-                                }
-                            } catch (Throwable e) {
-                                doFailure(failure, Helpers.appendCause(e, error)); // error already has context so no
-                                // contextWrap needed
-                            }
-                        }));
+                // Use contextWrap so error has a context cause
+                contextWrap((error) -> {
+                    try {
+                        if (check.test(error)) {
+                            doSuccess(success, map.apply(error));
+                        } else {
+                            doFailure(failure, error);
+                        }
+                    } catch (Throwable e) {
+                        doFailure(failure, Helpers.appendCause(e, error));
+                    }
+                }));
     }
 
     @Override

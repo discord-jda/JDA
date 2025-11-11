@@ -273,8 +273,8 @@ public class SubcommandData implements SerializableData {
                     option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group to a subcommand!");
             Checks.check(
                     allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
-            allowRequired = option.isRequired(); // prevent adding required options after non-required
-            // options
+            // prevent adding required options after non-required options
+            allowRequired = option.isRequired();
         }
 
         Checks.checkUnique(

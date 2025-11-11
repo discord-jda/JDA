@@ -43,8 +43,8 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
     public ComponentInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         this.customId = data.getObject("data").getString("custom_id");
-        // message might be just id and flags for ephemeral messages in which case our "message" is
-        // null
+        // message might be just id and flags for ephemeral messages
+        // in which case our "message" is null
         DataObject messageJson = data.getObject("message");
         messageId = messageJson.getUnsignedLong("id");
 

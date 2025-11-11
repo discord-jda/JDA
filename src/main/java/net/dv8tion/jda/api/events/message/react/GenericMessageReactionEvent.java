@@ -95,8 +95,8 @@ public class GenericMessageReactionEvent extends GenericMessageEvent {
     @Nullable
     public User getUser() {
         return issuer == null && isFromType(ChannelType.PRIVATE)
-                ? getChannel().asPrivateChannel().getUser() // this can't be the self user because then issuer would be
-                // nonnull
+                // this can't be the self user because then issuer would be nonnull
+                ? getChannel().asPrivateChannel().getUser()
                 : issuer;
     }
 

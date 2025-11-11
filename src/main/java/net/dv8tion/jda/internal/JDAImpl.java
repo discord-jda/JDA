@@ -246,11 +246,12 @@ public class JDAImpl implements JDA {
 
     public void usedPrivateChannel(long id) {
         synchronized (privateChannelLRU) {
-            privateChannelLRU.remove(id); // We could probably make a special LRU cache view too, might not be worth
-            // it though
+            // We could probably make a special LRU cache view too,
+            // might not be worth it though
+            privateChannelLRU.remove(id);
             privateChannelLRU.addFirst(id);
-            if (privateChannelLRU.size() > 10) // This could probably be a config option
-            {
+            // This could probably be a config option
+            if (privateChannelLRU.size() > 10) {
                 long removed = privateChannelLRU.removeLast();
                 channelCache.remove(ChannelType.PRIVATE, removed);
             }
@@ -339,8 +340,8 @@ public class JDAImpl implements JDA {
         return getSessionController().getGateway();
     }
 
-    // This method also checks for a valid bot token as it is required to get the recommended shard
-    // count.
+    // This method also checks for a valid bot token
+    // as it is required to get the recommended shard count.
     public SessionController.ShardedGateway getShardedGateway() {
         return getSessionController().getShardedGateway(this);
     }

@@ -824,8 +824,8 @@ public class GuildImpl implements Guild {
         // In our implementation we iterate all applicable channels and only add categories,
         // when a member of the category is added too.
         //
-        // Note: We avoid using Category#getChannels because it would iterate the entire cache each
-        // time.
+        // Note: We avoid using Category#getChannels
+        // because it would iterate the entire cache each time.
         // This is an optimization to avoid many unnecessary iterations.
 
         Member self = getSelfMember();
@@ -1260,9 +1260,8 @@ public class GuildImpl implements Guild {
                 DataObject selfThreadMemberObj = selfThreadMemberMap.get(threadObj.getLong("id", 0));
 
                 if (selfThreadMemberObj != null) {
-                    // Combine the thread and self thread-member into a single object to model what
-                    // we get from
-                    // thread payloads (like from Gateway, etc)
+                    // Combine the thread and self thread-member into a single object
+                    // to model what we get from thread payloads (like from Gateway, etc)
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
@@ -1382,8 +1381,8 @@ public class GuildImpl implements Guild {
         if (vState == null) {
             throw new IllegalStateException("You cannot move a Member who isn't in an AudioChannel!");
         }
-        // A cached voice state means that the member is connected to a channel, but we'll check
-        // just in case
+        // A cached voice state means that the member is connected to a channel,
+        // but we'll check just in case
         AudioChannel channel = vState.getChannel();
         if (channel == null) {
             throw new IllegalStateException("You cannot move a Member who isn't in an AudioChannel!");
@@ -1811,8 +1810,9 @@ public class GuildImpl implements Guild {
         DataObject body = DataObject.empty();
         body.put("name", name);
         body.put("image", icon.getEncoding());
-        if (roles.length > 0) { // making sure none of the provided roles are null before mapping them to the
-            // snowflake id
+        if (roles.length > 0) {
+            // making sure none of the provided roles are null
+            // before mapping them to the snowflake id
             body.put(
                     "roles",
                     Stream.of(roles)
@@ -2009,8 +2009,8 @@ public class GuildImpl implements Guild {
         Member member = getMemberById(user.getIdLong());
         if (member == null && user instanceof Member) {
             member = (Member) user;
-            // Only resolve if member is in the same guild, otherwise role information is not
-            // accurate
+            // Only resolve if member is in the same guild,
+            // otherwise role information is not accurate
             if (!equals(member.getGuild())) {
                 member = null;
             }

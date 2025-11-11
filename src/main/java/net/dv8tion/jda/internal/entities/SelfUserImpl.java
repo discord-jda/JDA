@@ -33,8 +33,9 @@ public class SelfUserImpl extends UserImpl implements SelfUser {
 
     public SelfUserImpl(long id, JDAImpl api) {
         super(id, api);
-        this.applicationId = id; // configured later by EntityBuilder#createSelfUser when handling the ready
-        // event payload
+        // configured later by EntityBuilder#createSelfUser
+        // when handling the ready event payload
+        this.applicationId = id;
     }
 
     @Override

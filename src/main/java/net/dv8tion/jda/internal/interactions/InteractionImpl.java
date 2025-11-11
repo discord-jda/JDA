@@ -58,8 +58,8 @@ public class InteractionImpl implements Interaction {
     protected final InteractionEntityBuilder interactionEntityBuilder;
 
     // This is used to give a proper error when an interaction is ack'd twice
-    // By default, discord only responds with "unknown interaction" which is horrible UX so we add a
-    // check manually here
+    // By default, discord only responds with "unknown interaction"
+    // which is horrible UX so we add a check manually here
     private boolean isAck;
 
     public InteractionImpl(JDAImpl jda, DataObject data) {

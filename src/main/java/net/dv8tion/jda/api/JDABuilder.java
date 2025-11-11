@@ -1755,11 +1755,12 @@ public class JDABuilder {
         }
 
         jda.addEventListener(listeners.toArray());
-        jda.setStatus(JDA.Status.INITIALIZED); // This is already set by JDA internally, but this is to make
-        // sure the listeners catch it.
+        // This is already set by JDA internally,
+        // but this is to make sure the listeners catch it.
+        jda.setStatus(JDA.Status.INITIALIZED);
 
-        // Set the presence information before connecting to have the correct information ready when
-        // sending IDENTIFY
+        // Set the presence information before connecting
+        // to have the correct information ready when sending IDENTIFY
         ((PresenceImpl) jda.getPresence())
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)

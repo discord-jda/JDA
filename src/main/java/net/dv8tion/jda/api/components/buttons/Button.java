@@ -226,8 +226,8 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @Override
     @CheckReturnValue
     default Button withUniqueId(int uniqueId) {
-        // This is not done in checkValid() because the button gets constructed with an invalid
-        // unique ID on purpose
+        // This is not done in checkValid()
+        // because the button gets constructed with an invalid unique ID on purpose
         // (as Discord generates one if none was passed)
         Checks.positive(uniqueId, "Unique ID");
         return new ButtonImpl(

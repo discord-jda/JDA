@@ -58,9 +58,9 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
         this.commandId = commandData.getUnsignedLong("id");
         this.name = commandData.getString("name");
         this.type = Command.Type.fromId(commandData.getInt("type", 1));
-        this.isGuildCommand =
-                !commandData.isNull("guild_id"); // guild_id is always either null or the owner guild (same as
-        // interaction guild_id)
+        // guild_id is always either null or the owner guild
+        // (same as interaction guild_id)
+        this.isGuildCommand = !commandData.isNull("guild_id");
 
         DataArray options = commandData.optArray("options").orElseGet(DataArray::empty);
         DataObject resolveJson = commandData.optObject("resolved").orElseGet(DataObject::empty);

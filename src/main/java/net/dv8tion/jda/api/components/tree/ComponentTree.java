@@ -63,8 +63,8 @@ public interface ComponentTree<E extends Component> {
             @Nonnull Class<T> unionType, @Nonnull Collection<E> components) {
         Checks.notNull(unionType, "Component union type");
         Checks.noneNull(components, "Components");
-        // We don't care if there are unknown components, they will be unpacked and checked when
-        // sending
+        // We don't care if there are unknown components,
+        // they will be unpacked and checked when sending
         return new ComponentTreeImpl<>(unionType, ComponentsUtil.membersToUnionWithUnknownType(components, unionType));
     }
 

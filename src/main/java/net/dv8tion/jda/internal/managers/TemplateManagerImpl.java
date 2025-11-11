@@ -120,8 +120,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
             body.put("description", name);
         }
 
-        reset(); // now that we've built our JSON object, reset the manager back to the non-modified
-        // state
+        reset();
         return getRequestBody(body);
     }
 

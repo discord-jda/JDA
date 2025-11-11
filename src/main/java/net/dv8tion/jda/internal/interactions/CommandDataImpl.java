@@ -243,8 +243,8 @@ public class CommandDataImpl implements SlashCommandData {
                     "Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
             Checks.check(
                     allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
-            allowRequired = option.isRequired(); // prevent adding required options after non-required
-            // options
+            // prevent adding required options after non-required options
+            allowRequired = option.isRequired();
         }
 
         Checks.checkUnique(

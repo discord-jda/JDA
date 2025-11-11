@@ -89,8 +89,8 @@ public interface MessageData {
      */
     boolean isUsingComponentsV2();
 
-    // Returns attachment interface for abstraction purposes, however you can only abstract the
-    // setter to allow FileUploads
+    // Returns attachment interface for abstraction purposes,
+    // however you can only abstract the setter to allow FileUploads
 
     /**
      * The configured message attachments as {@link AttachedFile}, this is the opposite of {@link MessageRequest#setFiles(Collection)} and only returns what was set using that setter.

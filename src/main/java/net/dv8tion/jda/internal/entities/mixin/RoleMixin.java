@@ -40,8 +40,8 @@ public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEnti
                 .setName(getName())
                 .setPermissions(getPermissionsRaw())
                 .setIcon(
-                        getIcon() == null ? null : getIcon().getEmoji()); // we can only copy the emoji as we don't have
-        // access to the Icon instance
+                        // we can only copy the emoji as we don't have access to the Icon instance
+                        getIcon() == null ? null : getIcon().getEmoji());
     }
 
     @Override
@@ -61,11 +61,10 @@ public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEnti
         OffsetDateTime thisTime = this.getTimeCreated();
         OffsetDateTime rTime = r.getTimeCreated();
 
-        // We compare the provided role's time to this's time instead of the reverse as one would
-        // expect due to how
-        // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy
-        // ranking when
-        // it shares the same position as another role.
+        // We compare the provided role's time to this's time
+        // instead of the reverse as one would expect due to how discord deals with hierarchy.
+        // The more recent a role was created,
+        // the lower its hierarchy ranking when it shares the same position as another role.
         return rTime.compareTo(thisTime);
     }
 

@@ -249,11 +249,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
 
         // Allows 115 messages to be sent before limiting.
-        if (this.messagesSent.get() <= 115
-                || (skipQueue
-                        && this.messagesSent.get() <= 119)) // technically we could go to 120, but we aren't going to
-        // chance it
-        {
+        if (this.messagesSent.get() <= 115 || (skipQueue && this.messagesSent.get() <= 119)) {
             LOG.trace("<- {}", message);
             if (encoding == GatewayEncoding.ETF) {
                 socket.sendBinary(message.toETF());
@@ -286,8 +282,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (socket != null) {
                 Socket rawSocket = this.socket.getSocket();
                 if (rawSocket != null) { // attempt to set a 10 second timeout for the close frame
-                    rawSocket.setSoTimeout(10000); // this has no affect if the socket is already stuck in a read
-                    // call
+                    // this has no affect if the socket is already stuck in a read call
+                    rawSocket.setSoTimeout(10000);
                 }
             }
         } catch (SocketException ignored) {
@@ -1202,8 +1198,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                             // Not yet ready, check if the guild is known to this shard
                             GuildSetupController controller = api.getGuildSetupController();
                             if (!controller.isKnown(guildId)) {
-                                // The guild is not tracked anymore -> we can't connect the audio
-                                // channel
+                                // The guild is not tracked anymore
+                                //   -> we can't connect the audio channel
                                 LOG.debug(
                                         "Removing audio connection request because the guild has been removed. {}",
                                         audioRequest);

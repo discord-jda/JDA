@@ -79,8 +79,8 @@ public class Requester {
 
     private final OkHttpClient httpClient;
 
-    // when we actually set the shard info we can also set the mdc context map, before it makes no
-    // sense
+    // when we actually set the shard info we can also set the mdc context map,
+    // before it makes no sense
     private boolean isContextReady = false;
     private ConcurrentMap<String, String> contextMap = null;
 

@@ -50,10 +50,10 @@ public class ChannelUpdateArchiveTimestampEvent extends GenericChannelUpdateEven
 
     public ChannelUpdateArchiveTimestampEvent(
             @Nonnull JDA api, long responseNumber, Channel channel, long oldValue, long newValue) {
-        // Explicitly providing null for new and old value here as we will override the methods
-        // providing them.
-        // We are doing this so that we only construct the OffsetDateTime objects if they are
-        // specifically requested
+        // Explicitly providing null for new and old value here
+        // as we will override the methods providing them.
+        // We are doing this so that we only construct the OffsetDateTime objects
+        // if they are specifically requested
         super(api, responseNumber, channel, FIELD, null, null);
 
         this.oldTimestamp = oldValue;

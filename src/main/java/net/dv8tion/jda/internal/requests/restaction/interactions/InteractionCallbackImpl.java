@@ -88,10 +88,8 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
 
     // This is an exception factory method that only returns an exception if we would have to throw
     // it or fail in another way.
-    protected final IllegalStateException
-            tryAck() // note that interaction.ack() is already synchronized so this is actually
-                // thread-safe!
-            {
+    // note that interaction.ack() is already synchronized so this is actually thread-safe!
+    protected final IllegalStateException tryAck() {
         // true => we already called this before => this will never succeed!
         return interaction.ack()
                 ? new IllegalStateException(
@@ -104,8 +102,8 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         IllegalStateException exception = tryAck();
         if (exception != null) {
             if (failure != null) {
-                failure.accept(exception);
                 // if the failure callback throws that will just bubble up, which is acceptable
+                failure.accept(exception);
             } else {
                 RestAction.getDefaultFailure().accept(exception);
             }

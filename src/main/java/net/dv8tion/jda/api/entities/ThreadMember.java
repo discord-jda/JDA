@@ -59,8 +59,8 @@ public interface ThreadMember extends IMentionable {
      *
      * @return The User instance
      */
-    // We might not actually be able to provide a user because we only get the `userId` in the
-    // ThreadMember object.
+    // We might not actually be able to provide a user
+    // because we only get the `userId` in the ThreadMember object.
     @Nonnull
     User getUser();
 

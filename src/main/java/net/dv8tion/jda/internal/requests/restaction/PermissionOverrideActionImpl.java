@@ -75,8 +75,8 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
         this.id = permissionHolder.getIdLong();
     }
 
-    // Whether to keep original value of the current override or not - by default we override the
-    // value
+    // Whether to keep original value of the current override or not
+    // by default we override the value
     public PermissionOverrideActionImpl setOverride(boolean override) {
         isOverride = override;
         return this;
@@ -274,8 +274,8 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
         PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isRole());
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));
-        // ((AbstractChannelImpl<?,?>) channel).getOverrideMap().put(id, override); This is added by
-        // the event later
+        // This is added by the event later
+        // ((AbstractChannelImpl<?,?>) channel).getOverrideMap().put(id, override);
         request.onSuccess(override);
     }
 }

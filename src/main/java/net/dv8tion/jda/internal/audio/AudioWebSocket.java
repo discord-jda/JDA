@@ -152,8 +152,8 @@ class AudioWebSocket extends WebSocketAdapter {
     }
 
     protected void close(ConnectionStatus closeStatus) {
-        // Makes sure we don't run this method again after the socket.close(1000) call fires
-        // onDisconnect
+        // Makes sure we don't run this method again
+        // after the socket.close(1000) call fires onDisconnect
         if (shutdown) {
             return;
         }
@@ -178,8 +178,8 @@ class AudioWebSocket extends WebSocketAdapter {
             AudioChannel disconnectedChannel = manager.getConnectedChannel();
             manager.setAudioConnection(null);
 
-            // Verify that it is actually a lost of connection and not due the connected channel
-            // being deleted.
+            // Verify that it is actually a lost of connection
+            // and not due the connected channel being deleted.
             JDAImpl api = getJDA();
             if (status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL
                     && (!api.getClient().isSession() || !api.getClient().isConnected())) {
@@ -187,9 +187,9 @@ class AudioWebSocket extends WebSocketAdapter {
                 status = ConnectionStatus.ERROR_CANNOT_RESUME;
             } else if (status == ConnectionStatus.ERROR_LOST_CONNECTION
                     || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL) {
-                // Get guild from JDA, don't use [guild] field to make sure that we don't have
-                // a problem of an out of date guild stored in [guild] during a possible mWS
-                // invalidate.
+                // Get guild from JDA, don't use [guild] field to make sure
+                // that we don't have a problem of an out of date guild stored in [guild]
+                // during a possible mWS invalidate.
                 Guild connGuild = api.getGuildById(guild.getIdLong());
                 if (connGuild != null) {
                     AudioChannel channel = (AudioChannel) connGuild.getGuildChannelById(
@@ -204,10 +204,10 @@ class AudioWebSocket extends WebSocketAdapter {
 
             // decide if we reconnect.
             if (shouldReconnect
-                    && status.shouldReconnect() // indicated that the connection was purposely
-                    // closed. don't reconnect.
-                    && status != ConnectionStatus.AUDIO_REGION_CHANGE) // Already handled.
-            {
+                    // indicated that the connection was purposely closed. don't reconnect.
+                    && status.shouldReconnect()
+                    // Already handled.
+                    && status != ConnectionStatus.AUDIO_REGION_CHANGE) {
                 if (disconnectedChannel == null) {
                     LOG.debug("Cannot reconnect due to null audio channel");
                     return;
@@ -579,9 +579,9 @@ class AudioWebSocket extends WebSocketAdapter {
             ByteBuffer buffer = ByteBuffer.allocate(74); // 74 taken from documentation
             buffer.putShort((short) 1); // 1 = send (receive will be 2)
             buffer.putShort((short) 70); // length = 70 bytes (required)
-            buffer.putInt(ssrc); // Put the ssrc that we were given into the packet to send back to
-            // discord.
+            // Put the ssrc that we were given into the packet to send back to discord.
             // rest of the bytes are used only in the response (address/port)
+            buffer.putInt(ssrc);
 
             // Construct our packet to be sent loaded with the byte buffer we store the ssrc in.
             DatagramPacket discoveryPacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
@@ -589,32 +589,30 @@ class AudioWebSocket extends WebSocketAdapter {
 
             // Discord responds to our packet, returning a packet containing our external ip and the
             // port we connected through.
-            DatagramPacket receivedPacket =
-                    new DatagramPacket(new byte[74], 74); // Give a buffer the same size as the one we sent.
+            // Give a buffer the same size as the one we sent.
+            DatagramPacket receivedPacket = new DatagramPacket(new byte[74], 74);
             audioConnection.udpSocket.setSoTimeout(1000);
             audioConnection.udpSocket.receive(receivedPacket);
 
-            // The byte array returned by discord containing our external ip and the port that we
-            // used
-            // to connect to discord with.
+            // The byte array returned by discord containing our external ip and the port
+            // that we used to connect to discord with.
             byte[] received = receivedPacket.getData();
 
-            // Example string:"   121.83.253.66
-            // ��"
-            // You'll notice that there are 4 leading nulls and a large amount of nulls between the
-            // the ip and
-            // the last 2 bytes. Not sure why these exist.  The last 2 bytes are the port. More info
-            // below.
+            // Example string:"   121.83.253.66 ��"
+            // You'll notice that there are 4 leading nulls and a large amount of nulls
+            // between the the ip and the last 2 bytes.
+            // Not sure why these exist.
+            // The last 2 bytes are the port. More info below.
 
             // Take bytes between SSRC and PORT and put them into a string
-            // null bytes at the beginning are skipped and the rest are appended to the end of the
-            // string
+            // null bytes at the beginning are skipped
+            // and the rest are appended to the end of the string
             String ourIP = new String(received, 8, received.length - 10);
             // Removes the extra nulls attached to the end of the IP string
             ourIP = ourIP.trim();
 
-            // The port exists as the last 2 bytes in the packet data, and is encoded as an UNSIGNED
-            // short.
+            // The port exists as the last 2 bytes in the packet data,
+            // and is encoded as an UNSIGNED short.
             // Furthermore, it is stored in Little Endian instead of normal Big Endian.
             // We will first need to convert the byte order from Little Endian to Big Endian
             // (reverse the order)

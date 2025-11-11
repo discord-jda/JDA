@@ -46,10 +46,9 @@ public class VoiceServerUpdateHandler extends SocketHandler {
                 .update(guild, guild.getSelfMember().getVoiceState().getChannel());
 
         if (content.isNull("endpoint")) {
-            // Discord did not provide an endpoint yet, we are to wait until discord has resources
-            // to provide
-            // an endpoint, which will result in them sending another VOICE_SERVER_UPDATE which we
-            // will handle
+            // Discord did not provide an endpoint yet,
+            // we are to wait until discord has resources to provide an endpoint,
+            // which will result in them sending another VOICE_SERVER_UPDATE which we will handle
             // to actually connect to the audio server.
             return null;
         }

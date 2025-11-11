@@ -42,9 +42,9 @@ import javax.annotation.Nullable;
  * @see JDA#getRoles()
  */
 public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity, Comparable<Role> {
+    // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
     /** Used to keep consistency between color values used in the API */
-    int DEFAULT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better
-    // consistency
+    int DEFAULT_COLOR_RAW = 0x1F_FFFFFF;
 
     /**
      * The hierarchical position of this {@link net.dv8tion.jda.api.entities.Role Role}

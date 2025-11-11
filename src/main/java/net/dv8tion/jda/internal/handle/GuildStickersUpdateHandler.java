@@ -80,8 +80,8 @@ public class GuildStickersUpdateHandler extends SocketHandler {
                     sticker = (GuildStickerImpl) builder.createRichSticker(current);
                     newStickers.add(sticker);
                 } else {
-                    // sticker is in our cache which is why we don't want to remove it in cleanup
-                    // later
+                    // sticker is in our cache
+                    // which is why we don't want to remove it in cleanup later
                     oldStickers.remove(sticker);
                     oldSticker = sticker.copy();
                 }

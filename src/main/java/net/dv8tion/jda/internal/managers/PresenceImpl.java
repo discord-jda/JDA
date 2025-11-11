@@ -152,10 +152,9 @@ public class PresenceImpl implements Presence {
                 .put(
                         "activities",
                         DataArray.fromCollection(
-                                activity == null // this is done so that nested DataObject is
-                                        // converted to a Map
-                                        ? Collections.emptyList()
-                                        : Collections.singletonList(activity)))
+                                // this is done so that nested DataObject is
+                                // converted to a Map
+                                activity == null ? Collections.emptyList() : Collections.singletonList(activity)))
                 .put("status", getStatus().getKey());
     }
 

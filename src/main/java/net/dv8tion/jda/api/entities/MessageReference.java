@@ -165,7 +165,8 @@ public class MessageReference {
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
         return new RestActionImpl<>(jda, route, (response, request) -> {
-            // channel can be null for MessageReferences, but we've already checked for that above,
+            // channel can be null for MessageReferences,
+            // but we've already checked for that above,
             // so it is nonnull here
             Message created = jda.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false);
             this.referencedMessage = created;

@@ -204,8 +204,8 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
             return false; // Role can't manage permissions at all!
         }
         long channelPermissions = PermissionUtil.getExplicitPermission(targetChannel, this, false);
-        // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
-        // permission on the channel
+        // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS
+        // then it can also set any other permission on the channel
         boolean hasLocalAdmin = ((rolePerms & Permission.ADMINISTRATOR.getRawValue())
                         | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
                 != 0;
@@ -223,8 +223,8 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
                 allow ^= existing.getAllowedRaw();
                 deny ^= existing.getDeniedRaw();
             }
-            // If any permissions changed that the role doesn't have in the channel, the role can't
-            // sync it :(
+            // If any permissions changed that the role doesn't have in the channel,
+            // the role can't sync it :(
             if (((allow | deny) & ~rolePerms) != 0) {
                 return false;
             }
@@ -241,8 +241,8 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
             return false; // Role can't manage permissions at all!
         }
         long channelPermissions = PermissionUtil.getExplicitPermission(channel, this, false);
-        // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other
-        // permission on the channel
+        // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS
+        // then it can also set any other permission on the channel
         return ((rolePerms & Permission.ADMINISTRATOR.getRawValue())
                         | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
                 != 0;

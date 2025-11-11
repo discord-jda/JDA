@@ -72,8 +72,8 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Override
     public User getUser() {
         // The user could come from another guild
-        // Load user from cache if one exists, ideally two members with the same id should wrap the
-        // same user object
+        // Load user from cache if one exists,
+        // ideally two members with the same id should wrap the same user object
         User realUser = getJDA().getUserById(user.getIdLong());
         if (realUser != null) {
             this.user = realUser;

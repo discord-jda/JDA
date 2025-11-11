@@ -330,8 +330,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny) {
         Member selfMember = getGuild().getSelfMember();
         boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR);
-        if (!canSetRoles && parent != null) { // You can also set MANAGE_ROLES if you have it on the category
-            // (apparently?)
+        if (!canSetRoles && parent != null) {
+            // You can also set MANAGE_ROLES if you have it on the category (apparently?)
             canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
         }
         if (!canSetRoles) {

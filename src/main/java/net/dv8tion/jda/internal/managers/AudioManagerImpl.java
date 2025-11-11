@@ -280,8 +280,8 @@ public class AudioManagerImpl implements AudioManager {
             return;
         }
 
-        // This will set the audioConnection to null, which we then immediately override with the
-        // new connection
+        // This will set the audioConnection to null,
+        // which we then immediately override with the new connection
         if (this.audioConnection != null) {
             closeAudioConnection(ConnectionStatus.AUDIO_REGION_CHANGE);
         }
