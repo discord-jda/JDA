@@ -71,9 +71,7 @@ public class ScheduledEventImpl implements ScheduledEvent {
     @Nullable
     @Override
     public String getImageUrl() {
-        return image == null
-                ? null
-                : String.format(IMAGE_URL, getId(), image, image.startsWith("a_") ? "gif" : "png");
+        return image == null ? null : String.format(IMAGE_URL, getId(), image, image.startsWith("a_") ? "gif" : "png");
     }
 
     @Nullable
@@ -162,8 +160,7 @@ public class ScheduledEventImpl implements ScheduledEvent {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_EVENTS);
         }
 
-        Route.CompiledRoute route =
-                Route.Guilds.DELETE_SCHEDULED_EVENT.compile(guild.getId(), getId());
+        Route.CompiledRoute route = Route.Guilds.DELETE_SCHEDULED_EVENT.compile(guild.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -235,8 +232,8 @@ public class ScheduledEventImpl implements ScheduledEvent {
                 this.getGuild().equals(scheduledEvent.getGuild()),
                 "Cannot compare two Scheduled Events belonging to seperate guilds!");
 
-        int startTimeComparison = OffsetDateTime.timeLineOrder()
-                .compare(this.getStartTime(), scheduledEvent.getStartTime());
+        int startTimeComparison =
+                OffsetDateTime.timeLineOrder().compare(this.getStartTime(), scheduledEvent.getStartTime());
         if (startTimeComparison == 0) {
             return Long.compare(this.getIdLong(), scheduledEvent.getIdLong());
         } else {

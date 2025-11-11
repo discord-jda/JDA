@@ -398,11 +398,7 @@ public interface Invite {
             String bannerId = getBannerId();
             return bannerId == null
                     ? null
-                    : String.format(
-                            BANNER_URL,
-                            getId(),
-                            bannerId,
-                            bannerId.startsWith("a_") ? "gif" : "png");
+                    : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
         }
 
         /**

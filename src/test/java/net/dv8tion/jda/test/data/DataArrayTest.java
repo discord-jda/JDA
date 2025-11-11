@@ -35,7 +35,6 @@ public class DataArrayTest extends AbstractSnapshotTest {
 
         assertThatExceptionOfType(DataArrayParsingException.class)
                 .isThrownBy(() -> data.getInt(3))
-                .satisfies(exception ->
-                        snapshotHandler.compareWithSnapshot(exception.toString(), null));
+                .satisfies(exception -> snapshotHandler.compareWithSnapshot(exception.toString(), null));
     }
 }

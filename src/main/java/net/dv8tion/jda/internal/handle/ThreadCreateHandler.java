@@ -55,15 +55,8 @@ public class ThreadCreateHandler extends SocketHandler {
 
             long parentId = content.getUnsignedLong("parent_id", 0L);
             EventCache.LOG.debug(
-                    "Caching THREAD_CREATE_EVENT for channel with uncached parent. Parent ID: {}",
-                    parentId);
-            api.getEventCache()
-                    .cache(
-                            EventCache.Type.CHANNEL,
-                            parentId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+                    "Caching THREAD_CREATE_EVENT for channel with uncached parent. Parent ID: {}", parentId);
+            api.getEventCache().cache(EventCache.Type.CHANNEL, parentId, responseNumber, allContent, this::handle);
         }
 
         return null;

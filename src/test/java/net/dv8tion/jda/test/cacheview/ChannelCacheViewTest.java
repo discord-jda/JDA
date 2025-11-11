@@ -50,8 +50,7 @@ class ChannelCacheViewTest {
         ChannelCacheViewImpl<Channel> cache = new ChannelCacheViewImpl<>(Channel.class);
 
         assertThatThrownBy(() -> cache.ofType((Class<Channel>) interfaceType).getElementById(0L))
-                .hasMessage(String.format(
-                        "Type %s is not a valid channel interface", interfaceType.getSimpleName()));
+                .hasMessage(String.format("Type %s is not a valid channel interface", interfaceType.getSimpleName()));
     }
 
     @Test

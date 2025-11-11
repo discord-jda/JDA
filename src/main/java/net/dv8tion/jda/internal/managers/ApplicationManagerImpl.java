@@ -41,8 +41,7 @@ import javax.annotation.Nullable;
 /**
  * When implement new fields, update also {@link #reset(long)}, {@link #reset(long...)}, {@link #reset()} and {@link #finalizeData()}
  */
-public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
-        implements ApplicationManager {
+public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> implements ApplicationManager {
 
     protected String description;
     protected Icon icon;
@@ -158,8 +157,7 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
 
     @Nonnull
     @Override
-    public ApplicationManager setInstallParams(
-            @Nullable ApplicationManager.IntegrationTypeConfig installParams) {
+    public ApplicationManager setInstallParams(@Nullable ApplicationManager.IntegrationTypeConfig installParams) {
         this.installParams = installParams;
         set |= INSTALL_PARAMS;
         return this;
@@ -167,8 +165,7 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
 
     @Nonnull
     @Override
-    public ApplicationManager setIntegrationTypeConfig(
-            @Nullable Map<IntegrationType, IntegrationTypeConfig> config) {
+    public ApplicationManager setIntegrationTypeConfig(@Nullable Map<IntegrationType, IntegrationTypeConfig> config) {
         if (config != null) {
             Checks.noneNull(config.keySet(), "IntegrationTypeConfig");
             Checks.noneNull(config.values(), "IntegrationTypeConfig");
@@ -209,8 +206,8 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager>
         }
         if (shouldUpdate(INTEGRATION_TYPES_CONFIG)) {
             DataObject config = DataObject.empty();
-            integrationTypeConfig.forEach((key, value) ->
-                    config.put(key.name(), DataObject.empty().put("oauth2_install_params", value)));
+            integrationTypeConfig.forEach(
+                    (key, value) -> config.put(key.name(), DataObject.empty().put("oauth2_install_params", value)));
             body.put("integration_type_config", config);
         }
 

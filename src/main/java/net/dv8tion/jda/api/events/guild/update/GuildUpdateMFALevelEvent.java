@@ -32,10 +32,7 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
     public static final String IDENTIFIER = "mfa_level";
 
     public GuildUpdateMFALevelEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull Guild.MFALevel oldMFALevel) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.MFALevel oldMFALevel) {
         super(api, responseNumber, guild, oldMFALevel, guild.getRequiredMFALevel(), IDENTIFIER);
     }
 

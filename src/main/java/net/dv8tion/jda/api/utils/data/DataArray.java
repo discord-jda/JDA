@@ -711,8 +711,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
     @Nonnull
     public byte[] toETF() {
         ByteBuffer buffer = ExTermEncoder.pack(data);
-        return Arrays.copyOfRange(
-                buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
+        return Arrays.copyOfRange(buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
     }
 
     @Override
@@ -757,9 +756,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
 
     private ParsingException valueError(int index, String expectedType) {
         return new DataArrayParsingException(
-                this,
-                "Unable to resolve value at " + index + " to type " + expectedType + ": "
-                        + data.get(index));
+                this, "Unable to resolve value at " + index + " to type " + expectedType + ": " + data.get(index));
     }
 
     @Nullable
@@ -805,8 +802,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
     }
 
     @Nonnull
-    public <T> Stream<T> stream(
-            @Nonnull BiFunction<? super DataArray, Integer, ? extends T> mapper) {
+    public <T> Stream<T> stream(@Nonnull BiFunction<? super DataArray, Integer, ? extends T> mapper) {
         return IntStream.range(0, length()).mapToObj(index -> mapper.apply(this, index));
     }
 

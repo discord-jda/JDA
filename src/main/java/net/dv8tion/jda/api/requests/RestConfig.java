@@ -37,21 +37,19 @@ public class RestConfig {
     /**
      * The User-Agent used by JDA for all REST-api requests.
      */
-    public static final String USER_AGENT =
-            "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
+    public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     /**
      * The default base url used by JDA for all REST-api requests.
      * This URL uses the API version defined by {@link JDAInfo#DISCORD_REST_VERSION} (v{@value JDAInfo#DISCORD_REST_VERSION}).
      */
-    public static final String DEFAULT_BASE_URL =
-            "https://discord.com/api/v" + JDAInfo.DISCORD_REST_VERSION + "/";
+    public static final String DEFAULT_BASE_URL = "https://discord.com/api/v" + JDAInfo.DISCORD_REST_VERSION + "/";
 
     private String userAgent = USER_AGENT;
     private String baseUrl = DEFAULT_BASE_URL;
     private boolean relativeRateLimit = true;
     private Consumer<? super Request.Builder> customBuilder;
-    private Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter>
-            rateLimiter = SequentialRestRateLimiter::new;
+    private Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> rateLimiter =
+            SequentialRestRateLimiter::new;
 
     /**
      * Whether to use {@code X-RateLimit-Reset-After} to determine the rate-limit backoff.
@@ -82,9 +80,7 @@ public class RestConfig {
      */
     @Nonnull
     public RestConfig setRateLimiterFactory(
-            @Nonnull
-                    Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter>
-                            rateLimiter) {
+            @Nonnull Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> rateLimiter) {
         Checks.notNull(rateLimiter, "RateLimiter");
         this.rateLimiter = rateLimiter;
         return this;
@@ -111,9 +107,7 @@ public class RestConfig {
     @Nonnull
     public RestConfig setBaseUrl(@Nonnull String baseUrl) {
         Checks.notEmpty(baseUrl, "URL");
-        Checks.check(
-                baseUrl.length() > 4 && baseUrl.substring(0, 4).equalsIgnoreCase("http"),
-                "URL must be HTTP");
+        Checks.check(baseUrl.length() > 4 && baseUrl.substring(0, 4).equalsIgnoreCase("http"), "URL must be HTTP");
         if (baseUrl.endsWith("/")) {
             this.baseUrl = baseUrl;
         } else {
@@ -191,8 +185,7 @@ public class RestConfig {
      * @return The rate-limiter
      */
     @Nonnull
-    public Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter>
-            getRateLimiterFactory() {
+    public Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> getRateLimiterFactory() {
         return rateLimiter;
     }
 

@@ -31,8 +31,7 @@ import javax.annotation.Nullable;
  * @see Category
  * @see net.dv8tion.jda.api.entities.Guild#getCategories()
  */
-public interface ICategorizableChannel
-        extends GuildChannel, IPermissionContainer, IPositionableChannel {
+public interface ICategorizableChannel extends GuildChannel, IPermissionContainer, IPositionableChannel {
     @Override
     @Nonnull
     @CheckReturnValue

@@ -81,13 +81,9 @@ class ChannelCacheViewTest {
 
     @SafeVarargs
     private static <T extends Channel> T mockChannel(
-            Class<T> clazz,
-            ChannelType type,
-            String name,
-            Class<? extends Channel>... extraInterfaces) {
-        T mock = extraInterfaces.length > 0
-                ? mock(clazz, withSettings().extraInterfaces(extraInterfaces))
-                : mock(clazz);
+            Class<T> clazz, ChannelType type, String name, Class<? extends Channel>... extraInterfaces) {
+        T mock =
+                extraInterfaces.length > 0 ? mock(clazz, withSettings().extraInterfaces(extraInterfaces)) : mock(clazz);
         when(mock.getType()).thenReturn(type);
         when(mock.toString()).thenReturn(name);
         when(mock.getName()).thenReturn(name);
@@ -99,8 +95,7 @@ class ChannelCacheViewTest {
         if (GuildChannel.class.isAssignableFrom(clazz)) {
             GuildChannel comparable = (GuildChannel) mock;
             when(comparable.compareTo(any()))
-                    .then((args) -> ChannelUtil.compare(
-                            (GuildChannel) args.getMock(), args.getArgument(0)));
+                    .then((args) -> ChannelUtil.compare((GuildChannel) args.getMock(), args.getArgument(0)));
         }
         return mock;
     }
@@ -125,14 +120,12 @@ class ChannelCacheViewTest {
                         ChannelType.FORUM,
                         "FORUM parent of " + threadType,
                         IPostContainer.class);
-            default ->
-                throw new IllegalStateException("Cannot map unknown thread type " + threadType);
+            default -> throw new IllegalStateException("Cannot map unknown thread type " + threadType);
         };
     }
 
     private static SortedChannelCacheViewImpl<GuildChannel> getMockedGuildCache() {
-        SortedChannelCacheViewImpl<GuildChannel> view =
-                new SortedChannelCacheViewImpl<>(GuildChannel.class);
+        SortedChannelCacheViewImpl<GuildChannel> view = new SortedChannelCacheViewImpl<>(GuildChannel.class);
 
         for (ChannelType type : ChannelType.values()) {
             Class<? extends Channel> channelType = type.getInterface();
@@ -205,8 +198,8 @@ class ChannelCacheViewTest {
 
         SortedChannelCacheView<VoiceChannel> voiceView = cache.ofType(VoiceChannel.class);
         List<VoiceChannel> fromOfType = voiceView.asList();
-        List<GuildChannel> voiceChannelFilter = cache.applyStream(stream ->
-                stream.filter(VoiceChannel.class::isInstance).collect(Collectors.toList()));
+        List<GuildChannel> voiceChannelFilter = cache.applyStream(
+                stream -> stream.filter(VoiceChannel.class::isInstance).collect(Collectors.toList()));
 
         assertThat(voiceChannelFilter).hasSameSizeAs(voiceView);
         assertThat(voiceChannelFilter).hasSameElementsAs(fromOfType);
@@ -221,8 +214,8 @@ class ChannelCacheViewTest {
 
         SortedChannelCacheView<VoiceChannel> voiceView = cache.ofType(VoiceChannel.class);
         Set<VoiceChannel> fromOfType = voiceView.asSet();
-        Set<GuildChannel> voiceChannelFilter = cache.applyStream(stream ->
-                stream.filter(VoiceChannel.class::isInstance).collect(Collectors.toSet()));
+        Set<GuildChannel> voiceChannelFilter = cache.applyStream(
+                stream -> stream.filter(VoiceChannel.class::isInstance).collect(Collectors.toSet()));
 
         assertThat(voiceChannelFilter).hasSize((int) voiceView.size());
         assertThat(voiceChannelFilter).hasSameElementsAs(fromOfType);
@@ -235,19 +228,16 @@ class ChannelCacheViewTest {
 
         assertThat(cache).hasSameSizeAs(asSet);
 
-        SortedChannelCacheView<GuildMessageChannel> ofTypeMessage =
-                cache.ofType(GuildMessageChannel.class);
-        Set<GuildChannel> filterMessageType = asSet.stream()
-                .filter(GuildMessageChannel.class::isInstance)
-                .collect(Collectors.toSet());
+        SortedChannelCacheView<GuildMessageChannel> ofTypeMessage = cache.ofType(GuildMessageChannel.class);
+        Set<GuildChannel> filterMessageType =
+                asSet.stream().filter(GuildMessageChannel.class::isInstance).collect(Collectors.toSet());
 
         assertThat(ofTypeMessage).hasSameSizeAs(filterMessageType);
     }
 
     @Test
     void testEmptyWorks() {
-        SortedChannelCacheView<GuildChannel> empty =
-                new SortedChannelCacheViewImpl<>(GuildChannel.class);
+        SortedChannelCacheView<GuildChannel> empty = new SortedChannelCacheViewImpl<>(GuildChannel.class);
 
         assertThat(empty).isEmpty();
 
@@ -268,16 +258,13 @@ class ChannelCacheViewTest {
     @Test
     void testRemoveWorks() {
         SortedChannelCacheViewImpl<GuildChannel> cache = getMockedGuildCache();
-        Supplier<List<GuildChannel>> getByName =
-                () -> cache.getElementsByName("TEXT without parent", true);
+        Supplier<List<GuildChannel>> getByName = () -> cache.getElementsByName("TEXT without parent", true);
         Supplier<List<GuildMessageChannel>> getOfType =
                 () -> cache.ofType(GuildMessageChannel.class).asList();
 
         GuildChannel textWithoutParent = getByName.get().getFirst();
 
-        assertThat(textWithoutParent)
-                .as("Remove returns instance")
-                .isSameAs(cache.remove(textWithoutParent));
+        assertThat(textWithoutParent).as("Remove returns instance").isSameAs(cache.remove(textWithoutParent));
         assertThat(getByName.get()).as("Channel should be removed").isEmpty();
 
         List<GuildMessageChannel> messageChannels = getOfType.get();

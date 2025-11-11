@@ -34,19 +34,13 @@ import javax.annotation.Nullable;
  *
  * @see ChannelField
  */
-public class GenericChannelUpdateEvent<T> extends GenericChannelEvent
-        implements UpdateEvent<Channel, T> {
+public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements UpdateEvent<Channel, T> {
     protected final ChannelField channelField;
     protected final T oldValue;
     protected final T newValue;
 
     public GenericChannelUpdateEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            ChannelField channelField,
-            T oldValue,
-            T newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, ChannelField channelField, T oldValue, T newValue) {
         super(api, responseNumber, channel);
 
         this.channelField = channelField;

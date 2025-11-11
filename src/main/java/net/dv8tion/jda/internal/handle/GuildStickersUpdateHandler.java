@@ -58,13 +58,7 @@ public class GuildStickersUpdateHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
 
@@ -74,8 +68,7 @@ public class GuildStickersUpdateHandler extends SocketHandler {
         EntityBuilder builder = api.getEntityBuilder();
         try (UnlockHook hook = stickersView.writeLock()) {
             TLongObjectMap<GuildSticker> stickersMap = stickersView.getMap();
-            oldStickers =
-                    new ArrayList<>(stickersMap.valueCollection()); // snapshot of sticker cache
+            oldStickers = new ArrayList<>(stickersMap.valueCollection()); // snapshot of sticker cache
             newStickers = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
                 DataObject current = array.getObject(i);
@@ -119,8 +112,7 @@ public class GuildStickersUpdateHandler extends SocketHandler {
         return null;
     }
 
-    private void handleReplace(
-            Guild guild, GuildStickerImpl oldSticker, GuildStickerImpl newSticker) {
+    private void handleReplace(Guild guild, GuildStickerImpl oldSticker, GuildStickerImpl newSticker) {
         if (oldSticker == null || newSticker == null) {
             return;
         }

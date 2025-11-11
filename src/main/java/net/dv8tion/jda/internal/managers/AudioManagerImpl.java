@@ -102,8 +102,7 @@ public class AudioManagerImpl implements AudioManager {
         }
 
         // if userLimit is 0 if no limit is set!
-        int userLimit =
-                channel instanceof VoiceChannel ? ((VoiceChannel) channel).getUserLimit() : 0;
+        int userLimit = channel instanceof VoiceChannel ? ((VoiceChannel) channel).getUserLimit() : 0;
         if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR)) {
             // Check if we can actually join this channel
             // - If there is a userlimit
@@ -111,8 +110,7 @@ public class AudioManagerImpl implements AudioManager {
             // - If we don't have voice move others permissions
             // VOICE_MOVE_OTHERS allows access because you would be able to move people out to
             // open up a slot anyway
-            if (userLimit <= channel.getMembers().size()
-                    && !perms.contains(Permission.VOICE_MOVE_OTHERS)) {
+            if (userLimit <= channel.getMembers().size() && !perms.contains(Permission.VOICE_MOVE_OTHERS)) {
                 throw new InsufficientPermissionException(
                         channel,
                         Permission.VOICE_MOVE_OTHERS,
@@ -316,8 +314,7 @@ public class AudioManagerImpl implements AudioManager {
     }
 
     @Override
-    @SuppressWarnings(
-            "deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
+    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize() {
         if (audioConnection != null) {
             LOG.warn(

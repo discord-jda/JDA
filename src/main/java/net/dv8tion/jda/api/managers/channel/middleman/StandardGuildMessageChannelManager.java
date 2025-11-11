@@ -41,11 +41,8 @@ import javax.annotation.Nullable;
  * @see StandardGuildMessageChannel#getManager()
  */
 public interface StandardGuildMessageChannelManager<
-                T extends StandardGuildMessageChannel,
-                M extends StandardGuildMessageChannelManager<T, M>>
-        extends StandardGuildChannelManager<T, M>,
-                IAgeRestrictedChannelManager<T, M>,
-                IThreadContainerManager<T, M> {
+                T extends StandardGuildMessageChannel, M extends StandardGuildMessageChannelManager<T, M>>
+        extends StandardGuildChannelManager<T, M>, IAgeRestrictedChannelManager<T, M>, IThreadContainerManager<T, M> {
     /**
      * Sets the <b><u>topic</u></b> of the selected {@link StandardGuildMessageChannel channel}.
      *

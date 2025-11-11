@@ -47,8 +47,7 @@ public class ThreadListSyncHandler extends SocketHandler {
                     throw ex;
                 }
                 EntityBuilder.LOG.debug(
-                        "Discarding thread on sync because of missing parent channel cache. JSON: {}",
-                        threadJson);
+                        "Discarding thread on sync because of missing parent channel cache. JSON: {}", threadJson);
             }
         }
 

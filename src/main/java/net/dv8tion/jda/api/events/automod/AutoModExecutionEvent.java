@@ -40,8 +40,7 @@ import javax.annotation.Nullable;
 public class AutoModExecutionEvent extends Event implements AutoModExecution {
     private final AutoModExecution execution;
 
-    public AutoModExecutionEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull AutoModExecution execution) {
+    public AutoModExecutionEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModExecution execution) {
         super(api, responseNumber);
         this.execution = execution;
     }

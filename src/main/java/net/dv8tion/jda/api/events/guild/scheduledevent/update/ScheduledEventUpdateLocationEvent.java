@@ -43,17 +43,8 @@ public class ScheduledEventUpdateLocationEvent extends GenericScheduledEventUpda
     public static final String IDENTIFIER = "location";
 
     public ScheduledEventUpdateLocationEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull ScheduledEvent scheduledEvent,
-            @Nonnull String previous) {
-        super(
-                api,
-                responseNumber,
-                scheduledEvent,
-                previous,
-                scheduledEvent.getLocation(),
-                IDENTIFIER);
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous) {
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getLocation(), IDENTIFIER);
     }
 
     /**

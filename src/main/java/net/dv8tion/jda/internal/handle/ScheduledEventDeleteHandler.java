@@ -40,17 +40,14 @@ public class ScheduledEventDeleteHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            EventCache.LOG.debug(
-                    "SCHEDULED_EVENT_DELETE was received for a Guild that is not yet cached: {}",
-                    content);
+            EventCache.LOG.debug("SCHEDULED_EVENT_DELETE was received for a Guild that is not yet cached: {}", content);
             return null;
         }
 
         long eventId = content.getLong("id");
         ScheduledEvent removedEvent = guild.getScheduledEventsView().remove(eventId);
         if (removedEvent != null) {
-            getJDA().handleEvent(
-                            new ScheduledEventDeleteEvent(getJDA(), responseNumber, removedEvent));
+            getJDA().handleEvent(new ScheduledEventDeleteEvent(getJDA(), responseNumber, removedEvent));
         }
         return null;
     }

@@ -43,10 +43,7 @@ public class ScheduledEventUpdateNameEvent extends GenericScheduledEventUpdateEv
     public static final String IDENTIFIER = "name";
 
     public ScheduledEventUpdateNameEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull ScheduledEvent scheduledEvent,
-            @Nonnull String previous) {
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous) {
         super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getName(), IDENTIFIER);
     }
 

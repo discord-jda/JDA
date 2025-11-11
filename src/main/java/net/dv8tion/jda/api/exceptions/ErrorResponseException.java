@@ -54,11 +54,7 @@ public class ErrorResponseException extends RuntimeException {
      *        The Discord Response causing the ErrorResponse
      */
     private ErrorResponseException(
-            ErrorResponse errorResponse,
-            Response response,
-            int code,
-            String meaning,
-            List<SchemaError> schemaErrors) {
+            ErrorResponse errorResponse, Response response, int code, String meaning, List<SchemaError> schemaErrors) {
         super(code + ": " + meaning
                 + (schemaErrors.isEmpty()
                         ? ""
@@ -152,14 +148,12 @@ public class ErrorResponseException extends RuntimeException {
     }
 
     @Nonnull
-    public static ErrorResponseException create(
-            @Nonnull String message, @Nonnull ErrorResponseException cause) {
+    public static ErrorResponseException create(@Nonnull String message, @Nonnull ErrorResponseException cause) {
         return new ErrorResponseException(message, cause);
     }
 
     @Nonnull
-    public static ErrorResponseException create(
-            @Nonnull ErrorResponse errorResponse, @Nonnull Response response) {
+    public static ErrorResponseException create(@Nonnull ErrorResponse errorResponse, @Nonnull Response response) {
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
         List<SchemaError> schemaErrors = new ArrayList<>();
@@ -195,17 +189,13 @@ public class ErrorResponseException extends RuntimeException {
             }
         } catch (Exception e) {
             JDALogger.getLog(ErrorResponseException.class)
-                    .error(
-                            "Failed to parse parts of error response. Body: {}",
-                            response.getString(),
-                            e);
+                    .error("Failed to parse parts of error response. Body: {}", response.getString(), e);
         }
 
         return new ErrorResponseException(errorResponse, response, code, meaning, schemaErrors);
     }
 
-    private static void parseSchema(
-            List<SchemaError> schemaErrors, String currentLocation, DataObject errors) {
+    private static void parseSchema(List<SchemaError> schemaErrors, String currentLocation, DataObject errors) {
         // check what kind of errors we are dealing with
         for (String name : errors.keys()) {
             if (name.equals("_errors")) {
@@ -222,8 +212,7 @@ public class ErrorResponseException extends RuntimeException {
                     DataObject properties = schemaError.getObject(index);
                     String location = String.format("%s%s[%s].", currentLocation, name, index);
                     if (properties.hasKey("_errors")) {
-                        schemaErrors.add(parseSchemaError(
-                                location.substring(0, location.length() - 1), properties));
+                        schemaErrors.add(parseSchemaError(location.substring(0, location.length() - 1), properties));
                     } else {
                         parseSchema(schemaErrors, location, properties);
                     }
@@ -295,8 +284,7 @@ public class ErrorResponseException extends RuntimeException {
      *         which ignores the specified {@link ErrorResponse ErrorResponses}
      */
     @Nonnull
-    public static Consumer<Throwable> ignore(
-            @Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses) {
+    public static Consumer<Throwable> ignore(@Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses) {
         return ignore(RestAction.getDefaultFailure(), ignored, errorResponses);
     }
 

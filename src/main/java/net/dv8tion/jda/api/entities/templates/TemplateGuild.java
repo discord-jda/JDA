@@ -128,11 +128,7 @@ public class TemplateGuild implements ISnowflake {
     public String getIconUrl() {
         return this.iconId == null
                 ? null
-                : String.format(
-                        Guild.ICON_URL,
-                        this.id,
-                        this.iconId,
-                        iconId.startsWith("a_") ? "gif" : "png");
+                : String.format(Guild.ICON_URL, this.id, this.iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
     /**

@@ -84,9 +84,7 @@ public class ComponentsUtil {
      */
     public static <TUnion extends IComponentUnion> List<TUnion> membersToUnion(
             Collection<? extends Component> members, Class<TUnion> clazz) {
-        return members.stream()
-                .map(c -> safeUnionCast("component", c, clazz))
-                .collect(Collectors.toList());
+        return members.stream().map(c -> safeUnionCast("component", c, clazz)).collect(Collectors.toList());
     }
 
     /**
@@ -135,18 +133,14 @@ public class ComponentsUtil {
     @Nonnull
     public static List<? extends Component> getIllegalV1Components(
             @Nonnull Collection<? extends Component> components) {
-        return components.stream()
-                .filter(c -> !(c instanceof ActionRow))
-                .collect(Collectors.toList());
+        return components.stream().filter(c -> !(c instanceof ActionRow)).collect(Collectors.toList());
     }
 
-    public static boolean hasIllegalV1Components(
-            @Nonnull Collection<? extends Component> components) {
+    public static boolean hasIllegalV1Components(@Nonnull Collection<? extends Component> components) {
         return !getIllegalV1Components(components).isEmpty();
     }
 
-    public static long getComponentTreeTextContentLength(
-            @Nonnull Collection<? extends Component> components) {
+    public static long getComponentTreeTextContentLength(@Nonnull Collection<? extends Component> components) {
         return ComponentIterator.createStream(components)
                 .mapToInt(c -> {
                     if (c instanceof TextDisplay) {

@@ -35,11 +35,7 @@ public class ChannelUpdateDefaultThreadSlowmodeEvent extends GenericChannelUpdat
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateDefaultThreadSlowmodeEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Channel channel,
-            int oldValue,
-            int newValue) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Channel channel, int oldValue, int newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 

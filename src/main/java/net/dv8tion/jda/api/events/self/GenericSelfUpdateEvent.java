@@ -36,11 +36,7 @@ public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateE
     protected final String identifier;
 
     public GenericSelfUpdateEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nullable T previous,
-            @Nullable T next,
-            @Nonnull String identifier) {
+            @Nonnull JDA api, long responseNumber, @Nullable T previous, @Nullable T next, @Nonnull String identifier) {
         super(api, responseNumber);
         this.previous = previous;
         this.next = next;

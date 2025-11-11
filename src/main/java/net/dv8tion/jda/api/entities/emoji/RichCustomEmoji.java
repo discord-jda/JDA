@@ -217,8 +217,7 @@ public interface RichCustomEmoji extends CustomEmoji {
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(
-            @Nonnull User issuer, @Nonnull MessageChannel channel, boolean botOverride) {
+    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel, boolean botOverride) {
         return PermissionUtil.canInteract(issuer, this, channel, botOverride);
     }
 }

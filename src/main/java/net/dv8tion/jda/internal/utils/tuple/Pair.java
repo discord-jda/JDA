@@ -33,8 +33,7 @@ import java.util.Objects;
  * @param <L> the left element type
  * @param <R> the right element type
  */
-public abstract class Pair<L, R>
-        implements /*Map.Entry<L, R>, Comparable<Pair<L, R>>,*/ Serializable {
+public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L, R>>,*/ Serializable {
 
     /**
      * <p>Obtains an immutable pair of from two objects inferring the generic types.</p>
@@ -86,8 +85,7 @@ public abstract class Pair<L, R>
         }
         if (obj instanceof Pair<?, ?>) {
             Pair<?, ?> other = (Pair<?, ?>) obj;
-            return Objects.equals(getLeft(), other.getLeft())
-                    && Objects.equals(getRight(), other.getRight());
+            return Objects.equals(getLeft(), other.getLeft()) && Objects.equals(getRight(), other.getRight());
         }
         return false;
     }

@@ -53,8 +53,7 @@ public class ZlibDecompressor implements Decompressor {
         // Check if the buffer has been collected by the GC or not
         ByteArrayOutputStream buffer = decompressBuffer.get();
         if (buffer == null) { // create a ne buffer because the GC got it
-            decompressBuffer = new SoftReference<>(
-                    buffer = new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
+            decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
         }
         return buffer;
     }
@@ -77,8 +76,7 @@ public class ZlibDecompressor implements Decompressor {
             // Flip to make it a read buffer
             flushBuffer.flip();
             // Reallocate for the new capacity
-            flushBuffer =
-                    IOUtil.reallocate(flushBuffer, (flushBuffer.capacity() + data.length) * 2);
+            flushBuffer = IOUtil.reallocate(flushBuffer, (flushBuffer.capacity() + data.length) * 2);
         }
 
         flushBuffer.put(data);

@@ -38,12 +38,8 @@ public class GuildMemberAddHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null) {
-            getJDA().getEventCache()
-                    .cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug(
-                    "Caching member for guild that is not yet cached. Guild ID: {} JSON: {}",
-                    id,
-                    content);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Caching member for guild that is not yet cached. Guild ID: {} JSON: {}", id, content);
             return null;
         }
 

@@ -53,24 +53,17 @@ public class TriggerRestAction<T> extends RestActionImpl<T> {
         super(api, route, data);
     }
 
-    public TriggerRestAction(
-            JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, handler);
     }
 
     public TriggerRestAction(
-            JDA api,
-            Route.CompiledRoute route,
-            DataObject data,
-            BiFunction<Response, Request<T>, T> handler) {
+            JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, data, handler);
     }
 
     public TriggerRestAction(
-            JDA api,
-            Route.CompiledRoute route,
-            RequestBody data,
-            BiFunction<Response, Request<T>, T> handler) {
+            JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, data, handler);
     }
 

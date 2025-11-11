@@ -39,8 +39,7 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChannel>
-        implements ThreadChannelAction {
+public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChannel> implements ThreadChannelAction {
     protected final Guild guild;
     protected final GuildChannel channel;
     protected final ChannelType type;
@@ -62,15 +61,11 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
     }
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, String parentMessageId) {
-        super(
-                channel.getJDA(),
-                Route.Channels.CREATE_THREAD_FROM_MESSAGE.compile(
-                        channel.getId(), parentMessageId));
+        super(channel.getJDA(), Route.Channels.CREATE_THREAD_FROM_MESSAGE.compile(channel.getId(), parentMessageId));
         this.guild = channel.getGuild();
         this.channel = channel;
-        this.type = channel.getType() == ChannelType.TEXT
-                ? ChannelType.GUILD_PUBLIC_THREAD
-                : ChannelType.GUILD_NEWS_THREAD;
+        this.type =
+                channel.getType() == ChannelType.TEXT ? ChannelType.GUILD_PUBLIC_THREAD : ChannelType.GUILD_NEWS_THREAD;
         this.parentMessageId = parentMessageId;
 
         this.name = name;
@@ -124,8 +119,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     @Nonnull
     @Override
-    public ThreadChannelAction setAutoArchiveDuration(
-            @Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration) {
+    public ThreadChannelAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration) {
         Checks.notNull(autoArchiveDuration, "autoArchiveDuration");
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
@@ -187,8 +181,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     @Override
     protected void handleSuccess(Response response, Request<ThreadChannel> request) {
-        ThreadChannel channel =
-                api.getEntityBuilder().createThreadChannel(response.getObject(), guild.getIdLong());
+        ThreadChannel channel = api.getEntityBuilder().createThreadChannel(response.getObject(), guild.getIdLong());
         request.onSuccess(channel);
     }
 }

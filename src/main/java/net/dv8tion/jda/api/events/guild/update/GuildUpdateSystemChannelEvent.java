@@ -35,10 +35,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
     public static final String IDENTIFIER = "system_channel";
 
     public GuildUpdateSystemChannelEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nullable TextChannel oldSystemChannel) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldSystemChannel) {
         super(api, responseNumber, guild, oldSystemChannel, guild.getSystemChannel(), IDENTIFIER);
     }
 

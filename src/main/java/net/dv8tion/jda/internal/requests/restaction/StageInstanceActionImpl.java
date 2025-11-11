@@ -33,8 +33,7 @@ import java.util.function.BooleanSupplier;
 
 import javax.annotation.Nonnull;
 
-public class StageInstanceActionImpl extends RestActionImpl<StageInstance>
-        implements StageInstanceAction {
+public class StageInstanceActionImpl extends RestActionImpl<StageInstance> implements StageInstanceAction {
     private final StageChannel channel;
     private String topic;
 
@@ -80,8 +79,8 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance>
 
     @Override
     protected void handleSuccess(Response response, Request<StageInstance> request) {
-        StageInstance instance = api.getEntityBuilder()
-                .createStageInstance((GuildImpl) channel.getGuild(), response.getObject());
+        StageInstance instance =
+                api.getEntityBuilder().createStageInstance((GuildImpl) channel.getGuild(), response.getObject());
         request.onSuccess(instance);
     }
 }

@@ -42,8 +42,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class CommandInteractionPayloadImpl extends InteractionImpl
-        implements CommandInteractionPayload {
+public class CommandInteractionPayloadImpl extends InteractionImpl implements CommandInteractionPayload {
     private final long commandId;
     private final List<OptionMapping> options = new ArrayList<>();
     private final TLongObjectMap<Object> resolved = new TLongObjectHashMap<>();
@@ -59,8 +58,8 @@ public class CommandInteractionPayloadImpl extends InteractionImpl
         this.commandId = commandData.getUnsignedLong("id");
         this.name = commandData.getString("name");
         this.type = Command.Type.fromId(commandData.getInt("type", 1));
-        this.isGuildCommand = !commandData.isNull(
-                "guild_id"); // guild_id is always either null or the owner guild (same as
+        this.isGuildCommand =
+                !commandData.isNull("guild_id"); // guild_id is always either null or the owner guild (same as
         // interaction guild_id)
 
         DataArray options = commandData.optArray("options").orElseGet(DataArray::empty);
@@ -75,8 +74,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl
                     option = options.getObject(0);
                 case SUB_COMMAND:
                     subcommand = option.getString("name");
-                    options = option.optArray("options")
-                            .orElseGet(DataArray::empty); // Flatten options
+                    options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
                     break;
             }
         }
@@ -113,15 +111,12 @@ public class CommandInteractionPayloadImpl extends InteractionImpl
                 DataObject users = resolveJson.getObject("users");
                 members.keys().forEach(memberId -> {
                     DataObject memberJson = members.getObject(memberId);
-                    memberJson.put(
-                            "user", users.getObject(memberId)); // Add user json as well for parsing
+                    memberJson.put("user", users.getObject(memberId)); // Add user json as well for parsing
                     Member optionMember = interactionEntityBuilder.createMember(guild, memberJson);
                     if (member instanceof MemberImpl) {
                         entityBuilder.updateMemberCache((MemberImpl) optionMember);
                     }
-                    resolved.put(
-                            optionMember.getIdLong(),
-                            optionMember); // This basically upgrades user to member
+                    resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
                 });
             });
             resolveJson.optObject("roles").ifPresent(roles -> {
@@ -130,8 +125,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl
                             if (!guild.isDetached()) {
                                 return guild.getRoleById(roleId);
                             }
-                            return interactionEntityBuilder.createRole(
-                                    guild, roles.getObject(roleId));
+                            return interactionEntityBuilder.createRole(guild, roles.getObject(roleId));
                         })
                         .filter(Objects::nonNull)
                         .forEach(role -> resolved.put(role.getIdLong(), role));
@@ -146,13 +140,11 @@ public class CommandInteractionPayloadImpl extends InteractionImpl
                                 .isThread()) {
                             resolved.put(
                                     Long.parseUnsignedLong(id),
-                                    interactionEntityBuilder.createThreadChannel(
-                                            guild, channelJson));
+                                    interactionEntityBuilder.createThreadChannel(guild, channelJson));
                         } else {
                             resolved.put(
                                     Long.parseUnsignedLong(id),
-                                    interactionEntityBuilder.createGuildChannel(
-                                            guild, channelJson));
+                                    interactionEntityBuilder.createGuildChannel(guild, channelJson));
                         }
                     }));
         }

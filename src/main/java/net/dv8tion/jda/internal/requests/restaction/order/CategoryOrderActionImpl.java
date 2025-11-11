@@ -53,15 +53,11 @@ public class CategoryOrderActionImpl extends ChannelOrderActionImpl implements C
     @Override
     protected void validateInput(GuildChannel entity) {
         Checks.notNull(entity, "Provided channel");
-        Checks.check(
-                entity instanceof ICategorizableChannel,
-                "Provided channel is not an ICategorizableChannel");
+        Checks.check(entity instanceof ICategorizableChannel, "Provided channel is not an ICategorizableChannel");
         Checks.check(
                 getCategory().equals(((ICategorizableChannel) entity).getParentCategory()),
                 "Provided channel's Category is not this Category!");
-        Checks.check(
-                orderList.contains(entity),
-                "Provided channel is not in the list of orderable channels!");
+        Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
     @Nonnull

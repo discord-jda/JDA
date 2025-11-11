@@ -33,8 +33,7 @@ import javax.annotation.Nonnull;
 public class GenericAutoModRuleEvent extends Event {
     private final AutoModRule rule;
 
-    public GenericAutoModRuleEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull AutoModRule rule) {
+    public GenericAutoModRuleEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModRule rule) {
         super(api, responseNumber);
         this.rule = rule;
     }

@@ -38,18 +38,12 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class MessagePaginationActionImpl
-        extends PaginationActionImpl<Message, MessagePaginationAction>
+public class MessagePaginationActionImpl extends PaginationActionImpl<Message, MessagePaginationAction>
         implements MessagePaginationAction {
     private final MessageChannel channel;
 
     public MessagePaginationActionImpl(MessageChannel channel) {
-        super(
-                channel.getJDA(),
-                Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()),
-                1,
-                100,
-                100);
+        super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
 
         if (channel instanceof GuildChannel) {
             GuildChannel guildChannel = (GuildChannel) channel;

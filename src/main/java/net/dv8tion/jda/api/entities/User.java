@@ -92,8 +92,7 @@ public interface User extends UserSnowflake {
     String TAG_BADGE_URL = "https://cdn.discordapp.com/guild-tag-badges/%s/%s.png";
 
     /** Used to keep consistency between color values used in the API */
-    int DEFAULT_ACCENT_COLOR_RAW =
-            0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better
+    int DEFAULT_ACCENT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better
     // consistency
 
     /**
@@ -194,8 +193,7 @@ public interface User extends UserSnowflake {
         String avatarId = getAvatarId();
         return avatarId == null
                 ? null
-                : String.format(
-                        AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+                : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
     /**

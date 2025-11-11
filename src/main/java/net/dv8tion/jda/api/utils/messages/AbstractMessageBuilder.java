@@ -45,13 +45,11 @@ import javax.annotation.Nullable;
  * @see   MessageEditBuilder
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>>
-        implements MessageRequest<R> {
+public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>> implements MessageRequest<R> {
     protected static boolean isDefaultUseComponentsV2 = false;
 
     protected final List<MessageEmbed> embeds = new ArrayList<>(Message.MAX_EMBED_COUNT);
-    protected final List<MessageTopLevelComponentUnion> components =
-            new ArrayList<>(Message.MAX_COMPONENT_COUNT);
+    protected final List<MessageTopLevelComponentUnion> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
     protected AllowedMentionsData mentions = new AllowedMentionsData();
     protected int messageFlags;
@@ -162,9 +160,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     public R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.noneNull(components, "MessageTopLevelComponents");
         Checks.checkComponents(
-                "Provided component is invalid for messages!",
-                components,
-                Component::isMessageCompatible);
+                "Provided component is invalid for messages!", components, Component::isMessageCompatible);
 
         List<MessageTopLevelComponentUnion> componentsAsUnions =
                 ComponentsUtil.membersToUnion(components, MessageTopLevelComponentUnion.class);

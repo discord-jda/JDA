@@ -203,8 +203,7 @@ public interface TriggerConfig extends SerializableData {
      * @return {@link PresetKeywordTriggerConfig}
      */
     @Nonnull
-    static PresetKeywordTriggerConfig presetKeywordFilter(
-            @Nonnull Collection<AutoModRule.KeywordPreset> presets) {
+    static PresetKeywordTriggerConfig presetKeywordFilter(@Nonnull Collection<AutoModRule.KeywordPreset> presets) {
         return new PresetKeywordTriggerConfig().enablePresets(presets);
     }
 
@@ -220,8 +219,7 @@ public interface TriggerConfig extends SerializableData {
      * @return {@link PresetKeywordTriggerConfig}
      */
     @Nonnull
-    static PresetKeywordTriggerConfig presetKeywordFilter(
-            @Nonnull AutoModRule.KeywordPreset... presets) {
+    static PresetKeywordTriggerConfig presetKeywordFilter(@Nonnull AutoModRule.KeywordPreset... presets) {
         return new PresetKeywordTriggerConfig().enablePresets(presets);
     }
 }

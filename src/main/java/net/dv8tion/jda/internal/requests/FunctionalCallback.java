@@ -30,8 +30,7 @@ public class FunctionalCallback implements Callback {
     private final BiConsumer<Call, IOException> failure;
     private final IOBiConsumer<Call, Response> success;
 
-    public FunctionalCallback(
-            BiConsumer<Call, IOException> failure, IOBiConsumer<Call, Response> success) {
+    public FunctionalCallback(BiConsumer<Call, IOException> failure, IOBiConsumer<Call, Response> success) {
         this.failure = failure;
         this.success = success;
     }

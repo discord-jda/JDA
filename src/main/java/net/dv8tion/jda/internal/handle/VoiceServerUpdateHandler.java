@@ -39,8 +39,7 @@ public class VoiceServerUpdateHandler extends SocketHandler {
         }
         Guild guild = getJDA().getGuildById(guildId);
         if (guild == null) {
-            throw new IllegalArgumentException(
-                    "Attempted to start audio connection with Guild that doesn't exist!");
+            throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist!");
         }
 
         getJDA().getDirectAudioController()
@@ -65,8 +64,8 @@ public class VoiceServerUpdateHandler extends SocketHandler {
 
         VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
         if (voiceInterceptor != null) {
-            voiceInterceptor.onVoiceServerUpdate(new VoiceDispatchInterceptor.VoiceServerUpdate(
-                    guild, endpoint, token, sessionId, allContent));
+            voiceInterceptor.onVoiceServerUpdate(
+                    new VoiceDispatchInterceptor.VoiceServerUpdate(guild, endpoint, token, sessionId, allContent));
             return null;
         }
 
@@ -88,8 +87,7 @@ public class VoiceServerUpdateHandler extends SocketHandler {
                 return;
             }
 
-            AudioConnection connection =
-                    new AudioConnection(audioManager, endpoint, sessionId, token, target);
+            AudioConnection connection = new AudioConnection(audioManager, endpoint, sessionId, token, target);
             audioManager.setAudioConnection(connection);
             connection.startConnection();
         });

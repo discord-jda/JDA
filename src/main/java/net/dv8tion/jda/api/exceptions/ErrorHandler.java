@@ -53,8 +53,7 @@ import javax.annotation.Nullable;
 public class ErrorHandler implements Consumer<Throwable> {
     private static final Consumer<? super Throwable> empty = (e) -> {};
     private final Consumer<? super Throwable> base;
-    private final Map<Predicate<? super Throwable>, Consumer<? super Throwable>> cases =
-            new LinkedHashMap<>();
+    private final Map<Predicate<? super Throwable>, Consumer<? super Throwable>> cases = new LinkedHashMap<>();
 
     /**
      * Create an ErrorHandler with {@link RestAction#getDefaultFailure()} as base consumer.
@@ -101,8 +100,7 @@ public class ErrorHandler implements Consumer<Throwable> {
      * @return This ErrorHandler with the applied ignore cases
      */
     @Nonnull
-    public ErrorHandler ignore(
-            @Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses) {
+    public ErrorHandler ignore(@Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses) {
         Checks.notNull(ignored, "ErrorResponse");
         Checks.noneNull(errorResponses, "ErrorResponse");
         return ignore(EnumSet.of(ignored, errorResponses));
@@ -229,8 +227,7 @@ public class ErrorHandler implements Consumer<Throwable> {
      */
     @Nonnull
     public ErrorHandler handle(
-            @Nonnull ErrorResponse response,
-            @Nonnull Consumer<? super ErrorResponseException> handler) {
+            @Nonnull ErrorResponse response, @Nonnull Consumer<? super ErrorResponseException> handler) {
         Checks.notNull(response, "ErrorResponse");
         return handle(EnumSet.of(response), handler);
     }
@@ -266,10 +263,7 @@ public class ErrorHandler implements Consumer<Throwable> {
             @Nonnull Consumer<? super ErrorResponseException> handler) {
         Checks.notNull(handler, "Handler");
         Checks.noneNull(errorResponses, "ErrorResponse");
-        return handle(
-                ErrorResponseException.class,
-                (it) -> errorResponses.contains(it.getErrorResponse()),
-                handler);
+        return handle(ErrorResponseException.class, (it) -> errorResponses.contains(it.getErrorResponse()), handler);
     }
 
     /**
@@ -328,14 +322,11 @@ public class ErrorHandler implements Consumer<Throwable> {
      */
     @Nonnull
     public <T> ErrorHandler handle(
-            @Nonnull Class<T> clazz,
-            @Nonnull Predicate<? super T> condition,
-            @Nonnull Consumer<? super T> handler) {
+            @Nonnull Class<T> clazz, @Nonnull Predicate<? super T> condition, @Nonnull Consumer<? super T> handler) {
         Checks.notNull(clazz, "Class");
         Checks.notNull(handler, "Handler");
         return handle(
-                (it) -> clazz.isInstance(it) && condition.test(clazz.cast(it)),
-                (ex) -> handler.accept(clazz.cast(ex)));
+                (it) -> clazz.isInstance(it) && condition.test(clazz.cast(it)), (ex) -> handler.accept(clazz.cast(ex)));
     }
 
     /**
@@ -370,8 +361,7 @@ public class ErrorHandler implements Consumer<Throwable> {
         Checks.notNull(handler, "Handler");
         List<Class<?>> classes = new ArrayList<>(clazz);
         Predicate<? super Throwable> check =
-                (it) -> classes.stream().anyMatch(c -> c.isInstance(it))
-                        && (condition == null || condition.test(it));
+                (it) -> classes.stream().anyMatch(c -> c.isInstance(it)) && (condition == null || condition.test(it));
         return handle(check, handler);
     }
 
@@ -397,8 +387,7 @@ public class ErrorHandler implements Consumer<Throwable> {
      */
     @Nonnull
     public ErrorHandler handle(
-            @Nonnull Predicate<? super Throwable> condition,
-            @Nonnull Consumer<? super Throwable> handler) {
+            @Nonnull Predicate<? super Throwable> condition, @Nonnull Consumer<? super Throwable> handler) {
         Checks.notNull(condition, "Condition");
         Checks.notNull(handler, "Handler");
         cases.put(condition, handler);
@@ -407,8 +396,7 @@ public class ErrorHandler implements Consumer<Throwable> {
 
     @Override
     public void accept(Throwable t) {
-        for (Map.Entry<Predicate<? super Throwable>, Consumer<? super Throwable>> entry :
-                cases.entrySet()) {
+        for (Map.Entry<Predicate<? super Throwable>, Consumer<? super Throwable>> entry : cases.entrySet()) {
             Predicate<? super Throwable> condition = entry.getKey();
             Consumer<? super Throwable> callback = entry.getValue();
             if (condition.test(t)) {

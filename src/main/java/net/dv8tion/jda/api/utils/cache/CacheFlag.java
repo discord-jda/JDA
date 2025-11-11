@@ -95,8 +95,7 @@ public enum CacheFlag {
     SCHEDULED_EVENTS(GatewayIntent.SCHEDULED_EVENTS),
     ;
 
-    private static final EnumSet<CacheFlag> privileged =
-            EnumSet.of(ACTIVITY, CLIENT_STATUS, ONLINE_STATUS);
+    private static final EnumSet<CacheFlag> privileged = EnumSet.of(ACTIVITY, CLIENT_STATUS, ONLINE_STATUS);
     private final GatewayIntent requiredIntent;
 
     CacheFlag() {

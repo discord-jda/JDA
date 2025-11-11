@@ -226,9 +226,7 @@ public class WidgetImpl implements Widget {
             this.avatar = json.getString("avatar", null);
             this.nickname = json.getString("nick", null);
             this.status = OnlineStatus.fromKey(json.getString("status"));
-            this.game = json.isNull("game")
-                    ? null
-                    : EntityBuilder.createActivity(json.getObject("game"));
+            this.game = json.isNull("game") ? null : EntityBuilder.createActivity(json.getObject("game"));
         }
 
         private void setVoiceState(VoiceState voiceState) {
@@ -275,11 +273,7 @@ public class WidgetImpl implements Widget {
             String avatarId = getAvatarId();
             return avatarId == null
                     ? null
-                    : String.format(
-                            User.AVATAR_URL,
-                            getId(),
-                            avatarId,
-                            avatarId.startsWith("a_") ? ".gif" : ".png");
+                    : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
         }
 
         @Override
@@ -547,9 +541,7 @@ public class WidgetImpl implements Widget {
                 return false;
             }
             VoiceState oState = (VoiceState) obj;
-            return this == oState
-                    || (this.member.equals(oState.getMember())
-                            && this.widget.equals(oState.getWidget()));
+            return this == oState || (this.member.equals(oState.getMember()) && this.widget.equals(oState.getWidget()));
         }
 
         @Override

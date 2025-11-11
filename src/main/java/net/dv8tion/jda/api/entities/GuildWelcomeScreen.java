@@ -137,10 +137,7 @@ public interface GuildWelcomeScreen {
          * @return The new welcome channel
          */
         @Nonnull
-        static Channel of(
-                @Nonnull StandardGuildChannel channel,
-                @Nonnull String description,
-                @Nullable Emoji emoji) {
+        static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description, @Nullable Emoji emoji) {
             Checks.notNull(channel, "Channel");
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");

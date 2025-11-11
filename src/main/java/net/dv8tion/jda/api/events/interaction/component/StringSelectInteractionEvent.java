@@ -34,8 +34,7 @@ import javax.annotation.Nonnull;
  *
  * @see EntitySelectInteractionEvent
  */
-public class StringSelectInteractionEvent
-        extends GenericSelectMenuInteractionEvent<String, StringSelectMenu>
+public class StringSelectInteractionEvent extends GenericSelectMenuInteractionEvent<String, StringSelectMenu>
         implements StringSelectInteraction {
     private final StringSelectInteraction interaction;
 

@@ -37,8 +37,7 @@ public class AutoModExecutionImpl implements AutoModExecution {
 
     public AutoModExecutionImpl(Guild guild, DataObject json) {
         this.guild = guild;
-        this.channel = guild.getChannelById(
-                GuildMessageChannel.class, json.getUnsignedLong("channel_id", 0L));
+        this.channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id", 0L));
         this.response = new AutoModResponseImpl(guild, json.getObject("action"));
         this.type = AutoModTriggerType.fromKey(json.getInt("rule_trigger_type", -1));
         this.userId = json.getUnsignedLong("user_id");

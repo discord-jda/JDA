@@ -533,8 +533,7 @@ public interface Command extends ISnowflake, ICommandReference {
                 return false;
             }
             Choice other = (Choice) obj;
-            return Objects.equals(other.name, name)
-                    && Objects.equals(other.stringValue, stringValue);
+            return Objects.equals(other.name, name) && Objects.equals(other.stringValue, stringValue);
         }
 
         @Override
@@ -582,8 +581,7 @@ public interface Command extends ISnowflake, ICommandReference {
             } else if (optionType == OptionType.NUMBER) {
                 value = getAsDouble();
             } else {
-                throw new IllegalArgumentException(
-                        "Cannot transform choice into data for type " + optionType);
+                throw new IllegalArgumentException("Cannot transform choice into data for type " + optionType);
             }
 
             return DataObject.empty()
@@ -610,8 +608,7 @@ public interface Command extends ISnowflake, ICommandReference {
 
         public Option(@Nonnull DataObject json) {
             this.name = json.getString("name");
-            this.nameLocalizations =
-                    LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations =
                     LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
@@ -624,9 +621,7 @@ public interface Command extends ISnowflake, ICommandReference {
                             .collect(Collectors.toSet()))
                     .orElse(Collections.emptySet()));
             this.choices = json.optArray("choices")
-                    .map(it -> it.stream(DataArray::getObject)
-                            .map(Choice::new)
-                            .collect(Collectors.toList()))
+                    .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
                     .orElse(Collections.emptyList());
             if (!json.isNull("min_value")) {
                 this.minValue = json.getDouble("min_value");
@@ -851,8 +846,7 @@ public interface Command extends ISnowflake, ICommandReference {
         public Subcommand(ICommandReference parentCommand, DataObject json) {
             this.parentCommand = parentCommand;
             this.name = json.getString("name");
-            this.nameLocalizations =
-                    LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations =
                     LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
@@ -964,8 +958,7 @@ public interface Command extends ISnowflake, ICommandReference {
         public SubcommandGroup(Command parentCommand, DataObject json) {
             this.parentCommand = parentCommand;
             this.name = json.getString("name");
-            this.nameLocalizations =
-                    LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations =
                     LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");

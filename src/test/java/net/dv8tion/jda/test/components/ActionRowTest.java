@@ -38,8 +38,8 @@ public class ActionRowTest extends AbstractSnapshotTest {
 
     private static final ActionRowChildComponentUnion EXAMPLE_BUTTON =
             (ActionRowChildComponentUnion) Button.primary("id", "label").withUniqueId(1);
-    private static final ActionRowChildComponentUnion EXAMPLE_MENU = (ActionRowChildComponentUnion)
-            EntitySelectMenu.create("id", EntitySelectMenu.SelectTarget.ROLE)
+    private static final ActionRowChildComponentUnion EXAMPLE_MENU =
+            (ActionRowChildComponentUnion) EntitySelectMenu.create("id", EntitySelectMenu.SelectTarget.ROLE)
                     .setUniqueId(2)
                     .build();
 
@@ -70,35 +70,20 @@ public class ActionRowTest extends AbstractSnapshotTest {
 
     @Test
     void testPartitionOf() {
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> ActionRow.partitionOf(Collections.emptyList()));
+        assertThatIllegalArgumentException().isThrownBy(() -> ActionRow.partitionOf(Collections.emptyList()));
 
         List<ActionRow> rowsOfSixButtons = ActionRow.partitionOf(
-                EXAMPLE_BUTTON,
-                EXAMPLE_BUTTON,
-                EXAMPLE_BUTTON,
-                EXAMPLE_BUTTON,
-                EXAMPLE_BUTTON,
-                EXAMPLE_BUTTON);
+                EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON);
         assertThat(rowsOfSixButtons)
                 .isEqualTo(Arrays.asList(
-                        ActionRow.of(
-                                EXAMPLE_BUTTON,
-                                EXAMPLE_BUTTON,
-                                EXAMPLE_BUTTON,
-                                EXAMPLE_BUTTON,
-                                EXAMPLE_BUTTON),
+                        ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON),
                         ActionRow.of(EXAMPLE_BUTTON)));
 
-        List<ActionRow> rowsOfFiveButtons = ActionRow.partitionOf(
-                EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON);
+        List<ActionRow> rowsOfFiveButtons =
+                ActionRow.partitionOf(EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON);
         assertThat(rowsOfFiveButtons)
-                .isEqualTo(Collections.singletonList(ActionRow.of(
-                        EXAMPLE_BUTTON,
-                        EXAMPLE_BUTTON,
-                        EXAMPLE_BUTTON,
-                        EXAMPLE_BUTTON,
-                        EXAMPLE_BUTTON)));
+                .isEqualTo(Collections.singletonList(
+                        ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON)));
     }
 
     @Test
@@ -106,18 +91,15 @@ public class ActionRowTest extends AbstractSnapshotTest {
         ActionRow actionRow = ActionRow.of(EXAMPLE_BUTTON);
 
         Button newButton = Button.secondary("custom-id", "Label");
-        ActionRow updatedRow =
-                actionRow.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), newButton));
+        ActionRow updatedRow = actionRow.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), newButton));
 
-        assertThat(updatedRow.getComponents())
-                .containsExactly((ActionRowChildComponentUnion) newButton);
+        assertThat(updatedRow.getComponents()).containsExactly((ActionRowChildComponentUnion) newButton);
     }
 
     @Test
     void testReplacerRemovingOneButton() {
         ActionRow actionRow = ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_BUTTON.withUniqueId(42));
-        ActionRow updatedRow =
-                actionRow.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), (Component) null));
+        ActionRow updatedRow = actionRow.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), (Component) null));
 
         assertThat(updatedRow.getComponents()).containsExactly(EXAMPLE_BUTTON);
     }
@@ -127,8 +109,7 @@ public class ActionRowTest extends AbstractSnapshotTest {
         ActionRow actionRow = ActionRow.of(EXAMPLE_BUTTON);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> actionRow.replace(
-                        byUniqueId(EXAMPLE_BUTTON.getUniqueId(), (Component) null)));
+                .isThrownBy(() -> actionRow.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), (Component) null)));
     }
 
     @Test
@@ -136,7 +117,6 @@ public class ActionRowTest extends AbstractSnapshotTest {
         int uniqueId = 42;
         ActionRow actionRow = ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_BUTTON.withUniqueId(uniqueId));
 
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> actionRow.replace(byUniqueId(uniqueId, EXAMPLE_MENU)));
+        assertThatIllegalArgumentException().isThrownBy(() -> actionRow.replace(byUniqueId(uniqueId, EXAMPLE_MENU)));
     }
 }

@@ -60,8 +60,7 @@ public class GuildMemberRemoveHandler extends SocketHandler {
             User user = api.getEntityBuilder().createUser(content.getObject("user"));
 
             GuildVoiceStateImpl voiceState = guild.getVoiceStateView().getElementById(userId);
-            if (voiceState != null
-                    && voiceState.inAudioChannel()) // If this user was in an AudioChannel, fire
+            if (voiceState != null && voiceState.inAudioChannel()) // If this user was in an AudioChannel, fire
             // VoiceLeaveEvent.
             {
                 AudioChannel channel = voiceState.getChannel();
@@ -83,8 +82,7 @@ public class GuildMemberRemoveHandler extends SocketHandler {
             }
 
             // Cache independent event
-            getJDA().handleEvent(new GuildMemberRemoveEvent(
-                    getJDA(), responseNumber, guild, user, member));
+            getJDA().handleEvent(new GuildMemberRemoveEvent(getJDA(), responseNumber, guild, user, member));
             return null;
         } finally {
             // Reduce member count and remove dependent caches

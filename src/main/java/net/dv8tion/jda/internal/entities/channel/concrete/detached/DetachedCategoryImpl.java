@@ -32,9 +32,7 @@ import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import javax.annotation.Nonnull;
 
 public class DetachedCategoryImpl extends AbstractGuildChannelImpl<DetachedCategoryImpl>
-        implements Category,
-                CategoryMixin<DetachedCategoryImpl>,
-                IInteractionPermissionMixin<DetachedCategoryImpl> {
+        implements Category, CategoryMixin<DetachedCategoryImpl>, IInteractionPermissionMixin<DetachedCategoryImpl> {
     private ChannelInteractionPermissions interactionPermissions;
 
     private int position;

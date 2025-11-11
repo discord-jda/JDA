@@ -32,10 +32,7 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
     public static final String IDENTIFIER = "afk_timeout";
 
     public GuildUpdateAfkTimeoutEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull Guild.Timeout oldAfkTimeout) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.Timeout oldAfkTimeout) {
         super(api, responseNumber, guild, oldAfkTimeout, guild.getAfkTimeout(), IDENTIFIER);
     }
 

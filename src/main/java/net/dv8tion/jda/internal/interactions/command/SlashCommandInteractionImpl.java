@@ -23,8 +23,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
 
-public class SlashCommandInteractionImpl extends CommandInteractionImpl
-        implements SlashCommandInteraction {
+public class SlashCommandInteractionImpl extends CommandInteractionImpl implements SlashCommandInteraction {
     public SlashCommandInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
     }

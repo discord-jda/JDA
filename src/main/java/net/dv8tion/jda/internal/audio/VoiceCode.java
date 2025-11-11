@@ -47,8 +47,7 @@ public final class VoiceCode {
         UNKNOWN_ENCRYPTION_MODE(4016, "The specified encryption method is not supported"),
         BAD_REQUEST(4020, "We sent a malformed request"),
         RATE_LIMIT_EXCEEDED(4021, "We exceeded the rate limit"),
-        DISCONNECTED_ALL_CLIENTS(
-                4022, "All clients were disconnected, likely the channel was deleted"),
+        DISCONNECTED_ALL_CLIENTS(4022, "All clients were disconnected, likely the channel was deleted"),
 
         UNKNOWN(0, "Unknown code");
 

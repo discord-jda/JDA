@@ -81,11 +81,7 @@ public class GuildWelcomeScreenImpl implements GuildWelcomeScreen {
         private final String description;
         private final EmojiUnion emoji;
 
-        public ChannelImpl(
-                @Nullable Guild guild,
-                long id,
-                @Nonnull String description,
-                @Nullable EmojiUnion emoji) {
+        public ChannelImpl(@Nullable Guild guild, long id, @Nonnull String description, @Nullable EmojiUnion emoji) {
             this.guild = guild;
             this.id = id;
             this.description = description;

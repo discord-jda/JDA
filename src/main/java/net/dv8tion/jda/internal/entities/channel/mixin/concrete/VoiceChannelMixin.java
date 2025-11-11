@@ -51,9 +51,8 @@ public interface VoiceChannelMixin<T extends VoiceChannelMixin<T>>
     default ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
 
-        ChannelAction<VoiceChannel> action = guild.createVoiceChannel(getName())
-                .setBitrate(getBitrate())
-                .setUserlimit(getUserLimit());
+        ChannelAction<VoiceChannel> action =
+                guild.createVoiceChannel(getName()).setBitrate(getBitrate()).setUserlimit(getUserLimit());
 
         if (getRegionRaw() != null) {
             action.setRegion(Region.fromKey(getRegionRaw()));
@@ -66,11 +65,9 @@ public interface VoiceChannelMixin<T extends VoiceChannelMixin<T>>
             }
             for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
                 if (o.isMemberOverride()) {
-                    action.addMemberPermissionOverride(
-                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 } else {
-                    action.addRolePermissionOverride(
-                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 }
             }
         }

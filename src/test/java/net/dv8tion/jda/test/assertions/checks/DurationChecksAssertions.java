@@ -26,8 +26,7 @@ import static net.dv8tion.jda.internal.utils.Helpers.durationToString;
 import static net.dv8tion.jda.test.ChecksHelper.isNegativeError;
 import static net.dv8tion.jda.test.ChecksHelper.notPositiveError;
 
-public class DurationChecksAssertions
-        extends AbstractChecksAssertions<Duration, DurationChecksAssertions> {
+public class DurationChecksAssertions extends AbstractChecksAssertions<Duration, DurationChecksAssertions> {
     public DurationChecksAssertions(String name, ThrowingConsumer<Duration> callable) {
         super(name, callable);
     }

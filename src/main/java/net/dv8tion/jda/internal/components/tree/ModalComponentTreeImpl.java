@@ -34,15 +34,13 @@ public class ModalComponentTreeImpl extends AbstractComponentTree<ModalTopLevelC
     }
 
     @Nonnull
-    public static ModalComponentTree of(
-            @Nonnull Collection<? extends ModalTopLevelComponent> components) {
+    public static ModalComponentTree of(@Nonnull Collection<? extends ModalTopLevelComponent> components) {
         Checks.notEmpty(components, "Components");
         Checks.noneNull(components, "Components");
 
         // Allow unknown components so [[Modal#getComponentTree]] works
         Collection<ModalTopLevelComponentUnion> componentUnions =
-                ComponentsUtil.membersToUnionWithUnknownType(
-                        components, ModalTopLevelComponentUnion.class);
+                ComponentsUtil.membersToUnionWithUnknownType(components, ModalTopLevelComponentUnion.class);
         return new ModalComponentTreeImpl(componentUnions);
     }
 

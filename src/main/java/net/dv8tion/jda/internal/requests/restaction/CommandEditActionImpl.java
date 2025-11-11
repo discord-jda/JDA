@@ -59,9 +59,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private CommandDataImpl data;
 
     public CommandEditActionImpl(JDA api, Command.Type type, String id) {
-        super(
-                api,
-                Route.Interactions.EDIT_COMMAND.compile(api.getSelfUser().getApplicationId(), id));
+        super(api, Route.Interactions.EDIT_COMMAND.compile(api.getSelfUser().getApplicationId(), id));
         this.guild = null;
         this.data = CommandDataImpl.of(type, UNDEFINED, UNDEFINED);
         this.reset();
@@ -138,8 +136,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setIntegrationTypes(
-            @Nonnull Collection<IntegrationType> integrationTypes) {
+    public CommandEditAction setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes) {
         data.setIntegrationTypes(integrationTypes);
         mask |= INTEGRATION_TYPES_SET;
         return this;

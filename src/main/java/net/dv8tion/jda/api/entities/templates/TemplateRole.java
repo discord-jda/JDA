@@ -39,13 +39,7 @@ public class TemplateRole implements ISnowflake {
     private final boolean mentionable;
     private final long rawPermissions;
 
-    public TemplateRole(
-            long id,
-            String name,
-            int color,
-            boolean hoisted,
-            boolean mentionable,
-            long rawPermissions) {
+    public TemplateRole(long id, String name, int color, boolean hoisted, boolean mentionable, long rawPermissions) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -95,9 +89,7 @@ public class TemplateRole implements ISnowflake {
      */
     @Nullable
     public Color getColor() {
-        return this.color == net.dv8tion.jda.api.entities.Role.DEFAULT_COLOR_RAW
-                ? null
-                : new Color(this.color);
+        return this.color == net.dv8tion.jda.api.entities.Role.DEFAULT_COLOR_RAW ? null : new Color(this.color);
     }
 
     /**

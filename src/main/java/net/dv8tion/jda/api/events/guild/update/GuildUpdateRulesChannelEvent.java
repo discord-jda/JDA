@@ -34,10 +34,7 @@ public class GuildUpdateRulesChannelEvent extends GenericGuildUpdateEvent<TextCh
     public static final String IDENTIFIER = "rules_channel";
 
     public GuildUpdateRulesChannelEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nullable TextChannel oldRulesChannel) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldRulesChannel) {
         super(api, responseNumber, guild, oldRulesChannel, guild.getRulesChannel(), IDENTIFIER);
     }
 

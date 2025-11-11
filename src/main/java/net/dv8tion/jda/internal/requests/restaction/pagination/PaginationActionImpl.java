@@ -34,8 +34,8 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
-public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
-        extends RestActionImpl<List<T>> implements PaginationAction<T, M> {
+public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>> extends RestActionImpl<List<T>>
+        implements PaginationAction<T, M> {
     protected final List<T> cached = new CopyOnWriteArrayList<>();
     protected final int maxLimit;
     protected final int minLimit;
@@ -62,8 +62,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
      * @param initialLimit
      *        The initial limit to use on the pagination endpoint
      */
-    public PaginationActionImpl(
-            JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit) {
+    public PaginationActionImpl(JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit) {
         super(api, route);
         this.maxLimit = maxLimit;
         this.minLimit = minLimit;
@@ -194,10 +193,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     @SuppressWarnings("unchecked")
     public M limit(int limit) {
         Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
-        Checks.check(
-                minLimit == 0 || limit >= minLimit,
-                "Limit must be greater or equal to %d",
-                minLimit);
+        Checks.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
         this.limit.set(limit);
         return (M) this;
     }
@@ -362,8 +358,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         route = route.withQueryParams("limit", limit);
 
         if (localLastKey != 0) {
-            route = route.withQueryParams(
-                    order.getKey(), getPaginationLastEvaluatedKey(localLastKey, this.last));
+            route = route.withQueryParams(order.getKey(), getPaginationLastEvaluatedKey(localLastKey, this.last));
         } else if (order == PaginationOrder.FORWARD) {
             route = route.withQueryParams("after", getPaginationLastEvaluatedKey(0, this.last));
         }
@@ -418,9 +413,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         protected boolean initial = true;
 
         protected ChainedConsumer(
-                CompletableFuture<?> task,
-                Procedure<? super T> action,
-                Consumer<Throwable> throwableConsumer) {
+                CompletableFuture<?> task, Procedure<? super T> action, Consumer<Throwable> throwableConsumer) {
             this.task = task;
             this.action = action;
             this.throwableConsumer = throwableConsumer;

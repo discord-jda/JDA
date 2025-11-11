@@ -36,8 +36,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager>
-        implements ScheduledEventManager {
+public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager> implements ScheduledEventManager {
     protected ScheduledEvent event;
     protected String name, description;
     protected long channelId;
@@ -50,8 +49,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     public ScheduledEventManagerImpl(ScheduledEvent event) {
         super(
                 event.getJDA(),
-                Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(
-                        event.getGuild().getId(), event.getId()));
+                Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(event.getGuild().getId(), event.getId()));
         this.event = event;
         if (isPermissionChecksEnabled()) {
             checkPermissions();
@@ -110,8 +108,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
             this.channelId = channel.getIdLong();
             this.entityType = ScheduledEvent.Type.VOICE;
         } else {
-            throw new IllegalArgumentException(
-                    "Invalid parameter: Can only set location to Voice and Stage Channels!");
+            throw new IllegalArgumentException("Invalid parameter: Can only set location to Voice and Stage Channels!");
         }
 
         set |= LOCATION;
@@ -134,9 +131,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     public ScheduledEventManager setStartTime(@Nonnull TemporalAccessor startTime) {
         Checks.notNull(startTime, "Start Time");
         OffsetDateTime offsetStartTime = Helpers.toOffsetDateTime(startTime);
-        Checks.check(
-                offsetStartTime.isAfter(OffsetDateTime.now()),
-                "Cannot schedule event in the past!");
+        Checks.check(offsetStartTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
         Checks.check(
                 offsetStartTime.isBefore(OffsetDateTime.now().plusYears(5)),
                 "Scheduled start and end times must be within five years.");
@@ -165,8 +160,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
         switch (newStatus) {
             case SCHEDULED:
             case UNKNOWN:
-                throw new IllegalArgumentException(
-                        "Cannot change scheduled event status to " + newStatus);
+                throw new IllegalArgumentException("Cannot change scheduled event status to " + newStatus);
         }
 
         // get the current status of the event. multiple-usage
@@ -176,8 +170,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
             case SCHEDULED:
                 // event is scheduled -> new status can be only active or cancel
                 Checks.check(
-                        newStatus == ScheduledEvent.Status.ACTIVE
-                                || newStatus == ScheduledEvent.Status.CANCELED,
+                        newStatus == ScheduledEvent.Status.ACTIVE || newStatus == ScheduledEvent.Status.CANCELED,
                         "Cannot perform status update! A scheduled event with status SCHEDULED can only be set to ACTIVE or CANCELED status.");
                 break;
 
@@ -223,8 +216,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
                     object.put("channel_id", null);
                     break;
                 default:
-                    throw new IllegalStateException(
-                            "ScheduledEventType " + entityType + " is not supported!");
+                    throw new IllegalStateException("ScheduledEventType " + entityType + " is not supported!");
             }
         }
         if (shouldUpdate(START_TIME)) {
@@ -248,8 +240,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
             Checks.check(
                     getScheduledEvent().getStatus() == ScheduledEvent.Status.SCHEDULED
                             || (entityType == ScheduledEvent.Type.EXTERNAL
-                                    && getScheduledEvent().getType()
-                                            == ScheduledEvent.Type.EXTERNAL),
+                                    && getScheduledEvent().getType() == ScheduledEvent.Type.EXTERNAL),
                     "Cannot update location type or location channel of non-scheduled event.");
             if (entityType == ScheduledEvent.Type.EXTERNAL
                     && endTime == null
@@ -264,15 +255,13 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
                     "Cannot update start time of non-scheduled event!");
             Checks.check(
                     (endTime == null && getScheduledEvent().getEndTime() == null)
-                            || (endTime == null ? getScheduledEvent().getEndTime() : endTime)
-                                    .isAfter(startTime),
+                            || (endTime == null ? getScheduledEvent().getEndTime() : endTime).isAfter(startTime),
                     "Cannot schedule event to end before starting!");
         }
 
         if (shouldUpdate(END_TIME)) {
             Checks.check(
-                    (startTime == null ? getScheduledEvent().getStartTime() : startTime)
-                            .isBefore(endTime),
+                    (startTime == null ? getScheduledEvent().getStartTime() : startTime).isBefore(endTime),
                     "Cannot schedule event to end before starting!");
         }
     }

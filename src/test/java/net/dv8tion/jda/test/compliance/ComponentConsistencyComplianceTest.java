@@ -41,13 +41,11 @@ public class ComponentConsistencyComplianceTest {
     }
 
     private DescribedPredicate<JavaClass> areComponents() {
-        return DescribedPredicate.describe(
-                "Is a Component", clazz -> clazz.isAssignableTo(Component.class));
+        return DescribedPredicate.describe("Is a Component", clazz -> clazz.isAssignableTo(Component.class));
     }
 
     private ArchCondition<JavaClass> overrideSupertypeMethodsWhichReturnsTheirDeclaringClass() {
-        return new ArchCondition<>(
-                "Overrides supertype methods which returns their declaring class") {
+        return new ArchCondition<>("Overrides supertype methods which returns their declaring class") {
             @Override
             public void check(JavaClass item, ConditionEvents events) {
                 List<JavaMethod> supertypeMethodsReturningDeclClass = getComponentSupertypes(item)
@@ -62,8 +60,7 @@ public class ComponentConsistencyComplianceTest {
                         .toList();
 
                 // The method may exist but have a diff return type, or it may not be overridden
-                for (JavaMethod supertypeMethodReturningDeclClass :
-                        supertypeMethodsReturningDeclClass) {
+                for (JavaMethod supertypeMethodReturningDeclClass : supertypeMethodsReturningDeclClass) {
                     Optional<JavaMethod> optDeclaredMethod = item.tryGetMethod(
                             supertypeMethodReturningDeclClass.getName(),
                             getParameterTypeNames(supertypeMethodReturningDeclClass));
@@ -90,9 +87,7 @@ public class ComponentConsistencyComplianceTest {
             }
 
             private Stream<JavaClass> getComponentSupertypes(JavaClass clazz) {
-                return Stream.concat(
-                                clazz.getAllRawSuperclasses().stream(),
-                                clazz.getAllRawInterfaces().stream())
+                return Stream.concat(clazz.getAllRawSuperclasses().stream(), clazz.getAllRawInterfaces().stream())
                         .filter(c -> c.isAssignableTo(Component.class));
             }
 

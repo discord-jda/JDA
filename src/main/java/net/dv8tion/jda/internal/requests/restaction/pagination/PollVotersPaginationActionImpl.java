@@ -32,15 +32,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class PollVotersPaginationActionImpl
-        extends PaginationActionImpl<User, PollVotersPaginationAction>
+public class PollVotersPaginationActionImpl extends PaginationActionImpl<User, PollVotersPaginationAction>
         implements PollVotersPaginationAction {
-    public PollVotersPaginationActionImpl(
-            JDA jda, String channelId, String messageId, long answerId) {
+    public PollVotersPaginationActionImpl(JDA jda, String channelId, String messageId, long answerId) {
         super(
                 jda,
-                Route.Messages.GET_POLL_ANSWER_VOTERS.compile(
-                        channelId, messageId, Long.toString(answerId)),
+                Route.Messages.GET_POLL_ANSWER_VOTERS.compile(channelId, messageId, Long.toString(answerId)),
                 1,
                 100,
                 100);

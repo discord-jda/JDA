@@ -28,8 +28,7 @@ import java.util.function.BooleanSupplier;
 
 import javax.annotation.Nonnull;
 
-public class ModalCallbackActionImpl extends InteractionCallbackImpl<Void>
-        implements ModalCallbackAction {
+public class ModalCallbackActionImpl extends InteractionCallbackImpl<Void> implements ModalCallbackAction {
     private final Modal modal;
 
     public ModalCallbackActionImpl(IModalCallback interaction, Modal modal) {

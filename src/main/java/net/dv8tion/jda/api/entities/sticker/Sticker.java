@@ -167,8 +167,7 @@ public interface Sticker extends StickerSnowflake {
         @Nonnull
         public String getExtension() {
             if (this == UNKNOWN) {
-                throw new IllegalStateException(
-                        "Cannot get file extension for StickerFormat.UNKNOWN");
+                throw new IllegalStateException("Cannot get file extension for StickerFormat.UNKNOWN");
             }
             return extension;
         }

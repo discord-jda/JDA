@@ -31,10 +31,7 @@ import javax.annotation.Nonnull;
  */
 public class ThreadMemberJoinEvent extends GenericThreadMemberEvent {
     public ThreadMemberJoinEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            ThreadChannel thread,
-            ThreadMember threadMember) {
+            @Nonnull JDA api, long responseNumber, ThreadChannel thread, ThreadMember threadMember) {
         super(api, responseNumber, thread, threadMember.getIdLong(), threadMember);
     }
 

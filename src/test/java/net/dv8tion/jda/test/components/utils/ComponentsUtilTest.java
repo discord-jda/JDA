@@ -41,8 +41,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ComponentsUtilTest {
-    private static final UnknownComponentImpl UNKNOWN_COMPONENT =
-            new UnknownComponentImpl(DataObject.empty());
+    private static final UnknownComponentImpl UNKNOWN_COMPONENT = new UnknownComponentImpl(DataObject.empty());
 
     @MethodSource("testUnknownComponentCannotBeInsertedArguments")
     @ParameterizedTest
@@ -54,13 +53,10 @@ public class ComponentsUtilTest {
         // Try everywhere ComponentsUtil is used
         return Stream.of(
                 Arguments.of(run(() -> Section.of(UNKNOWN_COMPONENT, TextDisplay.of("0")))),
-                Arguments.of(
-                        run(() -> Section.of(Button.primary("id", "label"), UNKNOWN_COMPONENT))),
-                Arguments.of(
-                        run(() -> Modal.create("id", "title").addComponents(UNKNOWN_COMPONENT))),
+                Arguments.of(run(() -> Section.of(Button.primary("id", "label"), UNKNOWN_COMPONENT))),
+                Arguments.of(run(() -> Modal.create("id", "title").addComponents(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> new MessageEditBuilder().setComponents(UNKNOWN_COMPONENT))),
-                Arguments.of(
-                        run(() -> new MessageCreateBuilder().addComponents(UNKNOWN_COMPONENT))),
+                Arguments.of(run(() -> new MessageCreateBuilder().addComponents(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> ActionRow.of(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> ActionRow.partitionOf(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> Container.of(UNKNOWN_COMPONENT))));

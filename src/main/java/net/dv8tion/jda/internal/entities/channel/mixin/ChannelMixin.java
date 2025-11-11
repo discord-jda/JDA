@@ -26,8 +26,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface ChannelMixin<T extends ChannelMixin<T>>
-        extends Channel, ChannelUnion, IDetachableEntityMixin {
+public interface ChannelMixin<T extends ChannelMixin<T>> extends Channel, ChannelUnion, IDetachableEntityMixin {
     // ---- Default implementations of interface ----
     @Override
     @Nonnull

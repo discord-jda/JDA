@@ -29,8 +29,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
-public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestActionImpl<Void>
-        implements Manager<M> {
+public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestActionImpl<Void> implements Manager<M> {
     private static boolean enablePermissionChecks = true;
     protected long set = 0;
 

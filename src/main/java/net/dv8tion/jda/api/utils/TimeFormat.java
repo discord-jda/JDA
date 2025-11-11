@@ -91,8 +91,7 @@ public enum TimeFormat {
      *
      * @see #parse(String)
      */
-    public static final Pattern MARKDOWN =
-            Pattern.compile("<t:(?<time>-?\\d{1,17})(?::(?<style>[tTdDfFR]))?>");
+    public static final Pattern MARKDOWN = Pattern.compile("<t:(?<time>-?\\d{1,17})(?::(?<style>[tTdDfFR]))?>");
 
     private final String style;
 
@@ -155,8 +154,7 @@ public enum TimeFormat {
         }
         String format = matcher.group("style");
         return new Timestamp(
-                format == null ? DEFAULT : fromStyle(format),
-                Long.parseLong(matcher.group("time")) * 1000);
+                format == null ? DEFAULT : fromStyle(format), Long.parseLong(matcher.group("time")) * 1000);
     }
 
     /**

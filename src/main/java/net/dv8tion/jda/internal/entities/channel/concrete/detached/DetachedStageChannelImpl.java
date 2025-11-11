@@ -36,8 +36,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class DetachedStageChannelImpl
-        extends AbstractStandardGuildChannelImpl<DetachedStageChannelImpl>
+public class DetachedStageChannelImpl extends AbstractStandardGuildChannelImpl<DetachedStageChannelImpl>
         implements StageChannel,
                 StageChannelMixin<DetachedStageChannelImpl>,
                 IInteractionPermissionMixin<DetachedStageChannelImpl> {

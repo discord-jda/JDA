@@ -193,8 +193,7 @@ public interface IPermissionHolder extends ISnowflake {
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
-    default boolean hasPermission(
-            @Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions) {
+    default boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions) {
         Checks.notNull(permissions, "Permission Collection");
         return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
@@ -243,8 +242,7 @@ public interface IPermissionHolder extends ISnowflake {
      *
      * @return True, if the channels can be synced
      */
-    boolean canSync(
-            @Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource);
+    boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource);
 
     /**
      * Whether the permissions of this PermissionHolder are good enough to sync the target channel with any other channel.

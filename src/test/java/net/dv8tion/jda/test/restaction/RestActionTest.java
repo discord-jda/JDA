@@ -84,11 +84,9 @@ public class RestActionTest extends IntegrationTest {
                 .delay(3, TimeUnit.SECONDS, scheduledExecutorService)
                 .queue();
 
-        verify(scheduledExecutorService, times(1))
-                .schedule(any(Runnable.class), eq(2000L), eq(TimeUnit.MILLISECONDS));
+        verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), eq(2000L), eq(TimeUnit.MILLISECONDS));
 
-        verify(scheduledExecutorService, times(1))
-                .schedule(any(Runnable.class), eq(3L), eq(TimeUnit.SECONDS));
+        verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), eq(3L), eq(TimeUnit.SECONDS));
     }
 
     @Test
@@ -96,10 +94,8 @@ public class RestActionTest extends IntegrationTest {
         when(scheduledExecutorService.schedule(any(Runnable.class), anyLong(), any()))
                 .thenReturn(null);
 
-        new CompletedRestAction<>(jda, "12345")
-                .queueAfter(2, TimeUnit.SECONDS, scheduledExecutorService);
+        new CompletedRestAction<>(jda, "12345").queueAfter(2, TimeUnit.SECONDS, scheduledExecutorService);
 
-        verify(scheduledExecutorService, times(1))
-                .schedule(any(Runnable.class), eq(2L), eq(TimeUnit.SECONDS));
+        verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), eq(2L), eq(TimeUnit.SECONDS));
     }
 }

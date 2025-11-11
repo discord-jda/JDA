@@ -35,10 +35,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildInviteDeleteEvent extends GenericGuildInviteEvent {
     public GuildInviteDeleteEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull String code,
-            @Nonnull GuildChannel channel) {
+            @Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel) {
         super(api, responseNumber, code, channel);
     }
 }

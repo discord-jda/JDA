@@ -40,8 +40,7 @@ import javax.annotation.Nonnull;
  *
  * @see ActionRowChildComponent
  */
-public interface ActionRow
-        extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable {
+public interface ActionRow extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable {
     /**
      * Create one row of {@link ActionRowChildComponent components}.
      * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link #getMaxAllowed(Type)}.
@@ -74,9 +73,7 @@ public interface ActionRow
      * @return The action row
      */
     @Nonnull
-    static ActionRow of(
-            @Nonnull ActionRowChildComponent component,
-            @Nonnull ActionRowChildComponent... components) {
+    static ActionRow of(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components) {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
         return of(Helpers.mergeVararg(component, components));
@@ -109,8 +106,7 @@ public interface ActionRow
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
-    static List<ActionRow> partitionOf(
-            @Nonnull Collection<? extends ActionRowChildComponent> components) {
+    static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> components) {
         return ActionRowImpl.partitionOf(components);
     }
 
@@ -144,8 +140,7 @@ public interface ActionRow
      */
     @Nonnull
     static List<ActionRow> partitionOf(
-            @Nonnull ActionRowChildComponent component,
-            @Nonnull ActionRowChildComponent... components) {
+            @Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components) {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
         return partitionOf(Helpers.mergeVararg(component, components));
@@ -250,8 +245,7 @@ public interface ActionRow
     @Override
     @CheckReturnValue
     default ActionRow withDisabled(boolean disabled) {
-        return replace(
-                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
+        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
     }
 
     @Nonnull
@@ -297,8 +291,7 @@ public interface ActionRow
     @Nonnull
     @CheckReturnValue
     default ActionRow withComponents(
-            @Nonnull ActionRowChildComponent component,
-            @Nonnull ActionRowChildComponent... components) {
+            @Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components) {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
         return withComponents(Helpers.mergeVararg(component, components));

@@ -33,8 +33,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser {
 
     public SelfUserImpl(long id, JDAImpl api) {
         super(id, api);
-        this.applicationId =
-                id; // configured later by EntityBuilder#createSelfUser when handling the ready
+        this.applicationId = id; // configured later by EntityBuilder#createSelfUser when handling the ready
         // event payload
     }
 
@@ -45,15 +44,13 @@ public class SelfUserImpl extends UserImpl implements SelfUser {
 
     @Override
     public PrivateChannel getPrivateChannel() {
-        throw new UnsupportedOperationException(
-                "You cannot get a PrivateChannel with yourself (SelfUser)");
+        throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
     }
 
     @Nonnull
     @Override
     public CacheRestAction<PrivateChannel> openPrivateChannel() {
-        throw new UnsupportedOperationException(
-                "You cannot open a PrivateChannel with yourself (SelfUser)");
+        throw new UnsupportedOperationException("You cannot open a PrivateChannel with yourself (SelfUser)");
     }
 
     @Override

@@ -174,8 +174,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
     @Override
     public Spliterator<JDA> spliterator() {
         try (UnlockHook hook = readLock()) {
-            return Spliterators.spliterator(
-                    iterator(), size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
+            return Spliterators.spliterator(iterator(), size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
         }
     }
 
@@ -237,8 +236,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
     public static class UnifiedShardCacheViewImpl implements ShardCacheView {
         protected final Supplier<? extends Stream<? extends ShardCacheView>> generator;
 
-        public UnifiedShardCacheViewImpl(
-                Supplier<? extends Stream<? extends ShardCacheView>> generator) {
+        public UnifiedShardCacheViewImpl(Supplier<? extends Stream<? extends ShardCacheView>> generator) {
             this.generator = generator;
         }
 

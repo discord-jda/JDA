@@ -40,10 +40,7 @@ public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEnti
                 .setName(getName())
                 .setPermissions(getPermissionsRaw())
                 .setIcon(
-                        getIcon() == null
-                                ? null
-                                : getIcon()
-                                        .getEmoji()); // we can only copy the emoji as we don't have
+                        getIcon() == null ? null : getIcon().getEmoji()); // we can only copy the emoji as we don't have
         // access to the Icon instance
     }
 
@@ -54,8 +51,7 @@ public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEnti
         }
 
         if (this.getGuild().getIdLong() != r.getGuild().getIdLong()) {
-            throw new IllegalArgumentException(
-                    "Cannot compare roles that aren't from the same guild!");
+            throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
         }
 
         if (this.getPositionRaw() != r.getPositionRaw()) {

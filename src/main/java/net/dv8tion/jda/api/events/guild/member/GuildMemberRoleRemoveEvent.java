@@ -45,10 +45,7 @@ public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent {
     private final List<Role> removedRoles;
 
     public GuildMemberRoleRemoveEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Member member,
-            @Nonnull List<Role> removedRoles) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull List<Role> removedRoles) {
         super(api, responseNumber, member);
         this.removedRoles = Collections.unmodifiableList(removedRoles);
     }

@@ -27,8 +27,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 
 import javax.annotation.Nonnull;
 
-public interface PrivateChannelMixin<T extends PrivateChannelMixin<T>>
-        extends PrivateChannel, MessageChannelMixin<T> {
+public interface PrivateChannelMixin<T extends PrivateChannelMixin<T>> extends PrivateChannel, MessageChannelMixin<T> {
 
     @Nonnull
     @Override

@@ -50,8 +50,8 @@ public class MessageMentionsImpl extends AbstractMentions {
             DataArray roleMentions) {
         super(content, jda, guild, mentionsEveryone);
         this.userMentionMap = new TLongObjectHashMap<>(userMentions.length());
-        this.roleMentionMap = new TLongHashSet(
-                roleMentions.stream(DataArray::getUnsignedLong).collect(Collectors.toList()));
+        this.roleMentionMap =
+                new TLongHashSet(roleMentions.stream(DataArray::getUnsignedLong).collect(Collectors.toList()));
 
         userMentions.stream(DataArray::getObject).forEach(obj -> {
             if (obj.isNull("member")) {

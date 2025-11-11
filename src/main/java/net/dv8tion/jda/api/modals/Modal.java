@@ -131,9 +131,8 @@ public interface Modal extends SerializableData {
      */
     @Nonnull
     default Modal.Builder createCopy() {
-        List<ModalTopLevelComponent> c = getComponents().stream()
-                .map(c2 -> (ModalTopLevelComponent) c2)
-                .collect(Collectors.toList());
+        List<ModalTopLevelComponent> c =
+                getComponents().stream().map(c2 -> (ModalTopLevelComponent) c2).collect(Collectors.toList());
         return new Builder(getId(), getTitle()).addComponents(c);
     }
 
@@ -164,8 +163,7 @@ public interface Modal extends SerializableData {
      * A preconfigured builder for the creation of modals.
      */
     class Builder {
-        private final List<ModalTopLevelComponentUnion> components =
-                new ArrayList<>(MAX_COMPONENTS);
+        private final List<ModalTopLevelComponentUnion> components = new ArrayList<>(MAX_COMPONENTS);
         private String id;
         private String title;
 
@@ -252,13 +250,10 @@ public interface Modal extends SerializableData {
          * @see    Component#isModalCompatible()
          */
         @Nonnull
-        public Builder addComponents(
-                @Nonnull Collection<? extends ModalTopLevelComponent> components) {
+        public Builder addComponents(@Nonnull Collection<? extends ModalTopLevelComponent> components) {
             Checks.noneNull(components, "Components");
             Checks.checkComponents(
-                    "Some components are incompatible with Modals",
-                    components,
-                    Component::isModalCompatible);
+                    "Some components are incompatible with Modals", components, Component::isModalCompatible);
 
             this.components.addAll(membersToUnion(components));
             return this;
@@ -282,8 +277,7 @@ public interface Modal extends SerializableData {
          * @see    Component#isModalCompatible()
          */
         @Nonnull
-        public Builder addComponents(
-                @Nonnull ComponentTree<? extends ModalTopLevelComponent> tree) {
+        public Builder addComponents(@Nonnull ComponentTree<? extends ModalTopLevelComponent> tree) {
             Checks.notNull(tree, "ModalComponentTree");
             return addComponents(tree.getComponents());
         }
@@ -332,9 +326,7 @@ public interface Modal extends SerializableData {
         @Nonnull
         public Modal build() {
             Checks.check(!components.isEmpty(), "Cannot make a modal without components!");
-            Checks.check(
-                    components.size() <= MAX_COMPONENTS,
-                    "Cannot make a modal with more than 5 components!");
+            Checks.check(components.size() <= MAX_COMPONENTS, "Cannot make a modal with more than 5 components!");
 
             return new ModalImpl(id, title, components);
         }

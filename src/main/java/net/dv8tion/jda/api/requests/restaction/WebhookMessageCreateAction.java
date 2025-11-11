@@ -160,8 +160,7 @@ public interface WebhookMessageCreateAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageCreateAction<T> createThread(
-            @Nonnull String threadName, @Nonnull ForumTagSnowflake... tags) {
+    default WebhookMessageCreateAction<T> createThread(@Nonnull String threadName, @Nonnull ForumTagSnowflake... tags) {
         return createThread(new ThreadCreateMetadata(threadName).addTags(tags));
     }
 }

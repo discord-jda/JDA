@@ -73,8 +73,7 @@ public class SecurityIncidentDetections {
             return false;
         }
         SecurityIncidentDetections that = (SecurityIncidentDetections) o;
-        return this.dmSpamDetectedAt == that.dmSpamDetectedAt
-                && this.raidDetectedAt == that.raidDetectedAt;
+        return this.dmSpamDetectedAt == that.dmSpamDetectedAt && this.raidDetectedAt == that.raidDetectedAt;
     }
 
     @Override

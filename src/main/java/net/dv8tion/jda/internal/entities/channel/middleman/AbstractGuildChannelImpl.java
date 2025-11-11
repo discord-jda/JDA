@@ -25,8 +25,8 @@ import net.dv8tion.jda.internal.utils.ChannelUtil;
 
 import javax.annotation.Nonnull;
 
-public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImpl<T>>
-        extends AbstractChannelImpl<T> implements GuildChannelMixin<T> {
+public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImpl<T>> extends AbstractChannelImpl<T>
+        implements GuildChannelMixin<T> {
     private Guild guild;
 
     public AbstractGuildChannelImpl(long id, Guild guild) {

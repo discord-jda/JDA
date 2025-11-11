@@ -389,8 +389,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeWhileAsync(
-            int limit, @Nonnull Predicate<? super T> rule) {
+    default CompletableFuture<List<T>> takeWhileAsync(int limit, @Nonnull Predicate<? super T> rule) {
         Checks.notNull(rule, "Rule");
         return takeUntilAsync(limit, rule.negate());
     }
@@ -437,8 +436,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeUntilAsync(
-            int limit, @Nonnull Predicate<? super T> rule) {
+    default CompletableFuture<List<T>> takeUntilAsync(int limit, @Nonnull Predicate<? super T> rule) {
         Checks.notNull(rule, "Rule");
         Checks.notNegative(limit, "Limit");
         List<T> result = new ArrayList<>();

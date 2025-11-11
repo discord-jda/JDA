@@ -55,12 +55,10 @@ public class MarkdownUtilTest {
         assertThat(codeblock("java", "Hello World")).isEqualTo("```java\nHello World```");
         assertThat(codeblock("java", "Hello ```java\nTest``` World"))
                 .isEqualTo("```java\nHello \\```java\nTest\\``` World```");
-        assertThat(codeblock("java", "Hello `Test` World"))
-                .isEqualTo("```java\nHello `Test` World```");
+        assertThat(codeblock("java", "Hello `Test` World")).isEqualTo("```java\nHello `Test` World```");
 
         assertThat(codeblock("Hello World")).isEqualTo("```Hello World```");
-        assertThat(codeblock("Hello ```java\nTest``` World"))
-                .isEqualTo("```Hello \\```java\nTest\\``` World```");
+        assertThat(codeblock("Hello ```java\nTest``` World")).isEqualTo("```Hello \\```java\nTest\\``` World```");
         assertThat(codeblock("Hello `Test` World")).isEqualTo("```Hello `Test` World```");
     }
 

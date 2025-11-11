@@ -43,8 +43,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
     }
 
     @Override
-    public void queue(
-            @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
+    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
         Consumer<? super Throwable> contextFailure = contextWrap(failure);
         action.queue(success, contextWrap((error) -> {
             try {
@@ -52,25 +51,18 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
                     // If check passed we can apply the fallback function and flatten it
                     RestAction<? extends T> then = map.apply(error);
                     if (then == null) {
-                        doFailure(
-                                failure,
-                                new IllegalStateException("FlatMapError operand is null", error));
+                        doFailure(failure, new IllegalStateException("FlatMapError operand is null", error));
                         // No contextFailure because error already has context
                     } else {
-                        then.queue(
-                                success,
-                                contextFailure); // Use contextFailure here to apply new context to
+                        then.queue(success, contextFailure); // Use contextFailure here to apply new context to
                         // new errors
                     }
                 } else {
-                    doFailure(
-                            failure, error); // No contextFailure because error already has context
+                    doFailure(failure, error); // No contextFailure because error already has context
                 }
             } catch (Throwable e) {
                 doFailure(
-                        failure,
-                        Helpers.appendCause(
-                                e, error)); // No contextFailure because error already has context
+                        failure, Helpers.appendCause(e, error)); // No contextFailure because error already has context
             }
         }));
     }

@@ -65,8 +65,7 @@ public interface ComponentTree<E extends Component> {
         Checks.noneNull(components, "Components");
         // We don't care if there are unknown components, they will be unpacked and checked when
         // sending
-        return new ComponentTreeImpl<>(
-                unionType, ComponentsUtil.membersToUnionWithUnknownType(components, unionType));
+        return new ComponentTreeImpl<>(unionType, ComponentsUtil.membersToUnionWithUnknownType(components, unionType));
     }
 
     /**
@@ -84,8 +83,7 @@ public interface ComponentTree<E extends Component> {
     static ComponentTree<IComponentUnion> of(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
         return new ComponentTreeImpl<>(
-                IComponentUnion.class,
-                ComponentsUtil.membersToUnionWithUnknownType(components, IComponentUnion.class));
+                IComponentUnion.class, ComponentsUtil.membersToUnionWithUnknownType(components, IComponentUnion.class));
     }
 
     /**
@@ -101,8 +99,7 @@ public interface ComponentTree<E extends Component> {
      * @return A {@link MessageComponentTree} containing the given components
      */
     @Nonnull
-    static MessageComponentTree forMessage(
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+    static MessageComponentTree forMessage(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         return MessageComponentTree.of(components);
     }
 
@@ -119,8 +116,7 @@ public interface ComponentTree<E extends Component> {
      * @return A {@link ModalComponentTree} containing the given components
      */
     @Nonnull
-    static ModalComponentTree forModal(
-            @Nonnull Collection<? extends ModalTopLevelComponent> components) {
+    static ModalComponentTree forModal(@Nonnull Collection<? extends ModalTopLevelComponent> components) {
         return ModalComponentTree.of(components);
     }
 
@@ -172,8 +168,7 @@ public interface ComponentTree<E extends Component> {
      * @return A modifiable list of components satisfying the type and filter
      */
     @Nonnull
-    default <T extends Component> List<T> findAll(
-            @Nonnull Class<T> type, @Nonnull Predicate<? super T> filter) {
+    default <T extends Component> List<T> findAll(@Nonnull Class<T> type, @Nonnull Predicate<? super T> filter) {
         Checks.notNull(type, "Component type");
         Checks.notNull(filter, "Component filter");
 
@@ -198,8 +193,7 @@ public interface ComponentTree<E extends Component> {
      * @return An {@link Optional} possibly containing a component satisfying the type and filter
      */
     @Nonnull
-    default <T extends Component> Optional<T> find(
-            @Nonnull Class<T> type, @Nonnull Predicate<? super T> filter) {
+    default <T extends Component> Optional<T> find(@Nonnull Class<T> type, @Nonnull Predicate<? super T> filter) {
         Checks.notNull(type, "Component type");
         Checks.notNull(filter, "Component filter");
 

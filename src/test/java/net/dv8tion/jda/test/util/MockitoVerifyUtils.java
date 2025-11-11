@@ -30,8 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mockingDetails;
 
 public class MockitoVerifyUtils {
-    public static Set<String> getMethodsByPattern(
-            @Nonnull Class<?> clazz, @Language("RegExp") String regex) {
+    public static Set<String> getMethodsByPattern(@Nonnull Class<?> clazz, @Language("RegExp") String regex) {
         Pattern pattern = Pattern.compile(regex);
         return Stream.of(clazz.getMethods())
                 .map(Method::getName)
@@ -44,8 +43,7 @@ public class MockitoVerifyUtils {
         return getMethodsByPattern(clazz, "^set.+$");
     }
 
-    public static void assertInteractionsContainMethods(
-            @Nonnull Object spy, @Nonnull Set<String> methodNames) {
+    public static void assertInteractionsContainMethods(@Nonnull Object spy, @Nonnull Set<String> methodNames) {
         assertThat(methodNames).isNotEmpty();
 
         Set<String> actualCalls = mockingDetails(spy).getInvocations().stream()

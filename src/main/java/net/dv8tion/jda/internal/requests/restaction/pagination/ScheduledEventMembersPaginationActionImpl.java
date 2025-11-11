@@ -71,8 +71,7 @@ public class ScheduledEventMembersPaginationActionImpl
                 }
                 DataObject userObject = object.getObject("user");
                 DataObject memberObject = object.getObject("member");
-                Member member = builder.createMember(
-                        (GuildImpl) guild, memberObject.put("user", userObject));
+                Member member = builder.createMember((GuildImpl) guild, memberObject.put("user", userObject));
                 members.add(member);
             } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered an exception in ScheduledEventPagination", e);

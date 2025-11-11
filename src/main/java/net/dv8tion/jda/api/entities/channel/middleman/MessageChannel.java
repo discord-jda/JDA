@@ -499,8 +499,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageEmbeds(
-            @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
+    default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(other, "MessageEmbeds");
         List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
@@ -563,8 +562,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageEmbeds(
-            @Nonnull Collection<? extends MessageEmbed> embeds) {
+    default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return new MessageCreateActionImpl(this).setEmbeds(embeds);
     }
 
@@ -661,8 +659,7 @@ public interface MessageChannel extends Channel, Formattable {
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessageComponents(
-            @Nonnull MessageTopLevelComponent component,
-            @Nonnull MessageTopLevelComponent... other) {
+            @Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other) {
         Checks.notNull(component, "MessageTopLevelComponent");
         Checks.noneNull(other, "MessageTopLevelComponents");
         return sendMessageComponents(Helpers.mergeVararg(component, other));
@@ -712,8 +709,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(
-            @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
+    default MessageCreateAction sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return sendMessageComponents(tree.getComponents());
     }
@@ -1127,13 +1123,10 @@ public interface MessageChannel extends Channel, Formattable {
     default AuditableRestAction<Message> endPollById(@Nonnull String messageId) {
         Checks.isSnowflake(messageId, "Message ID");
         return new AuditableRestActionImpl<>(
-                getJDA(),
-                Route.Messages.END_POLL.compile(getId(), messageId),
-                (response, request) -> {
+                getJDA(), Route.Messages.END_POLL.compile(getId(), messageId), (response, request) -> {
                     JDAImpl jda = (JDAImpl) getJDA();
                     return jda.getEntityBuilder()
-                            .createMessageWithChannel(
-                                    response.getObject(), MessageChannel.this, false);
+                            .createMessageWithChannel(response.getObject(), MessageChannel.this, false);
                 });
     }
 
@@ -1180,8 +1173,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default PollVotersPaginationAction retrievePollVotersById(
-            @Nonnull String messageId, long answerId) {
+    default PollVotersPaginationAction retrievePollVotersById(@Nonnull String messageId, long answerId) {
         return new PollVotersPaginationActionImpl(getJDA(), getId(), messageId, answerId);
     }
 
@@ -1198,8 +1190,7 @@ public interface MessageChannel extends Channel, Formattable {
     @Nonnull
     @CheckReturnValue
     default PollVotersPaginationAction retrievePollVotersById(long messageId, long answerId) {
-        return new PollVotersPaginationActionImpl(
-                getJDA(), getId(), Long.toUnsignedString(messageId), answerId);
+        return new PollVotersPaginationActionImpl(getJDA(), getId(), Long.toUnsignedString(messageId), answerId);
     }
 
     /**
@@ -1319,8 +1310,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAround(
-            @Nonnull String messageId, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull String messageId, int limit) {
         return MessageHistory.getHistoryAround(this, messageId).limit(limit);
     }
 
@@ -1454,8 +1444,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAround(
-            @Nonnull Message message, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull Message message, int limit) {
         Checks.notNull(message, "Provided target message");
         return getHistoryAround(message.getId(), limit);
     }
@@ -1515,8 +1504,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAfter(
-            @Nonnull String messageId, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull String messageId, int limit) {
         return MessageHistory.getHistoryAfter(this, messageId).limit(limit);
     }
 
@@ -1631,8 +1619,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAfter(
-            @Nonnull Message message, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull Message message, int limit) {
         Checks.notNull(message, "Message");
         return getHistoryAfter(message.getId(), limit);
     }
@@ -1692,8 +1679,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryBefore(
-            @Nonnull String messageId, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull String messageId, int limit) {
         return MessageHistory.getHistoryBefore(this, messageId).limit(limit);
     }
 
@@ -1811,8 +1797,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryBefore(
-            @Nonnull Message message, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull Message message, int limit) {
         Checks.notNull(message, "Message");
         return getHistoryBefore(message.getId(), limit);
     }
@@ -1975,8 +1960,8 @@ public interface MessageChannel extends Channel, Formattable {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(
-                getId(), messageId, emoji.getAsReactionCode(), "@me");
+        Route.CompiledRoute route =
+                Route.Messages.ADD_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -2087,8 +2072,8 @@ public interface MessageChannel extends Channel, Formattable {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
-                getId(), messageId, emoji.getAsReactionCode(), "@me");
+        Route.CompiledRoute route =
+                Route.Messages.REMOVE_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -2189,8 +2174,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(
-            @Nonnull String messageId, @Nonnull Emoji emoji) {
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji) {
         return retrieveReactionUsersById(messageId, emoji, MessageReaction.ReactionType.NORMAL);
     }
 
@@ -2243,8 +2227,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(
-            long messageId, @Nonnull Emoji emoji) {
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji) {
         return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji);
     }
 
@@ -2293,9 +2276,7 @@ public interface MessageChannel extends Channel, Formattable {
     @Nonnull
     @CheckReturnValue
     default ReactionPaginationAction retrieveReactionUsersById(
-            @Nonnull String messageId,
-            @Nonnull Emoji emoji,
-            @Nonnull MessageReaction.ReactionType type) {
+            @Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
         Checks.notNull(type, "ReactionType");
@@ -2615,8 +2596,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageById(
-            @Nonnull String messageId, @Nonnull CharSequence newContent) {
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(newContent, "Provided message content");
         Checks.check(
@@ -2723,8 +2703,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageById(
-            @Nonnull String messageId, @Nonnull MessageEditData data) {
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull MessageEditData data) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(data, "message");
         return new MessageEditActionImpl(this, messageId).applyData(data);
@@ -2896,8 +2875,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageFormatById(
-            long messageId, @Nonnull String format, @Nonnull Object... args) {
+    default MessageEditAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args) {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
     }
@@ -2949,8 +2927,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageEmbedsById(
-            @Nonnull String messageId, @Nonnull MessageEmbed... newEmbeds) {
+    default MessageEditAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... newEmbeds) {
         Checks.noneNull(newEmbeds, "MessageEmbeds");
         return editMessageEmbedsById(messageId, Arrays.asList(newEmbeds));
     }
@@ -3002,8 +2979,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageEmbedsById(
-            long messageId, @Nonnull MessageEmbed... newEmbeds) {
+    default MessageEditAction editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... newEmbeds) {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), newEmbeds);
     }
 
@@ -3176,8 +3152,7 @@ public interface MessageChannel extends Channel, Formattable {
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageComponentsById(
-            @Nonnull String messageId,
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+            @Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noneNull(components, "Components");
         return new MessageEditActionImpl(this, messageId).setComponents(components);
@@ -3454,8 +3429,7 @@ public interface MessageChannel extends Channel, Formattable {
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageComponentsById(
-            @Nonnull String messageId,
-            @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
+            @Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
     }
@@ -3749,8 +3723,7 @@ public interface MessageChannel extends Channel, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageAttachmentsById(
-            long messageId, @Nonnull AttachedFile... attachments) {
+    default MessageEditAction editMessageAttachmentsById(long messageId, @Nonnull AttachedFile... attachments) {
         return editMessageAttachmentsById(Long.toUnsignedString(messageId), attachments);
     }
 }

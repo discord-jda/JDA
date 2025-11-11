@@ -49,8 +49,7 @@ public class SectionTest {
     void testContainerWithNoAccessoryThrows() {
         ChecksHelper.<SectionAccessoryComponentUnion>assertChecks(
                         "Accessory",
-                        accessory -> Section.of(
-                                accessory, Collections.singletonList(EXAMPLE_TEXT_DISPLAY)))
+                        accessory -> Section.of(accessory, Collections.singletonList(EXAMPLE_TEXT_DISPLAY)))
                 .checksNotNull();
     }
 
@@ -59,11 +58,9 @@ public class SectionTest {
         Section container = Section.of(EXAMPLE_BUTTON, EXAMPLE_TEXT_DISPLAY);
 
         TextDisplay replacedText = TextDisplay.of("Replaced");
-        Section replaced =
-                container.replace(byUniqueId(EXAMPLE_TEXT_DISPLAY.getUniqueId(), replacedText));
+        Section replaced = container.replace(byUniqueId(EXAMPLE_TEXT_DISPLAY.getUniqueId(), replacedText));
 
-        assertThat(replaced.getContentComponents())
-                .containsExactly((SectionContentComponentUnion) replacedText);
+        assertThat(replaced.getContentComponents()).containsExactly((SectionContentComponentUnion) replacedText);
 
         Button replacedButton = Button.secondary("replaced", "Replaced Button");
         replaced = container.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), replacedButton));
@@ -76,11 +73,9 @@ public class SectionTest {
         Section container = Section.of(EXAMPLE_BUTTON, EXAMPLE_TEXT_DISPLAY);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> container.replace(
-                        byUniqueId(EXAMPLE_TEXT_DISPLAY.getUniqueId(), (Component) null)));
+                .isThrownBy(() -> container.replace(byUniqueId(EXAMPLE_TEXT_DISPLAY.getUniqueId(), (Component) null)));
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> container.replace(
-                        byUniqueId(EXAMPLE_BUTTON.getUniqueId(), (Component) null)));
+                .isThrownBy(() -> container.replace(byUniqueId(EXAMPLE_BUTTON.getUniqueId(), (Component) null)));
     }
 }

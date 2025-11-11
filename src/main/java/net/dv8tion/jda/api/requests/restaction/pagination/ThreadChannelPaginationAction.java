@@ -57,8 +57,7 @@ import javax.annotation.Nonnull;
  * @see    IThreadContainer#retrieveArchivedPrivateThreadChannels()
  * @see    IThreadContainer#retrieveArchivedPrivateJoinedThreadChannels()
  */
-public interface ThreadChannelPaginationAction
-        extends PaginationAction<ThreadChannel, ThreadChannelPaginationAction> {
+public interface ThreadChannelPaginationAction extends PaginationAction<ThreadChannel, ThreadChannelPaginationAction> {
     /**
      * The {@link IThreadContainerUnion} for this action
      * <br>This can also be used for casting down to more concrete types.

@@ -80,8 +80,7 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
      * @return The new builder
      */
     @Nonnull
-    public static Builder fromBundle(
-            @Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale) {
+    public static Builder fromBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale) {
         return new Builder().addBundle(resourceBundle, locale);
     }
 
@@ -162,8 +161,7 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
          * @see #fromBundle(ResourceBundle, DiscordLocale)
          */
         @Nonnull
-        public Builder addBundle(
-                @Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale) {
+        public Builder addBundle(@Nonnull ResourceBundle resourceBundle, @Nonnull DiscordLocale locale) {
             Checks.notNull(resourceBundle, "Resource bundle");
             Checks.notNull(locale, "Locale");
             Checks.check(locale != DiscordLocale.UNKNOWN, "Cannot use UNKNOWN DiscordLocale");
@@ -202,8 +200,8 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
             for (DiscordLocale locale : locales) {
                 Checks.check(locale != DiscordLocale.UNKNOWN, "Cannot use UNKNOWN DiscordLocale");
 
-                ResourceBundle resourceBundle = ResourceBundle.getBundle(
-                        baseName, Locale.forLanguageTag(locale.getLocale()));
+                ResourceBundle resourceBundle =
+                        ResourceBundle.getBundle(baseName, Locale.forLanguageTag(locale.getLocale()));
                 bundles.add(new Bundle(locale, resourceBundle));
             }
             return this;

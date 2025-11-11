@@ -38,11 +38,7 @@ public class ChannelUpdateUserLimitEvent extends GenericChannelUpdateEvent<Integ
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateUserLimitEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            Integer oldValue,
-            Integer newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

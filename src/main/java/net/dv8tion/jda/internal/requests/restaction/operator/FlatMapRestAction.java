@@ -46,8 +46,7 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O> {
     }
 
     @Override
-    public void queue(
-            @Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure) {
+    public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure) {
         Consumer<? super Throwable> catcher = contextWrap(failure);
         handle(action, catcher, (result) -> {
             if (condition != null && !condition.test(result)) {

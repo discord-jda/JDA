@@ -38,10 +38,7 @@ public abstract class GenericForumTagEvent extends Event {
     protected final ForumTag tag;
 
     public GenericForumTagEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull IPostContainer channel,
-            @Nonnull ForumTag tag) {
+            @Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag) {
         super(api, responseNumber);
         this.channel = channel;
         this.tag = tag;

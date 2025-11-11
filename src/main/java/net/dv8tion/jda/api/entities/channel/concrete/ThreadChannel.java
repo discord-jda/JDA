@@ -1054,8 +1054,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
 
     @Override
     default void formatTo(Formatter formatter, int flags, int width, int precision) {
-        boolean leftJustified =
-                (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         String out;
@@ -1117,8 +1116,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
                     return duration;
                 }
             }
-            throw new IllegalArgumentException(
-                    "Provided key was not recognized. Minutes: " + minutes);
+            throw new IllegalArgumentException("Provided key was not recognized. Minutes: " + minutes);
         }
     }
 }

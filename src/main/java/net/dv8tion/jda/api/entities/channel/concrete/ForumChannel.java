@@ -44,11 +44,7 @@ import javax.annotation.Nonnull;
  * @see #createForumPost(String, MessageCreateData)
  */
 public interface ForumChannel
-        extends StandardGuildChannel,
-                IPostContainer,
-                IWebhookContainer,
-                IAgeRestrictedChannel,
-                ISlowmodeChannel {
+        extends StandardGuildChannel, IPostContainer, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel {
     /**
      * The maximum length of a forum topic ({@value #MAX_FORUM_TOPIC_LENGTH})
      */

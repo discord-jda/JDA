@@ -169,8 +169,7 @@ public class AttachmentProxy extends FileProxy {
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height) {
         Checks.notNull(file, "File");
 
-        CompletableFuture<Path> downloadToPathFuture =
-                downloadToPath(getUrl(width, height), file.toPath());
+        CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(width, height), file.toPath());
         return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
     }
 

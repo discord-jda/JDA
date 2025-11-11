@@ -29,9 +29,7 @@ public class WebhookMessageRetrieveActionImpl
         extends AbstractWebhookMessageActionImpl<Message, WebhookMessageRetrieveActionImpl>
         implements WebhookMessageRetrieveAction {
     public WebhookMessageRetrieveActionImpl(
-            JDA api,
-            Route.CompiledRoute route,
-            BiFunction<Response, Request<Message>, Message> handler) {
+            JDA api, Route.CompiledRoute route, BiFunction<Response, Request<Message>, Message> handler) {
         super(api, route, handler);
     }
 

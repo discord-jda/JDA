@@ -626,8 +626,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     @CheckReturnValue
     default PermissionOverrideAction setPermissions(
-            @Nullable Collection<Permission> grantPermissions,
-            @Nullable Collection<Permission> denyPermissions) {
+            @Nullable Collection<Permission> grantPermissions, @Nullable Collection<Permission> denyPermissions) {
         return setAllowed(grantPermissions).setDenied(denyPermissions);
     }
 }

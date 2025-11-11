@@ -29,8 +29,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TextInputImpl extends AbstractComponentImpl
-        implements TextInput, LabelChildComponentUnion {
+public class TextInputImpl extends AbstractComponentImpl implements TextInput, LabelChildComponentUnion {
     private final String id;
     private final int uniqueId;
     private final TextInputStyle style;
@@ -75,8 +74,7 @@ public class TextInputImpl extends AbstractComponentImpl
     @Override
     public TextInputImpl withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
-        return new TextInputImpl(
-                id, uniqueId, style, minLength, maxLength, required, value, placeholder);
+        return new TextInputImpl(id, uniqueId, style, minLength, maxLength, required, value, placeholder);
     }
 
     @Nonnull
@@ -170,8 +168,7 @@ public class TextInputImpl extends AbstractComponentImpl
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                id, uniqueId, style, minLength, maxLength, required, value, placeholder);
+        return Objects.hash(id, uniqueId, style, minLength, maxLength, required, value, placeholder);
     }
 
     @Override

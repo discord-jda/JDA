@@ -61,8 +61,7 @@ public class ComponentIterator implements Iterator<Component> {
      * @return A new, ordered {@link Stream} of {@link Component}
      */
     @Nonnull
-    public static Stream<Component> createStream(
-            @Nonnull Collection<? extends Component> components) {
+    public static Stream<Component> createStream(@Nonnull Collection<? extends Component> components) {
         Spliterator<Component> spliterator =
                 Spliterators.spliteratorUnknownSize(create(components), Spliterator.ORDERED);
         return StreamSupport.stream(spliterator, false);

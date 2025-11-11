@@ -34,10 +34,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildStickerAddedEvent extends GenericGuildStickerEvent {
     public GuildStickerAddedEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull GuildSticker sticker) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull GuildSticker sticker) {
         super(api, responseNumber, guild, sticker);
     }
 }

@@ -139,8 +139,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     @Nonnull
     @Override
     public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel) {
-        return Permission.getPermissions(
-                PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
     }
 
     @Nonnull
@@ -152,8 +151,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     @Nonnull
     @Override
     public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel) {
-        return Permission.getPermissions(
-                PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
     }
 
     @Override
@@ -184,10 +182,8 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     }
 
     @Override
-    public boolean hasPermission(
-            @Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
-        long effectivePerms =
-                PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
+        long effectivePerms = PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
         for (Permission perm : permissions) {
             long rawValue = perm.getRawValue();
             if ((effectivePerms & rawValue) != rawValue) {
@@ -198,15 +194,11 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     }
 
     @Override
-    public boolean canSync(
-            @Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
-        Checks.check(
-                targetChannel.getGuild().equals(getGuild()),
-                "Channels must be from the same guild!");
-        Checks.check(
-                syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(targetChannel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long rolePerms = PermissionUtil.getEffectivePermission(targetChannel, this);
         if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // Role can't manage permissions at all!
@@ -243,8 +235,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     @Override
     public boolean canSync(@Nonnull IPermissionContainer channel) {
         Checks.notNull(channel, "Channel");
-        Checks.check(
-                channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long rolePerms = PermissionUtil.getEffectivePermission(channel, this);
         if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // Role can't manage permissions at all!

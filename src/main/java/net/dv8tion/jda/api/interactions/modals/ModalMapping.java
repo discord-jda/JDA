@@ -135,8 +135,7 @@ public class ModalMapping {
             typeError("List<String>");
         }
 
-        return value.getArray("values").stream(DataArray::getString)
-                .collect(Helpers.toUnmodifiableList());
+        return value.getArray("values").stream(DataArray::getString).collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -157,8 +156,7 @@ public class ModalMapping {
             typeError("List<Long>");
         }
 
-        return value.getArray("values").stream(DataArray::getLong)
-                .collect(Helpers.toUnmodifiableList());
+        return value.getArray("values").stream(DataArray::getLong).collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -243,7 +241,7 @@ public class ModalMapping {
     }
 
     private void typeError(String targetType) {
-        throw new IllegalStateException("ModalMapping of type " + getType()
-                + " can not be represented as " + targetType + "!");
+        throw new IllegalStateException(
+                "ModalMapping of type " + getType() + " can not be represented as " + targetType + "!");
     }
 }

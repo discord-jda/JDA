@@ -29,8 +29,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class EntitySelectInteractionImpl
-        extends SelectMenuInteractionImpl<IMentionable, EntitySelectMenu>
+public class EntitySelectInteractionImpl extends SelectMenuInteractionImpl<IMentionable, EntitySelectMenu>
         implements EntitySelectInteraction {
     private final Mentions mentions;
 

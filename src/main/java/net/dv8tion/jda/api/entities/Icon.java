@@ -168,8 +168,7 @@ public class Icon {
      * @return An Icon instance representing the specified InputStream
      */
     @Nonnull
-    public static Icon from(@Nonnull InputStream stream, @Nonnull IconType type)
-            throws IOException {
+    public static Icon from(@Nonnull InputStream stream, @Nonnull IconType type) throws IOException {
         Checks.notNull(stream, "InputStream");
         Checks.notNull(type, "IconType");
 

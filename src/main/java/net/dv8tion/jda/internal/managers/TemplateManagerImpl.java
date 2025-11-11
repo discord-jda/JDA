@@ -47,8 +47,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     public TemplateManagerImpl(Template template) {
         super(
                 template.getJDA(),
-                Route.Templates.MODIFY_TEMPLATE.compile(
-                        template.getGuild().getId(), template.getCode()));
+                Route.Templates.MODIFY_TEMPLATE.compile(template.getGuild().getId(), template.getCode()));
         this.template = template;
         this.api = template.getJDA();
         if (isPermissionChecksEnabled()) {

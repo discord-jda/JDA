@@ -51,8 +51,7 @@ public class RoleConnectionMetadata implements SerializableData {
     private final String key;
     private final String name;
     private final String description;
-    private final LocalizationMap nameLocalization =
-            new LocalizationMap(RoleConnectionMetadata::checkName);
+    private final LocalizationMap nameLocalization = new LocalizationMap(RoleConnectionMetadata::checkName);
     private final LocalizationMap descriptionLocalization =
             new LocalizationMap(RoleConnectionMetadata::checkDescription);
 
@@ -79,10 +78,7 @@ public class RoleConnectionMetadata implements SerializableData {
      *         </ul>
      */
     public RoleConnectionMetadata(
-            @Nonnull MetadataType type,
-            @Nonnull String name,
-            @Nonnull String key,
-            @Nonnull String description) {
+            @Nonnull MetadataType type, @Nonnull String name, @Nonnull String key, @Nonnull String description) {
         Checks.check(type != MetadataType.UNKNOWN, "Type must not be UNKNOWN");
         Checks.notNull(type, "Type");
         Checks.notNull(key, "Key");
@@ -188,8 +184,7 @@ public class RoleConnectionMetadata implements SerializableData {
      * @return This updated record instance
      */
     @Nonnull
-    public RoleConnectionMetadata setNameLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String name) {
+    public RoleConnectionMetadata setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
         this.nameLocalization.setTranslation(locale, name);
         return this;
     }
@@ -262,8 +257,7 @@ public class RoleConnectionMetadata implements SerializableData {
      * @return This updated record instance
      */
     @Nonnull
-    public RoleConnectionMetadata setDescriptionLocalizations(
-            @Nonnull Map<DiscordLocale, String> map) {
+    public RoleConnectionMetadata setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map) {
         this.descriptionLocalization.setTranslations(map);
         return this;
     }
@@ -331,10 +325,8 @@ public class RoleConnectionMetadata implements SerializableData {
                 data.getString("name", null),
                 data.getString("key", null),
                 data.getString("description", null));
-        return metadata.setNameLocalizations(
-                        LocalizationUtils.mapFromProperty(data, "name_localizations"))
-                .setDescriptionLocalizations(
-                        LocalizationUtils.mapFromProperty(data, "description_localizations"));
+        return metadata.setNameLocalizations(LocalizationUtils.mapFromProperty(data, "name_localizations"))
+                .setDescriptionLocalizations(LocalizationUtils.mapFromProperty(data, "description_localizations"));
     }
 
     /**

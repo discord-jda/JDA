@@ -37,8 +37,7 @@ public class UserUpdateHandler extends SocketHandler {
         String globalName = content.getString("global_name", null);
         String avatarId = content.getString("avatar", null);
         Boolean verified = content.hasKey("verified") ? content.getBoolean("verified") : null;
-        Boolean mfaEnabled =
-                content.hasKey("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
+        Boolean mfaEnabled = content.hasKey("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
         if (!Objects.equals(name, self.getName())) {
             String oldName = self.getName();
@@ -49,15 +48,13 @@ public class UserUpdateHandler extends SocketHandler {
         if (!Objects.equals(discriminator, self.getDiscriminator())) {
             String oldDiscriminator = self.getDiscriminator();
             self.setDiscriminator(Short.parseShort(discriminator));
-            getJDA().handleEvent(new SelfUpdateDiscriminatorEvent(
-                    getJDA(), responseNumber, oldDiscriminator));
+            getJDA().handleEvent(new SelfUpdateDiscriminatorEvent(getJDA(), responseNumber, oldDiscriminator));
         }
 
         if (!Objects.equals(globalName, self.getGlobalName())) {
             String oldGlobalName = self.getGlobalName();
             self.setGlobalName(globalName);
-            getJDA().handleEvent(
-                            new SelfUpdateGlobalNameEvent(getJDA(), responseNumber, oldGlobalName));
+            getJDA().handleEvent(new SelfUpdateGlobalNameEvent(getJDA(), responseNumber, oldGlobalName));
         }
 
         if (!Objects.equals(avatarId, self.getAvatarId())) {
@@ -69,8 +66,7 @@ public class UserUpdateHandler extends SocketHandler {
         if (verified != null && verified != self.isVerified()) {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
-            getJDA().handleEvent(
-                            new SelfUpdateVerifiedEvent(getJDA(), responseNumber, wasVerified));
+            getJDA().handleEvent(new SelfUpdateVerifiedEvent(getJDA(), responseNumber, wasVerified));
         }
 
         if (mfaEnabled != null && mfaEnabled != self.isMfaEnabled()) {

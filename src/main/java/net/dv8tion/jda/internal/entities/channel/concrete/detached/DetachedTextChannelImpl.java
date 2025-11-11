@@ -31,8 +31,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class DetachedTextChannelImpl
-        extends AbstractStandardGuildMessageChannelImpl<DetachedTextChannelImpl>
+public class DetachedTextChannelImpl extends AbstractStandardGuildMessageChannelImpl<DetachedTextChannelImpl>
         implements TextChannel,
                 DefaultGuildChannelUnion,
                 TextChannelMixin<DetachedTextChannelImpl>,

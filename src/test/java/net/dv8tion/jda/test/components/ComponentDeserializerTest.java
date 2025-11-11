@@ -44,8 +44,7 @@ class ComponentDeserializerTest extends AbstractComponentTest {
         try (InputStream sample = loadSample("exampleMessageTree.json")) {
             DataArray data = DataArray.fromJson(sample);
 
-            MessageComponentTree tree =
-                    deserializer.deserializeAsTree(MessageComponentTree.class, data);
+            MessageComponentTree tree = deserializer.deserializeAsTree(MessageComponentTree.class, data);
 
             assertThat(tree).isNotNull();
 
@@ -65,8 +64,7 @@ class ComponentDeserializerTest extends AbstractComponentTest {
         // We only want to test that [[Components#parseTree]] recognizes the tree type,
         // don't construct a real tree as that may throw on empty trees
         try (MockedStatic<?> ignored = Mockito.mockStatic(treeClass)) {
-            assertThatNoException()
-                    .isThrownBy(() -> deserializer.deserializeAsTree(treeClass, DataArray.empty()));
+            assertThatNoException().isThrownBy(() -> deserializer.deserializeAsTree(treeClass, DataArray.empty()));
         }
     }
 

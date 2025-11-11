@@ -48,11 +48,7 @@ public abstract class GenericMessageEvent extends Event {
     protected final long messageId;
     protected final MessageChannel channel;
 
-    public GenericMessageEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            long messageId,
-            @Nonnull MessageChannel channel) {
+    public GenericMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel) {
         super(api, responseNumber);
         this.messageId = messageId;
         this.channel = channel;

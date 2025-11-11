@@ -24,8 +24,7 @@ import net.dv8tion.jda.internal.interactions.response.InteractionCallbackRespons
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 
-public abstract class DeferrableCallbackActionImpl
-        extends InteractionCallbackImpl<InteractionHook> {
+public abstract class DeferrableCallbackActionImpl extends InteractionCallbackImpl<InteractionHook> {
     protected final InteractionHookImpl hook;
 
     public DeferrableCallbackActionImpl(InteractionHookImpl hook) {
@@ -62,8 +61,8 @@ public abstract class DeferrableCallbackActionImpl
         if (mediaType != null && mediaType.toString().startsWith("application/json")) {
             response.optObject()
                     .flatMap(obj -> obj.optObject("resource"))
-                    .ifPresent(resource -> hook.setCallbackResponse(
-                            new InteractionCallbackResponseImpl(hook, resource)));
+                    .ifPresent(
+                            resource -> hook.setCallbackResponse(new InteractionCallbackResponseImpl(hook, resource)));
         }
     }
 }

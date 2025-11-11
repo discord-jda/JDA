@@ -45,14 +45,11 @@ public class MessageEditBuilderTest extends AbstractSnapshotTest {
 
         MessageEditBuilder builder = spy(new MessageEditBuilder());
         builder.applyMessage(message);
-        assertThat(builder)
-                .usingRecursiveComparison()
-                .isEqualTo(MessageEditBuilder.fromMessage(message));
+        assertThat(builder).usingRecursiveComparison().isEqualTo(MessageEditBuilder.fromMessage(message));
 
         Set<String> expectedCalls = getMessageEditBuilderSetters();
 
-        Arrays.asList("setFiles", "setAttachments", "setAllowedMentions")
-                .forEach(expectedCalls::remove);
+        Arrays.asList("setFiles", "setAttachments", "setAllowedMentions").forEach(expectedCalls::remove);
 
         assertInteractionsContainMethods(builder, expectedCalls);
 
@@ -67,8 +64,7 @@ public class MessageEditBuilderTest extends AbstractSnapshotTest {
 
         builder.setContent("Test content")
                 .setEmbeds(new EmbedBuilder().setDescription("Test embed").build())
-                .setComponents(ComponentTestData.getMinimalComponent(
-                        ActionRow.class, Component.Type.ACTION_ROW))
+                .setComponents(ComponentTestData.getMinimalComponent(ActionRow.class, Component.Type.ACTION_ROW))
                 .useComponentsV2(false)
                 .setAttachments(Collections.emptyList())
                 .setReplace(true)

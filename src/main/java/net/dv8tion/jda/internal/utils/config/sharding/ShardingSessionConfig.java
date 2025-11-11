@@ -47,17 +47,9 @@ public class ShardingSessionConfig extends SessionConfig {
             EnumSet<ShardingConfigFlag> shardingFlags,
             int maxReconnectDelay,
             int largeThreshold) {
-        super(
-                sessionController,
-                httpClient,
-                webSocketFactory,
-                interceptor,
-                flags,
-                maxReconnectDelay,
-                largeThreshold);
+        super(sessionController, httpClient, webSocketFactory, interceptor, flags, maxReconnectDelay, largeThreshold);
         if (httpClient == null) {
-            this.builder =
-                    httpClientBuilder == null ? IOUtil.newHttpClientBuilder() : httpClientBuilder;
+            this.builder = httpClientBuilder == null ? IOUtil.newHttpClientBuilder() : httpClientBuilder;
         } else {
             this.builder = null;
         }

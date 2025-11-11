@@ -100,9 +100,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost>
     public ForumPostAction setTags(@Nonnull Collection<? extends ForumTagSnowflake> tags) {
         Checks.noneNull(tags, "Tags");
         Checks.check(
-                tags.size() <= ForumChannel.MAX_POST_TAGS,
-                "Provided more than %d tags.",
-                ForumChannel.MAX_POST_TAGS);
+                tags.size() <= ForumChannel.MAX_POST_TAGS, "Provided more than %d tags.", ForumChannel.MAX_POST_TAGS);
         Checks.check(
                 !channel.isTagRequired() || !tags.isEmpty(),
                 "This forum requires at least one tag per post! See ForumChannel#isRequireTag()");
@@ -128,8 +126,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost>
 
     @Nonnull
     @Override
-    public ForumPostAction setAutoArchiveDuration(
-            @Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration) {
+    public ForumPostAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration) {
         Checks.notNull(autoArchiveDuration, "AutoArchiveDuration");
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
@@ -188,8 +185,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost>
 
         ThreadChannel thread =
                 entityBuilder.createThreadChannel(json, getGuild().getIdLong());
-        Message message =
-                entityBuilder.createMessageWithChannel(json.getObject("message"), thread, false);
+        Message message = entityBuilder.createMessageWithChannel(json.getObject("message"), thread, false);
 
         request.onSuccess(new ForumPost(message, thread));
     }

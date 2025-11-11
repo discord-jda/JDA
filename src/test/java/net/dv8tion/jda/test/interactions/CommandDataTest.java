@@ -49,9 +49,7 @@ public class CommandDataTest {
                         DataArray.empty()
                                 .add(InteractionContextType.GUILD.getType())
                                 .add(InteractionContextType.BOT_DM.getType()))
-                .put(
-                        "integration_types",
-                        DataArray.empty().add(IntegrationType.GUILD_INSTALL.getType()))
+                .put("integration_types", DataArray.empty().add(IntegrationType.GUILD_INSTALL.getType()))
                 .put("name_localizations", DataObject.empty())
                 .put("description_localizations", DataObject.empty())
                 .put("nsfw", false)
@@ -76,18 +74,9 @@ public class CommandDataTest {
                 .setContexts(InteractionContextType.GUILD)
                 .setIntegrationTypes(IntegrationType.USER_INSTALL)
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
-                .addOption(
-                        OptionType.USER,
-                        "user",
-                        "The user to ban",
-                        true) // required before non-required
-                .addOption(
-                        OptionType.STRING, "reason", "The ban reason") // test that default is false
-                .addOption(
-                        OptionType.INTEGER,
-                        "days",
-                        "The duration of the ban",
-                        false); // test with explicit false
+                .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
+                .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
+                .addOption(OptionType.INTEGER, "days", "The duration of the ban", false); // test with explicit false
 
         DataObject data = command.toData();
 
@@ -97,25 +86,16 @@ public class CommandDataTest {
                         .put("type", 1)
                         .put("name", "ban")
                         .put("description", "Ban a user from this server")
-                        .put(
-                                "contexts",
-                                DataArray.empty().add(InteractionContextType.GUILD.getType()))
-                        .put(
-                                "integration_types",
-                                DataArray.empty().add(IntegrationType.USER_INSTALL.getType()))
+                        .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType()))
+                        .put("integration_types", DataArray.empty().add(IntegrationType.USER_INSTALL.getType()))
                         .put("default_member_permissions", "4")
                         .put(
                                 "options",
                                 DataArray.empty()
-                                        .add(defaultOption(
-                                                        OptionType.USER, "user", "The user to ban")
+                                        .add(defaultOption(OptionType.USER, "user", "The user to ban")
                                                 .put("required", true))
-                                        .add(defaultOption(
-                                                OptionType.STRING, "reason", "The ban reason"))
-                                        .add(defaultOption(
-                                                OptionType.INTEGER,
-                                                "days",
-                                                "The duration of the ban"))));
+                                        .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
+                                        .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))));
     }
 
     @Test
@@ -134,15 +114,8 @@ public class CommandDataTest {
     void testSubcommand() {
         CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
-                        .addOption(
-                                OptionType.USER,
-                                "user",
-                                "The user to ban",
-                                true) // required before non-required
-                        .addOption(
-                                OptionType.STRING,
-                                "reason",
-                                "The ban reason") // test that default is false
+                        .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
+                        .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
                         .addOption(
                                 OptionType.INTEGER,
                                 "days",
@@ -151,61 +124,42 @@ public class CommandDataTest {
 
         assertThat(command.toData())
                 .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(
-                        defaultCommand()
-                                .put("name", "mod")
-                                .put("description", "Moderation commands")
-                                .put(
-                                        "options",
-                                        DataArray.empty()
-                                                .add(
-                                                        defaultOption(
-                                                                        OptionType.SUB_COMMAND,
-                                                                        "ban",
-                                                                        "Ban a user from this server")
-                                                                .remove("autocomplete")
-                                                                .remove("required")
-                                                                .put(
-                                                                        "options",
-                                                                        DataArray.empty()
-                                                                                .add(
-                                                                                        defaultOption(
-                                                                                                        OptionType
-                                                                                                                .USER,
-                                                                                                        "user",
-                                                                                                        "The user to ban")
-                                                                                                .put(
-                                                                                                        "required",
-                                                                                                        true))
-                                                                                .add(
-                                                                                        defaultOption(
-                                                                                                OptionType
-                                                                                                        .STRING,
-                                                                                                "reason",
-                                                                                                "The ban reason"))
-                                                                                .add(
-                                                                                        defaultOption(
-                                                                                                OptionType
-                                                                                                        .INTEGER,
-                                                                                                "days",
-                                                                                                "The duration of the ban"))))));
+                .isEqualTo(defaultCommand()
+                        .put("name", "mod")
+                        .put("description", "Moderation commands")
+                        .put(
+                                "options",
+                                DataArray.empty()
+                                        .add(defaultOption(OptionType.SUB_COMMAND, "ban", "Ban a user from this server")
+                                                .remove("autocomplete")
+                                                .remove("required")
+                                                .put(
+                                                        "options",
+                                                        DataArray.empty()
+                                                                .add(defaultOption(
+                                                                                OptionType.USER,
+                                                                                "user",
+                                                                                "The user to ban")
+                                                                        .put("required", true))
+                                                                .add(defaultOption(
+                                                                        OptionType.STRING, "reason", "The ban reason"))
+                                                                .add(defaultOption(
+                                                                        OptionType.INTEGER,
+                                                                        "days",
+                                                                        "The duration of the ban"))))));
     }
 
     @Test
     void testSubcommandGroup() {
         CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
-                .addSubcommandGroups(new SubcommandGroupData(
-                                "ban", "Ban or unban a user from this server")
+                .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
                         .addSubcommands(new SubcommandData("add", "Ban a user from this server")
                                 .addOption(
                                         OptionType.USER,
                                         "user",
                                         "The user to ban",
                                         true) // required before non-required
-                                .addOption(
-                                        OptionType.STRING,
-                                        "reason",
-                                        "The ban reason") // test that default is false
+                                .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
                                 .addOption(
                                         OptionType.INTEGER,
                                         "days",
@@ -223,8 +177,7 @@ public class CommandDataTest {
                                         DataArray.empty()
                                                 .add(
                                                         defaultOption(
-                                                                        OptionType
-                                                                                .SUB_COMMAND_GROUP,
+                                                                        OptionType.SUB_COMMAND_GROUP,
                                                                         "ban",
                                                                         "Ban or unban a user from this server")
                                                                 .remove("autocomplete")
@@ -238,10 +191,8 @@ public class CommandDataTest {
                                                                                                                 .SUB_COMMAND,
                                                                                                         "add",
                                                                                                         "Ban a user from this server")
-                                                                                                .remove(
-                                                                                                        "autocomplete")
-                                                                                                .remove(
-                                                                                                        "required")
+                                                                                                .remove("autocomplete")
+                                                                                                .remove("required")
                                                                                                 .put(
                                                                                                         "options",
                                                                                                         DataArray
@@ -321,8 +272,7 @@ public class CommandDataTest {
 
     @Test
     void testChoices() {
-        OptionData stringOption =
-                new OptionData(OptionType.STRING, "choice", "Option with choices!");
+        OptionData stringOption = new OptionData(OptionType.STRING, "choice", "Option with choices!");
 
         assertStringChecks("Value", value -> stringOption.addChoice("valid_name", value))
                 .checksNotEmpty();

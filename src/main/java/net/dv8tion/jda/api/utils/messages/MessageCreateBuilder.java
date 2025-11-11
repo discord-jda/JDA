@@ -61,8 +61,7 @@ import javax.annotation.Nullable;
  * @see net.dv8tion.jda.api.interactions.InteractionHook#sendMessage(MessageCreateData) InteractionHook.sendMessage(data)
  * @see MessageEditBuilder
  */
-public class MessageCreateBuilder
-        extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder>
+public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder>
         implements MessageCreateRequest<MessageCreateBuilder> {
     private final List<FileUpload> files = new ArrayList<>(10);
     private MessagePollData poll;
@@ -140,8 +139,7 @@ public class MessageCreateBuilder
     public MessageCreateBuilder addContent(@Nonnull String content) {
         Checks.notNull(content, "Content");
         Checks.check(
-                Helpers.codePointLength(this.content) + Helpers.codePointLength(content)
-                        <= Message.MAX_CONTENT_LENGTH,
+                Helpers.codePointLength(this.content) + Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH,
                 "Cannot have content longer than %d characters",
                 Message.MAX_CONTENT_LENGTH);
         this.content.append(content);
@@ -162,13 +160,10 @@ public class MessageCreateBuilder
 
     @Nonnull
     @Override
-    public MessageCreateBuilder addComponents(
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+    public MessageCreateBuilder addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.noneNull(components, "MessageTopLevelComponents");
         Checks.checkComponents(
-                "Provided component is invalid for messages!",
-                components,
-                Component::isMessageCompatible);
+                "Provided component is invalid for messages!", components, Component::isMessageCompatible);
         List<MessageTopLevelComponentUnion> componentsAsUnions =
                 ComponentsUtil.membersToUnion(components, MessageTopLevelComponentUnion.class);
 
@@ -249,11 +244,7 @@ public class MessageCreateBuilder
 
     @Override
     public boolean isEmpty() {
-        return Helpers.isBlank(content)
-                && embeds.isEmpty()
-                && files.isEmpty()
-                && components.isEmpty()
-                && poll == null;
+        return Helpers.isBlank(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty() && poll == null;
     }
 
     @Override
@@ -278,8 +269,7 @@ public class MessageCreateBuilder
                 && embeds.isEmpty()
                 && poll == null
                 && !components.isEmpty()
-                && ComponentsUtil.getComponentTreeSize(components)
-                        <= Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE
+                && ComponentsUtil.getComponentTreeSize(components) <= Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE
                 && ComponentsUtil.getComponentTreeTextContentLength(components)
                         <= Message.MAX_CONTENT_LENGTH_COMPONENT_V2;
     }
@@ -302,41 +292,34 @@ public class MessageCreateBuilder
         List<MessageTopLevelComponentUnion> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
-        if (content.isEmpty()
-                && embeds.isEmpty()
-                && files.isEmpty()
-                && components.isEmpty()
-                && poll == null) {
+        if (content.isEmpty() && embeds.isEmpty() && files.isEmpty() && components.isEmpty() && poll == null) {
             throw new IllegalStateException(
                     "Cannot build an empty message. You need at least one of content, embeds, components, poll, or files");
         }
 
         int length = Helpers.codePointLength(content);
         if (length > Message.MAX_CONTENT_LENGTH) {
-            throw new IllegalStateException("Message content is too long! Max length is "
-                    + Message.MAX_CONTENT_LENGTH + " characters, provided " + length);
+            throw new IllegalStateException("Message content is too long! Max length is " + Message.MAX_CONTENT_LENGTH
+                    + " characters, provided " + length);
         }
 
         if (embeds.size() > Message.MAX_EMBED_COUNT) {
-            throw new IllegalStateException("Cannot build message with over "
-                    + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
+            throw new IllegalStateException(
+                    "Cannot build message with over " + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
         }
 
         if (components.size() > Message.MAX_COMPONENT_COUNT) {
-            throw new IllegalStateException(
-                    "Cannot build message with over " + Message.MAX_COMPONENT_COUNT
-                            + " top-level components, provided " + components.size());
+            throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT
+                    + " top-level components, provided " + components.size());
         }
-        List<? extends Component> illegalV1Components =
-                ComponentsUtil.getIllegalV1Components(components);
+        List<? extends Component> illegalV1Components = ComponentsUtil.getIllegalV1Components(components);
         if (!illegalV1Components.isEmpty()) {
             throw new IllegalStateException(
                     "Cannot build message with components other than ActionRow while using components V1, see #useComponentsV2, provided: "
                             + illegalV1Components);
         }
 
-        return new MessageCreateData(
-                content, embeds, files, components, mentions, poll, tts, messageFlags);
+        return new MessageCreateData(content, embeds, files, components, mentions, poll, tts, messageFlags);
     }
 
     @Nonnull
@@ -363,13 +346,11 @@ public class MessageCreateBuilder
         }
         long componentTreeLength = ComponentsUtil.getComponentTreeTextContentLength(components);
         if (componentTreeLength > Message.MAX_CONTENT_LENGTH_COMPONENT_V2) {
-            throw new IllegalStateException(
-                    "Cannot build message with over " + Message.MAX_CONTENT_LENGTH_COMPONENT_V2
-                            + " total characters, provided " + componentTreeLength);
+            throw new IllegalStateException("Cannot build message with over " + Message.MAX_CONTENT_LENGTH_COMPONENT_V2
+                    + " total characters, provided " + componentTreeLength);
         }
 
-        return new MessageCreateData(
-                "", Collections.emptyList(), files, components, mentions, poll, tts, messageFlags);
+        return new MessageCreateData("", Collections.emptyList(), files, components, mentions, poll, tts, messageFlags);
     }
 
     @Nonnull

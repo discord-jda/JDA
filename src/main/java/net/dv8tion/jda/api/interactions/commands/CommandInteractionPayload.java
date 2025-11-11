@@ -271,9 +271,7 @@ public interface CommandInteractionPayload extends Interaction {
     @Nonnull
     default List<OptionMapping> getOptionsByName(@Nonnull String name) {
         Checks.notNull(name, "Name");
-        return getOptions().stream()
-                .filter(opt -> opt.getName().equals(name))
-                .collect(Collectors.toList());
+        return getOptions().stream().filter(opt -> opt.getName().equals(name)).collect(Collectors.toList());
     }
 
     /**
@@ -295,9 +293,7 @@ public interface CommandInteractionPayload extends Interaction {
     @Nonnull
     default List<OptionMapping> getOptionsByType(@Nonnull OptionType type) {
         Checks.notNull(type, "Type");
-        return getOptions().stream()
-                .filter(it -> it.getType() == type)
-                .collect(Collectors.toList());
+        return getOptions().stream().filter(it -> it.getType() == type).collect(Collectors.toList());
     }
 
     /**
@@ -364,8 +360,7 @@ public interface CommandInteractionPayload extends Interaction {
      * @see    #getOption(String, Supplier, Function)
      */
     @Nullable
-    default <T> T getOption(
-            @Nonnull String name, @Nonnull Function<? super OptionMapping, ? extends T> resolver) {
+    default <T> T getOption(@Nonnull String name, @Nonnull Function<? super OptionMapping, ? extends T> resolver) {
         return getOption(name, null, resolver);
     }
 

@@ -121,8 +121,7 @@ public interface SlashCommandData extends CommandData {
      * @return This builder instance, for chaining
      */
     @Nonnull
-    SlashCommandData setDescriptionLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String description);
+    SlashCommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
 
     /**
      * Sets multiple {@link DiscordLocale language-specific} localizations of this command's description.
@@ -374,9 +373,8 @@ public interface SlashCommandData extends CommandData {
             @Nonnull String description,
             boolean required,
             boolean autoComplete) {
-        return addOptions(new OptionData(type, name, description)
-                .setRequired(required)
-                .setAutoComplete(autoComplete));
+        return addOptions(
+                new OptionData(type, name, description).setRequired(required).setAutoComplete(autoComplete));
     }
 
     /**
@@ -408,10 +406,7 @@ public interface SlashCommandData extends CommandData {
      */
     @Nonnull
     default SlashCommandData addOption(
-            @Nonnull OptionType type,
-            @Nonnull String name,
-            @Nonnull String description,
-            boolean required) {
+            @Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required) {
         return addOption(type, name, description, required, false);
     }
 
@@ -442,8 +437,7 @@ public interface SlashCommandData extends CommandData {
      * @return The builder instance, for chaining
      */
     @Nonnull
-    default SlashCommandData addOption(
-            @Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
+    default SlashCommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         return addOption(type, name, description, false);
     }
 
@@ -517,8 +511,7 @@ public interface SlashCommandData extends CommandData {
      * @return The builder instance, for chaining
      */
     @Nonnull
-    default SlashCommandData addSubcommands(
-            @Nonnull Collection<? extends SubcommandData> subcommands) {
+    default SlashCommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands) {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
@@ -593,8 +586,7 @@ public interface SlashCommandData extends CommandData {
      * @return The builder instance, for chaining
      */
     @Nonnull
-    default SlashCommandData addSubcommandGroups(
-            @Nonnull Collection<? extends SubcommandGroupData> groups) {
+    default SlashCommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups) {
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
     }
@@ -614,8 +606,8 @@ public interface SlashCommandData extends CommandData {
     static SlashCommandData fromCommand(@Nonnull Command command) {
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH) {
-            throw new IllegalArgumentException("Cannot convert command of type " + command.getType()
-                    + " to SlashCommandData!");
+            throw new IllegalArgumentException(
+                    "Cannot convert command of type " + command.getType() + " to SlashCommandData!");
         }
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
@@ -627,9 +619,7 @@ public interface SlashCommandData extends CommandData {
         data.setNameLocalizations(command.getNameLocalizations().toMap());
         data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
         command.getOptions().stream().map(OptionData::fromOption).forEach(data::addOptions);
-        command.getSubcommands().stream()
-                .map(SubcommandData::fromSubcommand)
-                .forEach(data::addSubcommands);
+        command.getSubcommands().stream().map(SubcommandData::fromSubcommand).forEach(data::addSubcommands);
         command.getSubcommandGroups().stream()
                 .map(SubcommandGroupData::fromGroup)
                 .forEach(data::addSubcommandGroups);
@@ -671,15 +661,14 @@ public interface SlashCommandData extends CommandData {
                     .map(InteractionContextType::fromKey)
                     .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
         } else {
-            command.setContexts(Helpers.unmodifiableEnumSet(
-                    InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+            command.setContexts(
+                    Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
         }
 
         if (!object.isNull("integration_types")) {
-            command.setIntegrationTypes(
-                    object.getArray("integration_types").stream(DataArray::getString)
-                            .map(IntegrationType::fromKey)
-                            .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+            command.setIntegrationTypes(object.getArray("integration_types").stream(DataArray::getString)
+                    .map(IntegrationType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
         } else {
             command.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
         }
@@ -689,13 +678,10 @@ public interface SlashCommandData extends CommandData {
         command.setDefaultPermissions(
                 object.isNull("default_member_permissions")
                         ? DefaultMemberPermissions.ENABLED
-                        : DefaultMemberPermissions.enabledFor(
-                                object.getLong("default_member_permissions")));
+                        : DefaultMemberPermissions.enabledFor(object.getLong("default_member_permissions")));
 
-        command.setNameLocalizations(
-                LocalizationUtils.mapFromProperty(object, "name_localizations"));
-        command.setDescriptionLocalizations(
-                LocalizationUtils.mapFromProperty(object, "description_localizations"));
+        command.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+        command.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
         options.stream(DataArray::getObject).forEach(opt -> {
             OptionType type = OptionType.fromKey(opt.getInt("type"));
             switch (type) {

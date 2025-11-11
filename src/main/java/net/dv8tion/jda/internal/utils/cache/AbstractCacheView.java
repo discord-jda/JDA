@@ -58,8 +58,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
 
     public TLongObjectMap<T> getMap() {
         if (!lock.writeLock().isHeldByCurrentThread()) {
-            throw new IllegalStateException(
-                    "Cannot access map directly without holding write lock!");
+            throw new IllegalStateException("Cannot access map directly without holding write lock!");
         }
         return elements;
     }
@@ -158,8 +157,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
             return Collections.emptyList();
         }
         if (nameMapper == null) { // no getName method available
-            throw new UnsupportedOperationException(
-                    "The contained elements are not assigned with names.");
+            throw new UnsupportedOperationException("The contained elements are not assigned with names.");
         }
         if (isEmpty()) {
             return Collections.emptyList();

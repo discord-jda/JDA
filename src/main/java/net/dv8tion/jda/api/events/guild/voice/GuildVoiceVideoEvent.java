@@ -37,8 +37,7 @@ import javax.annotation.Nonnull;
 public class GuildVoiceVideoEvent extends GenericGuildVoiceEvent {
     private final boolean video;
 
-    public GuildVoiceVideoEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean video) {
+    public GuildVoiceVideoEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean video) {
         super(api, responseNumber, member);
         this.video = video;
     }

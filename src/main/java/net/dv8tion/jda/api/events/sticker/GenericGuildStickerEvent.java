@@ -38,10 +38,7 @@ public abstract class GenericGuildStickerEvent extends Event {
     protected final GuildSticker sticker;
 
     public GenericGuildStickerEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull GuildSticker sticker) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull GuildSticker sticker) {
         super(api, responseNumber);
         this.guild = guild;
         this.sticker = sticker;

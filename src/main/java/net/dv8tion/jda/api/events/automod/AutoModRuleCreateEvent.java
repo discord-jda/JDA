@@ -30,8 +30,7 @@ import javax.annotation.Nonnull;
  * <br>This event will only fire for guilds where the bot has the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
  */
 public class AutoModRuleCreateEvent extends GenericAutoModRuleEvent {
-    public AutoModRuleCreateEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull AutoModRule rule) {
+    public AutoModRuleCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModRule rule) {
         super(api, responseNumber, rule);
     }
 }

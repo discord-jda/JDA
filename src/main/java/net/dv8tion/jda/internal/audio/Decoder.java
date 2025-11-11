@@ -39,11 +39,10 @@ public class Decoder {
         this.lastTimestamp = -1;
 
         IntBuffer error = IntBuffer.allocate(1);
-        opusDecoder = Opus.INSTANCE.opus_decoder_create(
-                OpusPacket.OPUS_SAMPLE_RATE, OpusPacket.OPUS_CHANNEL_COUNT, error);
+        opusDecoder =
+                Opus.INSTANCE.opus_decoder_create(OpusPacket.OPUS_SAMPLE_RATE, OpusPacket.OPUS_CHANNEL_COUNT, error);
         if (error.get() != Opus.OPUS_OK && opusDecoder == null) {
-            throw new IllegalStateException(
-                    "Received error code from opus_decoder_create(...): " + error.get());
+            throw new IllegalStateException("Received error code from opus_decoder_create(...): " + error.get());
         }
     }
 
@@ -60,8 +59,7 @@ public class Decoder {
         ShortBuffer decoded = ShortBuffer.allocate(4096);
         if (decryptedPacket == null) // Flag for packet-loss
         {
-            result = Opus.INSTANCE.opus_decode(
-                    opusDecoder, null, 0, decoded, OpusPacket.OPUS_FRAME_SIZE, 0);
+            result = Opus.INSTANCE.opus_decode(opusDecoder, null, 0, decoded, OpusPacket.OPUS_FRAME_SIZE, 0);
             lastSeq = (char) -1;
             lastTimestamp = -1;
         } else {
@@ -74,8 +72,7 @@ public class Decoder {
             byte[] buf = new byte[length];
             byte[] data = encodedAudio.array();
             System.arraycopy(data, offset, buf, 0, length);
-            result = Opus.INSTANCE.opus_decode(
-                    opusDecoder, buf, buf.length, decoded, OpusPacket.OPUS_FRAME_SIZE, 0);
+            result = Opus.INSTANCE.opus_decode(opusDecoder, buf, buf.length, decoded, OpusPacket.OPUS_FRAME_SIZE, 0);
         }
 
         // If we get a result that is less than 0, then there was an error. Return null as a
@@ -128,8 +125,7 @@ public class Decoder {
     }
 
     @Override
-    @SuppressWarnings(
-            "deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
+    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize() throws Throwable {
         super.finalize();
         close();

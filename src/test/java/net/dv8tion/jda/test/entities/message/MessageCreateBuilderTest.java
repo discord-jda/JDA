@@ -48,9 +48,7 @@ public class MessageCreateBuilderTest extends AbstractSnapshotTest {
 
         MessageCreateBuilder builder = spy(new MessageCreateBuilder());
         builder.applyMessage(message);
-        assertThat(builder)
-                .usingRecursiveComparison()
-                .isEqualTo(MessageCreateBuilder.fromMessage(message));
+        assertThat(builder).usingRecursiveComparison().isEqualTo(MessageCreateBuilder.fromMessage(message));
 
         Set<String> expectedCalls = getMessageCreateBuilderSetters();
 
@@ -66,8 +64,7 @@ public class MessageCreateBuilderTest extends AbstractSnapshotTest {
 
         builder.setContent("Test content")
                 .setEmbeds(new EmbedBuilder().setDescription("Test embed").build())
-                .setComponents(ComponentTestData.getMinimalComponent(
-                        ActionRow.class, Component.Type.ACTION_ROW))
+                .setComponents(ComponentTestData.getMinimalComponent(ActionRow.class, Component.Type.ACTION_ROW))
                 .useComponentsV2(false)
                 .setFiles(Collections.emptyList())
                 .setAllowedMentions(Collections.emptyList())

@@ -70,8 +70,7 @@ import javax.annotation.Nullable;
  * @see    Guild#createScheduledEvent(String, String, OffsetDateTime, OffsetDateTime)
  * @see    Guild#createScheduledEvent(String, net.dv8tion.jda.api.entities.channel.middleman.GuildChannel, OffsetDateTime)
  */
-public interface ScheduledEventAction
-        extends FluentAuditableRestAction<ScheduledEvent, ScheduledEventAction> {
+public interface ScheduledEventAction extends FluentAuditableRestAction<ScheduledEvent, ScheduledEventAction> {
     /**
      * The guild to create the {@link ScheduledEvent} in
      *

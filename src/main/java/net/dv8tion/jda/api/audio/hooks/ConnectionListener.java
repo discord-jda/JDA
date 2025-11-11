@@ -62,8 +62,7 @@ public interface ConnectionListener {
      * @param modes
      *        The new speaking modes of the user
      */
-    default void onUserSpeakingModeUpdate(
-            @Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes) {}
+    default void onUserSpeakingModeUpdate(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes) {}
 
     /**
      * This method is used to listen for users changing their speaking mode.
@@ -78,6 +77,5 @@ public interface ConnectionListener {
      * @param modes
      *        The new speaking modes of the user
      */
-    default void onUserSpeakingModeUpdate(
-            @Nonnull UserSnowflake user, @Nonnull EnumSet<SpeakingMode> modes) {}
+    default void onUserSpeakingModeUpdate(@Nonnull UserSnowflake user, @Nonnull EnumSet<SpeakingMode> modes) {}
 }

@@ -65,8 +65,8 @@ public class InteractionImpl implements Interaction {
     public InteractionImpl(JDAImpl jda, DataObject data) {
         DataObject userObj = data.optObject("member").orElse(data).getObject("user");
         this.api = jda;
-        this.interactionEntityBuilder = new InteractionEntityBuilder(
-                jda, data.getLong("channel_id"), userObj.getUnsignedLong("id"));
+        this.interactionEntityBuilder =
+                new InteractionEntityBuilder(jda, data.getLong("channel_id"), userObj.getUnsignedLong("id"));
         this.id = data.getUnsignedLong("id");
         this.token = data.getString("token");
         this.type = data.getInt("type");
@@ -81,27 +81,23 @@ public class InteractionImpl implements Interaction {
         this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
         this.context = InteractionContextType.fromKey(data.getString("context"));
-        this.integrationOwners =
-                new IntegrationOwnersImpl(data.getObject("authorizing_integration_owners"));
+        this.integrationOwners = new IntegrationOwnersImpl(data.getObject("authorizing_integration_owners"));
 
         DataObject channelJson = data.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
         if (guild instanceof GuildImpl) {
-            member = jda.getEntityBuilder()
-                    .createMember((GuildImpl) guild, data.getObject("member"));
+            member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
             jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
             user = member.getUser();
 
             GuildChannel channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
             if (channel == null && channelType.isThread()) {
                 channel = api.getEntityBuilder()
-                        .createThreadChannel(
-                                (GuildImpl) guild, channelJson, guild.getIdLong(), false);
+                        .createThreadChannel((GuildImpl) guild, channelJson, guild.getIdLong(), false);
             }
             if (channel == null) {
-                throw new IllegalStateException(
-                        "Failed to create channel instance for interaction! Channel Type: "
-                                + channelJson.getInt("type"));
+                throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: "
+                        + channelJson.getInt("type"));
             }
             this.channel = channel;
         } else if (guild instanceof DetachedGuildImpl) {
@@ -114,9 +110,8 @@ public class InteractionImpl implements Interaction {
                 channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
             }
             if (channel == null) {
-                throw new IllegalStateException(
-                        "Failed to create channel instance for interaction! Channel Type: "
-                                + channelJson.getInt("type"));
+                throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: "
+                        + channelJson.getInt("type"));
             }
         } else {
             // (G)DMs
@@ -132,13 +127,11 @@ public class InteractionImpl implements Interaction {
                     break;
                 default:
                     throw new IllegalArgumentException(
-                            "Received interaction in unexpected channel type! Type " + type
-                                    + " is not supported yet!");
+                            "Received interaction in unexpected channel type! Type " + type + " is not supported yet!");
             }
         }
 
-        this.entitlements = data.optArray("entitlements").orElseGet(DataArray::empty).stream(
-                        DataArray::getObject)
+        this.entitlements = data.optArray("entitlements").orElseGet(DataArray::empty).stream(DataArray::getObject)
                 .map(jda.getEntityBuilder()::createEntitlement)
                 .collect(Helpers.toUnmodifiableList());
     }

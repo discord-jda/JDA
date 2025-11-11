@@ -102,8 +102,8 @@ public class InviteImpl implements Invite {
         }
 
         JDAImpl jda = (JDAImpl) api;
-        return new RestActionImpl<>(api, route, (response, request) -> jda.getEntityBuilder()
-                .createInvite(response.getObject()));
+        return new RestActionImpl<>(
+                api, route, (response, request) -> jda.getEntityBuilder().createInvite(response.getObject()));
     }
 
     @Nonnull
@@ -128,8 +128,7 @@ public class InviteImpl implements Invite {
         net.dv8tion.jda.api.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
 
         if (guild == null) {
-            throw new UnsupportedOperationException(
-                    "You're not in the guild this invite points to");
+            throw new UnsupportedOperationException("You're not in the guild this invite points to");
         }
 
         Member member = guild.getSelfMember();
@@ -139,8 +138,7 @@ public class InviteImpl implements Invite {
         GuildChannel channel = guild.getChannelById(GuildChannel.class, this.channel.getIdLong());
         if (channel == null) {
             throw new UnsupportedOperationException(
-                    "Cannot expand invite without known channel. Channel ID: "
-                            + this.channel.getId());
+                    "Cannot expand invite without known channel. Channel ID: " + this.channel.getId());
         }
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL)) {
@@ -149,9 +147,7 @@ public class InviteImpl implements Invite {
             route = Route.Invites.GET_GUILD_INVITES.compile(guild.getId());
         } else {
             throw new InsufficientPermissionException(
-                    channel,
-                    Permission.MANAGE_CHANNEL,
-                    "You don't have the permission to view the full invite info");
+                    channel, Permission.MANAGE_CHANNEL, "You don't have the permission to view the full invite info");
         }
 
         return new RestActionImpl<>(this.api, route, (response, request) -> {
@@ -428,8 +424,7 @@ public class InviteImpl implements Invite {
         public String getSplashUrl() {
             return this.splashId == null
                     ? null
-                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId
-                            + ".png";
+                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
         }
 
         @Nonnull
@@ -493,8 +488,7 @@ public class InviteImpl implements Invite {
         public String getIconUrl() {
             return this.iconId == null
                     ? null
-                    : "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId
-                            + ".png";
+                    : "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".png";
         }
 
         @Override
@@ -523,8 +517,7 @@ public class InviteImpl implements Invite {
         private final EmbeddedApplication targetApplication;
         private final User targetUser;
 
-        public InviteTargetImpl(
-                TargetType type, EmbeddedApplication targetApplication, User targetUser) {
+        public InviteTargetImpl(TargetType type, EmbeddedApplication targetApplication, User targetUser) {
             this.type = type;
             this.targetApplication = targetApplication;
             this.targetUser = targetUser;
@@ -585,12 +578,7 @@ public class InviteImpl implements Invite {
         private final int maxParticipants;
 
         public EmbeddedApplicationImpl(
-                String iconId,
-                String name,
-                String description,
-                String summary,
-                long id,
-                int maxParticipants) {
+                String iconId, String name, String description, String summary, long id, int maxParticipants) {
             this.iconId = iconId;
             this.name = name;
             this.description = description;
@@ -633,8 +621,7 @@ public class InviteImpl implements Invite {
         public String getIconUrl() {
             return this.iconId == null
                     ? null
-                    : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId
-                            + ".png";
+                    : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
         }
 
         @Override

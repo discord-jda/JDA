@@ -36,15 +36,12 @@ import static org.mockito.Mockito.*;
 
 public class MessagePinDeadlineTest {
     private static final Instant BEFORE_DEADLINE = Instant.parse("2025-08-21T00:00:00Z");
-    private static final Instant AFTER_DEADLINE =
-            GuildMessageChannelMixin.PIN_PERMISSION_DEADLINE.plusSeconds(1);
+    private static final Instant AFTER_DEADLINE = GuildMessageChannelMixin.PIN_PERMISSION_DEADLINE.plusSeconds(1);
 
     @MethodSource("validPermissions")
     @ParameterizedTest
     void testPermissionsAreValidatedInOrder(
-            Instant timeOfCheck,
-            Set<Permission> grantedPermissions,
-            Set<Permission> expectedCheckedPermissions) {
+            Instant timeOfCheck, Set<Permission> grantedPermissions, Set<Permission> expectedCheckedPermissions) {
         GuildMessageChannelMixin<?> channel = mock(GuildMessageChannelMixin.class);
         doCallRealMethod().when(channel).checkCanControlMessagePins();
         doAnswer(invocation -> {
@@ -87,8 +84,7 @@ public class MessagePinDeadlineTest {
 
     @MethodSource("invalidPermissions")
     @ParameterizedTest
-    void testPermissionsAreInvalid(
-            Instant timeOfCheck, Set<Permission> expectedCheckedPermissions) {
+    void testPermissionsAreInvalid(Instant timeOfCheck, Set<Permission> expectedCheckedPermissions) {
         GuildMessageChannelMixin<?> channel = mock(GuildMessageChannelMixin.class);
         doCallRealMethod().when(channel).checkCanControlMessagePins();
         doReturn(false).when(channel).hasPermission(any());
@@ -96,8 +92,7 @@ public class MessagePinDeadlineTest {
         doCallRealMethod().when(channel).checkPermission(any(), any());
 
         assertThatException()
-                .isThrownBy(() -> ClockProvider.withFixedTime(
-                        timeOfCheck, channel::checkCanControlMessagePins))
+                .isThrownBy(() -> ClockProvider.withFixedTime(timeOfCheck, channel::checkCanControlMessagePins))
                 .isInstanceOf(InsufficientPermissionException.class);
 
         // Make sure the permissions are checked in the given order

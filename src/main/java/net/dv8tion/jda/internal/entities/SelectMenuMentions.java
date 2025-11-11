@@ -137,10 +137,7 @@ public class SelectMenuMentions implements Mentions {
     @Nonnull
     @Override
     public <T extends GuildChannel> List<T> getChannels(@Nonnull Class<T> clazz) {
-        return getChannels().stream()
-                .filter(clazz::isInstance)
-                .map(clazz::cast)
-                .collect(Helpers.toUnmodifiableList());
+        return getChannels().stream().filter(clazz::isInstance).map(clazz::cast).collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -254,8 +251,7 @@ public class SelectMenuMentions implements Mentions {
                     List<User> users = getUsers();
                     mentions.addAll(members);
                     users.stream()
-                            .filter(u ->
-                                    members.stream().noneMatch(m -> m.getIdLong() == u.getIdLong()))
+                            .filter(u -> members.stream().noneMatch(m -> m.getIdLong() == u.getIdLong()))
                             .forEach(mentions::add);
                     break;
                 case ROLE:
@@ -272,8 +268,7 @@ public class SelectMenuMentions implements Mentions {
     }
 
     @Override
-    public boolean isMentioned(
-            @Nonnull IMentionable mentionable, @Nonnull Message.MentionType... types) {
+    public boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull Message.MentionType... types) {
         Checks.notNull(types, "Mention Types");
         if (types.length == 0) {
             return isMentioned(mentionable, Message.MentionType.values());
@@ -296,8 +291,7 @@ public class SelectMenuMentions implements Mentions {
                     if (mentionable instanceof Member) {
                         boolean mentioned = ((Member) mentionable)
                                 .getUnsortedRoles().stream()
-                                        .anyMatch(role ->
-                                                isMentioned(role, Message.MentionType.ROLE));
+                                        .anyMatch(role -> isMentioned(role, Message.MentionType.ROLE));
                         if (mentioned) {
                             return true;
                         }
@@ -320,8 +314,7 @@ public class SelectMenuMentions implements Mentions {
                     }
                     break;
                 case CHANNEL:
-                    if (mentionable instanceof GuildChannel
-                            && getChannels().contains(mentionable)) {
+                    if (mentionable instanceof GuildChannel && getChannels().contains(mentionable)) {
                         return true;
                     }
                     break;

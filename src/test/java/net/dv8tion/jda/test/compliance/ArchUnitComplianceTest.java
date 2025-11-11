@@ -169,8 +169,7 @@ public class ArchUnitComplianceTest {
     }
 
     private ArchCondition<JavaMethod> haveNonPrimitiveParametersAnnotatedWithNullability() {
-        return new ArchCondition<>(
-                "have non-primitive parameters annotated with @Nonnull or @Nullable") {
+        return new ArchCondition<>("have non-primitive parameters annotated with @Nonnull or @Nullable") {
             @Override
             public void check(JavaMethod method, ConditionEvents events) {
                 method.getParameters().stream()
@@ -179,9 +178,7 @@ public class ArchUnitComplianceTest {
                                 && !parameter.isAnnotatedWith(Nullable.class)
                                 && !parameter.isAnnotatedWith(CheckForNull.class))
                         .forEach(parameter -> events.add(SimpleConditionEvent.violated(
-                                method,
-                                parameter.getDescription()
-                                        + " is not annotated with @Nonnull or @Nullable")));
+                                method, parameter.getDescription() + " is not annotated with @Nonnull or @Nullable")));
             }
         };
     }

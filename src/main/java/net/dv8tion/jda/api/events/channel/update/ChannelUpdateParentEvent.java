@@ -39,11 +39,7 @@ public class ChannelUpdateParentEvent extends GenericChannelUpdateEvent<Category
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateParentEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            Category oldValue,
-            Category newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, Category oldValue, Category newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

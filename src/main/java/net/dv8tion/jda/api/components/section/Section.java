@@ -48,8 +48,7 @@ import javax.annotation.Nonnull;
  * @see SectionAccessoryComponent
  * @see SectionAccessoryComponentUnion
  */
-public interface Section
-        extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable {
+public interface Section extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable {
     /**
      * How many {@link SectionContentComponent} can be in this section. ({@value})
      */
@@ -141,8 +140,7 @@ public interface Section
     @Override
     @CheckReturnValue
     default Section withDisabled(boolean disabled) {
-        return replace(
-                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
+        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
     }
 
     @Nonnull
@@ -172,8 +170,7 @@ public interface Section
      */
     @Nonnull
     @CheckReturnValue
-    Section withContentComponents(
-            @Nonnull Collection<? extends SectionContentComponent> components);
+    Section withContentComponents(@Nonnull Collection<? extends SectionContentComponent> components);
 
     /**
      * Creates a new {@link Section} with the specified content components.
@@ -191,8 +188,7 @@ public interface Section
     @Nonnull
     @CheckReturnValue
     default Section withContentComponents(
-            @Nonnull SectionContentComponent component,
-            @Nonnull SectionContentComponent... components) {
+            @Nonnull SectionContentComponent component, @Nonnull SectionContentComponent... components) {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
         return withContentComponents(Helpers.mergeVararg(component, components));

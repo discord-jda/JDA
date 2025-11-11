@@ -44,31 +44,21 @@ public class ScheduledEventUserHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            EventCache.LOG.debug(
-                    "Caching SCHEDULED_EVENT_USER_ADD for uncached guild with id {}", guildId);
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            EventCache.LOG.debug("Caching SCHEDULED_EVENT_USER_ADD for uncached guild with id {}", guildId);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
 
-        ScheduledEvent event =
-                guild.getScheduledEventById(content.getUnsignedLong("guild_scheduled_event_id"));
+        ScheduledEvent event = guild.getScheduledEventById(content.getUnsignedLong("guild_scheduled_event_id"));
         long userId = content.getUnsignedLong("user_id");
         if (event == null) {
             return null;
         }
 
         if (add) {
-            getJDA().handleEvent(new ScheduledEventUserAddEvent(
-                    getJDA(), responseNumber, event, userId));
+            getJDA().handleEvent(new ScheduledEventUserAddEvent(getJDA(), responseNumber, event, userId));
         } else {
-            getJDA().handleEvent(new ScheduledEventUserRemoveEvent(
-                    getJDA(), responseNumber, event, userId));
+            getJDA().handleEvent(new ScheduledEventUserRemoveEvent(getJDA(), responseNumber, event, userId));
         }
 
         return null;

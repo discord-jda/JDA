@@ -55,8 +55,7 @@ public interface IPermissionContainerMixin<T extends IPermissionContainerMixin<T
 
     @Nonnull
     @Override
-    default PermissionOverrideAction upsertPermissionOverride(
-            @Nonnull IPermissionHolder permissionHolder) {
+    default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder) {
         checkAttached();
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(permissionHolder, "PermissionHolder");

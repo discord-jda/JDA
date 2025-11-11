@@ -39,10 +39,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
-        extends GuildMessageChannel,
-                GuildMessageChannelUnion,
-                GuildChannelMixin<T>,
-                MessageChannelMixin<T> {
+        extends GuildMessageChannel, GuildMessageChannelUnion, GuildChannelMixin<T>, MessageChannelMixin<T> {
     Instant PIN_PERMISSION_DEADLINE = Instant.parse("2026-01-12T00:00:00Z");
 
     // ---- Default implementations of interface ----
@@ -55,16 +52,13 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
                 "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
 
         if (messageIds.size() < 2 || messageIds.size() > 100) {
-            throw new IllegalArgumentException(
-                    "Must provide at least 2 or at most 100 messages to be deleted.");
+            throw new IllegalArgumentException("Must provide at least 2 or at most 100 messages to be deleted.");
         }
 
-        long twoWeeksAgo = TimeUtil.getDiscordTimestamp(
-                (System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
+        long twoWeeksAgo = TimeUtil.getDiscordTimestamp((System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000)));
         for (String id : messageIds) {
             Checks.check(
-                    MiscUtil.parseSnowflake(id) > twoWeeksAgo,
-                    "Message Id provided was older than 2 weeks. Id: " + id);
+                    MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
         }
 
         return bulkDeleteMessages(messageIds);
@@ -72,8 +66,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
     @Nonnull
     @Override
-    default RestAction<Void> removeReactionById(
-            @Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull User user) {
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull User user) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
         Checks.notNull(user, "User");
@@ -90,8 +83,8 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
             targetUser = user.getId();
         }
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
-                getId(), messageId, emoji.getAsReactionCode(), targetUser);
+        Route.CompiledRoute route =
+                Route.Messages.REMOVE_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), targetUser);
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -116,15 +109,14 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         checkCanAccess();
         checkPermission(Permission.MESSAGE_MANAGE);
 
-        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(
-                getId(), messageId, emoji.getAsReactionCode());
+        Route.CompiledRoute route =
+                Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getId(), messageId, emoji.getAsReactionCode());
         return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    default MessageCreateAction sendStickers(
-            @Nonnull Collection<? extends StickerSnowflake> stickers) {
+    default MessageCreateAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers) {
         checkCanSendMessage();
         Checks.notEmpty(stickers, "Stickers");
         Checks.noneNull(stickers, "Stickers");
@@ -160,16 +152,12 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     default void checkCanAddReactions() {
         checkCanAccess();
         checkPermission(Permission.MESSAGE_ADD_REACTION);
-        checkPermission(
-                Permission.MESSAGE_HISTORY,
-                "You need MESSAGE_HISTORY to add reactions to a message");
+        checkPermission(Permission.MESSAGE_HISTORY, "You need MESSAGE_HISTORY to add reactions to a message");
     }
 
     default void checkCanRemoveReactions() {
         checkCanAccess();
-        checkPermission(
-                Permission.MESSAGE_HISTORY,
-                "You need MESSAGE_HISTORY to remove reactions from a message");
+        checkPermission(Permission.MESSAGE_HISTORY, "You need MESSAGE_HISTORY to remove reactions from a message");
     }
 
     default void checkCanControlMessagePins() {

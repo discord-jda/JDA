@@ -36,8 +36,7 @@ public class CommandEditActionTest extends IntegrationTest {
     @BeforeEach
     void setupMocks() {
         when(jda.getSelfUser()).thenReturn(selfUser);
-        when(selfUser.getApplicationId())
-                .thenReturn(Long.toUnsignedString(Constants.BUTLER_USER_ID));
+        when(selfUser.getApplicationId()).thenReturn(Long.toUnsignedString(Constants.BUTLER_USER_ID));
     }
 
     @Test
@@ -51,8 +50,7 @@ public class CommandEditActionTest extends IntegrationTest {
             action.setNSFW(true);
         });
 
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> action.setName("updated name with space"));
+        assertThatIllegalArgumentException().isThrownBy(() -> action.setName("updated name with space"));
 
         assertThatRequestFrom(action)
                 .hasMethod(Method.PATCH)
@@ -67,8 +65,7 @@ public class CommandEditActionTest extends IntegrationTest {
         CommandEditActionImpl action = new CommandEditActionImpl(jda, Command.Type.MESSAGE, id);
 
         assertThatNoException().isThrownBy(() -> action.setName("updated name with space"));
-        assertThatIllegalStateException()
-                .isThrownBy(() -> action.setDescription("Updated description"));
+        assertThatIllegalStateException().isThrownBy(() -> action.setDescription("Updated description"));
 
         action.setNSFW(true);
 
@@ -85,8 +82,7 @@ public class CommandEditActionTest extends IntegrationTest {
         CommandEditActionImpl action = new CommandEditActionImpl(jda, Command.Type.USER, id);
 
         assertThatNoException().isThrownBy(() -> action.setName("updated name with space"));
-        assertThatIllegalStateException()
-                .isThrownBy(() -> action.setDescription("Updated description"));
+        assertThatIllegalStateException().isThrownBy(() -> action.setDescription("Updated description"));
 
         action.setNSFW(true);
 

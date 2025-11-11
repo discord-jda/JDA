@@ -71,8 +71,7 @@ public class ListenerProxy implements ConnectionListener {
     }
 
     @Override
-    public void onUserSpeakingModeUpdate(
-            @Nonnull UserSnowflake user, @Nonnull EnumSet<SpeakingMode> modes) {
+    public void onUserSpeakingModeUpdate(@Nonnull UserSnowflake user, @Nonnull EnumSet<SpeakingMode> modes) {
         if (listener == null) {
             return;
         }

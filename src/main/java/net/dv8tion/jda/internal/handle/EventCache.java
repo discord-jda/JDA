@@ -34,8 +34,7 @@ public class EventCache {
     /** Sequence difference after which events will be removed from cache */
     public static final long TIMEOUT_AMOUNT = 100;
 
-    private final EnumMap<Type, TLongObjectMap<List<CacheNode>>> eventCache =
-            new EnumMap<>(Type.class);
+    private final EnumMap<Type, TLongObjectMap<List<CacheNode>>> eventCache = new EnumMap<>(Type.class);
 
     public EventCache() {}
 
@@ -58,11 +57,7 @@ public class EventCache {
                     boolean remove = responseTotal - node.responseTotal > TIMEOUT_AMOUNT;
                     if (remove) {
                         count.incrementAndGet();
-                        LOG.trace(
-                                "Removing type {}/{} from event cache with payload {}",
-                                type,
-                                triggerId,
-                                node.event);
+                        LOG.trace("Removing type {}/{} from event cache with payload {}", type, triggerId, node.event);
                     }
                     return remove;
                 });
@@ -78,11 +73,7 @@ public class EventCache {
     }
 
     public synchronized void cache(
-            Type type,
-            long triggerId,
-            long responseTotal,
-            DataObject event,
-            CacheConsumer handler) {
+            Type type, long triggerId, long responseTotal, DataObject event, CacheConsumer handler) {
         TLongObjectMap<List<CacheNode>> triggerCache =
                 eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
 
@@ -104,10 +95,7 @@ public class EventCache {
         List<CacheNode> items = typeCache.remove(triggerId);
         if (items != null && !items.isEmpty()) {
             EventCache.LOG.debug(
-                    "Replaying {} events from the EventCache for type {} with id: {}",
-                    items.size(),
-                    type,
-                    triggerId);
+                    "Replaying {} events from the EventCache for type {} with id: {}", items.size(), type, triggerId);
             for (CacheNode item : items) {
                 item.execute();
             }

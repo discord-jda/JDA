@@ -130,8 +130,7 @@ public class IOUtil {
             // Before converting to an int type, check
             // to ensure that file is not larger than Integer.MAX_VALUE.
             if (length > Integer.MAX_VALUE) {
-                throw new IOException(
-                        "Cannot read the file into memory completely due to it being too large!");
+                throw new IOException("Cannot read the file into memory completely due to it being too large!");
                 // File is too large
             }
 
@@ -141,8 +140,7 @@ public class IOUtil {
             // Read in the bytes
             int offset = 0;
             int numRead = 0;
-            while (offset < bytes.length
-                    && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+            while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
                 offset += numRead;
             }
 
@@ -240,8 +238,7 @@ public class IOUtil {
      *
      * @return InputStream representing the body of this response
      */
-    @SuppressWarnings(
-            "ConstantConditions") // methods here don't return null despite the annotations on them,
+    @SuppressWarnings("ConstantConditions") // methods here don't return null despite the annotations on them,
     // read the docs
     public static InputStream getBody(okhttp3.Response response) throws IOException {
         String encoding = response.header("content-encoding", "");

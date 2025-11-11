@@ -40,11 +40,7 @@ public class ChannelUpdateRegionEvent extends GenericChannelUpdateEvent<Region> 
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateRegionEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            Region oldValue,
-            Region newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, Region oldValue, Region newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

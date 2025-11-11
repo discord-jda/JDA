@@ -45,8 +45,7 @@ public class SessionConfig {
             EnumSet<ConfigFlag> flags,
             int maxReconnectDelay,
             int largeThreshold) {
-        this.sessionController =
-                sessionController == null ? new ConcurrentSessionController() : sessionController;
+        this.sessionController = sessionController == null ? new ConcurrentSessionController() : sessionController;
         this.httpClient = httpClient;
         this.webSocketFactory = webSocketFactory == null ? newWebSocketFactory() : webSocketFactory;
         this.interceptor = interceptor;
@@ -125,7 +124,6 @@ public class SessionConfig {
 
     @Nonnull
     public static SessionConfig getDefault() {
-        return new SessionConfig(
-                null, new OkHttpClient(), null, null, ConfigFlag.getDefault(), 900, 250);
+        return new SessionConfig(null, new OkHttpClient(), null, null, ConfigFlag.getDefault(), 900, 250);
     }
 }

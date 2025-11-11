@@ -121,8 +121,7 @@ public interface MediaGallery extends Component, MessageTopLevelComponent, Conta
      */
     @Nonnull
     @CheckReturnValue
-    default MediaGallery withItems(
-            @Nonnull MediaGalleryItem item, @Nonnull MediaGalleryItem... items) {
+    default MediaGallery withItems(@Nonnull MediaGalleryItem item, @Nonnull MediaGalleryItem... items) {
         Checks.notNull(item, "Item");
         Checks.notNull(items, "Items");
         return withItems(Helpers.mergeVararg(item, items));

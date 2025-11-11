@@ -184,8 +184,7 @@ public class LRUMemberCachePolicy implements MemberCachePolicy {
                     activeMemberIterator.hasNext() ? activeMemberIterator.next() : null;
 
             MemberNode removed = this.queue.poll();
-            if (removed == null
-                    || oldestActive != null && oldestActive.getValue() < removed.insertionTime) {
+            if (removed == null || oldestActive != null && oldestActive.getValue() < removed.insertionTime) {
                 activeMemberIterator.remove();
                 unloadable = oldestActive.getKey();
                 if (removed != null) {

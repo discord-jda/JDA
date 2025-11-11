@@ -47,8 +47,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         implements ForumChannel, GuildChannelUnion, ForumChannelMixin<ForumChannelImpl> {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
     private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache =
-            new SortedSnowflakeCacheViewImpl<>(
-                    ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
+            new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
 
     private Emoji defaultReaction;
     private String topic;
@@ -213,8 +212,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     @Override
     public ForumChannelImpl setDefaultReaction(DataObject emoji) {
         if (emoji != null && !emoji.isNull("emoji_id")) {
-            this.defaultReaction =
-                    new CustomEmojiImpl("", emoji.getUnsignedLong("emoji_id"), false);
+            this.defaultReaction = new CustomEmojiImpl("", emoji.getUnsignedLong("emoji_id"), false);
         } else if (emoji != null && !emoji.isNull("emoji_name")) {
             this.defaultReaction = Emoji.fromUnicode(emoji.getString("emoji_name"));
         } else {

@@ -475,8 +475,7 @@ public interface IGuildChannelContainer<C extends Channel> {
      */
     @Nullable
     default ThreadChannel getThreadChannelById(@Nonnull String id) {
-        return (ThreadChannel)
-                getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
+        return (ThreadChannel) getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
     }
 
     /**
@@ -502,8 +501,7 @@ public interface IGuildChannelContainer<C extends Channel> {
      */
     @Nullable
     default ThreadChannel getThreadChannelById(long id) {
-        return (ThreadChannel)
-                getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
+        return (ThreadChannel) getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
     }
 
     /**

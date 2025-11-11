@@ -31,8 +31,7 @@ import javax.annotation.Nonnull;
 
 public class MessageUtil {
     @Nonnull
-    public static List<FileUpload> getIndirectFiles(
-            @Nonnull Collection<? extends Component> components) {
+    public static List<FileUpload> getIndirectFiles(@Nonnull Collection<? extends Component> components) {
         return ComponentIterator.createStream(components)
                 .filter(FileContainerMixin.class::isInstance)
                 .map(FileContainerMixin.class::cast)

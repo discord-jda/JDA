@@ -46,11 +46,7 @@ public class GenericMessagePollVoteEvent extends GenericMessageEvent {
     protected final long answerId;
 
     public GenericMessagePollVoteEvent(
-            @Nonnull MessageChannel channel,
-            long responseNumber,
-            long messageId,
-            long userId,
-            long answerId) {
+            @Nonnull MessageChannel channel, long responseNumber, long messageId, long userId, long answerId) {
         super(channel.getJDA(), responseNumber, messageId, channel);
         this.userId = userId;
         this.messageId = messageId;
@@ -113,8 +109,7 @@ public class GenericMessagePollVoteEvent extends GenericMessageEvent {
     @CheckReturnValue
     public RestAction<Member> retrieveMember() {
         if (!getChannel().getType().isGuild()) {
-            throw new IllegalStateException(
-                    "Cannot retrieve member for a vote that happened outside of a guild");
+            throw new IllegalStateException("Cannot retrieve member for a vote that happened outside of a guild");
         }
         return getGuild().retrieveMemberById(getUserIdLong());
     }

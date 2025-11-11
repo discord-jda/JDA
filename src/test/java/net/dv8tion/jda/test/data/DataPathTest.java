@@ -60,8 +60,7 @@ public class DataPathTest {
         assertThat(DataPath.getDouble(array, "[0].foo")).isEqualTo(10.0);
         assertThat(DataPath.getDouble(array, "[1]?.foo", 20.0)).isEqualTo(20.0);
 
-        assertThatIndexOutOfBoundsException()
-                .isThrownBy(() -> DataPath.getDouble(array, "[1].foo"));
+        assertThatIndexOutOfBoundsException().isThrownBy(() -> DataPath.getDouble(array, "[1].foo"));
     }
 
     @Test
@@ -71,8 +70,7 @@ public class DataPathTest {
 
         assertThat(DataPath.getString(object, "foo[0]")).isEqualTo("hello");
         assertThat(DataPath.getString(object, "foo[1]?", "world")).isEqualTo("world");
-        assertThatIndexOutOfBoundsException()
-                .isThrownBy(() -> DataPath.getString(object, "foo[1]"));
+        assertThatIndexOutOfBoundsException().isThrownBy(() -> DataPath.getString(object, "foo[1]"));
     }
 
     @Test
@@ -82,10 +80,8 @@ public class DataPathTest {
         assertThat(DataPath.getUnsignedInt(array, "[0][0]")).isEqualTo(10);
         assertThat(DataPath.getUnsignedInt(array, "[0][1]?", 20)).isEqualTo(20);
         assertThat(DataPath.getUnsignedInt(array, "[1]?[0]", 20)).isEqualTo(20);
-        assertThatIndexOutOfBoundsException()
-                .isThrownBy(() -> DataPath.getUnsignedInt(array, "[0][1]"));
-        assertThatIndexOutOfBoundsException()
-                .isThrownBy(() -> DataPath.getUnsignedInt(array, "[1][0]"));
+        assertThatIndexOutOfBoundsException().isThrownBy(() -> DataPath.getUnsignedInt(array, "[0][1]"));
+        assertThatIndexOutOfBoundsException().isThrownBy(() -> DataPath.getUnsignedInt(array, "[1][0]"));
         assertThatThrownBy(() -> DataPath.getUnsignedInt(array, "[0][1]?"))
                 .hasMessage("Could not resolve value of type unsigned int at path \"[0][1]?\"")
                 .isInstanceOf(ParsingException.class);
@@ -106,8 +102,7 @@ public class DataPathTest {
         assertThat(DataPath.getString(object, "array[0].foo.bar")).isEqualTo("hello");
         assertThat(DataPath.getString(object, "array[0].wrong?.bar", "world")).isEqualTo("world");
         assertThatThrownBy(() -> DataPath.getString(object, "array[0].wrong?.bar"))
-                .hasMessage(
-                        "Could not resolve value of type String at path \"array[0].wrong?.bar\"")
+                .hasMessage("Could not resolve value of type String at path \"array[0].wrong?.bar\"")
                 .isInstanceOf(ParsingException.class);
     }
 }

@@ -23,8 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
-public class UserContextInteractionImpl extends ContextInteractionImpl<User>
-        implements UserContextInteraction {
+public class UserContextInteractionImpl extends ContextInteractionImpl<User> implements UserContextInteraction {
     private Member member;
 
     public UserContextInteractionImpl(JDAImpl jda, DataObject data) {

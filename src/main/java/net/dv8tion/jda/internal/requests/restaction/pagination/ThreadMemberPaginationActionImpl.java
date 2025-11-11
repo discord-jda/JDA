@@ -34,17 +34,14 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class ThreadMemberPaginationActionImpl
-        extends PaginationActionImpl<ThreadMember, ThreadMemberPaginationAction>
+public class ThreadMemberPaginationActionImpl extends PaginationActionImpl<ThreadMember, ThreadMemberPaginationAction>
         implements ThreadMemberPaginationAction {
     private final ThreadChannelImpl channel;
 
     public ThreadMemberPaginationActionImpl(ThreadChannel channel) {
         super(
                 channel.getJDA(),
-                Route.Channels.LIST_THREAD_MEMBERS
-                        .compile(channel.getId())
-                        .withQueryParams("with_member", "true"),
+                Route.Channels.LIST_THREAD_MEMBERS.compile(channel.getId()).withQueryParams("with_member", "true"),
                 1,
                 100,
                 100);
@@ -80,8 +77,7 @@ public class ThreadMemberPaginationActionImpl
                 if (object.isNull("member")) {
                     continue;
                 }
-                ThreadMember threadMember =
-                        builder.createThreadMember(channel.getGuild(), channel, object);
+                ThreadMember threadMember = builder.createThreadMember(channel.getGuild(), channel, object);
                 members.add(threadMember);
             } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered an exception in ThreadMemberPaginationAction", e);

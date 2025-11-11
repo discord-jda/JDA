@@ -50,8 +50,7 @@ public enum IntegrationType {
     /**
      * Contains all integration types.
      */
-    public static final Set<IntegrationType> ALL =
-            Helpers.unmodifiableEnumSet(GUILD_INSTALL, USER_INSTALL);
+    public static final Set<IntegrationType> ALL = Helpers.unmodifiableEnumSet(GUILD_INSTALL, USER_INSTALL);
 
     private final String key;
 

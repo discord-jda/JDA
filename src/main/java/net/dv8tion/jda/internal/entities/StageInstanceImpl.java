@@ -109,17 +109,14 @@ public class StageInstanceImpl implements StageInstance {
 
     private void checkPermissions() {
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(getChannel());
-        EnumSet<Permission> required = EnumSet.of(
-                Permission.MANAGE_CHANNEL,
-                Permission.VOICE_MUTE_OTHERS,
-                Permission.VOICE_MOVE_OTHERS);
+        EnumSet<Permission> required =
+                EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
         for (Permission perm : required) {
             if (!permissions.contains(perm)) {
                 throw new InsufficientPermissionException(
                         getChannel(),
                         perm,
-                        "You must be a stage moderator to manage a stage instance! Missing Permission: "
-                                + perm);
+                        "You must be a stage moderator to manage a stage instance! Missing Permission: " + perm);
             }
         }
     }

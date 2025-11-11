@@ -41,12 +41,10 @@ import javax.annotation.Nullable;
  *
  * @see    ModalInteraction
  */
-public class ModalInteractionEvent extends GenericInteractionCreateEvent
-        implements ModalInteraction {
+public class ModalInteractionEvent extends GenericInteractionCreateEvent implements ModalInteraction {
     private final ModalInteraction interaction;
 
-    public ModalInteractionEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull ModalInteraction interaction) {
+    public ModalInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ModalInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }

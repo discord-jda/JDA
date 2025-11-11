@@ -51,9 +51,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>>
 
         ChannelType threadType = isPrivate
                 ? ChannelType.GUILD_PRIVATE_THREAD
-                : getType() == ChannelType.TEXT
-                        ? ChannelType.GUILD_PUBLIC_THREAD
-                        : ChannelType.GUILD_NEWS_THREAD;
+                : getType() == ChannelType.TEXT ? ChannelType.GUILD_PUBLIC_THREAD : ChannelType.GUILD_NEWS_THREAD;
 
         return new ThreadChannelActionImpl(this, name, threadType);
     }
@@ -103,8 +101,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>>
         Checks.checkAccess(getGuild().getSelfMember(), this);
         checkPermission(Permission.MESSAGE_HISTORY);
 
-        Route.CompiledRoute route =
-                Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
+        Route.CompiledRoute route = Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
         return new ThreadChannelPaginationActionImpl(getJDA(), route, this, true);
     }
 

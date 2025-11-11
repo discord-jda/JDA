@@ -25,16 +25,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 
 public class PollVotersPaginationTest extends IntegrationTest {
     private PollVotersPaginationActionImpl newAction() {
-        return new PollVotersPaginationActionImpl(
-                jda, "381886978205155338", "1228092239079804968", 5);
+        return new PollVotersPaginationActionImpl(jda, "381886978205155338", "1228092239079804968", 5);
     }
 
     @Test
     void testDefaults() {
         assertThatRequestFrom(newAction())
                 .hasMethod(Method.GET)
-                .hasCompiledRoute(
-                        "channels/381886978205155338/polls/1228092239079804968/answers/5?limit=100&after=0")
+                .hasCompiledRoute("channels/381886978205155338/polls/1228092239079804968/answers/5?limit=100&after=0")
                 .whenQueueCalled();
     }
 

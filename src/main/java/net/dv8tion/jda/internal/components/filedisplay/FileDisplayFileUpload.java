@@ -34,10 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class FileDisplayFileUpload extends AbstractComponentImpl
-        implements FileDisplay,
-                MessageTopLevelComponentUnion,
-                ContainerChildComponentUnion,
-                FileContainerMixin {
+        implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin {
     private final int uniqueId;
     private final FileUpload file;
     private final boolean spoiler;

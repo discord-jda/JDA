@@ -68,8 +68,7 @@ public class MemberChunkManager {
         }
     }
 
-    public ChunkRequest chunkGuild(
-            GuildImpl guild, boolean presence, BiConsumer<Boolean, List<Member>> handler) {
+    public ChunkRequest chunkGuild(GuildImpl guild, boolean presence, BiConsumer<Boolean, List<Member>> handler) {
         init();
         DataObject request = DataObject.empty()
                 .put("guild_id", guild.getId())
@@ -96,10 +95,7 @@ public class MemberChunkManager {
     }
 
     public ChunkRequest chunkGuild(
-            GuildImpl guild,
-            boolean presence,
-            long[] userIds,
-            BiConsumer<Boolean, List<Member>> handler) {
+            GuildImpl guild, boolean presence, long[] userIds, BiConsumer<Boolean, List<Member>> handler) {
         init();
         DataObject request = DataObject.empty()
                 .put("guild_id", guild.getId())
@@ -158,8 +154,7 @@ public class MemberChunkManager {
         private long startTime;
         private long timeout = MAX_CHUNK_AGE;
 
-        public ChunkRequest(
-                BiConsumer<Boolean, List<Member>> handler, GuildImpl guild, DataObject request) {
+        public ChunkRequest(BiConsumer<Boolean, List<Member>> handler, GuildImpl guild, DataObject request) {
             this.handler = handler;
             this.guild = guild;
             this.nonce = ThreadLocalRandom.current().nextLong() & ~1;
@@ -196,8 +191,7 @@ public class MemberChunkManager {
             EntityBuilder builder = guild.getJDA().getEntityBuilder();
             DataArray memberArray = chunk.getArray("members");
             TLongObjectMap<DataObject> presences = chunk.optArray("presences")
-                    .map(it -> Helpers.convertToMap(
-                            o -> o.getObject("user").getUnsignedLong("id"), it))
+                    .map(it -> Helpers.convertToMap(o -> o.getObject("user").getUnsignedLong("id"), it))
                     .orElseGet(TLongObjectHashMap::new);
             List<Member> collect = new ArrayList<>(memberArray.length());
             for (int i = 0; i < memberArray.length(); i++) {

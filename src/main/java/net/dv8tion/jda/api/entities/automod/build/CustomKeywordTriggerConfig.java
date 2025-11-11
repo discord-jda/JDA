@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
 /**
  * Configuration for a {@link net.dv8tion.jda.api.entities.automod.AutoModTriggerType#KEYWORD KEYWORD} trigger.
  */
-public class CustomKeywordTriggerConfig
-        extends AbstractKeywordTriggerConfig<CustomKeywordTriggerConfig> {
+public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<CustomKeywordTriggerConfig> {
     protected final Set<String> keywords = new HashSet<>();
     protected final Set<String> patterns = new HashSet<>();
 
@@ -278,9 +277,7 @@ public class CustomKeywordTriggerConfig
     @Nonnull
     @Override
     public DataObject toData() {
-        Checks.check(
-                !keywords.isEmpty() || !patterns.isEmpty(),
-                "Must have at least one keyword or pattern!");
+        Checks.check(!keywords.isEmpty() || !patterns.isEmpty(), "Must have at least one keyword or pattern!");
         DataObject data = super.toData();
         data.put("keyword_filter", DataArray.fromCollection(keywords));
         data.put("regex_patterns", DataArray.fromCollection(patterns));

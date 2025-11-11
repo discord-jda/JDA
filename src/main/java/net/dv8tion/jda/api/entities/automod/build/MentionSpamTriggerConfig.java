@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
 /**
  * Configuration for {@link AutoModTriggerType#MENTION_SPAM MENTION_SPAM} trigger.
  */
-public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamTriggerConfig>
-        implements TriggerConfig {
+public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamTriggerConfig> implements TriggerConfig {
     private int mentionLimit;
     private boolean isMentionRaidProtectionEnabled;
 

@@ -106,12 +106,10 @@ import javax.annotation.Nonnull;
 public class JDAImpl implements JDA {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
-    protected final SnowflakeCacheViewImpl<User> userCache =
-            new SnowflakeCacheViewImpl<>(User.class, User::getName);
+    protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache =
             new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
-    protected final ChannelCacheViewImpl<Channel> channelCache =
-            new ChannelCacheViewImpl<>(Channel.class);
+    protected final ChannelCacheViewImpl<Channel> channelCache = new ChannelCacheViewImpl<>(Channel.class);
     protected final ArrayDeque<Long> privateChannelLRU = new ArrayDeque<>();
 
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(
@@ -133,8 +131,7 @@ public class JDAImpl implements JDA {
     protected final RestConfig restConfig;
 
     public ShutdownReason shutdownReason =
-            ShutdownReason
-                    .USER_SHUTDOWN; // indicates why shutdown happened in awaitStatus / awaitReady
+            ShutdownReason.USER_SHUTDOWN; // indicates why shutdown happened in awaitStatus / awaitReady
     protected WebSocketClient client;
     protected Requester requester;
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
@@ -170,15 +167,13 @@ public class JDAImpl implements JDA {
         this.sessionConfig = sessionConfig == null ? SessionConfig.getDefault() : sessionConfig;
         this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
         this.restConfig = restConfig == null ? new RestConfig() : restConfig;
-        this.shutdownHook = this.metaConfig.isUseShutdownHook()
-                ? new Thread(this::shutdownNow, "JDA Shutdown Hook")
-                : null;
+        this.shutdownHook =
+                this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdownNow, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
-        this.eventManager = new EventManagerProxy(
-                new InterfacedEventManager(), this.threadConfig.getEventPool());
+        this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
     }
 
     public void handleEvent(@Nonnull GenericEvent event) {
@@ -251,8 +246,7 @@ public class JDAImpl implements JDA {
 
     public void usedPrivateChannel(long id) {
         synchronized (privateChannelLRU) {
-            privateChannelLRU.remove(
-                    id); // We could probably make a special LRU cache view too, might not be worth
+            privateChannelLRU.remove(id); // We could probably make a special LRU cache view too, might not be worth
             // it though
             privateChannelLRU.addFirst(id);
             if (privateChannelLRU.size() > 10) // This could probably be a config option
@@ -273,20 +267,13 @@ public class JDAImpl implements JDA {
                         this.threadConfig.getRateLimitScheduler(),
                         this.threadConfig.getRateLimitElastic(),
                         getSessionController().getRateLimitHandle(),
-                        this.sessionConfig.isRelativeRateLimit()
-                                && this.restConfig.isRelativeRateLimit()));
+                        this.sessionConfig.isRelativeRateLimit() && this.restConfig.isRelativeRateLimit()));
         this.requester = new Requester(this, this.authConfig, this.restConfig, rateLimiter);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
     }
 
     public int login() {
-        return login(
-                null,
-                null,
-                Compression.ZLIB,
-                true,
-                GatewayIntent.ALL_INTENTS,
-                GatewayEncoding.JSON);
+        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
     }
 
     public int login(
@@ -359,9 +346,7 @@ public class JDAImpl implements JDA {
     }
 
     public ConcurrentMap<String, String> getContextMap() {
-        return metaConfig.getMdcContextMap() == null
-                ? null
-                : new ConcurrentHashMap<>(metaConfig.getMdcContextMap());
+        return metaConfig.getMdcContextMap() == null ? null : new ConcurrentHashMap<>(metaConfig.getMdcContextMap());
     }
 
     public void setContext() {
@@ -388,22 +373,20 @@ public class JDAImpl implements JDA {
     }
 
     public void verifyToken() {
-        RestActionImpl<DataObject> login =
-                new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile()) {
-                    @Override
-                    public void handleResponse(Response response, Request<DataObject> request) {
-                        if (response.isOk()) {
-                            request.onSuccess(response.getObject());
-                        } else if (response.isRateLimit()) {
-                            request.onFailure(new RateLimitedException(
-                                    request.getRoute(), response.retryAfter));
-                        } else if (response.code == 401) {
-                            request.onSuccess(null);
-                        } else {
-                            request.onFailure(response);
-                        }
-                    }
-                }.priority();
+        RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile()) {
+            @Override
+            public void handleResponse(Response response, Request<DataObject> request) {
+                if (response.isOk()) {
+                    request.onSuccess(response.getObject());
+                } else if (response.isRateLimit()) {
+                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
+                } else if (response.code == 401) {
+                    request.onSuccess(null);
+                } else {
+                    request.onFailure(response);
+                }
+            }
+        }.priority();
 
         try {
             DataObject userResponse = login.complete();
@@ -483,8 +466,7 @@ public class JDAImpl implements JDA {
 
         // We avoid to lock both the guild cache and member cache to make a deadlock impossible
         return getGuildCache().stream()
-                        .filter(guild ->
-                                guild.unloadMember(userId)) // this also removes it from user cache
+                        .filter(guild -> guild.unloadMember(userId)) // this also removes it from user cache
                         .count()
                 > 0L; // we use count to make sure it iterates all guilds not just one
     }
@@ -496,8 +478,7 @@ public class JDAImpl implements JDA {
 
     @Nonnull
     @Override
-    public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn)
-            throws InterruptedException {
+    public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn) throws InterruptedException {
         Checks.notNull(status, "Status");
         if (getStatus() == Status.CONNECTED) {
             return this;
@@ -508,13 +489,11 @@ public class JDAImpl implements JDA {
             EnumSet<Status> endCondition = EnumSet.of(status, failOn);
             Status current = getStatus();
             while (!current.isInit() // In case of disconnects during startup
-                    || current.ordinal()
-                            < status.ordinal()) // If we missed the status (e.g. LOGGING_IN ->
+                    || current.ordinal() < status.ordinal()) // If we missed the status (e.g. LOGGING_IN ->
             // CONNECTED happened while waiting for lock)
             {
                 if (current == Status.SHUTDOWN) {
-                    throw new IllegalStateException(
-                            "Was shutdown trying to await status.\nReason: " + shutdownReason);
+                    throw new IllegalStateException("Was shutdown trying to await status.\nReason: " + shutdownReason);
                 }
                 if (endCondition.contains(current)) {
                     return this;
@@ -538,8 +517,7 @@ public class JDAImpl implements JDA {
         try {
             Status current = getStatus();
             while (current != Status.SHUTDOWN) {
-                if (!statusCondition.await(
-                        deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
+                if (!statusCondition.await(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
                     return false;
                 }
                 current = getStatus();
@@ -584,8 +562,7 @@ public class JDAImpl implements JDA {
     @Override
     public DirectAudioControllerImpl getDirectAudioController() {
         if (!isIntent(GatewayIntent.GUILD_VOICE_STATES)) {
-            throw new IllegalStateException(
-                    "Cannot use audio features with disabled GUILD_VOICE_STATES intent!");
+            throw new IllegalStateException("Cannot use audio features with disabled GUILD_VOICE_STATES intent!");
         }
         return this.audioController;
     }
@@ -615,19 +592,16 @@ public class JDAImpl implements JDA {
         return new DeferredRestAction<>(
                 this,
                 User.class,
-                () -> isIntent(GatewayIntent.GUILD_MEMBERS)
-                                || isIntent(GatewayIntent.GUILD_PRESENCES)
+                () -> isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES)
                         ? getUserById(id)
                         : null,
                 () -> {
                     if (id == getSelfUser().getIdLong()) {
                         return new CompletedRestAction<>(this, getSelfUser());
                     }
-                    Route.CompiledRoute route =
-                            Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-                    return new RestActionImpl<>(
-                            this, route, (response, request) -> getEntityBuilder()
-                                    .createUser(response.getObject()));
+                    Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
+                    return new RestActionImpl<>(this, route, (response, request) -> getEntityBuilder()
+                            .createUser(response.getObject()));
                 });
     }
 
@@ -671,8 +645,7 @@ public class JDAImpl implements JDA {
 
     @Nonnull
     @Override
-    public RestAction<ApplicationEmoji> createApplicationEmoji(
-            @Nonnull String name, @Nonnull Icon icon) {
+    public RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon) {
         Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
@@ -707,10 +680,7 @@ public class JDAImpl implements JDA {
 
                     list.add(entityBuilder.createApplicationEmoji(this, emoji, owner));
                 } catch (ParsingException e) {
-                    LOG.error(
-                            "Failed to parse application emoji with JSON: {}",
-                            emojis.getObject(i),
-                            e);
+                    LOG.error("Failed to parse application emoji with JSON: {}", emojis.getObject(i), e);
                 }
             }
 
@@ -722,8 +692,8 @@ public class JDAImpl implements JDA {
     @Override
     public RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId) {
         Checks.isSnowflake(emojiId);
-        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(
-                getSelfUser().getApplicationId(), emojiId);
+        Route.CompiledRoute route =
+                Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
         return new RestActionImpl<>(this, route, (response, request) -> {
             DataObject emoji = response.getObject();
             User owner = emoji.optObject("user").map(entityBuilder::createUser).orElse(null);
@@ -738,9 +708,7 @@ public class JDAImpl implements JDA {
         Checks.notNull(sticker, "Sticker");
         Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(sticker.getId());
         return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) -> entityBuilder.createRichSticker(response.getObject()));
+                this, route, (response, request) -> entityBuilder.createRichSticker(response.getObject()));
     }
 
     @Nonnull
@@ -767,8 +735,7 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public SnowflakeCacheView<ScheduledEvent> getScheduledEventCache() {
-        return CacheView.allSnowflakes(
-                () -> guildCache.stream().map(Guild::getScheduledEventCache));
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getScheduledEventCache));
     }
 
     @Nonnull
@@ -880,9 +847,8 @@ public class JDAImpl implements JDA {
                 () -> {
                     Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
                     DataObject body = DataObject.empty().put("recipient_id", userId);
-                    return new RestActionImpl<>(
-                            this, route, body, (response, request) -> getEntityBuilder()
-                                    .createPrivateChannel(response.getObject()));
+                    return new RestActionImpl<>(this, route, body, (response, request) -> getEntityBuilder()
+                            .createPrivateChannel(response.getObject()));
                 });
     }
 
@@ -950,9 +916,8 @@ public class JDAImpl implements JDA {
         }
 
         // If the requester has been shutdown too, we can fire the shutdown event
-        boolean signal = MiscUtil.locked(
-                statusLock,
-                () -> shutdownEvent.getAndSet(event) == null && requesterShutdown.get());
+        boolean signal =
+                MiscUtil.locked(statusLock, () -> shutdownEvent.getAndSet(event) == null && requesterShutdown.get());
         if (signal) {
             signalShutdown();
         }
@@ -963,9 +928,8 @@ public class JDAImpl implements JDA {
         threadConfig.shutdownRequester();
 
         // If the websocket has been shutdown too, we can fire the shutdown event
-        boolean signal = MiscUtil.locked(
-                statusLock,
-                () -> !requesterShutdown.getAndSet(true) && shutdownEvent.get() != null);
+        boolean signal =
+                MiscUtil.locked(statusLock, () -> !requesterShutdown.getAndSet(true) && shutdownEvent.get() != null);
         if (signal) {
             signalShutdown();
         }
@@ -1052,10 +1016,9 @@ public class JDAImpl implements JDA {
                 .compile(getSelfUser().getApplicationId())
                 .withQueryParams("with_localizations", String.valueOf(withLocalizations));
 
-        return new RestActionImpl<>(
-                this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
-                        .map(json -> new CommandImpl(this, null, json))
-                        .collect(Collectors.toList()));
+        return new RestActionImpl<>(this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
+                .map(json -> new CommandImpl(this, null, json))
+                .collect(Collectors.toList()));
     }
 
     @Nonnull
@@ -1065,9 +1028,7 @@ public class JDAImpl implements JDA {
         Route.CompiledRoute route =
                 Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
         return new RestActionImpl<>(
-                this,
-                route,
-                (response, request) -> new CommandImpl(this, null, response.getObject()));
+                this, route, (response, request) -> new CommandImpl(this, null, response.getObject()));
     }
 
     @Nonnull
@@ -1098,8 +1059,8 @@ public class JDAImpl implements JDA {
     @Override
     public RestAction<Void> deleteCommandById(@Nonnull String commandId) {
         Checks.isSnowflake(commandId);
-        Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(
-                getSelfUser().getApplicationId(), commandId);
+        Route.CompiledRoute route =
+                Route.Interactions.DELETE_COMMAND.compile(getSelfUser().getApplicationId(), commandId);
         return new RestActionImpl<>(this, route);
     }
 
@@ -1108,10 +1069,9 @@ public class JDAImpl implements JDA {
     public RestAction<List<RoleConnectionMetadata>> retrieveRoleConnectionMetadata() {
         Route.CompiledRoute route = Route.Applications.GET_ROLE_CONNECTION_METADATA.compile(
                 getSelfUser().getApplicationId());
-        return new RestActionImpl<>(
-                this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
-                        .map(RoleConnectionMetadata::fromData)
-                        .collect(Helpers.toUnmodifiableList()));
+        return new RestActionImpl<>(this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
+                .map(RoleConnectionMetadata::fromData)
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull
@@ -1131,8 +1091,7 @@ public class JDAImpl implements JDA {
         RequestBody body = RequestBody.create(array.toJson(), Requester.MEDIA_TYPE_JSON);
 
         return new RestActionImpl<>(
-                this, route, body, (response, request) -> response.getArray().stream(
-                                DataArray::getObject)
+                this, route, body, (response, request) -> response.getArray().stream(DataArray::getObject)
                         .map(RoleConnectionMetadata::fromData)
                         .collect(Helpers.toUnmodifiableList()));
     }
@@ -1186,9 +1145,7 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public TestEntitlementCreateAction createTestEntitlement(
-            long skuId,
-            long ownerId,
-            @Nonnull TestEntitlementCreateActionImpl.OwnerType ownerType) {
+            long skuId, long ownerId, @Nonnull TestEntitlementCreateActionImpl.OwnerType ownerType) {
         Checks.notNull(ownerType, "ownerType");
 
         return new TestEntitlementCreateActionImpl(this, skuId, ownerId, ownerType);
@@ -1246,8 +1203,7 @@ public class JDAImpl implements JDA {
                 retrieveApplicationInfo().complete();
             }
         }
-        StringBuilder builder =
-                new StringBuilder("https://discord.com/oauth2/authorize?client_id=");
+        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?client_id=");
         builder.append(clientId);
         builder.append("&scope=").append(requiredScopes);
         return builder;

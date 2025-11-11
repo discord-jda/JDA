@@ -31,8 +31,7 @@ import javax.annotation.Nonnull;
  * @see    CompletableFuture
  * @see    Delayed
  */
-public class DelayedCompletableFuture<T> extends CompletableFuture<T>
-        implements ScheduledFuture<T> {
+public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements ScheduledFuture<T> {
     private ScheduledFuture<?> future;
 
     private DelayedCompletableFuture() {}

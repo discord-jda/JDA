@@ -109,15 +109,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
         Member selfMember = getGuild().getSelfMember();
         boolean isSelf = selfMember.equals(member);
         if (!isSelf && !selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS)) {
-            throw new InsufficientPermissionException(
-                    connectedChannel, Permission.VOICE_MUTE_OTHERS);
+            throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
         }
 
-        Route.CompiledRoute route =
-                Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), isSelf ? "@me" : getId());
-        DataObject body = DataObject.empty()
-                .put("channel_id", connectedChannel.getId())
-                .put("suppress", suppress);
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), isSelf ? "@me" : getId());
+        DataObject body =
+                DataObject.empty().put("channel_id", connectedChannel.getId()).put("suppress", suppress);
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
@@ -127,11 +124,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState {
         if (!(connectedChannel instanceof StageChannel)) {
             return new CompletedRestAction<>(api, null);
         }
-        if (!getGuild()
-                .getSelfMember()
-                .hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS)) {
-            throw new InsufficientPermissionException(
-                    connectedChannel, Permission.VOICE_MUTE_OTHERS);
+        if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS)) {
+            throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
         }
 
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), getId());

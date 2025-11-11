@@ -31,13 +31,11 @@ import java.util.function.Function;
 
 public class WebhookMessageEditActionImpl<T>
         extends AbstractWebhookMessageActionImpl<T, WebhookMessageEditActionImpl<T>>
-        implements WebhookMessageEditAction<T>,
-                MessageEditBuilderMixin<WebhookMessageEditAction<T>> {
+        implements WebhookMessageEditAction<T>, MessageEditBuilderMixin<WebhookMessageEditAction<T>> {
     private final Function<DataObject, T> transformer;
     private final MessageEditBuilder builder = new MessageEditBuilder();
 
-    public WebhookMessageEditActionImpl(
-            JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer) {
+    public WebhookMessageEditActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer) {
         super(api, route);
         this.transformer = transformer;
     }

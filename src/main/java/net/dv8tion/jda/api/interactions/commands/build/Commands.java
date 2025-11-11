@@ -145,9 +145,7 @@ public class Commands {
     @Nonnull
     public static List<CommandData> fromList(@Nonnull DataArray array) {
         Checks.notNull(array, "DataArray");
-        return array.stream(DataArray::getObject)
-                .map(CommandData::fromData)
-                .collect(Collectors.toList());
+        return array.stream(DataArray::getObject).map(CommandData::fromData).collect(Collectors.toList());
     }
 
     /**

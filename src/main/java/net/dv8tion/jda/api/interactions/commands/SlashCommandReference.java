@@ -34,10 +34,7 @@ public class SlashCommandReference implements ICommandReference {
     private final String subcommandGroup;
 
     public SlashCommandReference(
-            @Nonnull String name,
-            @Nullable String subcommandGroup,
-            @Nullable String subcommand,
-            long id) {
+            @Nonnull String name, @Nullable String subcommandGroup, @Nullable String subcommand, long id) {
         this.name = name;
         this.subcommandGroup = subcommandGroup;
         this.subcommand = subcommand;

@@ -176,8 +176,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      */
     @Nonnull
     @CheckReturnValue
-    GuildWelcomeScreenManager setWelcomeChannels(
-            @Nonnull Collection<? extends GuildWelcomeScreen.Channel> channels);
+    GuildWelcomeScreenManager setWelcomeChannels(@Nonnull Collection<? extends GuildWelcomeScreen.Channel> channels);
 
     /**
      * Sets the welcome channels of the welcome screen.
@@ -199,8 +198,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      */
     @Nonnull
     @CheckReturnValue
-    default GuildWelcomeScreenManager setWelcomeChannels(
-            @Nonnull GuildWelcomeScreen.Channel... channels) {
+    default GuildWelcomeScreenManager setWelcomeChannels(@Nonnull GuildWelcomeScreen.Channel... channels) {
         Checks.notNull(channels, "Welcome channels");
         return setWelcomeChannels(Arrays.asList(channels));
     }

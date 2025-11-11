@@ -240,8 +240,7 @@ spotless {
 
     java {
         palantirJavaFormat("2.80.0")
-                .style("AOSP")
-                .formatJavadoc(false)
+            .formatJavadoc(false)
 
         licenseHeaderFile("spotless/licence-header.txt")
 

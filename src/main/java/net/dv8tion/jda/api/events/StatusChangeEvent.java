@@ -33,8 +33,7 @@ public class StatusChangeEvent extends Event implements UpdateEvent<JDA, JDA.Sta
     protected final JDA.Status newStatus;
     protected final JDA.Status oldStatus;
 
-    public StatusChangeEvent(
-            @Nonnull JDA api, @Nonnull JDA.Status newStatus, @Nonnull JDA.Status oldStatus) {
+    public StatusChangeEvent(@Nonnull JDA api, @Nonnull JDA.Status newStatus, @Nonnull JDA.Status oldStatus) {
         super(api);
         this.newStatus = newStatus;
         this.oldStatus = oldStatus;

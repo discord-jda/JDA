@@ -44,11 +44,7 @@ public class GuildMemberRemoveEvent extends GenericGuildEvent {
     private final Member member;
 
     public GuildMemberRemoveEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull User user,
-            @Nullable Member member) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user, @Nullable Member member) {
         super(api, responseNumber, guild);
         this.user = user;
         this.member = member;

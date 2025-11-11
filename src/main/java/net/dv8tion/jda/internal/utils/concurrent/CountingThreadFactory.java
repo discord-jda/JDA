@@ -31,8 +31,7 @@ public class CountingThreadFactory implements ThreadFactory {
         this(identifier, specifier, true);
     }
 
-    public CountingThreadFactory(
-            @Nonnull Supplier<String> identifier, @Nonnull String specifier, boolean daemon) {
+    public CountingThreadFactory(@Nonnull Supplier<String> identifier, @Nonnull String specifier, boolean daemon) {
         this.identifier = () -> identifier.get() + " " + specifier;
         this.daemon = daemon;
     }

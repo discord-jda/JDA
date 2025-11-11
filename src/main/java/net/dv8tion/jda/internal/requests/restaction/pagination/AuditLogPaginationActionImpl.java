@@ -40,8 +40,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class AuditLogPaginationActionImpl
-        extends PaginationActionImpl<AuditLogEntry, AuditLogPaginationAction>
+public class AuditLogPaginationActionImpl extends PaginationActionImpl<AuditLogEntry, AuditLogPaginationAction>
         implements AuditLogPaginationAction {
     protected final Guild guild;
     // filters
@@ -125,8 +124,7 @@ public class AuditLogPaginationActionImpl
                 DataObject entry = entries.getObject(i);
                 DataObject user = userMap.get(entry.getLong("user_id", 0));
                 DataObject webhook = webhookMap.get(entry.getLong("target_id", 0));
-                AuditLogEntry result =
-                        builder.createAuditLogEntry((GuildImpl) guild, entry, user, webhook);
+                AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user, webhook);
                 list.add(result);
             } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered exception in AuditLogPagination", e);

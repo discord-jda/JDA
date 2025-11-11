@@ -35,8 +35,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
-public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
-        implements ComponentInteraction {
+public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl implements ComponentInteraction {
     protected final String customId;
     protected final Message message;
     protected final long messageId;

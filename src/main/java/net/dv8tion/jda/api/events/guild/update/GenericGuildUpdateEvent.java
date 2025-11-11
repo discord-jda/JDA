@@ -29,8 +29,7 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect when a Guild is updated.
  */
-public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent
-        implements UpdateEvent<Guild, T> {
+public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent implements UpdateEvent<Guild, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;

@@ -53,8 +53,7 @@ public enum InteractionContextType {
     /**
      * Contains all interaction types.
      */
-    public static final Set<InteractionContextType> ALL =
-            Helpers.unmodifiableEnumSet(GUILD, BOT_DM, PRIVATE_CHANNEL);
+    public static final Set<InteractionContextType> ALL = Helpers.unmodifiableEnumSet(GUILD, BOT_DM, PRIVATE_CHANNEL);
 
     private final String key;
 

@@ -46,8 +46,7 @@ public class ChannelDeleteHandler extends SocketHandler {
         long channelId = content.getLong("id");
 
         if (guild == null) {
-            PrivateChannel channel =
-                    getJDA().getChannelsView().remove(ChannelType.PRIVATE, channelId);
+            PrivateChannel channel = getJDA().getChannelsView().remove(ChannelType.PRIVATE, channelId);
             if (channel == null) {
                 WebSocketClient.LOG.debug(
                         "CHANNEL_DELETE attempted to delete a private channel that is not yet cached. JSON: {}",
@@ -59,8 +58,7 @@ public class ChannelDeleteHandler extends SocketHandler {
         GuildChannel channel = guild.getChannelById(GuildChannel.class, channelId);
         if (channel == null) {
             WebSocketClient.LOG.debug(
-                    "CHANNEL_DELETE attempted to delete a guild channel that is not yet cached. JSON: {}",
-                    content);
+                    "CHANNEL_DELETE attempted to delete a guild channel that is not yet cached. JSON: {}", content);
             return null;
         }
 
@@ -76,8 +74,7 @@ public class ChannelDeleteHandler extends SocketHandler {
         guild.getScheduledEventsView().stream()
                 .filter(scheduledEvent -> scheduledEvent.getType().isChannel()
                         && scheduledEvent.getLocation().equals(location))
-                .forEach(scheduledEvent ->
-                        guild.getScheduledEventsView().remove(scheduledEvent.getIdLong()));
+                .forEach(scheduledEvent -> guild.getScheduledEventsView().remove(scheduledEvent.getIdLong()));
 
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
         return null;

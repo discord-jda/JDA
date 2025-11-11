@@ -65,10 +65,8 @@ public class Requester {
     @SuppressWarnings("deprecation")
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[0]);
 
-    public static final MediaType MEDIA_TYPE_JSON =
-            MediaType.parse("application/json; charset=utf-8");
-    public static final MediaType MEDIA_TYPE_OCTET =
-            MediaType.parse("application/octet-stream; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_OCTET = MediaType.parse("application/octet-stream; charset=utf-8");
     public static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
     public static final MediaType MEDIA_TYPE_GIF = MediaType.parse("image/gif");
 
@@ -88,11 +86,7 @@ public class Requester {
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(
-            JDA api,
-            AuthorizationConfig authConfig,
-            RestConfig config,
-            RestRateLimiter rateLimiter) {
+    public Requester(JDA api, AuthorizationConfig authConfig, RestConfig config, RestRateLimiter rateLimiter) {
         if (authConfig == null) {
             throw new NullPointerException("Provided config was null!");
         }
@@ -126,8 +120,7 @@ public class Requester {
 
     public <T> void request(Request<T> apiRequest) {
         if (rateLimiter.isStopped()) {
-            throw new RejectedExecutionException(
-                    "The Requester has been stopped! No new requests can be requested!");
+            throw new RejectedExecutionException("The Requester has been stopped! No new requests can be requested!");
         }
 
         if (apiRequest.shouldQueue()) {
@@ -247,16 +240,14 @@ public class Requester {
             } else if (code != 429) {
                 task.handleResponse(lastResponse, rays);
             } else if (getContentType(lastResponse)
-                    .startsWith(
-                            "application/json")) // potentially not json when cloudflare does 429
+                    .startsWith("application/json")) // potentially not json when cloudflare does 429
             {
                 // On 429, replace the retry-after header if its wrong (discord moment)
                 // We just pick whichever is bigger between body and header
                 try (InputStream body = IOUtil.getBody(lastResponse)) {
                     long retryAfterBody =
                             (long) Math.ceil(DataObject.fromJson(body).getDouble("retry_after", 0));
-                    long retryAfterHeader =
-                            Long.parseLong(lastResponse.header(RestRateLimiter.RETRY_AFTER_HEADER));
+                    long retryAfterHeader = Long.parseLong(lastResponse.header(RestRateLimiter.RETRY_AFTER_HEADER));
                     lastResponse = lastResponse
                             .newBuilder()
                             .header(
@@ -317,9 +308,7 @@ public class Requester {
         builder.header("user-agent", userAgent)
                 .header("accept-encoding", "gzip")
                 .header("authorization", authConfig.getToken())
-                .header(
-                        "x-ratelimit-precision",
-                        "millisecond"); // still sending this in case of regressions
+                .header("x-ratelimit-precision", "millisecond"); // still sending this in case of regressions
 
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing
@@ -429,8 +418,7 @@ public class Requester {
             request.handleResponse(new Response(error, rays));
         }
 
-        private void handleResponse(
-                okhttp3.Response response, long retryAfter, Set<String> cfRays) {
+        private void handleResponse(okhttp3.Response response, long retryAfter, Set<String> cfRays) {
             done = true;
             request.handleResponse(new Response(response, retryAfter, cfRays));
         }

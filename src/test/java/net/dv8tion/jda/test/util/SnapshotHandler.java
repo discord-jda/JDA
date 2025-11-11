@@ -83,8 +83,7 @@ public class SnapshotHandler {
         }
     }
 
-    private void updateOrCreateIfNecessary(String actual, String suffix, String extension)
-            throws IOException {
+    private void updateOrCreateIfNecessary(String actual, String suffix, String extension) throws IOException {
         if (System.getProperty("updateSnapshots") == null) {
             return;
         }

@@ -60,8 +60,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T>
-        implements ChannelAction<T> {
+public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T> {
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
     protected final Class<T> clazz;
@@ -156,8 +155,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (category != null) {
             Checks.check(category.getGuild().equals(guild), "Category is not from same guild!");
             if (type == ChannelType.CATEGORY) {
-                throw new UnsupportedOperationException(
-                        "Cannot set a parent Category on a Category");
+                throw new UnsupportedOperationException("Cannot set a parent Category on a Category");
             }
         }
 
@@ -194,8 +192,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setNSFW(boolean nsfw) {
-        Checks.checkSupportedChannelTypes(
-                ChannelUtil.NSFW_SUPPORTED, type, "NSFW (age-restricted)");
+        Checks.checkSupportedChannelTypes(ChannelUtil.NSFW_SUPPORTED, type, "NSFW (age-restricted)");
         this.nsfw = nsfw;
         return this;
     }
@@ -216,8 +213,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     public ChannelAction<T> setDefaultThreadSlowmode(int slowmode) {
-        Checks.checkSupportedChannelTypes(
-                ChannelUtil.THREAD_CONTAINERS, type, "Default Thread Slowmode");
+        Checks.checkSupportedChannelTypes(ChannelUtil.THREAD_CONTAINERS, type, "Default Thread Slowmode");
         Checks.check(
                 slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0,
                 "Slowmode must be between 0 and %d (seconds)!",
@@ -249,8 +245,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelAction<T> setDefaultSortOrder(@Nonnull IPostContainer.SortOrder sortOrder) {
         Checks.checkSupportedChannelTypes(ChannelUtil.POST_CONTAINERS, type, "Default Sort Order");
         Checks.notNull(sortOrder, "SortOrder");
-        Checks.check(
-                sortOrder != IPostContainer.SortOrder.UNKNOWN, "Sort Order cannot be UNKNOWN.");
+        Checks.check(sortOrder != IPostContainer.SortOrder.UNKNOWN, "Sort Order cannot be UNKNOWN.");
         this.defaultSortOrder = sortOrder.getKey();
         return this;
     }
@@ -307,8 +302,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         // override on the channel
         // That is why we explicitly exclude it here!
         // This is by far the most complex and weird permission logic in the entire API...
-        long botPerms = PermissionUtil.getEffectivePermission(selfMember)
-                & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+        long botPerms =
+                PermissionUtil.getEffectivePermission(selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
         parent.getRolePermissionOverrides().forEach(override -> {
             long allow = override.getAllowedRaw();
@@ -335,8 +330,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny) {
         Member selfMember = getGuild().getSelfMember();
         boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR);
-        if (!canSetRoles
-                && parent != null) { // You can also set MANAGE_ROLES if you have it on the category
+        if (!canSetRoles && parent != null) { // You can also set MANAGE_ROLES if you have it on the category
             // (apparently?)
             canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
         }
@@ -346,11 +340,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             // override on the channel
             // That is why we explicitly exclude it here!
             // This is by far the most complex and weird permission logic in the entire API...
-            long botPerms = PermissionUtil.getEffectivePermission(selfMember)
-                    & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+            long botPerms =
+                    PermissionUtil.getEffectivePermission(selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
-            EnumSet<Permission> missingPerms =
-                    Permission.getPermissions((allow | deny) & ~botPerms);
+            EnumSet<Permission> missingPerms = Permission.getPermissions((allow | deny) & ~botPerms);
             if (!missingPerms.isEmpty()) {
                 throw new InsufficientPermissionException(
                         guild,
@@ -368,8 +361,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setBitrate(Integer bitrate) {
         if (!type.isAudio()) {
-            throw new UnsupportedOperationException(
-                    "Can only set the bitrate for an Audio Channel!");
+            throw new UnsupportedOperationException("Can only set the bitrate for an Audio Channel!");
         }
         if (bitrate != null) {
             int maxBitrate = getGuild().getMaxBitrate();
@@ -454,12 +446,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (defaultReactionEmoji instanceof CustomEmoji) {
             object.put(
                     "default_reaction_emoji",
-                    DataObject.empty()
-                            .put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
+                    DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
         } else if (defaultReactionEmoji instanceof UnicodeEmoji) {
-            object.put(
-                    "default_reaction_emoji",
-                    DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
+            object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
         }
         if (availableTags != null) {
             object.put("available_tags", DataArray.fromCollection(availableTags));

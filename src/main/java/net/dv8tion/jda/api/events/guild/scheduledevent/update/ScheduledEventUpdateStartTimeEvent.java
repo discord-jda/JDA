@@ -41,8 +41,7 @@ import javax.annotation.Nonnull;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateStartTimeEvent
-        extends GenericScheduledEventUpdateEvent<OffsetDateTime> {
+public class ScheduledEventUpdateStartTimeEvent extends GenericScheduledEventUpdateEvent<OffsetDateTime> {
     public static final String IDENTIFIER = "start_time";
 
     public ScheduledEventUpdateStartTimeEvent(
@@ -50,13 +49,7 @@ public class ScheduledEventUpdateStartTimeEvent
             long responseNumber,
             @Nonnull ScheduledEvent scheduledEvent,
             @Nonnull OffsetDateTime previous) {
-        super(
-                api,
-                responseNumber,
-                scheduledEvent,
-                previous,
-                scheduledEvent.getStartTime(),
-                IDENTIFIER);
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getStartTime(), IDENTIFIER);
     }
 
     /**

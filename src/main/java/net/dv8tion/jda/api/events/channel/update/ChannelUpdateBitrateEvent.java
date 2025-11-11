@@ -36,11 +36,7 @@ public class ChannelUpdateBitrateEvent extends GenericChannelUpdateEvent<Integer
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateBitrateEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            Integer oldValue,
-            Integer newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

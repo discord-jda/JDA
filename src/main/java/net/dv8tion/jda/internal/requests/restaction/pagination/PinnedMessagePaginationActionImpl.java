@@ -36,18 +36,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public class PinnedMessagePaginationActionImpl
-        extends PaginationActionImpl<
-                PinnedMessagePaginationAction.PinnedMessage, PinnedMessagePaginationAction>
+        extends PaginationActionImpl<PinnedMessagePaginationAction.PinnedMessage, PinnedMessagePaginationAction>
         implements PinnedMessagePaginationAction {
     protected final MessageChannel channel;
 
     public PinnedMessagePaginationActionImpl(MessageChannel channel) {
-        super(
-                channel.getJDA(),
-                Route.Messages.GET_MESSAGE_PINS.compile(channel.getId()),
-                1,
-                50,
-                50);
+        super(channel.getJDA(), Route.Messages.GET_MESSAGE_PINS.compile(channel.getId()), 1, 50, 50);
         this.channel = channel;
     }
 
@@ -83,8 +77,8 @@ public class PinnedMessagePaginationActionImpl
         for (int i = 0; i < items.length(); i++) {
             try {
                 DataObject item = items.getObject(i);
-                ReceivedMessage message = entityBuilder.createMessageWithChannel(
-                        item.getObject("message"), channel, false);
+                ReceivedMessage message =
+                        entityBuilder.createMessageWithChannel(item.getObject("message"), channel, false);
                 OffsetDateTime pinnedAt = item.getOffsetDateTime("pinned_at");
                 PinnedMessage pinnedMessage = new PinnedMessage(pinnedAt, message);
 

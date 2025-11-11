@@ -43,15 +43,8 @@ public class MessageUpdateHandler extends SocketHandler {
             }
             guild = api.getGuildById(guildId);
             if (guild == null) {
-                api.getEventCache()
-                        .cache(
-                                EventCache.Type.GUILD,
-                                guildId,
-                                responseNumber,
-                                allContent,
-                                this::handle);
-                EventCache.LOG.debug(
-                        "Received message for a guild that JDA does not currently have cached");
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received message for a guild that JDA does not currently have cached");
                 return null;
             }
         }
@@ -95,19 +88,13 @@ public class MessageUpdateHandler extends SocketHandler {
                         GuildChannel actual = guild.getGuildChannelById(channelId);
                         if (actual != null) {
                             WebSocketClient.LOG.debug(
-                                    "Dropping MESSAGE_UPDATE for unexpected channel of type {}",
-                                    actual.getType());
+                                    "Dropping MESSAGE_UPDATE for unexpected channel of type {}", actual.getType());
                             return null;
                         }
                     }
 
                     getJDA().getEventCache()
-                            .cache(
-                                    EventCache.Type.CHANNEL,
-                                    channelId,
-                                    responseNumber,
-                                    allContent,
-                                    this::handle);
+                            .cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug(
                             "Received a message update for a channel that JDA does not currently have cached");
                     return null;
@@ -115,12 +102,7 @@ public class MessageUpdateHandler extends SocketHandler {
                 case EntityBuilder.MISSING_USER: {
                     long authorId = content.getObject("author").getLong("id");
                     getJDA().getEventCache()
-                            .cache(
-                                    EventCache.Type.USER,
-                                    authorId,
-                                    responseNumber,
-                                    allContent,
-                                    this::handle);
+                            .cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug(
                             "Received a message update for a user that JDA does not currently have cached");
                     return null;

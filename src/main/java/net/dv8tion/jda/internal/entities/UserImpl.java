@@ -122,17 +122,15 @@ public class UserImpl extends UserSnowflakeImpl implements User {
     @Nonnull
     @Override
     public CacheRestAction<PrivateChannel> openPrivateChannel() {
-        return new DeferredRestAction<>(
-                getJDA(), PrivateChannel.class, this::getPrivateChannel, () -> {
-                    Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
-                    DataObject body = DataObject.empty().put("recipient_id", getId());
-                    return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
-                        PrivateChannel priv = api.getEntityBuilder()
-                                .createPrivateChannel(response.getObject(), this);
-                        UserImpl.this.privateChannelId = priv.getIdLong();
-                        return priv;
-                    });
-                });
+        return new DeferredRestAction<>(getJDA(), PrivateChannel.class, this::getPrivateChannel, () -> {
+            Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
+            DataObject body = DataObject.empty().put("recipient_id", getId());
+            return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
+                PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
+                UserImpl.this.privateChannelId = priv.getIdLong();
+                return priv;
+            });
+        });
     }
 
     public PrivateChannel getPrivateChannel() {
@@ -249,8 +247,7 @@ public class UserImpl extends UserSnowflakeImpl implements User {
     public void formatTo(Formatter formatter, int flags, int width, int precision) {
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
-        boolean leftJustified =
-                (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
 
         String out;
         if (!alt) {

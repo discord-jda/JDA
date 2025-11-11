@@ -59,8 +59,7 @@ public class OptionMapping {
         if (type == OptionType.STRING) {
             mentions = new InteractionMentions(getAsString(), resolved, (JDAImpl) jda, guild);
         } else {
-            mentions =
-                    new InteractionMentions("", new TLongObjectHashMap<>(0), (JDAImpl) jda, guild);
+            mentions = new InteractionMentions("", new TLongObjectHashMap<>(0), (JDAImpl) jda, guild);
         }
     }
 
@@ -117,8 +116,7 @@ public class OptionMapping {
         if (obj instanceof Message.Attachment) {
             return (Message.Attachment) obj;
         }
-        throw new IllegalStateException(
-                "Cannot resolve option of type " + type + " to Attachment!");
+        throw new IllegalStateException("Cannot resolve option of type " + type + " to Attachment!");
     }
 
     /**
@@ -143,8 +141,7 @@ public class OptionMapping {
      */
     public boolean getAsBoolean() {
         if (type != OptionType.BOOLEAN) {
-            throw new IllegalStateException(
-                    "Cannot convert option of type " + type + " to boolean");
+            throw new IllegalStateException("Cannot convert option of type " + type + " to boolean");
         }
         return data.getBoolean("value");
     }
@@ -163,8 +160,7 @@ public class OptionMapping {
     public long getAsLong() {
         switch (type) {
             default:
-                throw new IllegalStateException(
-                        "Cannot convert option of type " + type + " to long");
+                throw new IllegalStateException("Cannot convert option of type " + type + " to long");
             case STRING:
             case MENTIONABLE:
             case CHANNEL:
@@ -208,8 +204,7 @@ public class OptionMapping {
     public double getAsDouble() {
         switch (type) {
             default:
-                throw new IllegalStateException(
-                        "Cannot convert option of type " + type + " to double");
+                throw new IllegalStateException("Cannot convert option of type " + type + " to double");
             case STRING:
             case INTEGER:
             case NUMBER:
@@ -231,8 +226,7 @@ public class OptionMapping {
         if (entity instanceof IMentionable) {
             return (IMentionable) entity;
         }
-        throw new IllegalStateException(
-                "Cannot resolve option of type " + type + " to IMentionable");
+        throw new IllegalStateException("Cannot resolve option of type " + type + " to IMentionable");
     }
 
     /**
@@ -247,8 +241,7 @@ public class OptionMapping {
     @Nullable
     public Member getAsMember() {
         if (type != OptionType.USER && type != OptionType.MENTIONABLE) {
-            throw new IllegalStateException(
-                    "Cannot resolve Member for option " + getName() + " of type " + type);
+            throw new IllegalStateException("Cannot resolve Member for option " + getName() + " of type " + type);
         }
         Object object = resolved.get(getAsLong());
         if (object instanceof Member) {
@@ -269,8 +262,7 @@ public class OptionMapping {
     @Nonnull
     public User getAsUser() {
         if (type != OptionType.USER && type != OptionType.MENTIONABLE) {
-            throw new IllegalStateException(
-                    "Cannot resolve User for option " + getName() + " of type " + type);
+            throw new IllegalStateException("Cannot resolve User for option " + getName() + " of type " + type);
         }
         Object object = resolved.get(getAsLong());
         if (object instanceof Member) {
@@ -294,8 +286,7 @@ public class OptionMapping {
     @Nonnull
     public Role getAsRole() {
         if (type != OptionType.ROLE && type != OptionType.MENTIONABLE) {
-            throw new IllegalStateException(
-                    "Cannot resolve Role for option " + getName() + " of type " + type);
+            throw new IllegalStateException("Cannot resolve Role for option " + getName() + " of type " + type);
         }
         Object role = resolved.get(getAsLong());
         if (role instanceof Role) {
@@ -330,8 +321,7 @@ public class OptionMapping {
     @Nonnull
     public GuildChannelUnion getAsChannel() {
         if (type != OptionType.CHANNEL) {
-            throw new IllegalStateException(
-                    "Cannot resolve Channel for option " + getName() + " of type " + type);
+            throw new IllegalStateException("Cannot resolve Channel for option " + getName() + " of type " + type);
         }
 
         Object entity = resolved.get(getAsLong());

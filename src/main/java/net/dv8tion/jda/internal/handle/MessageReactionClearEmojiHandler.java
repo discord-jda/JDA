@@ -40,15 +40,8 @@ public class MessageReactionClearEmojiHandler extends SocketHandler {
         }
         Guild guild = getJDA().getGuildById(guildId);
         if (guild == null) {
-            EventCache.LOG.debug(
-                    "Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown guild {}", guildId);
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            EventCache.LOG.debug("Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown guild {}", guildId);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
 
@@ -60,21 +53,13 @@ public class MessageReactionClearEmojiHandler extends SocketHandler {
             GuildChannel actual = guild.getGuildChannelById(channelId);
             if (actual != null) {
                 WebSocketClient.LOG.debug(
-                        "Dropping MESSAGE_REACTION_REMOVE_EMOJI for unexpected channel of type {}",
-                        actual.getType());
+                        "Dropping MESSAGE_REACTION_REMOVE_EMOJI for unexpected channel of type {}", actual.getType());
                 return null;
             }
 
-            EventCache.LOG.debug(
-                    "Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown channel {}",
-                    channelId);
+            EventCache.LOG.debug("Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown channel {}", channelId);
             getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.CHANNEL,
-                            channelId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+                    .cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             return null;
         }
 
@@ -85,11 +70,10 @@ public class MessageReactionClearEmojiHandler extends SocketHandler {
         // We don't know if it is a normal or super reaction
         boolean[] self = new boolean[] {false, false};
 
-        MessageReaction reaction =
-                new MessageReaction(api, channel, reactionEmoji, channelId, messageId, self, null);
+        MessageReaction reaction = new MessageReaction(api, channel, reactionEmoji, channelId, messageId, self, null);
 
-        getJDA().handleEvent(new MessageReactionRemoveEmojiEvent(
-                getJDA(), responseNumber, messageId, channel, reaction));
+        getJDA().handleEvent(
+                        new MessageReactionRemoveEmojiEvent(getJDA(), responseNumber, messageId, channel, reaction));
         return null;
     }
 }

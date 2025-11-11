@@ -34,8 +34,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class RoleOrderActionImpl extends OrderActionImpl<Role, RoleOrderAction>
-        implements RoleOrderAction {
+public class RoleOrderActionImpl extends OrderActionImpl<Role, RoleOrderAction> implements RoleOrderAction {
     protected final Guild guild;
 
     /**
@@ -116,9 +115,7 @@ public class RoleOrderActionImpl extends OrderActionImpl<Role, RoleOrderAction>
 
             array.add(DataObject.empty()
                     .put("id", role.getId())
-                    .put(
-                            "position",
-                            i + 1)); // plus 1 because position 0 is the @everyone position.
+                    .put("position", i + 1)); // plus 1 because position 0 is the @everyone position.
         }
 
         return getRequestBody(array);
@@ -126,9 +123,7 @@ public class RoleOrderActionImpl extends OrderActionImpl<Role, RoleOrderAction>
 
     @Override
     protected void validateInput(Role entity) {
-        Checks.check(
-                entity.getGuild().equals(guild), "Provided selected role is not from this Guild!");
-        Checks.check(
-                orderList.contains(entity), "Provided role is not in the list of orderable roles!");
+        Checks.check(entity.getGuild().equals(guild), "Provided selected role is not from this Guild!");
+        Checks.check(orderList.contains(entity), "Provided role is not in the list of orderable roles!");
     }
 }

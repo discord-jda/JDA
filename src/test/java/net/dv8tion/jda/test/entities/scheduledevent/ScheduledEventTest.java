@@ -38,10 +38,8 @@ public class ScheduledEventTest extends IntegrationTest {
 
         when(guild.getId()).thenReturn(guildId);
 
-        ScheduledEvent scheduledEvent =
-                new ScheduledEventImpl(Long.parseUnsignedLong(eventId), guild);
+        ScheduledEvent scheduledEvent = new ScheduledEventImpl(Long.parseUnsignedLong(eventId), guild);
 
-        assertThat(scheduledEvent.getJumpUrl())
-                .isEqualTo("https://discord.com/events/" + guildId + "/" + eventId);
+        assertThat(scheduledEvent.getJumpUrl()).isEqualTo("https://discord.com/events/" + guildId + "/" + eventId);
     }
 }

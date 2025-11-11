@@ -68,12 +68,9 @@ public class MarkdownSanitizer {
     private static final int ESCAPED_QUOTE = Integer.MIN_VALUE | QUOTE;
     private static final int ESCAPED_QUOTE_BLOCK = Integer.MIN_VALUE | QUOTE_BLOCK;
 
-    private static final Pattern codeLanguage =
-            Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
-    private static final Pattern quote =
-            Pattern.compile("> +.*", Pattern.DOTALL | Pattern.MULTILINE);
-    private static final Pattern quoteBlock =
-            Pattern.compile(">>>\\s+\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
+    private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern quote = Pattern.compile("> +.*", Pattern.DOTALL | Pattern.MULTILINE);
+    private static final Pattern quoteBlock = Pattern.compile(">>>\\s+\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
 
     private static final TIntObjectMap<String> tokens;
 
@@ -136,8 +133,7 @@ public class MarkdownSanitizer {
      * @see    #withIgnored(int)
      */
     @Nonnull
-    public static String sanitize(
-            @Nonnull String sequence, @Nonnull SanitizationStrategy strategy) {
+    public static String sanitize(@Nonnull String sequence, @Nonnull SanitizationStrategy strategy) {
         Checks.notNull(sequence, "String");
         Checks.notNull(strategy, "Strategy");
         return new MarkdownSanitizer().withStrategy(strategy).compute(sequence);
@@ -210,12 +206,10 @@ public class MarkdownSanitizer {
         for (int i = 0; i < sequence.length(); i++) {
             char current = sequence.charAt(i);
             if (newline) {
-                newline = Character.isWhitespace(
-                        current); // might still be a quote if prefixed by whitespace
+                newline = Character.isWhitespace(current); // might still be a quote if prefixed by whitespace
                 if (current == '>') {
                     // Check for quote if line starts with angle bracket
-                    if (i + 1 < sequence.length()
-                            && Character.isWhitespace(sequence.charAt(i + 1))) {
+                    if (i + 1 < sequence.length() && Character.isWhitespace(sequence.charAt(i + 1))) {
                         builder.append("\\>"); // simple quote
                     } else if (i + 3 < sequence.length()
                             && sequence.startsWith(">>>", i)
@@ -305,9 +299,7 @@ public class MarkdownSanitizer {
                 case "```":
                     return doesEscape(index, sequence) ? ESCAPED_BLOCK : BLOCK;
                 case "***":
-                    return doesEscape(index, sequence)
-                            ? ESCAPED_BOLD | ITALICS_A
-                            : BOLD | ITALICS_A;
+                    return doesEscape(index, sequence) ? ESCAPED_BOLD | ITALICS_A : BOLD | ITALICS_A;
             }
         }
         if (sequence.length() - index >= 2) {
@@ -357,10 +349,7 @@ public class MarkdownSanitizer {
                 case BOLD:
                     lastMatch = sequence.indexOf("**", lastMatch);
                     if (lastMatch != -1
-                            && hasCollision(
-                                    lastMatch + 1,
-                                    sequence,
-                                    '*')) // did we find a bold italics tag?
+                            && hasCollision(lastMatch + 1, sequence, '*')) // did we find a bold italics tag?
                     {
                         lastMatch += 3;
                         continue;
@@ -368,8 +357,7 @@ public class MarkdownSanitizer {
                     break;
                 case ITALICS_A:
                     lastMatch = sequence.indexOf('*', lastMatch);
-                    if (lastMatch != -1
-                            && hasCollision(lastMatch, sequence, '*')) // did we find a bold tag?
+                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '*')) // did we find a bold tag?
                     {
                         if (hasCollision(lastMatch + 1, sequence, '*')) {
                             lastMatch += 3;
@@ -384,9 +372,7 @@ public class MarkdownSanitizer {
                     break;
                 case ITALICS_U:
                     lastMatch = sequence.indexOf('_', lastMatch);
-                    if (lastMatch != -1
-                            && hasCollision(
-                                    lastMatch, sequence, '_')) // did we find an underline tag?
+                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '_')) // did we find an underline tag?
                     {
                         lastMatch += 2;
                         continue;
@@ -400,9 +386,7 @@ public class MarkdownSanitizer {
                     break;
                 case MONO_TWO:
                     lastMatch = sequence.indexOf("``", lastMatch);
-                    if (lastMatch != -1
-                            && hasCollision(
-                                    lastMatch + 1, sequence, '`')) // did we find a codeblock?
+                    if (lastMatch != -1 && hasCollision(lastMatch + 1, sequence, '`')) // did we find a codeblock?
                     {
                         lastMatch += 3;
                         continue;
@@ -410,8 +394,7 @@ public class MarkdownSanitizer {
                     break;
                 case MONO:
                     lastMatch = sequence.indexOf('`', lastMatch);
-                    if (lastMatch != -1
-                            && hasCollision(lastMatch, sequence, '`')) // did we find a codeblock?
+                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '`')) // did we find a codeblock?
                     {
                         if (hasCollision(lastMatch + 1, sequence, '`')) {
                             lastMatch += 3;
@@ -490,8 +473,8 @@ public class MarkdownSanitizer {
         }
         String token = tokens.get(region);
         if (token == null) {
-            throw new IllegalStateException("Found illegal region for strategy ESCAPE '" + region
-                    + "' with no known format token!");
+            throw new IllegalStateException(
+                    "Found illegal region for strategy ESCAPE '" + region + "' with no known format token!");
         }
         if (region == UNDERLINE) {
             token = "_\\_"; // UNDERLINE needs special handling because the client thinks its
@@ -575,8 +558,7 @@ public class MarkdownSanitizer {
                 continue;
             }
             int delta = getDelta(nextRegion);
-            applyStrategy(
-                    nextRegion, handleRegion(i + delta, endRegion, sequence, nextRegion), builder);
+            applyStrategy(nextRegion, handleRegion(i + delta, endRegion, sequence, nextRegion), builder);
             i = endRegion + delta;
         }
         return builder.toString();

@@ -45,8 +45,7 @@ public class JDALogger {
      *
      * <p>{@value}
      */
-    public static final String DISABLE_FALLBACK_PROPERTY_NAME =
-            "net.dv8tion.jda.disableFallbackLogger";
+    public static final String DISABLE_FALLBACK_PROPERTY_NAME = "net.dv8tion.jda.disableFallbackLogger";
 
     /**
      * Whether an implementation of {@link SLF4JServiceProvider} was found.
@@ -76,10 +75,8 @@ public class JDALogger {
         MethodHandle constructor = null;
         try {
             MethodHandles.Lookup lookup = MethodHandles.publicLookup();
-            Class<?> fallbackLoggerClass =
-                    Class.forName("net.dv8tion.jda.internal.utils.FallbackLogger");
-            constructor = lookup.findConstructor(
-                    fallbackLoggerClass, MethodType.methodType(void.class, String.class));
+            Class<?> fallbackLoggerClass = Class.forName("net.dv8tion.jda.internal.utils.FallbackLogger");
+            constructor = lookup.findConstructor(fallbackLoggerClass, MethodType.methodType(void.class, String.class));
         } catch (ClassNotFoundException
                 | ExceptionInInitializerError
                 | IllegalAccessException

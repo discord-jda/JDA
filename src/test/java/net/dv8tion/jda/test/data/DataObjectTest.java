@@ -34,8 +34,7 @@ public class DataObjectTest extends AbstractSnapshotTest {
 
         assertThatExceptionOfType(DataObjectParsingException.class)
                 .isThrownBy(() -> data.get("bar"))
-                .satisfies(exception ->
-                        snapshotHandler.compareWithSnapshot(exception.toString(), null));
+                .satisfies(exception -> snapshotHandler.compareWithSnapshot(exception.toString(), null));
     }
 
     @Test
@@ -47,7 +46,6 @@ public class DataObjectTest extends AbstractSnapshotTest {
 
         assertThatExceptionOfType(DataObjectParsingException.class)
                 .isThrownBy(() -> data.getInt("foo"))
-                .satisfies(exception ->
-                        snapshotHandler.compareWithSnapshot(exception.toString(), null));
+                .satisfies(exception -> snapshotHandler.compareWithSnapshot(exception.toString(), null));
     }
 }

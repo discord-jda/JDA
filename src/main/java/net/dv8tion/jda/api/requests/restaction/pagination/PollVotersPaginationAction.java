@@ -26,5 +26,4 @@ import net.dv8tion.jda.api.entities.User;
  * Maximum - 1000
  * <br>Default - 1000
  */
-public interface PollVotersPaginationAction
-        extends PaginationAction<User, PollVotersPaginationAction> {}
+public interface PollVotersPaginationAction extends PaginationAction<User, PollVotersPaginationAction> {}

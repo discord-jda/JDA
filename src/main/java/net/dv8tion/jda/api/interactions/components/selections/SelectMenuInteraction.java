@@ -83,8 +83,8 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
     @CheckReturnValue
     default RestAction<Void> editSelectMenu(@Nullable SelectMenu newMenu) {
         Message message = getMessage();
-        MessageComponentTree newTree = message.getComponentTree()
-                .replace(ComponentReplacer.byUniqueId(getSelectMenu(), newMenu));
+        MessageComponentTree newTree =
+                message.getComponentTree().replace(ComponentReplacer.byUniqueId(getSelectMenu(), newMenu));
 
         if (isAcknowledged()) {
             return getHook()

@@ -40,15 +40,8 @@ public class StageInstanceUpdateHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            EventCache.LOG.debug(
-                    "Caching STAGE_INSTANCE_UPDATE for uncached guild with id {}", guildId);
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            EventCache.LOG.debug("Caching STAGE_INSTANCE_UPDATE for uncached guild with id {}", guildId);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
 
@@ -69,12 +62,11 @@ public class StageInstanceUpdateHandler extends SocketHandler {
         }
 
         if (!Objects.equals(oldTopic, newInstance.getTopic())) {
-            getJDA().handleEvent(new StageInstanceUpdateTopicEvent(
-                    getJDA(), responseNumber, newInstance, oldTopic));
+            getJDA().handleEvent(new StageInstanceUpdateTopicEvent(getJDA(), responseNumber, newInstance, oldTopic));
         }
         if (oldLevel != newInstance.getPrivacyLevel()) {
-            getJDA().handleEvent(new StageInstanceUpdatePrivacyLevelEvent(
-                    getJDA(), responseNumber, newInstance, oldLevel));
+            getJDA().handleEvent(
+                            new StageInstanceUpdatePrivacyLevelEvent(getJDA(), responseNumber, newInstance, oldLevel));
         }
         return null;
     }

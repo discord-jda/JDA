@@ -493,8 +493,7 @@ public interface TextInput extends ICustomId, LabelChildComponent {
                 throw new IllegalStateException("maxLength cannot be smaller than minLength!");
             }
 
-            return new TextInputImpl(
-                    customId, uniqueId, style, minLength, maxLength, required, value, placeholder);
+            return new TextInputImpl(customId, uniqueId, style, minLength, maxLength, required, value, placeholder);
         }
     }
 }

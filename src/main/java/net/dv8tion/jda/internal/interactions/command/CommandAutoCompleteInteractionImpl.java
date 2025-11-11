@@ -43,8 +43,7 @@ public class CommandAutoCompleteInteractionImpl extends InteractionImpl
         findFocused(options);
 
         if (focused == null) {
-            throw new IllegalStateException(
-                    "Failed to get focused option for auto complete interaction");
+            throw new IllegalStateException("Failed to get focused option for auto complete interaction");
         }
     }
 

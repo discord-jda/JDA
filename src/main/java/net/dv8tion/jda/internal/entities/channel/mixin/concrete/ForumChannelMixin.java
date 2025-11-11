@@ -60,11 +60,9 @@ public interface ForumChannelMixin<T extends ForumChannelMixin<T>>
             }
             for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
                 if (o.isMemberOverride()) {
-                    action.addMemberPermissionOverride(
-                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 } else {
-                    action.addRolePermissionOverride(
-                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 }
             }
         }

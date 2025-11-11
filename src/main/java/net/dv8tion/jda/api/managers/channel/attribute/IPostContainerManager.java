@@ -35,8 +35,7 @@ import javax.annotation.Nullable;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface IPostContainerManager<
-                T extends IPostContainer, M extends IPostContainerManager<T, M>>
+public interface IPostContainerManager<T extends IPostContainer, M extends IPostContainerManager<T, M>>
         extends IThreadContainerManager<T, M>, IPermissionContainerManager<T, M> {
     /**
      * Sets the tag requirement state of this {@link IPostContainer}.

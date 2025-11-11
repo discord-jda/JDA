@@ -43,11 +43,7 @@ public class ChannelUpdateTypeEvent extends GenericChannelUpdateEvent<ChannelTyp
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateTypeEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            ChannelType oldValue,
-            ChannelType newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, ChannelType oldValue, ChannelType newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

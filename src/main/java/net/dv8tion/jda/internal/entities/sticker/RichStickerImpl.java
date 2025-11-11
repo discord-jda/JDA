@@ -31,8 +31,7 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
     protected Set<String> tags;
     protected String description;
 
-    public RichStickerImpl(
-            long id, StickerFormat format, String name, Set<String> tags, String description) {
+    public RichStickerImpl(long id, StickerFormat format, String name, Set<String> tags, String description) {
         super(id, format, name);
         this.tags = Collections.unmodifiableSet(tags);
         this.description = description;
@@ -41,15 +40,13 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
     @Nonnull
     @Override
     public StandardSticker asStandardSticker() {
-        throw new IllegalStateException(
-                "Cannot convert sticker of type " + getType() + " to StandardSticker!");
+        throw new IllegalStateException("Cannot convert sticker of type " + getType() + " to StandardSticker!");
     }
 
     @Nonnull
     @Override
     public GuildSticker asGuildSticker() {
-        throw new IllegalStateException(
-                "Cannot convert sticker of type " + getType() + " to GuildSticker!");
+        throw new IllegalStateException("Cannot convert sticker of type " + getType() + " to GuildSticker!");
     }
 
     @Nonnull

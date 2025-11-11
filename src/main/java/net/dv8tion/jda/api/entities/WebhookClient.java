@@ -208,8 +208,7 @@ public interface WebhookClient<T> extends ISnowflake {
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageCreateAction<T> sendMessageFormat(
-            @Nonnull String format, @Nonnull Object... args) {
+    default WebhookMessageCreateAction<T> sendMessageFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return sendMessage(String.format(format, args));
     }
@@ -262,8 +261,7 @@ public interface WebhookClient<T> extends ISnowflake {
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageCreateAction<T> sendMessageEmbeds(
-            @Nonnull Collection<? extends MessageEmbed> embeds);
+    WebhookMessageCreateAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Send a message to this webhook.
@@ -403,8 +401,7 @@ public interface WebhookClient<T> extends ISnowflake {
     @Nonnull
     @CheckReturnValue
     default WebhookMessageCreateAction<T> sendMessageComponents(
-            @Nonnull MessageTopLevelComponent component,
-            @Nonnull MessageTopLevelComponent... other) {
+            @Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other) {
         Checks.notNull(component, "MessageTopLevelComponent");
         Checks.noneNull(other, "MessageTopLevelComponents");
         return sendMessageComponents(Helpers.mergeVararg(component, other));
@@ -667,8 +664,7 @@ public interface WebhookClient<T> extends ISnowflake {
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageEditAction<T> editMessageById(
-            @Nonnull String messageId, @Nonnull MessageEditData message);
+    WebhookMessageEditAction<T> editMessageById(@Nonnull String messageId, @Nonnull MessageEditData message);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -699,8 +695,7 @@ public interface WebhookClient<T> extends ISnowflake {
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageById(
-            long messageId, @Nonnull MessageEditData message) {
+    default WebhookMessageEditAction<T> editMessageById(long messageId, @Nonnull MessageEditData message) {
         return editMessageById(Long.toUnsignedString(messageId), message);
     }
 
@@ -895,8 +890,7 @@ public interface WebhookClient<T> extends ISnowflake {
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageEmbedsById(
-            long messageId, @Nonnull MessageEmbed... embeds) {
+    default WebhookMessageEditAction<T> editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... embeds) {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), embeds);
     }
 
@@ -934,8 +928,7 @@ public interface WebhookClient<T> extends ISnowflake {
     @Nonnull
     @CheckReturnValue
     WebhookMessageEditAction<T> editMessageComponentsById(
-            @Nonnull String messageId,
-            @Nonnull Collection<? extends MessageTopLevelComponent> components);
+            @Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -1088,8 +1081,7 @@ public interface WebhookClient<T> extends ISnowflake {
     @Nonnull
     @CheckReturnValue
     default WebhookMessageEditAction<T> editMessageComponentsById(
-            @Nonnull String messageId,
-            @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
+            @Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
     }

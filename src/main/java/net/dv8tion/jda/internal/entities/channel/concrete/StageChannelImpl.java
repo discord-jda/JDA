@@ -106,17 +106,14 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     @Override
     public StageInstanceAction createStageInstance(@Nonnull String topic) {
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
-        EnumSet<Permission> required = EnumSet.of(
-                Permission.MANAGE_CHANNEL,
-                Permission.VOICE_MUTE_OTHERS,
-                Permission.VOICE_MOVE_OTHERS);
+        EnumSet<Permission> required =
+                EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
         for (Permission perm : required) {
             if (!permissions.contains(perm)) {
                 throw new InsufficientPermissionException(
                         this,
                         perm,
-                        "You must be a stage moderator to create a stage instance! Missing Permission: "
-                                + perm);
+                        "You must be a stage moderator to create a stage instance! Missing Permission: " + perm);
             }
         }
 
@@ -164,8 +161,7 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
         }
 
         if (!this.equals(guild.getSelfMember().getVoiceState().getChannel())) {
-            throw new IllegalStateException(
-                    "Cannot request to speak without being connected to the stage channel!");
+            throw new IllegalStateException("Cannot request to speak without being connected to the stage channel!");
         }
         return new RestActionImpl<>(getJDA(), route, body);
     }

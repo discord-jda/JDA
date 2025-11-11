@@ -31,8 +31,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code system_channel_flags}
  */
-public class GuildUpdateSystemChannelFlagsEvent
-        extends GenericGuildUpdateEvent<Set<SystemChannelFlag>> {
+public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<Set<SystemChannelFlag>> {
     public static final String IDENTIFIER = "system_channel_flags";
 
     public GuildUpdateSystemChannelFlagsEvent(

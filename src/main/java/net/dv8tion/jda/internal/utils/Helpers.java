@@ -86,8 +86,8 @@ public final class Helpers {
                     return OffsetDateTime.ofInstant(instant, offset);
                 } catch (DateTimeException ex) {
                     throw new DateTimeException(
-                            "Unable to obtain OffsetDateTime from TemporalAccessor: " + temporal
-                                    + " of type " + temporal.getClass().getName(),
+                            "Unable to obtain OffsetDateTime from TemporalAccessor: " + temporal + " of type "
+                                    + temporal.getClass().getName(),
                             ex);
                 }
             }
@@ -215,9 +215,7 @@ public final class Helpers {
     }
 
     public static boolean equals(String a, String b, boolean ignoreCase) {
-        return ignoreCase
-                ? a == b || (a != null && b != null && a.equalsIgnoreCase(b))
-                : Objects.equals(a, b);
+        return ignoreCase ? a == b || (a != null && b != null && a.equalsIgnoreCase(b)) : Objects.equals(a, b);
     }
 
     // ## CollectionUtils ##
@@ -229,8 +227,7 @@ public final class Helpers {
         if (first == null || second == null || first.size() != second.size()) {
             return false;
         }
-        for (Iterator<?> itFirst = first.iterator(), itSecond = second.iterator();
-                itFirst.hasNext(); ) {
+        for (Iterator<?> itFirst = first.iterator(), itSecond = second.iterator(); itFirst.hasNext(); ) {
             Object elementFirst = itFirst.next();
             Object elementSecond = itSecond.next();
             if (!Objects.equals(elementFirst, elementSecond)) {
@@ -266,8 +263,7 @@ public final class Helpers {
         return Collections.unmodifiableList(Arrays.asList(elements));
     }
 
-    public static TLongObjectMap<DataObject> convertToMap(
-            ToLongFunction<DataObject> getId, DataArray array) {
+    public static TLongObjectMap<DataObject> convertToMap(ToLongFunction<DataObject> getId, DataArray array) {
         TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
         for (int i = 0; i < array.length(); i++) {
             DataObject obj = array.getObject(i);
@@ -281,8 +277,7 @@ public final class Helpers {
         return element -> Result.defer(() -> mapper.apply(element));
     }
 
-    public static <I, O> Stream<O> mapGracefully(
-            Stream<I> stream, Function<I, O> mapper, String errorDescription) {
+    public static <I, O> Stream<O> mapGracefully(Stream<I> stream, Function<I, O> mapper, String errorDescription) {
         return stream.map(tryMap(mapper))
                 .peek(result -> {
                     if (result.isFailure()) {
@@ -319,11 +314,9 @@ public final class Helpers {
         return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 
-    public static <E extends Enum<E>> Collector<E, ?, Set<E>> toUnmodifiableEnumSet(
-            Class<E> enumType) {
+    public static <E extends Enum<E>> Collector<E, ?, Set<E>> toUnmodifiableEnumSet(Class<E> enumType) {
         return Collectors.collectingAndThen(
-                Collectors.toCollection(() -> EnumSet.noneOf(enumType)),
-                Collections::unmodifiableSet);
+                Collectors.toCollection(() -> EnumSet.noneOf(enumType)), Collections::unmodifiableSet);
     }
 
     @SafeVarargs

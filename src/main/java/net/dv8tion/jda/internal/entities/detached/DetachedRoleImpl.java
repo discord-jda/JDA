@@ -156,14 +156,12 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
     }
 
     @Override
-    public boolean hasPermission(
-            @Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
         throw detachedException();
     }
 
     @Override
-    public boolean canSync(
-            @Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
         throw detachedException();
     }
 

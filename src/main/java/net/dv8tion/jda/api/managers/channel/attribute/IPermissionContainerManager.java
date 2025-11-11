@@ -164,9 +164,7 @@ public interface IPermissionContainerManager<
     @Nonnull
     @CheckReturnValue
     default M putRolePermissionOverride(
-            long roleId,
-            @Nullable Collection<Permission> allow,
-            @Nullable Collection<Permission> deny) {
+            long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
         long denyRaw = deny == null ? 0 : Permission.getRaw(deny);
         return putRolePermissionOverride(roleId, allowRaw, denyRaw);
@@ -219,9 +217,7 @@ public interface IPermissionContainerManager<
     @Nonnull
     @CheckReturnValue
     default M putMemberPermissionOverride(
-            long memberId,
-            @Nullable Collection<Permission> allow,
-            @Nullable Collection<Permission> deny) {
+            long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
         long denyRaw = deny == null ? 0 : Permission.getRaw(deny);
         return putMemberPermissionOverride(memberId, allowRaw, denyRaw);

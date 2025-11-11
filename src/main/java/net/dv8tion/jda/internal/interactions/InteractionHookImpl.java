@@ -48,8 +48,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nonnull;
 
 public class InteractionHookImpl extends AbstractWebhookClient<Message> implements InteractionHook {
-    public static final String TIMEOUT_MESSAGE =
-            "Timed out waiting for interaction acknowledgement";
+    public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
     private final DeferrableInteractionImpl interaction;
     private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
     private final Future<?> timeoutHandle;
@@ -66,10 +65,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         this.token = interaction.getToken();
         // 10 second timeout for our failure
         this.timeoutHandle = api.getGatewayPool()
-                .schedule(
-                        () -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)),
-                        10,
-                        TimeUnit.SECONDS);
+                .schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
     }
 
     public InteractionHookImpl(@Nonnull JDA api, @Nonnull String token) {
@@ -129,8 +125,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         });
     }
 
-    public InteractionHookImpl setCallbackResponse(
-            InteractionCallbackResponseImpl callbackResponse) {
+    public InteractionHookImpl setCallbackResponse(InteractionCallbackResponseImpl callbackResponse) {
         this.callbackResponse = callbackResponse;
         return this;
     }
@@ -161,8 +156,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Override
     public long getExpirationTimestamp() {
-        OffsetDateTime creationTime =
-                interaction == null ? OffsetDateTime.now() : interaction.getTimeCreated();
+        OffsetDateTime creationTime = interaction == null ? OffsetDateTime.now() : interaction.getTimeCreated();
         return creationTime.plus(15, ChronoUnit.MINUTES).toEpochSecond() * 1000;
     }
 
@@ -176,12 +170,11 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     @Nonnull
     @Override
     public WebhookMessageCreateActionImpl<Message> sendRequest() {
-        Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(
-                api.getSelfUser().getApplicationId(), token);
+        Route.CompiledRoute route =
+                Route.Interactions.CREATE_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), token);
         route = route.withQueryParams("wait", "true");
-        WebhookMessageCreateActionImpl<Message> action = new WebhookMessageCreateActionImpl<>(
-                        api, route, this::buildMessage)
-                .setEphemeral(ephemeral);
+        WebhookMessageCreateActionImpl<Message> action =
+                new WebhookMessageCreateActionImpl<>(api, route, this::buildMessage).setEphemeral(ephemeral);
         action.setCheck(this::checkExpired);
         return onReady(action);
     }
@@ -193,8 +186,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
             Checks.isSnowflake(messageId);
         }
 
-        Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(
-                api.getSelfUser().getApplicationId(), token, messageId);
+        Route.CompiledRoute route =
+                Route.Interactions.EDIT_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), token, messageId);
         route = route.withQueryParams("wait", "true");
         WebhookMessageEditActionImpl<Message> action =
                 new WebhookMessageEditActionImpl<>(api, route, this::buildMessage);
@@ -208,8 +201,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         if (!"@original".equals(messageId)) {
             Checks.isSnowflake(messageId);
         }
-        Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(
-                api.getSelfUser().getApplicationId(), token, messageId);
+        Route.CompiledRoute route =
+                Route.Interactions.DELETE_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), token, messageId);
         WebhookMessageDeleteActionImpl action = new WebhookMessageDeleteActionImpl(api, route);
         action.setCheck(this::checkExpired);
         return onReady(action);
@@ -221,8 +214,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         if (!"@original".equals(messageId)) {
             Checks.isSnowflake(messageId);
         }
-        Route.CompiledRoute route = Route.Interactions.GET_MESSAGE.compile(
-                api.getSelfUser().getApplicationId(), token, messageId);
+        Route.CompiledRoute route =
+                Route.Interactions.GET_MESSAGE.compile(api.getSelfUser().getApplicationId(), token, messageId);
         WebhookMessageRetrieveActionImpl action = new WebhookMessageRetrieveActionImpl(
                 api, route, (response, request) -> buildMessage(response.getObject()));
         action.setCheck(this::checkExpired);
@@ -260,8 +253,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         }
 
         // Then build the message with the information we have
-        ReceivedMessage message =
-                jda.getEntityBuilder().createMessageBestEffort(json, channel, guild);
+        ReceivedMessage message = jda.getEntityBuilder().createMessageBestEffort(json, channel, guild);
         return message.withHook(this);
     }
 }

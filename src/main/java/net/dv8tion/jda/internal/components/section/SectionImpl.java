@@ -49,16 +49,12 @@ public class SectionImpl extends AbstractComponentImpl
         this(
                 data.getInt("id", -1),
                 deserializer
-                        .deserializeAs(
-                                SectionContentComponentUnion.class, data.getArray("components"))
+                        .deserializeAs(SectionContentComponentUnion.class, data.getArray("components"))
                         .collect(Collectors.toList()),
-                deserializer.deserializeAs(
-                        SectionAccessoryComponentUnion.class, data.getObject("accessory")));
+                deserializer.deserializeAs(SectionAccessoryComponentUnion.class, data.getObject("accessory")));
     }
 
-    public SectionImpl(
-            Collection<SectionContentComponentUnion> components,
-            SectionAccessoryComponentUnion accessory) {
+    public SectionImpl(Collection<SectionContentComponentUnion> components, SectionAccessoryComponentUnion accessory) {
         this(-1, components, accessory);
     }
 
@@ -73,8 +69,7 @@ public class SectionImpl extends AbstractComponentImpl
     }
 
     public static Section validated(
-            SectionAccessoryComponent accessory,
-            Collection<? extends SectionContentComponent> components) {
+            SectionAccessoryComponent accessory, Collection<? extends SectionContentComponent> components) {
         return validated(accessory, components, -1);
     }
 
@@ -94,8 +89,8 @@ public class SectionImpl extends AbstractComponentImpl
         // Don't allow unknown components in user-called methods
         Collection<SectionContentComponentUnion> componentUnions =
                 ComponentsUtil.membersToUnion(components, SectionContentComponentUnion.class);
-        SectionAccessoryComponentUnion accessoryUnion = ComponentsUtil.safeUnionCast(
-                "accessory", accessory, SectionAccessoryComponentUnion.class);
+        SectionAccessoryComponentUnion accessoryUnion =
+                ComponentsUtil.safeUnionCast("accessory", accessory, SectionAccessoryComponentUnion.class);
 
         return new SectionImpl(uniqueId, componentUnions, accessoryUnion);
     }
@@ -115,13 +110,10 @@ public class SectionImpl extends AbstractComponentImpl
 
     @Nonnull
     @Override
-    public Section withContentComponents(
-            @Nonnull Collection<? extends SectionContentComponent> components) {
+    public Section withContentComponents(@Nonnull Collection<? extends SectionContentComponent> components) {
         Checks.noneNull(components, "Components");
         return new SectionImpl(
-                uniqueId,
-                ComponentsUtil.membersToUnion(components, SectionContentComponentUnion.class),
-                accessory);
+                uniqueId, ComponentsUtil.membersToUnion(components, SectionContentComponentUnion.class), accessory);
     }
 
     @Nonnull
@@ -131,8 +123,7 @@ public class SectionImpl extends AbstractComponentImpl
         return new SectionImpl(
                 uniqueId,
                 components,
-                ComponentsUtil.safeUnionCast(
-                        "accessory", accessory, SectionAccessoryComponentUnion.class));
+                ComponentsUtil.safeUnionCast("accessory", accessory, SectionAccessoryComponentUnion.class));
     }
 
     @Nonnull
@@ -141,10 +132,7 @@ public class SectionImpl extends AbstractComponentImpl
         Checks.notNull(replacer, "ComponentReplacer");
 
         List<SectionContentComponentUnion> newContent = ComponentsUtil.doReplace(
-                SectionContentComponent.class,
-                getContentComponents(),
-                replacer,
-                Function.identity());
+                SectionContentComponent.class, getContentComponents(), replacer, Function.identity());
 
         SectionAccessoryComponentUnion newAccessory = ComponentsUtil.doReplace(
                 SectionAccessoryComponent.class,

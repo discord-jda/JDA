@@ -35,10 +35,7 @@ public class SeparatorImpl extends AbstractComponentImpl
     private final boolean isDivider;
 
     public SeparatorImpl(DataObject obj) {
-        this(
-                obj.getInt("id", -1),
-                Spacing.fromKey(obj.getInt("spacing", 1)),
-                obj.getBoolean("divider", true));
+        this(obj.getInt("id", -1), Spacing.fromKey(obj.getInt("spacing", 1)), obj.getBoolean("divider", true));
     }
 
     public SeparatorImpl(Spacing spacing, boolean isDivider) {
@@ -117,9 +114,7 @@ public class SeparatorImpl extends AbstractComponentImpl
             return false;
         }
         SeparatorImpl separator = (SeparatorImpl) o;
-        return uniqueId == separator.uniqueId
-                && isDivider == separator.isDivider
-                && spacing == separator.spacing;
+        return uniqueId == separator.uniqueId && isDivider == separator.isDivider && spacing == separator.spacing;
     }
 
     @Override

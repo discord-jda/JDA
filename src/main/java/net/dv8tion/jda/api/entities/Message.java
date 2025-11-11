@@ -1026,8 +1026,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditAction editMessageComponents(
-            @Nonnull Collection<? extends MessageTopLevelComponent> components);
+    MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * Edits this message using the provided {@link MessageTopLevelComponent MessageTopLevelComponents}.
@@ -1072,8 +1071,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponents(
-            @Nonnull MessageTopLevelComponent... components) {
+    default MessageEditAction editMessageComponents(@Nonnull MessageTopLevelComponent... components) {
         Checks.noneNull(components, "Components");
         return editMessageComponents(Arrays.asList(components));
     }
@@ -1122,8 +1120,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponents(
-            @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
+    default MessageEditAction editMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponents(tree.getComponents());
     }
@@ -1225,8 +1222,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditAction editMessageAttachments(
-            @Nonnull Collection<? extends AttachedFile> attachments);
+    MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments);
 
     /**
      * Edits this message using the provided files.
@@ -1326,8 +1322,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyStickers(
-            @Nonnull Collection<? extends StickerSnowflake> stickers) {
+    default MessageCreateAction replyStickers(@Nonnull Collection<? extends StickerSnowflake> stickers) {
         return getGuildChannel().sendStickers(stickers).setMessageReference(this);
     }
 
@@ -1514,8 +1509,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyEmbeds(
-            @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
+    default MessageCreateAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(other, "MessageEmbeds");
         List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
@@ -1585,8 +1579,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponents(
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+    default MessageCreateAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.noneNull(components, "MessageTopLevelComponents");
         return getChannel().sendMessageComponents(components).setMessageReference(this);
     }
@@ -1624,8 +1617,7 @@ public interface Message extends ISnowflake, Formattable {
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyComponents(
-            @Nonnull MessageTopLevelComponent component,
-            @Nonnull MessageTopLevelComponent... other) {
+            @Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other) {
         Checks.notNull(component, "MessageTopLevelComponents");
         Checks.noneNull(other, "MessageTopLevelComponents");
         List<MessageTopLevelComponent> components = new ArrayList<>(1 + other.length);
@@ -1666,8 +1658,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponents(
-            @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
+    default MessageCreateAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return replyComponents(tree.getComponents());
     }
@@ -2271,8 +2262,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     @Nonnull
     @CheckReturnValue
-    ReactionPaginationAction retrieveReactionUsers(
-            @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type);
+    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type);
 
     /**
      * This obtains the {@link MessageReaction} for the given {@link Emoji} on this message.
@@ -2716,10 +2706,10 @@ public interface Message extends ISnowflake, Formattable {
      * Represents a {@link net.dv8tion.jda.api.entities.Message Message} file attachment.
      */
     class Attachment implements ISnowflake, AttachedFile {
-        private static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(
-                Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
-        private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(Arrays.asList(
-                "webm", "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg", "mpeg", "gifv"));
+        private static final Set<String> IMAGE_EXTENSIONS =
+                new HashSet<>(Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
+        private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(
+                Arrays.asList("webm", "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg", "mpeg", "gifv"));
         private final long id;
         private final String url;
         private final String proxyUrl;

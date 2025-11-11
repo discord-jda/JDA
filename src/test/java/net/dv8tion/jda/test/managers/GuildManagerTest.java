@@ -78,8 +78,8 @@ public class GuildManagerTest extends IntegrationTest {
         Set<String> features = new HashSet<>(Arrays.asList("BANNER", "VERIFIED", "INVITE_SPLASH"));
         when(guild.getFeatures()).thenReturn(features);
 
-        Set<String> ignoredSetters = new HashSet<>(Arrays.asList(
-                "setFeatures", "setSystemChannelFlags", "setInvitesDisabled", "setCheck"));
+        Set<String> ignoredSetters =
+                new HashSet<>(Arrays.asList("setFeatures", "setSystemChannelFlags", "setInvitesDisabled", "setCheck"));
 
         GuildManagerImpl manager = spy(new GuildManagerImpl(guild));
 

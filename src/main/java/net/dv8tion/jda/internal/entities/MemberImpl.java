@@ -236,12 +236,10 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel) {
         Checks.notNull(channel, "Channel");
         if (!getGuild().equals(channel.getGuild())) {
-            throw new IllegalArgumentException(
-                    "Provided channel is not in the same guild as this member!");
+            throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
         }
 
-        return Permission.getPermissions(
-                PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
     }
 
     @Nonnull
@@ -253,8 +251,7 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Nonnull
     @Override
     public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel) {
-        return Permission.getPermissions(
-                PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
     }
 
     @Override
@@ -263,21 +260,16 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     }
 
     @Override
-    public boolean hasPermission(
-            @Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
         return PermissionUtil.checkPermission(channel.getPermissionContainer(), this, permissions);
     }
 
     @Override
-    public boolean canSync(
-            @Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
-        Checks.check(
-                targetChannel.getGuild().equals(getGuild()),
-                "Channels must be from the same guild!");
-        Checks.check(
-                syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(targetChannel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long userPerms = PermissionUtil.getEffectivePermission(targetChannel, this);
         if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // We can't manage permissions at all!
@@ -314,8 +306,7 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Override
     public boolean canSync(@Nonnull IPermissionContainer channel) {
         Checks.notNull(channel, "Channel");
-        Checks.check(
-                channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long userPerms = PermissionUtil.getEffectivePermission(channel, this);
         if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // We can't manage permissions at all!
@@ -367,12 +358,11 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Nullable
     @Override
     public DefaultGuildChannelUnion getDefaultChannel() {
-        return (DefaultGuildChannelUnion) Stream.concat(
-                        getGuild().getTextChannelCache().stream(),
-                        getGuild().getNewsChannelCache().stream())
-                .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
-                .min(Comparator.naturalOrder())
-                .orElse(null);
+        return (DefaultGuildChannelUnion)
+                Stream.concat(getGuild().getTextChannelCache().stream(), getGuild().getNewsChannelCache().stream())
+                        .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
+                        .min(Comparator.naturalOrder())
+                        .orElse(null);
     }
 
     @Nonnull
@@ -445,8 +435,7 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
         }
 
         MemberImpl oMember = (MemberImpl) o;
-        return oMember.user.getIdLong() == user.getIdLong()
-                && oMember.guild.getIdLong() == guild.getIdLong();
+        return oMember.user.getIdLong() == user.getIdLong() && oMember.guild.getIdLong() == guild.getIdLong();
     }
 
     @Override

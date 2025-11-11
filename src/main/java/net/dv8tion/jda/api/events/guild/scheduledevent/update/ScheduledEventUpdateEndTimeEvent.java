@@ -42,8 +42,7 @@ import javax.annotation.Nullable;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateEndTimeEvent
-        extends GenericScheduledEventUpdateEvent<OffsetDateTime> {
+public class ScheduledEventUpdateEndTimeEvent extends GenericScheduledEventUpdateEvent<OffsetDateTime> {
     public static final String IDENTIFIER = "end_time";
 
     public ScheduledEventUpdateEndTimeEvent(
@@ -51,13 +50,7 @@ public class ScheduledEventUpdateEndTimeEvent
             long responseNumber,
             @Nonnull ScheduledEvent scheduledEvent,
             @Nullable OffsetDateTime previous) {
-        super(
-                api,
-                responseNumber,
-                scheduledEvent,
-                previous,
-                scheduledEvent.getEndTime(),
-                IDENTIFIER);
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getEndTime(), IDENTIFIER);
     }
 
     /**

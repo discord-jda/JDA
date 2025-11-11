@@ -55,8 +55,7 @@ import javax.annotation.Nonnull;
  *
  * @see    MessageChannel#getIterableHistory()
  */
-public interface MessagePaginationAction
-        extends PaginationAction<Message, MessagePaginationAction> {
+public interface MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction> {
     /**
      * The {@link ChannelType ChannelType} of
      * the targeted {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.

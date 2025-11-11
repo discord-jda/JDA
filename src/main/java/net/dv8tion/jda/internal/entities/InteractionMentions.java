@@ -30,8 +30,7 @@ import javax.annotation.Nullable;
 public class InteractionMentions extends AbstractMentions {
     protected final TLongObjectMap<Object> resolved;
 
-    public InteractionMentions(
-            String content, TLongObjectMap<Object> resolved, JDAImpl jda, @Nullable Guild guild) {
+    public InteractionMentions(String content, TLongObjectMap<Object> resolved, JDAImpl jda, @Nullable Guild guild) {
         super(content, jda, guild, false);
         this.resolved = resolved;
     }
@@ -40,9 +39,7 @@ public class InteractionMentions extends AbstractMentions {
     protected User matchUser(Matcher matcher) {
         long userId = MiscUtil.parseSnowflake(matcher.group(1));
         Object it = resolved.get(userId);
-        return it instanceof User
-                ? (User) it
-                : it instanceof Member ? ((Member) it).getUser() : null;
+        return it instanceof User ? (User) it : it instanceof Member ? ((Member) it).getUser() : null;
     }
 
     @Override

@@ -129,8 +129,7 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      * @throws java.lang.IllegalArgumentException
      *         If the provided event listeners provider is {@code null}.
      */
-    default void removeEventListeners(
-            @Nonnull IntFunction<Collection<Object>> eventListenerProvider) {
+    default void removeEventListeners(@Nonnull IntFunction<Collection<Object>> eventListenerProvider) {
         Checks.notNull(eventListenerProvider, "event listener provider");
         this.getShardCache()
                 .forEach(jda -> jda.removeEventListener(
@@ -186,9 +185,9 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
     @Nonnull
     default EnumSet<GatewayIntent> getGatewayIntents() {
         //noinspection ConstantConditions
-        return getShardCache().applyStream((stream) -> stream.map(JDA::getGatewayIntents)
-                .findAny()
-                .orElse(EnumSet.noneOf(GatewayIntent.class)));
+        return getShardCache()
+                .applyStream((stream) ->
+                        stream.map(JDA::getGatewayIntents).findAny().orElse(EnumSet.noneOf(GatewayIntent.class)));
     }
 
     /**
@@ -234,8 +233,7 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      */
     @Nonnull
     default SnowflakeCacheView<Category> getCategoryCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getCategoryCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getCategoryCache));
     }
 
     /**
@@ -492,8 +490,8 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
             api = shard;
             EnumSet<GatewayIntent> intents = shard.getGatewayIntents();
             User user = shard.getUserById(id);
-            boolean isUpdated = intents.contains(GatewayIntent.GUILD_PRESENCES)
-                    || intents.contains(GatewayIntent.GUILD_MEMBERS);
+            boolean isUpdated =
+                    intents.contains(GatewayIntent.GUILD_PRESENCES) || intents.contains(GatewayIntent.GUILD_MEMBERS);
             if (user != null && isUpdated) {
                 return new CompletedRestAction<>(shard, user);
             }
@@ -505,8 +503,8 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
 
         JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder()
-                .createUser(response.getObject()));
+        return new RestActionImpl<>(
+                jda, route, (response, request) -> jda.getEntityBuilder().createUser(response.getObject()));
     }
 
     /**
@@ -561,11 +559,10 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      */
     @Nullable
     default User getUserByTag(@Nonnull String username, @Nonnull String discriminator) {
-        return getShardCache()
-                .applyStream(stream -> stream.map(jda -> jda.getUserByTag(username, discriminator))
-                        .filter(Objects::nonNull)
-                        .findFirst()
-                        .orElse(null));
+        return getShardCache().applyStream(stream -> stream.map(jda -> jda.getUserByTag(username, discriminator))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null));
     }
 
     /**
@@ -705,8 +702,7 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      */
     @Nonnull
     default SnowflakeCacheView<PrivateChannel> getPrivateChannelCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getPrivateChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getPrivateChannelCache));
     }
 
     @Nullable
@@ -738,56 +734,48 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
 
     @Nonnull
     default SnowflakeCacheView<TextChannel> getTextChannelCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getTextChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getTextChannelCache));
     }
 
     @Nonnull
     default SnowflakeCacheView<VoiceChannel> getVoiceChannelCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getVoiceChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getVoiceChannelCache));
     }
 
     @Nonnull
     @Override
     default SnowflakeCacheView<StageChannel> getStageChannelCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getStageChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getStageChannelCache));
     }
 
     @Nonnull
     @Override
     default SnowflakeCacheView<ThreadChannel> getThreadChannelCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getThreadChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getThreadChannelCache));
     }
 
     @Nonnull
     @Override
     default SnowflakeCacheView<NewsChannel> getNewsChannelCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getNewsChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getNewsChannelCache));
     }
 
     @Nonnull
     @Override
     default SnowflakeCacheView<ForumChannel> getForumChannelCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getForumChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getForumChannelCache));
     }
 
     @Nonnull
     @Override
     default SnowflakeCacheView<MediaChannel> getMediaChannelCache() {
-        return CacheView.allSnowflakes(
-                () -> this.getShardCache().stream().map(JDA::getMediaChannelCache));
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getMediaChannelCache));
     }
 
     @Nonnull
     @Override
     default ChannelCacheView<Channel> getChannelCache() {
-        return new UnifiedChannelCacheView<>(
-                () -> this.getShardCache().stream().map(JDA::getChannelCache));
+        return new UnifiedChannelCacheView<>(() -> this.getShardCache().stream().map(JDA::getChannelCache));
     }
 
     /**
@@ -869,8 +857,8 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
     @Nonnull
     @Unmodifiable
     default Map<JDA, Status> getStatuses() {
-        return Collections.unmodifiableMap(this.getShardCache().stream()
-                .collect(Collectors.toMap(Function.identity(), JDA::getStatus)));
+        return Collections.unmodifiableMap(
+                this.getShardCache().stream().collect(Collectors.toMap(Function.identity(), JDA::getStatus)));
     }
 
     /**

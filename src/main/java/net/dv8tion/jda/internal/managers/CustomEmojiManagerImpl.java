@@ -35,17 +35,14 @@ import java.util.Set;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
-        implements CustomEmojiManager {
+public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager> implements CustomEmojiManager {
     protected final RichCustomEmojiImpl emoji;
 
     protected final List<String> roles = new ArrayList<>();
     protected String name;
 
     public CustomEmojiManagerImpl(RichCustomEmojiImpl emoji) {
-        super(
-                emoji.getJDA(),
-                Route.Emojis.MODIFY_EMOJI.compile(emoji.getGuild().getId(), emoji.getId()));
+        super(emoji.getJDA(), Route.Emojis.MODIFY_EMOJI.compile(emoji.getGuild().getId(), emoji.getId()));
         this.emoji = emoji;
         if (isPermissionChecksEnabled()) {
             checkPermissions();
@@ -112,9 +109,7 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
             Checks.notNull(roles, "Roles");
             roles.forEach((role) -> {
                 Checks.notNull(role, "Roles");
-                Checks.check(
-                        role.getGuild().equals(getGuild()),
-                        "Roles must all be from the same guild");
+                Checks.check(role.getGuild().equals(getGuild()), "Roles must all be from the same guild");
             });
             withLock(this.roles, (list) -> {
                 list.clear();
@@ -143,8 +138,7 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager>
     @Override
     protected boolean checkPermissions() {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
-            throw new InsufficientPermissionException(
-                    getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
         }
         return super.checkPermissions();
     }

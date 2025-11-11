@@ -31,8 +31,7 @@ public class MessageIndirectFileUploadTest {
     @Test
     void testIndirectFileUploadGetsUploaded() {
         try (MessageCreateData data = new MessageCreateBuilder()
-                .setComponents(
-                        FileDisplay.fromFile(FileUpload.fromData(new byte[100], "bytes.bin")))
+                .setComponents(FileDisplay.fromFile(FileUpload.fromData(new byte[100], "bytes.bin")))
                 .useComponentsV2()
                 .build()) {
             assertThat(data.getFiles()).isEmpty();
@@ -44,8 +43,7 @@ public class MessageIndirectFileUploadTest {
         }
 
         try (MessageEditData data = new MessageEditBuilder()
-                .setComponents(
-                        FileDisplay.fromFile(FileUpload.fromData(new byte[100], "bytes.bin")))
+                .setComponents(FileDisplay.fromFile(FileUpload.fromData(new byte[100], "bytes.bin")))
                 .useComponentsV2()
                 .build()) {
             assertThat(data.getFiles()).isEmpty();

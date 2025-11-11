@@ -42,8 +42,7 @@ import javax.annotation.Nullable;
  * @see MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(...)
  */
 public interface MessageCreateAction
-        extends MessageCreateRequest<MessageCreateAction>,
-                FluentRestAction<Message, MessageCreateAction> {
+        extends MessageCreateRequest<MessageCreateAction>, FluentRestAction<Message, MessageCreateAction> {
     /**
      * Sets the default value for {@link #failOnInvalidReply(boolean)}
      *
@@ -220,8 +219,7 @@ public interface MessageCreateAction
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction setMessageReference(
-            @Nonnull MessageReferenceType type, @Nonnull Message message) {
+    default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nonnull Message message) {
         Checks.notNull(message, "Message");
         return setMessageReference(
                 type, message.getGuildId(), message.getChannel().getId(), message.getId());

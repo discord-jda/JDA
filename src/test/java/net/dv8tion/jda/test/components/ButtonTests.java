@@ -44,8 +44,7 @@ public class ButtonTests {
 
     @MethodSource("validButtons")
     @ParameterizedTest
-    void testButtonValid(
-            ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
+    void testButtonValid(ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
         ButtonImpl button = new ButtonImpl(id, label, style, url, sku, false, emoji);
         assertDoesNotThrow(button::checkValid);
         assertDoesNotThrow(button::toData);
@@ -68,8 +67,7 @@ public class ButtonTests {
 
     @MethodSource("testButtonInvalidArguments")
     @ParameterizedTest
-    void testButtonInvalid(
-            ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
+    void testButtonInvalid(ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
         ButtonImpl button = new ButtonImpl(id, label, style, url, sku, false, emoji);
         assertThatIllegalArgumentException().isThrownBy(button::checkValid);
     }
@@ -214,8 +212,7 @@ public class ButtonTests {
 
     @MethodSource("validButtons")
     @ParameterizedTest
-    void testWithDisabled(
-            ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
+    void testWithDisabled(ButtonStyle style, String id, String label, String url, SkuSnowflake sku, Emoji emoji) {
         Button button = new ButtonImpl(id, label, style, url, sku, false, emoji);
         assertDoesNotThrow(() -> button.withDisabled(true));
         assertDoesNotThrow(() -> button.withDisabled(false));

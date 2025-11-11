@@ -27,8 +27,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-public class AttachmentUploadImpl extends AbstractComponentImpl
-        implements AttachmentUpload, LabelChildComponentUnion {
+public class AttachmentUploadImpl extends AbstractComponentImpl implements AttachmentUpload, LabelChildComponentUnion {
     protected final int uniqueId;
     protected final String customId;
     protected final int minValues;
@@ -44,8 +43,7 @@ public class AttachmentUploadImpl extends AbstractComponentImpl
                 data.getBoolean("required", true));
     }
 
-    public AttachmentUploadImpl(
-            int uniqueId, String customId, int minValues, int maxValues, boolean required) {
+    public AttachmentUploadImpl(int uniqueId, String customId, int minValues, int maxValues, boolean required) {
         this.uniqueId = uniqueId;
         this.customId = customId;
         this.minValues = minValues;

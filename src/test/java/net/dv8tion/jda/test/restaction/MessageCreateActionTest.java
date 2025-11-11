@@ -78,8 +78,7 @@ public class MessageCreateActionTest extends IntegrationTest {
 
     @Test
     void testContentOnly() {
-        MessageCreateAction action =
-                new MessageCreateActionImpl(channel).setContent("test content");
+        MessageCreateAction action = new MessageCreateActionImpl(channel).setContent("test content");
 
         assertThatRequestFrom(action)
                 .hasMethod(POST)
@@ -90,8 +89,7 @@ public class MessageCreateActionTest extends IntegrationTest {
 
     @Test
     void testEmbedOnly() {
-        MessageCreateAction action =
-                new MessageCreateActionImpl(channel).setEmbeds(Data.getTestEmbed());
+        MessageCreateAction action = new MessageCreateActionImpl(channel).setEmbeds(Data.getTestEmbed());
 
         assertThatRequestFrom(action)
                 .hasMethod(POST)
@@ -102,8 +100,7 @@ public class MessageCreateActionTest extends IntegrationTest {
 
     @Test
     void testPollOnly() {
-        MessageCreateAction action =
-                new MessageCreateActionImpl(channel).setPoll(Data.getTestPoll());
+        MessageCreateAction action = new MessageCreateActionImpl(channel).setPoll(Data.getTestPoll());
 
         assertThatRequestFrom(action)
                 .hasMethod(POST)
@@ -116,8 +113,8 @@ public class MessageCreateActionTest extends IntegrationTest {
     void testSendVoiceMessage() {
         MessageCreateActionImpl action = new MessageCreateActionImpl(channel);
 
-        FileUpload file = Data.getVoiceMessageFileUpload(
-                voiceMessageAudio, voiceMessageFilename, voiceMessageMediaType);
+        FileUpload file =
+                Data.getVoiceMessageFileUpload(voiceMessageAudio, voiceMessageFilename, voiceMessageMediaType);
 
         assertThat(file.isVoiceMessage()).isTrue();
 
@@ -133,8 +130,8 @@ public class MessageCreateActionTest extends IntegrationTest {
     void testSuppressVoiceMessage() {
         MessageCreateActionImpl action = new MessageCreateActionImpl(channel);
 
-        FileUpload file = Data.getVoiceMessageFileUpload(
-                voiceMessageAudio, voiceMessageFilename, voiceMessageMediaType);
+        FileUpload file =
+                Data.getVoiceMessageFileUpload(voiceMessageAudio, voiceMessageFilename, voiceMessageMediaType);
 
         assertThat(file.isVoiceMessage()).isTrue();
 
@@ -165,10 +162,7 @@ public class MessageCreateActionTest extends IntegrationTest {
 
         long messageId = random.nextLong();
         action.setMessageReference(
-                MessageReference.MessageReferenceType.FORWARD,
-                Constants.GUILD_ID,
-                Constants.CHANNEL_ID,
-                messageId);
+                MessageReference.MessageReferenceType.FORWARD, Constants.GUILD_ID, Constants.CHANNEL_ID, messageId);
 
         action.setSuppressedNotifications(true);
 
@@ -210,11 +204,9 @@ public class MessageCreateActionTest extends IntegrationTest {
     }
 
     static class Data {
-        static FileUpload getVoiceMessageFileUpload(
-                byte[] fakeAudio, String fileName, String audioMediaType) {
+        static FileUpload getVoiceMessageFileUpload(byte[] fakeAudio, String fileName, String audioMediaType) {
             return FileUpload.fromData(fakeAudio, fileName)
-                    .asVoiceMessage(
-                            MediaType.parse(audioMediaType), fakeAudio, Duration.ofSeconds(3));
+                    .asVoiceMessage(MediaType.parse(audioMediaType), fakeAudio, Duration.ofSeconds(3));
         }
 
         static MessageEmbed getTestEmbed() {

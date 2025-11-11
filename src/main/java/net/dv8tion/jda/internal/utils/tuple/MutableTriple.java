@@ -25,8 +25,7 @@ public class MutableTriple<LEFT, MIDDLE, RIGHT> extends MutablePair<LEFT, RIGHT>
         this.middle = middle;
     }
 
-    public static <LEFT, MIDDLE, RIGHT> MutableTriple<LEFT, MIDDLE, RIGHT> of(
-            LEFT left, MIDDLE middle, RIGHT right) {
+    public static <LEFT, MIDDLE, RIGHT> MutableTriple<LEFT, MIDDLE, RIGHT> of(LEFT left, MIDDLE middle, RIGHT right) {
         return new MutableTriple<>(left, middle, right);
     }
 

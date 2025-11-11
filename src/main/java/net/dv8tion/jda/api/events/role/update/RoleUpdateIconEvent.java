@@ -33,8 +33,7 @@ import javax.annotation.Nullable;
 public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon> {
     public static final String IDENTIFIER = "icon";
 
-    public RoleUpdateIconEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nullable RoleIcon oldIcon) {
+    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nullable RoleIcon oldIcon) {
         super(api, responseNumber, role, oldIcon, role.getIcon(), IDENTIFIER);
     }
 

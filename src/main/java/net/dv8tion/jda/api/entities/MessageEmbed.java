@@ -155,9 +155,8 @@ public class MessageEmbed implements SerializableData {
         this.videoInfo = videoInfo;
         this.footer = footer;
         this.image = image;
-        this.fields = fields != null && !fields.isEmpty()
-                ? Collections.unmodifiableList(fields)
-                : Collections.emptyList();
+        this.fields =
+                fields != null && !fields.isEmpty() ? Collections.unmodifiableList(fields) : Collections.emptyList();
     }
 
     /**
@@ -368,8 +367,7 @@ public class MessageEmbed implements SerializableData {
             }
             if (fields != null) {
                 for (Field f : fields) {
-                    length += Helpers.codePointLength(f.getName())
-                            + Helpers.codePointLength(f.getValue());
+                    length += Helpers.codePointLength(f.getName()) + Helpers.codePointLength(f.getValue());
                 }
             }
 
@@ -631,8 +629,7 @@ public class MessageEmbed implements SerializableData {
                 return false;
             }
             Provider provider = (Provider) obj;
-            return provider == this
-                    || (Objects.equals(provider.name, name) && Objects.equals(provider.url, url));
+            return provider == this || (Objects.equals(provider.name, name) && Objects.equals(provider.url, url));
         }
     }
 
@@ -719,10 +716,7 @@ public class MessageEmbed implements SerializableData {
                 return false;
             }
             VideoInfo video = (VideoInfo) obj;
-            return video == this
-                    || (Objects.equals(video.url, url)
-                            && video.width == width
-                            && video.height == height);
+            return video == this || (Objects.equals(video.url, url) && video.width == width && video.height == height);
         }
     }
 

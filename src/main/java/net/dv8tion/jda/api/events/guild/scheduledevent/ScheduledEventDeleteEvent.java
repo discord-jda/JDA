@@ -34,8 +34,7 @@ import javax.annotation.Nonnull;
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
 public class ScheduledEventDeleteEvent extends GenericScheduledEventGatewayEvent {
-    public ScheduledEventDeleteEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent) {
+    public ScheduledEventDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent) {
         super(api, responseNumber, scheduledEvent);
     }
 }

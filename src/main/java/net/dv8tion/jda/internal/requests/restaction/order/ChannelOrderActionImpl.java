@@ -80,8 +80,7 @@ public class ChannelOrderActionImpl extends OrderActionImpl<GuildChannel, Channe
      *         or any of them do not have the same ChannelType as the one
      *         provided.
      */
-    public ChannelOrderActionImpl(
-            Guild guild, int bucket, Collection<? extends GuildChannel> channels) {
+    public ChannelOrderActionImpl(Guild guild, int bucket, Collection<? extends GuildChannel> channels) {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
 
         Checks.notNull(channels, "Channels to order");
@@ -114,12 +113,10 @@ public class ChannelOrderActionImpl extends OrderActionImpl<GuildChannel, Channe
     public ChannelOrderAction setCategory(@Nullable Category category, boolean syncPermissions) {
         GuildChannel channel = getSelectedEntity();
         if (!(channel instanceof ICategorizableChannel) && category != null) {
-            throw new IllegalStateException(
-                    "Cannot move channel of type " + channel.getType() + " to category!");
+            throw new IllegalStateException("Cannot move channel of type " + channel.getType() + " to category!");
         }
         if (category != null) {
-            Checks.check(
-                    category.getGuild().equals(getGuild()), "Category is not from the same guild!");
+            Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild!");
         }
 
         long id = channel.getIdLong();
@@ -156,9 +153,7 @@ public class ChannelOrderActionImpl extends OrderActionImpl<GuildChannel, Channe
     @Override
     protected void validateInput(GuildChannel entity) {
         Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
-        Checks.check(
-                orderList.contains(entity),
-                "Provided channel is not in the list of orderable channels!");
+        Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
     protected static Collection<GuildChannel> getChannelsOfType(Guild guild, int bucket) {

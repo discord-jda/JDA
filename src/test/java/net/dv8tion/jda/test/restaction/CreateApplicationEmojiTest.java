@@ -48,15 +48,11 @@ public class CreateApplicationEmojiTest extends RestActionTest {
     @MethodSource
     @ParameterizedTest
     void testNullArguments(String name, Icon icon) {
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> jda.createApplicationEmoji(name, icon));
+        assertThatIllegalArgumentException().isThrownBy(() -> jda.createApplicationEmoji(name, icon));
     }
 
     static Stream<Arguments> testNullArguments() {
-        return Stream.of(
-                arguments(null, null),
-                arguments(null, EXAMPLE_ICON),
-                arguments(EXAMPLE_NAME, null));
+        return Stream.of(arguments(null, null), arguments(null, EXAMPLE_ICON), arguments(EXAMPLE_NAME, null));
     }
 
     @Test
@@ -69,8 +65,7 @@ public class CreateApplicationEmojiTest extends RestActionTest {
     @Test
     void testWrongNameLength() {
         assertThatIllegalArgumentException()
-                .isThrownBy(
-                        () -> jda.createApplicationEmoji(StringUtils.repeat('a', 33), EXAMPLE_ICON))
+                .isThrownBy(() -> jda.createApplicationEmoji(StringUtils.repeat('a', 33), EXAMPLE_ICON))
                 .withMessageContaining("must be between 2 and 32 characters long");
     }
 

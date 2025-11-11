@@ -77,12 +77,10 @@ public class AuditLogEntry implements ISnowflake {
         this.user = user;
         this.webhook = webhook;
         this.reason = reason;
-        this.changes = changes != null && !changes.isEmpty()
-                ? Collections.unmodifiableMap(changes)
-                : Collections.emptyMap();
-        this.options = options != null && !options.isEmpty()
-                ? Collections.unmodifiableMap(options)
-                : Collections.emptyMap();
+        this.changes =
+                changes != null && !changes.isEmpty() ? Collections.unmodifiableMap(changes) : Collections.emptyMap();
+        this.options =
+                options != null && !options.isEmpty() ? Collections.unmodifiableMap(options) : Collections.emptyMap();
     }
 
     @Override

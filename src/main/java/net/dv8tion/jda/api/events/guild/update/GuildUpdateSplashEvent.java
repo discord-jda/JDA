@@ -34,10 +34,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "splash";
 
     public GuildUpdateSplashEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nullable String oldSplashId) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldSplashId) {
         super(api, responseNumber, guild, oldSplashId, guild.getSplashId(), IDENTIFIER);
     }
 

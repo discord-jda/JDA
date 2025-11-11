@@ -48,8 +48,7 @@ public class DetachedForumChannelImpl extends AbstractGuildChannelImpl<DetachedF
                 IInteractionPermissionMixin<DetachedForumChannelImpl> {
     private ChannelInteractionPermissions interactionPermissions;
     private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache =
-            new SortedSnowflakeCacheViewImpl<>(
-                    ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
+            new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
 
     private Emoji defaultReaction;
     private String topic;
@@ -212,8 +211,7 @@ public class DetachedForumChannelImpl extends AbstractGuildChannelImpl<DetachedF
     @Override
     public DetachedForumChannelImpl setDefaultReaction(DataObject emoji) {
         if (emoji != null && !emoji.isNull("emoji_id")) {
-            this.defaultReaction =
-                    new CustomEmojiImpl("", emoji.getUnsignedLong("emoji_id"), false);
+            this.defaultReaction = new CustomEmojiImpl("", emoji.getUnsignedLong("emoji_id"), false);
         } else if (emoji != null && !emoji.isNull("emoji_name")) {
             this.defaultReaction = Emoji.fromUnicode(emoji.getString("emoji_name"));
         } else {

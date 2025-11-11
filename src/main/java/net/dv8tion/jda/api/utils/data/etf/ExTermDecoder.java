@@ -242,8 +242,7 @@ public class ExTermDecoder {
         return unpackAtom(buffer, charset, length);
     }
 
-    private static Object unpackAtom(
-            @Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length) {
+    private static Object unpackAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length) {
         String value = getString(buffer, charset, length);
         switch (value) {
             case "true":
@@ -257,8 +256,7 @@ public class ExTermDecoder {
         }
     }
 
-    private static String getString(
-            @Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length) {
+    private static String getString(@Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length) {
         byte[] array = new byte[length];
         buffer.get(array);
         return new String(array, charset);

@@ -34,15 +34,13 @@ public class MessageComponentTreeImpl extends AbstractComponentTree<MessageTopLe
     }
 
     @Nonnull
-    public static MessageComponentTree of(
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+    public static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         // Empty trees are allowed (messages can contain no components)
         Checks.noneNull(components, "Components");
 
         // Allow unknown components so [[Message#getComponentTree]] works
         Collection<MessageTopLevelComponentUnion> componentUnions =
-                ComponentsUtil.membersToUnionWithUnknownType(
-                        components, MessageTopLevelComponentUnion.class);
+                ComponentsUtil.membersToUnionWithUnknownType(components, MessageTopLevelComponentUnion.class);
         return new MessageComponentTreeImpl(componentUnions);
     }
 
@@ -57,10 +55,7 @@ public class MessageComponentTreeImpl extends AbstractComponentTree<MessageTopLe
     public MessageComponentTree replace(@Nonnull ComponentReplacer replacer) {
         Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(
-                MessageTopLevelComponent.class,
-                components,
-                replacer,
-                MessageComponentTreeImpl::new);
+                MessageTopLevelComponent.class, components, replacer, MessageComponentTreeImpl::new);
     }
 
     @Nonnull

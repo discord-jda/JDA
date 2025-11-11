@@ -68,13 +68,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
                 }
 
                 if (getType() == ChannelType.PRIVATE) {
-                    throw new IllegalStateException(
-                            "Cannot delete messages of other users in a private channel");
+                    throw new IllegalStateException("Cannot delete messages of other users in a private channel");
                 } else {
                     throw new InsufficientPermissionException(
-                            (GuildChannel) this,
-                            Permission.MESSAGE_MANAGE,
-                            "Cannot delete messages of other users");
+                            (GuildChannel) this, Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
                 }
             }
         }
@@ -99,8 +96,8 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
         List<CompletableFuture<Void>> list = new LinkedList<>();
         TreeSet<Long> bulk = new TreeSet<>(Comparator.reverseOrder());
         TreeSet<Long> norm = new TreeSet<>(Comparator.reverseOrder());
-        long twoWeeksAgo = TimeUtil.getDiscordTimestamp(
-                System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
+        long twoWeeksAgo =
+                TimeUtil.getDiscordTimestamp(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000) + 10000);
         for (long messageId : messageIds) {
             if (messageId > twoWeeksAgo) { // Bulk delete cannot delete messages older than 2 weeks.
                 bulk.add(messageId);
@@ -147,8 +144,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
 
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageEmbeds(
-            @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
+    default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
         checkCanSendMessage();
         checkCanSendMessageEmbeds();
         return MessageChannelUnion.super.sendMessageEmbeds(embed, other);
@@ -156,8 +152,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
 
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageEmbeds(
-            @Nonnull Collection<? extends MessageEmbed> embeds) {
+    default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         checkCanSendMessage();
         checkCanSendMessageEmbeds();
         return MessageChannelUnion.super.sendMessageEmbeds(embeds);
@@ -225,24 +220,21 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
 
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAround(
-            @Nonnull String messageId, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull String messageId, int limit) {
         checkCanViewHistory();
         return MessageChannelUnion.super.getHistoryAround(messageId, limit);
     }
 
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAfter(
-            @Nonnull String messageId, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull String messageId, int limit) {
         checkCanViewHistory();
         return MessageChannelUnion.super.getHistoryAfter(messageId, limit);
     }
 
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryBefore(
-            @Nonnull String messageId, int limit) {
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull String messageId, int limit) {
         checkCanViewHistory();
         return MessageChannelUnion.super.getHistoryBefore(messageId, limit);
     }
@@ -277,8 +269,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
 
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(
-            @Nonnull String messageId, @Nonnull Emoji emoji) {
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji) {
         checkCanRemoveReactions();
         return MessageChannelUnion.super.retrieveReactionUsersById(messageId, emoji);
     }
@@ -306,16 +297,14 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
 
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageById(
-            @Nonnull String messageId, @Nonnull CharSequence newContent) {
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent) {
         checkCanSendMessage();
         return MessageChannelUnion.super.editMessageById(messageId, newContent);
     }
 
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageById(
-            @Nonnull String messageId, @Nonnull MessageEditData data) {
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull MessageEditData data) {
         checkCanSendMessage();
         return MessageChannelUnion.super.editMessageById(messageId, data);
     }
@@ -332,8 +321,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageComponentsById(
-            @Nonnull String messageId,
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+            @Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         checkCanSendMessage();
         return MessageChannelUnion.super.editMessageComponentsById(messageId, components);
     }

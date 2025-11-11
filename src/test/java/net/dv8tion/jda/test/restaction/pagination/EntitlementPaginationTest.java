@@ -66,17 +66,13 @@ public class EntitlementPaginationTest extends IntegrationTest {
     void testParsingFailure() {
         assertThatRequestFrom(action)
                 .hasMethod(GET)
-                .hasCompiledRoute(
-                        String.format(routeTemplate, Constants.BUTLER_USER_ID, "?limit=100"))
+                .hasCompiledRoute(String.format(routeTemplate, Constants.BUTLER_USER_ID, "?limit=100"))
                 .whenQueueCalled();
 
-        DataArray responseBody =
-                DataArray.empty().add(DataObject.empty()); // Invalid entitlement object
+        DataArray responseBody = DataArray.empty().add(DataObject.empty()); // Invalid entitlement object
 
         whenSuccess(
-                action,
-                responseBody,
-                response -> assertThat(response).isEmpty() // Is logged and skipped
+                action, responseBody, response -> assertThat(response).isEmpty() // Is logged and skipped
                 );
     }
 

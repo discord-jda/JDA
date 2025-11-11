@@ -36,8 +36,7 @@ import javax.annotation.Nonnull;
 public abstract class GenericEmojiEvent extends Event {
     protected final RichCustomEmoji emoji;
 
-    public GenericEmojiEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji) {
+    public GenericEmojiEvent(@Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji) {
         super(api, responseNumber);
         this.emoji = emoji;
     }

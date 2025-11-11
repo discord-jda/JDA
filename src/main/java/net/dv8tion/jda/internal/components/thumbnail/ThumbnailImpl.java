@@ -59,8 +59,7 @@ public class ThumbnailImpl extends AbstractComponentImpl
         this(-1, url, null, null, false);
     }
 
-    private ThumbnailImpl(
-            int uniqueId, String url, ResolvedMedia media, String description, boolean spoiler) {
+    private ThumbnailImpl(int uniqueId, String url, ResolvedMedia media, String description, boolean spoiler) {
         this.uniqueId = uniqueId;
         this.url = url;
         this.media = media;

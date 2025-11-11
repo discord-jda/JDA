@@ -45,15 +45,8 @@ public class MessageBulkDeleteHandler extends SocketHandler {
             guild = api.getGuildById(guildId);
             if (guild == null) {
                 EventCache.LOG.debug(
-                        "Caching MESSAGE_DELETE event for guild that is not currently cached. GuildID: {}",
-                        guildId);
-                api.getEventCache()
-                        .cache(
-                                EventCache.Type.GUILD,
-                                guildId,
-                                responseNumber,
-                                allContent,
-                                this::handle);
+                        "Caching MESSAGE_DELETE event for guild that is not currently cached. GuildID: {}", guildId);
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
                 return null;
             }
         }
@@ -73,8 +66,7 @@ public class MessageBulkDeleteHandler extends SocketHandler {
                                                 .put("id", id)));
             });
         } else {
-            GuildMessageChannel channel =
-                    getJDA().getChannelById(GuildMessageChannel.class, channelId);
+            GuildMessageChannel channel = getJDA().getChannelById(GuildMessageChannel.class, channelId);
             if (channel == null) {
                 if (guild != null) {
                     GuildChannel guildChannel = guild.getGuildChannelById(channelId);
@@ -87,12 +79,7 @@ public class MessageBulkDeleteHandler extends SocketHandler {
                 }
 
                 getJDA().getEventCache()
-                        .cache(
-                                EventCache.Type.CHANNEL,
-                                channelId,
-                                responseNumber,
-                                allContent,
-                                this::handle);
+                        .cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug(
                         "Received a Bulk Message Delete for a GuildMessageChannel that is not yet cached.");
                 return null;
@@ -104,8 +91,7 @@ public class MessageBulkDeleteHandler extends SocketHandler {
 
             DataArray array = content.getArray("ids");
             List<String> messages = array.stream(DataArray::getString).collect(Collectors.toList());
-            getJDA().handleEvent(new MessageBulkDeleteEvent(
-                    getJDA(), responseNumber, channel, messages));
+            getJDA().handleEvent(new MessageBulkDeleteEvent(getJDA(), responseNumber, channel, messages));
         }
         return null;
     }

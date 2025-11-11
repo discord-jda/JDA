@@ -27,11 +27,7 @@ public class ShardingConfig {
     private MemberCachePolicy memberCachePolicy;
     private final boolean useShutdownNow;
 
-    public ShardingConfig(
-            int shardsTotal,
-            boolean useShutdownNow,
-            int intents,
-            MemberCachePolicy memberCachePolicy) {
+    public ShardingConfig(int shardsTotal, boolean useShutdownNow, int intents, MemberCachePolicy memberCachePolicy) {
         this.shardsTotal = shardsTotal;
         this.useShutdownNow = useShutdownNow;
         this.intents = intents;

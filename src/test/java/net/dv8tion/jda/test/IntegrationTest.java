@@ -74,10 +74,7 @@ public class IntegrationTest extends AbstractSnapshotTest {
 
     @AfterEach
     protected final void teardown(TestInfo testInfo) throws Exception {
-        verify(
-                        requester,
-                        times(expectedRequestCount)
-                                .description("Requests sent by " + testInfo.getDisplayName()))
+        verify(requester, times(expectedRequestCount).description("Requests sent by " + testInfo.getDisplayName()))
                 .request(any());
         closeable.close();
     }
@@ -97,9 +94,7 @@ public class IntegrationTest extends AbstractSnapshotTest {
     @CheckReturnValue
     @SuppressWarnings("unchecked")
     protected <T> T captureCallback(
-            @Nonnull Class<T> responseType,
-            @Nonnull RestAction<T> action,
-            @Nonnull DataObject successBody) {
+            @Nonnull Class<T> responseType, @Nonnull RestAction<T> action, @Nonnull DataObject successBody) {
         assertThat(action).isInstanceOf(RestActionImpl.class);
 
         Response response = mock(Response.class);
@@ -119,9 +114,7 @@ public class IntegrationTest extends AbstractSnapshotTest {
     @CheckReturnValue
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected <T> List<T> captureListCallback(
-            @Nonnull Class<T> responseType,
-            @Nonnull RestAction<List<T>> action,
-            @Nonnull DataObject successBody) {
+            @Nonnull Class<T> responseType, @Nonnull RestAction<List<T>> action, @Nonnull DataObject successBody) {
         Object response = captureCallback(Object.class, (RestAction) action, successBody);
         assertThat(response).isInstanceOf(List.class);
 
@@ -135,8 +128,7 @@ public class IntegrationTest extends AbstractSnapshotTest {
         verify(requester, never()).request(any());
     }
 
-    protected <T> void whenSuccess(
-            RestActionImpl<T> action, DataArray array, Consumer<T> assertion) {
+    protected <T> void whenSuccess(RestActionImpl<T> action, DataArray array, Consumer<T> assertion) {
         Response response = mock();
         Request<T> request = mock();
 

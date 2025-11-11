@@ -307,8 +307,7 @@ public interface RestAction<T> {
      */
     @Nonnull
     @CheckReturnValue
-    static <E> RestAction<List<E>> allOf(
-            @Nonnull Collection<? extends RestAction<? extends E>> actions) {
+    static <E> RestAction<List<E>> allOf(@Nonnull Collection<? extends RestAction<? extends E>> actions) {
         return accumulate(actions, Collectors.toList());
     }
 
@@ -587,8 +586,7 @@ public interface RestAction<T> {
      * @see    #submit()
      * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
-    void queue(
-            @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure);
+    void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure);
 
     /**
      * Blocks the current Thread and awaits the completion
@@ -838,8 +836,7 @@ public interface RestAction<T> {
     @Nonnull
     @CheckReturnValue
     default RestAction<T> onErrorMap(
-            @Nullable Predicate<? super Throwable> condition,
-            @Nonnull Function<? super Throwable, ? extends T> map) {
+            @Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends T> map) {
         Checks.notNull(map, "Function");
         return new MapErrorRestAction<>(this, condition == null ? (x) -> true : condition, map);
     }
@@ -871,8 +868,7 @@ public interface RestAction<T> {
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> onErrorFlatMap(
-            @Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map) {
+    default RestAction<T> onErrorFlatMap(@Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map) {
         return onErrorFlatMap(null, map);
     }
 
@@ -943,8 +939,7 @@ public interface RestAction<T> {
      */
     @Nonnull
     @CheckReturnValue
-    default <O> RestAction<O> flatMap(
-            @Nonnull Function<? super T, ? extends RestAction<O>> flatMap) {
+    default <O> RestAction<O> flatMap(@Nonnull Function<? super T, ? extends RestAction<O>> flatMap) {
         return flatMap(null, flatMap);
     }
 
@@ -987,8 +982,7 @@ public interface RestAction<T> {
     @Nonnull
     @CheckReturnValue
     default <O> RestAction<O> flatMap(
-            @Nullable Predicate<? super T> condition,
-            @Nonnull Function<? super T, ? extends RestAction<O>> flatMap) {
+            @Nullable Predicate<? super T> condition, @Nonnull Function<? super T, ? extends RestAction<O>> flatMap) {
         Checks.notNull(flatMap, "Function");
         return new FlatMapRestAction<>(this, condition, flatMap);
     }
@@ -1017,8 +1011,7 @@ public interface RestAction<T> {
     @Nonnull
     @CheckReturnValue
     default <U, O> RestAction<O> and(
-            @Nonnull RestAction<U> other,
-            @Nonnull BiFunction<? super T, ? super U, ? extends O> accumulator) {
+            @Nonnull RestAction<U> other, @Nonnull BiFunction<? super T, ? super U, ? extends O> accumulator) {
         Checks.notNull(other, "RestAction");
         Checks.notNull(accumulator, "Accumulator");
         return new CombineRestAction<>(this, other, accumulator);
@@ -1068,8 +1061,7 @@ public interface RestAction<T> {
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked")
-    default RestAction<List<T>> zip(
-            @Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other) {
+    default RestAction<List<T>> zip(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other) {
         Checks.notNull(first, "RestAction");
         Checks.noneNull(other, "RestAction");
         List<RestAction<? extends T>> list = new ArrayList<>();
@@ -1135,8 +1127,7 @@ public interface RestAction<T> {
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> delay(
-            @Nonnull Duration duration, @Nullable ScheduledExecutorService scheduler) {
+    default RestAction<T> delay(@Nonnull Duration duration, @Nullable ScheduledExecutorService scheduler) {
         Checks.notNull(duration, "Duration");
         return new DelayRestAction<>(this, TimeUnit.MILLISECONDS, duration.toMillis(), scheduler);
     }
@@ -1201,8 +1192,7 @@ public interface RestAction<T> {
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> delay(
-            long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService scheduler) {
+    default RestAction<T> delay(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService scheduler) {
         Checks.notNull(unit, "TimeUnit");
         return new DelayRestAction<>(this, unit, delay, scheduler);
     }
@@ -1364,8 +1354,7 @@ public interface RestAction<T> {
      *         representing the delayed operation
      */
     @Nonnull
-    default ScheduledFuture<?> queueAfter(
-            long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success) {
+    default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success) {
         return queueAfter(delay, unit, success, null, null);
     }
 

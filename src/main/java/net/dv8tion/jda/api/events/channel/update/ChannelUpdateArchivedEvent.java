@@ -38,11 +38,7 @@ public class ChannelUpdateArchivedEvent extends GenericChannelUpdateEvent<Boolea
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateArchivedEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            Boolean oldValue,
-            Boolean newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

@@ -67,12 +67,8 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
         this.id = override.getIdLong();
     }
 
-    public PermissionOverrideActionImpl(
-            JDA api, GuildChannel channel, IPermissionHolder permissionHolder) {
-        super(
-                api,
-                Route.Channels.CREATE_PERM_OVERRIDE.compile(
-                        channel.getId(), permissionHolder.getId()));
+    public PermissionOverrideActionImpl(JDA api, GuildChannel channel, IPermissionHolder permissionHolder) {
+        super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), permissionHolder.getId()));
         this.channel = (IPermissionContainerMixin<?>) channel;
         this.permissionHolder = permissionHolder;
         this.isRole = permissionHolder instanceof Role;
@@ -210,15 +206,13 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
     @Nonnull
     @Override
     public PermissionOverrideAction clear(long inheritedBits) {
-        return setAllowed(getCurrentAllow() & ~inheritedBits)
-                .setDenied(getCurrentDeny() & ~inheritedBits);
+        return setAllowed(getCurrentAllow() & ~inheritedBits).setDenied(getCurrentDeny() & ~inheritedBits);
     }
 
     protected void checkPermissions(long changed) {
         Member selfMember = getGuild().getSelfMember();
         if (changed != 0 && !selfMember.hasPermission(Permission.ADMINISTRATOR)) {
-            long channelPermissions =
-                    PermissionUtil.getExplicitPermission(channel, selfMember, false);
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
             if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
                 // This implies we can only set permissions the bot also has in the channel
                 long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember);

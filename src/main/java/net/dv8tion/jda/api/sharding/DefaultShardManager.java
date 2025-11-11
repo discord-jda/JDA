@@ -176,20 +176,15 @@ public class DefaultShardManager implements ShardManager {
         this.token = token;
         this.eventConfig = eventConfig == null ? EventConfig.getDefault() : eventConfig;
         this.shardingConfig = shardingConfig == null ? ShardingConfig.getDefault() : shardingConfig;
-        this.threadingConfig =
-                threadingConfig == null ? ThreadingProviderConfig.getDefault() : threadingConfig;
-        this.sessionConfig =
-                sessionConfig == null ? ShardingSessionConfig.getDefault() : sessionConfig;
-        this.presenceConfig =
-                presenceConfig == null ? PresenceProviderConfig.getDefault() : presenceConfig;
+        this.threadingConfig = threadingConfig == null ? ThreadingProviderConfig.getDefault() : threadingConfig;
+        this.sessionConfig = sessionConfig == null ? ShardingSessionConfig.getDefault() : sessionConfig;
+        this.presenceConfig = presenceConfig == null ? PresenceProviderConfig.getDefault() : presenceConfig;
         this.metaConfig = metaConfig == null ? ShardingMetaConfig.getDefault() : metaConfig;
         this.chunkingFilter = chunkingFilter == null ? ChunkingFilter.ALL : chunkingFilter;
-        this.restConfigProvider =
-                restConfigProvider == null ? (i) -> new RestConfig() : restConfigProvider;
+        this.restConfigProvider = restConfigProvider == null ? (i) -> new RestConfig() : restConfigProvider;
         this.executor = createExecutor(this.threadingConfig.getThreadFactory());
-        this.shutdownHook = this.metaConfig.isUseShutdownHook()
-                ? new Thread(this::shutdown, "JDA Shutdown Hook")
-                : null;
+        this.shutdownHook =
+                this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
 
         synchronized (queue) {
             if (getShardsTotal() != -1) {
@@ -493,8 +488,7 @@ public class DefaultShardManager implements ShardManager {
         ExecutorService callbackPool = callbackPair.executor;
         boolean shutdownCallbackPool = callbackPair.automaticShutdown;
 
-        ExecutorPair<ExecutorService> eventPair =
-                resolveExecutor(threadingConfig.getEventPoolProvider(), shardId);
+        ExecutorPair<ExecutorService> eventPair = resolveExecutor(threadingConfig.getEventPoolProvider(), shardId);
         ExecutorService eventPool = eventPair.executor;
         boolean shutdownEventPool = eventPair.automaticShutdown;
 
@@ -522,8 +516,7 @@ public class DefaultShardManager implements ShardManager {
             restConfig = new RestConfig();
         }
 
-        JDAImpl jda =
-                new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
+        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
         jda.setMemberCachePolicy(shardingConfig.getMemberCachePolicy());
         threadingConfig.init(jda::getIdentifierString);
         jda.initRequester();
@@ -546,9 +539,7 @@ public class DefaultShardManager implements ShardManager {
         }
 
         jda.addEventListener(this.eventConfig.getListeners().toArray());
-        this.eventConfig
-                .getListenerProviders()
-                .forEach(provider -> jda.addEventListener(provider.apply(shardId)));
+        this.eventConfig.getListenerProviders().forEach(provider -> jda.addEventListener(provider.apply(shardId)));
 
         // Set the presence information before connecting to have the correct information ready when
         // sending IDENTIFY
@@ -577,10 +568,9 @@ public class DefaultShardManager implements ShardManager {
         JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, getShardsTotal());
 
         // Initialize SelfUser instance before logging in
-        SelfUser selfUser = getShardCache()
-                .applyStream(s -> s.map(JDA::getSelfUser) // this should never throw!
-                        .findFirst()
-                        .orElse(null));
+        SelfUser selfUser = getShardCache().applyStream(s -> s.map(JDA::getSelfUser) // this should never throw!
+                .findFirst()
+                .orElse(null));
 
         // Copy from other JDA instance or do initial fetch
         if (selfUser == null) {
@@ -590,9 +580,7 @@ public class DefaultShardManager implements ShardManager {
         }
 
         jda.setSelfUser(selfUser);
-        jda.setStatus(
-                JDA.Status
-                        .INITIALIZED); // This is already set by JDA internally, but this is to make
+        jda.setStatus(JDA.Status.INITIALIZED); // This is already set by JDA internally, but this is to make
         // sure the listeners catch it.
 
         jda.login(
@@ -608,9 +596,8 @@ public class DefaultShardManager implements ShardManager {
 
     private SelfUser retrieveSelfUser(JDAImpl jda) {
         Route.CompiledRoute route = Route.Self.GET_SELF.compile();
-        return new RestActionImpl<SelfUser>(
-                        jda, route, (response, request) -> jda.getEntityBuilder()
-                                .createSelfUser(response.getObject()))
+        return new RestActionImpl<SelfUser>(jda, route, (response, request) -> jda.getEntityBuilder()
+                        .createSelfUser(response.getObject()))
                 .complete();
     }
 
@@ -656,8 +643,8 @@ public class DefaultShardManager implements ShardManager {
         });
 
         try {
-            RestRateLimiter.RateLimitConfig rateLimitConfig = new RestRateLimiter.RateLimitConfig(
-                    pool, RestRateLimiter.GlobalRateLimit.create(), true);
+            RestRateLimiter.RateLimitConfig rateLimitConfig =
+                    new RestRateLimiter.RateLimitConfig(pool, RestRateLimiter.GlobalRateLimit.create(), true);
             SequentialRestRateLimiter rateLimiter = new SequentialRestRateLimiter(rateLimitConfig);
             rateLimiter.enqueue(new ShardTotalTask(future, httpClient));
 
@@ -772,13 +759,11 @@ public class DefaultShardManager implements ShardManager {
                         future.complete(shardTotal);
                     } else if (response.code() == 401) {
                         future.completeExceptionally(new InvalidTokenException());
-                    } else if (response.code() != 429 && response.code() < 500
-                            || ++failedAttempts > 4) {
+                    } else if (response.code() != 429 && response.code() < 500 || ++failedAttempts > 4) {
                         future.completeExceptionally(new IllegalStateException(
                                 "Failed to fetch recommended shard total! Code: " + response.code()
                                         + "\n"
-                                        + new String(
-                                                IOUtil.readFully(body), StandardCharsets.UTF_8)));
+                                        + new String(IOUtil.readFully(body), StandardCharsets.UTF_8)));
                     } else if (response.code() >= 500) {
                         int backoff = 1 << failedAttempts;
                         LOG.warn(
@@ -788,9 +773,7 @@ public class DefaultShardManager implements ShardManager {
                         response = response.newBuilder()
                                 .headers(response.headers()
                                         .newBuilder()
-                                        .set(
-                                                RestRateLimiter.RESET_AFTER_HEADER,
-                                                String.valueOf(backoff))
+                                        .set(RestRateLimiter.RESET_AFTER_HEADER, String.valueOf(backoff))
                                         .set(RestRateLimiter.REMAINING_HEADER, String.valueOf(0))
                                         .set(RestRateLimiter.LIMIT_HEADER, String.valueOf(1))
                                         .set(RestRateLimiter.SCOPE_HEADER, "custom")

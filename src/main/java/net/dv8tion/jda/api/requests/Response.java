@@ -38,10 +38,8 @@ import javax.annotation.Nullable;
 public class Response implements Closeable {
     public static final int ERROR_CODE = -1;
     public static final String ERROR_MESSAGE = "ERROR";
-    public static final IOFunction<BufferedReader, DataObject> JSON_SERIALIZE_OBJECT =
-            DataObject::fromJson;
-    public static final IOFunction<BufferedReader, DataArray> JSON_SERIALIZE_ARRAY =
-            DataArray::fromJson;
+    public static final IOFunction<BufferedReader, DataObject> JSON_SERIALIZE_OBJECT = DataObject::fromJson;
+    public static final IOFunction<BufferedReader, DataArray> JSON_SERIALIZE_ARRAY = DataArray::fromJson;
 
     public final int code;
     public final String message;
@@ -79,8 +77,7 @@ public class Response implements Closeable {
             try {
                 this.body = IOUtil.getBody(response);
             } catch (Exception e) {
-                throw new IllegalStateException(
-                        "An error occurred while parsing the response for a RestAction", e);
+                throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);
             }
         }
     }
@@ -89,8 +86,7 @@ public class Response implements Closeable {
         this(null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
     }
 
-    public Response(
-            @Nonnull okhttp3.Response response, long retryAfter, @Nonnull Set<String> cfRays) {
+    public Response(@Nonnull okhttp3.Response response, long retryAfter, @Nonnull Set<String> cfRays) {
         this(response, response.code(), response.message(), retryAfter, cfRays);
     }
 
@@ -154,8 +150,7 @@ public class Response implements Closeable {
 
     @Override
     public String toString() {
-        EntityString entityString =
-                new EntityString(exception == null ? "HTTPResponse" : "HTTPException");
+        EntityString entityString = new EntityString(exception == null ? "HTTPResponse" : "HTTPException");
         if (exception == null) {
             entityString.addMetadata("code", code);
             if (object != null) {
@@ -184,8 +179,7 @@ public class Response implements Closeable {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private <T> Optional<T> parseBody(
-            boolean opt, Class<T> clazz, IOFunction<BufferedReader, T> parser) {
+    private <T> Optional<T> parseBody(boolean opt, Class<T> clazz, IOFunction<BufferedReader, T> parser) {
         if (attemptedParsing) {
             if (object != null && clazz.isAssignableFrom(object.getClass())) {
                 return Optional.of(clazz.cast(object));
@@ -219,8 +213,7 @@ public class Response implements Closeable {
             if (opt && e instanceof ParsingException) {
                 return Optional.empty();
             } else {
-                throw new IllegalStateException(
-                        "An error occurred while parsing the response for a RestAction", e);
+                throw new IllegalStateException("An error occurred while parsing the response for a RestAction", e);
             }
         }
     }

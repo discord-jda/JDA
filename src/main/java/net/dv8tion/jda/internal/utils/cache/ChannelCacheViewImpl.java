@@ -38,10 +38,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<T>
-        implements ChannelCacheView<T> {
-    protected final EnumMap<ChannelType, TLongObjectMap<T>> caches =
-            new EnumMap<>(ChannelType.class);
+public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<T> implements ChannelCacheView<T> {
+    protected final EnumMap<ChannelType, TLongObjectMap<T>> caches = new EnumMap<>(ChannelType.class);
 
     public ChannelCacheViewImpl(Class<T> type) {
         for (ChannelType channelType : ChannelType.values()) {
@@ -167,8 +165,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     @Override
     public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase) {
         Checks.notEmpty(name, "Name");
-        return applyStream(stream -> stream.filter(
-                        (channel) -> Helpers.equals(channel.getName(), name, ignoreCase))
+        return applyStream(stream -> stream.filter((channel) -> Helpers.equals(channel.getName(), name, ignoreCase))
                 .collect(Helpers.toUnmodifiableList()));
     }
 
@@ -235,10 +232,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             for (ChannelType channelType : ChannelType.values()) {
                 isValidInterfaceType |= type.isAssignableFrom(channelType.getInterface());
             }
-            Checks.check(
-                    isValidInterfaceType,
-                    "Type %s is not a valid channel interface",
-                    type.getSimpleName());
+            Checks.check(isValidInterfaceType, "Type %s is not a valid channel interface", type.getSimpleName());
         }
 
         protected void removeIf(Predicate<? super C> filter) {
@@ -254,8 +248,8 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         @Nonnull
         @Override
         public Set<C> asSet() {
-            return applyStream(stream -> stream.collect(Collectors.collectingAndThen(
-                    Collectors.toSet(), Collections::unmodifiableSet)));
+            return applyStream(stream ->
+                    stream.collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet)));
         }
 
         @Nonnull
@@ -293,8 +287,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         @Override
         public List<C> getElementsByName(@Nonnull String name, boolean ignoreCase) {
             Checks.notEmpty(name, "Name");
-            return applyStream(stream -> stream.filter(
-                            channel -> Helpers.equals(channel.getName(), name, ignoreCase))
+            return applyStream(stream -> stream.filter(channel -> Helpers.equals(channel.getName(), name, ignoreCase))
                     .collect(Helpers.toUnmodifiableList()));
         }
 

@@ -32,8 +32,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-public class EntitySelectMenuImpl extends SelectMenuImpl
-        implements EntitySelectMenu, LabelChildComponentUnion {
+public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelectMenu, LabelChildComponentUnion {
     protected final Component.Type type;
     protected final EnumSet<ChannelType> channelTypes;
     protected final List<DefaultValue> defaultValues;
@@ -120,9 +119,8 @@ public class EntitySelectMenuImpl extends SelectMenuImpl
         if (type == Type.CHANNEL_SELECT && !channelTypes.isEmpty()) {
             json.put(
                     "channel_types",
-                    DataArray.fromCollection(channelTypes.stream()
-                            .map(ChannelType::getId)
-                            .collect(Collectors.toList())));
+                    DataArray.fromCollection(
+                            channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
         }
         if (!defaultValues.isEmpty()) {
             json.put("default_values", DataArray.fromCollection(defaultValues));
@@ -132,8 +130,7 @@ public class EntitySelectMenuImpl extends SelectMenuImpl
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                id, placeholder, minValues, maxValues, disabled, type, channelTypes, defaultValues);
+        return Objects.hash(id, placeholder, minValues, maxValues, disabled, type, channelTypes, defaultValues);
     }
 
     @Override

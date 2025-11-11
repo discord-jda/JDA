@@ -42,10 +42,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent {
     private final GuildChannel channel;
 
     public GenericGuildInviteEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull String code,
-            @Nonnull GuildChannel channel) {
+            @Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel) {
         super(api, responseNumber, channel.getGuild());
         this.code = code;
         this.channel = channel;

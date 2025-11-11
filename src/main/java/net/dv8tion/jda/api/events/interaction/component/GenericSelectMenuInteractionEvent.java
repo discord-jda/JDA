@@ -38,14 +38,12 @@ import javax.annotation.Nonnull;
  * @param <S>
  *        The type of select menu
  */
-public class GenericSelectMenuInteractionEvent<T, S extends SelectMenu>
-        extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction<T, S> {
+public class GenericSelectMenuInteractionEvent<T, S extends SelectMenu> extends GenericComponentInteractionCreateEvent
+        implements SelectMenuInteraction<T, S> {
     private final SelectMenuInteraction<T, S> menuInteraction;
 
     public GenericSelectMenuInteractionEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull SelectMenuInteraction<T, S> interaction) {
+            @Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction<T, S> interaction) {
         super(api, responseNumber, interaction);
         this.menuInteraction = interaction;
     }

@@ -43,15 +43,8 @@ public class MessageDeleteHandler extends SocketHandler {
             guild = getJDA().getGuildById(guildId);
             if (guild == null) {
                 getJDA().getEventCache()
-                        .cache(
-                                EventCache.Type.GUILD,
-                                guildId,
-                                responseNumber,
-                                allContent,
-                                this::handle);
-                EventCache.LOG.debug(
-                        "Got message delete for a guild that is not yet cached. GuildId: {}",
-                        guildId);
+                        .cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Got message delete for a guild that is not yet cached. GuildId: {}", guildId);
                 return null;
             }
         }
@@ -67,22 +60,15 @@ public class MessageDeleteHandler extends SocketHandler {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null) {
                     WebSocketClient.LOG.debug(
-                            "Dropping MESSAGE_DELETE for unexpected channel of type {}",
-                            actual.getType());
+                            "Dropping MESSAGE_DELETE for unexpected channel of type {}", actual.getType());
                     return null;
                 }
             }
 
             getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.CHANNEL,
-                            channelId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+                    .cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug(
-                    "Got message delete for a channel/group that is not yet cached. ChannelId: {}",
-                    channelId);
+                    "Got message delete for a channel/group that is not yet cached. ChannelId: {}", channelId);
             return null;
         }
 

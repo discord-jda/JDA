@@ -109,8 +109,7 @@ public class PermissionOverrideImpl implements PermissionOverride {
     @Nonnull
     @Override
     public IPermissionContainerUnion getChannel() {
-        IPermissionContainer realChannel =
-                api.getChannelById(IPermissionContainer.class, channel.getIdLong());
+        IPermissionContainer realChannel = api.getChannelById(IPermissionContainer.class, channel.getIdLong());
         if (realChannel != null) {
             channel = realChannel;
         }
@@ -146,8 +145,7 @@ public class PermissionOverrideImpl implements PermissionOverride {
     public AuditableRestAction<Void> delete() {
         checkPermissions();
 
-        Route.CompiledRoute route =
-                Route.Channels.DELETE_PERM_OVERRIDE.compile(this.channel.getId(), getId());
+        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(this.channel.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 

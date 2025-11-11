@@ -45,10 +45,7 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
     public static final String IDENTIFIER = "avatar";
 
     public GuildMemberUpdateAvatarEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Member member,
-            @Nullable String oldAvatarId) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable String oldAvatarId) {
         super(api, responseNumber, member, oldAvatarId, member.getAvatarId(), IDENTIFIER);
     }
 

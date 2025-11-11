@@ -46,8 +46,7 @@ import javax.annotation.Nullable;
 public class GenericInteractionCreateEvent extends Event implements Interaction {
     private final Interaction interaction;
 
-    public GenericInteractionCreateEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction) {
+    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction) {
         super(api, responseNumber);
         this.interaction = interaction;
     }

@@ -28,6 +28,9 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
+import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.api.utils.cache.SortedChannelCacheView;
+import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -50,11 +53,7 @@ import javax.annotation.Nonnull;
  * @see   JDA#getCategoryById(long)
  */
 public interface Category
-        extends GuildChannel,
-                ICopyableChannel,
-                IPositionableChannel,
-                IPermissionContainer,
-                IMemberContainer {
+        extends GuildChannel, ICopyableChannel, IPositionableChannel, IPermissionContainer, IMemberContainer {
     /**
      * All {@link GuildChannel Channels} listed for this Category.
      * <br>Includes all types of channels, except for threads.
@@ -67,12 +66,11 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<GuildChannel> getChannels() {
-        return getGuild()
-                .getChannelCache()
-                .ofType(ICategorizableChannel.class)
-                .applyStream(stream -> stream.filter(it -> this.equals(it.getParentCategory()))
-                        .sorted()
-                        .collect(Helpers.toUnmodifiableList()));
+        SortedChannelCacheView<ICategorizableChannel> filtered =
+                getGuild().getChannelCache().ofType(ICategorizableChannel.class);
+        return filtered.applyStream(stream -> stream.filter(it -> this.equals(it.getParentCategory()))
+                .sorted()
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     /**
@@ -87,8 +85,8 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<TextChannel> getTextChannels() {
-        return getGuild().getTextChannelCache().applyStream(stream -> stream.filter(
-                        channel -> equals(channel.getParentCategory()))
+        SortedSnowflakeCacheView<TextChannel> filtered = getGuild().getTextChannelCache();
+        return filtered.applyStream(stream -> stream.filter(channel -> equals(channel.getParentCategory()))
                 .sorted()
                 .collect(Helpers.toUnmodifiableList()));
     }
@@ -105,8 +103,8 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<NewsChannel> getNewsChannels() {
-        return getGuild().getNewsChannelCache().applyStream(stream -> stream.filter(
-                        channel -> equals(channel.getParentCategory()))
+        SortedSnowflakeCacheView<NewsChannel> filtered = getGuild().getNewsChannelCache();
+        return filtered.applyStream(stream -> stream.filter(channel -> equals(channel.getParentCategory()))
                 .sorted()
                 .collect(Helpers.toUnmodifiableList()));
     }
@@ -122,8 +120,8 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<ForumChannel> getForumChannels() {
-        return getGuild().getForumChannelCache().applyStream(stream -> stream.filter(
-                        channel -> equals(channel.getParentCategory()))
+        SortedSnowflakeCacheView<ForumChannel> filtered = getGuild().getForumChannelCache();
+        return filtered.applyStream(stream -> stream.filter(channel -> equals(channel.getParentCategory()))
                 .sorted()
                 .collect(Helpers.toUnmodifiableList()));
     }
@@ -139,8 +137,8 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<MediaChannel> getMediaChannels() {
-        return getGuild().getMediaChannelCache().applyStream(stream -> stream.filter(
-                        channel -> equals(channel.getParentCategory()))
+        SnowflakeCacheView<MediaChannel> filtered = getGuild().getMediaChannelCache();
+        return filtered.applyStream(stream -> stream.filter(channel -> equals(channel.getParentCategory()))
                 .sorted()
                 .collect(Helpers.toUnmodifiableList()));
     }
@@ -157,8 +155,8 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<VoiceChannel> getVoiceChannels() {
-        return getGuild().getVoiceChannelCache().applyStream(stream -> stream.filter(
-                        channel -> equals(channel.getParentCategory()))
+        SortedSnowflakeCacheView<VoiceChannel> filtered = getGuild().getVoiceChannelCache();
+        return filtered.applyStream(stream -> stream.filter(channel -> equals(channel.getParentCategory()))
                 .sorted()
                 .collect(Helpers.toUnmodifiableList()));
     }
@@ -175,8 +173,8 @@ public interface Category
     @Nonnull
     @Unmodifiable
     default List<StageChannel> getStageChannels() {
-        return getGuild().getStageChannelCache().applyStream(stream -> stream.filter(
-                        channel -> equals(channel.getParentCategory()))
+        SortedSnowflakeCacheView<StageChannel> filtered = getGuild().getStageChannelCache();
+        return filtered.applyStream(stream -> stream.filter(channel -> equals(channel.getParentCategory()))
                 .sorted()
                 .collect(Helpers.toUnmodifiableList()));
     }

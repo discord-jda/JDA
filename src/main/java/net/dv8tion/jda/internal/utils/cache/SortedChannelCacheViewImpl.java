@@ -29,8 +29,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
-public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T>>
-        extends ChannelCacheViewImpl<T> implements SortedChannelCacheView<T> {
+public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T>> extends ChannelCacheViewImpl<T>
+        implements SortedChannelCacheView<T> {
     public SortedChannelCacheViewImpl(Class<T> type) {
         super(type);
     }
@@ -56,8 +56,7 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
     public NavigableSet<T> asSet() {
         NavigableSet<T> set = (NavigableSet<T>) getCachedSet();
         if (set == null) {
-            set = cache((NavigableSet<T>)
-                    applyStream(stream -> stream.collect(Collectors.toCollection(TreeSet::new))));
+            set = cache((NavigableSet<T>) applyStream(stream -> stream.collect(Collectors.toCollection(TreeSet::new))));
         }
         return set;
     }
@@ -131,17 +130,16 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
         @Override
         public List<C> getElementsByName(@Nonnull String name, boolean ignoreCase) {
             Checks.notEmpty(name, "Name");
-            return applyStream(
-                    stream -> stream.filter(it -> Helpers.equals(name, it.getName(), ignoreCase))
-                            .sorted()
-                            .collect(Helpers.toUnmodifiableList()));
+            return applyStream(stream -> stream.filter(it -> Helpers.equals(name, it.getName(), ignoreCase))
+                    .sorted()
+                    .collect(Helpers.toUnmodifiableList()));
         }
 
         @Nonnull
         @Override
         public Stream<C> streamUnordered() {
-            List<C> elements = applyStream(
-                    stream -> stream.filter(type::isInstance).collect(Collectors.toList()));
+            List<C> elements =
+                    applyStream(stream -> stream.filter(type::isInstance).collect(Collectors.toList()));
             return elements.stream();
         }
 

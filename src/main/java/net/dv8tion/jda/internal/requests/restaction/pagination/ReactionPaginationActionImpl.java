@@ -34,8 +34,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class ReactionPaginationActionImpl
-        extends PaginationActionImpl<User, ReactionPaginationAction>
+public class ReactionPaginationActionImpl extends PaginationActionImpl<User, ReactionPaginationAction>
         implements ReactionPaginationAction {
     protected final MessageReaction reaction;
 
@@ -57,12 +56,10 @@ public class ReactionPaginationActionImpl
      * @param type
      *        Type of {@link MessageReaction.ReactionType MessageReaction.ReactionType} to retrieve users for
      */
-    public ReactionPaginationActionImpl(
-            MessageReaction reaction, MessageReaction.ReactionType type) {
+    public ReactionPaginationActionImpl(MessageReaction reaction, MessageReaction.ReactionType type) {
         super(
                 reaction.getJDA(),
-                getCompiledRoute(
-                        reaction.getChannelId(), reaction.getMessageId(), getCode(reaction), type),
+                getCompiledRoute(reaction.getChannelId(), reaction.getMessageId(), getCode(reaction), type),
                 1,
                 100,
                 100);
@@ -70,29 +67,15 @@ public class ReactionPaginationActionImpl
         this.reaction = reaction;
     }
 
-    public ReactionPaginationActionImpl(
-            Message message, String code, MessageReaction.ReactionType type) {
-        super(
-                message.getJDA(),
-                getCompiledRoute(message.getChannelId(), message.getId(), code, type),
-                1,
-                100,
-                100);
+    public ReactionPaginationActionImpl(Message message, String code, MessageReaction.ReactionType type) {
+        super(message.getJDA(), getCompiledRoute(message.getChannelId(), message.getId(), code, type), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
     public ReactionPaginationActionImpl(
-            MessageChannel channel,
-            String messageId,
-            String code,
-            MessageReaction.ReactionType type) {
-        super(
-                channel.getJDA(),
-                getCompiledRoute(channel.getId(), messageId, code, type),
-                1,
-                100,
-                100);
+            MessageChannel channel, String messageId, String code, MessageReaction.ReactionType type) {
+        super(channel.getJDA(), getCompiledRoute(channel.getId(), messageId, code, type), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }

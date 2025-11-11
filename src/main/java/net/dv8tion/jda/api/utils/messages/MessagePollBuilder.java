@@ -132,11 +132,7 @@ public class MessagePollBuilder {
     public MessagePollBuilder setDuration(@Nonnull Duration duration) {
         Checks.notNull(duration, "Duration");
         Checks.positive(duration.toHours(), "Duration");
-        Checks.notLonger(
-                duration,
-                Duration.ofHours(MessagePoll.MAX_DURATION_HOURS),
-                TimeUnit.HOURS,
-                "Duration");
+        Checks.notLonger(duration, Duration.ofHours(MessagePoll.MAX_DURATION_HOURS), TimeUnit.HOURS, "Duration");
 
         this.duration = duration;
         return this;
@@ -218,8 +214,7 @@ public class MessagePollBuilder {
                 "Poll cannot have more than %d answers",
                 MessagePoll.MAX_ANSWERS);
 
-        this.answers.add(new MessagePoll.Answer(
-                this.answers.size() + 1, title, (EmojiUnion) emoji, 0, false));
+        this.answers.add(new MessagePoll.Answer(this.answers.size() + 1, title, (EmojiUnion) emoji, 0, false));
         return this;
     }
 
@@ -237,10 +232,6 @@ public class MessagePollBuilder {
             throw new IllegalStateException("Cannot build a poll without answers");
         }
         return new MessagePollData(
-                layout,
-                new MessagePoll.Question(title, null),
-                new ArrayList<>(answers),
-                duration,
-                isMultiAnswer);
+                layout, new MessagePoll.Question(title, null), new ArrayList<>(answers), duration, isMultiAnswer);
     }
 }

@@ -36,8 +36,7 @@ import javax.annotation.Nonnull;
 public class GuildVoiceStreamEvent extends GenericGuildVoiceEvent {
     private final boolean stream;
 
-    public GuildVoiceStreamEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean stream) {
+    public GuildVoiceStreamEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean stream) {
         super(api, responseNumber, member);
         this.stream = stream;
     }

@@ -38,9 +38,7 @@ public class MessagePollDataTest {
 
         MessagePollBuilder builder = new MessagePollBuilder("test title");
 
-        assertEnumChecks("Layout", builder::setLayout)
-                .checksNotNull()
-                .checkIsNot(MessagePoll.LayoutType.UNKNOWN);
+        assertEnumChecks("Layout", builder::setLayout).checksNotNull().checkIsNot(MessagePoll.LayoutType.UNKNOWN);
 
         assertDurationChecks("Duration", builder::setDuration)
                 .checksNotNull()
@@ -61,9 +59,7 @@ public class MessagePollDataTest {
                 .checksNotBlank()
                 .checksNotLonger(55);
 
-        assertThatIllegalStateException()
-                .isThrownBy(builder::build)
-                .withMessage("Cannot build a poll without answers");
+        assertThatIllegalStateException().isThrownBy(builder::build).withMessage("Cannot build a poll without answers");
 
         for (int i = 0; i < 10; i++) {
             builder.addAnswer("Answer " + i);

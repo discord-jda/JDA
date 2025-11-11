@@ -36,8 +36,7 @@ import javax.annotation.Nonnull;
  * @see MessageChannel#retrievePinnedMessages()
  */
 public interface PinnedMessagePaginationAction
-        extends PaginationAction<
-                PinnedMessagePaginationAction.PinnedMessage, PinnedMessagePaginationAction> {
+        extends PaginationAction<PinnedMessagePaginationAction.PinnedMessage, PinnedMessagePaginationAction> {
     /**
      * A pinned message instance.
      *

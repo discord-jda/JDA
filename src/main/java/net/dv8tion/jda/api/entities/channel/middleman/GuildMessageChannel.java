@@ -129,8 +129,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel {
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> removeReactionById(
-            @Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull User user);
+    RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull User user);
 
     /**
      * Attempts to remove the reaction from a message represented by the specified {@code messageId}
@@ -186,8 +185,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel {
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(
-            long messageId, @Nonnull Emoji emoji, @Nonnull User user) {
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emoji emoji, @Nonnull User user) {
         return removeReactionById(Long.toUnsignedString(messageId), emoji, user);
     }
 
@@ -241,8 +239,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel {
     default RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages) {
         Checks.notEmpty(messages, "Messages collection");
 
-        return deleteMessagesByIds(
-                messages.stream().map(ISnowflake::getId).collect(Collectors.toList()));
+        return deleteMessagesByIds(messages.stream().map(ISnowflake::getId).collect(Collectors.toList()));
     }
 
     /**

@@ -33,10 +33,7 @@ public class GuildUpdateVanityCodeEvent extends GenericGuildUpdateEvent<String> 
     public static final String IDENTIFIER = "vanity_code";
 
     public GuildUpdateVanityCodeEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nullable String previous) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous) {
         super(api, responseNumber, guild, previous, guild.getVanityCode(), IDENTIFIER);
     }
 

@@ -79,9 +79,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
     public BooleanSupplier getCheck() {
         BooleanSupplier check1 = action1.getCheck();
         BooleanSupplier check2 = action2.getCheck();
-        return () -> (check1 == null || check1.getAsBoolean())
-                && (check2 == null || check2.getAsBoolean())
-                && !failed;
+        return () -> (check1 == null || check1.getAsBoolean()) && (check2 == null || check2.getAsBoolean()) && !failed;
     }
 
     @Nonnull
@@ -93,8 +91,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
     }
 
     @Override
-    public void queue(
-            @Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure) {
+    public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure) {
         AtomicInteger count = new AtomicInteger(0);
         AtomicReference<I1> result1 = new AtomicReference<>();
         AtomicReference<I2> result2 = new AtomicReference<>();
@@ -110,8 +107,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
                     try {
                         result1.set(s);
                         if (count.incrementAndGet() == 2) {
-                            RestActionOperator.doSuccess(
-                                    success, accumulator.apply(result1.get(), result2.get()));
+                            RestActionOperator.doSuccess(success, accumulator.apply(result1.get(), result2.get()));
                         }
                     } catch (Exception e) {
                         failureCallback.accept(e);
@@ -123,8 +119,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
                     try {
                         result2.set(s);
                         if (count.incrementAndGet() == 2) {
-                            RestActionOperator.doSuccess(
-                                    success, accumulator.apply(result1.get(), result2.get()));
+                            RestActionOperator.doSuccess(success, accumulator.apply(result1.get(), result2.get()));
                         }
                     } catch (Exception e) {
                         failureCallback.accept(e);

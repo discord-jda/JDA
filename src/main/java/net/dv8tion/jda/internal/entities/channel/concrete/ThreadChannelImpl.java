@@ -135,15 +135,11 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public boolean canTalk(@Nonnull Member member) {
         Checks.notNull(member, "Member");
-        if (type == ChannelType.GUILD_PRIVATE_THREAD
-                && threadMembers.get(member.getIdLong()) == null) {
+        if (type == ChannelType.GUILD_PRIVATE_THREAD && threadMembers.get(member.getIdLong()) == null) {
             return member.hasPermission(
-                    getParentChannel(),
-                    Permission.MANAGE_THREADS,
-                    Permission.MESSAGE_SEND_IN_THREADS);
+                    getParentChannel(), Permission.MANAGE_THREADS, Permission.MESSAGE_SEND_IN_THREADS);
         }
-        return member.hasPermission(
-                getParentChannel(), Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND_IN_THREADS);
+        return member.hasPermission(getParentChannel(), Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND_IN_THREADS);
     }
 
     @Nonnull
@@ -155,8 +151,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Nonnull
     @Override
     public IThreadContainerUnion getParentChannel() {
-        IThreadContainer realChannel =
-                getGuild().getChannelById(IThreadContainer.class, parentChannel.getIdLong());
+        IThreadContainer realChannel = getGuild().getChannelById(IThreadContainer.class, parentChannel.getIdLong());
         if (realChannel != null) {
             parentChannel = (IThreadContainerUnion) realChannel;
         }
@@ -209,14 +204,13 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public CacheRestAction<ThreadMember> retrieveThreadMemberById(long id) {
         JDAImpl jda = (JDAImpl) getJDA();
-        return new DeferredRestAction<>(
-                jda, ThreadMember.class, () -> getThreadMemberById(id), () -> {
-                    Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER
-                            .compile(getId(), Long.toUnsignedString(id))
-                            .withQueryParams("with_member", "true");
-                    return new RestActionImpl<>(jda, route, (resp, req) -> jda.getEntityBuilder()
-                            .createThreadMember(getGuild(), this, resp.getObject()));
-                });
+        return new DeferredRestAction<>(jda, ThreadMember.class, () -> getThreadMemberById(id), () -> {
+            Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER
+                    .compile(getId(), Long.toUnsignedString(id))
+                    .withQueryParams("with_member", "true");
+            return new RestActionImpl<>(jda, route, (resp, req) -> jda.getEntityBuilder()
+                    .createThreadMember(getGuild(), this, resp.getObject()));
+        });
     }
 
     @Nonnull
@@ -238,8 +232,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public boolean isInvitable() {
         if (type != ChannelType.GUILD_PRIVATE_THREAD) {
-            throw new UnsupportedOperationException(
-                    "Only private threads support the concept of invitable.");
+            throw new UnsupportedOperationException("Only private threads support the concept of invitable.");
         }
 
         return invitable;
@@ -260,9 +253,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Nonnull
     @Override
     public OffsetDateTime getTimeCreated() {
-        return creationTimestamp == 0
-                ? TimeUtil.getTimeCreated(getIdLong())
-                : Helpers.toOffset(creationTimestamp);
+        return creationTimestamp == 0 ? TimeUtil.getTimeCreated(getIdLong()) : Helpers.toOffset(creationTimestamp);
     }
 
     @Override
@@ -295,8 +286,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         checkInvitable();
         checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
 
-        Route.CompiledRoute route =
-                Route.Channels.ADD_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
+        Route.CompiledRoute route = Route.Channels.ADD_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
         return new RestActionImpl<>(api, route);
     }
 
@@ -311,8 +301,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
             checkPermission(Permission.MANAGE_THREADS);
         }
 
-        Route.CompiledRoute route =
-                Route.Channels.REMOVE_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
+        Route.CompiledRoute route = Route.Channels.REMOVE_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
         return new RestActionImpl<>(api, route);
     }
 
@@ -396,8 +385,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Override
     public ThreadChannelImpl setTotalMessageCount(int messageCount) {
-        this.totalMessageCount =
-                Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
+        this.totalMessageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
         return this;
     }
 

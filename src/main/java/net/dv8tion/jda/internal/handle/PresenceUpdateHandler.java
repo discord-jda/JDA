@@ -70,13 +70,7 @@ public class PresenceUpdateHandler extends SocketHandler {
         }
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug(
                     "Received a PRESENCE_UPDATE for a guild that is not yet cached! GuildId:{} UserId: {}",
                     guildId,
@@ -109,10 +103,9 @@ public class PresenceUpdateHandler extends SocketHandler {
         // information.
         // This is stored in the Member objects.
         // We set the activities to null to prevent parsing if the cache was disabled
-        DataArray activityArray =
-                !getJDA().isCacheFlagSet(CacheFlag.ACTIVITY) || content.isNull("activities")
-                        ? null
-                        : content.getArray("activities");
+        DataArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.ACTIVITY) || content.isNull("activities")
+                ? null
+                : content.getArray("activities");
         List<Activity> newActivities = new ArrayList<>();
         boolean parsedActivity = parseActivities(userId, activityArray, newActivities);
 
@@ -132,15 +125,13 @@ public class PresenceUpdateHandler extends SocketHandler {
             presence.setOnlineStatus(status);
             if (member != null) {
                 getJDA().getEntityBuilder().updateMemberCache(member);
-                getJDA().handleEvent(new UserUpdateOnlineStatusEvent(
-                        getJDA(), responseNumber, member, oldStatus));
+                getJDA().handleEvent(new UserUpdateOnlineStatusEvent(getJDA(), responseNumber, member, oldStatus));
             }
         }
         return null;
     }
 
-    private boolean parseActivities(
-            long userId, DataArray activityArray, List<Activity> newActivities) {
+    private boolean parseActivities(long userId, DataArray activityArray, List<Activity> newActivities) {
         boolean parsedActivity = false;
         try {
             if (activityArray != null) {
@@ -167,9 +158,7 @@ public class PresenceUpdateHandler extends SocketHandler {
     }
 
     private void handleActivities(
-            List<Activity> newActivities,
-            @Nullable MemberImpl member,
-            MemberPresenceImpl presence) {
+            List<Activity> newActivities, @Nullable MemberImpl member, MemberPresenceImpl presence) {
         List<Activity> oldActivities = presence.getActivities();
         presence.setActivities(newActivities);
         if (member == null) {
@@ -179,13 +168,11 @@ public class PresenceUpdateHandler extends SocketHandler {
         if (unorderedEquals) {
             boolean deepEquals = Helpers.deepEquals(oldActivities, newActivities);
             if (!deepEquals) {
-                getJDA().handleEvent(new UserUpdateActivityOrderEvent(
-                        getJDA(), responseNumber, oldActivities, member));
+                getJDA().handleEvent(new UserUpdateActivityOrderEvent(getJDA(), responseNumber, oldActivities, member));
             }
         } else {
             getJDA().getEntityBuilder().updateMemberCache(member);
-            List<Activity> stoppedActivities =
-                    new ArrayList<>(oldActivities); // create modifiable copy
+            List<Activity> stoppedActivities = new ArrayList<>(oldActivities); // create modifiable copy
             List<Activity> startedActivities = new ArrayList<>();
             for (Activity activity : newActivities) {
                 if (!stoppedActivities.remove(activity)) {
@@ -194,17 +181,14 @@ public class PresenceUpdateHandler extends SocketHandler {
             }
 
             for (Activity activity : startedActivities) {
-                getJDA().handleEvent(new UserActivityStartEvent(
-                        getJDA(), responseNumber, member, activity));
+                getJDA().handleEvent(new UserActivityStartEvent(getJDA(), responseNumber, member, activity));
             }
 
             for (Activity activity : stoppedActivities) {
-                getJDA().handleEvent(new UserActivityEndEvent(
-                        getJDA(), responseNumber, member, activity));
+                getJDA().handleEvent(new UserActivityEndEvent(getJDA(), responseNumber, member, activity));
             }
 
-            getJDA().handleEvent(new UserUpdateActivitiesEvent(
-                    getJDA(), responseNumber, member, oldActivities));
+            getJDA().handleEvent(new UserUpdateActivitiesEvent(getJDA(), responseNumber, member, oldActivities));
         }
     }
 

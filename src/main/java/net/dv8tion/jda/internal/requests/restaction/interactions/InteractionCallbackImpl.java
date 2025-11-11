@@ -27,8 +27,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
-public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T>
-        implements InteractionCallbackAction<T> {
+public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> implements InteractionCallbackAction<T> {
     protected final InteractionImpl interaction;
 
     public InteractionCallbackImpl(InteractionImpl interaction) {

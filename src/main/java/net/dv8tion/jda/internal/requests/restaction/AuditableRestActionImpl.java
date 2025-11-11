@@ -36,8 +36,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class AuditableRestActionImpl<T> extends RestActionImpl<T>
-        implements AuditableRestAction<T> {
+public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements AuditableRestAction<T> {
     protected String reason = null;
 
     public AuditableRestActionImpl(JDA api, Route.CompiledRoute route) {
@@ -52,24 +51,17 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T>
         super(api, route, data);
     }
 
-    public AuditableRestActionImpl(
-            JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
+    public AuditableRestActionImpl(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, handler);
     }
 
     public AuditableRestActionImpl(
-            JDA api,
-            Route.CompiledRoute route,
-            DataObject data,
-            BiFunction<Response, Request<T>, T> handler) {
+            JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, data, handler);
     }
 
     public AuditableRestActionImpl(
-            JDA api,
-            Route.CompiledRoute route,
-            RequestBody data,
-            BiFunction<Response, Request<T>, T> handler) {
+            JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, data, handler);
     }
 

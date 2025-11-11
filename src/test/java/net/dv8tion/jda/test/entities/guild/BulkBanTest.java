@@ -45,9 +45,8 @@ public class BulkBanTest extends AbstractGuildTest {
 
         assertThatThrownBy(() -> guild.ban(Collections.emptyList(), Duration.ZERO))
                 .isInstanceOf(InsufficientPermissionException.class)
-                .hasMessage(
-                        "Cannot perform action due to a lack of Permission. Missing permission: "
-                                + Permission.BAN_MEMBERS);
+                .hasMessage("Cannot perform action due to a lack of Permission. Missing permission: "
+                        + Permission.BAN_MEMBERS);
     }
 
     @Test
@@ -67,9 +66,7 @@ public class BulkBanTest extends AbstractGuildTest {
     void testInvalidInputs() {
         hasPermission(true);
 
-        assertDurationChecks(
-                        "Deletion timeframe",
-                        duration -> guild.ban(Collections.emptyList(), duration))
+        assertDurationChecks("Deletion timeframe", duration -> guild.ban(Collections.emptyList(), duration))
                 .checksNotNegative()
                 .throwsFor(
                         Duration.ofDays(100),
@@ -101,10 +98,9 @@ public class BulkBanTest extends AbstractGuildTest {
 
         Duration duration = Duration.ofSeconds(random.nextInt(10000));
         String reason = Helpers.format(
-                "User %d was banned by %d for %s",
-                Constants.BUTLER_USER_ID, Constants.MINN_USER_ID, duration);
-        List<UserSnowflake> users = Arrays.asList(
-                User.fromId(Constants.BUTLER_USER_ID), User.fromId(Constants.BUTLER_USER_ID));
+                "User %d was banned by %d for %s", Constants.BUTLER_USER_ID, Constants.MINN_USER_ID, duration);
+        List<UserSnowflake> users =
+                Arrays.asList(User.fromId(Constants.BUTLER_USER_ID), User.fromId(Constants.BUTLER_USER_ID));
 
         assertThatRequestFrom(guild.ban(users, duration).reason(reason))
                 .hasMethod(Method.POST)

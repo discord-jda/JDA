@@ -46,8 +46,7 @@ public class CommandDataImpl implements SlashCommandData {
     protected String name, description = "";
     private LocalizationMapper localizationMapper;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private final LocalizationMap descriptionLocalizations =
-            new LocalizationMap(this::checkDescription);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
 
     private boolean allowSubcommands = true;
     private boolean allowOption = true;
@@ -75,8 +74,7 @@ public class CommandDataImpl implements SlashCommandData {
         setName(name);
     }
 
-    public static CommandDataImpl of(
-            @Nonnull Command.Type type, @Nonnull String name, @Nullable String description) {
+    public static CommandDataImpl of(@Nonnull Command.Type type, @Nonnull String name, @Nullable String description) {
         if (type == Command.Type.SLASH) {
             return new CommandDataImpl(name, description);
         }
@@ -118,25 +116,19 @@ public class CommandDataImpl implements SlashCommandData {
                 .put("options", options)
                 .put(
                         "contexts",
-                        contexts.stream()
-                                .map(InteractionContextType::getType)
-                                .collect(Collectors.toList()))
+                        contexts.stream().map(InteractionContextType::getType).collect(Collectors.toList()))
                 .put(
                         "integration_types",
-                        integrationTypes.stream()
-                                .map(IntegrationType::getType)
-                                .collect(Collectors.toList()))
+                        integrationTypes.stream().map(IntegrationType::getType).collect(Collectors.toList()))
                 .put(
                         "default_member_permissions",
                         defaultMemberPermissions == DefaultMemberPermissions.ENABLED
                                 ? null
-                                : Long.toUnsignedString(
-                                        defaultMemberPermissions.getPermissionsRaw()))
+                                : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()))
                 .put("name_localizations", nameLocalizations);
 
         if (type == Command.Type.SLASH) {
-            json.put("description", description)
-                    .put("description_localizations", descriptionLocalizations);
+            json.put("description", description).put("description_localizations", descriptionLocalizations);
         }
         return json;
     }
@@ -215,8 +207,7 @@ public class CommandDataImpl implements SlashCommandData {
 
     @Nonnull
     @Override
-    public CommandDataImpl setIntegrationTypes(
-            @Nonnull Collection<IntegrationType> integrationTypes) {
+    public CommandDataImpl setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes) {
         Checks.notEmpty(contexts, "Contexts");
         this.integrationTypes = Helpers.copyEnumSet(IntegrationType.class, integrationTypes);
         return this;
@@ -251,16 +242,13 @@ public class CommandDataImpl implements SlashCommandData {
                     option.getType() != OptionType.SUB_COMMAND_GROUP,
                     "Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
             Checks.check(
-                    allowRequired || !option.isRequired(),
-                    "Cannot add required options after non-required options!");
-            allowRequired =
-                    option.isRequired(); // prevent adding required options after non-required
+                    allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
+            allowRequired = option.isRequired(); // prevent adding required options after non-required
             // options
         }
 
         Checks.checkUnique(
-                Stream.concat(getOptions().stream(), Arrays.stream(options))
-                        .map(OptionData::getName),
+                Stream.concat(getOptions().stream(), Arrays.stream(options)).map(OptionData::getName),
                 "Cannot have multiple options with the same name. Name: \"%s\" appeared %d times!",
                 (count, value) -> new Object[] {value, count});
 
@@ -324,8 +312,7 @@ public class CommandDataImpl implements SlashCommandData {
 
     @Nonnull
     @Override
-    public CommandDataImpl setLocalizationFunction(
-            @Nonnull LocalizationFunction localizationFunction) {
+    public CommandDataImpl setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction) {
         Checks.notNull(localizationFunction, "Localization function");
 
         this.localizationMapper = LocalizationMapper.fromFunction(localizationFunction);
@@ -342,8 +329,7 @@ public class CommandDataImpl implements SlashCommandData {
 
     @Nonnull
     @Override
-    public CommandDataImpl setNameLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String name) {
+    public CommandDataImpl setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
         // Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
         return this;
@@ -366,8 +352,7 @@ public class CommandDataImpl implements SlashCommandData {
 
     @Nonnull
     @Override
-    public CommandDataImpl setDescriptionLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String description) {
+    public CommandDataImpl setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description) {
         // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
         return this;
@@ -407,8 +392,7 @@ public class CommandDataImpl implements SlashCommandData {
     @Override
     public boolean removeOptions(@Nonnull Predicate<? super OptionData> condition) {
         Checks.notNull(condition, "Condition");
-        boolean modified =
-                options.removeIf((o) -> o instanceof OptionData && condition.test((OptionData) o));
+        boolean modified = options.removeIf((o) -> o instanceof OptionData && condition.test((OptionData) o));
         if (modified) {
             updateAllowedOptions();
         }
@@ -418,8 +402,7 @@ public class CommandDataImpl implements SlashCommandData {
     @Override
     public boolean removeSubcommands(@Nonnull Predicate<? super SubcommandData> condition) {
         Checks.notNull(condition, "Condition");
-        boolean modified = options.removeIf(
-                (o) -> o instanceof SubcommandData && condition.test((SubcommandData) o));
+        boolean modified = options.removeIf((o) -> o instanceof SubcommandData && condition.test((SubcommandData) o));
         if (modified) {
             updateAllowedOptions();
         }
@@ -427,11 +410,10 @@ public class CommandDataImpl implements SlashCommandData {
     }
 
     @Override
-    public boolean removeSubcommandGroups(
-            @Nonnull Predicate<? super SubcommandGroupData> condition) {
+    public boolean removeSubcommandGroups(@Nonnull Predicate<? super SubcommandGroupData> condition) {
         Checks.notNull(condition, "Condition");
-        boolean modified = options.removeIf(
-                (o) -> o instanceof SubcommandGroupData && condition.test((SubcommandGroupData) o));
+        boolean modified =
+                options.removeIf((o) -> o instanceof SubcommandGroupData && condition.test((SubcommandGroupData) o));
         if (modified) {
             updateAllowedOptions();
         }

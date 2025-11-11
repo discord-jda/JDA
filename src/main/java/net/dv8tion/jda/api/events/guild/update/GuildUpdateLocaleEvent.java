@@ -34,10 +34,7 @@ public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<DiscordLocal
     public static final String IDENTIFIER = "locale";
 
     public GuildUpdateLocaleEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull DiscordLocale previous) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull DiscordLocale previous) {
         super(api, responseNumber, guild, previous, guild.getLocale(), IDENTIFIER);
     }
 

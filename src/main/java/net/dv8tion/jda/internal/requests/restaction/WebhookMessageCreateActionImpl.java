@@ -40,8 +40,7 @@ import javax.annotation.Nullable;
 
 public class WebhookMessageCreateActionImpl<T>
         extends AbstractWebhookMessageActionImpl<T, WebhookMessageCreateActionImpl<T>>
-        implements WebhookMessageCreateAction<T>,
-                MessageCreateBuilderMixin<WebhookMessageCreateAction<T>> {
+        implements WebhookMessageCreateAction<T>, MessageCreateBuilderMixin<WebhookMessageCreateAction<T>> {
     private final MessageCreateBuilder builder = new MessageCreateBuilder();
     private final Function<DataObject, T> transformer;
 
@@ -56,8 +55,7 @@ public class WebhookMessageCreateActionImpl<T>
     private String avatar;
     private ThreadCreateMetadata threadMetadata;
 
-    public WebhookMessageCreateActionImpl(
-            JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer) {
+    public WebhookMessageCreateActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer) {
         super(api, route);
         this.transformer = transformer;
     }
@@ -122,8 +120,7 @@ public class WebhookMessageCreateActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> createThread(
-            @Nonnull ThreadCreateMetadata threadMetadata) {
+    public WebhookMessageCreateAction<T> createThread(@Nonnull ThreadCreateMetadata threadMetadata) {
         if (isInteraction) {
             throw new IllegalStateException("Cannot create a thread through an interaction hook.");
         }
@@ -155,9 +152,7 @@ public class WebhookMessageCreateActionImpl<T>
                 if (!tags.isEmpty()) {
                     json.put(
                             "applied_tags",
-                            tags.stream()
-                                    .map(ForumTagSnowflake::getId)
-                                    .collect(Helpers.toDataArray()));
+                            tags.stream().map(ForumTagSnowflake::getId).collect(Helpers.toDataArray()));
                 }
             }
 

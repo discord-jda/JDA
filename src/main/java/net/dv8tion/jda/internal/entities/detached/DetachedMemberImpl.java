@@ -233,8 +233,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     }
 
     @Override
-    public boolean hasPermission(
-            @Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
         long rawPermissions = Permission.getRaw(permissions);
         return (getRawInteractionPermissions(channel) & rawPermissions) == rawPermissions;
     }
@@ -258,8 +257,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     }
 
     @Override
-    public boolean canSync(
-            @Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
         throw detachedException();
     }
 
@@ -369,8 +367,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
         return this;
     }
 
-    public DetachedMemberImpl setInteractionPermissions(
-            @Nonnull MemberInteractionPermissions interactionPermissions) {
+    public DetachedMemberImpl setInteractionPermissions(@Nonnull MemberInteractionPermissions interactionPermissions) {
         this.interactionPermissions = interactionPermissions;
         return this;
     }
@@ -393,8 +390,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
         }
 
         DetachedMemberImpl oMember = (DetachedMemberImpl) o;
-        return oMember.user.getIdLong() == user.getIdLong()
-                && oMember.guild.getIdLong() == guild.getIdLong();
+        return oMember.user.getIdLong() == user.getIdLong() && oMember.guild.getIdLong() == guild.getIdLong();
     }
 
     @Override

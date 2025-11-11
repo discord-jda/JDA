@@ -145,8 +145,7 @@ public class ExTermEncoder {
     }
 
     @Nonnull
-    private static ByteBuffer packMap(
-            @Nonnull ByteBuffer buffer, @Nonnull Map<String, Object> data) {
+    private static ByteBuffer packMap(@Nonnull ByteBuffer buffer, @Nonnull Map<String, Object> data) {
         buffer = realloc(buffer, data.size() + 5);
         buffer.put(MAP);
         buffer.putInt(data.size());
@@ -160,8 +159,7 @@ public class ExTermEncoder {
     }
 
     @Nonnull
-    private static ByteBuffer packList(
-            @Nonnull ByteBuffer buffer, @Nonnull Collection<Object> data) {
+    private static ByteBuffer packList(@Nonnull ByteBuffer buffer, @Nonnull Collection<Object> data) {
         if (data.isEmpty()) {
             // NIL is for empty lists
             return packNil(buffer);

@@ -35,8 +35,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
-public interface AbstractMessageBuilderMixin<
-                R extends MessageRequest<R>, B extends AbstractMessageBuilder<?, B>>
+public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B extends AbstractMessageBuilder<?, B>>
         extends MessageRequest<R> {
     B getBuilder();
 

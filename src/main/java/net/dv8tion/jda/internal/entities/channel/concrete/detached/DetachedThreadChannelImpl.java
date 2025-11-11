@@ -190,8 +190,7 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
     @Override
     public boolean isInvitable() {
         if (type != ChannelType.GUILD_PRIVATE_THREAD) {
-            throw new UnsupportedOperationException(
-                    "Only private threads support the concept of invitable.");
+            throw new UnsupportedOperationException("Only private threads support the concept of invitable.");
         }
 
         return invitable;
@@ -212,9 +211,7 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
     @Nonnull
     @Override
     public OffsetDateTime getTimeCreated() {
-        return creationTimestamp == 0
-                ? TimeUtil.getTimeCreated(getIdLong())
-                : Helpers.toOffset(creationTimestamp);
+        return creationTimestamp == 0 ? TimeUtil.getTimeCreated(getIdLong()) : Helpers.toOffset(creationTimestamp);
     }
 
     @Override
@@ -270,8 +267,7 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
     }
 
     @Override
-    public DetachedThreadChannelImpl setAutoArchiveDuration(
-            AutoArchiveDuration autoArchiveDuration) {
+    public DetachedThreadChannelImpl setAutoArchiveDuration(AutoArchiveDuration autoArchiveDuration) {
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
     }
@@ -320,8 +316,7 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
 
     @Override
     public DetachedThreadChannelImpl setTotalMessageCount(int messageCount) {
-        this.totalMessageCount =
-                Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
+        this.totalMessageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
         return this;
     }
 

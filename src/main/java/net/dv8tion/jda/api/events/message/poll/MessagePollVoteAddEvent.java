@@ -36,11 +36,7 @@ import javax.annotation.Nonnull;
  */
 public class MessagePollVoteAddEvent extends GenericMessagePollVoteEvent {
     public MessagePollVoteAddEvent(
-            @Nonnull MessageChannel channel,
-            long responseNumber,
-            long messageId,
-            long userId,
-            long answerId) {
+            @Nonnull MessageChannel channel, long responseNumber, long messageId, long userId, long answerId) {
         super(channel, responseNumber, messageId, userId, answerId);
     }
 }

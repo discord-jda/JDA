@@ -37,8 +37,7 @@ public interface IPostContainerMixin<T extends IPostContainerMixin<T>>
 
     @Nonnull
     @Override
-    default ForumPostAction createForumPost(
-            @Nonnull String name, @Nonnull MessageCreateData message) {
+    default ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message) {
         checkAttached();
         checkPermission(Permission.MESSAGE_SEND);
         return new ForumPostActionImpl(this, name, new MessageCreateBuilder().applyData(message));
@@ -53,8 +52,7 @@ public interface IPostContainerMixin<T extends IPostContainerMixin<T>>
 
     @Nonnull
     @Override
-    default ThreadChannelAction createThreadChannel(
-            @Nonnull String name, @Nonnull String messageId) {
+    default ThreadChannelAction createThreadChannel(@Nonnull String name, @Nonnull String messageId) {
         throw new UnsupportedOperationException(
                 "You cannot create threads without a message payload in forum/media channels! Use createForumPost(...) instead.");
     }

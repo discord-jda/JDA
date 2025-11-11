@@ -32,10 +32,7 @@ public class GuildUpdateNSFWLevelEvent extends GenericGuildUpdateEvent<Guild.NSF
     public static final String IDENTIFIER = "nsfw_level";
 
     public GuildUpdateNSFWLevelEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull Guild.NSFWLevel oldNSFWLevel) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.NSFWLevel oldNSFWLevel) {
         super(api, responseNumber, guild, oldNSFWLevel, guild.getNSFWLevel(), IDENTIFIER);
     }
 

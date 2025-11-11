@@ -69,9 +69,7 @@ public class MessageReactionHandler extends SocketHandler {
 
         if (emojiId == null && emojiName == null) {
             WebSocketClient.LOG.debug(
-                    "Received a reaction {} with no name nor id. json: {}",
-                    add ? "add" : "remove",
-                    content);
+                    "Received a reaction {} with no name nor id. json: {}", add ? "add" : "remove", content);
             return null;
         }
         long guildId = content.getUnsignedLong("guild_id", 0);
@@ -115,13 +113,7 @@ public class MessageReactionHandler extends SocketHandler {
             // The only time we can receive a reaction add but not have the user cached would be if
             // we receive the event in an uncached or partially built PrivateChannel.
             if (add && guild != null) {
-                api.getEventCache()
-                        .cache(
-                                EventCache.Type.USER,
-                                userId,
-                                responseNumber,
-                                allContent,
-                                this::handle);
+                api.getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
                 EventCache.LOG.debug(
                         "Received a reaction for a user that JDA does not currently have cached. "
                                 + "UserID: {} ChannelId: {} MessageId: {}",
@@ -140,22 +132,14 @@ public class MessageReactionHandler extends SocketHandler {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null) {
                     WebSocketClient.LOG.debug(
-                            "Dropping MESSAGE_REACTION event for unexpected channel of type {}",
-                            actual.getType());
+                            "Dropping MESSAGE_REACTION event for unexpected channel of type {}", actual.getType());
                     return null;
                 }
             }
 
             if (guildId != 0) {
-                api.getEventCache()
-                        .cache(
-                                EventCache.Type.CHANNEL,
-                                channelId,
-                                responseNumber,
-                                allContent,
-                                this::handle);
-                EventCache.LOG.debug(
-                        "Received a reaction for a channel that JDA does not currently have cached");
+                api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
                 return null;
             }
 
@@ -170,8 +154,7 @@ public class MessageReactionHandler extends SocketHandler {
         // We don't know if it is a normal or super reaction
         boolean[] self = new boolean[] {false, false};
 
-        MessageReaction reaction =
-                new MessageReaction(api, channel, rEmoji, channelId, messageId, self, null);
+        MessageReaction reaction = new MessageReaction(api, channel, rEmoji, channelId, messageId, self, null);
 
         if (channel.getType() == ChannelType.PRIVATE) {
             api.usedPrivateChannel(reaction.getChannel().getIdLong());
@@ -192,8 +175,7 @@ public class MessageReactionHandler extends SocketHandler {
                     userId,
                     content.getUnsignedLong("message_author_id", 0L)));
         } else {
-            api.handleEvent(new MessageReactionRemoveEvent(
-                    api, responseNumber, user, member, reaction, userId));
+            api.handleEvent(new MessageReactionRemoveEvent(api, responseNumber, user, member, reaction, userId));
         }
         return null;
     }

@@ -28,12 +28,10 @@ public class IntegrationOwnersImpl implements IntegrationOwners {
     private final long userIntegration;
 
     public IntegrationOwnersImpl(DataObject authorizedIntegrationOwners) {
-        this.userIntegration =
-                authorizedIntegrationOwners.getLong(IntegrationType.USER_INSTALL.getType(), 0);
+        this.userIntegration = authorizedIntegrationOwners.getLong(IntegrationType.USER_INSTALL.getType(), 0);
 
         if (authorizedIntegrationOwners.hasKey(IntegrationType.GUILD_INSTALL.getType())) {
-            this.guildIntegration =
-                    authorizedIntegrationOwners.getLong(IntegrationType.GUILD_INSTALL.getType());
+            this.guildIntegration = authorizedIntegrationOwners.getLong(IntegrationType.GUILD_INSTALL.getType());
         } else {
             this.guildIntegration = null;
         }

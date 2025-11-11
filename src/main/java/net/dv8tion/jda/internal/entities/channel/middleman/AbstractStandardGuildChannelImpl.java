@@ -23,8 +23,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildChannelMixin;
 
-public abstract class AbstractStandardGuildChannelImpl<
-                T extends AbstractStandardGuildChannelImpl<T>>
+public abstract class AbstractStandardGuildChannelImpl<T extends AbstractStandardGuildChannelImpl<T>>
         extends AbstractGuildChannelImpl<T> implements StandardGuildChannelMixin<T> {
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 

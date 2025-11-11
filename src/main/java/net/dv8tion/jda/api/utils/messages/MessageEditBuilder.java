@@ -132,8 +132,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder setAllowedMentions(
-            @Nullable Collection<Message.MentionType> allowedMentions) {
+    public MessageEditBuilder setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
         super.setAllowedMentions(allowedMentions);
         configuredFields |= MENTIONS;
         return this;
@@ -165,8 +164,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder setAttachments(
-            @Nullable Collection<? extends AttachedFile> attachments) {
+    public MessageEditBuilder setAttachments(@Nullable Collection<? extends AttachedFile> attachments) {
         this.attachments.clear();
         configuredFields |= ATTACHMENTS;
         if (attachments != null) {
@@ -211,8 +209,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder setComponents(
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+    public MessageEditBuilder setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         super.setComponents(components);
         configuredFields |= COMPONENTS;
         return this;
@@ -298,8 +295,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             return false;
         }
         if (isSet(COMPONENTS)) {
-            if (ComponentsUtil.getComponentTreeSize(components)
-                    > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE) {
+            if (ComponentsUtil.getComponentTreeSize(components) > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE) {
                 return false;
             }
             if (ComponentsUtil.getComponentTreeTextContentLength(components)
@@ -342,23 +338,21 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
         int length = isSet(CONTENT) ? Helpers.codePointLength(content) : 0;
         if (length > Message.MAX_CONTENT_LENGTH) {
-            throw new IllegalStateException("Message content is too long! Max length is "
-                    + Message.MAX_CONTENT_LENGTH + " characters, provided " + length);
+            throw new IllegalStateException("Message content is too long! Max length is " + Message.MAX_CONTENT_LENGTH
+                    + " characters, provided " + length);
         }
 
         if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT) {
-            throw new IllegalStateException("Cannot build message with over "
-                    + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
+            throw new IllegalStateException(
+                    "Cannot build message with over " + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
         }
 
         if (isSet(COMPONENTS)) {
             if (components.size() > Message.MAX_COMPONENT_COUNT) {
-                throw new IllegalStateException(
-                        "Cannot build message with over " + Message.MAX_COMPONENT_COUNT
-                                + " top-level components, provided " + components.size());
+                throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT
+                        + " top-level components, provided " + components.size());
             }
-            List<? extends Component> illegalComponents =
-                    ComponentsUtil.getIllegalV1Components(components);
+            List<? extends Component> illegalComponents = ComponentsUtil.getIllegalV1Components(components);
             if (!illegalComponents.isEmpty()) {
                 throw new IllegalStateException(
                         "Cannot build message with components other than ActionRow while using components V1, see #useComponentsV2, provided: "
@@ -367,14 +361,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         }
 
         return new MessageEditData(
-                configuredFields,
-                messageFlags,
-                replace,
-                content,
-                embeds,
-                attachments,
-                components,
-                mentions);
+                configuredFields, messageFlags, replace, content, embeds, attachments, components, mentions);
     }
 
     @Nonnull

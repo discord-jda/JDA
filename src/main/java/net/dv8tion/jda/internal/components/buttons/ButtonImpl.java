@@ -57,8 +57,7 @@ public class ButtonImpl extends AbstractComponentImpl
                 data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
-    public ButtonImpl(
-            String customId, String label, ButtonStyle style, boolean disabled, Emoji emoji) {
+    public ButtonImpl(String customId, String label, ButtonStyle style, boolean disabled, Emoji emoji) {
         this(customId, label, style, null, null, disabled, emoji);
     }
 
@@ -104,9 +103,7 @@ public class ButtonImpl extends AbstractComponentImpl
             case DANGER:
                 Checks.check(url == null, "Cannot set an URL on action buttons");
                 Checks.check(sku == null, "Cannot set an SKU on action buttons");
-                Checks.check(
-                        emoji != null || !label.isEmpty(),
-                        "Action buttons must have either an emoji or label");
+                Checks.check(emoji != null || !label.isEmpty(), "Action buttons must have either an emoji or label");
                 Checks.notEmpty(customId, "Id");
                 Checks.notLonger(customId, ID_MAX_LENGTH, "Id");
                 break;
@@ -114,9 +111,7 @@ public class ButtonImpl extends AbstractComponentImpl
                 Checks.check(customId == null, "Cannot set an ID on link buttons");
                 Checks.check(url != null, "You must set an URL on link buttons");
                 Checks.check(sku == null, "Cannot set an SKU on link buttons");
-                Checks.check(
-                        emoji != null || !label.isEmpty(),
-                        "Link buttons must have either an emoji or label");
+                Checks.check(emoji != null || !label.isEmpty(), "Link buttons must have either an emoji or label");
                 Checks.notEmpty(url, "URL");
                 Checks.notLonger(url, URL_MAX_LENGTH, "URL");
                 break;
@@ -241,8 +236,7 @@ public class ButtonImpl extends AbstractComponentImpl
 
     @Override
     public String toString() {
-        EntityString entityString =
-                new EntityString(this).setName(label).addMetadata("id", uniqueId);
+        EntityString entityString = new EntityString(this).setName(label).addMetadata("id", uniqueId);
         if (customId != null) {
             entityString.addMetadata("custom id", customId);
         }

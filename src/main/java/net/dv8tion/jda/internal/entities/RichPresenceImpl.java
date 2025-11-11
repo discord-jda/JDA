@@ -62,12 +62,8 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence {
         this.sessionId = sessionId;
         this.syncId = syncId;
         this.flags = flags;
-        this.largeImage = largeImageKey != null
-                ? new Image(applicationId, largeImageKey, largeImageText)
-                : null;
-        this.smallImage = smallImageKey != null
-                ? new Image(applicationId, smallImageKey, smallImageText)
-                : null;
+        this.largeImage = largeImageKey != null ? new Image(applicationId, largeImageKey, largeImageText) : null;
+        this.smallImage = smallImageKey != null ? new Image(applicationId, smallImageKey, smallImageText) : null;
     }
 
     @Override
@@ -149,16 +145,7 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence {
     @Override
     public int hashCode() {
         return Objects.hash(
-                applicationId,
-                state,
-                details,
-                party,
-                sessionId,
-                syncId,
-                flags,
-                timestamps,
-                largeImage,
-                smallImage);
+                applicationId, state, details, party, sessionId, syncId, flags, timestamps, largeImage, smallImage);
     }
 
     @Override

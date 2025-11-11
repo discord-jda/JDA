@@ -118,8 +118,7 @@ public class FileUpload implements Closeable, AttachedFile {
      * @return {@link FileUpload}
      */
     @Nonnull
-    public static FileUpload fromSourceSupplier(
-            @Nonnull String name, @Nonnull Supplier<? extends Source> supplier) {
+    public static FileUpload fromSourceSupplier(@Nonnull String name, @Nonnull Supplier<? extends Source> supplier) {
         Checks.notNull(supplier, "Supplier");
         Checks.notBlank(name, "Name");
         return new FileUpload(supplier, name);
@@ -255,17 +254,14 @@ public class FileUpload implements Closeable, AttachedFile {
      * @return {@link FileUpload}
      */
     @Nonnull
-    public static FileUpload fromData(
-            @Nonnull Path path, @Nonnull String name, @Nonnull OpenOption... options) {
+    public static FileUpload fromData(@Nonnull Path path, @Nonnull String name, @Nonnull OpenOption... options) {
         Checks.notNull(path, "Path");
         Checks.noneNull(options, "Options");
-        Checks.check(
-                Files.isReadable(path), "File for specified path cannot be read. Path: %s", path);
+        Checks.check(Files.isReadable(path), "File for specified path cannot be read. Path: %s", path);
         try {
             return fromData(Files.newInputStream(path, options), name);
         } catch (IOException e) {
-            throw new UncheckedIOException(
-                    "Could not open file for specified path. Path: " + path, e);
+            throw new UncheckedIOException("Could not open file for specified path. Path: " + path, e);
         }
     }
 
@@ -343,8 +339,7 @@ public class FileUpload implements Closeable, AttachedFile {
     @Nonnull
     public FileUpload setDescription(@Nullable String description) {
         if (description != null) {
-            Checks.notLonger(
-                    description = description.trim(), MAX_DESCRIPTION_LENGTH, "Description");
+            Checks.notLonger(description = description.trim(), MAX_DESCRIPTION_LENGTH, "Description");
         }
         this.description = description;
         return this;
@@ -388,13 +383,10 @@ public class FileUpload implements Closeable, AttachedFile {
      * @return The same FileUpload instance configured as a voice message attachment
      */
     @Nonnull
-    public FileUpload asVoiceMessage(
-            @Nonnull MediaType mediaType, @Nonnull byte[] waveform, double durationSeconds) {
+    public FileUpload asVoiceMessage(@Nonnull MediaType mediaType, @Nonnull byte[] waveform, double durationSeconds) {
         Checks.notNull(mediaType, "Media type");
         Checks.notNull(waveform, "Waveform");
-        Checks.check(
-                waveform.length > 0 && waveform.length <= 256,
-                "Waveform must be between 1 and 256 bytes long");
+        Checks.check(waveform.length > 0 && waveform.length <= 256, "Waveform must be between 1 and 256 bytes long");
         Checks.check(Double.isFinite(durationSeconds), "Duration must be a finite number");
         Checks.check(durationSeconds > 0, "Duration must be positive");
         this.waveform = waveform;
@@ -492,9 +484,7 @@ public class FileUpload implements Closeable, AttachedFile {
                 .put("content_type", mediaType.toString())
                 .put("filename", name);
         if (waveform != null && durationSeconds > 0) {
-            attachment.put(
-                    "waveform",
-                    new String(Base64.getEncoder().encode(waveform), StandardCharsets.UTF_8));
+            attachment.put("waveform", new String(Base64.getEncoder().encode(waveform), StandardCharsets.UTF_8));
             attachment.put("duration_secs", durationSeconds);
         }
         return attachment;

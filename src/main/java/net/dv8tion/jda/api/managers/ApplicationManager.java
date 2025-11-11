@@ -227,8 +227,7 @@ public interface ApplicationManager extends Manager<ApplicationManager> {
      */
     @Nonnull
     @CheckReturnValue
-    ApplicationManager setIntegrationTypeConfig(
-            @Nullable Map<IntegrationType, IntegrationTypeConfig> config);
+    ApplicationManager setIntegrationTypeConfig(@Nullable Map<IntegrationType, IntegrationTypeConfig> config);
 
     /**
      * A config describing how the application is installed.

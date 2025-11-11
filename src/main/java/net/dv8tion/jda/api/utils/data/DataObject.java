@@ -638,8 +638,7 @@ public class DataObject implements SerializableData {
      * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
      */
     @Contract("_, !null -> !null")
-    public OffsetDateTime getOffsetDateTime(
-            @Nonnull String key, @Nullable OffsetDateTime defaultValue) {
+    public OffsetDateTime getOffsetDateTime(@Nonnull String key, @Nullable OffsetDateTime defaultValue) {
         OffsetDateTime value;
         try {
             value = get(OffsetDateTime.class, key, OffsetDateTime::parse, null);
@@ -773,8 +772,7 @@ public class DataObject implements SerializableData {
     @Nonnull
     public byte[] toETF() {
         ByteBuffer buffer = ExTermEncoder.pack(data);
-        return Arrays.copyOfRange(
-                buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
+        return Arrays.copyOfRange(buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
     }
 
     @Override
@@ -829,9 +827,7 @@ public class DataObject implements SerializableData {
                     this, "Missing value for key '" + key + "' with expected type " + expectedType);
         }
         return new DataObjectParsingException(
-                this,
-                "Unable to resolve value with key '" + key + "' to type " + expectedType + ": "
-                        + data.get(key));
+                this, "Unable to resolve value with key '" + key + "' to type " + expectedType + ": " + data.get(key));
     }
 
     @Nullable

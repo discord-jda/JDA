@@ -47,10 +47,7 @@ public class GuildMemberUpdateTimeOutEvent extends GenericGuildMemberUpdateEvent
     public static final String IDENTIFIER = "timeout_time";
 
     public GuildMemberUpdateTimeOutEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Member member,
-            @Nullable OffsetDateTime previous) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous) {
         super(api, responseNumber, member, previous, member.getTimeOutEnd(), IDENTIFIER);
     }
 

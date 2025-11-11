@@ -125,22 +125,18 @@ public interface CryptoAdapter {
             }
         }
 
-        protected abstract void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce)
+        protected abstract void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce) throws Exception;
+
+        protected abstract byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce)
                 throws Exception;
 
-        protected abstract byte[] decryptInternally(
-                byte[] cipherText, byte[] associatedData, byte[] nonce) throws Exception;
-
         protected byte[] getAssociatedData(ByteBuffer output) {
-            return Arrays.copyOfRange(
-                    output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
+            return Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
         }
 
         protected byte[] getPlaintextCopy(ByteBuffer audio) {
             return Arrays.copyOfRange(
-                    audio.array(),
-                    audio.arrayOffset() + audio.position(),
-                    audio.arrayOffset() + audio.limit());
+                    audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
         }
     }
 
@@ -155,8 +151,7 @@ public interface CryptoAdapter {
         }
 
         @Override
-        protected void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce)
-                throws Exception {
+        protected void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce) throws Exception {
             InsecureNonceAesGcmJce cipher = getCipher();
             byte[] input = getPlaintextCopy(audio);
             byte[] associatedData = getAssociatedData(output);
@@ -164,8 +159,7 @@ public interface CryptoAdapter {
         }
 
         @Override
-        public byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce)
-                throws Exception {
+        public byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce) throws Exception {
             InsecureNonceAesGcmJce cipher = getCipher();
             return cipher.decrypt(nonce, cipherText, associatedData);
         }
@@ -186,8 +180,7 @@ public interface CryptoAdapter {
         }
 
         @Override
-        public void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce)
-                throws Exception {
+        public void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce) throws Exception {
             InsecureNonceXChaCha20Poly1305 cipher = getCipher();
             byte[] input = getPlaintextCopy(audio);
             byte[] associatedData = getAssociatedData(output);
@@ -195,8 +188,7 @@ public interface CryptoAdapter {
         }
 
         @Override
-        public byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce)
-                throws Exception {
+        public byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce) throws Exception {
             InsecureNonceXChaCha20Poly1305 cipher = getCipher();
             return cipher.decrypt(nonce, cipherText, associatedData);
         }

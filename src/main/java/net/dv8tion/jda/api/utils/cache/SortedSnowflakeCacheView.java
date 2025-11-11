@@ -34,8 +34,7 @@ import javax.annotation.Nonnull;
  *
  * @see   CacheView CacheView for details on Efficient Memory Usage
  */
-public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISnowflake>
-        extends SnowflakeCacheView<T> {
+public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISnowflake> extends SnowflakeCacheView<T> {
     /**
      * Behavior similar to {@link CacheView#forEach(Consumer)} but does not preserve order.
      * <br>This will not copy the data store as sorting is not needed.

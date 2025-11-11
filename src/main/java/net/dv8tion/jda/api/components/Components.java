@@ -56,8 +56,7 @@ public class Components {
      * @see ComponentDeserializer#deserializeAs(Class, DataObject)
      */
     @Nonnull
-    public static <T extends Component> T parseComponent(
-            @Nonnull Class<T> componentType, @Nonnull DataObject data) {
+    public static <T extends Component> T parseComponent(@Nonnull Class<T> componentType, @Nonnull DataObject data) {
         return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data);
     }
 
@@ -78,9 +77,7 @@ public class Components {
     @Nonnull
     public static <T extends Component> List<T> parseComponents(
             @Nonnull Class<T> componentType, @Nonnull DataArray data) {
-        return DEFAULT_COMPONENT_DESERIALIZER
-                .deserializeAs(componentType, data)
-                .collect(Collectors.toList());
+        return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data).collect(Collectors.toList());
     }
 
     /**
@@ -100,8 +97,7 @@ public class Components {
      * @see ComponentDeserializer#deserializeAsTree(Class, DataArray)
      */
     @Nonnull
-    public static <T extends ComponentTree<?>> T parseTree(
-            @Nonnull Class<T> treeType, @Nonnull DataArray data) {
+    public static <T extends ComponentTree<?>> T parseTree(@Nonnull Class<T> treeType, @Nonnull DataArray data) {
         return DEFAULT_COMPONENT_DESERIALIZER.deserializeAsTree(treeType, data);
     }
 }

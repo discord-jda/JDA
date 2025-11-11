@@ -299,8 +299,7 @@ public interface InteractionHook extends WebhookClient<Message> {
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalComponents(
-            @Nonnull MessageTopLevelComponent... components) {
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull MessageTopLevelComponent... components) {
         return editMessageComponentsById("@original", components);
     }
 
@@ -379,8 +378,7 @@ public interface InteractionHook extends WebhookClient<Message> {
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalEmbeds(
-            @Nonnull Collection<? extends MessageEmbed> embeds) {
+    default WebhookMessageEditAction<Message> editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return editMessageEmbedsById("@original", embeds);
     }
 
@@ -487,8 +485,7 @@ public interface InteractionHook extends WebhookClient<Message> {
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalFormat(
-            @Nonnull String format, @Nonnull Object... args) {
+    default WebhookMessageEditAction<Message> editOriginalFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return editOriginal(String.format(format, args));
     }
@@ -602,8 +599,7 @@ public interface InteractionHook extends WebhookClient<Message> {
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalAttachments(
-            @Nonnull AttachedFile... attachments) {
+    default WebhookMessageEditAction<Message> editOriginalAttachments(@Nonnull AttachedFile... attachments) {
         Checks.noneNull(attachments, "Attachments");
         return editOriginalAttachments(Arrays.asList(attachments));
     }

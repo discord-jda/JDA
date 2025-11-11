@@ -63,9 +63,7 @@ public class MessageSerializationTest {
                         .put("thumbnail", DataObject.empty().put("url", THUMBNAIL_URL))
                         .put(
                                 "footer",
-                                DataObject.empty()
-                                        .put("icon_url", FOOTER_ICON)
-                                        .put("text", FOOTER_TEXT))
+                                DataObject.empty().put("icon_url", FOOTER_ICON).put("text", FOOTER_TEXT))
                         .put(
                                 "author",
                                 DataObject.empty()

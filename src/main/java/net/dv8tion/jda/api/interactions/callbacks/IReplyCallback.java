@@ -308,8 +308,7 @@ public interface IReplyCallback extends IDeferrableCallback {
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyEmbeds(
-            @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds) {
+    default ReplyCallbackAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds) {
         Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");
         return deferReply().addEmbeds(embed).addEmbeds(embeds);
@@ -353,8 +352,7 @@ public interface IReplyCallback extends IDeferrableCallback {
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+    default ReplyCallbackAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         return deferReply().setComponents(components);
     }
 
@@ -399,8 +397,7 @@ public interface IReplyCallback extends IDeferrableCallback {
     @Nonnull
     @CheckReturnValue
     default ReplyCallbackAction replyComponents(
-            @Nonnull MessageTopLevelComponent component,
-            @Nonnull MessageTopLevelComponent... other) {
+            @Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other) {
         Checks.notNull(component, "MessageTopLevelComponent");
         Checks.noneNull(other, "MessageTopLevelComponents");
         return replyComponents(Helpers.mergeVararg(component, other));
@@ -445,8 +442,7 @@ public interface IReplyCallback extends IDeferrableCallback {
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(
-            @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
+    default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return replyComponents(tree.getComponents());
     }

@@ -28,8 +28,7 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class AbstractWebhookMessageActionImpl<
-                T, R extends AbstractWebhookMessageActionImpl<T, R>>
+public abstract class AbstractWebhookMessageActionImpl<T, R extends AbstractWebhookMessageActionImpl<T, R>>
         extends TriggerRestAction<T> {
     protected String threadId;
 

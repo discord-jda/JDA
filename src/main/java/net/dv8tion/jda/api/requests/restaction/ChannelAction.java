@@ -64,8 +64,7 @@ import javax.annotation.Nullable;
  * @see    net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel#createCopy()
  * @see    net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel#createCopy(Guild)
  */
-public interface ChannelAction<T extends GuildChannel>
-        extends FluentAuditableRestAction<T, ChannelAction<T>> {
+public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRestAction<T, ChannelAction<T>> {
     /**
      * The guild to create this {@link GuildChannel} in
      *
@@ -376,8 +375,7 @@ public interface ChannelAction<T extends GuildChannel>
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addPermissionOverride(
-            @Nonnull IPermissionHolder target, long allow, long deny) {
+    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny) {
         Checks.notNull(target, "Override Role/Member");
         if (target instanceof Role) {
             return addRolePermissionOverride(target.getIdLong(), allow, deny);
@@ -420,9 +418,7 @@ public interface ChannelAction<T extends GuildChannel>
     @Nonnull
     @CheckReturnValue
     default ChannelAction<T> addMemberPermissionOverride(
-            long memberId,
-            @Nullable Collection<Permission> allow,
-            @Nullable Collection<Permission> deny) {
+            long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -461,9 +457,7 @@ public interface ChannelAction<T extends GuildChannel>
     @Nonnull
     @CheckReturnValue
     default ChannelAction<T> addRolePermissionOverride(
-            long roleId,
-            @Nullable Collection<Permission> allow,
-            @Nullable Collection<Permission> deny) {
+            long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 

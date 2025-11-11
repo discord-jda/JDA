@@ -42,8 +42,7 @@ import javax.annotation.Nonnull;
  *
  * @see GuildChannel#getManager()
  */
-public interface ChannelManager<T extends GuildChannel, M extends ChannelManager<T, M>>
-        extends Manager<M> {
+public interface ChannelManager<T extends GuildChannel, M extends ChannelManager<T, M>> extends Manager<M> {
     /** Used to reset the name field */
     long NAME = 1;
     /** Used to reset the parent field */

@@ -60,10 +60,7 @@ public class UserActivityEndEvent extends GenericUserEvent implements GenericUse
     private final Member member;
 
     public UserActivityEndEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Member member,
-            @Nonnull Activity oldActivity) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull Activity oldActivity) {
         super(api, responseNumber, member.getUser());
         this.oldActivity = oldActivity;
         this.member = member;

@@ -32,10 +32,7 @@ public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.Boo
     public static final String IDENTIFIER = "boost_tier";
 
     public GuildUpdateBoostTierEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull Guild.BoostTier previous) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.BoostTier previous) {
         super(api, responseNumber, guild, previous, guild.getBoostTier(), IDENTIFIER);
     }
 

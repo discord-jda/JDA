@@ -153,8 +153,7 @@ public class FileProxy {
         // in any state
         DownloadTask downloadTask = downloadInternal(url);
 
-        return FutureUtil.thenApplyCancellable(
-                downloadTask.getFuture(), Function.identity(), downloadTask::cancelCall);
+        return FutureUtil.thenApplyCancellable(downloadTask.getFuture(), Function.identity(), downloadTask::cancelCall);
     }
 
     private DownloadTask downloadInternal(String url) {
@@ -173,8 +172,7 @@ public class FileProxy {
                             IOUtil.silentClose(response);
                         }
                     } else {
-                        future.completeExceptionally(
-                                new HttpException(response.code() + ": " + response.message()));
+                        future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
                         IOUtil.silentClose(response);
                     }
                 })
@@ -217,12 +215,9 @@ public class FileProxy {
         // Check if the parent path, the folder, exists
         Path parent = absolute.getParent();
         Checks.check(
-                parent != null && Files.exists(parent),
-                "Parent folder of the file '%s' does not exist.",
-                absolute);
+                parent != null && Files.exists(parent), "Parent folder of the file '%s' does not exist.", absolute);
         if (Files.exists(absolute)) {
-            Checks.check(
-                    Files.isRegularFile(absolute), "Path '%s' is not a regular file.", absolute);
+            Checks.check(Files.isRegularFile(absolute), "Path '%s' is not a regular file.", absolute);
             Checks.check(Files.isWritable(absolute), "File at '%s' is not writable.", absolute);
         }
 

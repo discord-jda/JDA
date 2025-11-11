@@ -86,8 +86,7 @@ public class TextDisplayImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        DataObject json =
-                DataObject.empty().put("type", getType().getKey()).put("content", content);
+        DataObject json = DataObject.empty().put("type", getType().getKey()).put("content", content);
         if (uniqueId >= 0) {
             json.put("id", uniqueId);
         }

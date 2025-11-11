@@ -141,8 +141,7 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
             return new RestActionImpl<>(api, route, (response, request) -> {
                 DataObject data = response.getObject();
                 if (data.isNull("user")) { // user is not provided when permissions are missing
-                    throw ErrorResponseException.create(
-                            ErrorResponse.MISSING_PERMISSIONS, response);
+                    throw ErrorResponseException.create(ErrorResponse.MISSING_PERMISSIONS, response);
                 }
                 DataObject user = data.getObject("user");
                 return this.owner = api.getEntityBuilder().createUser(user);
@@ -168,8 +167,7 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
             throw new UnsupportedOperationException("You cannot delete a managed emoji!");
         }
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
-            throw new InsufficientPermissionException(
-                    getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
         }
 
         Route.CompiledRoute route = Route.Emojis.DELETE_EMOJI.compile(getGuild().getId(), getId());

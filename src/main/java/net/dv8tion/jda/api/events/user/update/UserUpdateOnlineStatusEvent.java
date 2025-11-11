@@ -54,17 +54,8 @@ public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineSt
     private final Member member;
 
     public UserUpdateOnlineStatusEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Member member,
-            @Nonnull OnlineStatus oldOnlineStatus) {
-        super(
-                api,
-                responseNumber,
-                member.getUser(),
-                oldOnlineStatus,
-                member.getOnlineStatus(),
-                IDENTIFIER);
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull OnlineStatus oldOnlineStatus) {
+        super(api, responseNumber, member.getUser(), oldOnlineStatus, member.getOnlineStatus(), IDENTIFIER);
         this.guild = member.getGuild();
         this.member = member;
     }

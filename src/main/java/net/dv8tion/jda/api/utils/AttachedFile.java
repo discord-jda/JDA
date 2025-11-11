@@ -156,8 +156,7 @@ public interface AttachedFile extends Closeable {
      * @return {@link FileUpload}
      */
     @Nonnull
-    static FileUpload fromData(
-            @Nonnull Path path, @Nonnull String name, @Nonnull OpenOption... options) {
+    static FileUpload fromData(@Nonnull Path path, @Nonnull String name, @Nonnull OpenOption... options) {
         return FileUpload.fromData(path, name, options);
     }
 
@@ -267,8 +266,7 @@ public interface AttachedFile extends Closeable {
      * @return {@link MultipartBody.Builder}
      */
     @Nonnull
-    static MultipartBody.Builder createMultipartBody(
-            @Nonnull Collection<? extends AttachedFile> files) {
+    static MultipartBody.Builder createMultipartBody(@Nonnull Collection<? extends AttachedFile> files) {
         return createMultipartBody(files, (RequestBody) null);
     }
 
@@ -288,9 +286,8 @@ public interface AttachedFile extends Closeable {
     @Nonnull
     static MultipartBody.Builder createMultipartBody(
             @Nonnull Collection<? extends AttachedFile> files, @Nullable DataObject payloadJson) {
-        RequestBody body = payloadJson != null
-                ? RequestBody.create(payloadJson.toJson(), Requester.MEDIA_TYPE_JSON)
-                : null;
+        RequestBody body =
+                payloadJson != null ? RequestBody.create(payloadJson.toJson(), Requester.MEDIA_TYPE_JSON) : null;
         return createMultipartBody(files, body);
     }
 

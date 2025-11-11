@@ -28,15 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code explicit_content_filter}
  */
-public class GuildUpdateExplicitContentLevelEvent
-        extends GenericGuildUpdateEvent<Guild.ExplicitContentLevel> {
+public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEvent<Guild.ExplicitContentLevel> {
     public static final String IDENTIFIER = "explicit_content_filter";
 
     public GuildUpdateExplicitContentLevelEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nonnull Guild.ExplicitContentLevel oldLevel) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.ExplicitContentLevel oldLevel) {
         super(api, responseNumber, guild, oldLevel, guild.getExplicitContentLevel(), IDENTIFIER);
     }
 

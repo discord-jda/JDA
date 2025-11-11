@@ -29,8 +29,7 @@ public class MigrateComponentsV2Test implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
         // https://docs.openrewrite.org/authoring-recipes/multiple-versions#manually-copying-jars-and-using-the-classpathfromresources-function
-        spec.parser(JavaParser.fromJavaVersion()
-                .classpathFromResources(new InMemoryExecutionContext(), "JDA-5.6.1"));
+        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "JDA-5.6.1"));
     }
 
     // https://docs.openrewrite.org/authoring-recipes/recipe-testing#declarative-recipe-testing
@@ -163,8 +162,7 @@ public class MigrateComponentsV2Test implements RewriteTest {
                 java(
                         "import net.dv8tion.jda.api.interactions.modals.Modal;\n\n"
                                 + "public class Test20 { Modal x() {} }",
-                        "import net.dv8tion.jda.api.modals.Modal;\n\n"
-                                + "public class Test20 { Modal x() {} }"));
+                        "import net.dv8tion.jda.api.modals.Modal;\n\n" + "public class Test20 { Modal x() {} }"));
     }
 
     @Test

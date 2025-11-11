@@ -33,8 +33,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class DetachedNewsChannelImpl
-        extends AbstractStandardGuildMessageChannelImpl<DetachedNewsChannelImpl>
+public class DetachedNewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<DetachedNewsChannelImpl>
         implements NewsChannel,
                 DefaultGuildChannelUnion,
                 NewsChannelMixin<DetachedNewsChannelImpl>,

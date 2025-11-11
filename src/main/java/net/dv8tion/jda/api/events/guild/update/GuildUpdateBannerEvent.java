@@ -34,10 +34,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "banner";
 
     public GuildUpdateBannerEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nullable String previous) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous) {
         super(api, responseNumber, guild, previous, guild.getBannerId(), IDENTIFIER);
     }
 
@@ -60,11 +57,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
     public String getNewBannerUrl() {
         return next == null
                 ? null
-                : String.format(
-                        Guild.BANNER_URL,
-                        guild.getId(),
-                        next,
-                        next.startsWith("a_") ? "gif" : "png");
+                : String.format(Guild.BANNER_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -99,11 +92,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
     public String getOldBannerUrl() {
         return previous == null
                 ? null
-                : String.format(
-                        Guild.BANNER_URL,
-                        guild.getId(),
-                        previous,
-                        previous.startsWith("a_") ? "gif" : "png");
+                : String.format(Guild.BANNER_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
     /**

@@ -161,8 +161,7 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {}
 
-    public void onCommandAutoCompleteInteraction(
-            @Nonnull CommandAutoCompleteInteractionEvent event) {}
+    public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {}
 
     public void onModalInteraction(@Nonnull ModalInteractionEvent event) {}
 
@@ -241,8 +240,7 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onStageInstanceUpdateTopic(@Nonnull StageInstanceUpdateTopicEvent event) {}
 
-    public void onStageInstanceUpdatePrivacyLevel(
-            @Nonnull StageInstanceUpdatePrivacyLevelEvent event) {}
+    public void onStageInstanceUpdatePrivacyLevel(@Nonnull StageInstanceUpdatePrivacyLevelEvent event) {}
 
     public void onStageInstanceCreate(@Nonnull StageInstanceCreateEvent event) {}
 
@@ -268,13 +266,11 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onChannelUpdateSlowmode(@Nonnull ChannelUpdateSlowmodeEvent event) {}
 
-    public void onChannelUpdateDefaultThreadSlowmode(
-            @Nonnull ChannelUpdateDefaultThreadSlowmodeEvent event) {}
+    public void onChannelUpdateDefaultThreadSlowmode(@Nonnull ChannelUpdateDefaultThreadSlowmodeEvent event) {}
 
     public void onChannelUpdateDefaultReaction(@Nonnull ChannelUpdateDefaultReactionEvent event) {}
 
-    public void onChannelUpdateDefaultSortOrder(
-            @Nonnull ChannelUpdateDefaultSortOrderEvent event) {}
+    public void onChannelUpdateDefaultSortOrder(@Nonnull ChannelUpdateDefaultSortOrderEvent event) {}
 
     public void onChannelUpdateDefaultLayout(@Nonnull ChannelUpdateDefaultLayoutEvent event) {}
 
@@ -288,11 +284,9 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onChannelUpdateArchived(@Nonnull ChannelUpdateArchivedEvent event) {}
 
-    public void onChannelUpdateArchiveTimestamp(
-            @Nonnull ChannelUpdateArchiveTimestampEvent event) {}
+    public void onChannelUpdateArchiveTimestamp(@Nonnull ChannelUpdateArchiveTimestampEvent event) {}
 
-    public void onChannelUpdateAutoArchiveDuration(
-            @Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
+    public void onChannelUpdateAutoArchiveDuration(@Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
 
     public void onChannelUpdateLocked(@Nonnull ChannelUpdateLockedEvent event) {}
 
@@ -353,22 +347,17 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onGuildUpdateRulesChannel(@Nonnull GuildUpdateRulesChannelEvent event) {}
 
-    public void onGuildUpdateCommunityUpdatesChannel(
-            @Nonnull GuildUpdateCommunityUpdatesChannelEvent event) {}
+    public void onGuildUpdateCommunityUpdatesChannel(@Nonnull GuildUpdateCommunityUpdatesChannelEvent event) {}
 
-    public void onGuildUpdateSafetyAlertsChannel(
-            @Nonnull GuildUpdateSafetyAlertsChannelEvent event) {}
+    public void onGuildUpdateSafetyAlertsChannel(@Nonnull GuildUpdateSafetyAlertsChannelEvent event) {}
 
     public void onGuildUpdateAfkTimeout(@Nonnull GuildUpdateAfkTimeoutEvent event) {}
 
-    public void onGuildUpdateSecurityIncidentActions(
-            @Nonnull GuildUpdateSecurityIncidentActionsEvent event) {}
+    public void onGuildUpdateSecurityIncidentActions(@Nonnull GuildUpdateSecurityIncidentActionsEvent event) {}
 
-    public void onGuildUpdateSecurityIncidentDetections(
-            @Nonnull GuildUpdateSecurityIncidentDetectionsEvent event) {}
+    public void onGuildUpdateSecurityIncidentDetections(@Nonnull GuildUpdateSecurityIncidentDetectionsEvent event) {}
 
-    public void onGuildUpdateExplicitContentLevel(
-            @Nonnull GuildUpdateExplicitContentLevelEvent event) {}
+    public void onGuildUpdateExplicitContentLevel(@Nonnull GuildUpdateExplicitContentLevelEvent event) {}
 
     public void onGuildUpdateIcon(@Nonnull GuildUpdateIconEvent event) {}
 
@@ -394,8 +383,7 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onGuildUpdateDescription(@Nonnull GuildUpdateDescriptionEvent event) {}
 
-    public void onGuildUpdateSystemChannelFlags(
-            @Nonnull GuildUpdateSystemChannelFlagsEvent event) {}
+    public void onGuildUpdateSystemChannelFlags(@Nonnull GuildUpdateSystemChannelFlagsEvent event) {}
 
     public void onGuildUpdateBoostTier(@Nonnull GuildUpdateBoostTierEvent event) {}
 
@@ -408,8 +396,7 @@ public abstract class ListenerAdapter implements EventListener {
     public void onGuildUpdateNSFWLevel(@Nonnull GuildUpdateNSFWLevelEvent event) {}
 
     // Scheduled Event Events
-    public void onScheduledEventUpdateDescription(
-            @Nonnull ScheduledEventUpdateDescriptionEvent event) {}
+    public void onScheduledEventUpdateDescription(@Nonnull ScheduledEventUpdateDescriptionEvent event) {}
 
     public void onScheduledEventUpdateEndTime(@Nonnull ScheduledEventUpdateEndTimeEvent event) {}
 
@@ -417,8 +404,7 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onScheduledEventUpdateName(@Nonnull ScheduledEventUpdateNameEvent event) {}
 
-    public void onScheduledEventUpdateStartTime(
-            @Nonnull ScheduledEventUpdateStartTimeEvent event) {}
+    public void onScheduledEventUpdateStartTime(@Nonnull ScheduledEventUpdateStartTimeEvent event) {}
 
     public void onScheduledEventUpdateStatus(@Nonnull ScheduledEventUpdateStatusEvent event) {}
 
@@ -524,8 +510,7 @@ public abstract class ListenerAdapter implements EventListener {
     // Application command permission update events
     public void onGenericPrivilegeUpdate(@Nonnull GenericPrivilegeUpdateEvent event) {}
 
-    public void onApplicationCommandUpdatePrivileges(
-            @Nonnull ApplicationCommandUpdatePrivilegesEvent event) {}
+    public void onApplicationCommandUpdatePrivileges(@Nonnull ApplicationCommandUpdatePrivilegesEvent event) {}
 
     public void onApplicationUpdatePrivileges(@Nonnull ApplicationUpdatePrivilegesEvent event) {}
 
@@ -539,8 +524,7 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onGuildStickerUpdateTags(@Nonnull GuildStickerUpdateTagsEvent event) {}
 
-    public void onGuildStickerUpdateDescription(
-            @Nonnull GuildStickerUpdateDescriptionEvent event) {}
+    public void onGuildStickerUpdateDescription(@Nonnull GuildStickerUpdateDescriptionEvent event) {}
 
     public void onGuildStickerUpdateAvailable(@Nonnull GuildStickerUpdateAvailableEvent event) {}
 
@@ -559,11 +543,9 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
 
-    public void onGenericAutoCompleteInteraction(
-            @Nonnull GenericAutoCompleteInteractionEvent event) {}
+    public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
 
-    public void onGenericComponentInteractionCreate(
-            @Nonnull GenericComponentInteractionCreateEvent event) {}
+    public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
 
     public void onGenericCommandInteraction(@Nonnull GenericCommandInteractionEvent event) {}
 

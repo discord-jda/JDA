@@ -137,8 +137,7 @@ public interface VoiceDispatchInterceptor {
         private final String sessionId;
         private final DataObject json;
 
-        public VoiceServerUpdate(
-                Guild guild, String endpoint, String token, String sessionId, DataObject json) {
+        public VoiceServerUpdate(Guild guild, String endpoint, String token, String sessionId, DataObject json) {
             this.guild = guild;
             this.endpoint = endpoint;
             this.token = token;

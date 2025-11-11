@@ -66,8 +66,7 @@ public class JDABuilderTest extends AbstractSnapshotTest {
 
         assertThatIllegalArgumentException()
                 .isThrownBy(builder::checkIntents)
-                .withMessage(
-                        "Cannot use CacheFlag.ACTIVITY without GatewayIntent.GUILD_PRESENCES!");
+                .withMessage("Cannot use CacheFlag.ACTIVITY without GatewayIntent.GUILD_PRESENCES!");
     }
 
     @ParameterizedTest
@@ -92,8 +91,7 @@ public class JDABuilderTest extends AbstractSnapshotTest {
     @EnumSource(CacheFlag.class)
     void testRequiredIntentForCacheFlagEnabled(CacheFlag cacheFlag) {
         GatewayIntent requiredIntent = cacheFlag.getRequiredIntent();
-        TestJDABuilder builder =
-                new TestJDABuilder(requiredIntent != null ? requiredIntent.getRawValue() : 0);
+        TestJDABuilder builder = new TestJDABuilder(requiredIntent != null ? requiredIntent.getRawValue() : 0);
         builder.applyIntents();
         builder.enableCache(cacheFlag);
 

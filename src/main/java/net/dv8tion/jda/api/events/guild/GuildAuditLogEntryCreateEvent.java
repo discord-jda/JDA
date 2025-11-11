@@ -35,8 +35,7 @@ import javax.annotation.Nonnull;
 public class GuildAuditLogEntryCreateEvent extends GenericGuildEvent {
     private final AuditLogEntry entry;
 
-    public GuildAuditLogEntryCreateEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull AuditLogEntry entry) {
+    public GuildAuditLogEntryCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull AuditLogEntry entry) {
         super(api, responseNumber, entry.getGuild());
         this.entry = entry;
     }

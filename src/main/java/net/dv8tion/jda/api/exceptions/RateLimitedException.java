@@ -33,8 +33,7 @@ public class RateLimitedException extends Exception {
     }
 
     public RateLimitedException(String route, long retryAfter) {
-        super(Helpers.format(
-                "The request was ratelimited! Retry-After: %d  Route: %s", retryAfter, route));
+        super(Helpers.format("The request was ratelimited! Retry-After: %d  Route: %s", retryAfter, route));
         this.rateLimitedRoute = route;
         this.retryAfter = retryAfter;
     }

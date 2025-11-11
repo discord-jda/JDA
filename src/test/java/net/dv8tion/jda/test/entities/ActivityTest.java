@@ -50,55 +50,46 @@ public class ActivityTest {
     @Test
     void activitySerializationTest() {
         assertEquals(
-                formatActivity(0, "playing test", null),
-                PresenceImpl.getGameJson(Activity.playing("playing test")));
+                formatActivity(0, "playing test", null), PresenceImpl.getGameJson(Activity.playing("playing test")));
         assertEquals(
                 formatActivity(0, "playing test", "playing state"),
-                PresenceImpl.getGameJson(
-                        Activity.playing("playing test").withState("playing state")));
+                PresenceImpl.getGameJson(Activity.playing("playing test").withState("playing state")));
 
         assertEquals(
                 formatActivity(1, "streaming test", null).put("url", "https://twitch.tv/discord"),
-                PresenceImpl.getGameJson(
-                        Activity.streaming("streaming test", "https://twitch.tv/discord")));
+                PresenceImpl.getGameJson(Activity.streaming("streaming test", "https://twitch.tv/discord")));
         assertEquals(
-                formatActivity(1, "streaming test", "streaming state")
-                        .put("url", "https://twitch.tv/discord"),
-                PresenceImpl.getGameJson(
-                        Activity.streaming("streaming test", "https://twitch.tv/discord")
-                                .withState("streaming state")));
+                formatActivity(1, "streaming test", "streaming state").put("url", "https://twitch.tv/discord"),
+                PresenceImpl.getGameJson(Activity.streaming("streaming test", "https://twitch.tv/discord")
+                        .withState("streaming state")));
 
         assertEquals(
                 formatActivity(2, "listening test", null),
                 PresenceImpl.getGameJson(Activity.listening("listening test")));
         assertEquals(
                 formatActivity(2, "listening test", "listening state"),
-                PresenceImpl.getGameJson(
-                        Activity.listening("listening test").withState("listening state")));
+                PresenceImpl.getGameJson(Activity.listening("listening test").withState("listening state")));
 
         assertEquals(
-                formatActivity(3, "watching test", null),
-                PresenceImpl.getGameJson(Activity.watching("watching test")));
+                formatActivity(3, "watching test", null), PresenceImpl.getGameJson(Activity.watching("watching test")));
         assertEquals(
                 formatActivity(3, "watching test", "watching state"),
-                PresenceImpl.getGameJson(
-                        Activity.watching("watching test").withState("watching state")));
+                PresenceImpl.getGameJson(Activity.watching("watching test").withState("watching state")));
 
         assertEquals(
                 formatActivity(4, "Custom Status", "custom status test"),
                 PresenceImpl.getGameJson(Activity.customStatus("custom status test")));
         assertEquals(
                 formatActivity(4, "Custom Status", "custom status test"),
-                PresenceImpl.getGameJson(Activity.customStatus("custom status test")
-                        .withState("should be ignored")));
+                PresenceImpl.getGameJson(
+                        Activity.customStatus("custom status test").withState("should be ignored")));
 
         assertEquals(
                 formatActivity(5, "competing test", null),
                 PresenceImpl.getGameJson(Activity.competing("competing test")));
         assertEquals(
                 formatActivity(5, "competing test", "competing state"),
-                PresenceImpl.getGameJson(
-                        Activity.competing("competing test").withState("competing state")));
+                PresenceImpl.getGameJson(Activity.competing("competing test").withState("competing state")));
     }
 
     @Test
@@ -135,12 +126,8 @@ public class ActivityTest {
                 .put("details", "Playing 3v3 Control Point")
                 .put(
                         "party",
-                        DataObject.empty()
-                                .put("id", "1234")
-                                .put("size", DataArray.fromCollection(Arrays.asList(3, 6))))
-                .put(
-                        "timestamps",
-                        DataObject.empty().put("start", 1507665886).put("end", 1507666000))
+                        DataObject.empty().put("id", "1234").put("size", DataArray.fromCollection(Arrays.asList(3, 6))))
+                .put("timestamps", DataObject.empty().put("start", 1507665886).put("end", 1507666000))
                 .put(
                         "assets",
                         DataObject.empty()

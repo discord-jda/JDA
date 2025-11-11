@@ -38,13 +38,7 @@ public class GuildUpdateCommunityUpdatesChannelEvent extends GenericGuildUpdateE
             long responseNumber,
             @Nonnull Guild guild,
             @Nullable TextChannel oldCommunityUpdatesChannel) {
-        super(
-                api,
-                responseNumber,
-                guild,
-                oldCommunityUpdatesChannel,
-                guild.getCommunityUpdatesChannel(),
-                IDENTIFIER);
+        super(api, responseNumber, guild, oldCommunityUpdatesChannel, guild.getCommunityUpdatesChannel(), IDENTIFIER);
     }
 
     /**

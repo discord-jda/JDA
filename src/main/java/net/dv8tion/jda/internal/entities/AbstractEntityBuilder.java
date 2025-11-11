@@ -109,14 +109,13 @@ public abstract class AbstractEntityBuilder {
                 .setLocked(threadMetadata.getBoolean("locked"))
                 .setArchived(threadMetadata.getBoolean("archived"))
                 .setInvitable(threadMetadata.getBoolean("invitable"))
-                .setArchiveTimestamp(
-                        Helpers.toTimestamp(threadMetadata.getString("archive_timestamp")))
+                .setArchiveTimestamp(Helpers.toTimestamp(threadMetadata.getString("archive_timestamp")))
                 .setCreationTimestamp(
                         threadMetadata.isNull("create_timestamp")
                                 ? 0
                                 : Helpers.toTimestamp(threadMetadata.getString("create_timestamp")))
-                .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.fromKey(
-                        threadMetadata.getInt("auto_archive_duration")));
+                .setAutoArchiveDuration(
+                        ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration")));
     }
 
     protected void configureForumChannel(DataObject json, ForumChannelMixin<?> channel) {
@@ -199,9 +198,8 @@ public abstract class AbstractEntityBuilder {
             member.setFlags(memberJson.getInt("flags"));
         }
 
-        long boostTimestamp = memberJson.isNull("premium_since")
-                ? 0
-                : Helpers.toTimestamp(memberJson.getString("premium_since"));
+        long boostTimestamp =
+                memberJson.isNull("premium_since") ? 0 : Helpers.toTimestamp(memberJson.getString("premium_since"));
         member.setBoostDate(boostTimestamp);
 
         long timeOutTimestamp = memberJson.isNull("communication_disabled_until")

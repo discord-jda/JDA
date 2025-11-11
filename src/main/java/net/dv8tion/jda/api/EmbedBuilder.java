@@ -109,14 +109,10 @@ public class EmbedBuilder {
         builder.setTitle(data.getString("title", null));
         builder.setUrl(data.getString("url", null));
         builder.setDescription(data.getString("description", ""));
-        builder.setTimestamp(
-                data.isNull("timestamp")
-                        ? null
-                        : OffsetDateTime.parse(data.getString("timestamp")));
+        builder.setTimestamp(data.isNull("timestamp") ? null : OffsetDateTime.parse(data.getString("timestamp")));
         builder.setColor(data.getInt("color", Role.DEFAULT_COLOR_RAW));
 
-        data.optObject("thumbnail")
-                .ifPresent(thumbnail -> builder.setThumbnail(thumbnail.getString("url")));
+        data.optObject("thumbnail").ifPresent(thumbnail -> builder.setThumbnail(thumbnail.getString("url")));
 
         data.optObject("author")
                 .ifPresent(author -> builder.setAuthor(
@@ -125,8 +121,8 @@ public class EmbedBuilder {
                         author.getString("icon_url", null)));
 
         data.optObject("footer")
-                .ifPresent(footer -> builder.setFooter(
-                        footer.getString("text", ""), footer.getString("icon_url", null)));
+                .ifPresent(
+                        footer -> builder.setFooter(footer.getString("text", ""), footer.getString("icon_url", null)));
 
         data.optObject("image").ifPresent(image -> builder.setImage(image.getString("url")));
 
@@ -163,18 +159,15 @@ public class EmbedBuilder {
         }
         if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH) {
             throw new IllegalStateException(Helpers.format(
-                    "Description is longer than %d! Please limit your input!",
-                    MessageEmbed.DESCRIPTION_MAX_LENGTH));
+                    "Description is longer than %d! Please limit your input!", MessageEmbed.DESCRIPTION_MAX_LENGTH));
         }
         if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT) {
             throw new IllegalStateException(Helpers.format(
-                    "Cannot build an embed with more than %d characters!",
-                    MessageEmbed.EMBED_MAX_LENGTH_BOT));
+                    "Cannot build an embed with more than %d characters!", MessageEmbed.EMBED_MAX_LENGTH_BOT));
         }
         if (fields.size() > MessageEmbed.MAX_FIELD_AMOUNT) {
             throw new IllegalStateException(Helpers.format(
-                    "Cannot build an embed with more than %d embed fields set!",
-                    MessageEmbed.MAX_FIELD_AMOUNT));
+                    "Cannot build an embed with more than %d embed fields set!", MessageEmbed.MAX_FIELD_AMOUNT));
         }
         String description = this.description.length() < 1 ? null : this.description.toString();
 
@@ -467,8 +460,7 @@ public class EmbedBuilder {
     public EmbedBuilder appendDescription(@Nonnull CharSequence description) {
         Checks.notNull(description, "description");
         Checks.check(
-                this.description.length() + description.length()
-                        <= MessageEmbed.DESCRIPTION_MAX_LENGTH,
+                this.description.length() + description.length() <= MessageEmbed.DESCRIPTION_MAX_LENGTH,
                 "Description cannot be longer than %d characters.",
                 MessageEmbed.DESCRIPTION_MAX_LENGTH);
         this.description.append(description);
@@ -711,8 +703,7 @@ public class EmbedBuilder {
      * @return the builder after the author has been set
      */
     @Nonnull
-    public EmbedBuilder setAuthor(
-            @Nullable String name, @Nullable String url, @Nullable String iconUrl) {
+    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url, @Nullable String iconUrl) {
         // We only check if the name is null because its presence is what determines if the author
         // will appear in the embed.
         if (name == null) {
@@ -895,9 +886,7 @@ public class EmbedBuilder {
     private void urlCheck(@Nullable String url) {
         if (url != null) {
             Checks.notLonger(url, MessageEmbed.URL_MAX_LENGTH, "URL");
-            Checks.check(
-                    URL_PATTERN.matcher(url).matches(),
-                    "URL must be a valid http(s) or attachment url.");
+            Checks.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http(s) or attachment url.");
         }
     }
 }

@@ -37,8 +37,7 @@ import javax.annotation.Nonnull;
 public class GuildBanEvent extends GenericGuildEvent {
     private final User user;
 
-    public GuildBanEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user) {
+    public GuildBanEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user) {
         super(api, responseNumber, guild);
         this.user = user;
     }

@@ -49,8 +49,7 @@ public class GuildMemberUpdateHandler extends SocketHandler {
             // getJDA().getEventCache().cache(EventCache.Type.GUILD, userId, responseNumber,
             // allContent, this::handle);
             EventCache.LOG.debug(
-                    "Got GuildMember update but JDA currently does not have the Guild cached. Ignoring. {}",
-                    content);
+                    "Got GuildMember update but JDA currently does not have the Guild cached. Ignoring. {}", content);
             return null;
         }
 
@@ -75,10 +74,8 @@ public class GuildMemberUpdateHandler extends SocketHandler {
             if (r != null) {
                 roles.add(r);
             } else {
-                getJDA().getEventCache()
-                        .cache(EventCache.Type.ROLE, id, responseNumber, allContent, this::handle);
-                EventCache.LOG.debug(
-                        "Got GuildMember update but one of the Roles for the Member is not yet cached.");
+                getJDA().getEventCache().cache(EventCache.Type.ROLE, id, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Got GuildMember update but one of the Roles for the Member is not yet cached.");
                 return null;
             }
         }

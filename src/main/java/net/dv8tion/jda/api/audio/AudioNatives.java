@@ -92,15 +92,11 @@ public final class AudioNatives {
         } else if (e instanceof IOException) {
             LOG.error("There was an IO Exception when setting up the temp files for audio.", e);
         } else if (e instanceof UnsatisfiedLinkError) {
-            LOG.error(
-                    "JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.",
-                    e);
+            LOG.error("JDA encountered a problem when attempting to load the Native libraries. Contact a DEV.", e);
         } else if (e instanceof Error) {
             throw (Error) e;
         } else {
-            LOG.error(
-                    "An unknown exception occurred while attempting to setup JDA's audio system!",
-                    e);
+            LOG.error("An unknown exception occurred while attempting to setup JDA's audio system!", e);
         }
     }
 }

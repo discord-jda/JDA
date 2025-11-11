@@ -454,23 +454,19 @@ public class MessageReaction {
         boolean self = user.equals(getJDA().getSelfUser());
         if (!self && channel != null) {
             if (!channel.getType().isGuild()) {
-                throw new PermissionException(
-                        "Unable to remove Reaction of other user in non-guild channels!");
+                throw new PermissionException("Unable to remove Reaction of other user in non-guild channels!");
             }
 
             GuildChannel guildChannel = (GuildChannel) channel;
-            if (!guildChannel
-                    .getGuild()
-                    .getSelfMember()
-                    .hasPermission(guildChannel, Permission.MESSAGE_MANAGE)) {
+            if (!guildChannel.getGuild().getSelfMember().hasPermission(guildChannel, Permission.MESSAGE_MANAGE)) {
                 throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
             }
         }
 
         String code = emoji.getAsReactionCode();
         String target = self ? "@me" : user.getId();
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
-                getChannelId(), getMessageId(), code, target);
+        Route.CompiledRoute route =
+                Route.Messages.REMOVE_REACTION.compile(getChannelId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -510,8 +506,7 @@ public class MessageReaction {
 
         // Requires permission, only works in guilds
         if (!getChannelType().isGuild()) {
-            throw new UnsupportedOperationException(
-                    "Cannot clear reactions on a message sent from a private channel");
+            throw new UnsupportedOperationException("Cannot clear reactions on a message sent from a private channel");
         }
         GuildMessageChannel guildChannel = Objects.requireNonNull(getGuildChannel());
         return guildChannel.clearReactionsById(getMessageId(), emoji);

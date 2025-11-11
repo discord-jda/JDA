@@ -48,8 +48,7 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 
-public class CommandCreateActionImpl extends RestActionImpl<Command>
-        implements CommandCreateAction {
+public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction {
     private final Guild guild;
     private final CommandDataImpl data;
 
@@ -102,8 +101,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command>
 
     @Nonnull
     @Override
-    public CommandCreateAction setIntegrationTypes(
-            @Nonnull Collection<IntegrationType> integrationTypes) {
+    public CommandCreateAction setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes) {
         data.setIntegrationTypes(integrationTypes);
         return this;
     }
@@ -117,8 +115,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command>
 
     @Nonnull
     @Override
-    public CommandCreateAction setLocalizationFunction(
-            @Nonnull LocalizationFunction localizationFunction) {
+    public CommandCreateAction setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction) {
         data.setLocalizationFunction(localizationFunction);
         return this;
     }
@@ -179,8 +176,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command>
 
     @Nonnull
     @Override
-    public CommandCreateAction setNameLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String name) {
+    public CommandCreateAction setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
         data.setNameLocalization(locale, name);
         return this;
     }
@@ -201,16 +197,14 @@ public class CommandCreateActionImpl extends RestActionImpl<Command>
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescriptionLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String description) {
+    public CommandCreateAction setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description) {
         data.setDescriptionLocalization(locale, description);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescriptionLocalizations(
-            @Nonnull Map<DiscordLocale, String> map) {
+    public CommandCreateAction setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map) {
         data.setDescriptionLocalizations(map);
         return this;
     }
@@ -238,8 +232,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command>
     }
 
     @Override
-    public boolean removeSubcommandGroups(
-            @Nonnull Predicate<? super SubcommandGroupData> condition) {
+    public boolean removeSubcommandGroups(@Nonnull Predicate<? super SubcommandGroupData> condition) {
         return data.removeSubcommandGroups(condition);
     }
 

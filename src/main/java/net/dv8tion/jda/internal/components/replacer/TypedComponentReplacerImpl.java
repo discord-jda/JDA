@@ -31,9 +31,7 @@ public class TypedComponentReplacerImpl<T extends Component> implements Componen
     private final Function<? super T, ? extends Component> updater;
 
     public TypedComponentReplacerImpl(
-            Class<? super T> type,
-            Predicate<? super T> filter,
-            Function<? super T, ? extends Component> updater) {
+            Class<? super T> type, Predicate<? super T> filter, Function<? super T, ? extends Component> updater) {
         this.type = type;
         this.filter = filter;
         this.updater = updater;

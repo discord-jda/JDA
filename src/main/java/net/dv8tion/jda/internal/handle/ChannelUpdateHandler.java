@@ -94,19 +94,11 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         // We assume the CHANNEL_UPDATE was for a GuildChannel because PrivateChannels don't emit
         // CHANNEL_UPDATE for 1:1 DMs, only Groups.
-        AbstractGuildChannelImpl<?> channel =
-                (AbstractGuildChannelImpl<?>) getJDA().getGuildChannelById(channelId);
+        AbstractGuildChannelImpl<?> channel = (AbstractGuildChannelImpl<?>) getJDA().getGuildChannelById(channelId);
         if (channel == null) {
             getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.CHANNEL,
-                            channelId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
-            EventCache.LOG.debug(
-                    "CHANNEL_UPDATE attempted to update a channel that does not exist. JSON: {}",
-                    content);
+                    .cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a channel that does not exist. JSON: {}", content);
             return null;
         }
 
@@ -122,8 +114,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         String name = content.getString("name", oldName);
         if (!Objects.equals(oldName, name)) {
             channel.setName(name);
-            getJDA().handleEvent(new ChannelUpdateNameEvent(
-                    getJDA(), responseNumber, channel, oldName, name));
+            getJDA().handleEvent(new ChannelUpdateNameEvent(getJDA(), responseNumber, channel, oldName, name));
         }
 
         if (channel instanceof ITopicChannelMixin<?>) {
@@ -131,8 +122,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         }
 
         if (channel instanceof ISlowmodeChannelMixin<?>) {
-            handleSlowmode(
-                    (ISlowmodeChannelMixin<?>) channel, content.getInt("rate_limit_per_user", 0));
+            handleSlowmode((ISlowmodeChannelMixin<?>) channel, content.getInt("rate_limit_per_user", 0));
         }
 
         if (channel instanceof IAgeRestrictedChannelMixin<?>) {
@@ -140,9 +130,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         }
 
         if (channel instanceof ICategorizableChannelMixin<?>) {
-            handleParentCategory(
-                    (ICategorizableChannelMixin<?>) channel,
-                    content.getUnsignedLong("parent_id", 0));
+            handleParentCategory((ICategorizableChannelMixin<?>) channel, content.getUnsignedLong("parent_id", 0));
         }
 
         if (channel instanceof IPositionableChannelMixin<?>) {
@@ -167,8 +155,7 @@ public class ChannelUpdateHandler extends SocketHandler {
             case FORUM:
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
 
-                int layout = content.getInt(
-                        "default_forum_layout", ((ForumChannelImpl) channel).getRawLayout());
+                int layout = content.getInt("default_forum_layout", ((ForumChannelImpl) channel).getRawLayout());
                 int oldLayout = forumChannel.getRawLayout();
 
                 if (oldLayout != layout) {
@@ -188,15 +175,13 @@ public class ChannelUpdateHandler extends SocketHandler {
             case CATEGORY:
                 break;
             default:
-                WebSocketClient.LOG.debug(
-                        "CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
+                WebSocketClient.LOG.debug("CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
         }
 
         DataArray permOverwrites = content.getArray("permission_overwrites");
         applyPermissions((IPermissionContainerMixin<?>) channel, permOverwrites);
 
-        boolean hasAccessToChannel =
-                channel.getGuild().getSelfMember().hasPermission(channel, Permission.VIEW_CHANNEL);
+        boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission(channel, Permission.VIEW_CHANNEL);
         if (channel instanceof IThreadContainer && !hasAccessToChannel) {
             handleHideChildThreads((IThreadContainer) channel);
         }
@@ -253,8 +238,7 @@ public class ChannelUpdateHandler extends SocketHandler {
             ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(latestMessageIdLong);
         }
 
-        getJDA().handleEvent(new ChannelUpdateTypeEvent(
-                getJDA(), responseNumber, newChannel, oldType, newChannelType));
+        getJDA().handleEvent(new ChannelUpdateTypeEvent(getJDA(), responseNumber, newChannel, oldType, newChannelType));
 
         return channel;
     }
@@ -305,8 +289,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         boolean isRole = type == 0;
         if (!isRole) {
             if (type != 1) {
-                EntityBuilder.LOG.debug(
-                        "Ignoring unknown invite of type '{}'. JSON: {}", type, override);
+                EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
                 return false;
             } else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES)
                     && overrideId != api.getSelfUser().getIdLong()) {
@@ -413,18 +396,16 @@ public class ChannelUpdateHandler extends SocketHandler {
 
                     impl.setPosition(i);
                     if (!Objects.equals(oldEmoji, impl.getEmoji())) {
-                        api.handleEvent(new ForumTagUpdateEmojiEvent(
-                                api, responseNumber, channel, impl, oldEmoji));
+                        api.handleEvent(new ForumTagUpdateEmojiEvent(api, responseNumber, channel, impl, oldEmoji));
                     }
                     if (!name.equals(oldName)) {
                         impl.setName(name);
-                        api.handleEvent(new ForumTagUpdateNameEvent(
-                                api, responseNumber, channel, impl, oldName));
+                        api.handleEvent(new ForumTagUpdateNameEvent(api, responseNumber, channel, impl, oldName));
                     }
                     if (moderated != impl.isModerated()) {
                         impl.setModerated(moderated);
-                        api.handleEvent(new ForumTagUpdateModeratedEvent(
-                                api, responseNumber, channel, impl, moderated));
+                        api.handleEvent(
+                                new ForumTagUpdateModeratedEvent(api, responseNumber, channel, impl, moderated));
                     }
                 } else {
                     ForumTag tag = builder.createForumTag(channel, tagJson, i);
@@ -460,8 +441,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         }
 
         channel.setSlowmode(slowmode);
-        api.handleEvent(new ChannelUpdateSlowmodeEvent(
-                api, responseNumber, channel, oldSlowmode, slowmode));
+        api.handleEvent(new ChannelUpdateSlowmodeEvent(api, responseNumber, channel, oldSlowmode, slowmode));
     }
 
     private void handleNsfw(IAgeRestrictedChannelMixin<?> channel, boolean nsfw) {
@@ -484,8 +464,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         channel.setParentCategory(parentId);
         Category newParent = channel.getParentCategory();
 
-        api.handleEvent(
-                new ChannelUpdateParentEvent(api, responseNumber, channel, oldParent, newParent));
+        api.handleEvent(new ChannelUpdateParentEvent(api, responseNumber, channel, oldParent, newParent));
     }
 
     private void handlePosition(IPositionableChannelMixin<?> channel, int position) {
@@ -495,8 +474,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         }
 
         channel.setPosition(position);
-        api.handleEvent(new ChannelUpdatePositionEvent(
-                api, responseNumber, channel, oldPosition, position));
+        api.handleEvent(new ChannelUpdatePositionEvent(api, responseNumber, channel, oldPosition, position));
     }
 
     private void handleThreadContainer(IThreadContainerMixin<?> channel, DataObject content) {
@@ -515,8 +493,7 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         if (oldBitrate != bitrate) {
             channel.setBitrate(bitrate);
-            api.handleEvent(new ChannelUpdateBitrateEvent(
-                    api, responseNumber, channel, oldBitrate, bitrate));
+            api.handleEvent(new ChannelUpdateBitrateEvent(api, responseNumber, channel, oldBitrate, bitrate));
         }
 
         int userLimit = content.getInt("user_limit");
@@ -524,8 +501,8 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         if (oldLimit != userLimit) {
             channel.setUserLimit(userLimit);
-            getJDA().handleEvent(new ChannelUpdateUserLimitEvent(
-                    getJDA(), responseNumber, channel, oldLimit, userLimit));
+            getJDA().handleEvent(
+                            new ChannelUpdateUserLimitEvent(getJDA(), responseNumber, channel, oldLimit, userLimit));
         }
 
         String oldRegion = channel.getRegionRaw();
@@ -534,11 +511,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         if (!Objects.equals(oldRegion, regionRaw)) {
             channel.setRegion(regionRaw);
             api.handleEvent(new ChannelUpdateRegionEvent(
-                    api,
-                    responseNumber,
-                    channel,
-                    Region.fromKey(oldRegion),
-                    Region.fromKey(regionRaw)));
+                    api, responseNumber, channel, Region.fromKey(oldRegion), Region.fromKey(regionRaw)));
         }
     }
 
@@ -563,10 +536,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         if (oldSortOrder != sortOrder) {
             channel.setDefaultSortOrder(sortOrder);
             getJDA().handleEvent(new ChannelUpdateDefaultSortOrderEvent(
-                    getJDA(),
-                    responseNumber,
-                    channel,
-                    IPostContainer.SortOrder.fromKey(oldSortOrder)));
+                    getJDA(), responseNumber, channel, IPostContainer.SortOrder.fromKey(oldSortOrder)));
         }
 
         int newFlags = content.getInt("flags", 0);
@@ -575,11 +545,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         if (oldFlags != newFlags) {
             channel.setFlags(newFlags);
             getJDA().handleEvent(new ChannelUpdateFlagsEvent(
-                    getJDA(),
-                    responseNumber,
-                    channel,
-                    ChannelFlag.fromRaw(oldFlags),
-                    ChannelFlag.fromRaw(newFlags)));
+                    getJDA(), responseNumber, channel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(newFlags)));
         }
     }
 }

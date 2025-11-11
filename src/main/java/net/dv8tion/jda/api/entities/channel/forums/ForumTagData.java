@@ -66,9 +66,8 @@ public class ForumTagData implements BaseForumTag {
     @Nonnull
     public static ForumTagData from(@Nonnull BaseForumTag tag) {
         Checks.notNull(tag, "Tag");
-        ForumTagData data = new ForumTagData(tag.getName())
-                .setEmoji(tag.getEmoji())
-                .setModerated(tag.isModerated());
+        ForumTagData data =
+                new ForumTagData(tag.getName()).setEmoji(tag.getEmoji()).setModerated(tag.isModerated());
         if (tag instanceof ForumTagSnowflake) {
             data.id = ((ForumTagSnowflake) tag).getIdLong();
         }

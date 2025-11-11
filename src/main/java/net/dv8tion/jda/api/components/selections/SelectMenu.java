@@ -279,10 +279,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
         @Nonnull
         public B setRequiredRange(int min, int max) {
             Checks.check(
-                    min <= max,
-                    "Min Values should be less than or equal to Max Values! Provided: [%d, %d]",
-                    min,
-                    max);
+                    min <= max, "Min Values should be less than or equal to Max Values! Provided: [%d, %d]", min, max);
             return setMinValues(min).setMaxValues(max);
         }
 

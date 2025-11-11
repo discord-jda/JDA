@@ -38,8 +38,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ContainerImpl extends AbstractComponentImpl
-        implements Container, MessageTopLevelComponentUnion {
+public class ContainerImpl extends AbstractComponentImpl implements Container, MessageTopLevelComponentUnion {
     private final int uniqueId;
     private final List<ContainerChildComponentUnion> components;
     private final boolean spoiler;
@@ -49,8 +48,7 @@ public class ContainerImpl extends AbstractComponentImpl
         this(
                 data.getInt("id", -1),
                 deserializer
-                        .deserializeAs(
-                                ContainerChildComponentUnion.class, data.getArray("components"))
+                        .deserializeAs(ContainerChildComponentUnion.class, data.getArray("components"))
                         .collect(Collectors.toList()),
                 data.getBoolean("spoiler", false),
                 data.isNull("accent_color") ? null : data.getInt("accent_color"));
@@ -61,10 +59,7 @@ public class ContainerImpl extends AbstractComponentImpl
     }
 
     public ContainerImpl(
-            int uniqueId,
-            Collection<ContainerChildComponentUnion> components,
-            boolean spoiler,
-            Integer accentColor) {
+            int uniqueId, Collection<ContainerChildComponentUnion> components, boolean spoiler, Integer accentColor) {
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
         this.spoiler = spoiler;
@@ -116,8 +111,7 @@ public class ContainerImpl extends AbstractComponentImpl
 
     @Nonnull
     @Override
-    public Container withComponents(
-            @Nonnull Collection<? extends ContainerChildComponent> components) {
+    public Container withComponents(@Nonnull Collection<? extends ContainerChildComponent> components) {
         Checks.noneNull(components, "Components");
         return new ContainerImpl(
                 uniqueId,

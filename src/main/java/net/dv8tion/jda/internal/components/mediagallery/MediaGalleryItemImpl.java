@@ -37,8 +37,7 @@ import javax.annotation.Nullable;
 /**
  * Represents either an external link, an attachment:// link, or an existing item (which is also a link)
  */
-public class MediaGalleryItemImpl
-        implements MediaGalleryItem, FileContainerMixin, SerializableData {
+public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixin, SerializableData {
     private final String url, description;
     private final ResolvedMedia media;
     private final boolean spoiler;
@@ -55,8 +54,7 @@ public class MediaGalleryItemImpl
         this(url, null, null, false);
     }
 
-    public MediaGalleryItemImpl(
-            String url, String description, ResolvedMedia media, boolean spoiler) {
+    public MediaGalleryItemImpl(String url, String description, ResolvedMedia media, boolean spoiler) {
         this.url = url;
         this.media = media;
         this.description = description;

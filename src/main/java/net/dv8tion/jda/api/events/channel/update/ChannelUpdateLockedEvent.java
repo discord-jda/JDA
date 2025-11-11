@@ -38,11 +38,7 @@ public class ChannelUpdateLockedEvent extends GenericChannelUpdateEvent<Boolean>
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateLockedEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            Boolean oldValue,
-            Boolean newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

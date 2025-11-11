@@ -69,8 +69,7 @@ public class BanPaginationActionImpl extends PaginationActionImpl<Guild.Ban, Ban
             DataObject object = bannedArr.getObject(i);
             try {
                 DataObject user = object.getObject("user");
-                Guild.Ban ban =
-                        new Guild.Ban(builder.createUser(user), object.getString("reason", null));
+                Guild.Ban ban = new Guild.Ban(builder.createUser(user), object.getString("reason", null));
 
                 bans.add(ban);
             } catch (Exception t) {

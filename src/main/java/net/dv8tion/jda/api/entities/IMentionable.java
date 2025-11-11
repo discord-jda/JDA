@@ -60,8 +60,7 @@ public interface IMentionable extends Formattable, ISnowflake {
 
     @Override
     default void formatTo(Formatter formatter, int flags, int width, int precision) {
-        boolean leftJustified =
-                (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
         String out = upper ? getAsMention().toUpperCase(formatter.locale()) : getAsMention();
 

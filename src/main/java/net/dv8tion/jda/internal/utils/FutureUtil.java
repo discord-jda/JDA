@@ -25,9 +25,7 @@ import javax.annotation.Nullable;
 public class FutureUtil {
     @Nonnull
     public static <T, U> CompletableFuture<U> thenApplyCancellable(
-            @Nonnull CompletableFuture<T> future,
-            @Nonnull Function<T, U> applyFunction,
-            @Nullable Runnable onCancel) {
+            @Nonnull CompletableFuture<T> future, @Nonnull Function<T, U> applyFunction, @Nullable Runnable onCancel) {
         CompletableFuture<U> cf = new CompletableFuture<>();
 
         future.thenAccept(t -> cf.complete(applyFunction.apply(t))).exceptionally(throwable -> {

@@ -55,10 +55,7 @@ public class RestActionImpl<T> implements RestAction<T> {
                     t.getMessage(),
                     t.getCause());
         } else {
-            LOG.error(
-                    "RestAction queue returned failure: [{}] {}",
-                    t.getClass().getSimpleName(),
-                    t.getMessage());
+            LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
         }
     };
 
@@ -122,30 +119,19 @@ public class RestActionImpl<T> implements RestAction<T> {
         this(api, route, data, null);
     }
 
-    public RestActionImpl(
-            JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
+    public RestActionImpl(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
         this(api, route, (RequestBody) null, handler);
     }
 
     @SuppressWarnings("deprecation")
     public RestActionImpl(
-            JDA api,
-            Route.CompiledRoute route,
-            DataObject data,
-            BiFunction<Response, Request<T>, T> handler) {
-        this(
-                api,
-                route,
-                data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()),
-                handler);
+            JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler) {
+        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()), handler);
         this.rawData = data;
     }
 
     public RestActionImpl(
-            JDA api,
-            Route.CompiledRoute route,
-            RequestBody data,
-            BiFunction<Response, Request<T>, T> handler) {
+            JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler) {
         Checks.notNull(api, "api");
         this.api = (JDAImpl) api;
         this.route = route;
@@ -224,16 +210,7 @@ public class RestActionImpl<T> implements RestAction<T> {
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        return new RestFuture<>(
-                this,
-                shouldQueue,
-                finisher,
-                data,
-                rawData,
-                getDeadline(),
-                priority,
-                route,
-                headers);
+        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, getDeadline(), priority, route, headers);
     }
 
     @Override
@@ -248,8 +225,7 @@ public class RestActionImpl<T> implements RestAction<T> {
             if (e.getCause() != null) {
                 Throwable cause = e.getCause();
                 if (cause instanceof ErrorResponseException) {
-                    throw (ErrorResponseException)
-                            cause.fillInStackTrace(); // this method will update the stacktrace
+                    throw (ErrorResponseException) cause.fillInStackTrace(); // this method will update the stacktrace
                     // to the current thread stack
                 }
                 if (cause instanceof RateLimitedException) {
@@ -286,9 +262,7 @@ public class RestActionImpl<T> implements RestAction<T> {
     protected RequestBody getRequestBody(DataObject object) {
         this.rawData = object;
 
-        return object == null
-                ? null
-                : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
+        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
     }
 
     @SuppressWarnings("deprecation")
@@ -299,8 +273,7 @@ public class RestActionImpl<T> implements RestAction<T> {
     }
 
     @Nonnull
-    protected RequestBody getMultipartBody(
-            @Nonnull Set<? extends AttachedFile> files, @Nonnull DataObject json) {
+    protected RequestBody getMultipartBody(@Nonnull Set<? extends AttachedFile> files, @Nonnull DataObject json) {
         RequestBody payloadJson = getRequestBody(json);
         if (files.isEmpty()) {
             return payloadJson;
@@ -311,9 +284,7 @@ public class RestActionImpl<T> implements RestAction<T> {
     private CheckWrapper getFinisher() {
         BooleanSupplier pre = finalizeChecks();
         BooleanSupplier wrapped = this.checks;
-        return (pre != null || wrapped != null)
-                ? new CheckWrapper(wrapped, pre)
-                : CheckWrapper.EMPTY;
+        return (pre != null || wrapped != null) ? new CheckWrapper(wrapped, pre) : CheckWrapper.EMPTY;
     }
 
     public void handleResponse(Response response, Request<T> request) {
@@ -323,9 +294,8 @@ public class RestActionImpl<T> implements RestAction<T> {
             request.onRateLimited(response);
         } else {
             ErrorResponseException exception = request.createErrorResponseException(response);
-            Throwable mappedThrowable = this.errorMapper != null
-                    ? this.errorMapper.apply(response, request, exception)
-                    : null;
+            Throwable mappedThrowable =
+                    this.errorMapper != null ? this.errorMapper.apply(response, request, exception) : null;
 
             if (mappedThrowable != null) {
                 request.onFailure(mappedThrowable);
@@ -344,9 +314,7 @@ public class RestActionImpl<T> implements RestAction<T> {
     }
 
     private long getDeadline() {
-        return deadline > 0
-                ? deadline
-                : defaultTimeout > 0 ? System.currentTimeMillis() + defaultTimeout : 0;
+        return deadline > 0 ? deadline : defaultTimeout > 0 ? System.currentTimeMillis() + defaultTimeout : 0;
     }
 
     /*

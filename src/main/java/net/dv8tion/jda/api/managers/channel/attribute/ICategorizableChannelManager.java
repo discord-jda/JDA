@@ -38,9 +38,7 @@ import javax.annotation.Nullable;
  */
 public interface ICategorizableChannelManager<
                 T extends ICategorizableChannel, M extends ICategorizableChannelManager<T, M>>
-        extends ChannelManager<T, M>,
-                IPermissionContainerManager<T, M>,
-                IPositionableChannelManager<T, M> {
+        extends ChannelManager<T, M>, IPermissionContainerManager<T, M>, IPositionableChannelManager<T, M> {
     /**
      * Sets the <b><u>{@link Category Parent Category}</u></b>
      * of the selected {@link GuildChannel GuildChannel}.

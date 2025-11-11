@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code verification_level}
  */
-public class GuildUpdateVerificationLevelEvent
-        extends GenericGuildUpdateEvent<Guild.VerificationLevel> {
+public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<Guild.VerificationLevel> {
     public static final String IDENTIFIER = "verification_level";
 
     public GuildUpdateVerificationLevelEvent(
@@ -37,13 +36,7 @@ public class GuildUpdateVerificationLevelEvent
             long responseNumber,
             @Nonnull Guild guild,
             @Nonnull Guild.VerificationLevel oldVerificationLevel) {
-        super(
-                api,
-                responseNumber,
-                guild,
-                oldVerificationLevel,
-                guild.getVerificationLevel(),
-                IDENTIFIER);
+        super(api, responseNumber, guild, oldVerificationLevel, guild.getVerificationLevel(), IDENTIFIER);
     }
 
     /**

@@ -357,25 +357,21 @@ public interface CommandData extends SerializableData {
                         .map(InteractionContextType::fromKey)
                         .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
             } else {
-                data.setContexts(Helpers.unmodifiableEnumSet(
-                        InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+                data.setContexts(
+                        Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
             }
 
             if (!object.isNull("integration_types")) {
-                data.setIntegrationTypes(
-                        object.getArray("integration_types").stream(DataArray::getString)
-                                .map(IntegrationType::fromKey)
-                                .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+                data.setIntegrationTypes(object.getArray("integration_types").stream(DataArray::getString)
+                        .map(IntegrationType::fromKey)
+                        .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
             } else {
-                data.setIntegrationTypes(
-                        Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
+                data.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
             }
 
             data.setNSFW(object.getBoolean("nsfw"));
-            data.setNameLocalizations(
-                    LocalizationUtils.mapFromProperty(object, "name_localizations"));
-            data.setDescriptionLocalizations(
-                    LocalizationUtils.mapFromProperty(object, "description_localizations"));
+            data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+            data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
             return data;
         }
 

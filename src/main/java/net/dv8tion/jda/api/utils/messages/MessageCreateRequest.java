@@ -354,8 +354,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setTTS(message.isTTS())
                 .setSuppressedNotifications(message.isSuppressedNotifications())
                 .setVoiceMessage(message.isVoiceMessage())
-                .setPoll(
-                        message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
+                .setPoll(message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
     }
 
     /**

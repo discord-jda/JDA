@@ -48,8 +48,7 @@ public class ActionRowImpl extends AbstractComponentImpl
     public ActionRowImpl(ComponentDeserializer deserializer, DataObject data) {
         this(
                 deserializer
-                        .deserializeAs(
-                                ActionRowChildComponentUnion.class, data.getArray("components"))
+                        .deserializeAs(ActionRowChildComponentUnion.class, data.getArray("components"))
                         .collect(Collectors.toList()),
                 data.getInt("id", -1));
     }
@@ -60,14 +59,12 @@ public class ActionRowImpl extends AbstractComponentImpl
     }
 
     @Nonnull
-    public static ActionRow validated(
-            @Nonnull Collection<? extends ActionRowChildComponent> components) {
+    public static ActionRow validated(@Nonnull Collection<? extends ActionRowChildComponent> components) {
         return validated(components, -1);
     }
 
     @Nonnull
-    public static ActionRow validated(
-            @Nonnull Collection<? extends ActionRowChildComponent> components, int uniqueId) {
+    public static ActionRow validated(@Nonnull Collection<? extends ActionRowChildComponent> components, int uniqueId) {
         Checks.notEmpty(components, "Row");
         Checks.noneNull(components, "Components");
         checkIsValid(components);
@@ -79,8 +76,7 @@ public class ActionRowImpl extends AbstractComponentImpl
     }
 
     @Nonnull
-    public static List<ActionRow> partitionOf(
-            @Nonnull Collection<? extends ActionRowChildComponent> components) {
+    public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> components) {
         Checks.noneNull(components, "Components");
         Checks.notEmpty(components, "Components");
         // Don't allow unknown components in user-called methods
@@ -141,12 +137,10 @@ public class ActionRowImpl extends AbstractComponentImpl
 
     @Nonnull
     @Override
-    public ActionRow withComponents(
-            @Nonnull Collection<? extends ActionRowChildComponent> components) {
+    public ActionRow withComponents(@Nonnull Collection<? extends ActionRowChildComponent> components) {
         Checks.noneNull(components, "Components");
         return new ActionRowImpl(
-                ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class),
-                uniqueId);
+                ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class), uniqueId);
     }
 
     @Nonnull
@@ -158,9 +152,7 @@ public class ActionRowImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        DataObject json = DataObject.empty()
-                .put("type", 1)
-                .put("components", DataArray.fromCollection(components));
+        DataObject json = DataObject.empty().put("type", 1).put("components", DataArray.fromCollection(components));
         if (uniqueId >= 0) {
             json.put("id", uniqueId);
         }
@@ -174,8 +166,7 @@ public class ActionRowImpl extends AbstractComponentImpl
         // on this when that happens
         if (groups.size() > 1) {
             throw new IllegalArgumentException(
-                    "Cannot create action row containing different component types! Provided: "
-                            + groups.keySet());
+                    "Cannot create action row containing different component types! Provided: " + groups.keySet());
         }
 
         for (Map.Entry<Component.Type, List<ActionRowChildComponent>> entry : groups.entrySet()) {

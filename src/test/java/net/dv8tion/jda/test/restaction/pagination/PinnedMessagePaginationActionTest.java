@@ -47,8 +47,7 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest {
     @BeforeEach
     void setupMocks() {
         when(guild.getJDA()).thenReturn(jda);
-        when(jda.getUsersView())
-                .thenReturn(new SnowflakeCacheViewImpl<>(User.class, User::getName));
+        when(jda.getUsersView()).thenReturn(new SnowflakeCacheViewImpl<>(User.class, User::getName));
         channel = new TextChannelImpl(Constants.CHANNEL_ID, guild);
     }
 
@@ -62,9 +61,7 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest {
                 .whenQueueCalled();
 
         assertThat(captureListCallback(
-                        PinnedMessage.class,
-                        action,
-                        DataObject.empty().put("items", DataArray.empty())))
+                        PinnedMessage.class, action, DataObject.empty().put("items", DataArray.empty())))
                 .isEmpty();
 
         assertThatRequestFrom(action)
@@ -82,9 +79,7 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest {
 
         for (int i = 0; i < 50; i++) {
             timeStamp = timeStamp.plusSeconds(1);
-            items.add(DataObject.empty()
-                    .put("pinned_at", timeStamp)
-                    .put("message", getTestMessage()));
+            items.add(DataObject.empty().put("pinned_at", timeStamp).put("message", getTestMessage()));
         }
 
         OffsetDateTime lastTimestamp = timeStamp;

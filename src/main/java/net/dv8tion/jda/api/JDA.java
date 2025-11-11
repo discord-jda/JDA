@@ -279,8 +279,8 @@ public interface JDA extends IGuildChannelContainer<Channel> {
     default RestAction<Long> getRestPing() {
         AtomicLong time = new AtomicLong();
         Route.CompiledRoute route = Route.Self.GET_SELF.compile();
-        RestActionImpl<Long> action = new RestActionImpl<>(
-                this, route, (response, request) -> System.currentTimeMillis() - time.get());
+        RestActionImpl<Long> action =
+                new RestActionImpl<>(this, route, (response, request) -> System.currentTimeMillis() - time.get());
         action.setCheck(() -> {
             time.set(System.currentTimeMillis());
             return true;
@@ -355,8 +355,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return The current JDA instance, for chaining convenience
      */
     @Nonnull
-    JDA awaitStatus(@Nonnull JDA.Status status, @Nonnull JDA.Status... failOn)
-            throws InterruptedException;
+    JDA awaitStatus(@Nonnull JDA.Status status, @Nonnull JDA.Status... failOn) throws InterruptedException;
 
     /**
      * This method will block until JDA has reached the status {@link Status#CONNECTED}.
@@ -1043,16 +1042,15 @@ public interface JDA extends IGuildChannelContainer<Channel> {
     default User getUserByTag(@Nonnull String username, @Nullable String discriminator) {
         Checks.inRange(username, 2, 32, "Username");
         Checks.check(
-                discriminator == null
-                        || discriminator.length() == 4 && Helpers.isNumeric(discriminator),
+                discriminator == null || discriminator.length() == 4 && Helpers.isNumeric(discriminator),
                 "Invalid format for discriminator! Provided: %s",
                 discriminator);
         String actualDiscriminator = discriminator == null ? "0000" : discriminator;
-        return getUserCache().applyStream(stream -> stream.filter(
-                        it -> it.getDiscriminator().equals(actualDiscriminator))
-                .filter(it -> it.getName().equals(username))
-                .findFirst()
-                .orElse(null));
+        return getUserCache()
+                .applyStream(stream -> stream.filter(it -> it.getDiscriminator().equals(actualDiscriminator))
+                        .filter(it -> it.getName().equals(username))
+                        .findFirst()
+                        .orElse(null));
     }
 
     /**
@@ -1433,8 +1431,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      */
     @Nonnull
     @Unmodifiable
-    default List<ScheduledEvent> getScheduledEventsByName(
-            @Nonnull String name, boolean ignoreCase) {
+    default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase) {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1947,11 +1944,8 @@ public interface JDA extends IGuildChannelContainer<Channel> {
     @Nonnull
     @CheckReturnValue
     default TestEntitlementCreateAction createTestEntitlement(
-            @Nonnull String skuId,
-            @Nonnull String ownerId,
-            @Nonnull TestEntitlementCreateAction.OwnerType ownerType) {
-        return createTestEntitlement(
-                MiscUtil.parseSnowflake(skuId), MiscUtil.parseSnowflake(ownerId), ownerType);
+            @Nonnull String skuId, @Nonnull String ownerId, @Nonnull TestEntitlementCreateAction.OwnerType ownerType) {
+        return createTestEntitlement(MiscUtil.parseSnowflake(skuId), MiscUtil.parseSnowflake(ownerId), ownerType);
     }
 
     /**

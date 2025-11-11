@@ -26,8 +26,7 @@ import okhttp3.RequestBody;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager>
-        implements StageInstanceManager {
+public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> implements StageInstanceManager {
     private final StageInstance instance;
 
     private String topic;

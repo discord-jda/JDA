@@ -228,8 +228,7 @@ public interface StringSelectMenu extends SelectMenu {
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder addOption(
-                @Nonnull String label, @Nonnull String value, @Nonnull Emoji emoji) {
+        public Builder addOption(@Nonnull String label, @Nonnull String value, @Nonnull Emoji emoji) {
             return addOption(label, value, null, emoji);
         }
 
@@ -251,8 +250,7 @@ public interface StringSelectMenu extends SelectMenu {
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder addOption(
-                @Nonnull String label, @Nonnull String value, @Nonnull String description) {
+        public Builder addOption(@Nonnull String label, @Nonnull String value, @Nonnull String description) {
             return addOption(label, value, description, null);
         }
 
@@ -277,10 +275,7 @@ public interface StringSelectMenu extends SelectMenu {
          */
         @Nonnull
         public Builder addOption(
-                @Nonnull String label,
-                @Nonnull String value,
-                @Nullable String description,
-                @Nullable Emoji emoji) {
+                @Nonnull String label, @Nonnull String value, @Nullable String description, @Nullable Emoji emoji) {
             return addOptions(new SelectOption(label, value, description, false, emoji));
         }
 
@@ -347,8 +342,7 @@ public interface StringSelectMenu extends SelectMenu {
         @Nonnull
         public Builder setDefaultOptions(@Nonnull Collection<? extends SelectOption> values) {
             Checks.noneNull(values, "Values");
-            return setDefaultValues(
-                    values.stream().map(SelectOption::getValue).collect(Collectors.toSet()));
+            return setDefaultValues(values.stream().map(SelectOption::getValue).collect(Collectors.toSet()));
         }
 
         /**
@@ -388,17 +382,14 @@ public interface StringSelectMenu extends SelectMenu {
         @Nonnull
         public StringSelectMenu build() {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
-            Checks.check(
-                    !options.isEmpty(),
-                    "Cannot build a select menu without options. Add at least one option!");
+            Checks.check(!options.isEmpty(), "Cannot build a select menu without options. Add at least one option!");
             Checks.check(
                     options.size() <= OPTIONS_MAX_AMOUNT,
                     "Cannot build a select menu with more than %d options.",
                     OPTIONS_MAX_AMOUNT);
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
-            return new StringSelectMenuImpl(
-                    customId, uniqueId, placeholder, min, max, disabled, options, required);
+            return new StringSelectMenuImpl(customId, uniqueId, placeholder, min, max, disabled, options, required);
         }
     }
 }

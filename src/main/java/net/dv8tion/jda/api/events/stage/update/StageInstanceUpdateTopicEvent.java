@@ -33,10 +33,7 @@ public class StageInstanceUpdateTopicEvent extends GenericStageInstanceUpdateEve
     public static final String IDENTIFIER = "topic";
 
     public StageInstanceUpdateTopicEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull StageInstance stageInstance,
-            String previous) {
+            @Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance, String previous) {
         super(api, responseNumber, stageInstance, previous, stageInstance.getTopic(), IDENTIFIER);
     }
 

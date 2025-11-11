@@ -255,16 +255,13 @@ public class GuildSetupNode {
         removedMembers.add(userId);
         EventCache eventCache = getController().getJDA().getEventCache();
         if (!getController()
-                .containsMember(
-                        userId,
-                        this)) { // if no other setup node contains this userId we clear it here
+                .containsMember(userId, this)) { // if no other setup node contains this userId we clear it here
             eventCache.clear(EventCache.Type.USER, userId);
         }
     }
 
     void cacheEvent(DataObject event) {
-        GuildSetupController.log.trace(
-                "Caching {} event during init. GuildId: {}", event.getString("t"), id);
+        GuildSetupController.log.trace("Caching {} event during init. GuildId: {}", event.getString("t"), id);
         cachedEvents.add(event);
         // Check if more than 2000 events cached - suspicious
         // Print warning every 1000 events
@@ -320,9 +317,7 @@ public class GuildSetupNode {
                 it.advance();
                 long userId = it.key();
                 if (!getController()
-                        .containsMember(
-                                userId,
-                                this)) { // if no other setup node contains this userId we clear it
+                        .containsMember(userId, this)) { // if no other setup node contains this userId we clear it
                     // here
                     eventCache.clear(EventCache.Type.USER, userId);
                 }
@@ -337,8 +332,7 @@ public class GuildSetupNode {
             members.remove(it.next());
         }
         removedMembers.clear();
-        GuildImpl guild =
-                api.getEntityBuilder().createGuild(id, partialGuild, members, expectedMemberCount);
+        GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members, expectedMemberCount);
         updateAudioManagerReference(guild);
         switch (type) {
             case AVAILABLE:
@@ -359,8 +353,7 @@ public class GuildSetupNode {
                 break;
         }
         updateStatus(GuildSetupController.Status.READY);
-        GuildSetupController.log.debug(
-                "Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
+        GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
     }

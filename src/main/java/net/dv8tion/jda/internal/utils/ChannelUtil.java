@@ -48,8 +48,7 @@ public class ChannelUtil {
     public static final EnumSet<ChannelType> TOPIC_SUPPORTED =
             EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
 
-    public static final EnumSet<ChannelType> POST_CONTAINERS =
-            EnumSet.of(ChannelType.FORUM, ChannelType.MEDIA);
+    public static final EnumSet<ChannelType> POST_CONTAINERS = EnumSet.of(ChannelType.FORUM, ChannelType.MEDIA);
 
     public static final EnumSet<ChannelType> THREAD_CONTAINERS =
             EnumSet.of(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.MEDIA);
@@ -85,20 +84,17 @@ public class ChannelUtil {
             // If they are threads on the same channel
             if (thisThread.getParentChannel().getIdLong()
                     == otherThread.getParentChannel().getIdLong()) {
-                return Long.compare(
-                        b.getIdLong(), a.getIdLong()); // threads are ordered ascending by age
+                return Long.compare(b.getIdLong(), a.getIdLong()); // threads are ordered ascending by age
                 // If they are threads on different channels
             }
             return thisThread.getParentChannel().compareTo(otherThread.getParentChannel());
         }
 
         // Check category positions
-        Category thisParent = a instanceof ICategorizableChannel
-                ? ((ICategorizableChannel) a).getParentCategory()
-                : null;
-        Category otherParent = b instanceof ICategorizableChannel
-                ? ((ICategorizableChannel) b).getParentCategory()
-                : null;
+        Category thisParent =
+                a instanceof ICategorizableChannel ? ((ICategorizableChannel) a).getParentCategory() : null;
+        Category otherParent =
+                b instanceof ICategorizableChannel ? ((ICategorizableChannel) b).getParentCategory() : null;
 
         if (thisParent != null && otherParent == null) {
             if (b instanceof Category) {
@@ -118,8 +114,7 @@ public class ChannelUtil {
                     return -1;
                 }
                 // This channel is a category higher than the other channel's parent category
-                return a.compareTo(
-                        otherParent); // safe use of recursion since no circular parents exist
+                return a.compareTo(otherParent); // safe use of recursion since no circular parents exist
             }
             return -1;
         }
@@ -139,9 +134,7 @@ public class ChannelUtil {
             IPositionableChannel thisPositionableChannel = (IPositionableChannel) a;
 
             if (thisPositionableChannel.getPositionRaw() != oPositionableChannel.getPositionRaw()) {
-                return Integer.compare(
-                        thisPositionableChannel.getPositionRaw(),
-                        oPositionableChannel.getPositionRaw());
+                return Integer.compare(thisPositionableChannel.getPositionRaw(), oPositionableChannel.getPositionRaw());
             }
         }
 

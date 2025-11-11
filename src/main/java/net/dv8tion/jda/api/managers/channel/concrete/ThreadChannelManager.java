@@ -64,8 +64,7 @@ public interface ThreadChannelManager
      */
     @Nonnull
     @CheckReturnValue
-    ThreadChannelManager setAutoArchiveDuration(
-            @Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
+    ThreadChannelManager setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
 
     /**
      * Sets the archived state of this ThreadChannel.

@@ -49,10 +49,7 @@ public class LocalizationTest {
                         .addSubcommands(
                                 new SubcommandData("perm", "Bans a user permanently")
                                         .addOptions(
-                                                new OptionData(
-                                                        OptionType.STRING,
-                                                        "user",
-                                                        "The user to ban"),
+                                                new OptionData(OptionType.STRING, "user", "The user to ban"),
                                                 new OptionData(
                                                                 OptionType.INTEGER,
                                                                 "del_days",
@@ -60,14 +57,10 @@ public class LocalizationTest {
                                                         .addChoices(
                                                                 new Command.Choice("1 Day", "1"),
                                                                 new Command.Choice("7 Days", "7"),
-                                                                new Command.Choice(
-                                                                        "14 Days", "14"))),
+                                                                new Command.Choice("14 Days", "14"))),
                                 new SubcommandData("temp", "Bans a user temporarily")
                                         .addOptions(
-                                                new OptionData(
-                                                        OptionType.STRING,
-                                                        "user",
-                                                        "The user to ban"),
+                                                new OptionData(OptionType.STRING, "user", "The user to ban"),
                                                 new OptionData(
                                                                 OptionType.INTEGER,
                                                                 "del_days",
@@ -75,8 +68,7 @@ public class LocalizationTest {
                                                         .addChoices(
                                                                 new Command.Choice("1 Day", "1"),
                                                                 new Command.Choice("7 Days", "7"),
-                                                                new Command.Choice(
-                                                                        "14 Days", "14")))))
+                                                                new Command.Choice("14 Days", "14")))))
                 .setLocalizationFunction(localizationFunction);
 
         data = slashCommandData.toData();
@@ -137,8 +129,7 @@ public class LocalizationTest {
         assertThat(userOption.getString("description")).isEqualTo("The user to ban");
 
         assertThat(delDaysOption.getString("name")).isEqualTo("del_days");
-        assertThat(delDaysOption.getString("description"))
-                .isEqualTo("The amount of days to delete messages");
+        assertThat(delDaysOption.getString("description")).isEqualTo("The amount of days to delete messages");
 
         assertThat(userOption.getObject("name_localizations"))
                 .withRepresentation(new PrettyRepresentation())

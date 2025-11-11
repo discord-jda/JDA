@@ -39,8 +39,7 @@ public class IntegrationPrivilege implements ISnowflake {
     private final boolean enabled;
     private final long id;
 
-    public IntegrationPrivilege(
-            @Nonnull Guild guild, @Nonnull Type type, boolean enabled, long id) {
+    public IntegrationPrivilege(@Nonnull Guild guild, @Nonnull Type type, boolean enabled, long id) {
         this.guild = guild;
         this.type = type;
         this.enabled = enabled;

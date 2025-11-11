@@ -31,8 +31,7 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager>
-        implements PermOverrideManager {
+public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager {
     protected final boolean role;
     protected PermissionOverride override;
 
@@ -72,8 +71,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager>
     @Override
     public PermissionOverride getPermissionOverride() {
         IPermissionContainerMixin<?> channel = (IPermissionContainerMixin<?>) override.getChannel();
-        PermissionOverride realOverride =
-                channel.getPermissionOverrideMap().get(override.getIdLong());
+        PermissionOverride realOverride = channel.getPermissionOverrideMap().get(override.getIdLong());
         if (realOverride != null) {
             override = realOverride;
         }

@@ -61,11 +61,10 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-@SuppressWarnings(
-        "unchecked") // We do a lot of (M) and (T) casting that we know is correct but the compiler
+@SuppressWarnings("unchecked") // We do a lot of (M) and (T) casting that we know is correct but the compiler
 // warns about.
-public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>>
-        extends ManagerBase<M> implements ChannelManager<T, M> {
+public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M>
+        implements ChannelManager<T, M> {
     protected T channel;
 
     protected final EnumSet<ChannelFlag> flags;
@@ -238,18 +237,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny) {
         if (!(channel instanceof IPermissionContainer)) {
-            throw new IllegalStateException(
-                    "Can only set permissions on Channels that implement IPermissionContainer");
+            throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
         }
 
         Checks.notNull(permHolder, "PermissionHolder");
-        Checks.check(
-                permHolder.getGuild().equals(getGuild()),
-                "PermissionHolder is not from the same Guild!");
+        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
         long id = permHolder.getIdLong();
-        int type = permHolder instanceof Role
-                ? PermOverrideData.ROLE_TYPE
-                : PermOverrideData.MEMBER_TYPE;
+        int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
         putPermissionOverride(new PermOverrideData(type, id, allow, deny));
         return (M) this;
     }
@@ -257,16 +251,14 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @Nonnull
     @CheckReturnValue
     public M putMemberPermissionOverride(long memberId, long allow, long deny) {
-        putPermissionOverride(
-                new PermOverrideData(PermOverrideData.MEMBER_TYPE, memberId, allow, deny));
+        putPermissionOverride(new PermOverrideData(PermOverrideData.MEMBER_TYPE, memberId, allow, deny));
         return (M) this;
     }
 
     @Nonnull
     @CheckReturnValue
     public M putRolePermissionOverride(long roleId, long allow, long deny) {
-        putPermissionOverride(
-                new PermOverrideData(PermOverrideData.ROLE_TYPE, roleId, allow, deny));
+        putPermissionOverride(new PermOverrideData(PermOverrideData.ROLE_TYPE, roleId, allow, deny));
         return (M) this;
     }
 
@@ -276,14 +268,12 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR)) {
             if (!selfMember.hasPermission(channel, Permission.MANAGE_ROLES)) {
                 throw new InsufficientPermissionException(
-                        channel,
-                        Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
+                        channel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
 
                 // Check on channel level to make sure we are actually able to set all the
                 // permissions!
             }
-            long channelPermissions =
-                    PermissionUtil.getExplicitPermission(channel, selfMember, false);
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
             if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue())
                     == 0) // This implies we can only set permissions the bot also has in the
             // channel!
@@ -318,14 +308,11 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M removePermissionOverride(@Nonnull IPermissionHolder permHolder) {
         if (!(channel instanceof IPermissionContainer)) {
-            throw new IllegalStateException(
-                    "Can only set permissions on Channels that implement IPermissionContainer");
+            throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
         }
 
         Checks.notNull(permHolder, "PermissionHolder");
-        Checks.check(
-                permHolder.getGuild().equals(getGuild()),
-                "PermissionHolder is not from the same Guild!");
+        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
         return (M) removePermissionOverride(permHolder.getIdLong());
     }
 
@@ -333,9 +320,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M removePermissionOverride(long id) {
         if (isPermissionChecksEnabled()
-                && !getGuild()
-                        .getSelfMember()
-                        .hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS)) {
+                && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS)) {
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         }
         withLock(lock, (lock) -> {
@@ -350,14 +335,11 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M sync(@Nonnull IPermissionContainer syncSource) {
         if (!(channel instanceof IPermissionContainer)) {
-            throw new IllegalStateException(
-                    "Can only set permissions on Channels that implement IPermissionContainer");
+            throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
         }
 
         Checks.notNull(syncSource, "SyncSource");
-        Checks.check(
-                getGuild().equals(syncSource.getGuild()),
-                "Sync only works for channels of same guild");
+        Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
 
         IPermissionContainer permChannel = (IPermissionContainer) channel;
         if (syncSource.equals(getChannel())) {
@@ -367,8 +349,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (isPermissionChecksEnabled()) {
             Member selfMember = getGuild().getSelfMember();
             if (!selfMember.hasPermission(permChannel, Permission.MANAGE_PERMISSIONS)) {
-                throw new InsufficientPermissionException(
-                        getChannel(), Permission.MANAGE_PERMISSIONS);
+                throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
             }
 
             if (!selfMember.canSync(permChannel, syncSource)) {
@@ -392,16 +373,12 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
             // re-add all perm-overrides of syncSource
             syncSource.getPermissionOverrides().forEach(override -> {
-                int type = override.isRoleOverride()
-                        ? PermOverrideData.ROLE_TYPE
-                        : PermOverrideData.MEMBER_TYPE;
+                int type = override.isRoleOverride() ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
                 long id = override.getIdLong();
 
                 this.overridesRem.remove(id);
                 this.overridesAdd.put(
-                        id,
-                        new PermOverrideData(
-                                type, id, override.getAllowedRaw(), override.getDeniedRaw()));
+                        id, new PermOverrideData(type, id, override.getAllowedRaw(), override.getDeniedRaw()));
             });
 
             set |= PERMISSION;
@@ -426,16 +403,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setType(@Nonnull ChannelType type) {
         Checks.check(
-                type == ChannelType.TEXT || type == ChannelType.NEWS,
-                "Can only change ChannelType to TEXT or NEWS");
+                type == ChannelType.TEXT || type == ChannelType.NEWS, "Can only change ChannelType to TEXT or NEWS");
 
         if (this.type != ChannelType.TEXT && this.type != ChannelType.NEWS) {
-            throw new UnsupportedOperationException(
-                    "Can only set ChannelType for TextChannel and NewsChannels");
+            throw new UnsupportedOperationException("Can only set ChannelType for TextChannel and NewsChannels");
         }
         if (type == ChannelType.NEWS && !getGuild().getFeatures().contains("NEWS")) {
-            throw new IllegalStateException(
-                    "Can only set ChannelType to NEWS for guilds with NEWS feature");
+            throw new IllegalStateException("Can only set ChannelType to NEWS for guilds with NEWS feature");
         }
 
         this.type = type;
@@ -476,9 +450,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             throw new IllegalStateException("Cannot set the parent of a category");
         }
 
-        Checks.check(
-                category == null || category.getGuild().equals(getGuild()),
-                "Category is not from the same guild");
+        Checks.check(category == null || category.getGuild().equals(getGuild()), "Category is not from the same guild");
 
         this.parent = category == null ? null : category.getId();
         set |= PARENT;
@@ -512,8 +484,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @Nonnull
     @CheckReturnValue
     public M setNSFW(boolean nsfw) {
-        Checks.checkSupportedChannelTypes(
-                ChannelUtil.NSFW_SUPPORTED, type, "NSFW (age-restriction)");
+        Checks.checkSupportedChannelTypes(ChannelUtil.NSFW_SUPPORTED, type, "NSFW (age-restriction)");
         this.nsfw = nsfw;
         set |= NSFW;
         return (M) this;
@@ -611,8 +582,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
             if (thread.isLocked()) {
                 checkPermission(
-                        Permission.MANAGE_THREADS,
-                        "Cannot unarchive a thread that is locked without MANAGE_THREADS");
+                        Permission.MANAGE_THREADS, "Cannot unarchive a thread that is locked without MANAGE_THREADS");
             }
         }
 
@@ -628,8 +598,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         if (isPermissionChecksEnabled()) {
             checkPermission(
-                    Permission.MANAGE_THREADS,
-                    "Cannot modified a thread's locked status without MANAGE_THREADS");
+                    Permission.MANAGE_THREADS, "Cannot modified a thread's locked status without MANAGE_THREADS");
         }
 
         this.locked = locked;
@@ -671,8 +640,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setTagRequired(boolean requireTag) {
         if (!(channel instanceof IPostContainer)) {
-            throw new IllegalStateException(
-                    "Can only set tag required flag on forum/media channels.");
+            throw new IllegalStateException("Can only set tag required flag on forum/media channels.");
         }
         if (requireTag) {
             flags.add(ChannelFlag.REQUIRE_TAG);
@@ -685,8 +653,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setHideMediaDownloadOption(boolean hideOption) {
         if (!(channel instanceof MediaChannel)) {
-            throw new IllegalStateException(
-                    "Can only set hide media download flag on media channels.");
+            throw new IllegalStateException("Can only set hide media download flag on media channels.");
         }
         if (hideOption) {
             flags.add(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
@@ -709,8 +676,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setAppliedTags(Collection<? extends ForumTagSnowflake> tags) {
         if (type != ChannelType.GUILD_PUBLIC_THREAD) {
-            throw new IllegalStateException(
-                    "Can only set applied tags on forum post thread channels.");
+            throw new IllegalStateException("Can only set applied tags on forum post thread channels.");
         }
         Checks.noneNull(tags, "Applied Tags");
         Checks.check(
@@ -720,8 +686,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         ThreadChannel thread = (ThreadChannel) getChannel();
         IThreadContainerUnion parentChannel = thread.getParentChannel();
         if (!(parentChannel instanceof IPostContainer)) {
-            throw new IllegalStateException(
-                    "Cannot apply tags to threads outside of forum/media channels.");
+            throw new IllegalStateException("Cannot apply tags to threads outside of forum/media channels.");
         }
         if (tags.isEmpty() && parentChannel.asForumChannel().isTagRequired()) {
             throw new IllegalArgumentException(
@@ -734,8 +699,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setDefaultReaction(Emoji emoji) {
         if (!(channel instanceof IPostContainer)) {
-            throw new IllegalStateException(
-                    "Can only set default reaction on forum/media channels.");
+            throw new IllegalStateException("Can only set default reaction on forum/media channels.");
         }
         this.defaultReactionEmoji = emoji;
         set |= DEFAULT_REACTION;
@@ -829,12 +793,10 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             if (defaultReactionEmoji instanceof CustomEmoji) {
                 frame.put(
                         "default_reaction_emoji",
-                        DataObject.empty()
-                                .put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
+                        DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
             } else if (defaultReactionEmoji instanceof UnicodeEmoji) {
                 frame.put(
-                        "default_reaction_emoji",
-                        DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
+                        "default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
             } else {
                 frame.put("default_reaction_emoji", null);
             }

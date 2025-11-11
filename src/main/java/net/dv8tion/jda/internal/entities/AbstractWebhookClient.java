@@ -77,8 +77,7 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T> {
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessageEmbeds(
-            @Nonnull Collection<? extends MessageEmbed> embeds) {
+    public WebhookMessageCreateAction<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return sendRequest().addEmbeds(embeds);
     }
 
@@ -104,23 +103,20 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T> {
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendFiles(
-            @Nonnull Collection<? extends FileUpload> files) {
+    public WebhookMessageCreateAction<T> sendFiles(@Nonnull Collection<? extends FileUpload> files) {
         return sendRequest().addFiles(files);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageEditActionImpl<T> editMessageById(
-            @Nonnull String messageId, @Nonnull String content) {
+    public WebhookMessageEditActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content) {
         return (WebhookMessageEditActionImpl<T>) editRequest(messageId).setContent(content);
     }
 
     @Nonnull
     @Override
     public WebhookMessageEditAction<T> editMessageComponentsById(
-            @Nonnull String messageId,
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+            @Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.noneNull(components, "Components");
         return editRequest(messageId).setComponents(components);
     }
@@ -152,8 +148,8 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T> {
         if (!"@original".equals(messageId)) {
             Checks.isSnowflake(messageId);
         }
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(
-                Long.toUnsignedString(id), token, messageId);
+        Route.CompiledRoute route =
+                Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(Long.toUnsignedString(id), token, messageId);
         return new WebhookMessageDeleteActionImpl(api, route);
     }
 }

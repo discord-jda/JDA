@@ -31,8 +31,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager>
-        implements SelfMemberManager {
+public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implements SelfMemberManager {
     protected final SelfMember selfMember;
 
     protected String nickname;

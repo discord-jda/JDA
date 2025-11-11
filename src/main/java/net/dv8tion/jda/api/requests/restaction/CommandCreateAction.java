@@ -94,8 +94,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandCreateAction setDescriptionLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String description);
+    CommandCreateAction setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
 
     @Nonnull
     @Override
@@ -123,29 +122,22 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
             @Nonnull String description,
             boolean required,
             boolean autoComplete) {
-        return (CommandCreateAction)
-                SlashCommandData.super.addOption(type, name, description, required, autoComplete);
+        return (CommandCreateAction) SlashCommandData.super.addOption(type, name, description, required, autoComplete);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
     default CommandCreateAction addOption(
-            @Nonnull OptionType type,
-            @Nonnull String name,
-            @Nonnull String description,
-            boolean required) {
-        return (CommandCreateAction)
-                SlashCommandData.super.addOption(type, name, description, required);
+            @Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required) {
+        return (CommandCreateAction) SlashCommandData.super.addOption(type, name, description, required);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addOption(
-            @Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
-        return (CommandCreateAction)
-                SlashCommandData.super.addOption(type, name, description, false);
+    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
+        return (CommandCreateAction) SlashCommandData.super.addOption(type, name, description, false);
     }
 
     @Nonnull
@@ -156,8 +148,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addSubcommands(
-            @Nonnull Collection<? extends SubcommandData> subcommands) {
+    default CommandCreateAction addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands) {
         return (CommandCreateAction) SlashCommandData.super.addSubcommands(subcommands);
     }
 
@@ -169,8 +160,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addSubcommandGroups(
-            @Nonnull Collection<? extends SubcommandGroupData> groups) {
+    default CommandCreateAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups) {
         return (CommandCreateAction) SlashCommandData.super.addSubcommandGroups(groups);
     }
 

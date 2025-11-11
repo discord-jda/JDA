@@ -44,11 +44,7 @@ import javax.annotation.Nullable;
  * @see StandardGuildChannel
  */
 public interface StandardGuildMessageChannel
-        extends StandardGuildChannel,
-                GuildMessageChannel,
-                IThreadContainer,
-                IWebhookContainer,
-                IAgeRestrictedChannel {
+        extends StandardGuildChannel, GuildMessageChannel, IThreadContainer, IWebhookContainer, IAgeRestrictedChannel {
     /**
      * The maximum length a channel topic can be ({@value #MAX_TOPIC_LENGTH})
      * <br>Forum channels have a higher limit, defined by {@link ForumChannel#MAX_FORUM_TOPIC_LENGTH}

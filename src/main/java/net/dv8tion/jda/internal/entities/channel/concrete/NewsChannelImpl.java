@@ -79,9 +79,7 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
         return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
             DataObject json = response.getObject();
             return new Webhook.WebhookReference(
-                    request.getJDA(),
-                    json.getUnsignedLong("webhook_id"),
-                    json.getUnsignedLong("channel_id"));
+                    request.getJDA(), json.getUnsignedLong("webhook_id"), json.getUnsignedLong("channel_id"));
         });
     }
 

@@ -46,8 +46,7 @@ import javax.annotation.Nonnull;
  * However, it is rather unlikely to be an issue in most cases. The only time where 64 threads would actually be used
  * is during the initial startup. During runtime its not common for all shards to reconnect at once.
  */
-public class ConcurrentSessionController extends SessionControllerAdapter
-        implements SessionController {
+public class ConcurrentSessionController extends SessionControllerAdapter implements SessionController {
     private Worker[] workers = new Worker[1];
 
     @Override
@@ -134,8 +133,7 @@ public class ConcurrentSessionController extends SessionControllerAdapter
             try {
                 node = queue.remove();
                 log.debug("Running connect node for shard {}", node.getShardInfo());
-                node.run(
-                        false); // we don't use isLast anymore because it can be a problem with many
+                node.run(false); // we don't use isLast anymore because it can be a problem with many
                 // reconnecting shards
             } catch (NoSuchElementException ignored) {
                 /* This means the node was removed before we started it */
@@ -144,11 +142,8 @@ public class ConcurrentSessionController extends SessionControllerAdapter
                 throw e;
             } catch (IllegalStateException | ErrorResponseException e) {
                 if (Helpers.hasCause(e, OpeningHandshakeException.class)) {
-                    log.error(
-                            "Failed opening handshake, appending to queue. Message: {}",
-                            e.getMessage());
-                } else if (e instanceof ErrorResponseException
-                        && e.getCause() instanceof IOException) {
+                    log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
+                } else if (e instanceof ErrorResponseException && e.getCause() instanceof IOException) {
                     /* This is already logged by the Requester */
                 } else if (Helpers.hasCause(e, UnknownHostException.class)) {
                     log.error("DNS resolution failed: {}", e.getMessage());

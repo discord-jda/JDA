@@ -39,8 +39,7 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberUpdateFlagsEvent
-        extends GenericGuildMemberUpdateEvent<EnumSet<Member.MemberFlag>> {
+public class GuildMemberUpdateFlagsEvent extends GenericGuildMemberUpdateEvent<EnumSet<Member.MemberFlag>> {
     public static final String IDENTIFIER = "flags";
 
     public GuildMemberUpdateFlagsEvent(

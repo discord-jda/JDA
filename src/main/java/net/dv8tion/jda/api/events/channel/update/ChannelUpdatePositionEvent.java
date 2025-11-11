@@ -38,11 +38,7 @@ public class ChannelUpdatePositionEvent extends GenericChannelUpdateEvent<Intege
     public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdatePositionEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            Channel channel,
-            Integer oldValue,
-            Integer newValue) {
+            @Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

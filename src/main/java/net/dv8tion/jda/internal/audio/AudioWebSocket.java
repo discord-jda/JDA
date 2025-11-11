@@ -108,8 +108,7 @@ class AudioWebSocket extends WebSocketAdapter {
                     "Cannot create a audio websocket connection using a null/empty sessionId!");
         }
         if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Cannot create a audio websocket connection using a null/empty token!");
+            throw new IllegalArgumentException("Cannot create a audio websocket connection using a null/empty token!");
         }
     }
 
@@ -304,10 +303,7 @@ class AudioWebSocket extends WebSocketAdapter {
         }
         LOG.debug("The Audio connection was closed!\nBy remote? {}", closedByServer);
         if (serverCloseFrame != null) {
-            LOG.debug(
-                    "Reason: {}\nClose code: {}",
-                    serverCloseFrame.getCloseReason(),
-                    serverCloseFrame.getCloseCode());
+            LOG.debug("Reason: {}\nClose code: {}", serverCloseFrame.getCloseReason(), serverCloseFrame.getCloseCode());
             int code = serverCloseFrame.getCloseCode();
             VoiceCode.Close closeCode = VoiceCode.Close.from(code);
             switch (closeCode) {
@@ -373,8 +369,7 @@ class AudioWebSocket extends WebSocketAdapter {
                 thread.setName(identifier + " AudioWS-ReadThread (guildId: " + guildId + ')');
                 break;
             default:
-                thread.setName(
-                        identifier + " AudioWS-" + threadType + " (guildId: " + guildId + ')');
+                thread.setName(identifier + " AudioWS-" + threadType + " (guildId: " + guildId + ')');
         }
     }
 
@@ -440,10 +435,7 @@ class AudioWebSocket extends WebSocketAdapter {
                                 DataObject.empty()
                                         .put("address", externalIpAndPort.getHostString())
                                         .put("port", externalIpAndPort.getPort())
-                                        .put(
-                                                "mode",
-                                                encryption
-                                                        .getKey())); // Discord requires encryption
+                                        .put("mode", encryption.getKey())); // Discord requires encryption
                 send(VoiceCode.SELECT_PROTOCOL, object);
                 changeStatus(ConnectionStatus.CONNECTING_AWAITING_READY);
                 break;
@@ -500,9 +492,7 @@ class AudioWebSocket extends WebSocketAdapter {
 
                 if (user == null) {
                     // more relevant for audio connection
-                    LOG.trace(
-                            "Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: {}",
-                            contentAll);
+                    LOG.trace("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: {}", contentAll);
                     listener.onUserSpeakingModeUpdate(UserSnowflake.fromId(userId), speaking);
                 } else {
                     listener.onUserSpeakingModeUpdate((UserSnowflake) user, speaking);
@@ -594,14 +584,13 @@ class AudioWebSocket extends WebSocketAdapter {
             // rest of the bytes are used only in the response (address/port)
 
             // Construct our packet to be sent loaded with the byte buffer we store the ssrc in.
-            DatagramPacket discoveryPacket =
-                    new DatagramPacket(buffer.array(), buffer.array().length, address);
+            DatagramPacket discoveryPacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
             audioConnection.udpSocket.send(discoveryPacket);
 
             // Discord responds to our packet, returning a packet containing our external ip and the
             // port we connected through.
-            DatagramPacket receivedPacket = new DatagramPacket(
-                    new byte[74], 74); // Give a buffer the same size as the one we sent.
+            DatagramPacket receivedPacket =
+                    new DatagramPacket(new byte[74], 74); // Give a buffer the same size as the one we sent.
             audioConnection.udpSocket.setSoTimeout(1000);
             audioConnection.udpSocket.receive(receivedPacket);
 
@@ -653,8 +642,7 @@ class AudioWebSocket extends WebSocketAdapter {
 
     private void setupKeepAlive(int keepAliveInterval) {
         if (keepAliveHandle != null) {
-            LOG.error(
-                    "Setting up a KeepAlive runnable while the previous one seems to still be active!!");
+            LOG.error("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
         }
 
         try {
@@ -678,18 +666,15 @@ class AudioWebSocket extends WebSocketAdapter {
                 }
                 send(VoiceCode.HEARTBEAT, packet);
             }
-            if (audioConnection.udpSocket != null
-                    && !audioConnection.udpSocket.isClosed()) // UDP keep-alive
+            if (audioConnection.udpSocket != null && !audioConnection.udpSocket.isClosed()) // UDP keep-alive
             {
                 try {
-                    DatagramPacket keepAlivePacket =
-                            new DatagramPacket(UDP_KEEP_ALIVE, UDP_KEEP_ALIVE.length, address);
+                    DatagramPacket keepAlivePacket = new DatagramPacket(UDP_KEEP_ALIVE, UDP_KEEP_ALIVE.length, address);
                     audioConnection.udpSocket.send(keepAlivePacket);
                 } catch (NoRouteToHostException e) {
                     LOG.warn("Closing AudioConnection due to inability to ping audio packets.");
-                    LOG.warn(
-                            "Cannot send audio packet because JDA navigate the route to Discord.\n"
-                                    + "Are you sure you have internet connection? It is likely that you've lost connection.");
+                    LOG.warn("Cannot send audio packet because JDA navigate the route to Discord.\n"
+                            + "Are you sure you have internet connection? It is likely that you've lost connection.");
                     this.close(ConnectionStatus.ERROR_LOST_CONNECTION);
                 } catch (IOException e) {
                     LOG.error("There was some error sending an audio keepalive packet", e);
@@ -698,8 +683,8 @@ class AudioWebSocket extends WebSocketAdapter {
         };
 
         try {
-            keepAliveHandle = keepAlivePool.scheduleAtFixedRate(
-                    keepAliveRunnable, 0, keepAliveInterval, TimeUnit.MILLISECONDS);
+            keepAliveHandle =
+                    keepAlivePool.scheduleAtFixedRate(keepAliveRunnable, 0, keepAliveInterval, TimeUnit.MILLISECONDS);
         } catch (RejectedExecutionException ignored) {
         } // ignored because this is probably caused due to a race condition
         // related to the threadpool shutdown.
@@ -710,12 +695,10 @@ class AudioWebSocket extends WebSocketAdapter {
     }
 
     @Override
-    @SuppressWarnings(
-            "deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
+    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
     protected void finalize() {
         if (!shutdown) {
-            LOG.error(
-                    "Finalization hook of AudioWebSocket was triggered without properly shutting down");
+            LOG.error("Finalization hook of AudioWebSocket was triggered without properly shutting down");
             close(ConnectionStatus.NOT_CONNECTED);
         }
     }

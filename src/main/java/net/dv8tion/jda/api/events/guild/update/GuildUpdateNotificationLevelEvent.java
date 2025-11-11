@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code notification_level}
  */
-public class GuildUpdateNotificationLevelEvent
-        extends GenericGuildUpdateEvent<Guild.NotificationLevel> {
+public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<Guild.NotificationLevel> {
     public static final String IDENTIFIER = "notification_level";
 
     public GuildUpdateNotificationLevelEvent(
@@ -37,13 +36,7 @@ public class GuildUpdateNotificationLevelEvent
             long responseNumber,
             @Nonnull Guild guild,
             @Nonnull Guild.NotificationLevel oldNotificationLevel) {
-        super(
-                api,
-                responseNumber,
-                guild,
-                oldNotificationLevel,
-                guild.getDefaultNotificationLevel(),
-                IDENTIFIER);
+        super(api, responseNumber, guild, oldNotificationLevel, guild.getDefaultNotificationLevel(), IDENTIFIER);
     }
 
     /**

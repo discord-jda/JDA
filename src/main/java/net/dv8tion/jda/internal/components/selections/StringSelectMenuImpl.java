@@ -29,8 +29,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-public class StringSelectMenuImpl extends SelectMenuImpl
-        implements StringSelectMenu, LabelChildComponentUnion {
+public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelectMenu, LabelChildComponentUnion {
     private final List<SelectOption> options;
 
     public StringSelectMenuImpl(DataObject data) {

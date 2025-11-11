@@ -36,10 +36,7 @@ import javax.annotation.Nonnull;
  */
 public class ForumTagRemoveEvent extends GenericForumTagEvent {
     public ForumTagRemoveEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull IPostContainer channel,
-            @Nonnull ForumTag tag) {
+            @Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag) {
         super(api, responseNumber, channel, tag);
     }
 }

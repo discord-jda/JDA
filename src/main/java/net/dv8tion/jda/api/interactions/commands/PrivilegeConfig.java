@@ -41,8 +41,7 @@ public class PrivilegeConfig {
     private final Guild guild;
     private final Map<String, List<IntegrationPrivilege>> privileges;
 
-    public PrivilegeConfig(
-            @Nonnull Guild guild, @Nonnull Map<String, List<IntegrationPrivilege>> privileges) {
+    public PrivilegeConfig(@Nonnull Guild guild, @Nonnull Map<String, List<IntegrationPrivilege>> privileges) {
         this.guild = guild;
         this.privileges = Collections.unmodifiableMap(privileges);
     }

@@ -84,8 +84,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
 
             if (!stickers.isEmpty()
                     || messageReference != null
-                            && messageReference.type
-                                    == MessageReference.MessageReferenceType.FORWARD) {
+                            && messageReference.type == MessageReference.MessageReferenceType.FORWARD) {
                 return getRequestBody(body);
             }
 
@@ -112,16 +111,13 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
             json.put("sticker_ids", stickers);
         }
         if (messageReference != null) {
-            json.put(
-                    "message_reference",
-                    messageReference.toData().put("fail_if_not_exists", failOnInvalidReply));
+            json.put("message_reference", messageReference.toData().put("fail_if_not_exists", failOnInvalidReply));
         }
     }
 
     @Override
     protected void handleSuccess(Response response, Request<Message> request) {
-        request.onSuccess(api.getEntityBuilder()
-                .createMessageWithChannel(response.getObject(), channel, false));
+        request.onSuccess(api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false));
     }
 
     @Nonnull
@@ -181,8 +177,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
 
     @Nonnull
     @Override
-    public MessageCreateAction setStickers(
-            @Nullable Collection<? extends StickerSnowflake> stickers) {
+    public MessageCreateAction setStickers(@Nullable Collection<? extends StickerSnowflake> stickers) {
         this.stickers.clear();
         if (stickers == null || stickers.isEmpty()) {
             return this;
@@ -211,8 +206,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
             }
         }
 
-        this.stickers.addAll(
-                stickers.stream().map(StickerSnowflake::getId).collect(Collectors.toList()));
+        this.stickers.addAll(stickers.stream().map(StickerSnowflake::getId).collect(Collectors.toList()));
         return this;
     }
 
@@ -235,10 +229,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
         private final String guildId;
 
         private MessageReferenceData(
-                MessageReference.MessageReferenceType type,
-                String guildId,
-                String channelId,
-                String messageId) {
+                MessageReference.MessageReferenceType type, String guildId, String channelId, String messageId) {
             this.type = type;
             this.messageId = messageId;
             this.guildId = guildId;

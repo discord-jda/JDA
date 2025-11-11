@@ -42,8 +42,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledEvent>
-        implements ScheduledEventAction {
+public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledEvent> implements ScheduledEventAction {
     protected final Guild guild;
     protected String name, description;
     protected Icon image;
@@ -53,11 +52,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
     protected final ScheduledEvent.Type entityType;
 
     public ScheduledEventActionImpl(
-            String name,
-            String location,
-            TemporalAccessor startTime,
-            TemporalAccessor endTime,
-            Guild guild) {
+            String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild) {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
         setName(name);
@@ -71,8 +66,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
         this.entityType = ScheduledEvent.Type.EXTERNAL;
     }
 
-    public ScheduledEventActionImpl(
-            String name, GuildChannel channel, TemporalAccessor startTime, Guild guild) {
+    public ScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild) {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
         setName(name);
@@ -88,8 +82,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
             this.channelId = channel.getIdLong();
             this.entityType = ScheduledEvent.Type.VOICE;
         } else {
-            throw new IllegalArgumentException(
-                    "Invalid parameter: Can only set location to Voice and Stage Channels!");
+            throw new IllegalArgumentException("Invalid parameter: Can only set location to Voice and Stage Channels!");
         }
     }
 
@@ -148,9 +141,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
     public ScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime) {
         Checks.notNull(startTime, "Start Time");
         OffsetDateTime offsetStartTime = Helpers.toOffsetDateTime(startTime);
-        Checks.check(
-                offsetStartTime.isAfter(OffsetDateTime.now()),
-                "Cannot schedule event in the past!");
+        Checks.check(offsetStartTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
         Checks.check(
                 offsetStartTime.isBefore(OffsetDateTime.now().plusYears(5)),
                 "Scheduled start and end times must be within five years.");
@@ -163,9 +154,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
     public ScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime) {
         Checks.notNull(endTime, "End Time");
         OffsetDateTime offsetEndTime = Helpers.toOffsetDateTime(endTime);
-        Checks.check(
-                offsetEndTime.isAfter(startTime),
-                "Cannot schedule event to end before its starting!");
+        Checks.check(offsetEndTime.isAfter(startTime), "Cannot schedule event to end before its starting!");
         Checks.check(
                 offsetEndTime.isBefore(OffsetDateTime.now().plusYears(5)),
                 "Scheduled start and end times must be within five years.");
@@ -197,8 +186,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
                 object.put("entity_metadata", DataObject.empty().put("location", location));
                 break;
             default:
-                throw new IllegalStateException(
-                        "ScheduledEventType " + entityType + " is not supported!");
+                throw new IllegalStateException("ScheduledEventType " + entityType + " is not supported!");
         }
 
         if (description != null) {
@@ -216,7 +204,6 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
 
     @Override
     protected void handleSuccess(Response response, Request<ScheduledEvent> request) {
-        request.onSuccess(api.getEntityBuilder()
-                .createScheduledEvent((GuildImpl) guild, response.getObject()));
+        request.onSuccess(api.getEntityBuilder().createScheduledEvent((GuildImpl) guild, response.getObject()));
     }
 }

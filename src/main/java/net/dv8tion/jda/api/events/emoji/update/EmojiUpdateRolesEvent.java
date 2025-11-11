@@ -42,10 +42,7 @@ public class EmojiUpdateRolesEvent extends GenericEmojiUpdateEvent<List<Role>> {
     public static final String IDENTIFIER = "roles";
 
     public EmojiUpdateRolesEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull RichCustomEmoji emoji,
-            @Nonnull List<Role> oldRoles) {
+            @Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji, @Nonnull List<Role> oldRoles) {
         super(api, responseNumber, emoji, oldRoles, emoji.getRoles(), IDENTIFIER);
     }
 

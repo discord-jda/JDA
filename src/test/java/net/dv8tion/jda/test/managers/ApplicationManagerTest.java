@@ -59,8 +59,7 @@ public class ApplicationManagerTest extends IntegrationTest {
 
         IntegrationTypeConfig installParams = getInstallParams();
 
-        LinkedHashMap<IntegrationType, IntegrationTypeConfig> integrationTypeConfig =
-                new LinkedHashMap<>();
+        LinkedHashMap<IntegrationType, IntegrationTypeConfig> integrationTypeConfig = new LinkedHashMap<>();
         for (IntegrationType type : IntegrationType.values()) {
             if (type != IntegrationType.UNKNOWN) {
                 integrationTypeConfig.put(type, installParams);
@@ -102,20 +101,15 @@ public class ApplicationManagerTest extends IntegrationTest {
         Map<IntegrationType, IntegrationTypeConfig> config = new HashMap<>();
         config.put(null, IntegrationTypeConfig.of(Collections.emptySet(), Collections.emptySet()));
 
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> manager.setIntegrationTypeConfig(config));
+        assertThatIllegalArgumentException().isThrownBy(() -> manager.setIntegrationTypeConfig(config));
 
         config.clear();
         config.put(IntegrationType.GUILD_INSTALL, null);
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> manager.setIntegrationTypeConfig(config));
+        assertThatIllegalArgumentException().isThrownBy(() -> manager.setIntegrationTypeConfig(config));
 
         config.clear();
-        config.put(
-                IntegrationType.UNKNOWN,
-                IntegrationTypeConfig.of(Collections.emptySet(), Collections.emptySet()));
-        assertThatIllegalArgumentException()
-                .isThrownBy(() -> manager.setIntegrationTypeConfig(config));
+        config.put(IntegrationType.UNKNOWN, IntegrationTypeConfig.of(Collections.emptySet(), Collections.emptySet()));
+        assertThatIllegalArgumentException().isThrownBy(() -> manager.setIntegrationTypeConfig(config));
     }
 
     @Nonnull

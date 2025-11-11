@@ -55,10 +55,7 @@ public class UserActivityStartEvent extends GenericUserEvent implements GenericU
     private final Member member;
 
     public UserActivityStartEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Member member,
-            @Nonnull Activity newActivity) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull Activity newActivity) {
         super(api, responseNumber, member.getUser());
         this.newActivity = newActivity;
         this.member = member;

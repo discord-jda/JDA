@@ -49,16 +49,9 @@ public class ThreadMembersUpdateHandler extends SocketHandler {
         long threadId = content.getLong("id");
         ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);
         if (thread == null) {
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.CHANNEL,
-                            threadId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, threadId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug(
-                    "THREAD_MEMBERS_UPDATE attempted to update a thread that does not exist. JSON: {}",
-                    content);
+                    "THREAD_MEMBERS_UPDATE attempted to update a thread that does not exist. JSON: {}", content);
             return null;
         }
 
@@ -68,8 +61,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler {
         }
 
         if (!content.isNull("removed_member_ids")) {
-            List<Long> removedMemberIds = content.getArray("removed_member_ids").stream(
-                            DataArray::getString)
+            List<Long> removedMemberIds = content.getArray("removed_member_ids").stream(DataArray::getString)
                     .map(MiscUtil::parseSnowflake)
                     .collect(Collectors.toList());
             handleRemovedThreadMembers(thread, removedMemberIds);
@@ -85,8 +77,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler {
         List<ThreadMember> addedThreadMembers = new ArrayList<>();
         for (int i = 0; i < addedMembersJson.length(); i++) {
             DataObject threadMemberJson = addedMembersJson.getObject(i);
-            ThreadMember threadMember =
-                    entityBuilder.createThreadMember(thread.getGuild(), thread, threadMemberJson);
+            ThreadMember threadMember = entityBuilder.createThreadMember(thread.getGuild(), thread, threadMemberJson);
             addedThreadMembers.add(threadMember);
         }
 
@@ -124,11 +115,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler {
 
         for (long threadMemberId : removedMemberIds) {
             api.handleEvent(new ThreadMemberLeaveEvent(
-                    api,
-                    responseNumber,
-                    thread,
-                    threadMemberId,
-                    removedThreadMembers.remove(threadMemberId)));
+                    api, responseNumber, thread, threadMemberId, removedThreadMembers.remove(threadMemberId)));
         }
     }
 }

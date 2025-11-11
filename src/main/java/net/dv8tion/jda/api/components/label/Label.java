@@ -63,10 +63,7 @@ public interface Label extends ModalTopLevelComponent {
      * @return The new {@link Label}
      */
     @Nonnull
-    static Label of(
-            @Nonnull String label,
-            @Nullable String description,
-            @Nonnull LabelChildComponent child) {
+    static Label of(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child) {
         return LabelImpl.validated(label, description, child);
     }
 

@@ -25,13 +25,12 @@ import java.util.regex.Pattern;
 
 public class ChecksHelper {
     public static String tooLongError(String name, int maxLength, String value) {
-        return name + " may not be longer than " + maxLength + " characters! Provided: \"" + value
-                + "\"";
+        return name + " may not be longer than " + maxLength + " characters! Provided: \"" + value + "\"";
     }
 
     public static String notInRangeError(String name, int minLength, int maxLength, String value) {
-        return name + " must be between " + minLength + " and " + maxLength
-                + " characters long! Provided: \"" + value + "\"";
+        return name + " must be between " + minLength + " and " + maxLength + " characters long! Provided: \"" + value
+                + "\"";
     }
 
     public static String isNullError(String name) {
@@ -66,8 +65,7 @@ public class ChecksHelper {
         return name + " may not be negative or zero";
     }
 
-    public static StringChecksAssertions assertStringChecks(
-            String name, ThrowingConsumer<String> callable) {
+    public static StringChecksAssertions assertStringChecks(String name, ThrowingConsumer<String> callable) {
         return new StringChecksAssertions(name, callable);
     }
 
@@ -76,13 +74,11 @@ public class ChecksHelper {
         return new EnumChecksAssertions<>(name, callable);
     }
 
-    public static DurationChecksAssertions assertDurationChecks(
-            String name, ThrowingConsumer<Duration> callable) {
+    public static DurationChecksAssertions assertDurationChecks(String name, ThrowingConsumer<Duration> callable) {
         return new DurationChecksAssertions(name, callable);
     }
 
-    public static LongChecksAssertions assertLongChecks(
-            String name, ThrowingConsumer<Long> callable) {
+    public static LongChecksAssertions assertLongChecks(String name, ThrowingConsumer<Long> callable) {
         return new LongChecksAssertions(name, callable);
     }
 
@@ -91,8 +87,7 @@ public class ChecksHelper {
         return new CollectionChecksAssertions<>(name, callable);
     }
 
-    public static <T> SimpleChecksAssertions<T> assertChecks(
-            String name, ThrowingConsumer<T> callable) {
+    public static <T> SimpleChecksAssertions<T> assertChecks(String name, ThrowingConsumer<T> callable) {
         return new SimpleChecksAssertions<>(name, callable);
     }
 }

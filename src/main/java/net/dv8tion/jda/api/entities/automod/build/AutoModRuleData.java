@@ -65,13 +65,11 @@ public class AutoModRuleData implements SerializableData {
     protected boolean enabled = true;
     protected TriggerConfig triggerMetadata;
 
-    protected final EnumMap<AutoModResponse.Type, AutoModResponse> actions =
-            new EnumMap<>(AutoModResponse.Type.class);
+    protected final EnumMap<AutoModResponse.Type, AutoModResponse> actions = new EnumMap<>(AutoModResponse.Type.class);
     protected final Collection<String> exemptChannels = new ArrayList<>();
     protected final Collection<String> exemptRoles = new ArrayList<>();
 
-    protected AutoModRuleData(
-            AutoModEventType eventType, String name, TriggerConfig triggerMetadata) {
+    protected AutoModRuleData(AutoModEventType eventType, String name, TriggerConfig triggerMetadata) {
         this.eventType = eventType;
         this.setName(name);
         this.setTriggerConfig(triggerMetadata);
@@ -91,8 +89,7 @@ public class AutoModRuleData implements SerializableData {
      * @return The new {@link AutoModRuleData} instance
      */
     @Nonnull
-    public static AutoModRuleData onMessage(
-            @Nonnull String name, @Nonnull TriggerConfig triggerConfig) {
+    public static AutoModRuleData onMessage(@Nonnull String name, @Nonnull TriggerConfig triggerConfig) {
         return new AutoModRuleData(AutoModEventType.MESSAGE_SEND, name, triggerConfig);
     }
 
@@ -110,8 +107,7 @@ public class AutoModRuleData implements SerializableData {
      * @return The new {@link AutoModRuleData} instance
      */
     @Nonnull
-    public static AutoModRuleData onMemberProfile(
-            @Nonnull String name, @Nonnull TriggerConfig triggerConfig) {
+    public static AutoModRuleData onMemberProfile(@Nonnull String name, @Nonnull TriggerConfig triggerConfig) {
         return new AutoModRuleData(AutoModEventType.MEMBER_UPDATE, name, triggerConfig)
                 .putResponses(AutoModResponse.blockMemberInteraction());
     }
@@ -169,9 +165,7 @@ public class AutoModRuleData implements SerializableData {
         Checks.noneNull(responses, "Responses");
         for (AutoModResponse response : responses) {
             AutoModResponse.Type type = response.getType();
-            Checks.check(
-                    type != AutoModResponse.Type.UNKNOWN,
-                    "Cannot create response with unknown response type");
+            Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
             actions.put(type, response);
         }
         return this;
@@ -197,9 +191,7 @@ public class AutoModRuleData implements SerializableData {
         Checks.noneNull(responses, "Responses");
         for (AutoModResponse response : responses) {
             AutoModResponse.Type type = response.getType();
-            Checks.check(
-                    type != AutoModResponse.Type.UNKNOWN,
-                    "Cannot create response with unknown response type");
+            Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
             actions.put(type, response);
         }
         return this;
@@ -225,15 +217,11 @@ public class AutoModRuleData implements SerializableData {
         Checks.noneNull(responses, "Responses");
         actions.clear();
         if (eventType == AutoModEventType.MEMBER_UPDATE) {
-            actions.put(
-                    AutoModResponse.Type.BLOCK_MEMBER_INTERACTION,
-                    AutoModResponse.blockMemberInteraction());
+            actions.put(AutoModResponse.Type.BLOCK_MEMBER_INTERACTION, AutoModResponse.blockMemberInteraction());
         }
         for (AutoModResponse response : responses) {
             AutoModResponse.Type type = response.getType();
-            Checks.check(
-                    type != AutoModResponse.Type.UNKNOWN,
-                    "Cannot create response with unknown response type");
+            Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
             actions.put(type, response);
         }
         return this;
@@ -444,15 +432,15 @@ public class AutoModRuleData implements SerializableData {
             if (triggerType == AutoModTriggerType.KEYWORD) {
                 triggerType = AutoModTriggerType.MEMBER_PROFILE_KEYWORD;
             } else {
-                throw new IllegalStateException("Cannot create rule of trigger type " + triggerType
-                        + " with event type " + eventType);
+                throw new IllegalStateException(
+                        "Cannot create rule of trigger type " + triggerType + " with event type " + eventType);
             }
         }
 
         for (AutoModResponse response : actions.values()) {
             if (!response.getType().isSupportedTrigger(triggerType)) {
-                throw new IllegalStateException("Cannot create a rule of trigger type "
-                        + triggerType + " with response type " + response.getType());
+                throw new IllegalStateException("Cannot create a rule of trigger type " + triggerType
+                        + " with response type " + response.getType());
             }
         }
 
@@ -461,10 +449,8 @@ public class AutoModRuleData implements SerializableData {
                     "Cannot create a rule with no responses. Add at least one response with putResponses(...)");
         }
 
-        DataObject data = DataObject.empty()
-                .put("name", name)
-                .put("enabled", enabled)
-                .put("event_type", eventType.getKey());
+        DataObject data =
+                DataObject.empty().put("name", name).put("enabled", enabled).put("event_type", eventType.getKey());
 
         data.put("actions", DataArray.fromCollection(actions.values()));
 

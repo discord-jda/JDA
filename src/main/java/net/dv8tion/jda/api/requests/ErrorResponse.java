@@ -81,17 +81,13 @@ public enum ErrorResponse {
     UNKNOWN_TAG(10087, "Unknown Tag"),
     BOTS_NOT_ALLOWED(20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(20002, "Only bots can use this endpoint"),
-    EXPLICIT_CONTENT_CANNOT_SEND_TO_RECIPIENT(
-            20009, "Explicit content cannot be sent to the desired recipient(s)"),
-    NOT_AUTHORIZED_PERFORM_ACTION(
-            20012, "You are not authorized to perform this action on this application"),
+    EXPLICIT_CONTENT_CANNOT_SEND_TO_RECIPIENT(20009, "Explicit content cannot be sent to the desired recipient(s)"),
+    NOT_AUTHORIZED_PERFORM_ACTION(20012, "You are not authorized to perform this action on this application"),
     SLOWMODE_RATE_LIMIT(20016, "This action cannot be performed due to slowmode rate limit"),
     OWNER_ONLY(20018, "Only the owner of this account can perform this action"),
     ANNOUNCEMENT_RATE_LIMIT(20022, "This message cannot be edited due to announcement rate limits"),
     CHANNEL_WRITE_RATE_LIMIT(20028, "The channel you are writing has hit the write rate limit"),
-    GUILD_WRITE_RATE_LIMIT(
-            20029,
-            "The write action you are performing on the server has hit the write rate limit"),
+    GUILD_WRITE_RATE_LIMIT(20029, "The write action you are performing on the server has hit the write rate limit"),
     GUILD_EXPLICIT_CONTENT_FILTER(
             20031,
             "Your Stage topic, server name, server description, or channel names contain words that are not allowed"),
@@ -115,21 +111,15 @@ public enum ErrorResponse {
     MAX_THREAD_PARTICIPANTS(30033, "Max number of thread participants has been reached (1000)"),
     MAX_DAILY_APPLICATION_COMMAND_CREATES(
             30034, "Maximum number of daily application command creates has been reached (200)"),
-    MAX_NON_GUILD_MEMBER_BANS(
-            30035, "Maximum number of bans for non-guild members have been exceeded"),
+    MAX_NON_GUILD_MEMBER_BANS(30035, "Maximum number of bans for non-guild members have been exceeded"),
     MAX_BAN_FETCHES(30037, "Maximum number of bans fetches has been reached"),
-    MAX_UNCOMPLETED_GUILD_SCHEDULED_EVENTS(
-            30038, "Maximum number of uncompleted guild scheduled events reached (100)"),
+    MAX_UNCOMPLETED_GUILD_SCHEDULED_EVENTS(30038, "Maximum number of uncompleted guild scheduled events reached (100)"),
     MAX_STICKERS(30039, "Maximum number of stickers reached"),
     MAX_PRUNE_REQUESTS(30040, "Maximum number of prune requests has been reached. Try again later"),
     MAX_GUILD_WIDGET_UPDATES(
-            30042,
-            "Maximum number of guild widget settings updates has been reached. Try again later"),
-    MAX_OLD_MESSAGE_EDITS(
-            30046,
-            "Maximum number of edits to messages older than 1 hour reached. Try again later"),
-    MAX_PINNED_THREADS_IN_FORUM(
-            30047, "Maximum number of pinned threads in a forum channel has been reached"),
+            30042, "Maximum number of guild widget settings updates has been reached. Try again later"),
+    MAX_OLD_MESSAGE_EDITS(30046, "Maximum number of edits to messages older than 1 hour reached. Try again later"),
+    MAX_PINNED_THREADS_IN_FORUM(30047, "Maximum number of pinned threads in a forum channel has been reached"),
     MAX_FORUM_TAGS(30048, "Maximum number of tags in a forum channel has been reached"),
     MAX_BITRATE(30052, "Bitrate is too high for channel of this type"),
     MAX_PREMIUM_EMOJIS(30056, "Maximum number of premium emojis reached (25)"),
@@ -146,8 +136,7 @@ public enum ErrorResponse {
     CONNECTION_REVOKED(40012, "Connection has been revoked"),
     USER_NOT_CONNECTED(40032, "Target user is not connected to voice."),
     ALREADY_CROSSPOSTED(40033, "This message has already been crossposted."),
-    APPLICATION_COMMAND_NAME_ALREADY_EXISTS(
-            40041, "An application command with that name already exists"),
+    APPLICATION_COMMAND_NAME_ALREADY_EXISTS(40041, "An application command with that name already exists"),
     APPLICATION_INTERACTION_FAILED(40043, "Application interaction failed to send"),
     CANNOT_SEND_MESSAGE_IN_FORUM(40058, "Cannot send a message in a forum channel"),
     INTERACTION_ALREADY_ACKNOWLEDGED(40060, "Interaction has already been acknowledged"),
@@ -155,13 +144,10 @@ public enum ErrorResponse {
     SERVICE_RESOURCE_RATE_LIMIT(40062, "Service resource is being rate limited"),
     MISSING_AVAILABLE_TAGS(40066, "There are no tags available that can be set by non-moderators"),
     FORUM_POST_TAG_REQUIRED(40067, "A tag is required to create a forum post in this channel"),
-    DUPLICATE_RESOURCE_ENTITLEMENT(
-            40074, "An entitlement has already been granted for this resource"),
-    MAX_FOLLOW_UP_MESSAGES_HIT(
-            40094, "This interaction has hit the maximum number of follow up messages"),
+    DUPLICATE_RESOURCE_ENTITLEMENT(40074, "An entitlement has already been granted for this resource"),
+    MAX_FOLLOW_UP_MESSAGES_HIT(40094, "This interaction has hit the maximum number of follow up messages"),
     CLOUDFLARE_BLOCKED_REQUEST(
-            40333,
-            "Cloudflare is blocking your request. This can often be resolved by setting a proper User Agent"),
+            40333, "Cloudflare is blocking your request. This can often be resolved by setting a proper User Agent"),
     MISSING_ACCESS(50001, "Missing Access"),
     INVALID_ACCOUNT_TYPE(50002, "Invalid Account Type"),
     INVALID_DM_ACTION(50003, "Cannot execute action on a DM channel"),
@@ -191,11 +177,9 @@ public enum ErrorResponse {
     INVALID_WEBHOOK_TOKEN(50027, "Invalid Webhook Token"),
     INVALID_ROLE(50028, "Invalid role"),
     INVALID_RECIPIENT(50033, "Invalid Recipient(s)"),
-    INVALID_BULK_DELETE_MESSAGE_AGE(
-            50034, "A Message provided to bulk_delete was older than 2 weeks"),
+    INVALID_BULK_DELETE_MESSAGE_AGE(50034, "A Message provided to bulk_delete was older than 2 weeks"),
     INVALID_FORM_BODY(50035, "Invalid Form Body"),
-    INVITE_FOR_UNKNOWN_GUILD(
-            50036, "An invite was accepted to a guild the application's bot is not in"),
+    INVITE_FOR_UNKNOWN_GUILD(50036, "An invite was accepted to a guild the application's bot is not in"),
     INVALID_ACTIVITY_ACTION(50039, "Invalid Activity Action"),
     INVALID_API_VERSION(50041, "Invalid API version"),
     FILE_UPLOAD_MAX_SIZE_EXCEEDED(50045, "File uploaded exceeds the maximum size"),
@@ -211,27 +195,22 @@ public enum ErrorResponse {
             50083,
             "Tried to perform an operation on an archived thread, such as editing a message or adding a user to the thread"),
     INVALID_THREAD_NOTIFICATION_SETTINGS(50084, "Invalid thread notification settings"),
-    BEFORE_VALUE_EARLIER_THAN_THREAD_CREATION(
-            50085, "\"before\" value is earlier than the thread creation date"),
+    BEFORE_VALUE_EARLIER_THAN_THREAD_CREATION(50085, "\"before\" value is earlier than the thread creation date"),
     INVALID_COMMUNITY_SERVER_CHANNEL_TYPE(50086, "Community server channels must be text channels"),
     INCONSISTENT_EVENT_START_ENTITY(
-            50091,
-            "The entity type of the event is different from the entity you are trying to start the event for"),
+            50091, "The entity type of the event is different from the entity you are trying to start the event for"),
     SERVER_NOT_AVAILABLE_IN_YOUR_LOCATION(50095, "This server is not available in your location"),
-    SERVER_MONETIZATION_DISABLED(
-            50097, "This server needs monetization enabled in order to perform this action"),
+    SERVER_MONETIZATION_DISABLED(50097, "This server needs monetization enabled in order to perform this action"),
     SERVER_NOT_ENOUGH_BOOSTS(50101, "This server needs more boosts to perform this action"),
     INVALID_REQUEST_BODY(50109, "The request body contains invalid JSON."),
     OWNER_CANNOT_BE_PENDING(50131, "Owner cannot be pending member"),
     OWNER_TRANSFER_TO_BOT(50132, "Ownership cannot be transferred to a bot user"),
     CANNOT_RESIZE_BELOW_MAXIMUM(50138, "Failed to resize asset below the maximum size: 262144"),
-    MIXED_PREMIUM_ROLES_FOR_EMOJI(
-            50144, "Cannot mix subscription and non subscription roles for an emoji"),
+    MIXED_PREMIUM_ROLES_FOR_EMOJI(50144, "Cannot mix subscription and non subscription roles for an emoji"),
     ILLEGAL_EMOJI_CONVERSION(50145, "Cannot convert between premium emoji and normal emoji"),
     UNKNOWN_UPLOADED_FILE(50146, "Uploaded file not found"),
     VOICE_MESSAGE_ADDITIONAL_CONTENT(50159, "Voice messages do not support additional content"),
-    VOICE_MESSAGE_TOO_MANY_AUDIO_ATTACHMENTS(
-            50160, "Voice messages must have a single audio attachment"),
+    VOICE_MESSAGE_TOO_MANY_AUDIO_ATTACHMENTS(50160, "Voice messages must have a single audio attachment"),
     VOICE_MESSAGE_MISSING_METADATA(50161, "Voice messages must have supporting metadata"),
     CANNOT_EDIT_VOICE_MESSAGE(50162, "Voice messages cannot be edited"),
     CANNOT_DELETE_GUILD_INTEGRATION(50163, "Cannot delete guild subscription integration"),
@@ -245,10 +224,8 @@ public enum ErrorResponse {
     APPLICATION_NOT_AVAILABLE(110001, "Application not yet available. Try again later"),
     RESOURCES_OVERLOADED(130000, "Resource overloaded"),
     STAGE_ALREADY_OPEN(150006, "The Stage is already open"),
-    REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM(
-            160002, "Cannot reply without permission to read message history"),
-    THREAD_WITH_THIS_MESSAGE_ALREADY_EXISTS(
-            160004, "A thread has already been created for this message"),
+    REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM(160002, "Cannot reply without permission to read message history"),
+    THREAD_WITH_THIS_MESSAGE_ALREADY_EXISTS(160004, "A thread has already been created for this message"),
     THREAD_LOCKED(160005, "Thread is locked"),
     MAX_ACTIVE_THREADS(160006, "Maximum number of active threads reached"),
     MAX_ANNOUNCEMENT_THREADS(160007, "Maximum number of active announcement threads reached"),
@@ -260,26 +237,20 @@ public enum ErrorResponse {
     MAX_STICKER_FPS(170003, "Sticker maximum framerate exceeded"),
     MAX_STICKER_FRAMES(170004, "Sticker frame count exceeds maximum of 1000 frames"),
     MAX_LOTTIE_ANIMATION_DIMENSION(170005, "Lottie animation maximum dimensions exceeded"),
-    STICKER_FPS_TOO_SMALL_OR_TOO_LARGE(
-            170006, "Sticker frame rate is either too small or too large"),
-    MAX_STICKER_ANIMATION_DURATION(
-            170007, "Sticker animation duration exceeds maximum of 5 seconds"),
+    STICKER_FPS_TOO_SMALL_OR_TOO_LARGE(170006, "Sticker frame rate is either too small or too large"),
+    MAX_STICKER_ANIMATION_DURATION(170007, "Sticker animation duration exceeds maximum of 5 seconds"),
     CANNOT_UPDATE_FINISHED_EVENT(180000, "Cannot update a finished event"),
     CANNOT_CREATE_STAGE_CHANNEL_FOR_EVENT(180002, "Failed to create stage needed for stage event"),
     MESSAGE_BLOCKED_BY_AUTOMOD(200000, "Message was blocked by automatic moderation"),
     TITLE_BLOCKED_BY_AUTOMOD(200001, "Title was blocked by automatic moderation"),
-    WEBHOOK_FORUM_POST_WITHOUT_THREAD(
-            220001, "Webhooks posted to forum channels must have a thread_name or thread_id"),
+    WEBHOOK_FORUM_POST_WITHOUT_THREAD(220001, "Webhooks posted to forum channels must have a thread_name or thread_id"),
     WEBHOOK_POST_WITH_THREAD_NAME_AND_ID(
-            220002,
-            "Webhooks posted to forum channels cannot have both a thread_name and thread_id"),
+            220002, "Webhooks posted to forum channels cannot have both a thread_name and thread_id"),
     INVALID_WEBHOOK_THREAD_CHANNEL(220003, "Webhooks can only create threads in forum channels"),
     INVALID_WEBHOOK_SERVICE_CHANNEL(220004, "Webhook services cannot be used in forum channels"),
     MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER(240000, "Message blocked by harmful links filter"),
-    ENABLE_ONBOARDING_MISSING_REQUIREMENTS(
-            350000, "Cannot enable onboarding, requirements are not met"),
-    UPDATE_ONBOARDING_MISSING_REQUIREMENTS(
-            350001, "Cannot update onboarding while below requirements"),
+    ENABLE_ONBOARDING_MISSING_REQUIREMENTS(350000, "Cannot enable onboarding, requirements are not met"),
+    UPDATE_ONBOARDING_MISSING_REQUIREMENTS(350001, "Cannot update onboarding while below requirements"),
     FAILED_TO_BAN_USERS(500000, "Failed to ban users"),
     POLL_VOTING_BLOCKED(520000, "Poll voting blocked"),
     POLL_EXPIRED(520001, "Poll expired"),

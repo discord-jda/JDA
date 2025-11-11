@@ -52,22 +52,14 @@ public class MessagePollVoteHandler extends SocketHandler {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null) {
                     WebSocketClient.LOG.debug(
-                            "Dropping message poll vote event for unexpected channel of type {}",
-                            actual.getType());
+                            "Dropping message poll vote event for unexpected channel of type {}", actual.getType());
                     return null;
                 }
             }
 
             if (guildId != 0) {
-                api.getEventCache()
-                        .cache(
-                                EventCache.Type.CHANNEL,
-                                channelId,
-                                responseNumber,
-                                allContent,
-                                this::handle);
-                EventCache.LOG.debug(
-                        "Received a vote for a channel that JDA does not currently have cached");
+                api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received a vote for a channel that JDA does not currently have cached");
                 return null;
             }
 
@@ -76,11 +68,9 @@ public class MessagePollVoteHandler extends SocketHandler {
         }
 
         if (add) {
-            api.handleEvent(new MessagePollVoteAddEvent(
-                    channel, responseNumber, messageId, userId, answerId));
+            api.handleEvent(new MessagePollVoteAddEvent(channel, responseNumber, messageId, userId, answerId));
         } else {
-            api.handleEvent(new MessagePollVoteRemoveEvent(
-                    channel, responseNumber, messageId, userId, answerId));
+            api.handleEvent(new MessagePollVoteRemoveEvent(channel, responseNumber, messageId, userId, answerId));
         }
 
         return null;

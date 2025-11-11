@@ -49,8 +49,7 @@ import javax.annotation.Nonnull;
  *
  * @see ThreadChannel#retrieveThreadMembers()
  */
-public interface ThreadMemberPaginationAction
-        extends PaginationAction<ThreadMember, ThreadMemberPaginationAction> {
+public interface ThreadMemberPaginationAction extends PaginationAction<ThreadMember, ThreadMemberPaginationAction> {
     /**
      * The {@link ThreadChannel} this action fetches members for.
      *

@@ -32,8 +32,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class DeferredRestAction<T, R extends RestAction<T>>
-        implements AuditableRestAction<T>, CacheRestAction<T> {
+public class DeferredRestAction<T, R extends RestAction<T>> implements AuditableRestAction<T>, CacheRestAction<T> {
     private final JDA api;
     private final Class<T> type;
     private final Supplier<T> valueSupplier;
@@ -49,8 +48,7 @@ public class DeferredRestAction<T, R extends RestAction<T>>
         this(api, null, null, actionSupplier);
     }
 
-    public DeferredRestAction(
-            JDA api, Class<T> type, Supplier<T> valueSupplier, Supplier<R> actionSupplier) {
+    public DeferredRestAction(JDA api, Class<T> type, Supplier<T> valueSupplier, Supplier<R> actionSupplier) {
         this.api = api;
         this.type = type;
         this.valueSupplier = valueSupplier;

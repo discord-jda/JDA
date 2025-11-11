@@ -27,8 +27,7 @@ import javax.annotation.Nonnull;
  * @see #getEntitlement()
  */
 public class EntitlementCreateEvent extends GenericEntitlementEvent {
-    public EntitlementCreateEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
+    public EntitlementCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
         super(api, responseNumber, entitlement);
     }
 }

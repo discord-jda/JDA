@@ -52,10 +52,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message>
     private String threadId;
 
     public MessageEditActionImpl(
-            @Nonnull JDA jda,
-            @Nullable Guild guild,
-            @Nonnull String channelId,
-            @Nonnull String messageId) {
+            @Nonnull JDA jda, @Nullable Guild guild, @Nonnull String channelId, @Nonnull String messageId) {
         super(jda, Route.Messages.EDIT_MESSAGE.compile(channelId, messageId));
         this.channel = null;
         this.guild = guild;
@@ -69,8 +66,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message>
         this.messageId = messageId;
     }
 
-    public MessageEditActionImpl withHook(
-            WebhookClient<Message> hook, ChannelType channelType, long channelId) {
+    public MessageEditActionImpl withHook(WebhookClient<Message> hook, ChannelType channelType, long channelId) {
         this.webhook = hook;
         if (!(hook instanceof InteractionHook) && channelType.isThread()) {
             this.threadId = Long.toUnsignedString(channelId);
@@ -85,11 +81,9 @@ public class MessageEditActionImpl extends RestActionImpl<Message>
 
     @Override
     protected Route.CompiledRoute finalizeRoute() {
-        if (webhook != null
-                && (!(webhook instanceof InteractionHook)
-                        || !((InteractionHook) webhook).isExpired())) {
-            Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(
-                    webhook.getId(), webhook.getToken(), messageId);
+        if (webhook != null && (!(webhook instanceof InteractionHook) || !((InteractionHook) webhook).isExpired())) {
+            Route.CompiledRoute route =
+                    Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), messageId);
             if (this.threadId != null) {
                 route = route.withQueryParams("thread_id", threadId);
             }

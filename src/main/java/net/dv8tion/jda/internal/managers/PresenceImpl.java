@@ -93,9 +93,7 @@ public class PresenceImpl implements Presence {
 
     @Override
     public void setPresence(OnlineStatus status, Activity activity, boolean idle) {
-        Checks.check(
-                status != OnlineStatus.UNKNOWN,
-                "Cannot set the presence status to an unknown OnlineStatus!");
+        Checks.check(status != OnlineStatus.UNKNOWN, "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null) {
             status = OnlineStatus.INVISIBLE;
         }

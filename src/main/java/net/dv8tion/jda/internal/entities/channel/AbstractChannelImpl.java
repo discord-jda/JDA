@@ -27,8 +27,7 @@ import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 
-public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>>
-        implements ChannelMixin<T> {
+public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> implements ChannelMixin<T> {
     protected final long id;
     protected final JDAImpl api;
 

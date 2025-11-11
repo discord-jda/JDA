@@ -49,8 +49,7 @@ public class MessagePollHandlerTests extends AbstractSocketHandlerTest {
         assertThatEvent(MessagePollVoteAddEvent.class)
                 .hasGetterWithValueEqualTo(MessagePollVoteAddEvent::getMessageId, messageId)
                 .hasGetterWithValueEqualTo(MessagePollVoteAddEvent::getAnswerId, 1L)
-                .hasGetterWithValueEqualTo(
-                        MessagePollVoteAddEvent::getUserIdLong, Constants.MINN_USER_ID)
+                .hasGetterWithValueEqualTo(MessagePollVoteAddEvent::getUserIdLong, Constants.MINN_USER_ID)
                 .isFiredBy(() -> {
                     handler.handle(
                             random.nextLong(),
@@ -73,8 +72,7 @@ public class MessagePollHandlerTests extends AbstractSocketHandlerTest {
         assertThatEvent(MessagePollVoteRemoveEvent.class)
                 .hasGetterWithValueEqualTo(MessagePollVoteRemoveEvent::getMessageId, messageId)
                 .hasGetterWithValueEqualTo(MessagePollVoteRemoveEvent::getAnswerId, 1L)
-                .hasGetterWithValueEqualTo(
-                        MessagePollVoteRemoveEvent::getUserIdLong, Constants.MINN_USER_ID)
+                .hasGetterWithValueEqualTo(MessagePollVoteRemoveEvent::getUserIdLong, Constants.MINN_USER_ID)
                 .isFiredBy(() -> {
                     handler.handle(
                             random.nextLong(),

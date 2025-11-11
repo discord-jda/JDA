@@ -108,8 +108,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
         Checks.notNegative(selectedPosition, "Provided selectedPosition");
         Checks.check(
                 selectedPosition < orderList.size(),
-                "Provided selectedPosition is too big and is out of bounds. selectedPosition: "
-                        + selectedPosition);
+                "Provided selectedPosition is too big and is out of bounds. selectedPosition: " + selectedPosition);
 
         this.selectedPosition = selectedPosition;
 
@@ -145,8 +144,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
     public M moveUp(int amount) {
         Checks.notNegative(amount, "Provided amount");
         if (selectedPosition == -1) {
-            throw new IllegalStateException(
-                    "Cannot move until an item has been selected. Use #selectPosition first.");
+            throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
         }
         if (ascendingOrder) {
             Checks.check(
@@ -174,8 +172,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
     public M moveDown(int amount) {
         Checks.notNegative(amount, "Provided amount");
         if (selectedPosition == -1) {
-            throw new IllegalStateException(
-                    "Cannot move until an item has been selected. Use #selectPosition first.");
+            throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
         }
 
         if (ascendingOrder) {
@@ -204,11 +201,9 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
     @SuppressWarnings("unchecked")
     public M moveTo(int position) {
         Checks.notNegative(position, "Provided position");
-        Checks.check(
-                position < orderList.size(), "Provided position is too big and is out of bounds.");
+        Checks.check(position < orderList.size(), "Provided position is too big and is out of bounds.");
         if (selectedPosition == -1) {
-            throw new IllegalStateException(
-                    "Cannot move until an item has been selected. Use #selectPosition first.");
+            throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
         }
 
         T selectedItem = orderList.remove(selectedPosition);
@@ -251,11 +246,9 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>> extends Re
         Checks.notNegative(swapPosition, "Provided swapPosition");
         Checks.check(
                 swapPosition < orderList.size(),
-                "Provided swapPosition is too big and is out of bounds. swapPosition: "
-                        + swapPosition);
+                "Provided swapPosition is too big and is out of bounds. swapPosition: " + swapPosition);
         if (selectedPosition == -1) {
-            throw new IllegalStateException(
-                    "Cannot move until an item has been selected. Use #selectPosition first.");
+            throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
         }
 
         T selectedItem = orderList.get(selectedPosition);

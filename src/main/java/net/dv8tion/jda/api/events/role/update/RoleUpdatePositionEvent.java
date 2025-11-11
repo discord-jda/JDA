@@ -35,11 +35,7 @@ public class RoleUpdatePositionEvent extends GenericRoleUpdateEvent<Integer> {
     private final int newPositionRaw;
 
     public RoleUpdatePositionEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Role role,
-            int oldPosition,
-            int oldPositionRaw) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Role role, int oldPosition, int oldPositionRaw) {
         super(api, responseNumber, role, oldPosition, role.getPosition(), IDENTIFIER);
         this.oldPositionRaw = oldPositionRaw;
         this.newPositionRaw = role.getPositionRaw();

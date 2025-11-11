@@ -36,10 +36,7 @@ public class GuildInviteCreateEvent extends GenericGuildInviteEvent {
     private final Invite invite;
 
     public GuildInviteCreateEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Invite invite,
-            @Nonnull GuildChannel channel) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Invite invite, @Nonnull GuildChannel channel) {
         super(api, responseNumber, invite.getCode(), channel);
         this.invite = invite;
     }

@@ -40,10 +40,7 @@ import javax.annotation.Nullable;
  * Represents either an attachment:// link, or a deserialized file component
  */
 public class FileDisplayImpl extends AbstractComponentImpl
-        implements FileDisplay,
-                MessageTopLevelComponentUnion,
-                ContainerChildComponentUnion,
-                FileContainerMixin {
+        implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin {
     private final int uniqueId;
     private final String url;
     private final ResolvedMedia media;

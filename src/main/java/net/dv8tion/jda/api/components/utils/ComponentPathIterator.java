@@ -64,8 +64,8 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
     @Nonnull
     public static Stream<ComponentWithPath> createStream(
             @Nonnull String rootName, @Nonnull Collection<? extends Component> components) {
-        Spliterator<ComponentWithPath> spliterator = Spliterators.spliteratorUnknownSize(
-                create(rootName, components), Spliterator.ORDERED);
+        Spliterator<ComponentWithPath> spliterator =
+                Spliterators.spliteratorUnknownSize(create(rootName, components), Spliterator.ORDERED);
         return StreamSupport.stream(spliterator, false);
     }
 
@@ -87,23 +87,21 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
 
         if (component instanceof Container) {
             Container container = (Container) component;
-            stack.push(new CollectionAttributeIterator(
-                    componentWithPath.path, "components", container.getComponents()));
+            stack.push(
+                    new CollectionAttributeIterator(componentWithPath.path, "components", container.getComponents()));
         } else if (component instanceof ActionRow) {
             ActionRow actionRow = (ActionRow) component;
-            stack.push(new CollectionAttributeIterator(
-                    componentWithPath.path, "components", actionRow.getComponents()));
+            stack.push(
+                    new CollectionAttributeIterator(componentWithPath.path, "components", actionRow.getComponents()));
         } else if (component instanceof Section) {
             Section section = (Section) component;
 
             stack.push(new CollectionAttributeIterator(
                     componentWithPath.path, "components", section.getContentComponents()));
-            stack.push(singleAttributeIterator(
-                    componentWithPath.path, "accessory", section.getAccessory()));
+            stack.push(singleAttributeIterator(componentWithPath.path, "accessory", section.getAccessory()));
         } else if (component instanceof Label) {
             Label label = (Label) component;
-            stack.push(
-                    singleAttributeIterator(componentWithPath.path, "component", label.getChild()));
+            stack.push(singleAttributeIterator(componentWithPath.path, "component", label.getChild()));
         }
 
         return componentWithPath;
@@ -141,8 +139,7 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
         private final String listName;
         private int index = 0;
 
-        CollectionAttributeIterator(
-                String parentPath, String listName, Collection<? extends Component> collection) {
+        CollectionAttributeIterator(String parentPath, String listName, Collection<? extends Component> collection) {
             this.nestedIterator = collection.iterator();
             this.parentPath = parentPath;
             this.listName = listName;

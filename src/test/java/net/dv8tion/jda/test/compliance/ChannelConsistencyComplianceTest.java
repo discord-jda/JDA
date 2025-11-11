@@ -34,9 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class ChannelConsistencyComplianceTest {
     private static Set<String> getMethodNames(Class<?> clazz) {
-        return Arrays.stream(clazz.getDeclaredMethods())
-                .map(Method::getName)
-                .collect(Collectors.toSet());
+        return Arrays.stream(clazz.getDeclaredMethods()).map(Method::getName).collect(Collectors.toSet());
     }
 
     private static String getChannelName(ChannelType type) {
@@ -117,8 +115,8 @@ public class ChannelConsistencyComplianceTest {
         for (ChannelType type : editable) {
             String channelName = getChannelName(type);
 
-            assertThatCode(() -> Class.forName("net.dv8tion.jda.api.managers.channel.concrete."
-                            + channelName + "ChannelManager"))
+            assertThatCode(() -> Class.forName(
+                            "net.dv8tion.jda.api.managers.channel.concrete." + channelName + "ChannelManager"))
                     .as("Missing manager interface for ChannelType." + type)
                     .doesNotThrowAnyException();
         }

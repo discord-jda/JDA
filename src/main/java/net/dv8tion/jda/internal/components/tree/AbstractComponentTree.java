@@ -43,7 +43,6 @@ public abstract class AbstractComponentTree<E extends Component> implements Comp
     @Nonnull
     @Override
     public ComponentTree<E> withDisabled(boolean disabled) {
-        return replace(
-                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
+        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
     }
 }

@@ -54,18 +54,14 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code audio-channel}
  */
-public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent
-        implements UpdateEvent<Member, AudioChannel> {
+public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements UpdateEvent<Member, AudioChannel> {
     public static final String IDENTIFIER = "audio-channel";
 
     private final AudioChannel previous;
     private final AudioChannel next;
 
     public GuildVoiceUpdateEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Member member,
-            @Nullable AudioChannel previous) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable AudioChannel previous) {
         super(api, responseNumber, member);
         this.previous = previous;
         this.next = member.getVoiceState().getChannel();

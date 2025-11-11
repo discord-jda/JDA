@@ -59,9 +59,7 @@ public class UnifiedChannelCacheView<C extends Channel> implements ChannelCacheV
     @Nonnull
     @Override
     public Set<C> asSet() {
-        return stream()
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toSet(), Collections::unmodifiableSet));
+        return stream().collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
     }
 
     @Nonnull

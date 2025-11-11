@@ -213,8 +213,7 @@ public interface IMessageEditCallback extends IDeferrableCallback {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(
-            @Nonnull MessageTopLevelComponent... components) {
+    default MessageEditCallbackAction editComponents(@Nonnull MessageTopLevelComponent... components) {
         Checks.noneNull(components, "components");
         return editComponents(Arrays.asList(components));
     }
@@ -256,8 +255,7 @@ public interface IMessageEditCallback extends IDeferrableCallback {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(
-            @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
+    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return editComponents(tree.getComponents());
     }
@@ -289,8 +287,7 @@ public interface IMessageEditCallback extends IDeferrableCallback {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessageEmbeds(
-            @Nonnull Collection<? extends MessageEmbed> embeds) {
+    default MessageEditCallbackAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
     }
@@ -356,8 +353,7 @@ public interface IMessageEditCallback extends IDeferrableCallback {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessageFormat(
-            @Nonnull String format, @Nonnull Object... args) {
+    default MessageEditCallbackAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return editMessage(String.format(format, args));
     }
@@ -397,8 +393,7 @@ public interface IMessageEditCallback extends IDeferrableCallback {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessageAttachments(
-            @Nonnull Collection<? extends AttachedFile> attachments) {
+    default MessageEditCallbackAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments) {
         Checks.noneNull(attachments, "Attachments");
         return deferEdit().setAttachments(attachments);
     }

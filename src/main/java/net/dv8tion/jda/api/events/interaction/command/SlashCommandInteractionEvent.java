@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
  *
  * @see SlashCommandInteraction
  */
-public class SlashCommandInteractionEvent extends GenericCommandInteractionEvent
-        implements SlashCommandInteraction {
+public class SlashCommandInteractionEvent extends GenericCommandInteractionEvent implements SlashCommandInteraction {
     private final SlashCommandInteraction interaction;
 
     public SlashCommandInteractionEvent(

@@ -37,10 +37,8 @@ public class VoiceChannelStatusUpdateHandler extends SocketHandler {
         VoiceChannelImpl channel = (VoiceChannelImpl) getJDA().getVoiceChannelById(id);
 
         if (channel == null) {
-            EventCache.LOG.debug(
-                    "Caching VOICE_CHANNEL_STATUS_UPDATE for uncached channel. ID: {}", id);
-            getJDA().getEventCache()
-                    .cache(EventCache.Type.CHANNEL, id, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Caching VOICE_CHANNEL_STATUS_UPDATE for uncached channel. ID: {}", id);
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, id, responseNumber, allContent, this::handle);
             return null;
         }
 
@@ -48,8 +46,7 @@ public class VoiceChannelStatusUpdateHandler extends SocketHandler {
         if (!newStatus.equals(channel.getStatus())) {
             String oldStatus = channel.getStatus();
             channel.setStatus(newStatus);
-            api.handleEvent(new ChannelUpdateVoiceStatusEvent(
-                    api, responseNumber, channel, oldStatus, newStatus));
+            api.handleEvent(new ChannelUpdateVoiceStatusEvent(api, responseNumber, channel, oldStatus, newStatus));
         }
         return null;
     }

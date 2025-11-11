@@ -43,17 +43,8 @@ public class ScheduledEventUpdateImageEvent extends GenericScheduledEventUpdateE
     public static final String IDENTIFIER = "image";
 
     public ScheduledEventUpdateImageEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull ScheduledEvent scheduledEvent,
-            @Nonnull String previous) {
-        super(
-                api,
-                responseNumber,
-                scheduledEvent,
-                previous,
-                scheduledEvent.getImageUrl(),
-                IDENTIFIER);
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous) {
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getImageUrl(), IDENTIFIER);
     }
 
     /**

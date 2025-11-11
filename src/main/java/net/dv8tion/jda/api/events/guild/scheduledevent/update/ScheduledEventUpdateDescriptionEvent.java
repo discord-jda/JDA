@@ -44,17 +44,8 @@ public class ScheduledEventUpdateDescriptionEvent extends GenericScheduledEventU
     public static final String IDENTIFIER = "description";
 
     public ScheduledEventUpdateDescriptionEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull ScheduledEvent scheduledEvent,
-            @Nullable String previous) {
-        super(
-                api,
-                responseNumber,
-                scheduledEvent,
-                previous,
-                scheduledEvent.getDescription(),
-                IDENTIFIER);
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nullable String previous) {
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getDescription(), IDENTIFIER);
     }
 
     /**

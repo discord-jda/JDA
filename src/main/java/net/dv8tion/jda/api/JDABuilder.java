@@ -166,9 +166,7 @@ public class JDABuilder {
     @Nonnull
     @CheckReturnValue
     public static JDABuilder createDefault(
-            @Nullable String token,
-            @Nonnull GatewayIntent intent,
-            @Nonnull GatewayIntent... intents) {
+            @Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "GatewayIntent");
         Checks.noneNull(intents, "GatewayIntent");
         return createDefault(token, EnumSet.of(intent, intents));
@@ -208,8 +206,7 @@ public class JDABuilder {
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder createDefault(
-            @Nullable String token, @Nonnull Collection<GatewayIntent> intents) {
+    public static JDABuilder createDefault(@Nullable String token, @Nonnull Collection<GatewayIntent> intents) {
         return create(token, intents).applyDefault();
     }
 
@@ -279,9 +276,7 @@ public class JDABuilder {
     @Nonnull
     @CheckReturnValue
     public static JDABuilder createLight(
-            @Nullable String token,
-            @Nonnull GatewayIntent intent,
-            @Nonnull GatewayIntent... intents) {
+            @Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "GatewayIntent");
         Checks.noneNull(intents, "GatewayIntent");
         return createLight(token, EnumSet.of(intent, intents));
@@ -318,8 +313,7 @@ public class JDABuilder {
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder createLight(
-            @Nullable String token, @Nonnull Collection<GatewayIntent> intents) {
+    public static JDABuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents) {
         return create(token, intents).applyLight();
     }
 
@@ -361,8 +355,7 @@ public class JDABuilder {
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder create(
-            @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+    public static JDABuilder create(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         return create(null, intent, intents);
     }
 
@@ -428,9 +421,7 @@ public class JDABuilder {
     @Nonnull
     @CheckReturnValue
     public static JDABuilder create(
-            @Nullable String token,
-            @Nonnull GatewayIntent intent,
-            @Nonnull GatewayIntent... intents) {
+            @Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         return new JDABuilder(token, GatewayIntent.getRaw(intent, intents)).applyIntents();
     }
 
@@ -460,8 +451,7 @@ public class JDABuilder {
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder create(
-            @Nullable String token, @Nonnull Collection<GatewayIntent> intents) {
+    public static JDABuilder create(@Nullable String token, @Nonnull Collection<GatewayIntent> intents) {
         return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyIntents();
     }
 
@@ -476,8 +466,7 @@ public class JDABuilder {
 
         boolean enableMembers = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
         return setChunkingFilter(enableMembers ? ChunkingFilter.ALL : ChunkingFilter.NONE)
-                .setMemberCachePolicy(
-                        enableMembers ? MemberCachePolicy.ALL : MemberCachePolicy.DEFAULT)
+                .setMemberCachePolicy(enableMembers ? MemberCachePolicy.ALL : MemberCachePolicy.DEFAULT)
                 .setDisabledCache(disabledCache);
     }
 
@@ -891,8 +880,7 @@ public class JDABuilder {
      * @return The JDABuilder instance. Useful for chaining.
      */
     @Nonnull
-    public JDABuilder setRateLimitScheduler(
-            @Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
+    public JDABuilder setRateLimitScheduler(@Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
         this.rateLimitScheduler = pool;
         this.shutdownRateLimitScheduler = automaticShutdown;
         return this;
@@ -936,8 +924,7 @@ public class JDABuilder {
      * @return The JDABuilder instance. Useful for chaining.
      */
     @Nonnull
-    public JDABuilder setRateLimitElastic(
-            @Nullable ExecutorService pool, boolean automaticShutdown) {
+    public JDABuilder setRateLimitElastic(@Nullable ExecutorService pool, boolean automaticShutdown) {
         this.rateLimitElastic = pool;
         this.shutdownRateLimitElastic = automaticShutdown;
         return this;
@@ -1001,8 +988,7 @@ public class JDABuilder {
      * @return The JDABuilder instance. Useful for chaining.
      */
     @Nonnull
-    public JDABuilder setGatewayPool(
-            @Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
+    public JDABuilder setGatewayPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
         this.mainWsPool = pool;
         this.shutdownMainWsPool = automaticShutdown;
         return this;
@@ -1050,8 +1036,7 @@ public class JDABuilder {
      * @return The JDABuilder instance. Useful for chaining.
      */
     @Nonnull
-    public JDABuilder setCallbackPool(
-            @Nullable ExecutorService executor, boolean automaticShutdown) {
+    public JDABuilder setCallbackPool(@Nullable ExecutorService executor, boolean automaticShutdown) {
         this.callbackPool = executor;
         this.shutdownCallbackPool = automaticShutdown;
         return this;
@@ -1124,8 +1109,7 @@ public class JDABuilder {
      * @return The JDABuilder instance. Useful for chaining.
      */
     @Nonnull
-    public JDABuilder setAudioPool(
-            @Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
+    public JDABuilder setAudioPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
         this.audioPool = pool;
         this.shutdownAudioPool = automaticShutdown;
         return this;
@@ -1382,9 +1366,7 @@ public class JDABuilder {
     public JDABuilder useSharding(int shardId, int shardTotal) {
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
-        Checks.check(
-                shardId < shardTotal,
-                "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
+        Checks.check(shardId < shardTotal, "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }
@@ -1470,8 +1452,7 @@ public class JDABuilder {
      * @see    #setMemberCachePolicy(MemberCachePolicy)
      */
     @Nonnull
-    public JDABuilder setDisabledIntents(
-            @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+    public JDABuilder setDisabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "Intents");
         Checks.noneNull(intents, "Intents");
         return setDisabledIntents(EnumSet.of(intent, intents));
@@ -1551,8 +1532,7 @@ public class JDABuilder {
      * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
     @Nonnull
-    public JDABuilder disableIntents(
-            @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+    public JDABuilder disableIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "GatewayIntent");
         Checks.noneNull(intents, "GatewayIntent");
         int raw = GatewayIntent.getRaw(intent, intents);
@@ -1584,8 +1564,7 @@ public class JDABuilder {
      * @see    #setMemberCachePolicy(MemberCachePolicy)
      */
     @Nonnull
-    public JDABuilder setEnabledIntents(
-            @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+    public JDABuilder setEnabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "Intents");
         Checks.noneNull(intents, "Intents");
         EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
@@ -1659,8 +1638,7 @@ public class JDABuilder {
      * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
     @Nonnull
-    public JDABuilder enableIntents(
-            @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+    public JDABuilder enableIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "GatewayIntent");
         Checks.noneNull(intents, "GatewayIntent");
         int raw = GatewayIntent.getRaw(intent, intents);
@@ -1741,8 +1719,7 @@ public class JDABuilder {
             httpClient = this.httpClientBuilder.build();
         }
 
-        WebSocketFactory wsFactory =
-                this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
+        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
 
         if (controller == null && shardInfo != null) {
             controller = new ConcurrentSessionController();
@@ -1757,17 +1734,10 @@ public class JDABuilder {
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         SessionConfig sessionConfig = new SessionConfig(
-                controller,
-                httpClient,
-                wsFactory,
-                voiceDispatchInterceptor,
-                flags,
-                maxReconnectDelay,
-                largeThreshold);
+                controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
-        JDAImpl jda =
-                new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
+        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
         jda.setMemberCachePolicy(memberCachePolicy);
         // We can only do member chunking with the GUILD_MEMBERS intent
         if ((intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0) {
@@ -1785,9 +1755,7 @@ public class JDABuilder {
         }
 
         jda.addEventListener(listeners.toArray());
-        jda.setStatus(
-                JDA.Status
-                        .INITIALIZED); // This is already set by JDA internally, but this is to make
+        jda.setStatus(JDA.Status.INITIALIZED); // This is already set by JDA internally, but this is to make
         // sure the listeners catch it.
 
         // Set the presence information before connecting to have the correct information ready when
@@ -1822,16 +1790,13 @@ public class JDABuilder {
             JDAImpl.LOG.warn("Automatically disabled CacheFlags due to missing intents");
             // List each missing intent
             automaticallyDisabled.stream()
-                    .map(it -> "Disabled CacheFlag." + it + " (missing GatewayIntent."
-                            + it.getRequiredIntent() + ")")
+                    .map(it -> "Disabled CacheFlag." + it + " (missing GatewayIntent." + it.getRequiredIntent() + ")")
                     .forEach(JDAImpl.LOG::warn);
 
             // Tell user how to disable this warning
             JDAImpl.LOG.warn(
                     "You can manually disable these flags to remove this warning by using disableCache({}) on your JDABuilder",
-                    automaticallyDisabled.stream()
-                            .map(it -> "CacheFlag." + it)
-                            .collect(Collectors.joining(", ")));
+                    automaticallyDisabled.stream().map(it -> "CacheFlag." + it).collect(Collectors.joining(", ")));
             // Only print this warning once
             automaticallyDisabled.clear();
         }

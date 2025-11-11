@@ -42,8 +42,7 @@ import javax.annotation.Nullable;
 public class UserUpdatePrimaryGuildEvent extends GenericUserUpdateEvent<User.PrimaryGuild> {
     public static final String IDENTIFIER = "primary_guild";
 
-    public UserUpdatePrimaryGuildEvent(
-            JDA api, long responseNumber, User user, User.PrimaryGuild oldPrimaryGuild) {
+    public UserUpdatePrimaryGuildEvent(JDA api, long responseNumber, User user, User.PrimaryGuild oldPrimaryGuild) {
         super(api, responseNumber, user, oldPrimaryGuild, user.getPrimaryGuild(), IDENTIFIER);
     }
 

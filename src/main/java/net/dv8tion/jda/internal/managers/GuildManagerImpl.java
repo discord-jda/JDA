@@ -46,11 +46,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     protected String name;
     protected Icon icon, splash, banner;
-    protected String afkChannel,
-            systemChannel,
-            rulesChannel,
-            communityUpdatesChannel,
-            safetyAlertsChannel;
+    protected String afkChannel, systemChannel, rulesChannel, communityUpdatesChannel, safetyAlertsChannel;
     protected String description;
     protected int afkTimeout;
     protected int notificationLevel;
@@ -182,8 +178,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @CheckReturnValue
     public GuildManagerImpl setAfkChannel(VoiceChannel afkChannel) {
         Checks.check(
-                afkChannel == null || afkChannel.getGuild().equals(getGuild()),
-                "Channel must be from the same guild");
+                afkChannel == null || afkChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
         this.afkChannel = afkChannel == null ? null : afkChannel.getId();
         set |= AFK_CHANNEL;
         return this;
@@ -221,8 +216,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
                 communityUpdatesChannel == null
                         || communityUpdatesChannel.getGuild().equals(getGuild()),
                 "Channel must be from the same guild");
-        this.communityUpdatesChannel =
-                communityUpdatesChannel == null ? null : communityUpdatesChannel.getId();
+        this.communityUpdatesChannel = communityUpdatesChannel == null ? null : communityUpdatesChannel.getId();
         set |= COMMUNITY_UPDATES_CHANNEL;
         return this;
     }
@@ -365,8 +359,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             BiConsumer<Set<SystemChannelFlag>, Collection<SystemChannelFlag>> bulkUpdateOp) {
         Checks.noneNull(flags, "System channel flag");
         if (this.systemChannelFlags == null) {
-            this.systemChannelFlags = Helpers.copyEnumSet(
-                    SystemChannelFlag.class, getGuild().getSystemChannelFlags());
+            this.systemChannelFlags =
+                    Helpers.copyEnumSet(SystemChannelFlag.class, getGuild().getSystemChannelFlags());
         }
         bulkUpdateOp.accept(this.systemChannelFlags, flags);
         set |= SYSTEM_CHANNEL_FLAGS;
@@ -443,8 +437,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     private void checkFeature(String feature) {
         if (!getGuild().getFeatures().contains(feature)) {
-            throw new IllegalStateException(
-                    "This guild doesn't have the " + feature + " feature enabled");
+            throw new IllegalStateException("This guild doesn't have the " + feature + " feature enabled");
         }
     }
 }

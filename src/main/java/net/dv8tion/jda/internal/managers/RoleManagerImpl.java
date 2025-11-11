@@ -54,9 +54,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
      *        {@link net.dv8tion.jda.api.entities.Role Role} that should be modified
      */
     public RoleManagerImpl(Role role) {
-        super(
-                role.getJDA(),
-                Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
+        super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
         JDA api = role.getJDA();
         this.role = role;
         if (isPermissionChecksEnabled()) {
@@ -239,8 +237,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_ROLES);
         }
         if (!selfMember.canInteract(getRole())) {
-            throw new HierarchyException(
-                    "Cannot modify a role that is higher or equal in hierarchy");
+            throw new HierarchyException("Cannot modify a role that is higher or equal in hierarchy");
         }
         return super.checkPermissions();
     }

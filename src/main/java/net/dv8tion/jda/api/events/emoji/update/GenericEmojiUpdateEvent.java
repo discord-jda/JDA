@@ -34,8 +34,7 @@ import javax.annotation.Nullable;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public abstract class GenericEmojiUpdateEvent<T> extends GenericEmojiEvent
-        implements UpdateEvent<RichCustomEmoji, T> {
+public abstract class GenericEmojiUpdateEvent<T> extends GenericEmojiEvent implements UpdateEvent<RichCustomEmoji, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;

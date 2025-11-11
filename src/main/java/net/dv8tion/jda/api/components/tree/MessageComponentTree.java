@@ -72,8 +72,7 @@ public interface MessageComponentTree extends ComponentTree<MessageTopLevelCompo
      * @return A {@link MessageComponentTree} containing the given components
      */
     @Nonnull
-    static MessageComponentTree of(
-            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
+    static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         return MessageComponentTreeImpl.of(components);
     }
 

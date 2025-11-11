@@ -123,8 +123,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(
-            @Nonnull String targetId) {
+    public RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId) {
         throw detachedException();
     }
 
@@ -322,9 +321,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
     @Nonnull
     @Override
     public ScheduledEventAction createScheduledEvent(
-            @Nonnull String name,
-            @Nonnull GuildChannel channel,
-            @Nonnull OffsetDateTime startTime) {
+            @Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime) {
         throw detachedException();
     }
 
@@ -730,8 +727,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public RestAction<Void> moveVoiceMember(
-            @Nonnull UserSnowflake user, @Nullable AudioChannel audioChannel) {
+    public RestAction<Void> moveVoiceMember(@Nonnull UserSnowflake user, @Nullable AudioChannel audioChannel) {
         throw detachedException();
     }
 
@@ -749,8 +745,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifySecurityIncidents(
-            @Nonnull SecurityIncidentActions incidents) {
+    public AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidentActions incidents) {
         throw detachedException();
     }
 
@@ -762,8 +757,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> ban(
-            @Nonnull UserSnowflake user, int duration, @Nonnull TimeUnit unit) {
+    public AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int duration, @Nonnull TimeUnit unit) {
         throw detachedException();
     }
 
@@ -782,8 +776,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> timeoutUntil(
-            @Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal) {
+    public AuditableRestAction<Void> timeoutUntil(@Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal) {
         throw detachedException();
     }
 
@@ -807,15 +800,13 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> addRoleToMember(
-            @Nonnull UserSnowflake user, @Nonnull Role role) {
+    public AuditableRestAction<Void> addRoleToMember(@Nonnull UserSnowflake user, @Nonnull Role role) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeRoleFromMember(
-            @Nonnull UserSnowflake user, @Nonnull Role role) {
+    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserSnowflake user, @Nonnull Role role) {
         throw detachedException();
     }
 
@@ -828,8 +819,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifyMemberRoles(
-            @Nonnull Member member, @Nonnull Collection<Role> roles) {
+    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles) {
         throw detachedException();
     }
 
@@ -865,8 +855,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public ChannelAction<MediaChannel> createMediaChannel(
-            @Nonnull String name, @Nullable Category parent) {
+    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name, @Nullable Category parent) {
         throw detachedException();
     }
 

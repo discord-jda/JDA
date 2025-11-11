@@ -123,14 +123,12 @@ public class ComponentDeserializer {
      * @see    #deserializeAs(Class, DataObject)
      */
     @Nonnull
-    public <T extends Component> Stream<T> deserializeAs(
-            @Nonnull Class<T> type, @Nonnull List<DataObject> components) {
+    public <T extends Component> Stream<T> deserializeAs(@Nonnull Class<T> type, @Nonnull List<DataObject> components) {
         Checks.notNull(type, "Type");
         Checks.noneNull(components, "Components");
         return components.stream()
                 .map(this::parseComponent)
-                .map(component ->
-                        ComponentsUtil.safeUnionCastWithUnknownType("component", component, type));
+                .map(component -> ComponentsUtil.safeUnionCastWithUnknownType("component", component, type));
     }
 
     /**
@@ -151,14 +149,12 @@ public class ComponentDeserializer {
      * @see    #deserializeAs(Class, List)
      */
     @Nonnull
-    public <T extends Component> Stream<T> deserializeAs(
-            @Nonnull Class<T> type, @Nonnull DataArray components) {
+    public <T extends Component> Stream<T> deserializeAs(@Nonnull Class<T> type, @Nonnull DataArray components) {
         Checks.notNull(type, "Type");
         Checks.notNull(components, "Components");
         return components.stream(DataArray::getObject)
                 .map(this::parseComponent)
-                .map(component ->
-                        ComponentsUtil.safeUnionCastWithUnknownType("component", component, type));
+                .map(component -> ComponentsUtil.safeUnionCastWithUnknownType("component", component, type));
     }
 
     /**
@@ -179,8 +175,7 @@ public class ComponentDeserializer {
      * @see    #deserializeAs(Class, List)
      */
     @Nonnull
-    public <T extends Component> T deserializeAs(
-            @Nonnull Class<T> type, @Nonnull DataObject component) {
+    public <T extends Component> T deserializeAs(@Nonnull Class<T> type, @Nonnull DataObject component) {
         Checks.notNull(type, "Type");
         Checks.notNull(component, "Component");
         IComponentUnion componentUnion = parseComponent(component);
@@ -230,24 +225,21 @@ public class ComponentDeserializer {
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public <T extends ComponentTree<?>> T deserializeAsTree(
-            @Nonnull Class<T> treeType, @Nonnull DataArray components) {
+    public <T extends ComponentTree<?>> T deserializeAsTree(@Nonnull Class<T> treeType, @Nonnull DataArray components) {
         Checks.notNull(treeType, "Tree type");
         Checks.notNull(components, "Components");
 
         if (MessageComponentTree.class.isAssignableFrom(treeType)) {
             return (T) MessageComponentTree.of(
-                    deserializeAs(MessageTopLevelComponent.class, components)
-                            .collect(Collectors.toList()));
+                    deserializeAs(MessageTopLevelComponent.class, components).collect(Collectors.toList()));
         } else if (ModalComponentTree.class.isAssignableFrom(treeType)) {
-            return (T) ModalComponentTree.of(deserializeAs(ModalTopLevelComponent.class, components)
-                    .collect(Collectors.toList()));
+            return (T) ModalComponentTree.of(
+                    deserializeAs(ModalTopLevelComponent.class, components).collect(Collectors.toList()));
         } else if (ComponentTree.class.isAssignableFrom(treeType)) {
-            return (T) ComponentTree.of(
-                    deserializeAs(Component.class, components).collect(Collectors.toList()));
+            return (T)
+                    ComponentTree.of(deserializeAs(Component.class, components).collect(Collectors.toList()));
         } else {
-            throw new UnsupportedOperationException(
-                    "Cannot deserialize to tree of type " + treeType.getName());
+            throw new UnsupportedOperationException("Cannot deserialize to tree of type " + treeType.getName());
         }
     }
 
@@ -308,8 +300,7 @@ public class ComponentDeserializer {
     private FileDisplay toFileDisplay(@Nonnull DataObject data) {
         String url = data.getObject("file").getString("url");
         if (url.startsWith(ATTACHMENT_SCHEMA)) {
-            return new FileDisplayFileUpload(
-                    data.getInt("id", -1), getFileByUri(url), data.getBoolean("spoiler"));
+            return new FileDisplayFileUpload(data.getInt("id", -1), getFileByUri(url), data.getBoolean("spoiler"));
         }
 
         return new FileDisplayImpl(data);
@@ -329,9 +320,7 @@ public class ComponentDeserializer {
         String url = data.getObject("media").getString("url");
         if (url.startsWith(ATTACHMENT_SCHEMA)) {
             return new MediaGalleryItemFileUpload(
-                    getFileByUri(url),
-                    data.getString("description", null),
-                    data.getBoolean("spoiler"));
+                    getFileByUri(url), data.getString("description", null), data.getBoolean("spoiler"));
         }
 
         return new MediaGalleryItemImpl(data);

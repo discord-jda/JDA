@@ -42,8 +42,7 @@ import javax.annotation.Nullable;
  * @param <T>
  *        The type of the updated value
  */
-public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent
-        implements UpdateEvent<User, T> {
+public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent implements UpdateEvent<User, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;

@@ -27,8 +27,7 @@ class MarkdownTest {
 
     @BeforeEach
     void setup() {
-        markdown =
-                new MarkdownSanitizer().withStrategy(MarkdownSanitizer.SanitizationStrategy.REMOVE);
+        markdown = new MarkdownSanitizer().withStrategy(MarkdownSanitizer.SanitizationStrategy.REMOVE);
     }
 
     @Test
@@ -128,8 +127,7 @@ class MarkdownTest {
 
         assertThat(markdown.compute("```Hello `to` World```")).isEqualTo("Hello `to` World");
         assertThat(markdown.compute("```Hello `to` World")).isEqualTo("```Hello to World");
-        assertThat(markdown.compute("\\```Hello `to` World```"))
-                .isEqualTo("\\```Hello to World```");
+        assertThat(markdown.compute("\\```Hello `to` World```")).isEqualTo("\\```Hello to World```");
 
         assertThat(markdown.compute("```java\nTest```")).isEqualTo("Test");
     }
@@ -155,8 +153,7 @@ class IgnoreMarkdownTest {
 
     @Test
     void testComplex() {
-        assertThat(markdown.compute("**A_B||C~~D__E`F`__~~||_**"))
-                .isEqualTo("**A_B||C~~D__E`F`__~~||_**");
+        assertThat(markdown.compute("**A_B||C~~D__E`F`__~~||_**")).isEqualTo("**A_B||C~~D__E`F`__~~||_**");
     }
 
     @Test
@@ -250,8 +247,7 @@ class EscapeMarkdownTest {
 
     @BeforeEach
     void setup() {
-        markdown =
-                new MarkdownSanitizer().withStrategy(MarkdownSanitizer.SanitizationStrategy.ESCAPE);
+        markdown = new MarkdownSanitizer().withStrategy(MarkdownSanitizer.SanitizationStrategy.ESCAPE);
     }
 
     @Test
@@ -315,8 +311,7 @@ class EscapeMarkdownTest {
 
         assertThat(markdown.compute("`Hello **World**`")).isEqualTo("\\`Hello **World**\\`");
         assertThat(markdown.compute("`Hello **World**")).isEqualTo("`Hello \\*\\*World\\*\\*");
-        assertThat(markdown.compute("\\`Hello **World**`"))
-                .isEqualTo("\\`Hello \\*\\*World\\*\\*`");
+        assertThat(markdown.compute("\\`Hello **World**`")).isEqualTo("\\`Hello \\*\\*World\\*\\*`");
     }
 
     @Test
@@ -327,8 +322,7 @@ class EscapeMarkdownTest {
 
         assertThat(markdown.compute("``Hello **World**``")).isEqualTo("\\``Hello **World**\\``");
         assertThat(markdown.compute("``Hello **World**")).isEqualTo("``Hello \\*\\*World\\*\\*");
-        assertThat(markdown.compute("\\``Hello **World**``"))
-                .isEqualTo("\\``Hello \\*\\*World\\*\\*``");
+        assertThat(markdown.compute("\\``Hello **World**``")).isEqualTo("\\``Hello \\*\\*World\\*\\*``");
 
         assertThat(markdown.compute("``Hello `to` World``")).isEqualTo("\\``Hello `to` World\\``");
         assertThat(markdown.compute("``Hello `to` World")).isEqualTo("``Hello \\`to\\` World");
@@ -341,17 +335,13 @@ class EscapeMarkdownTest {
         assertThat(markdown.compute("```Hello")).isEqualTo("```Hello");
         assertThat(markdown.compute("\\```Hello")).isEqualTo("\\```Hello");
 
-        assertThat(markdown.compute("```Hello **World**```"))
-                .isEqualTo("\\```Hello **World**\\```");
+        assertThat(markdown.compute("```Hello **World**```")).isEqualTo("\\```Hello **World**\\```");
         assertThat(markdown.compute("```Hello **World**")).isEqualTo("```Hello \\*\\*World\\*\\*");
-        assertThat(markdown.compute("\\```Hello **World**"))
-                .isEqualTo("\\```Hello \\*\\*World\\*\\*");
+        assertThat(markdown.compute("\\```Hello **World**")).isEqualTo("\\```Hello \\*\\*World\\*\\*");
 
-        assertThat(markdown.compute("```Hello `to` World```"))
-                .isEqualTo("\\```Hello `to` World\\```");
+        assertThat(markdown.compute("```Hello `to` World```")).isEqualTo("\\```Hello `to` World\\```");
         assertThat(markdown.compute("```Hello `to` World")).isEqualTo("```Hello \\`to\\` World");
-        assertThat(markdown.compute("\\```Hello `to` World"))
-                .isEqualTo("\\```Hello \\`to\\` World");
+        assertThat(markdown.compute("\\```Hello `to` World")).isEqualTo("\\```Hello \\`to\\` World");
 
         assertThat(markdown.compute("```java\nTest```")).isEqualTo("\\```java\nTest\\```");
     }
@@ -363,8 +353,7 @@ class EscapeMarkdownTest {
         assertThat(markdown.compute(">>> Hello\nWorld")).isEqualTo("\\>>> Hello\nWorld");
         assertThat(markdown.compute(">>>\nHello\nWorld")).isEqualTo("\\>>>\nHello\nWorld");
         assertThat(markdown.compute(">>>\nHello > World")).isEqualTo("\\>>>\nHello > World");
-        assertThat(markdown.compute("> _Hello \n> World_"))
-                .isEqualTo("\\> \\_Hello \n\\> World\\_");
+        assertThat(markdown.compute("> _Hello \n> World_")).isEqualTo("\\> \\_Hello \n\\> World\\_");
         assertThat(markdown.compute("Hello\n > World")).isEqualTo("Hello\n \\> World");
     }
 }
@@ -374,42 +363,33 @@ class EscapeMarkdownAllTest {
     void testAsterisk() {
         assertThat(MarkdownSanitizer.escape("Hello*World", true)).isEqualTo("Hello\\*World");
         assertThat(MarkdownSanitizer.escape("Hello**World", true)).isEqualTo("Hello\\*\\*World");
-        assertThat(MarkdownSanitizer.escape("Hello***World", true))
-                .isEqualTo("Hello\\*\\*\\*World");
+        assertThat(MarkdownSanitizer.escape("Hello***World", true)).isEqualTo("Hello\\*\\*\\*World");
 
         assertThat(MarkdownSanitizer.escape("Hello\\*World", true)).isEqualTo("Hello\\*World");
-        assertThat(MarkdownSanitizer.escape("Hello\\*\\*World", true))
-                .isEqualTo("Hello\\*\\*World");
-        assertThat(MarkdownSanitizer.escape("Hello\\*\\*\\*World", true))
-                .isEqualTo("Hello\\*\\*\\*World");
+        assertThat(MarkdownSanitizer.escape("Hello\\*\\*World", true)).isEqualTo("Hello\\*\\*World");
+        assertThat(MarkdownSanitizer.escape("Hello\\*\\*\\*World", true)).isEqualTo("Hello\\*\\*\\*World");
     }
 
     @Test
     void testUnderscore() {
         assertThat(MarkdownSanitizer.escape("Hello_World", true)).isEqualTo("Hello\\_World");
         assertThat(MarkdownSanitizer.escape("Hello__World", true)).isEqualTo("Hello\\_\\_World");
-        assertThat(MarkdownSanitizer.escape("Hello___World", true))
-                .isEqualTo("Hello\\_\\_\\_World");
+        assertThat(MarkdownSanitizer.escape("Hello___World", true)).isEqualTo("Hello\\_\\_\\_World");
 
         assertThat(MarkdownSanitizer.escape("Hello\\_World", true)).isEqualTo("Hello\\_World");
-        assertThat(MarkdownSanitizer.escape("Hello\\_\\_World", true))
-                .isEqualTo("Hello\\_\\_World");
-        assertThat(MarkdownSanitizer.escape("Hello\\_\\_\\_World", true))
-                .isEqualTo("Hello\\_\\_\\_World");
+        assertThat(MarkdownSanitizer.escape("Hello\\_\\_World", true)).isEqualTo("Hello\\_\\_World");
+        assertThat(MarkdownSanitizer.escape("Hello\\_\\_\\_World", true)).isEqualTo("Hello\\_\\_\\_World");
     }
 
     @Test
     void testCodeBlock() {
         assertThat(MarkdownSanitizer.escape("Hello`World", true)).isEqualTo("Hello\\`World");
         assertThat(MarkdownSanitizer.escape("Hello``World", true)).isEqualTo("Hello\\`\\`World");
-        assertThat(MarkdownSanitizer.escape("Hello```World", true))
-                .isEqualTo("Hello\\`\\`\\`World");
+        assertThat(MarkdownSanitizer.escape("Hello```World", true)).isEqualTo("Hello\\`\\`\\`World");
 
         assertThat(MarkdownSanitizer.escape("Hello\\`World", true)).isEqualTo("Hello\\`World");
-        assertThat(MarkdownSanitizer.escape("Hello\\`\\`World", true))
-                .isEqualTo("Hello\\`\\`World");
-        assertThat(MarkdownSanitizer.escape("Hello\\`\\`\\`World", true))
-                .isEqualTo("Hello\\`\\`\\`World");
+        assertThat(MarkdownSanitizer.escape("Hello\\`\\`World", true)).isEqualTo("Hello\\`\\`World");
+        assertThat(MarkdownSanitizer.escape("Hello\\`\\`\\`World", true)).isEqualTo("Hello\\`\\`\\`World");
     }
 
     @Test
@@ -417,34 +397,28 @@ class EscapeMarkdownAllTest {
         assertThat(MarkdownSanitizer.escape("Hello||World", true)).isEqualTo("Hello\\|\\|World");
         assertThat(MarkdownSanitizer.escape("Hello|World", true)).isEqualTo("Hello|World");
 
-        assertThat(MarkdownSanitizer.escape("Hello\\|\\|World", true))
-                .isEqualTo("Hello\\|\\|World");
+        assertThat(MarkdownSanitizer.escape("Hello\\|\\|World", true)).isEqualTo("Hello\\|\\|World");
         assertThat(MarkdownSanitizer.escape("Hello\\|World", true)).isEqualTo("Hello\\|World");
     }
 
     @Test
     void testStrike() {
         assertThat(MarkdownSanitizer.escape("Hello~~World", true)).isEqualTo("Hello\\~\\~World");
-        assertThat(MarkdownSanitizer.escape("Hello\\~\\~World", true))
-                .isEqualTo("Hello\\~\\~World");
+        assertThat(MarkdownSanitizer.escape("Hello\\~\\~World", true)).isEqualTo("Hello\\~\\~World");
     }
 
     @Test
     void testQuote() {
         assertThat(MarkdownSanitizer.escape("> Hello World", true)).isEqualTo("\\> Hello World");
         assertThat(MarkdownSanitizer.escape(">Hello World", true)).isEqualTo(">Hello World");
-        assertThat(MarkdownSanitizer.escape(">>> Hello World", true))
-                .isEqualTo("\\>\\>\\> Hello World");
+        assertThat(MarkdownSanitizer.escape(">>> Hello World", true)).isEqualTo("\\>\\>\\> Hello World");
         assertThat(MarkdownSanitizer.escape(">>>Hello World", true)).isEqualTo(">>>Hello World");
         assertThat(MarkdownSanitizer.escape(
-                        ">>> Hello > World\n> Hello >>> World\n<@12345> > Hello\n > Hello world",
-                        true))
-                .isEqualTo(
-                        "\\>\\>\\> Hello > World\n\\> Hello >>> World\n<@12345> > Hello\n \\> Hello world");
+                        ">>> Hello > World\n> Hello >>> World\n<@12345> > Hello\n > Hello world", true))
+                .isEqualTo("\\>\\>\\> Hello > World\n\\> Hello >>> World\n<@12345> > Hello\n \\> Hello world");
 
         assertThat(MarkdownSanitizer.escape("\\> Hello World", true)).isEqualTo("\\> Hello World");
-        assertThat(MarkdownSanitizer.escape("\\>\\>\\> Hello World", true))
-                .isEqualTo("\\>\\>\\> Hello World");
+        assertThat(MarkdownSanitizer.escape("\\>\\>\\> Hello World", true)).isEqualTo("\\>\\>\\> Hello World");
         assertThat(MarkdownSanitizer.escape("Hello > World")).isEqualTo("Hello > World");
         assertThat(MarkdownSanitizer.escape("Hello\n > World")).isEqualTo("Hello\n \\> World");
         assertThat(MarkdownSanitizer.escape("Hello\n> World")).isEqualTo("Hello\n\\> World");

@@ -32,8 +32,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class DetachedVoiceChannelImpl
-        extends AbstractStandardGuildChannelImpl<DetachedVoiceChannelImpl>
+public class DetachedVoiceChannelImpl extends AbstractStandardGuildChannelImpl<DetachedVoiceChannelImpl>
         implements VoiceChannel,
                 VoiceChannelMixin<DetachedVoiceChannelImpl>,
                 IInteractionPermissionMixin<DetachedVoiceChannelImpl> {

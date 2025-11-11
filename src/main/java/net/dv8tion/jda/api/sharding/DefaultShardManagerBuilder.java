@@ -96,8 +96,7 @@ public class DefaultShardManagerBuilder {
             });
     protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider =
             ThreadPoolProvider.lazy((total) -> Executors.newScheduledThreadPool(
-                    Math.max(1, (int) Math.log(total)),
-                    new CountingThreadFactory(() -> "JDA", "Gateway")));
+                    Math.max(1, (int) Math.log(total)), new CountingThreadFactory(() -> "JDA", "Gateway")));
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> eventPoolProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider = null;
@@ -178,9 +177,7 @@ public class DefaultShardManagerBuilder {
     @Nonnull
     @CheckReturnValue
     public static DefaultShardManagerBuilder createDefault(
-            @Nullable String token,
-            @Nonnull GatewayIntent intent,
-            @Nonnull GatewayIntent... intents) {
+            @Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "GatewayIntent");
         Checks.noneNull(intents, "GatewayIntent");
         return createDefault(token, EnumSet.of(intent, intents));
@@ -291,9 +288,7 @@ public class DefaultShardManagerBuilder {
     @Nonnull
     @CheckReturnValue
     public static DefaultShardManagerBuilder createLight(
-            @Nullable String token,
-            @Nonnull GatewayIntent intent,
-            @Nonnull GatewayIntent... intents) {
+            @Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "GatewayIntent");
         Checks.noneNull(intents, "GatewayIntent");
         return createLight(token, EnumSet.of(intent, intents));
@@ -373,8 +368,7 @@ public class DefaultShardManagerBuilder {
      */
     @Nonnull
     @CheckReturnValue
-    public static DefaultShardManagerBuilder create(
-            @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+    public static DefaultShardManagerBuilder create(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         return create(null, intent, intents);
     }
 
@@ -439,11 +433,8 @@ public class DefaultShardManagerBuilder {
     @Nonnull
     @CheckReturnValue
     public static DefaultShardManagerBuilder create(
-            @Nullable String token,
-            @Nonnull GatewayIntent intent,
-            @Nonnull GatewayIntent... intents) {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents))
-                .applyIntents();
+            @Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents)).applyIntents();
     }
 
     /**
@@ -488,8 +479,7 @@ public class DefaultShardManagerBuilder {
 
         boolean enableMembers = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
         return setChunkingFilter(enableMembers ? ChunkingFilter.ALL : ChunkingFilter.NONE)
-                .setMemberCachePolicy(
-                        enableMembers ? MemberCachePolicy.ALL : MemberCachePolicy.DEFAULT)
+                .setMemberCachePolicy(enableMembers ? MemberCachePolicy.ALL : MemberCachePolicy.DEFAULT)
                 .setDisabledCache(disabledCache);
     }
 
@@ -563,8 +553,7 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setRestConfigProvider(
-            @Nonnull IntFunction<? extends RestConfig> provider) {
+    public DefaultShardManagerBuilder setRestConfigProvider(@Nonnull IntFunction<? extends RestConfig> provider) {
         Checks.notNull(provider, "RestConfig Provider");
         this.restConfigProvider = provider;
         return this;
@@ -628,8 +617,7 @@ public class DefaultShardManagerBuilder {
      * @see    #disableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
-    public DefaultShardManagerBuilder enableCache(
-            @Nonnull CacheFlag flag, @Nonnull CacheFlag... flags) {
+    public DefaultShardManagerBuilder enableCache(@Nonnull CacheFlag flag, @Nonnull CacheFlag... flags) {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(flags, "CacheFlag");
         cacheFlags.addAll(EnumSet.of(flag, flags));
@@ -677,8 +665,7 @@ public class DefaultShardManagerBuilder {
      * @see    #enableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
-    public DefaultShardManagerBuilder disableCache(
-            @Nonnull CacheFlag flag, @Nonnull CacheFlag... flags) {
+    public DefaultShardManagerBuilder disableCache(@Nonnull CacheFlag flag, @Nonnull CacheFlag... flags) {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(flags, "CacheFlag");
         return disableCache(EnumSet.of(flag, flags));
@@ -759,8 +746,7 @@ public class DefaultShardManagerBuilder {
      * @see    VoiceDispatchInterceptor
      */
     @Nonnull
-    public DefaultShardManagerBuilder setVoiceDispatchInterceptor(
-            @Nullable VoiceDispatchInterceptor interceptor) {
+    public DefaultShardManagerBuilder setVoiceDispatchInterceptor(@Nullable VoiceDispatchInterceptor interceptor) {
         this.voiceDispatchInterceptor = interceptor;
         return this;
     }
@@ -931,8 +917,7 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder addEventListenerProvider(
-            @Nonnull IntFunction<Object> listenerProvider) {
+    public DefaultShardManagerBuilder addEventListenerProvider(@Nonnull IntFunction<Object> listenerProvider) {
         return this.addEventListenerProviders(Collections.singleton(listenerProvider));
     }
 
@@ -971,8 +956,7 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder removeEventListenerProvider(
-            @Nonnull IntFunction<Object> listenerProvider) {
+    public DefaultShardManagerBuilder removeEventListenerProvider(@Nonnull IntFunction<Object> listenerProvider) {
         return this.removeEventListenerProviders(Collections.singleton(listenerProvider));
     }
 
@@ -1122,8 +1106,7 @@ public class DefaultShardManagerBuilder {
      * @see    net.dv8tion.jda.api.managers.Presence#setActivity(net.dv8tion.jda.api.entities.Activity)
      */
     @Nonnull
-    public DefaultShardManagerBuilder setActivityProvider(
-            @Nullable IntFunction<? extends Activity> activityProvider) {
+    public DefaultShardManagerBuilder setActivityProvider(@Nullable IntFunction<? extends Activity> activityProvider) {
         this.activityProvider = activityProvider;
         return this;
     }
@@ -1200,8 +1183,7 @@ public class DefaultShardManagerBuilder {
      * @see    net.dv8tion.jda.api.managers.Presence#setStatus(OnlineStatus) Presence.setStatusProvider(OnlineStatus)
      */
     @Nonnull
-    public DefaultShardManagerBuilder setStatusProvider(
-            @Nullable IntFunction<OnlineStatus> statusProvider) {
+    public DefaultShardManagerBuilder setStatusProvider(@Nullable IntFunction<OnlineStatus> statusProvider) {
         this.statusProvider = statusProvider;
         return this;
     }
@@ -1272,8 +1254,7 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setRateLimitScheduler(
-            @Nullable ScheduledExecutorService pool) {
+    public DefaultShardManagerBuilder setRateLimitScheduler(@Nullable ScheduledExecutorService pool) {
         return setRateLimitScheduler(pool, pool == null);
     }
 
@@ -1368,10 +1349,8 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setRateLimitElastic(
-            @Nullable ExecutorService pool, boolean automaticShutdown) {
-        return setRateLimitElasticProvider(
-                pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
+    public DefaultShardManagerBuilder setRateLimitElastic(@Nullable ExecutorService pool, boolean automaticShutdown) {
+        return setRateLimitElasticProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
     /**
@@ -1455,8 +1434,7 @@ public class DefaultShardManagerBuilder {
     @Nonnull
     public DefaultShardManagerBuilder setGatewayPool(
             @Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
-        return setGatewayPoolProvider(
-                pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
+        return setGatewayPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
     /**
@@ -1531,12 +1509,9 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setCallbackPool(
-            @Nullable ExecutorService executor, boolean automaticShutdown) {
+    public DefaultShardManagerBuilder setCallbackPool(@Nullable ExecutorService executor, boolean automaticShutdown) {
         return setCallbackPoolProvider(
-                executor == null
-                        ? null
-                        : new ThreadPoolProviderImpl<>(executor, automaticShutdown));
+                executor == null ? null : new ThreadPoolProviderImpl<>(executor, automaticShutdown));
     }
 
     /**
@@ -1595,12 +1570,9 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setEventPool(
-            @Nullable ExecutorService executor, boolean automaticShutdown) {
+    public DefaultShardManagerBuilder setEventPool(@Nullable ExecutorService executor, boolean automaticShutdown) {
         return setEventPoolProvider(
-                executor == null
-                        ? null
-                        : new ThreadPoolProviderImpl<>(executor, automaticShutdown));
+                executor == null ? null : new ThreadPoolProviderImpl<>(executor, automaticShutdown));
     }
 
     /**
@@ -1658,10 +1630,8 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setAudioPool(
-            @Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
-        return setAudioPoolProvider(
-                pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
+    public DefaultShardManagerBuilder setAudioPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown) {
+        return setAudioPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
     /**
@@ -1769,8 +1739,7 @@ public class DefaultShardManagerBuilder {
     public DefaultShardManagerBuilder setShards(int minShardId, int maxShardId) {
         Checks.notNegative(minShardId, "minShardId");
         Checks.check(maxShardId < this.shardsTotal, "maxShardId must be lower than shardsTotal");
-        Checks.check(
-                minShardId <= maxShardId, "minShardId must be lower than or equal to maxShardId");
+        Checks.check(minShardId <= maxShardId, "minShardId must be lower than or equal to maxShardId");
 
         List<Integer> shards = new ArrayList<>(maxShardId - minShardId + 1);
         for (int i = minShardId; i <= maxShardId; i++) {
@@ -1823,9 +1792,7 @@ public class DefaultShardManagerBuilder {
      */
     @Nonnull
     public DefaultShardManagerBuilder setShardsTotal(int shardsTotal) {
-        Checks.check(
-                shardsTotal == -1 || shardsTotal > 0,
-                "shardsTotal must either be -1 or greater than 0");
+        Checks.check(shardsTotal == -1 || shardsTotal > 0, "shardsTotal must either be -1 or greater than 0");
         this.shardsTotal = shardsTotal;
 
         return this;
@@ -1964,8 +1931,7 @@ public class DefaultShardManagerBuilder {
      * @see    #setMemberCachePolicy(MemberCachePolicy)
      */
     @Nonnull
-    public DefaultShardManagerBuilder setDisabledIntents(
-            @Nullable Collection<GatewayIntent> intents) {
+    public DefaultShardManagerBuilder setDisabledIntents(@Nullable Collection<GatewayIntent> intents) {
         this.intents = GatewayIntent.ALL_INTENTS;
         if (intents != null) {
             this.intents = 1 | (GatewayIntent.ALL_INTENTS & ~GatewayIntent.getRaw(intents));
@@ -2020,8 +1986,7 @@ public class DefaultShardManagerBuilder {
      * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
     @Nonnull
-    public DefaultShardManagerBuilder disableIntents(
-            @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+    public DefaultShardManagerBuilder disableIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "GatewayIntent");
         Checks.noneNull(intents, "GatewayIntent");
         int raw = GatewayIntent.getRaw(intent, intents);
@@ -2080,8 +2045,7 @@ public class DefaultShardManagerBuilder {
      * @see    #setMemberCachePolicy(MemberCachePolicy)
      */
     @Nonnull
-    public DefaultShardManagerBuilder setEnabledIntents(
-            @Nullable Collection<GatewayIntent> intents) {
+    public DefaultShardManagerBuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents) {
         if (intents == null || intents.isEmpty()) {
             this.intents = 1;
         } else {
@@ -2129,8 +2093,7 @@ public class DefaultShardManagerBuilder {
      * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
     @Nonnull
-    public DefaultShardManagerBuilder enableIntents(
-            @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
+    public DefaultShardManagerBuilder enableIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents) {
         Checks.notNull(intent, "GatewayIntent");
         Checks.noneNull(intents, "GatewayIntent");
         int raw = GatewayIntent.getRaw(intent, intents);
@@ -2228,8 +2191,7 @@ public class DefaultShardManagerBuilder {
     public ShardManager build(boolean login) throws IllegalArgumentException {
         checkIntents();
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
-        ShardingConfig shardingConfig =
-                new ShardingConfig(shardsTotal, useShutdownNow, intents, memberCachePolicy);
+        ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents, memberCachePolicy);
         EventConfig eventConfig = new EventConfig(eventManagerProvider);
         listeners.forEach(eventConfig::addEventListener);
         listenerProviders.forEach(eventConfig::addEventListenerProvider);
@@ -2256,8 +2218,8 @@ public class DefaultShardManagerBuilder {
                 shardingFlags,
                 maxReconnectDelay,
                 largeThreshold);
-        ShardingMetaConfig metaConfig = new ShardingMetaConfig(
-                maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
+        ShardingMetaConfig metaConfig =
+                new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
         DefaultShardManager manager = new DefaultShardManager(
                 this.token,
                 this.shards,
@@ -2301,24 +2263,20 @@ public class DefaultShardManagerBuilder {
             throw new IllegalStateException(
                     "Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");
         } else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE) {
-            DefaultShardManager.LOG.warn(
-                    "Member chunking is disabled due to missing GUILD_MEMBERS intent.");
+            DefaultShardManager.LOG.warn("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
         }
 
         if (!automaticallyDisabled.isEmpty()) {
             JDAImpl.LOG.warn("Automatically disabled CacheFlags due to missing intents");
             // List each missing intent
             automaticallyDisabled.stream()
-                    .map(it -> "Disabled CacheFlag." + it + " (missing GatewayIntent."
-                            + it.getRequiredIntent() + ")")
+                    .map(it -> "Disabled CacheFlag." + it + " (missing GatewayIntent." + it.getRequiredIntent() + ")")
                     .forEach(JDAImpl.LOG::warn);
 
             // Tell user how to disable this warning
             JDAImpl.LOG.warn(
                     "You can manually disable these flags to remove this warning by using disableCache({}) on your DefaultShardManagerBuilder",
-                    automaticallyDisabled.stream()
-                            .map(it -> "CacheFlag." + it)
-                            .collect(Collectors.joining(", ")));
+                    automaticallyDisabled.stream().map(it -> "CacheFlag." + it).collect(Collectors.joining(", ")));
             // Only print this warning once
             automaticallyDisabled.clear();
         }
@@ -2338,8 +2296,7 @@ public class DefaultShardManagerBuilder {
     }
 
     // Avoid having multiple anonymous classes
-    private static class ThreadPoolProviderImpl<T extends ExecutorService>
-            implements ThreadPoolProvider<T> {
+    private static class ThreadPoolProviderImpl<T extends ExecutorService> implements ThreadPoolProvider<T> {
         private final boolean autoShutdown;
         private final T pool;
 

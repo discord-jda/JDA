@@ -42,11 +42,7 @@ import javax.annotation.Nonnull;
  * @see #createForumPost(String, MessageCreateData)
  */
 public interface MediaChannel
-        extends StandardGuildChannel,
-                IPostContainer,
-                IWebhookContainer,
-                IAgeRestrictedChannel,
-                ISlowmodeChannel {
+        extends StandardGuildChannel, IPostContainer, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel {
     @Nonnull
     @Override
     @CheckReturnValue

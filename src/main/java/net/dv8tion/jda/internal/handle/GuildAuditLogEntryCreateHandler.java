@@ -36,16 +36,12 @@ public class GuildAuditLogEntryCreateHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null) {
-            getJDA().getEventCache()
-                    .cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug(
-                    "Received Guild Audit Log Create event for a Guild not yet cached. GuildId: {}",
-                    id);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received Guild Audit Log Create event for a Guild not yet cached. GuildId: {}", id);
             return null;
         }
 
-        AuditLogEntry entry =
-                api.getEntityBuilder().createAuditLogEntry(guild, content, null, null);
+        AuditLogEntry entry = api.getEntityBuilder().createAuditLogEntry(guild, content, null, null);
 
         api.handleEvent(new GuildAuditLogEntryCreateEvent(api, responseNumber, entry));
 

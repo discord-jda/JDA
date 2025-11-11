@@ -38,16 +38,9 @@ public class ThreadMemberUpdateHandler extends SocketHandler {
         long threadId = content.getLong("id");
         ThreadChannelImpl thread = (ThreadChannelImpl) getJDA().getThreadChannelById(threadId);
         if (thread == null) {
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.CHANNEL,
-                            threadId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, threadId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug(
-                    "THREAD_MEMBER_UPDATE attempted to update a thread that does not exist. JSON: {}",
-                    content);
+                    "THREAD_MEMBER_UPDATE attempted to update a thread that does not exist. JSON: {}", content);
             return null;
         }
 

@@ -374,8 +374,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
 
     @Nonnull
     private static Set<FileUpload> createAllDistinctFiles(
-            @Nonnull Collection<FileUpload> files,
-            @Nonnull Collection<MessageTopLevelComponentUnion> components) {
+            @Nonnull Collection<FileUpload> files, @Nonnull Collection<MessageTopLevelComponentUnion> components) {
         List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
         Set<FileUpload> distinctFiles = new LinkedHashSet<>(files.size() + indirectFiles.size());
         distinctFiles.addAll(files);

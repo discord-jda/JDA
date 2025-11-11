@@ -81,8 +81,7 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
                     break;
                 case NUMBER:
                     Checks.check(
-                            choice.getType() == OptionType.NUMBER
-                                    || choice.getType() == OptionType.INTEGER,
+                            choice.getType() == OptionType.NUMBER || choice.getType() == OptionType.INTEGER,
                             "Choice of type %s cannot be converted to NUMBER",
                             choice.getType());
                     double valueDouble = choice.getAsDouble();
@@ -100,8 +99,7 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
                 case STRING:
                     // String can be any type, we just toString it
                     String valueString = choice.getAsString();
-                    Checks.inRange(
-                            valueString, 1, OptionData.MAX_CHOICE_VALUE_LENGTH, "Choice value");
+                    Checks.inRange(valueString, 1, OptionData.MAX_CHOICE_VALUE_LENGTH, "Choice value");
                     break;
             }
         }

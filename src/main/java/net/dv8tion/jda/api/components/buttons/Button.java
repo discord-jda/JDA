@@ -75,8 +75,7 @@ import javax.annotation.Nullable;
  *
  * @see ReplyCallbackAction#addComponents(MessageTopLevelComponent...)
  */
-public interface Button
-        extends ActionComponent, ActionRowChildComponent, SectionAccessoryComponent {
+public interface Button extends ActionComponent, ActionRowChildComponent, SectionAccessoryComponent {
     /**
      * The maximum length a button label can have
      */
@@ -152,14 +151,7 @@ public interface Button
     @CheckReturnValue
     default Button withDisabled(boolean disabled) {
         return new ButtonImpl(
-                        getCustomId(),
-                        getUniqueId(),
-                        getLabel(),
-                        getStyle(),
-                        getUrl(),
-                        getSku(),
-                        disabled,
-                        getEmoji())
+                        getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji())
                 .checkValid();
     }
 
@@ -178,14 +170,7 @@ public interface Button
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji) {
         return new ButtonImpl(
-                        getCustomId(),
-                        getUniqueId(),
-                        getLabel(),
-                        getStyle(),
-                        getUrl(),
-                        getSku(),
-                        isDisabled(),
-                        emoji)
+                        getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji)
                 .checkValid();
     }
 
@@ -209,14 +194,7 @@ public interface Button
     @CheckReturnValue
     default Button withLabel(@Nonnull String label) {
         return new ButtonImpl(
-                        getCustomId(),
-                        getUniqueId(),
-                        label,
-                        getStyle(),
-                        getUrl(),
-                        getSku(),
-                        isDisabled(),
-                        getEmoji())
+                        getCustomId(), getUniqueId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji())
                 .checkValid();
     }
 
@@ -240,14 +218,7 @@ public interface Button
     @CheckReturnValue
     default Button withCustomId(@Nonnull String customId) {
         return new ButtonImpl(
-                        customId,
-                        getUniqueId(),
-                        getLabel(),
-                        getStyle(),
-                        getUrl(),
-                        getSku(),
-                        isDisabled(),
-                        getEmoji())
+                        customId, getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji())
                 .checkValid();
     }
 
@@ -260,14 +231,7 @@ public interface Button
         // (as Discord generates one if none was passed)
         Checks.positive(uniqueId, "Unique ID");
         return new ButtonImpl(
-                        getCustomId(),
-                        uniqueId,
-                        getLabel(),
-                        getStyle(),
-                        getUrl(),
-                        getSku(),
-                        isDisabled(),
-                        getEmoji())
+                        getCustomId(), uniqueId, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji())
                 .checkValid();
     }
 
@@ -291,14 +255,7 @@ public interface Button
     @CheckReturnValue
     default Button withUrl(@Nonnull String url) {
         return new ButtonImpl(
-                        getCustomId(),
-                        getUniqueId(),
-                        getLabel(),
-                        getStyle(),
-                        url,
-                        getSku(),
-                        isDisabled(),
-                        getEmoji())
+                        getCustomId(), getUniqueId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji())
                 .checkValid();
     }
 
@@ -317,14 +274,7 @@ public interface Button
     @CheckReturnValue
     default Button withSku(@Nonnull SkuSnowflake sku) {
         return new ButtonImpl(
-                        getCustomId(),
-                        getUniqueId(),
-                        getLabel(),
-                        getStyle(),
-                        getUrl(),
-                        sku,
-                        isDisabled(),
-                        getEmoji())
+                        getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji())
                 .checkValid();
     }
 
@@ -353,26 +303,16 @@ public interface Button
             throw new IllegalArgumentException("You cannot change a link button to another style!");
         }
         if (getStyle() != ButtonStyle.LINK && style == ButtonStyle.LINK) {
-            throw new IllegalArgumentException(
-                    "You cannot change a styled button to a link button!");
+            throw new IllegalArgumentException("You cannot change a styled button to a link button!");
         }
         if (getStyle() == ButtonStyle.PREMIUM && style != ButtonStyle.PREMIUM) {
-            throw new IllegalArgumentException(
-                    "You cannot change a premium button to another style!");
+            throw new IllegalArgumentException("You cannot change a premium button to another style!");
         }
         if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM) {
-            throw new IllegalArgumentException(
-                    "You cannot change a styled button to a premium button!");
+            throw new IllegalArgumentException("You cannot change a styled button to a premium button!");
         }
         return new ButtonImpl(
-                        getCustomId(),
-                        getUniqueId(),
-                        getLabel(),
-                        style,
-                        getUrl(),
-                        getSku(),
-                        isDisabled(),
-                        getEmoji())
+                        getCustomId(), getUniqueId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji())
                 .checkValid();
     }
 
@@ -767,29 +707,17 @@ public interface Button
      */
     @Nonnull
     static Button of(
-            @Nonnull ButtonStyle style,
-            @Nonnull String idOrUrlOrSku,
-            @Nullable String label,
-            @Nullable Emoji emoji) {
+            @Nonnull ButtonStyle style, @Nonnull String idOrUrlOrSku, @Nullable String label, @Nullable Emoji emoji) {
         Checks.notNull(style, "ButtonStyle");
 
         switch (style) {
             case LINK:
-                return new ButtonImpl(null, label, style, idOrUrlOrSku, null, false, emoji)
-                        .checkValid();
+                return new ButtonImpl(null, label, style, idOrUrlOrSku, null, false, emoji).checkValid();
             case PREMIUM:
-                return new ButtonImpl(
-                                null,
-                                label,
-                                style,
-                                null,
-                                SkuSnowflake.fromId(idOrUrlOrSku),
-                                false,
-                                emoji)
+                return new ButtonImpl(null, label, style, null, SkuSnowflake.fromId(idOrUrlOrSku), false, emoji)
                         .checkValid();
             default:
-                return new ButtonImpl(idOrUrlOrSku, label, style, null, null, false, emoji)
-                        .checkValid();
+                return new ButtonImpl(idOrUrlOrSku, label, style, null, null, false, emoji).checkValid();
         }
     }
 }

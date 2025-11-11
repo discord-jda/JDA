@@ -259,8 +259,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer {
      */
     @Nonnull
     @CheckReturnValue
-    default ThreadChannelAction createThreadChannel(
-            @Nonnull String name, @Nonnull String messageId) {
+    default ThreadChannelAction createThreadChannel(@Nonnull String name, @Nonnull String messageId) {
         return createThreadChannel(name, MiscUtil.parseSnowflake(messageId));
     }
 

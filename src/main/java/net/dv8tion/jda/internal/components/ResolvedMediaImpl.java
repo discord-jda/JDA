@@ -44,12 +44,7 @@ public class ResolvedMediaImpl implements ResolvedMedia {
     }
 
     public ResolvedMediaImpl(
-            String attachmentId,
-            String url,
-            String proxyUrl,
-            int width,
-            int height,
-            String contentType) {
+            String attachmentId, String url, String proxyUrl, int width, int height, String contentType) {
         this.attachmentId = attachmentId;
         this.url = url;
         this.proxyUrl = proxyUrl;

@@ -79,8 +79,7 @@ public class CompletedRestAction<T> implements AuditableRestAction<T> {
     }
 
     @Override
-    public void queue(
-            @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
+    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
         if (error == null) {
             if (success == null) {
                 RestAction.getDefaultSuccess().accept(value);

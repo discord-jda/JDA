@@ -35,9 +35,7 @@ public class ThreadingProviderConfig {
     private final ThreadFactory threadFactory;
 
     public ThreadingProviderConfig(
-            @Nullable
-                    ThreadPoolProvider<? extends ScheduledExecutorService>
-                            rateLimitSchedulerProvider,
+            @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitSchedulerProvider,
             @Nullable ThreadPoolProvider<? extends ExecutorService> rateLimitElasticProvider,
             @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider,
             @Nullable ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,

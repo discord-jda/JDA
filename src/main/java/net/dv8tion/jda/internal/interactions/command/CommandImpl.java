@@ -77,21 +77,17 @@ public class CommandImpl implements Command {
         this.api = api;
         this.guild = guild;
         this.name = json.getString("name");
-        this.nameLocalizations =
-                LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
+        this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
         this.description = json.getString("description", "");
-        this.descriptionLocalizations =
-                LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
+        this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.applicationId =
                 json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
         this.options = parseOptions(json, OPTION_TEST, Command.Option::new);
-        this.groups =
-                parseOptions(json, GROUP_TEST, (DataObject o) -> new SubcommandGroup(this, o));
-        this.subcommands =
-                parseOptions(json, SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
+        this.groups = parseOptions(json, GROUP_TEST, (DataObject o) -> new SubcommandGroup(this, o));
+        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
         this.version = json.getUnsignedLong("version", id);
 
         this.defaultMemberPermissions = json.isNull("default_member_permissions")
@@ -110,8 +106,7 @@ public class CommandImpl implements Command {
         } else {
             boolean dmPermission = json.getBoolean("dm_permission", true);
             this.contexts = dmPermission
-                    ? Helpers.unmodifiableEnumSet(
-                            InteractionContextType.GUILD, InteractionContextType.BOT_DM)
+                    ? Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM)
                     : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
         }
 
@@ -143,8 +138,7 @@ public class CommandImpl implements Command {
         Route.CompiledRoute route;
         String appId = getJDA().getSelfUser().getApplicationId();
         if (guildId != 0L) {
-            route = Route.Interactions.DELETE_GUILD_COMMAND.compile(
-                    appId, Long.toUnsignedString(guildId), getId());
+            route = Route.Interactions.DELETE_GUILD_COMMAND.compile(appId, Long.toUnsignedString(guildId), getId());
         } else {
             route = Route.Interactions.DELETE_COMMAND.compile(appId, getId());
         }

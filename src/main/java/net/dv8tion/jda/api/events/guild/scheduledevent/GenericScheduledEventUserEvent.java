@@ -44,10 +44,7 @@ public abstract class GenericScheduledEventUserEvent extends GenericScheduledEve
     private final long userId;
 
     public GenericScheduledEventUserEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull ScheduledEvent scheduledEvent,
-            long userId) {
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, long userId) {
         super(api, responseNumber, scheduledEvent);
         this.userId = userId;
     }

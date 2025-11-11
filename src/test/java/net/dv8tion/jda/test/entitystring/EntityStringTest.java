@@ -38,15 +38,13 @@ public class EntityStringTest {
     @Order(2)
     void testClassNameAsString() {
         assertThat(new EntityString("NotAnEntity")).hasToString("NotAnEntity");
-        assertThat(new EntityString("NotAnEntity").setName("AName"))
-                .hasToString("NotAnEntity:AName");
+        assertThat(new EntityString("NotAnEntity").setName("AName")).hasToString("NotAnEntity:AName");
     }
 
     @Test
     @Order(3)
     void testType() {
-        assertThat(new EntityString(new AnEntity()).setType("AType"))
-                .hasToString("AnEntity[AType]");
+        assertThat(new EntityString(new AnEntity()).setType("AType")).hasToString("AnEntity[AType]");
         assertThat(new EntityString(new AnEntity()).setType("AType").setName("AName"))
                 .hasToString("AnEntity[AType]:AName");
         assertThat(new EntityString(new AnEntity()).setType(ChannelType.NEWS).setName("AName"))
@@ -60,8 +58,7 @@ public class EntityStringTest {
                 .hasToString("AnEntity(Metadata1)");
         assertThat(new EntityString(new AnEntity()).addMetadata("MetaKey", "Metadata1"))
                 .hasToString("AnEntity(MetaKey=Metadata1)");
-        assertThat(new EntityString(new AnEntity()).addMetadata("MetaKey", 42))
-                .hasToString("AnEntity(MetaKey=42)");
+        assertThat(new EntityString(new AnEntity()).addMetadata("MetaKey", 42)).hasToString("AnEntity(MetaKey=42)");
         assertThat(new EntityString(new AnEntity())
                         .addMetadata("MetaKey1", "Metadata1")
                         .addMetadata("MetaKey2", "Metadata2"))
@@ -73,9 +70,7 @@ public class EntityStringTest {
     void testAll() {
         assertThat(new EntityString(new AnEntity()).setName("AName").addMetadata(null, "Metadata1"))
                 .hasToString("AnEntity:AName(Metadata1)");
-        assertThat(new EntityString(new AnEntity())
-                        .setName("AName")
-                        .addMetadata("MetaKey", "Metadata1"))
+        assertThat(new EntityString(new AnEntity()).setName("AName").addMetadata("MetaKey", "Metadata1"))
                 .hasToString("AnEntity:AName(MetaKey=Metadata1)");
         assertThat(new EntityString(new AnEntity()).setName("AName").addMetadata("MetaKey", 42))
                 .hasToString("AnEntity:AName(MetaKey=42)");
@@ -112,15 +107,13 @@ public class EntityStringTest {
     @Order(6)
     void testSimpleSnowflake() {
         assertThat(new EntityString(new ASnowflake())).hasToString("ASnowflake(id=42)");
-        assertThat(new EntityString(new ASnowflake()).setName("AName"))
-                .hasToString("ASnowflake:AName(id=42)");
+        assertThat(new EntityString(new ASnowflake()).setName("AName")).hasToString("ASnowflake:AName(id=42)");
     }
 
     @Test
     @Order(7)
     void testTypeSnowflake() {
-        assertThat(new EntityString(new ASnowflake()).setType("AType"))
-                .hasToString("ASnowflake[AType](id=42)");
+        assertThat(new EntityString(new ASnowflake()).setType("AType")).hasToString("ASnowflake[AType](id=42)");
         assertThat(new EntityString(new ASnowflake()).setType("AType").setName("AName"))
                 .hasToString("ASnowflake[AType]:AName(id=42)");
         assertThat(new EntityString(new ASnowflake()).setType(ChannelType.NEWS).setName("AName"))
@@ -145,13 +138,9 @@ public class EntityStringTest {
     @Test
     @Order(9)
     void testAllSnowflake() {
-        assertThat(new EntityString(new ASnowflake())
-                        .setName("AName")
-                        .addMetadata(null, "Metadata1"))
+        assertThat(new EntityString(new ASnowflake()).setName("AName").addMetadata(null, "Metadata1"))
                 .hasToString("ASnowflake:AName(id=42, Metadata1)");
-        assertThat(new EntityString(new ASnowflake())
-                        .setName("AName")
-                        .addMetadata("MetaKey", "Metadata1"))
+        assertThat(new EntityString(new ASnowflake()).setName("AName").addMetadata("MetaKey", "Metadata1"))
                 .hasToString("ASnowflake:AName(id=42, MetaKey=Metadata1)");
         assertThat(new EntityString(new ASnowflake()).setName("AName").addMetadata("MetaKey", 42))
                 .hasToString("ASnowflake:AName(id=42, MetaKey=42)");
@@ -181,7 +170,6 @@ public class EntityStringTest {
                         .setType("Type")
                         .addMetadata("MetaKey1", "Metadata1")
                         .addMetadata("MetaKey2", "Metadata2"))
-                .hasToString(
-                        "ASnowflake[Type]:AName(id=42, MetaKey1=Metadata1, MetaKey2=Metadata2)");
+                .hasToString("ASnowflake[Type]:AName(id=42, MetaKey1=Metadata1, MetaKey2=Metadata2)");
     }
 }

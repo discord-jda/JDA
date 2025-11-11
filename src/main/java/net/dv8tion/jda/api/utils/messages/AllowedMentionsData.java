@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 class AllowedMentionsData implements SerializableData {
-    private static EnumSet<Message.MentionType> defaultParse =
-            EnumSet.allOf(Message.MentionType.class);
+    private static EnumSet<Message.MentionType> defaultParse = EnumSet.allOf(Message.MentionType.class);
     private static boolean defaultMentionRepliedUser = true;
 
     private EnumSet<Message.MentionType> mentionParse = getDefaultMentions();
@@ -41,8 +40,7 @@ class AllowedMentionsData implements SerializableData {
     private final Set<String> mentionRoles = new HashSet<>();
     private boolean mentionRepliedUser = defaultMentionRepliedUser;
 
-    public static void setDefaultMentions(
-            @Nullable Collection<Message.MentionType> allowedMentions) {
+    public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
         defaultParse = allowedMentions == null
                 ? EnumSet.allOf(Message.MentionType.class) // Default to all mentions enabled
                 : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);

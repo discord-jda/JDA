@@ -34,8 +34,7 @@ import javax.annotation.Nullable;
 public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer> {
     public static final String IDENTIFIER = "color";
 
-    public RoleUpdateColorEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Role role, int oldColor) {
+    public RoleUpdateColorEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, int oldColor) {
         super(api, responseNumber, role, oldColor, role.getColorRaw(), IDENTIFIER);
     }
 

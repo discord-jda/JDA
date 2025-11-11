@@ -37,8 +37,7 @@ import javax.annotation.Nonnull;
  * @param <T>
  *        The type of the updated field
  */
-public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent
-        implements UpdateEvent<ForumTag, T> {
+public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent implements UpdateEvent<ForumTag, T> {
     private final T previous;
     private final T next;
     private final String identifier;

@@ -95,9 +95,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent {
     @Nullable
     public User getUser() {
         return issuer == null && isFromType(ChannelType.PRIVATE)
-                ? getChannel()
-                        .asPrivateChannel()
-                        .getUser() // this can't be the self user because then issuer would be
+                ? getChannel().asPrivateChannel().getUser() // this can't be the self user because then issuer would be
                 // nonnull
                 : issuer;
     }
@@ -177,8 +175,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent {
             return new CompletedRestAction<>(getJDA(), member);
         }
         if (!getChannel().getType().isGuild()) {
-            throw new IllegalStateException(
-                    "Cannot retrieve member for a private reaction not from a guild");
+            throw new IllegalStateException("Cannot retrieve member for a private reaction not from a guild");
         }
         return getGuild().retrieveMemberById(getUserIdLong());
     }

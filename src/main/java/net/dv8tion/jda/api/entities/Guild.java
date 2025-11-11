@@ -376,8 +376,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(
-            @Nonnull String targetId);
+    RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId);
 
     /**
      * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the target with the specified ID.
@@ -400,8 +399,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(
-            long targetId) {
+    default RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(long targetId) {
         return retrieveIntegrationPrivilegesById(Long.toUnsignedString(targetId));
     }
 
@@ -953,8 +951,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         String bannerId = getBannerId();
         return bannerId == null
                 ? null
-                : String.format(
-                        BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+                : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -1718,8 +1715,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @Unmodifiable
-    default List<ScheduledEvent> getScheduledEventsByName(
-            @Nonnull String name, boolean ignoreCase) {
+    default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase) {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
     }
 
@@ -2003,10 +1999,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nullable
     default Role getRoleByBot(long userId) {
-        return getRoleCache().applyStream(stream -> stream.filter(
-                        role -> role.getTags().getBotIdLong() == userId)
-                .findFirst()
-                .orElse(null));
+        return getRoleCache()
+                .applyStream(stream -> stream.filter(role -> role.getTags().getBotIdLong() == userId)
+                        .findFirst()
+                        .orElse(null));
     }
 
     /**
@@ -2437,9 +2433,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default RestAction<RichCustomEmoji> retrieveEmoji(@Nonnull CustomEmoji emoji) {
         Checks.notNull(emoji, "Emoji");
         if (emoji instanceof RichCustomEmoji && ((RichCustomEmoji) emoji).getGuild() != null) {
-            Checks.check(
-                    ((RichCustomEmoji) emoji).getGuild().equals(this),
-                    "Emoji must be from the same Guild!");
+            Checks.check(((RichCustomEmoji) emoji).getGuild().equals(this), "Emoji must be from the same Guild!");
         }
 
         JDA jda = getJDA();
@@ -2450,8 +2444,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
                     if (emoji instanceof RichCustomEmoji) {
                         RichCustomEmoji richEmoji = (RichCustomEmoji) emoji;
                         if (richEmoji.getOwner() != null
-                                || !getSelfMember()
-                                        .hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
+                                || !getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
                             return richEmoji;
                         }
                     }
@@ -3121,8 +3114,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         }
 
         if (isLoaded()) {
-            CompletableFuture<List<Member>> future =
-                    CompletableFuture.completedFuture(getMembersWithRoles(roles));
+            CompletableFuture<List<Member>> future = CompletableFuture.completedFuture(getMembersWithRoles(roles));
             return new GatewayTask<>(future, () -> {});
         }
 
@@ -3366,8 +3358,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembers(@Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
         if (users.isEmpty()) {
-            return new GatewayTask<>(
-                    CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
         }
 
         long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
@@ -3407,8 +3398,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty()) {
-            return new GatewayTask<>(
-                    CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
         }
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
@@ -3448,8 +3438,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembersByIds(@Nonnull String... ids) {
         Checks.notNull(ids, "Array");
         if (ids.length == 0) {
-            return new GatewayTask<>(
-                    CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
         }
 
         long[] arr = new long[ids.length];
@@ -3529,8 +3518,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
             boolean includePresence, @Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
         if (users.isEmpty()) {
-            return new GatewayTask<>(
-                    CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
         }
 
         long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
@@ -3568,12 +3556,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(
-            boolean includePresence, @Nonnull Collection<Long> ids) {
+    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty()) {
-            return new GatewayTask<>(
-                    CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
         }
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
@@ -3611,12 +3597,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(
-            boolean includePresence, @Nonnull String... ids) {
+    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull String... ids) {
         Checks.notNull(ids, "Array");
         if (ids.length == 0) {
-            return new GatewayTask<>(
-                    CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
         }
 
         long[] arr = new long[ids.length];
@@ -3806,8 +3790,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> moveVoiceMember(
-            @Nonnull UserSnowflake user, @Nullable AudioChannel audioChannel);
+    RestAction<Void> moveVoiceMember(@Nonnull UserSnowflake user, @Nullable AudioChannel audioChannel);
 
     /**
      * Used to kick a member from a {@link AudioChannel AudioChannel}.
@@ -4113,8 +4096,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(
-            @Nonnull UserSnowflake user, int deletionTimeframe, @Nonnull TimeUnit unit);
+    AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int deletionTimeframe, @Nonnull TimeUnit unit);
 
     /**
      * Bans up to 200 of the provided users.
@@ -4200,9 +4182,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     @CheckReturnValue
     default AuditableRestAction<BulkBanResponse> ban(
-            @Nonnull Collection<? extends UserSnowflake> users,
-            int deletionTimeframe,
-            @Nonnull TimeUnit unit) {
+            @Nonnull Collection<? extends UserSnowflake> users, int deletionTimeframe, @Nonnull TimeUnit unit) {
         Checks.notNull(unit, "TimeUnit");
         return ban(users, Duration.ofSeconds(unit.toSeconds(deletionTimeframe)));
     }
@@ -4281,12 +4261,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutFor(
-            @Nonnull UserSnowflake user, long amount, @Nonnull TimeUnit unit) {
+    default AuditableRestAction<Void> timeoutFor(@Nonnull UserSnowflake user, long amount, @Nonnull TimeUnit unit) {
         Checks.check(amount >= 1, "The amount must be more than 0");
         Checks.notNull(unit, "TimeUnit");
-        return timeoutUntil(
-                user, Helpers.toOffset(System.currentTimeMillis() + unit.toMillis(amount)));
+        return timeoutUntil(user, Helpers.toOffset(System.currentTimeMillis() + unit.toMillis(amount)));
     }
 
     /**
@@ -4329,11 +4307,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutFor(
-            @Nonnull UserSnowflake user, @Nonnull Duration duration) {
+    default AuditableRestAction<Void> timeoutFor(@Nonnull UserSnowflake user, @Nonnull Duration duration) {
         Checks.notNull(duration, "Duration");
-        return timeoutUntil(
-                user, Helpers.toOffset(System.currentTimeMillis() + duration.toMillis()));
+        return timeoutUntil(user, Helpers.toOffset(System.currentTimeMillis() + duration.toMillis()));
     }
 
     /**
@@ -4376,8 +4352,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> timeoutUntil(
-            @Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal);
+    AuditableRestAction<Void> timeoutUntil(@Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal);
 
     /**
      * Removes a time out from the specified Member in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -4658,9 +4633,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> modifyMemberRoles(
-            @Nonnull Member member,
-            @Nullable Collection<Role> rolesToAdd,
-            @Nullable Collection<Role> rolesToRemove);
+            @Nonnull Member member, @Nullable Collection<Role> rolesToAdd, @Nullable Collection<Role> rolesToRemove);
 
     /**
      * Modifies the complete {@link Role Role} set of the specified {@link Member Member}
@@ -4719,8 +4692,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> modifyMemberRoles(
-            @Nonnull Member member, @Nonnull Role... roles) {
+    default AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Role... roles) {
         return modifyMemberRoles(member, Arrays.asList(roles));
     }
 
@@ -4784,8 +4756,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> modifyMemberRoles(
-            @Nonnull Member member, @Nonnull Collection<Role> roles);
+    AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles);
 
     /**
      * Creates a new {@link TextChannel TextChannel} in this Guild.
@@ -5373,8 +5344,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<RichCustomEmoji> createEmoji(
-            @Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
+    AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles);
 
     /**
      * Creates a new {@link GuildSticker} in this Guild.
@@ -5877,8 +5847,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
                     return t;
                 }
             }
-            throw new IllegalArgumentException(
-                    "Provided key was not recognized. Seconds: " + seconds);
+            throw new IllegalArgumentException("Provided key was not recognized. Seconds: " + seconds);
         }
     }
 
@@ -6297,11 +6266,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
         private final int approximatePresences;
         private final int approximateMembers;
 
-        public MetaData(
-                int memberLimit,
-                int presenceLimit,
-                int approximatePresences,
-                int approximateMembers) {
+        public MetaData(int memberLimit, int presenceLimit, int approximatePresences, int approximateMembers) {
             this.memberLimit = memberLimit;
             this.presenceLimit = presenceLimit;
             this.approximatePresences = approximatePresences;

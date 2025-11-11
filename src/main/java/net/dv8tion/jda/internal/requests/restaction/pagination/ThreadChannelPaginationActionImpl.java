@@ -108,8 +108,7 @@ public class ThreadChannelPaginationActionImpl
         for (int i = 0; i < threads.length(); i++) {
             try {
                 DataObject threadObj = threads.getObject(i);
-                DataObject selfThreadMemberObj =
-                        selfThreadMemberMap.get(threadObj.getLong("id", 0));
+                DataObject selfThreadMemberObj = selfThreadMemberMap.get(threadObj.getLong("id", 0));
 
                 if (selfThreadMemberObj != null) {
                     // Combine the thread and self thread-member into a single object to model what
@@ -130,12 +129,9 @@ public class ThreadChannelPaginationActionImpl
                     this.lastKey = last.getIdLong();
                 } catch (Exception e) {
                     if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage())) {
-                        EntityBuilder.LOG.debug(
-                                "Discarding thread without cached parent channel. JSON: {}",
-                                threadObj);
+                        EntityBuilder.LOG.debug("Discarding thread without cached parent channel. JSON: {}", threadObj);
                     } else {
-                        EntityBuilder.LOG.warn(
-                                "Failed to create thread channel. JSON: {}", threadObj, e);
+                        EntityBuilder.LOG.warn("Failed to create thread channel. JSON: {}", threadObj, e);
                     }
                 }
             } catch (ParsingException | NullPointerException e) {

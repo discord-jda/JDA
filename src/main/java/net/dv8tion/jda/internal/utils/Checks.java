@@ -40,10 +40,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Checks {
-    public static final Pattern ALPHANUMERIC_WITH_DASH =
-            Pattern.compile("[\\w-]+", Pattern.UNICODE_CHARACTER_CLASS);
-    public static final Pattern ALPHANUMERIC =
-            Pattern.compile("\\w+", Pattern.UNICODE_CHARACTER_CLASS);
+    public static final Pattern ALPHANUMERIC_WITH_DASH = Pattern.compile("[\\w-]+", Pattern.UNICODE_CHARACTER_CLASS);
+    public static final Pattern ALPHANUMERIC = Pattern.compile("\\w+", Pattern.UNICODE_CHARACTER_CLASS);
     public static final Pattern LOWERCASE_ASCII_ALPHANUMERIC = Pattern.compile("[a-z0-9_]+");
 
     @Contract("null -> fail")
@@ -108,8 +106,7 @@ public class Checks {
     public static void noWhitespace(CharSequence argument, String name) {
         notNull(argument, name);
         if (Helpers.containsWhitespace(argument)) {
-            throw new IllegalArgumentException(
-                    name + " may not contain blanks. Provided: \"" + argument + "\"");
+            throw new IllegalArgumentException(name + " may not contain blanks. Provided: \"" + argument + "\"");
         }
     }
 
@@ -156,8 +153,7 @@ public class Checks {
     }
 
     @Contract("null, _ -> fail")
-    public static <T extends CharSequence> void noneContainBlanks(
-            Collection<T> argument, String name) {
+    public static <T extends CharSequence> void noneContainBlanks(Collection<T> argument, String name) {
         notNull(argument, name);
         argument.forEach(it -> noWhitespace(it, name));
     }
@@ -196,11 +192,7 @@ public class Checks {
 
     public static void isLowercase(String input, String name) {
         notNull(input, name);
-        check(
-                input.toLowerCase(Locale.ROOT).equals(input),
-                "%s must be lowercase only! Provided: \"%s\"",
-                name,
-                input);
+        check(input.toLowerCase(Locale.ROOT).equals(input), "%s must be lowercase only! Provided: \"%s\"", name, input);
     }
 
     public static void positive(int n, String name) {
@@ -227,24 +219,20 @@ public class Checks {
         }
     }
 
-    public static void notLonger(
-            Duration duration, Duration maxDuration, TimeUnit resolutionUnit, String name) {
+    public static void notLonger(Duration duration, Duration maxDuration, TimeUnit resolutionUnit, String name) {
         notNull(duration, name);
         check(
                 duration.compareTo(maxDuration) <= 0,
                 "%s may not be longer than %s. Provided: %s",
                 name,
-                JDALogger.getLazyString(
-                        () -> Helpers.durationToString(maxDuration, resolutionUnit)),
+                JDALogger.getLazyString(() -> Helpers.durationToString(maxDuration, resolutionUnit)),
                 JDALogger.getLazyString(() -> Helpers.durationToString(duration, resolutionUnit)));
     }
 
     // Unique streams checks
 
-    public static <T> void checkUnique(
-            Stream<T> stream, String format, BiFunction<Long, T, Object[]> getArgs) {
-        Map<T, Long> counts =
-                stream.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    public static <T> void checkUnique(Stream<T> stream, String format, BiFunction<Long, T, Object[]> getArgs) {
+        Map<T, Long> counts = stream.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         for (Map.Entry<T, Long> entry : counts.entrySet()) {
             if (entry.getValue() > 1) {
                 Object[] args = getArgs.apply(entry.getValue(), entry.getKey());
@@ -254,9 +242,7 @@ public class Checks {
     }
 
     public static void checkComponents(
-            String errorMessage,
-            Collection<? extends Component> components,
-            Predicate<Component> predicate) {
+            String errorMessage, Collection<? extends Component> components, Predicate<Component> predicate) {
         StringBuilder sb = new StringBuilder();
 
         ComponentPathIterator.createStream("root", components)
@@ -269,15 +255,12 @@ public class Checks {
         }
     }
 
-    public static void checkComponents(
-            String errorMessage, Component[] components, Predicate<Component> predicate) {
+    public static void checkComponents(String errorMessage, Component[] components, Predicate<Component> predicate) {
         checkComponents(errorMessage, Arrays.asList(components), predicate);
     }
 
     public static void checkComponentType(
-            Class<? extends Component> expectedChildrenType,
-            Component originalComponent,
-            Component newComponent) {
+            Class<? extends Component> expectedChildrenType, Component originalComponent, Component newComponent) {
         Checks.check(
                 expectedChildrenType.isInstance(newComponent),
                 "%s was replaced by an incompatible component (%s), this layout only supports components of type %s",
@@ -310,14 +293,12 @@ public class Checks {
 
     // Type checks
 
-    public static void checkSupportedChannelTypes(
-            EnumSet<ChannelType> supported, ChannelType type, String what) {
+    public static void checkSupportedChannelTypes(EnumSet<ChannelType> supported, ChannelType type, String what) {
         Checks.check(
                 supported.contains(type),
                 "Can only configure %s for channels of types %s",
                 what,
-                JDALogger.getLazyString(() -> supported.stream()
-                        .map(ChannelType::name)
-                        .collect(Collectors.joining(", "))));
+                JDALogger.getLazyString(
+                        () -> supported.stream().map(ChannelType::name).collect(Collectors.joining(", "))));
     }
 }

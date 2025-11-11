@@ -104,8 +104,7 @@ public class AnnotatedEventManager implements IEventManager {
                     } catch (IllegalAccessException | InvocationTargetException e1) {
                         JDAImpl.LOG.error("Couldn't access annotated EventListener method", e1);
                     } catch (Throwable throwable) {
-                        JDAImpl.LOG.error(
-                                "One of the EventListeners had an uncaught exception", throwable);
+                        JDAImpl.LOG.error("One of the EventListeners had an uncaught exception", throwable);
                         if (throwable instanceof Error) {
                             throw (Error) throwable;
                         }
@@ -136,8 +135,7 @@ public class AnnotatedEventManager implements IEventManager {
             }
 
             Class<?>[] parameterTypes = m.getParameterTypes();
-            if (parameterTypes.length != 1
-                    || !GenericEvent.class.isAssignableFrom(parameterTypes[0])) {
+            if (parameterTypes.length != 1 || !GenericEvent.class.isAssignableFrom(parameterTypes[0])) {
                 LOGGER.warn(
                         "Method '{}' annotated with @{} must have at most 1 parameter, which implements GenericEvent",
                         m,

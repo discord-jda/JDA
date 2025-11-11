@@ -32,8 +32,7 @@ public class BulkBanResponse {
     private final List<UserSnowflake> bannedUsers;
     private final List<UserSnowflake> failedUsers;
 
-    public BulkBanResponse(
-            @Nonnull List<UserSnowflake> bannedUsers, @Nonnull List<UserSnowflake> failedUsers) {
+    public BulkBanResponse(@Nonnull List<UserSnowflake> bannedUsers, @Nonnull List<UserSnowflake> failedUsers) {
         this.bannedUsers = Collections.unmodifiableList(bannedUsers);
         this.failedUsers = Collections.unmodifiableList(failedUsers);
     }

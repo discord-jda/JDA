@@ -44,8 +44,7 @@ import javax.annotation.Nullable;
  * @author John A. Grosh
  */
 public class WidgetUtil {
-    public static final String WIDGET_PNG =
-            RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.png?style=%s";
+    public static final String WIDGET_PNG = RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.png?style=%s";
     public static final String WIDGET_URL = RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.json";
     public static final String WIDGET_HTML =
             "<iframe src=\"https://discord.com/widget?id=%s&theme=%s\" width=\"%d\" height=\"%d\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";
@@ -105,8 +104,7 @@ public class WidgetUtil {
      * @return a String containing the pre-made widget with the supplied settings
      */
     @Nonnull
-    public static String getPremadeWidgetHtml(
-            @Nonnull Guild guild, @Nonnull WidgetTheme theme, int width, int height) {
+    public static String getPremadeWidgetHtml(@Nonnull Guild guild, @Nonnull WidgetTheme theme, int width, int height) {
         Checks.notNull(guild, "Guild");
         return getPremadeWidgetHtml(guild.getId(), theme, width, height);
     }

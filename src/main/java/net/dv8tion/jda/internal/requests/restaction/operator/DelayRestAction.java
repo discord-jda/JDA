@@ -32,8 +32,7 @@ public class DelayRestAction<T> extends RestActionOperator<T, T> {
     private final long delay;
     private final ScheduledExecutorService scheduler;
 
-    public DelayRestAction(
-            RestAction<T> action, TimeUnit unit, long delay, ScheduledExecutorService scheduler) {
+    public DelayRestAction(RestAction<T> action, TimeUnit unit, long delay, ScheduledExecutorService scheduler) {
         super(action);
         this.unit = unit;
         this.delay = delay;
@@ -41,12 +40,8 @@ public class DelayRestAction<T> extends RestActionOperator<T, T> {
     }
 
     @Override
-    public void queue(
-            @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
-        handle(
-                action,
-                failure,
-                (result) -> scheduler.schedule(() -> doSuccess(success, result), delay, unit));
+    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
+        handle(action, failure, (result) -> scheduler.schedule(() -> doSuccess(success, result), delay, unit));
     }
 
     @Override

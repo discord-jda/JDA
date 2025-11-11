@@ -36,10 +36,7 @@ import javax.annotation.Nonnull;
  */
 public class ScheduledEventUserRemoveEvent extends GenericScheduledEventUserEvent {
     public ScheduledEventUserRemoveEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull ScheduledEvent scheduledEvent,
-            long userId) {
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, long userId) {
         super(api, responseNumber, scheduledEvent, userId);
     }
 }

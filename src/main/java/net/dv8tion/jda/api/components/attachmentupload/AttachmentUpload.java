@@ -159,11 +159,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
         @Nonnull
         public Builder setMinValues(int minValues) {
             Checks.notNegative(minValues, "Min values");
-            Checks.check(
-                    minValues <= MAX_UPLOADS,
-                    "Min values (%s) must be lower than %s",
-                    minValues,
-                    MAX_UPLOADS);
+            Checks.check(minValues <= MAX_UPLOADS, "Min values (%s) must be lower than %s", minValues, MAX_UPLOADS);
             this.minValues = minValues;
             return this;
         }
@@ -183,11 +179,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
         @Nonnull
         public Builder setMaxValues(int maxValues) {
             Checks.positive(maxValues, "Max values");
-            Checks.check(
-                    maxValues <= MAX_UPLOADS,
-                    "Max values (%s) must be lower than %s",
-                    maxValues,
-                    MAX_UPLOADS);
+            Checks.check(maxValues <= MAX_UPLOADS, "Max values (%s) must be lower than %s", maxValues, MAX_UPLOADS);
             this.maxValues = maxValues;
             return this;
         }
@@ -295,11 +287,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          */
         @Nonnull
         public AttachmentUpload build() {
-            Checks.check(
-                    maxValues >= minValues,
-                    "Max (%s) must be higher or equal to min (%s)",
-                    maxValues,
-                    minValues);
+            Checks.check(maxValues >= minValues, "Max (%s) must be higher or equal to min (%s)", maxValues, minValues);
             return new AttachmentUploadImpl(uniqueId, customId, minValues, maxValues, required);
         }
     }

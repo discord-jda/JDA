@@ -82,8 +82,7 @@ public class Once<E extends GenericEvent> implements EventListener {
             }
         });
         task.onSetTimeout(e -> {
-            throw new UnsupportedOperationException(
-                    "You must set the timeout on Once.Builder#timeout");
+            throw new UnsupportedOperationException("You must set the timeout on Once.Builder#timeout");
         });
         return task;
     }
@@ -277,8 +276,7 @@ public class Once<E extends GenericEvent> implements EventListener {
          */
         @Nonnull
         public Task<E> subscribe(@Nonnull Consumer<E> callback) {
-            Once<E> once =
-                    new Once<>(jda, eventType, filters, timeoutCallback, timeout, timeoutPool);
+            Once<E> once = new Once<>(jda, eventType, filters, timeoutCallback, timeout, timeoutPool);
             jda.addEventListener(once);
             return once.task.onSuccess(callback);
         }

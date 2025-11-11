@@ -58,8 +58,8 @@ public class GuildSetupController {
 
     private Future<?> timeoutHandle;
 
-    protected StatusListener listener = (id, oldStatus, newStatus) ->
-            log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
+    protected StatusListener listener =
+            (id, oldStatus, newStatus) -> log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
 
     public GuildSetupController(JDAImpl api) {
         this.api = api;
@@ -158,8 +158,7 @@ public class GuildSetupController {
         if (isUnavailable(id) && available) {
             log.debug("Leaving unavailable guild with id {}", id);
             remove(id);
-            api.getEventManager()
-                    .handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
             return true;
         }
 
@@ -171,8 +170,7 @@ public class GuildSetupController {
         if (!available) {
             // The guild is currently unavailable and should be ignored for chunking requests
             if (!node.markedUnavailable) {
-                node.markedUnavailable =
-                        true; // this prevents repeated decrements from duplicate events
+                node.markedUnavailable = true; // this prevents repeated decrements from duplicate events
                 if (incompleteCount > 0) {
                     // Allow other guilds to start chunking
                     chunkingGuilds.remove(id);
@@ -188,8 +186,7 @@ public class GuildSetupController {
             } else {
                 ready(id);
             }
-            api.getEventManager()
-                    .handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
         }
         log.debug("Updated incompleteCount to {}", incompleteCount);
         checkReady();
@@ -200,12 +197,7 @@ public class GuildSetupController {
         DataArray members = chunk.getArray("members");
         int index = chunk.getInt("chunk_index");
         int count = chunk.getInt("chunk_count");
-        log.debug(
-                "Received member chunk for guild id: {} size: {} index: {}/{}",
-                id,
-                members.length(),
-                index,
-                count);
+        log.debug("Received member chunk for guild id: {} size: {} index: {}/{}", id, members.length(), index, count);
         GuildSetupNode node = setupNodes.get(id);
         if (node != null) {
             node.handleMemberChunk(MemberChunkManager.isLastChunk(chunk), members);
@@ -217,8 +209,7 @@ public class GuildSetupController {
         if (node == null) {
             return false;
         }
-        log.debug(
-                "Received GUILD_MEMBER_ADD during setup, adding member to guild. GuildID: {}", id);
+        log.debug("Received GUILD_MEMBER_ADD during setup, adding member to guild. GuildID: {}", id);
         node.handleAddMember(member);
         return true;
     }
@@ -228,9 +219,7 @@ public class GuildSetupController {
         if (node == null) {
             return false;
         }
-        log.debug(
-                "Received GUILD_MEMBER_REMOVE during setup, removing member from guild. GuildID: {}",
-                id);
+        log.debug("Received GUILD_MEMBER_REMOVE during setup, removing member from guild. GuildID: {}", id);
         node.handleRemoveMember(member);
         return true;
     }
@@ -260,10 +249,7 @@ public class GuildSetupController {
         if (node != null) {
             node.cacheEvent(event);
         } else {
-            log.warn(
-                    "Attempted to cache event for a guild that is not locked. {}",
-                    event,
-                    new IllegalStateException());
+            log.warn("Attempted to cache event for a guild that is not locked. {}", event, new IllegalStateException());
         }
     }
 
@@ -302,9 +288,7 @@ public class GuildSetupController {
     }
 
     public Set<GuildSetupNode> getSetupNodes(Status status) {
-        return getSetupNodes().stream()
-                .filter((node) -> node.status == status)
-                .collect(Collectors.toSet());
+        return getSetupNodes().stream().filter((node) -> node.status == status).collect(Collectors.toSet());
     }
 
     public GuildSetupNode getSetupNodeById(long id) {
@@ -330,9 +314,7 @@ public class GuildSetupController {
     }
 
     void sendChunkRequest(Object obj) {
-        log.debug(
-                "Sending chunking requests for {} guilds",
-                obj instanceof DataArray ? ((DataArray) obj).length() : 1);
+        log.debug("Sending chunking requests for {} guilds", obj instanceof DataArray ? ((DataArray) obj).length() : 1);
 
         getJDA().getClient()
                 .sendChunkRequest(
@@ -348,22 +330,17 @@ public class GuildSetupController {
     }
 
     private void startTimeout() {
-        if (timeoutHandle != null
-                || incompleteCount < 1) { // We don't need to start a timeout for 0 guilds
+        if (timeoutHandle != null || incompleteCount < 1) { // We don't need to start a timeout for 0 guilds
             return;
         }
 
         log.debug("Starting {} second timeout for {} guilds", timeoutDuration, incompleteCount);
-        timeoutHandle = getJDA().getGatewayPool()
-                .schedule(this::onTimeout, timeoutDuration, TimeUnit.SECONDS);
+        timeoutHandle = getJDA().getGatewayPool().schedule(this::onTimeout, timeoutDuration, TimeUnit.SECONDS);
     }
 
     public void onUnavailable(long id) {
         unavailableGuilds.add(id);
-        log.debug(
-                "Guild with id {} is now marked unavailable. Total: {}",
-                id,
-                unavailableGuilds.size());
+        log.debug("Guild with id {} is now marked unavailable. Total: {}", id, unavailableGuilds.size());
     }
 
     public void onTimeout() {

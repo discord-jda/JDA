@@ -55,8 +55,8 @@ public class GatewayTask<T> implements Task<T> {
     @Override
     public Task<T> onError(@Nonnull Consumer<? super Throwable> callback) {
         Checks.notNull(callback, "Callback");
-        Consumer<Throwable> failureHandler = ContextException.here(
-                (error) -> log.error("Task Failure callback threw error", error));
+        Consumer<Throwable> failureHandler =
+                ContextException.here((error) -> log.error("Task Failure callback threw error", error));
         future.exceptionally(error -> {
             try {
                 callback.accept(error);
@@ -75,8 +75,8 @@ public class GatewayTask<T> implements Task<T> {
     @Override
     public Task<T> onSuccess(@Nonnull Consumer<? super T> callback) {
         Checks.notNull(callback, "Callback");
-        Consumer<Throwable> failureHandler = ContextException.here(
-                (error) -> log.error("Task Success callback threw error", error));
+        Consumer<Throwable> failureHandler =
+                ContextException.here((error) -> log.error("Task Success callback threw error", error));
         future.thenAccept(result -> {
             try {
                 callback.accept(result);
@@ -106,8 +106,7 @@ public class GatewayTask<T> implements Task<T> {
     @Override
     public T get() {
         if (WebSocketClient.WS_THREAD.get()) {
-            throw new UnsupportedOperationException(
-                    "Blocking operations are not permitted on the gateway thread");
+            throw new UnsupportedOperationException("Blocking operations are not permitted on the gateway thread");
         }
         return future.join();
     }

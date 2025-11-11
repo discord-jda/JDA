@@ -25,8 +25,8 @@ import net.dv8tion.jda.internal.interactions.components.ComponentInteractionImpl
 
 import javax.annotation.Nonnull;
 
-public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu>
-        extends ComponentInteractionImpl implements SelectMenuInteraction<T, S> {
+public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu> extends ComponentInteractionImpl
+        implements SelectMenuInteraction<T, S> {
     private final S menu;
 
     public SelectMenuInteractionImpl(JDAImpl jda, Class<S> type, DataObject data) {

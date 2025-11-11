@@ -47,15 +47,13 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
         DataObject data = object.getObject("data");
         this.modalId = data.getString("custom_id");
         DataObject resolved = data.optObject("resolved").orElseGet(DataObject::empty);
-        this.mappings = data.optArray("components").orElseGet(DataArray::empty).stream(
-                        DataArray::getObject)
+        this.mappings = data.optArray("components").orElseGet(DataArray::empty).stream(DataArray::getObject)
                 .map(component -> getMapping(component, resolved))
                 .filter(Objects::nonNull)
                 .collect(Helpers.toUnmodifiableList());
 
         this.message = object.optObject("message")
-                .map(o -> api.getEntityBuilder()
-                        .createMessageWithChannel(o, getMessageChannel(), false))
+                .map(o -> api.getEntityBuilder().createMessageWithChannel(o, getMessageChannel(), false))
                 .orElse(null);
     }
 

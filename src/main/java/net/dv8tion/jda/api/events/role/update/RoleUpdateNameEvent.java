@@ -31,8 +31,7 @@ import javax.annotation.Nonnull;
 public class RoleUpdateNameEvent extends GenericRoleUpdateEvent<String> {
     public static final String IDENTIFIER = "name";
 
-    public RoleUpdateNameEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nonnull String oldName) {
+    public RoleUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nonnull String oldName) {
         super(api, responseNumber, role, oldName, role.getName(), IDENTIFIER);
     }
 

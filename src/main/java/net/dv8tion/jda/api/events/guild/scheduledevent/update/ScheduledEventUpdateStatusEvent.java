@@ -40,8 +40,7 @@ import javax.annotation.Nonnull;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateStatusEvent
-        extends GenericScheduledEventUpdateEvent<ScheduledEvent.Status> {
+public class ScheduledEventUpdateStatusEvent extends GenericScheduledEventUpdateEvent<ScheduledEvent.Status> {
     public static final String IDENTIFIER = "status";
 
     public ScheduledEventUpdateStatusEvent(
@@ -49,13 +48,7 @@ public class ScheduledEventUpdateStatusEvent
             long responseNumber,
             @Nonnull ScheduledEvent scheduledEvent,
             @Nonnull ScheduledEvent.Status previous) {
-        super(
-                api,
-                responseNumber,
-                scheduledEvent,
-                previous,
-                scheduledEvent.getStatus(),
-                IDENTIFIER);
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getStatus(), IDENTIFIER);
     }
 
     /**

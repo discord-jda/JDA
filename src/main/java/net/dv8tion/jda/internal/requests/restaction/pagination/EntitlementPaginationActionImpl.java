@@ -34,8 +34,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class EntitlementPaginationActionImpl
-        extends PaginationActionImpl<Entitlement, EntitlementPaginationAction>
+public class EntitlementPaginationActionImpl extends PaginationActionImpl<Entitlement, EntitlementPaginationAction>
         implements EntitlementPaginationAction {
     protected List<String> skuIds;
     protected long guildId;
@@ -43,12 +42,7 @@ public class EntitlementPaginationActionImpl
     protected boolean excludeEnded;
 
     public EntitlementPaginationActionImpl(JDA api) {
-        super(
-                api,
-                Route.Applications.GET_ENTITLEMENTS.compile(api.getSelfUser().getApplicationId()),
-                1,
-                100,
-                100);
+        super(api, Route.Applications.GET_ENTITLEMENTS.compile(api.getSelfUser().getApplicationId()), 1, 100, 100);
         this.skuIds = new ArrayList<>();
         this.guildId = 0;
         this.userId = 0;

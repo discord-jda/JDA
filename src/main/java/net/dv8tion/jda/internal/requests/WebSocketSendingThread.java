@@ -129,8 +129,7 @@ class WebSocketSendingThread implements Runnable {
                 handleNormalRequest();
             }
         } catch (InterruptedException ignored) {
-            LOG.debug(
-                    "Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
+            LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
             return;
         } catch (Throwable ex) {
             // Log error
@@ -168,22 +167,18 @@ class WebSocketSendingThread implements Runnable {
                 scheduleSentMessage();
             }
         } catch (RejectedExecutionException ex) {
-            if (api.getStatus() == JDA.Status.SHUTTING_DOWN
-                    || api.getStatus() == JDA.Status.SHUTDOWN) {
+            if (api.getStatus() == JDA.Status.SHUTTING_DOWN || api.getStatus() == JDA.Status.SHUTDOWN) {
                 LOG.debug("Rejected task after shutdown", ex);
             } else {
-                LOG.error(
-                        "Was unable to schedule next packet due to rejected execution by threadpool",
-                        ex);
+                LOG.error("Was unable to schedule next packet due to rejected execution by threadpool", ex);
             }
         }
     }
 
     private void handleChunkSync(DataObject chunkOrSyncRequest) {
         LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
-        boolean success = send(DataObject.empty()
-                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-                .put("d", chunkOrSyncRequest));
+        boolean success = send(
+                DataObject.empty().put("op", WebSocketCode.MEMBER_CHUNK_REQUEST).put("d", chunkOrSyncRequest));
 
         if (success) {
             chunkQueue.remove();

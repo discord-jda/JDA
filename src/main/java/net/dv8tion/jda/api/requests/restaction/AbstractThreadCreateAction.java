@@ -38,8 +38,7 @@ import javax.annotation.Nonnull;
  * @param <R>
  *        The common return type of setters, allowing for fluid interface design
  */
-public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAction<T, R>>
-        extends RestAction<T> {
+public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAction<T, R>> extends RestAction<T> {
     /**
      * The guild to create this {@link GuildChannel} for.
      *

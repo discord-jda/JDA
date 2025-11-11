@@ -33,8 +33,7 @@ public class ContainerTest {
 
     @Test
     void testEmptyContainerThrows() {
-        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks(
-                        "Components", Container::of)
+        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks("Components", Container::of)
                 .checksNotNull()
                 .checksNotEmpty();
     }
@@ -44,11 +43,9 @@ public class ContainerTest {
         Container container = Container.of(EXAMPLE_TEXT);
 
         TextDisplay replacedText = TextDisplay.of("Replaced");
-        Container replaced =
-                container.replace(byUniqueId(EXAMPLE_TEXT.getUniqueId(), replacedText));
+        Container replaced = container.replace(byUniqueId(EXAMPLE_TEXT.getUniqueId(), replacedText));
 
-        assertThat(replaced.getComponents())
-                .containsExactly((ContainerChildComponentUnion) replacedText);
+        assertThat(replaced.getComponents()).containsExactly((ContainerChildComponentUnion) replacedText);
     }
 
     @Test
@@ -56,7 +53,6 @@ public class ContainerTest {
         Container container = Container.of(EXAMPLE_TEXT);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> container.replace(
-                        byUniqueId(EXAMPLE_TEXT.getUniqueId(), (Component) null)));
+                .isThrownBy(() -> container.replace(byUniqueId(EXAMPLE_TEXT.getUniqueId(), (Component) null)));
     }
 }

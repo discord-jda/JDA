@@ -40,8 +40,7 @@ public class SubcommandGroupData implements SerializableData {
     private final List<SubcommandData> subcommands = new ArrayList<>(CommandData.MAX_OPTIONS);
     private String name, description;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private final LocalizationMap descriptionLocalizations =
-            new LocalizationMap(this::checkDescription);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
 
     /**
      * Create an group builder.
@@ -116,8 +115,7 @@ public class SubcommandGroupData implements SerializableData {
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setNameLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String name) {
+    public SubcommandGroupData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
         // Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
         return this;
@@ -182,8 +180,7 @@ public class SubcommandGroupData implements SerializableData {
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescriptionLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String description) {
+    public SubcommandGroupData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description) {
         // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
         return this;
@@ -205,8 +202,7 @@ public class SubcommandGroupData implements SerializableData {
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescriptionLocalizations(
-            @Nonnull Map<DiscordLocale, String> map) {
+    public SubcommandGroupData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map) {
         // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(map);
         return this;
@@ -335,8 +331,7 @@ public class SubcommandGroupData implements SerializableData {
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData addSubcommands(
-            @Nonnull Collection<? extends SubcommandData> subcommands) {
+    public SubcommandGroupData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands) {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
@@ -376,8 +371,7 @@ public class SubcommandGroupData implements SerializableData {
                 .map(SubcommandData::fromData)
                 .forEach(group::addSubcommands));
         group.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
-        group.setDescriptionLocalizations(
-                LocalizationUtils.mapFromProperty(json, "description_localizations"));
+        group.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
 
         return group;
     }
@@ -399,9 +393,7 @@ public class SubcommandGroupData implements SerializableData {
         SubcommandGroupData data = new SubcommandGroupData(group.getName(), group.getDescription());
         data.setNameLocalizations(group.getNameLocalizations().toMap());
         data.setDescriptionLocalizations(group.getDescriptionLocalizations().toMap());
-        group.getSubcommands().stream()
-                .map(SubcommandData::fromSubcommand)
-                .forEach(data::addSubcommands);
+        group.getSubcommands().stream().map(SubcommandData::fromSubcommand).forEach(data::addSubcommands);
         return data;
     }
 }

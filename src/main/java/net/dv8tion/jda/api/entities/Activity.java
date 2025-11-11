@@ -48,9 +48,8 @@ import javax.annotation.Nullable;
  */
 public interface Activity {
     /** The Pattern used for {@link #isValidStreamingUrl(String)} */
-    Pattern STREAMING_URL = Pattern.compile(
-            "https?://(www\\.)?(twitch\\.tv/|youtube\\.com/watch\\?v=).+",
-            Pattern.CASE_INSENSITIVE);
+    Pattern STREAMING_URL =
+            Pattern.compile("https?://(www\\.)?(twitch\\.tv/|youtube\\.com/watch\\?v=).+", Pattern.CASE_INSENSITIVE);
 
     /** Maximum length for an activity name */
     int MAX_ACTIVITY_NAME_LENGTH = 128;

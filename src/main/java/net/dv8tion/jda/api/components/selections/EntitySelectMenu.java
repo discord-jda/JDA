@@ -195,8 +195,7 @@ public interface EntitySelectMenu extends SelectMenu {
      */
     @Nonnull
     @CheckReturnValue
-    static Builder create(
-            @Nonnull String customId, @Nonnull SelectTarget type, @Nonnull SelectTarget... types) {
+    static Builder create(@Nonnull String customId, @Nonnull SelectTarget type, @Nonnull SelectTarget... types) {
         Checks.notNull(type, "Type");
         Checks.noneNull(types, "Types");
         return create(customId, EnumSet.of(type, types));
@@ -253,8 +252,7 @@ public interface EntitySelectMenu extends SelectMenu {
                 case "channel":
                     return channel(id);
             }
-            throw new IllegalArgumentException(
-                    "Unknown value type '" + object.getString("type", null) + "'");
+            throw new IllegalArgumentException("Unknown value type '" + object.getString("type", null) + "'");
         }
 
         /**
@@ -478,13 +476,11 @@ public interface EntitySelectMenu extends SelectMenu {
                     this.componentType = Type.MENTIONABLE_SELECT;
                 } else {
                     throw new IllegalArgumentException(
-                            "The provided combination of select targets is not supported. Provided: "
-                                    + set);
+                            "The provided combination of select targets is not supported. Provided: " + set);
                 }
             } else {
                 throw new IllegalArgumentException(
-                        "The provided combination of select targets is not supported. Provided: "
-                                + set);
+                        "The provided combination of select targets is not supported. Provided: " + set);
             }
 
             return this;
@@ -526,8 +522,7 @@ public interface EntitySelectMenu extends SelectMenu {
         public Builder setChannelTypes(@Nonnull Collection<ChannelType> types) {
             Checks.noneNull(types, "Types");
             for (ChannelType type : types) {
-                Checks.check(
-                        type.isGuild(), "Only guild channel types are allowed! Provided: %s", type);
+                Checks.check(type.isGuild(), "Only guild channel types are allowed! Provided: %s", type);
             }
             this.channelTypes = Helpers.copyEnumSet(ChannelType.class, types);
             return this;
@@ -601,8 +596,7 @@ public interface EntitySelectMenu extends SelectMenu {
                         Checks.check(type == SelectTarget.USER, error, "SelectTarget.USER", type);
                         break;
                     case CHANNEL_SELECT:
-                        Checks.check(
-                                type == SelectTarget.CHANNEL, error, "SelectTarget.CHANNEL", type);
+                        Checks.check(type == SelectTarget.CHANNEL, error, "SelectTarget.CHANNEL", type);
                         break;
                     case MENTIONABLE_SELECT:
                         Checks.check(
@@ -631,9 +625,8 @@ public interface EntitySelectMenu extends SelectMenu {
         @Override
         public EntitySelectMenu build() {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
-            EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT
-                    ? this.channelTypes
-                    : EnumSet.noneOf(ChannelType.class);
+            EnumSet<ChannelType> channelTypes =
+                    componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
             List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);
             return new EntitySelectMenuImpl(
                     customId,

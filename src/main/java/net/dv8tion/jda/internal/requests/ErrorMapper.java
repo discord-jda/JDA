@@ -26,8 +26,5 @@ import javax.annotation.Nullable;
 @FunctionalInterface
 public interface ErrorMapper {
     @Nullable
-    Throwable apply(
-            @Nonnull Response response,
-            @Nonnull Request<?> request,
-            @Nonnull ErrorResponseException exception);
+    Throwable apply(@Nonnull Response response, @Nonnull Request<?> request, @Nonnull ErrorResponseException exception);
 }

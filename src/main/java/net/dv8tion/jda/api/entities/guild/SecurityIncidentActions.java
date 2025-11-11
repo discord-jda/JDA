@@ -62,9 +62,7 @@ public class SecurityIncidentActions {
      */
     @Nullable
     public OffsetDateTime getDirectMessagesDisabledUntil() {
-        return directMessagesDisabledUntil == 0
-                ? null
-                : Helpers.toOffset(directMessagesDisabledUntil);
+        return directMessagesDisabledUntil == 0 ? null : Helpers.toOffset(directMessagesDisabledUntil);
     }
 
     /**
@@ -91,8 +89,7 @@ public class SecurityIncidentActions {
      */
     @Nonnull
     public static SecurityIncidentActions enabled(
-            @Nullable OffsetDateTime invitesDisabledUntil,
-            @Nullable OffsetDateTime directMessagesDisabledUntil) {
+            @Nullable OffsetDateTime invitesDisabledUntil, @Nullable OffsetDateTime directMessagesDisabledUntil) {
         return new SecurityIncidentActions(
                 invitesDisabledUntil == null
                         ? 0

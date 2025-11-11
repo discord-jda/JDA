@@ -75,15 +75,13 @@ public class SessionControllerAdapter implements SessionController {
     public ShardedGateway getShardedGateway(@Nonnull JDA api) {
         return new RestActionImpl<ShardedGateway>(api, Route.Misc.GATEWAY_BOT.compile()) {
             @Override
-            public void handleResponse(
-                    @Nonnull Response response, @Nonnull Request<ShardedGateway> request) {
+            public void handleResponse(@Nonnull Response response, @Nonnull Request<ShardedGateway> request) {
                 if (response.isOk()) {
                     DataObject object = response.getObject();
 
                     String url = object.getString("url");
                     int shards = object.getInt("shards");
-                    int concurrency =
-                            object.getObject("session_start_limit").getInt("max_concurrency", 1);
+                    int concurrency = object.getObject("session_start_limit").getInt("max_concurrency", 1);
 
                     request.onSuccess(new ShardedGateway(url, shards, concurrency));
                 } else if (response.code == 401) {
@@ -177,13 +175,9 @@ public class SessionControllerAdapter implements SessionController {
                 } catch (IllegalStateException e) {
                     Throwable t = e.getCause();
                     if (t instanceof OpeningHandshakeException) {
-                        log.error(
-                                "Failed opening handshake, appending to queue. Message: {}",
-                                e.getMessage());
-                    } else if (t != null
-                            && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage())) {
-                        log.error(
-                                "Failed to establish connection for a node, appending to queue", e);
+                        log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
+                    } else if (t != null && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage())) {
+                        log.error("Failed to establish connection for a node, appending to queue", e);
                     } else {
                         log.error("Unexpected exception when running connect node", e);
                     }

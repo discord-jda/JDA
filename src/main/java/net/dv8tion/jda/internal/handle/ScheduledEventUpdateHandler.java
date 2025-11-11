@@ -47,20 +47,12 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            EventCache.LOG.debug(
-                    "Caching SCHEDULED_EVENT_UPDATE for uncached guild with id {}", guildId);
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            EventCache.LOG.debug("Caching SCHEDULED_EVENT_UPDATE for uncached guild with id {}", guildId);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
 
-        ScheduledEventImpl event =
-                (ScheduledEventImpl) guild.getScheduledEventById(content.getUnsignedLong("id"));
+        ScheduledEventImpl event = (ScheduledEventImpl) guild.getScheduledEventById(content.getUnsignedLong("id"));
         if (event == null) {
             api.getEntityBuilder().createScheduledEvent(guild, content);
             return null;
@@ -87,56 +79,48 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
         if (!Objects.equals(name, event.getName())) {
             String oldName = event.getName();
             event.setName(name);
-            getJDA().handleEvent(new ScheduledEventUpdateNameEvent(
-                    getJDA(), responseNumber, event, oldName));
+            getJDA().handleEvent(new ScheduledEventUpdateNameEvent(getJDA(), responseNumber, event, oldName));
         }
         if (!Objects.equals(description, event.getDescription())) {
             String oldDescription = event.getDescription();
             event.setDescription(description);
-            getJDA().handleEvent(new ScheduledEventUpdateDescriptionEvent(
-                    getJDA(), responseNumber, event, oldDescription));
+            getJDA().handleEvent(
+                            new ScheduledEventUpdateDescriptionEvent(getJDA(), responseNumber, event, oldDescription));
         }
         if (!Objects.equals(startTime, event.getStartTime())) {
             OffsetDateTime oldStartTime = event.getStartTime();
             event.setStartTime(startTime);
-            getJDA().handleEvent(new ScheduledEventUpdateStartTimeEvent(
-                    getJDA(), responseNumber, event, oldStartTime));
+            getJDA().handleEvent(new ScheduledEventUpdateStartTimeEvent(getJDA(), responseNumber, event, oldStartTime));
         }
         if (!Objects.equals(endTime, event.getEndTime())) {
             OffsetDateTime oldEndTime = event.getEndTime();
             event.setEndTime(endTime);
-            getJDA().handleEvent(new ScheduledEventUpdateEndTimeEvent(
-                    getJDA(), responseNumber, event, oldEndTime));
+            getJDA().handleEvent(new ScheduledEventUpdateEndTimeEvent(getJDA(), responseNumber, event, oldEndTime));
         }
         if (!Objects.equals(status, event.getStatus())) {
             ScheduledEvent.Status oldStatus = event.getStatus();
             event.setStatus(status);
-            getJDA().handleEvent(new ScheduledEventUpdateStatusEvent(
-                    getJDA(), responseNumber, event, oldStatus));
+            getJDA().handleEvent(new ScheduledEventUpdateStatusEvent(getJDA(), responseNumber, event, oldStatus));
         }
         if (channel == null && !location.equals(event.getLocation())) {
             event.setLocation(location);
             event.setType(ScheduledEvent.Type.EXTERNAL);
-            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(
-                    getJDA(), responseNumber, event, oldLocation));
+            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (channel instanceof StageChannel && !location.equals(event.getLocation())) {
             event.setLocation(channel.getId());
             event.setType(ScheduledEvent.Type.STAGE_INSTANCE);
-            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(
-                    getJDA(), responseNumber, event, oldLocation));
+            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (channel instanceof VoiceChannel && !location.equals(event.getLocation())) {
             event.setLocation(channel.getId());
             event.setType(ScheduledEvent.Type.VOICE);
-            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(
-                    getJDA(), responseNumber, event, oldLocation));
+            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (!Objects.equals(imageUrl, event.getImageUrl())) {
             String oldImageUrl = event.getImageUrl();
             event.setImage(imageUrl);
-            getJDA().handleEvent(new ScheduledEventUpdateImageEvent(
-                    getJDA(), responseNumber, event, oldImageUrl));
+            getJDA().handleEvent(new ScheduledEventUpdateImageEvent(getJDA(), responseNumber, event, oldImageUrl));
         }
         return null;
     }

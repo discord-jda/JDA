@@ -100,8 +100,7 @@ public class SplitUtil {
      * @see    Strategy#WHITESPACE
      */
     @Nonnull
-    public static List<String> split(
-            @Nonnull String input, int limit, @Nonnull Strategy... strategies) {
+    public static List<String> split(@Nonnull String input, int limit, @Nonnull Strategy... strategies) {
         return split(input, limit, false, strategies);
     }
 
@@ -134,8 +133,7 @@ public class SplitUtil {
      * @see    Strategy#WHITESPACE
      */
     @Nonnull
-    public static List<String> split(
-            @Nonnull String input, int limit, boolean trim, @Nonnull Strategy... strategies) {
+    public static List<String> split(@Nonnull String input, int limit, boolean trim, @Nonnull Strategy... strategies) {
         Checks.notNull(input, "Input string");
         if (input.isEmpty() || input.length() <= limit) {
             return Collections.singletonList(input);

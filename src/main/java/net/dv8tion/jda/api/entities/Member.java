@@ -287,11 +287,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
         return avatarId == null
                 ? null
                 : String.format(
-                        AVATAR_URL,
-                        getGuild().getId(),
-                        getId(),
-                        avatarId,
-                        avatarId.startsWith("a_") ? "gif" : "png");
+                        AVATAR_URL, getGuild().getId(), getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
     /**

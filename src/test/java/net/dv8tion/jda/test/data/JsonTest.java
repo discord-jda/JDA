@@ -52,16 +52,14 @@ public class JsonTest {
             .collect(Collectors.joining(",\n", "[", "]"));
 
     private static final byte[] simpleEtfArray = {
-        -125, 108, 0, 0, 0, 6, 97, 10, 97, 100, 100, 0, 4, 116, 114, 117, 101, 109, 0, 0, 0, 4, 116,
-        101, 115, 116, 70, 64, 16, -52, -52, -52, -52, -52, -51, 70, 64, 20, -52, -52, -52, -52,
-        -52, -51, 106
+        -125, 108, 0, 0, 0, 6, 97, 10, 97, 100, 100, 0, 4, 116, 114, 117, 101, 109, 0, 0, 0, 4, 116, 101, 115, 116, 70,
+        64, 16, -52, -52, -52, -52, -52, -51, 70, 64, 20, -52, -52, -52, -52, -52, -51, 106
     };
     private static final byte[] complexEtfArray = {
-        -125, 108, 0, 0, 0, 6, 109, 0, 0, 0, 3, 111, 110, 101, 97, 2, 70, 64, 11, -103, -103, -103,
-        -103, -103, -102, 97, 7, 116, 0, 0, 0, 2, 109, 0, 0, 0, 5, 102, 105, 114, 115, 116, 109, 0,
-        0, 0, 5, 101, 105, 103, 104, 116, 109, 0, 0, 0, 6, 115, 101, 99, 111, 110, 100, 106, 108, 0,
-        0, 0, 2, 109, 0, 0, 0, 4, 110, 105, 110, 101, 116, 0, 0, 0, 1, 109, 0, 0, 0, 3, 107, 101,
-        121, 109, 0, 0, 0, 3, 116, 101, 110, 106, 106
+        -125, 108, 0, 0, 0, 6, 109, 0, 0, 0, 3, 111, 110, 101, 97, 2, 70, 64, 11, -103, -103, -103, -103, -103, -102,
+        97, 7, 116, 0, 0, 0, 2, 109, 0, 0, 0, 5, 102, 105, 114, 115, 116, 109, 0, 0, 0, 5, 101, 105, 103, 104, 116, 109,
+        0, 0, 0, 6, 115, 101, 99, 111, 110, 100, 106, 108, 0, 0, 0, 2, 109, 0, 0, 0, 4, 110, 105, 110, 101, 116, 0, 0,
+        0, 1, 109, 0, 0, 0, 3, 107, 101, 121, 109, 0, 0, 0, 3, 116, 101, 110, 106, 106
     };
 
     @Nested
@@ -154,8 +152,7 @@ public class JsonTest {
             assertThat(DataObject.fromJson(new StringReader(testJson)))
                     .withRepresentation(new PrettyRepresentation())
                     .isEqualTo(reference);
-            assertThat(DataObject.fromJson(
-                            new ByteArrayInputStream(testJson.getBytes(StandardCharsets.UTF_8))))
+            assertThat(DataObject.fromJson(new ByteArrayInputStream(testJson.getBytes(StandardCharsets.UTF_8))))
                     .withRepresentation(new PrettyRepresentation())
                     .isEqualTo(reference);
         }
@@ -183,9 +180,7 @@ public class JsonTest {
                     .add(TEST_TIME_STRING)
                     .add("123.456");
 
-            assertThat(array.toList())
-                    .containsExactly(
-                            "42", "true", "86699011792191488", TEST_TIME_STRING, "123.456");
+            assertThat(array.toList()).containsExactly("42", "true", "86699011792191488", TEST_TIME_STRING, "123.456");
 
             assertThat(array.getInt(0)).isEqualTo(42);
             assertThat(array.getBoolean(1)).isTrue();
@@ -234,10 +229,8 @@ public class JsonTest {
             assertThat(intArray.stream(DataArray::getInt)).containsExactly(0, 1, 2);
             assertThat(intArray.stream(DataArray::getLong)).containsExactly(0L, 1L, 2L);
 
-            DataArray doubleArray =
-                    DoubleStream.of(0.1, 0.5, 1.2, 4.2).boxed().collect(Helpers.toDataArray());
-            assertThat(doubleArray.stream(DataArray::getDouble))
-                    .containsExactly(0.1, 0.5, 1.2, 4.2);
+            DataArray doubleArray = DoubleStream.of(0.1, 0.5, 1.2, 4.2).boxed().collect(Helpers.toDataArray());
+            assertThat(doubleArray.stream(DataArray::getDouble)).containsExactly(0.1, 0.5, 1.2, 4.2);
 
             DataArray stringArray = DataArray.empty().add("foo").add("bar");
             assertThat(stringArray.stream(DataArray::getString)).containsExactly("foo", "bar");
@@ -249,10 +242,8 @@ public class JsonTest {
                     .isInstanceOf(NumberFormatException.class);
             assertThatThrownBy(() -> polyTypedArray.stream(DataArray::getObject).toArray())
                     .isInstanceOf(ParsingException.class)
-                    .hasMessage(
-                            "Cannot parse value for index 0 into type Map: 1 instance of Integer");
-            assertThat(polyTypedArray.stream(DataArray::getString))
-                    .containsExactly("1", "2.3", "four");
+                    .hasMessage("Cannot parse value for index 0 into type Map: 1 instance of Integer");
+            assertThat(polyTypedArray.stream(DataArray::getString)).containsExactly("1", "2.3", "four");
 
             DataArray objectArray = DataArray.empty()
                     .add(DataObject.empty().put("foo", 1))
@@ -265,8 +256,7 @@ public class JsonTest {
                             .map(obj -> obj.getInt("foo"))
                             .toArray())
                     .isInstanceOf(ParsingException.class)
-                    .hasMessage(
-                            "Cannot parse value for index 2 into type Map: [] instance of ArrayList");
+                    .hasMessage("Cannot parse value for index 2 into type Map: [] instance of ArrayList");
         }
 
         @Test
@@ -274,8 +264,7 @@ public class JsonTest {
             assertThat(DataArray.fromJson(new StringReader(testJsonArray)))
                     .withRepresentation(new PrettyRepresentation())
                     .containsExactly(10, 100, true, "test", 4.2, 5.2);
-            assertThat(DataArray.fromJson(new ByteArrayInputStream(
-                            testJsonArray.getBytes(StandardCharsets.UTF_8))))
+            assertThat(DataArray.fromJson(new ByteArrayInputStream(testJsonArray.getBytes(StandardCharsets.UTF_8))))
                     .withRepresentation(new PrettyRepresentation())
                     .containsExactly(10, 100, true, "test", 4.2, 5.2);
             assertThat(DataArray.fromJson(testJsonArray))

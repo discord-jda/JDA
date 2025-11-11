@@ -40,14 +40,12 @@ import net.dv8tion.jda.internal.components.UnknownComponentImpl;
 import net.dv8tion.jda.test.Resources;
 
 public class ComponentTestData {
-    public static <T extends Component> T getMinimalComponent(
-            Class<T> componentType, Component.Type type) {
+    public static <T extends Component> T getMinimalComponent(Class<T> componentType, Component.Type type) {
         return switch (type) {
             case UNKNOWN ->
                 componentType.cast(new UnknownComponentImpl(
                         DataObject.empty().put("type", 42).put("id", 0)));
-            case ACTION_ROW ->
-                componentType.cast(ActionRow.of(Button.primary("button", "Click me!")));
+            case ACTION_ROW -> componentType.cast(ActionRow.of(Button.primary("button", "Click me!")));
             case BUTTON -> componentType.cast(Button.primary("button", "Click me!"));
             case STRING_SELECT ->
                 componentType.cast(StringSelectMenu.create("select-menu")
@@ -61,39 +59,31 @@ public class ComponentTestData {
                 componentType.cast(
                         EntitySelectMenu.create("role-menu", SelectTarget.ROLE).build());
             case MENTIONABLE_SELECT ->
-                componentType.cast(EntitySelectMenu.create(
-                                "mentionable-menu", SelectTarget.USER, SelectTarget.ROLE)
+                componentType.cast(EntitySelectMenu.create("mentionable-menu", SelectTarget.USER, SelectTarget.ROLE)
                         .build());
             case CHANNEL_SELECT ->
                 componentType.cast(EntitySelectMenu.create("channel-menu", SelectTarget.CHANNEL)
                         .build());
             case SECTION ->
-                componentType.cast(Section.of(
-                        Thumbnail.fromFile(getImageFileUpload()),
-                        TextDisplay.of("Section with thumbnail")));
+                componentType.cast(
+                        Section.of(Thumbnail.fromFile(getImageFileUpload()), TextDisplay.of("Section with thumbnail")));
             case TEXT_DISPLAY -> componentType.cast(TextDisplay.of("TextDisplay"));
             case THUMBNAIL -> componentType.cast(Thumbnail.fromFile(getImageFileUpload()));
-            case MEDIA_GALLERY ->
-                componentType.cast(
-                        MediaGallery.of(MediaGalleryItem.fromFile(getImageFileUpload())));
+            case MEDIA_GALLERY -> componentType.cast(MediaGallery.of(MediaGalleryItem.fromFile(getImageFileUpload())));
             case FILE_DISPLAY -> componentType.cast(FileDisplay.fromFile(getImageFileUpload()));
-            case SEPARATOR ->
-                componentType.cast(Separator.createInvisible(Separator.Spacing.LARGE));
+            case SEPARATOR -> componentType.cast(Separator.createInvisible(Separator.Spacing.LARGE));
             case CONTAINER ->
                 componentType.cast(Container.of(
                         TextDisplay.of("First text"),
                         Separator.createDivider(Separator.Spacing.SMALL),
                         FileDisplay.fromFile(getImageFileUpload())));
-            case LABEL ->
-                componentType.cast(
-                        Label.of("Custom label", TextInput.of("input", TextInputStyle.SHORT)));
+            case LABEL -> componentType.cast(Label.of("Custom label", TextInput.of("input", TextInputStyle.SHORT)));
             case FILE_UPLOAD -> componentType.cast(AttachmentUpload.of("file-upload"));
         };
     }
 
     private static FileUpload getImageFileUpload() {
         return FileUpload.fromData(
-                ComponentTestData.class.getResourceAsStream("/" + Resources.LOGO_PNG),
-                Resources.LOGO_PNG);
+                ComponentTestData.class.getResourceAsStream("/" + Resources.LOGO_PNG), Resources.LOGO_PNG);
     }
 }

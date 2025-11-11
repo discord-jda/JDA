@@ -28,5 +28,4 @@ import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
  * @see MessageChannel#editMessageById(long, MessageEditData) MessageChannel.editMessageById(...)
  */
 public interface MessageEditAction
-        extends MessageEditRequest<MessageEditAction>,
-                FluentRestAction<Message, MessageEditAction> {}
+        extends MessageEditRequest<MessageEditAction>, FluentRestAction<Message, MessageEditAction> {}

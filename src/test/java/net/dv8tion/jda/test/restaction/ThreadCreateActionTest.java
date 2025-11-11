@@ -67,8 +67,8 @@ public class ThreadCreateActionTest extends IntegrationTest {
 
     @Test
     void testMinimalForumPost() {
-        ForumPostActionImpl action = new ForumPostActionImpl(
-                forum, "post title", new MessageCreateBuilder().setContent("test content"));
+        ForumPostActionImpl action =
+                new ForumPostActionImpl(forum, "post title", new MessageCreateBuilder().setContent("test content"));
 
         assertThatRequestFrom(action)
                 .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
@@ -79,8 +79,7 @@ public class ThreadCreateActionTest extends IntegrationTest {
 
     @Test
     void testFullForumPost() {
-        ForumPostActionImpl action =
-                new ForumPostActionImpl(forum, "post title", new MessageCreateBuilder());
+        ForumPostActionImpl action = new ForumPostActionImpl(forum, "post title", new MessageCreateBuilder());
 
         String tagId = randomSnowflake();
 
@@ -100,8 +99,7 @@ public class ThreadCreateActionTest extends IntegrationTest {
 
     @Test
     void testMinimalStartThread() {
-        ThreadChannelActionImpl action =
-                new ThreadChannelActionImpl(textChannel, "thread title", ChannelType.TEXT);
+        ThreadChannelActionImpl action = new ThreadChannelActionImpl(textChannel, "thread title", ChannelType.TEXT);
 
         assertThatRequestFrom(action)
                 .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
@@ -112,8 +110,7 @@ public class ThreadCreateActionTest extends IntegrationTest {
 
     @Test
     void testFullStartThread() {
-        ThreadChannelActionImpl action =
-                new ThreadChannelActionImpl(textChannel, "thread title", ChannelType.TEXT);
+        ThreadChannelActionImpl action = new ThreadChannelActionImpl(textChannel, "thread title", ChannelType.TEXT);
 
         action.setName("post title by setter").setSlowmode(1337);
 

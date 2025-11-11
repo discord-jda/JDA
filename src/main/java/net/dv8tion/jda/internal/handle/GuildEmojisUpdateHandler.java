@@ -52,13 +52,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
 
@@ -133,13 +127,11 @@ public class GuildEmojisUpdateHandler extends SocketHandler {
         }
 
         if (!Objects.equals(oldEmoji.getName(), newEmoji.getName())) {
-            getJDA().handleEvent(new EmojiUpdateNameEvent(
-                    getJDA(), responseNumber, newEmoji, oldEmoji.getName()));
+            getJDA().handleEvent(new EmojiUpdateNameEvent(getJDA(), responseNumber, newEmoji, oldEmoji.getName()));
         }
 
         if (!CollectionUtils.isEqualCollection(oldEmoji.getRoles(), newEmoji.getRoles())) {
-            getJDA().handleEvent(new EmojiUpdateRolesEvent(
-                    getJDA(), responseNumber, newEmoji, oldEmoji.getRoles()));
+            getJDA().handleEvent(new EmojiUpdateRolesEvent(getJDA(), responseNumber, newEmoji, oldEmoji.getRoles()));
         }
     }
 }

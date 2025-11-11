@@ -31,8 +31,7 @@ import javax.annotation.Nonnull;
  * @see ChannelField#DEFAULT_FORUM_LAYOUT
  */
 @SuppressWarnings("ConstantConditions")
-public class ChannelUpdateDefaultLayoutEvent
-        extends GenericChannelUpdateEvent<ForumChannel.Layout> {
+public class ChannelUpdateDefaultLayoutEvent extends GenericChannelUpdateEvent<ForumChannel.Layout> {
     public static final ChannelField FIELD = ChannelField.DEFAULT_FORUM_LAYOUT;
     public static final String IDENTIFIER = FIELD.getFieldName();
 

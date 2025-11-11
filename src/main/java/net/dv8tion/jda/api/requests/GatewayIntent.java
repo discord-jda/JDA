@@ -329,8 +329,7 @@ public enum GatewayIntent {
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> fromCacheFlags(
-            @Nonnull CacheFlag flag, @Nonnull CacheFlag... other) {
+    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull CacheFlag flag, @Nonnull CacheFlag... other) {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(other, "CacheFlag");
         return fromCacheFlags(EnumSet.of(flag, other));
@@ -375,8 +374,7 @@ public enum GatewayIntent {
      */
     @Nonnull
     @SafeVarargs
-    public static EnumSet<GatewayIntent> fromEvents(
-            @Nonnull Class<? extends GenericEvent>... events) {
+    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Class<? extends GenericEvent>... events) {
         Checks.noneNull(events, "Event");
         return fromEvents(Arrays.asList(events));
     }
@@ -393,8 +391,7 @@ public enum GatewayIntent {
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> fromEvents(
-            @Nonnull Collection<Class<? extends GenericEvent>> events) {
+    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events) {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
         for (Class<? extends GenericEvent> event : events) {
             Checks.notNull(event, "Event");
@@ -450,8 +447,7 @@ public enum GatewayIntent {
      */
     @Nonnull
     public static EnumSet<GatewayIntent> from(
-            @Nonnull Collection<Class<? extends GenericEvent>> events,
-            @Nonnull Collection<CacheFlag> flags) {
+            @Nonnull Collection<Class<? extends GenericEvent>> events, @Nonnull Collection<CacheFlag> flags) {
         EnumSet<GatewayIntent> intents = fromEvents(events);
         intents.addAll(fromCacheFlags(flags));
         return intents;

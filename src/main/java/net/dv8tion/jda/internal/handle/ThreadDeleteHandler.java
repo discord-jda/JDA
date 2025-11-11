@@ -44,8 +44,7 @@ public class ThreadDeleteHandler extends SocketHandler {
         ThreadChannel thread = channelsView.ofType(ThreadChannel.class).getElementById(threadId);
         if (thread == null || guild == null) {
             WebSocketClient.LOG.debug(
-                    "THREAD_DELETE attempted to delete a thread that is not yet cached. JSON: {}",
-                    content);
+                    "THREAD_DELETE attempted to delete a thread that is not yet cached. JSON: {}", content);
             return null;
         }
 

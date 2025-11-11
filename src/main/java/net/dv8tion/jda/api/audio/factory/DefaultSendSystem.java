@@ -61,9 +61,8 @@ public class DefaultSendSystem implements IAudioSendSystem {
             boolean sentPacket = true;
             while (!udpSocket.isClosed() && !sendThread.isInterrupted()) {
                 try {
-                    boolean changeTalking = !sentPacket
-                            || (System.currentTimeMillis() - lastFrameSent)
-                                    > OPUS_FRAME_TIME_AMOUNT;
+                    boolean changeTalking =
+                            !sentPacket || (System.currentTimeMillis() - lastFrameSent) > OPUS_FRAME_TIME_AMOUNT;
                     DatagramPacket packet = packetProvider.getNextPacket(changeTalking);
 
                     sentPacket = packet != null;
@@ -78,8 +77,7 @@ public class DefaultSendSystem implements IAudioSendSystem {
                 } catch (Exception e) {
                     AudioConnection.LOG.error("Error while sending udp audio data", e);
                 } finally {
-                    long sleepTime =
-                            (OPUS_FRAME_TIME_AMOUNT) - (System.currentTimeMillis() - lastFrameSent);
+                    long sleepTime = (OPUS_FRAME_TIME_AMOUNT) - (System.currentTimeMillis() - lastFrameSent);
                     if (sleepTime > 0) {
                         try {
                             Thread.sleep(sleepTime);
@@ -99,8 +97,7 @@ public class DefaultSendSystem implements IAudioSendSystem {
             }
         });
         sendThread.setUncaughtExceptionHandler((thread, throwable) -> {
-            JDALogger.getLog(DefaultSendSystem.class)
-                    .error("Uncaught exception in audio send thread", throwable);
+            JDALogger.getLog(DefaultSendSystem.class).error("Uncaught exception in audio send thread", throwable);
             start();
         });
         sendThread.setDaemon(true);

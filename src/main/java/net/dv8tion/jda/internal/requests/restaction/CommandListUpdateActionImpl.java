@@ -41,8 +41,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
-public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>>
-        implements CommandListUpdateAction {
+public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> implements CommandListUpdateAction {
     private final List<CommandData> commands = new ArrayList<>();
     private final GuildImpl guild;
     private int slash, user, message;
@@ -78,8 +77,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>>
 
     @Nonnull
     @Override
-    public CommandListUpdateAction addCommands(
-            @Nonnull Collection<? extends CommandData> commands) {
+    public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands) {
         Checks.noneNull(commands, "Command");
         int newSlash = 0, newUser = 0, newMessage = 0;
         for (CommandData command : commands) {
@@ -110,8 +108,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>>
                 Commands.MAX_MESSAGE_COMMANDS);
 
         Checks.checkUnique(
-                Stream.concat(commands.stream(), this.commands.stream())
-                        .map(c -> c.getType() + " " + c.getName()),
+                Stream.concat(commands.stream(), this.commands.stream()).map(c -> c.getType() + " " + c.getName()),
                 "Cannot have multiple commands of the same type with identical names. "
                         + "Name: \"%s\" with type %s appeared %d times!",
                 (count, value) -> {

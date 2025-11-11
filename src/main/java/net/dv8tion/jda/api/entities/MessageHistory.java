@@ -201,8 +201,7 @@ public class MessageHistory {
 
             for (int i = 0; i < historyJson.length(); i++) {
                 try {
-                    messages.add(builder.createMessageWithChannel(
-                            historyJson.getObject(i), channel, false));
+                    messages.add(builder.createMessageWithChannel(historyJson.getObject(i), channel, false));
                 } catch (Exception e) {
                     LOG.warn("Encountered exception when retrieving messages ", e);
                 }
@@ -271,11 +270,7 @@ public class MessageHistory {
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
                 .compile(channel.getId())
-                .withQueryParams(
-                        "limit",
-                        Integer.toString(amount),
-                        "after",
-                        String.valueOf(history.firstKey()));
+                .withQueryParams("limit", Integer.toString(amount), "after", String.valueOf(history.firstKey()));
         JDAImpl jda = (JDAImpl) getJDA();
         return new RestActionImpl<>(jda, route, (response, request) -> {
             EntityBuilder builder = jda.getEntityBuilder();
@@ -284,8 +279,7 @@ public class MessageHistory {
 
             for (int i = 0; i < historyJson.length(); i++) {
                 try {
-                    messages.add(builder.createMessageWithChannel(
-                            historyJson.getObject(i), channel, false));
+                    messages.add(builder.createMessageWithChannel(historyJson.getObject(i), channel, false));
                 } catch (Exception e) {
                     LOG.warn("Encountered exception when retrieving messages ", e);
                 }
@@ -401,12 +395,10 @@ public class MessageHistory {
      */
     @Nonnull
     @CheckReturnValue
-    public static MessageRetrieveAction getHistoryAfter(
-            @Nonnull MessageChannel channel, @Nonnull String messageId) {
+    public static MessageRetrieveAction getHistoryAfter(@Nonnull MessageChannel channel, @Nonnull String messageId) {
         checkArguments(channel, messageId);
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
-                .compile(channel.getId())
-                .withQueryParams("after", messageId);
+        Route.CompiledRoute route =
+                Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("after", messageId);
         return new MessageRetrieveAction(route, channel);
     }
 
@@ -448,12 +440,10 @@ public class MessageHistory {
      */
     @Nonnull
     @CheckReturnValue
-    public static MessageRetrieveAction getHistoryBefore(
-            @Nonnull MessageChannel channel, @Nonnull String messageId) {
+    public static MessageRetrieveAction getHistoryBefore(@Nonnull MessageChannel channel, @Nonnull String messageId) {
         checkArguments(channel, messageId);
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
-                .compile(channel.getId())
-                .withQueryParams("before", messageId);
+        Route.CompiledRoute route =
+                Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("before", messageId);
         return new MessageRetrieveAction(route, channel);
     }
 
@@ -495,12 +485,10 @@ public class MessageHistory {
      */
     @Nonnull
     @CheckReturnValue
-    public static MessageRetrieveAction getHistoryAround(
-            @Nonnull MessageChannel channel, @Nonnull String messageId) {
+    public static MessageRetrieveAction getHistoryAround(@Nonnull MessageChannel channel, @Nonnull String messageId) {
         checkArguments(channel, messageId);
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY
-                .compile(channel.getId())
-                .withQueryParams("around", messageId);
+        Route.CompiledRoute route =
+                Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("around", messageId);
         return new MessageRetrieveAction(route, channel);
     }
 
@@ -595,9 +583,7 @@ public class MessageHistory {
             for (int i = 0; i < array.length(); i++) {
                 try {
                     DataObject obj = array.getObject(i);
-                    result.history.put(
-                            obj.getLong("id"),
-                            builder.createMessageWithChannel(obj, channel, false));
+                    result.history.put(obj.getLong("id"), builder.createMessageWithChannel(obj, channel, false));
                 } catch (Exception e) {
                     LOG.warn("Encountered exception in MessagePagination", e);
                 }

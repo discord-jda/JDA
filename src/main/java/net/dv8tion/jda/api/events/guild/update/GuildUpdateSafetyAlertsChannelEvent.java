@@ -34,17 +34,8 @@ public class GuildUpdateSafetyAlertsChannelEvent extends GenericGuildUpdateEvent
     public static final String IDENTIFIER = "safety_alerts_channel";
 
     public GuildUpdateSafetyAlertsChannelEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Guild guild,
-            @Nullable TextChannel oldSafetyAlertsChannel) {
-        super(
-                api,
-                responseNumber,
-                guild,
-                oldSafetyAlertsChannel,
-                guild.getSafetyAlertsChannel(),
-                IDENTIFIER);
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldSafetyAlertsChannel) {
+        super(api, responseNumber, guild, oldSafetyAlertsChannel, guild.getSafetyAlertsChannel(), IDENTIFIER);
     }
 
     /**

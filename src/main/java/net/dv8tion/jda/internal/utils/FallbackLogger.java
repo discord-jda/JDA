@@ -38,15 +38,10 @@ public class FallbackLogger extends LegacyAbstractLogger {
 
     @Override
     protected void handleNormalizedLoggingCall(
-            Level level,
-            Marker marker,
-            String messagePattern,
-            Object[] arguments,
-            Throwable throwable) {
+            Level level, Marker marker, String messagePattern, Object[] arguments, Throwable throwable) {
         LocalDateTime now = LocalDateTime.now();
         FormattingTuple result = MessageFormatter.arrayFormat(messagePattern, arguments);
-        System.err.printf(
-                "%1$tF %1$tT [%2$s] [%3$s] %4$s%n", now, name, level, result.getMessage());
+        System.err.printf("%1$tF %1$tT [%2$s] [%3$s] %4$s%n", now, name, level, result.getMessage());
         if (throwable != null) {
             throwable.printStackTrace(System.err);
         }

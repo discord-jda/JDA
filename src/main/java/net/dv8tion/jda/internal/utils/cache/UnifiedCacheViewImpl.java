@@ -122,10 +122,8 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     }
 
     public static class UnifiedSnowflakeCacheView<T extends ISnowflake>
-            extends UnifiedCacheViewImpl<T, SnowflakeCacheView<T>>
-            implements SnowflakeCacheView<T> {
-        public UnifiedSnowflakeCacheView(
-                Supplier<? extends Stream<? extends SnowflakeCacheView<T>>> generator) {
+            extends UnifiedCacheViewImpl<T, SnowflakeCacheView<T>> implements SnowflakeCacheView<T> {
+        public UnifiedSnowflakeCacheView(Supplier<? extends Stream<? extends SnowflakeCacheView<T>>> generator) {
             super(generator);
         }
 
@@ -140,12 +138,10 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         }
     }
 
-    public static class UnifiedMemberCacheViewImpl
-            extends UnifiedCacheViewImpl<Member, MemberCacheView>
+    public static class UnifiedMemberCacheViewImpl extends UnifiedCacheViewImpl<Member, MemberCacheView>
             implements UnifiedMemberCacheView {
 
-        public UnifiedMemberCacheViewImpl(
-                Supplier<? extends Stream<? extends MemberCacheView>> generator) {
+        public UnifiedMemberCacheViewImpl(Supplier<? extends Stream<? extends MemberCacheView>> generator) {
             super(generator);
         }
 

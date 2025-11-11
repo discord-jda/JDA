@@ -41,8 +41,7 @@ public class SubcommandData implements SerializableData {
     protected final List<OptionData> options = new ArrayList<>(CommandData.MAX_OPTIONS);
     protected String name, description;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
-    private final LocalizationMap descriptionLocalizations =
-            new LocalizationMap(this::checkDescription);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
     private boolean allowRequired = true;
 
     /**
@@ -177,8 +176,7 @@ public class SubcommandData implements SerializableData {
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandData setDescriptionLocalization(
-            @Nonnull DiscordLocale locale, @Nonnull String description) {
+    public SubcommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description) {
         // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
         return this;
@@ -270,23 +268,17 @@ public class SubcommandData implements SerializableData {
                 CommandData.MAX_OPTIONS);
         boolean allowRequired = this.allowRequired;
         for (OptionData option : options) {
+            Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand to a subcommand!");
             Checks.check(
-                    option.getType() != OptionType.SUB_COMMAND,
-                    "Cannot add a subcommand to a subcommand!");
+                    option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group to a subcommand!");
             Checks.check(
-                    option.getType() != OptionType.SUB_COMMAND_GROUP,
-                    "Cannot add a subcommand group to a subcommand!");
-            Checks.check(
-                    allowRequired || !option.isRequired(),
-                    "Cannot add required options after non-required options!");
-            allowRequired =
-                    option.isRequired(); // prevent adding required options after non-required
+                    allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
+            allowRequired = option.isRequired(); // prevent adding required options after non-required
             // options
         }
 
         Checks.checkUnique(
-                Stream.concat(getOptions().stream(), Arrays.stream(options))
-                        .map(OptionData::getName),
+                Stream.concat(getOptions().stream(), Arrays.stream(options)).map(OptionData::getName),
                 "Cannot have multiple options with the same name. Name: \"%s\" appeared %d times!",
                 (count, value) -> new Object[] {value, count});
 
@@ -355,9 +347,8 @@ public class SubcommandData implements SerializableData {
             @Nonnull String description,
             boolean required,
             boolean autoComplete) {
-        return addOptions(new OptionData(type, name, description)
-                .setRequired(required)
-                .setAutoComplete(autoComplete));
+        return addOptions(
+                new OptionData(type, name, description).setRequired(required).setAutoComplete(autoComplete));
     }
 
     /**
@@ -386,10 +377,7 @@ public class SubcommandData implements SerializableData {
      */
     @Nonnull
     public SubcommandData addOption(
-            @Nonnull OptionType type,
-            @Nonnull String name,
-            @Nonnull String description,
-            boolean required) {
+            @Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required) {
         return addOption(type, name, description, required, false);
     }
 
@@ -417,8 +405,7 @@ public class SubcommandData implements SerializableData {
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData addOption(
-            @Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
+    public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         return addOption(type, name, description, false);
     }
 
@@ -508,8 +495,7 @@ public class SubcommandData implements SerializableData {
                 .map(OptionData::fromData)
                 .forEach(sub::addOptions));
         sub.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
-        sub.setDescriptionLocalizations(
-                LocalizationUtils.mapFromProperty(json, "description_localizations"));
+        sub.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
 
         return sub;
     }

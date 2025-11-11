@@ -43,10 +43,7 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
     public static final String IDENTIFIER = "discriminator";
 
     public UserUpdateDiscriminatorEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull User user,
-            @Nonnull String oldDiscriminator) {
+            @Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull String oldDiscriminator) {
         super(api, responseNumber, user, oldDiscriminator, user.getDiscriminator(), IDENTIFIER);
     }
 

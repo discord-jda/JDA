@@ -46,8 +46,7 @@ public class VoiceStateUpdateHandler extends SocketHandler {
         }
 
         if (content.isNull("member")) {
-            WebSocketClient.LOG.debug(
-                    "Discarding VOICE_STATE_UPDATE with missing member. JSON: {}", content);
+            WebSocketClient.LOG.debug("Discarding VOICE_STATE_UPDATE with missing member. JSON: {}", content);
             return null;
         }
 
@@ -77,16 +76,9 @@ public class VoiceStateUpdateHandler extends SocketHandler {
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug(
-                    "Received a VOICE_STATE_UPDATE for a Guild that has yet to be cached. JSON: {}",
-                    content);
+                    "Received a VOICE_STATE_UPDATE for a Guild that has yet to be cached. JSON: {}", content);
             return;
         }
 
@@ -97,15 +89,9 @@ public class VoiceStateUpdateHandler extends SocketHandler {
 
         if (channel == null && (channelId != null)) {
             getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.CHANNEL,
-                            channelId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
+                    .cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug(
-                    "Received VOICE_STATE_UPDATE for an AudioChannel that has yet to be cached. JSON: {}",
-                    content);
+                    "Received VOICE_STATE_UPDATE for an AudioChannel that has yet to be cached. JSON: {}", content);
             return;
         }
 
@@ -156,8 +142,7 @@ public class VoiceStateUpdateHandler extends SocketHandler {
         if (stream != vState.isStream()) {
             vState.setStream(stream);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(
-                            new GuildVoiceStreamEvent(getJDA(), responseNumber, member, stream));
+            getJDA().handleEvent(new GuildVoiceStreamEvent(getJDA(), responseNumber, member, stream));
         }
         if (video != vState.isSendingVideo()) {
             vState.setVideo(video);
@@ -187,8 +172,7 @@ public class VoiceStateUpdateHandler extends SocketHandler {
                 if (isSelf) {
                     getJDA().getDirectAudioController().update(guild, null);
                 }
-                getJDA().getEntityBuilder()
-                        .updateMemberCache(member, memberJson.isNull("joined_at"));
+                getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
             } else {
                 AudioManagerImpl mng =
                         (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
@@ -216,8 +200,7 @@ public class VoiceStateUpdateHandler extends SocketHandler {
                 getJDA().getEntityBuilder().updateMemberCache(member);
             }
 
-            getJDA().handleEvent(new GuildVoiceUpdateEvent(
-                    getJDA(), responseNumber, member, oldChannel));
+            getJDA().handleEvent(new GuildVoiceUpdateEvent(getJDA(), responseNumber, member, oldChannel));
         }
 
         if (isSelf && voiceInterceptor != null) {

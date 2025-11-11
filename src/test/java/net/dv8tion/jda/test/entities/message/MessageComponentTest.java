@@ -47,29 +47,23 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.*;
 
 public class MessageComponentTest {
-    private static final FileUpload EXAMPLE_FILE_UPLOAD =
-            FileUpload.fromData(new byte[100], "bytes.bin");
+    private static final FileUpload EXAMPLE_FILE_UPLOAD = FileUpload.fromData(new byte[100], "bytes.bin");
     private static final TextDisplay EXAMPLE_TEXT_DISPLAY = TextDisplay.of(getMaxContentString());
-    private static final Section EXAMPLE_SECTION =
-            Section.of(Button.primary("id", "label"), EXAMPLE_TEXT_DISPLAY);
+    private static final Section EXAMPLE_SECTION = Section.of(Button.primary("id", "label"), EXAMPLE_TEXT_DISPLAY);
     private static final MediaGallery EXAMPLE_MEDIA_GALLERY =
             MediaGallery.of(MediaGalleryItem.fromFile(EXAMPLE_FILE_UPLOAD));
-    private static final Separator EXAMPLE_SEPARATOR =
-            Separator.createDivider(Separator.Spacing.SMALL);
-    private static final FileDisplay EXAMPLE_FILE_DISPLAY =
-            FileDisplay.fromFile(EXAMPLE_FILE_UPLOAD);
+    private static final Separator EXAMPLE_SEPARATOR = Separator.createDivider(Separator.Spacing.SMALL);
+    private static final FileDisplay EXAMPLE_FILE_DISPLAY = FileDisplay.fromFile(EXAMPLE_FILE_UPLOAD);
     private static final Container EXAMPLE_CONTAINER = Container.of(EXAMPLE_TEXT_DISPLAY);
     private static final ActionRow EXAMPLE_ROW = ActionRow.of(Button.primary("id", "label"));
 
     @MethodSource("buildInvalidMessageArguments")
     @ParameterizedTest
-    void buildInvalidMessage(
-            Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> builderFunction) {
+    void buildInvalidMessage(Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> builderFunction) {
         // The builder function may return null when a test case is impossible using the provided
         // builder type
         // (e.g., voice messages are only on MessageCreateBuilder)
-        AbstractMessageBuilder<?, ?> createBuilder =
-                builderFunction.apply(new MessageCreateBuilder());
+        AbstractMessageBuilder<?, ?> createBuilder = builderFunction.apply(new MessageCreateBuilder());
         if (createBuilder != null) {
             assertThat(createBuilder.isValid()).isFalse();
             assertThatIllegalStateException().isThrownBy(createBuilder::build);
@@ -92,8 +86,8 @@ public class MessageComponentTest {
                 Arguments.of(message(b -> b.setComponents(EXAMPLE_FILE_DISPLAY))),
                 Arguments.of(message(b -> b.setComponents(EXAMPLE_CONTAINER))),
                 // Attempt to use V1 content in V2 mode
-                Arguments.of(messageCreate(b ->
-                        b.useComponentsV2().setVoiceMessage(true).setFiles(EXAMPLE_FILE_UPLOAD))),
+                Arguments.of(messageCreate(
+                        b -> b.useComponentsV2().setVoiceMessage(true).setFiles(EXAMPLE_FILE_UPLOAD))),
                 Arguments.of(message(b -> b.useComponentsV2().setContent("content"))),
                 Arguments.of(message(b -> b.useComponentsV2()
                         .setEmbeds(
@@ -106,28 +100,25 @@ public class MessageComponentTest {
                 Arguments.of(messageCreate(b -> b.useComponentsV2().setFiles(EXAMPLE_FILE_UPLOAD))),
                 // Attempt to edit with an entirely new message with no components in V2 mode (use a
                 // file for it to be not empty)
-                Arguments.of(messageEdit(
-                        b -> b.useComponentsV2().setReplace(true).setFiles(EXAMPLE_FILE_UPLOAD))),
-                // Attempt to use >MAX_COMPONENT_COUNT top-level
                 Arguments.of(
-                        message(b -> b.setComponents(mergeItems(getMaxTopLevelV1(), EXAMPLE_ROW)))),
+                        messageEdit(b -> b.useComponentsV2().setReplace(true).setFiles(EXAMPLE_FILE_UPLOAD))),
+                // Attempt to use >MAX_COMPONENT_COUNT top-level
+                Arguments.of(message(b -> b.setComponents(mergeItems(getMaxTopLevelV1(), EXAMPLE_ROW)))),
                 // Attempt to use >MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total
-                Arguments.of(message(b -> b.useComponentsV2()
-                        .setComponents(mergeItems(getMaxTotal(), EXAMPLE_FILE_DISPLAY)))),
+                Arguments.of(message(
+                        b -> b.useComponentsV2().setComponents(mergeItems(getMaxTotal(), EXAMPLE_FILE_DISPLAY)))),
                 // Attempt to use >MAX_CONTENT_LENGTH_COMPONENT_V2
-                Arguments.of(message(b -> b.useComponentsV2()
-                        .setComponents(EXAMPLE_TEXT_DISPLAY, TextDisplay.of("1")))));
+                Arguments.of(
+                        message(b -> b.useComponentsV2().setComponents(EXAMPLE_TEXT_DISPLAY, TextDisplay.of("1")))));
     }
 
     @MethodSource("buildValidMessageArguments")
     @ParameterizedTest
-    void buildValidMessage(
-            Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> builderFunction) {
+    void buildValidMessage(Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> builderFunction) {
         // The builder function may return null when a test case is impossible using the provided
         // builder type
         // (e.g., voice messages are only on MessageCreateBuilder)
-        AbstractMessageBuilder<?, ?> createBuilder =
-                builderFunction.apply(new MessageCreateBuilder());
+        AbstractMessageBuilder<?, ?> createBuilder = builderFunction.apply(new MessageCreateBuilder());
         if (createBuilder != null) {
             assertThat(createBuilder.isValid()).isTrue();
             assertThatNoException().isThrownBy(createBuilder::build);
@@ -145,14 +136,12 @@ public class MessageComponentTest {
                 // Use V2 components
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_SECTION))),
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_TEXT_DISPLAY))),
-                Arguments.of(
-                        message(b -> b.useComponentsV2().setComponents(EXAMPLE_MEDIA_GALLERY))),
+                Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_MEDIA_GALLERY))),
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_SEPARATOR))),
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_FILE_DISPLAY))),
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_CONTAINER))),
                 // Use V1 content
-                Arguments.of(
-                        messageCreate(b -> b.setVoiceMessage(true).setFiles(EXAMPLE_FILE_UPLOAD))),
+                Arguments.of(messageCreate(b -> b.setVoiceMessage(true).setFiles(EXAMPLE_FILE_UPLOAD))),
                 Arguments.of(message(b -> b.setContent("content"))),
                 Arguments.of(message(b -> b.setEmbeds(
                         new EmbedBuilder().setDescription("description").build()))),
@@ -167,13 +156,11 @@ public class MessageComponentTest {
                 // Add top-levels until it would break the tree size checks,
                 // to make sure the top-level size isn't checked, or at least equal to the max tree
                 // size
-                Arguments.of(
-                        message(b -> b.useComponentsV2().setComponents(getAbsurdTopLevelV2()))),
+                Arguments.of(message(b -> b.useComponentsV2().setComponents(getAbsurdTopLevelV2()))),
                 // MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(getMaxTotal()))),
                 // Attempt to use =MAX_CONTENT_LENGTH_COMPONENT_V2
-                Arguments.of(
-                        message(b -> b.useComponentsV2().setComponents(EXAMPLE_TEXT_DISPLAY))));
+                Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_TEXT_DISPLAY))));
     }
 
     private static String getMaxContentString() {
@@ -232,8 +219,8 @@ public class MessageComponentTest {
         return function;
     }
 
-    private static Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>>
-            messageCreate(Function<MessageCreateBuilder, MessageCreateBuilder> function) {
+    private static Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> messageCreate(
+            Function<MessageCreateBuilder, MessageCreateBuilder> function) {
         return abstractMessageBuilder -> {
             if (abstractMessageBuilder instanceof MessageCreateBuilder) {
                 return function.apply((MessageCreateBuilder) abstractMessageBuilder);

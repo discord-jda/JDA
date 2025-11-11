@@ -129,9 +129,7 @@ public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTrig
     public B setAllowList(@Nonnull Collection<String> keywords) {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(
-                keywords.size() <= maxAllowListAmount(),
-                "Cannot add more than %d keywords!",
-                maxAllowListAmount());
+                keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
         keywords.forEach(AbstractKeywordTriggerConfig::checkKeyword);
         allowList.clear();
         allowList.addAll(keywords);

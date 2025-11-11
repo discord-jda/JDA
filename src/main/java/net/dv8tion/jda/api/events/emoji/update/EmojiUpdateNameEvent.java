@@ -39,10 +39,7 @@ public class EmojiUpdateNameEvent extends GenericEmojiUpdateEvent<String> {
     public static final String IDENTIFIER = "name";
 
     public EmojiUpdateNameEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull RichCustomEmoji emoji,
-            @Nonnull String oldName) {
+            @Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji, @Nonnull String oldName) {
         super(api, responseNumber, emoji, oldName, emoji.getName(), IDENTIFIER);
     }
 

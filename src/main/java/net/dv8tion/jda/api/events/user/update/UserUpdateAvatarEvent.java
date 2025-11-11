@@ -69,10 +69,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
         return previous == null
                 ? null
                 : String.format(
-                        User.AVATAR_URL,
-                        getUser().getId(),
-                        previous,
-                        previous.startsWith("a_") ? "gif" : "png");
+                        User.AVATAR_URL, getUser().getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -109,11 +106,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
     public String getNewAvatarUrl() {
         return next == null
                 ? null
-                : String.format(
-                        User.AVATAR_URL,
-                        getUser().getId(),
-                        next,
-                        next.startsWith("a_") ? "gif" : "png");
+                : String.format(User.AVATAR_URL, getUser().getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
     /**

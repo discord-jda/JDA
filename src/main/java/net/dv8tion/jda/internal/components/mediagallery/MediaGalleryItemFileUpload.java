@@ -31,8 +31,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MediaGalleryItemFileUpload
-        implements MediaGalleryItem, FileContainerMixin, SerializableData {
+public class MediaGalleryItemFileUpload implements MediaGalleryItem, FileContainerMixin, SerializableData {
     private final FileUpload file; // Contains name and description
     private final String description;
     private final boolean spoiler;

@@ -77,8 +77,7 @@ public class MessageActivity {
         private final String coverId;
         private final long id;
 
-        public Application(
-                String name, String description, String iconId, String coverId, long id) {
+        public Application(String name, String description, String iconId, String coverId, long id) {
             this.name = name;
             this.description = description;
             this.iconId = iconId;
@@ -123,9 +122,7 @@ public class MessageActivity {
          */
         @Nullable
         public String getIconUrl() {
-            return iconId == null
-                    ? null
-                    : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
+            return iconId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
         }
 
         /**

@@ -50,10 +50,7 @@ public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Ac
     private final Member member;
 
     public UserUpdateActivityOrderEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull List<Activity> previous,
-            @Nonnull Member member) {
+            @Nonnull JDA api, long responseNumber, @Nonnull List<Activity> previous, @Nonnull Member member) {
         super(api, responseNumber, member.getUser(), previous, member.getActivities(), IDENTIFIER);
         this.member = member;
     }

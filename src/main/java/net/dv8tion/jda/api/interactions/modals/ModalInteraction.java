@@ -40,8 +40,7 @@ import javax.annotation.Nullable;
  *
  * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */
-public interface ModalInteraction
-        extends IReplyCallback, IMessageEditCallback, ICustomIdInteraction {
+public interface ModalInteraction extends IReplyCallback, IMessageEditCallback, ICustomIdInteraction {
 
     @Override
     @Nonnull

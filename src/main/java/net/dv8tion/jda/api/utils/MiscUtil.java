@@ -119,8 +119,7 @@ public class MiscUtil {
             return parseLong(input);
         } catch (NumberFormatException ex) {
             throw new NumberFormatException(Helpers.format(
-                    "The specified ID is not a valid snowflake (%s). Expecting a valid long value!",
-                    input));
+                    "The specified ID is not a valid snowflake (%s). Expecting a valid long value!", input));
         }
     }
 
@@ -155,8 +154,7 @@ public class MiscUtil {
     public static void tryLock(@Nonnull Lock lock) {
         try {
             if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS)) {
-                throw new IllegalStateException(
-                        "Could not acquire lock in a reasonable timeframe! (10 seconds)");
+                throw new IllegalStateException("Could not acquire lock in a reasonable timeframe! (10 seconds)");
             }
         } catch (InterruptedException e) {
             throw new IllegalStateException("Unable to acquire lock while thread is interrupted!");
@@ -178,11 +176,7 @@ public class MiscUtil {
      *        The String to append
      */
     public static void appendTo(
-            @Nonnull Formatter formatter,
-            int width,
-            int precision,
-            boolean leftJustified,
-            @Nonnull String out) {
+            @Nonnull Formatter formatter, int width, int precision, boolean leftJustified, @Nonnull String out) {
         try {
             Appendable appendable = formatter.out();
             if (precision > -1 && out.length() > precision) {

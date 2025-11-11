@@ -65,8 +65,7 @@ public class LocalizationMapper {
      * @see ResourceBundleLocalizationFunction
      */
     @Nonnull
-    public static LocalizationMapper fromFunction(
-            @Nonnull LocalizationFunction localizationFunction) {
+    public static LocalizationMapper fromFunction(@Nonnull LocalizationFunction localizationFunction) {
         return new LocalizationMapper(localizationFunction);
     }
 
@@ -76,8 +75,7 @@ public class LocalizationMapper {
             ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
             if (commandData.getType() == Command.Type.SLASH) {
                 SlashCommandData slashCommandData = (SlashCommandData) commandData;
-                ctx.trySetTranslation(
-                        slashCommandData.getDescriptionLocalizations(), "description");
+                ctx.trySetTranslation(slashCommandData.getDescriptionLocalizations(), "description");
                 localizeOptionArray(optionArray, ctx);
             }
         });
@@ -106,9 +104,7 @@ public class LocalizationMapper {
         private final Stack<String> keyComponents = new Stack<>();
 
         private void forObjects(
-                DataArray source,
-                Function<DataObject, String> keyExtractor,
-                Consumer<DataObject> consumer) {
+                DataArray source, Function<DataObject, String> keyExtractor, Consumer<DataObject> consumer) {
             for (int i = 0; i < source.length(); i++) {
                 DataObject item = source.getObject(i);
                 Runnable runnable = () -> {
@@ -120,8 +116,7 @@ public class LocalizationMapper {
 
                 // We need to differentiate subcommands/groups from options before inserting the
                 // "options" separator
-                OptionType type = OptionType.fromKey(
-                        item.getInt("type", -1)); // -1 when the object isn't an option
+                OptionType type = OptionType.fromKey(item.getInt("type", -1)); // -1 when the object isn't an option
                 boolean isOption = type != OptionType.SUB_COMMAND
                         && type != OptionType.SUB_COMMAND_GROUP
                         && type != OptionType.UNKNOWN;
@@ -147,8 +142,7 @@ public class LocalizationMapper {
         private String getKey(String finalComponent) {
             StringJoiner joiner = new StringJoiner(".");
             for (String keyComponent : keyComponents) {
-                joiner.add(keyComponent.replace(
-                        " ", "_")); // Context commands can have spaces, we need to replace them
+                joiner.add(keyComponent.replace(" ", "_")); // Context commands can have spaces, we need to replace them
             }
             joiner.add(finalComponent.replace(" ", "_"));
             return joiner.toString().toLowerCase();
@@ -161,8 +155,8 @@ public class LocalizationMapper {
                 localizationMap.setTranslations(data);
             } catch (Exception e) {
                 throw new RuntimeException(
-                        "An uncaught exception occurred while using a LocalizationFunction, localization key: '"
-                                + key + "'",
+                        "An uncaught exception occurred while using a LocalizationFunction, localization key: '" + key
+                                + "'",
                         e);
             }
         }
@@ -180,8 +174,8 @@ public class LocalizationMapper {
                 });
             } catch (Exception e) {
                 throw new RuntimeException(
-                        "An uncaught exception occurred while using a LocalizationFunction, localization key: '"
-                                + key + "'",
+                        "An uncaught exception occurred while using a LocalizationFunction, localization key: '" + key
+                                + "'",
                         e);
             }
         }

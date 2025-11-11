@@ -99,8 +99,7 @@ public interface Channel extends IMentionable, IDetachableEntity {
 
     @Override
     default void formatTo(Formatter formatter, int flags, int width, int precision) {
-        boolean leftJustified =
-                (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
+        boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         String out;

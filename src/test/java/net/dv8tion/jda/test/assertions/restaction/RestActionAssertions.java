@@ -65,8 +65,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>> {
 
     @CheckReturnValue
     @Contract("_->this")
-    public RestActionAssertions withNormalizedBody(
-            @Nonnull Consumer<? super DataObject> normalizer) {
+    public RestActionAssertions withNormalizedBody(@Nonnull Consumer<? super DataObject> normalizer) {
         this.normalizeRequestBody = normalizer;
         return this;
     }
@@ -152,9 +151,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>> {
         Map<String, String> expectedQuery = new LinkedHashMap<>();
 
         for (int i = 0; i < params.length; i += 2) {
-            expectedQuery.put(
-                    String.valueOf(params[i]),
-                    EncodingUtil.encodeUTF8(String.valueOf(params[i + 1])));
+            expectedQuery.put(String.valueOf(params[i]), EncodingUtil.encodeUTF8(String.valueOf(params[i + 1])));
         }
 
         return checkAssertions(request -> {

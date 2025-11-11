@@ -31,8 +31,7 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager>
-        implements GuildStickerManager {
+public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> implements GuildStickerManager {
     private final Guild guild;
     private final long guildId;
     private String name;
@@ -42,8 +41,7 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager>
     public GuildStickerManagerImpl(Guild guild, long guildId, StickerSnowflake sticker) {
         super(
                 guild.getJDA(),
-                Route.Stickers.MODIFY_GUILD_STICKER.compile(
-                        Long.toUnsignedString(guildId), sticker.getId()));
+                Route.Stickers.MODIFY_GUILD_STICKER.compile(Long.toUnsignedString(guildId), sticker.getId()));
         this.guild = guild;
         this.guildId = guildId;
         if (isPermissionChecksEnabled()) {
@@ -145,8 +143,7 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager>
 
     @Override
     protected boolean checkPermissions() {
-        if (guild != null
-                && !guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
+        if (guild != null && !guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
         }
         return super.checkPermissions();

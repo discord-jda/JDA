@@ -23,8 +23,7 @@ import java.util.regex.Pattern;
 
 import static net.dv8tion.jda.test.ChecksHelper.*;
 
-public class StringChecksAssertions
-        extends AbstractChecksAssertions<String, StringChecksAssertions> {
+public class StringChecksAssertions extends AbstractChecksAssertions<String, StringChecksAssertions> {
     public StringChecksAssertions(String name, ThrowingConsumer<String> callable) {
         super(name, callable);
     }

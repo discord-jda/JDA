@@ -83,9 +83,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
      * @return The new {@link Container}
      */
     @Nonnull
-    static Container of(
-            @Nonnull ContainerChildComponent component,
-            @Nonnull ContainerChildComponent... components) {
+    static Container of(@Nonnull ContainerChildComponent component, @Nonnull ContainerChildComponent... components) {
         return of(Helpers.mergeVararg(component, components));
     }
 
@@ -187,8 +185,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
     @Nonnull
     @CheckReturnValue
     default Container withComponents(
-            @Nonnull ContainerChildComponent component,
-            @Nonnull ContainerChildComponent... components) {
+            @Nonnull ContainerChildComponent component, @Nonnull ContainerChildComponent... components) {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
         return withComponents(Helpers.mergeVararg(component, components));
@@ -198,8 +195,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
     @Override
     @CheckReturnValue
     default Container withDisabled(boolean disabled) {
-        return replace(
-                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
+        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
     }
 
     @Nonnull

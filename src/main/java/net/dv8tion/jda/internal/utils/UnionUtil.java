@@ -17,8 +17,7 @@
 package net.dv8tion.jda.internal.utils;
 
 public class UnionUtil {
-    public static <T> T safeUnionCast(
-            String classCategory, Object instance, Class<T> toObjectClass) {
+    public static <T> T safeUnionCast(String classCategory, Object instance, Class<T> toObjectClass) {
         if (toObjectClass.isInstance(instance)) {
             return toObjectClass.cast(instance);
         }

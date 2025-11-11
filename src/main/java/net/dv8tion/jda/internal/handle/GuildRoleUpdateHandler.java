@@ -41,25 +41,16 @@ public class GuildRoleUpdateHandler extends SocketHandler {
         DataObject rolejson = content.getObject("role");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null) {
-            getJDA().getEventCache()
-                    .cache(
-                            EventCache.Type.GUILD,
-                            guildId,
-                            responseNumber,
-                            allContent,
-                            this::handle);
-            EventCache.LOG.debug(
-                    "Received a Role Update for a Guild that is not yet cached: {}", content);
+            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received a Role Update for a Guild that is not yet cached: {}", content);
             return null;
         }
 
         long roleId = rolejson.getLong("id");
         RoleImpl role = (RoleImpl) guild.getRolesView().get(roleId);
         if (role == null) {
-            getJDA().getEventCache()
-                    .cache(EventCache.Type.ROLE, roleId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug(
-                    "Received a Role Update for Role that is not yet cached: {}", content);
+            getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received a Role Update for Role that is not yet cached: {}", content);
             return null;
         }
 
@@ -85,39 +76,34 @@ public class GuildRoleUpdateHandler extends SocketHandler {
         if (color != role.getColorRaw()) {
             int oldColor = role.getColorRaw();
             role.setColor(color);
-            getJDA().handleEvent(
-                            new RoleUpdateColorEvent(getJDA(), responseNumber, role, oldColor));
+            getJDA().handleEvent(new RoleUpdateColorEvent(getJDA(), responseNumber, role, oldColor));
         }
         if (!Objects.equals(position, role.getPositionRaw())) {
             int oldPosition = role.getPosition();
             int oldPositionRaw = role.getPositionRaw();
             role.setRawPosition(position);
-            getJDA().handleEvent(new RoleUpdatePositionEvent(
-                    getJDA(), responseNumber, role, oldPosition, oldPositionRaw));
+            getJDA().handleEvent(
+                            new RoleUpdatePositionEvent(getJDA(), responseNumber, role, oldPosition, oldPositionRaw));
         }
         if (!Objects.equals(permissions, role.getPermissionsRaw())) {
             long oldPermissionsRaw = role.getPermissionsRaw();
             role.setRawPermissions(permissions);
-            getJDA().handleEvent(new RoleUpdatePermissionsEvent(
-                    getJDA(), responseNumber, role, oldPermissionsRaw));
+            getJDA().handleEvent(new RoleUpdatePermissionsEvent(getJDA(), responseNumber, role, oldPermissionsRaw));
         }
 
         if (hoisted != role.isHoisted()) {
             boolean wasHoisted = role.isHoisted();
             role.setHoisted(hoisted);
-            getJDA().handleEvent(
-                            new RoleUpdateHoistedEvent(getJDA(), responseNumber, role, wasHoisted));
+            getJDA().handleEvent(new RoleUpdateHoistedEvent(getJDA(), responseNumber, role, wasHoisted));
         }
         if (mentionable != role.isMentionable()) {
             boolean wasMentionable = role.isMentionable();
             role.setMentionable(mentionable);
-            getJDA().handleEvent(new RoleUpdateMentionableEvent(
-                    getJDA(), responseNumber, role, wasMentionable));
+            getJDA().handleEvent(new RoleUpdateMentionableEvent(getJDA(), responseNumber, role, wasMentionable));
         }
 
         RoleIcon oldIcon = role.getIcon();
-        RoleIcon newIcon =
-                iconId == null && emoji == null ? null : new RoleIcon(iconId, emoji, roleId);
+        RoleIcon newIcon = iconId == null && emoji == null ? null : new RoleIcon(iconId, emoji, roleId);
         if (!Objects.equals(oldIcon, newIcon)) {
             role.setIcon(newIcon);
             getJDA().handleEvent(new RoleUpdateIconEvent(getJDA(), responseNumber, role, oldIcon));

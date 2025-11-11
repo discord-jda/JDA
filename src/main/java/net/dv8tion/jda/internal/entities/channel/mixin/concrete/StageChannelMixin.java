@@ -43,8 +43,7 @@ public interface StageChannelMixin<T extends StageChannelMixin<T>>
     default ChannelAction<StageChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
 
-        ChannelAction<StageChannel> action =
-                guild.createStageChannel(getName()).setBitrate(getBitrate());
+        ChannelAction<StageChannel> action = guild.createStageChannel(getName()).setBitrate(getBitrate());
 
         if (getRegionRaw() != null) {
             action.setRegion(Region.fromKey(getRegionRaw()));
@@ -57,11 +56,9 @@ public interface StageChannelMixin<T extends StageChannelMixin<T>>
             }
             for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
                 if (o.isMemberOverride()) {
-                    action.addMemberPermissionOverride(
-                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 } else {
-                    action.addRolePermissionOverride(
-                            o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 }
             }
         }

@@ -49,9 +49,7 @@ public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInte
     private final CommandAutoCompleteInteraction interaction;
 
     public CommandAutoCompleteInteractionEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull CommandAutoCompleteInteraction interaction) {
+            @Nonnull JDA api, long responseNumber, @Nonnull CommandAutoCompleteInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }

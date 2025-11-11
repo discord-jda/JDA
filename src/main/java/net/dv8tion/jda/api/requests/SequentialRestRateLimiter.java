@@ -86,8 +86,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
 
     public SequentialRestRateLimiter(@Nonnull RateLimitConfig config) {
         this.config = config;
-        this.cleanupWorker =
-                config.getScheduler().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
+        this.cleanupWorker = config.getScheduler().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -254,10 +253,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
         MiscUtil.locked(
                 lock,
                 () -> rateLimitQueue.computeIfAbsent(bucket, k -> config.getScheduler()
-                        .schedule(
-                                () -> scheduleElastic(bucket),
-                                bucket.getRateLimit(),
-                                TimeUnit.MILLISECONDS)));
+                        .schedule(() -> scheduleElastic(bucket), bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
     }
 
     private long parseLong(String input) {
@@ -303,18 +299,13 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                     // Handle global rate limit if necessary
                     if (global) {
                         config.getGlobalRateLimit().setClassic(now + retryAfter);
-                        log.error(
-                                "Encountered global rate limit! Retry-After: {} ms Scope: {}",
-                                retryAfter,
-                                scope);
+                        log.error("Encountered global rate limit! Retry-After: {} ms Scope: {}", retryAfter, scope);
                     }
                     // Handle cloudflare rate limits, this applies to all routes and uses seconds
                     // for retry-after
                     else if (cloudflare) {
                         config.getGlobalRateLimit().setCloudflare(now + retryAfter);
-                        log.error(
-                                "Encountered cloudflare rate limit! Retry-After: {} s",
-                                retryAfter / 1000);
+                        log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter / 1000);
                     }
                     // Handle hard rate limit, pretty much just log that it happened
                     else {
@@ -342,10 +333,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                         }
                     }
 
-                    log.trace(
-                            "Updated bucket {} to retry after {}",
-                            bucket.bucketId,
-                            bucket.reset - now);
+                    log.trace("Updated bucket {} to retry after {}", bucket.bucketId, bucket.reset - now);
                     return bucket;
                 }
 
@@ -510,11 +498,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                                 TimeUnit.MILLISECONDS.toMinutes(rateLimit),
                                 baseRoute);
                     }
-                    log.debug(
-                            "Backing off {} ms for bucket {} on route {}",
-                            rateLimit,
-                            bucketId,
-                            baseRoute);
+                    log.debug("Backing off {} ms for bucket {} on route {}", rateLimit, bucketId, baseRoute);
                     break;
                 }
 

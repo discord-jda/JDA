@@ -45,10 +45,7 @@ public class GuildMemberRoleAddEvent extends GenericGuildMemberEvent {
     private final List<Role> addedRoles;
 
     public GuildMemberRoleAddEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull Member member,
-            @Nonnull List<Role> addedRoles) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull List<Role> addedRoles) {
         super(api, responseNumber, member);
         this.addedRoles = Collections.unmodifiableList(addedRoles);
     }

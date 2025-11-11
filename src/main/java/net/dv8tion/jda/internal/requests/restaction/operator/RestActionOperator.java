@@ -54,10 +54,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O> {
         }
     }
 
-    protected void handle(
-            RestAction<I> action,
-            Consumer<? super Throwable> failure,
-            Consumer<? super I> success) {
+    protected void handle(RestAction<I> action, Consumer<? super Throwable> failure, Consumer<? super I> success) {
         Consumer<? super Throwable> catcher = contextWrap(failure);
         action.queue(
                 (result) -> {
@@ -115,13 +112,11 @@ public abstract class RestActionOperator<I, O> implements RestAction<O> {
     }
 
     @Nullable
-    protected Consumer<? super Throwable> contextWrap(
-            @Nullable Consumer<? super Throwable> callback) {
+    protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback) {
         if (callback instanceof ContextException.ContextConsumer) {
             return callback;
         } else if (RestAction.isPassContext()) {
-            return ContextException.here(
-                    callback == null ? RestAction.getDefaultFailure() : callback);
+            return ContextException.here(callback == null ? RestAction.getDefaultFailure() : callback);
         }
         return callback;
     }

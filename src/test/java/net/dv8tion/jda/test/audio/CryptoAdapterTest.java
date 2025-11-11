@@ -40,8 +40,7 @@ public class CryptoAdapterTest {
         AudioPacket original = getMinimalPacket();
         byte[] key = getKey();
 
-        CryptoAdapter adapter =
-                CryptoAdapter.getAdapter(AudioEncryption.AEAD_AES256_GCM_RTPSIZE, key);
+        CryptoAdapter adapter = CryptoAdapter.getAdapter(AudioEncryption.AEAD_AES256_GCM_RTPSIZE, key);
         doRoundTripAndAssertPayload(adapter, original);
     }
 
@@ -50,8 +49,7 @@ public class CryptoAdapterTest {
         AudioPacket original = getMinimalPacket();
         byte[] key = getKey();
 
-        CryptoAdapter adapter =
-                CryptoAdapter.getAdapter(AudioEncryption.AEAD_XCHACHA20_POLY1305_RTPSIZE, key);
+        CryptoAdapter adapter = CryptoAdapter.getAdapter(AudioEncryption.AEAD_XCHACHA20_POLY1305_RTPSIZE, key);
         doRoundTripAndAssertPayload(adapter, original);
     }
 
@@ -60,8 +58,7 @@ public class CryptoAdapterTest {
         AudioPacket original = getPacketWithExtension();
         byte[] key = getKey();
 
-        CryptoAdapter adapter =
-                CryptoAdapter.getAdapter(AudioEncryption.AEAD_AES256_GCM_RTPSIZE, key);
+        CryptoAdapter adapter = CryptoAdapter.getAdapter(AudioEncryption.AEAD_AES256_GCM_RTPSIZE, key);
         doRoundTripAndAssertPayload(adapter, original);
     }
 
@@ -70,8 +67,7 @@ public class CryptoAdapterTest {
         AudioPacket original = getPacketWithExtension();
         byte[] key = getKey();
 
-        CryptoAdapter adapter =
-                CryptoAdapter.getAdapter(AudioEncryption.AEAD_XCHACHA20_POLY1305_RTPSIZE, key);
+        CryptoAdapter adapter = CryptoAdapter.getAdapter(AudioEncryption.AEAD_XCHACHA20_POLY1305_RTPSIZE, key);
         doRoundTripAndAssertPayload(adapter, original);
     }
 

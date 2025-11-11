@@ -115,16 +115,12 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
             throw new InsufficientPermissionException(g, Permission.MANAGE_GUILD_EXPRESSIONS);
         }
         return new DeferredRestAction<>(jda, User.class, this::getOwner, () -> {
-            Route.CompiledRoute route =
-                    Route.Stickers.GET_GUILD_STICKER.compile(getGuildId(), getId());
+            Route.CompiledRoute route = Route.Stickers.GET_GUILD_STICKER.compile(getGuildId(), getId());
             return new RestActionImpl<>(jda, route, (response, request) -> {
                 DataObject json = response.getObject();
                 return this.owner = json.optObject("user")
-                        .map(user -> ((JDAImpl) jda)
-                                .getEntityBuilder()
-                                .createUser(json.getObject("user")))
-                        .orElseThrow(() -> ErrorResponseException.create(
-                                ErrorResponse.MISSING_PERMISSIONS, response));
+                        .map(user -> ((JDAImpl) jda).getEntityBuilder().createUser(json.getObject("user")))
+                        .orElseThrow(() -> ErrorResponseException.create(ErrorResponse.MISSING_PERMISSIONS, response));
             });
         });
     }
@@ -135,8 +131,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
         if (guild != null) {
             return guild.deleteSticker(this);
         }
-        Route.CompiledRoute route =
-                Route.Stickers.DELETE_GUILD_STICKER.compile(getGuildId(), getId());
+        Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(getGuildId(), getId());
         return new AuditableRestActionImpl<>(jda, route);
     }
 
@@ -152,8 +147,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
     }
 
     public GuildStickerImpl copy() {
-        return new GuildStickerImpl(
-                id, format, name, tags, description, available, guildId, jda, owner);
+        return new GuildStickerImpl(id, format, name, tags, description, available, guildId, jda, owner);
     }
 
     @Override

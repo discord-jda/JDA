@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
  * @see EntitlementUpdateEvent
  */
 public class EntitlementDeleteEvent extends GenericEntitlementEvent {
-    public EntitlementDeleteEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
+    public EntitlementDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
         super(api, responseNumber, entitlement);
     }
 }

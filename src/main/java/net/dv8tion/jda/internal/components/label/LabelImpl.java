@@ -43,14 +43,10 @@ public class LabelImpl extends AbstractComponentImpl implements Label, ModalTopL
                 object.getInt("id", -1),
                 object.getString("label"),
                 object.getString("description", null),
-                deserializer.deserializeAs(
-                        LabelChildComponentUnion.class, object.getObject("component")));
+                deserializer.deserializeAs(LabelChildComponentUnion.class, object.getObject("component")));
     }
 
-    public LabelImpl(
-            @Nonnull String label,
-            @Nullable String description,
-            @Nonnull LabelChildComponentUnion child) {
+    public LabelImpl(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponentUnion child) {
         this(-1, label, description, child);
     }
 
@@ -66,9 +62,7 @@ public class LabelImpl extends AbstractComponentImpl implements Label, ModalTopL
     }
 
     public static Label validated(
-            @Nonnull String label,
-            @Nullable String description,
-            @Nonnull LabelChildComponent child) {
+            @Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child) {
         Checks.notBlank(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         Checks.notNull(child, "Child");

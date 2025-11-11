@@ -30,8 +30,7 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect any RoleUpdateEvent.
  */
-public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent
-        implements UpdateEvent<Role, T> {
+public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent implements UpdateEvent<Role, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;

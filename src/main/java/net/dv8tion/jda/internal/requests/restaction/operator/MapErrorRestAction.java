@@ -35,17 +35,14 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
     private final Function<? super Throwable, ? extends T> map;
 
     public MapErrorRestAction(
-            RestAction<T> action,
-            Predicate<? super Throwable> check,
-            Function<? super Throwable, ? extends T> map) {
+            RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends T> map) {
         super(action);
         this.check = check;
         this.map = map;
     }
 
     @Override
-    public void queue(
-            @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
+    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
         action.queue(
                 success,
                 contextWrap(
@@ -56,16 +53,11 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
                                     doSuccess(success, map.apply(error));
                                     // Then apply fallback function
                                 } else { // Fallback downstream
-                                    doFailure(
-                                            failure,
-                                            error); // error already has context so no contextWrap
+                                    doFailure(failure, error); // error already has context so no contextWrap
                                     // needed
                                 }
                             } catch (Throwable e) {
-                                doFailure(
-                                        failure,
-                                        Helpers.appendCause(
-                                                e, error)); // error already has context so no
+                                doFailure(failure, Helpers.appendCause(e, error)); // error already has context so no
                                 // contextWrap needed
                             }
                         }));
@@ -98,9 +90,7 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
         return action.submit(shouldQueue).handle((value, error) -> {
             T result = value;
             if (error != null) {
-                error = error instanceof CompletionException && error.getCause() != null
-                        ? error.getCause()
-                        : error;
+                error = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
                 if (check.test(error)) {
                     result = map.apply(error);
                 } else {

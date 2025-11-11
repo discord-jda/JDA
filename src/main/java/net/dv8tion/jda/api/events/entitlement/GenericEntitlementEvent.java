@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
 public abstract class GenericEntitlementEvent extends Event {
     protected final Entitlement entitlement;
 
-    protected GenericEntitlementEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
+    protected GenericEntitlementEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
         super(api, responseNumber);
         this.entitlement = entitlement;
     }

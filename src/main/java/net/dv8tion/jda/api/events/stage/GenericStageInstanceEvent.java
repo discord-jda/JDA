@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
 public abstract class GenericStageInstanceEvent extends GenericGuildEvent {
     protected final StageInstance instance;
 
-    public GenericStageInstanceEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance) {
+    public GenericStageInstanceEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance) {
         super(api, responseNumber, stageInstance.getGuild());
         this.instance = stageInstance;
     }

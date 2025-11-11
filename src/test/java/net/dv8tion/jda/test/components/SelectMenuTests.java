@@ -88,8 +88,7 @@ public class SelectMenuTests {
                         "The select menu supports types SelectTarget.ROLE, but provided default value has type SelectTarget.CHANNEL!");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> {
-                    Builder builder = EntitySelectMenu.create(
-                            "customid", SelectTarget.ROLE, SelectTarget.USER);
+                    Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE, SelectTarget.USER);
                     builder.setDefaultValues(DefaultValue.channel("1234"));
                 })
                 .withMessage(

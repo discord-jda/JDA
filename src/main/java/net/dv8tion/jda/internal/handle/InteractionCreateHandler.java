@@ -68,8 +68,7 @@ public class InteractionCreateHandler extends SocketHandler {
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
         if (!channelType.isMessage()) {
             WebSocketClient.LOG.debug(
-                    "Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}",
-                    channelJson);
+                    "Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channelJson);
             return null;
         }
 
@@ -85,12 +84,11 @@ public class InteractionCreateHandler extends SocketHandler {
                         api, responseNumber, new CommandAutoCompleteInteractionImpl(api, content)));
                 break;
             case MODAL_SUBMIT:
-                api.handleEvent(new ModalInteractionEvent(
-                        api, responseNumber, new ModalInteractionImpl(api, content)));
+                api.handleEvent(new ModalInteractionEvent(api, responseNumber, new ModalInteractionImpl(api, content)));
                 break;
             default:
-                api.handleEvent(new GenericInteractionCreateEvent(
-                        api, responseNumber, new InteractionImpl(api, content)));
+                api.handleEvent(
+                        new GenericInteractionCreateEvent(api, responseNumber, new InteractionImpl(api, content)));
         }
 
         return null;
@@ -116,8 +114,8 @@ public class InteractionCreateHandler extends SocketHandler {
     private void handleAction(DataObject content) {
         switch (Component.Type.fromKey(content.getObject("data").getInt("component_type"))) {
             case BUTTON:
-                api.handleEvent(new ButtonInteractionEvent(
-                        api, responseNumber, new ButtonInteractionImpl(api, content)));
+                api.handleEvent(
+                        new ButtonInteractionEvent(api, responseNumber, new ButtonInteractionImpl(api, content)));
                 break;
             case STRING_SELECT:
                 api.handleEvent(new StringSelectInteractionEvent(

@@ -95,8 +95,7 @@ public class AudioPacket {
         this.encodedAudio = buffer;
     }
 
-    public AudioPacket(
-            ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio) {
+    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio) {
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;
@@ -155,8 +154,7 @@ public class AudioPacket {
                         .slice());
     }
 
-    private static byte[] generateRawPacket(
-            ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data) {
+    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data) {
         if (buffer == null) {
             buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.remaining());
         }
@@ -172,8 +170,7 @@ public class AudioPacket {
         buffer.putInt(ssrc);
     }
 
-    private static void populateBuffer(
-            char seq, int timestamp, int ssrc, ByteBuffer data, ByteBuffer buffer) {
+    private static void populateBuffer(char seq, int timestamp, int ssrc, ByteBuffer data, ByteBuffer buffer) {
         writeHeader(seq, timestamp, ssrc, buffer);
         buffer.put(data);
         ((Buffer) data).flip();

@@ -37,10 +37,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 public class MediaGalleryImpl extends AbstractComponentImpl
-        implements MediaGallery,
-                MessageTopLevelComponentUnion,
-                ContainerChildComponentUnion,
-                FileContainerMixin {
+        implements MediaGallery, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin {
     private final int uniqueId;
     private final List<MediaGalleryItem> items;
 
@@ -107,9 +104,8 @@ public class MediaGalleryImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        DataObject json = DataObject.empty()
-                .put("type", getType().getKey())
-                .put("items", DataArray.fromCollection(getItems()));
+        DataObject json =
+                DataObject.empty().put("type", getType().getKey()).put("items", DataArray.fromCollection(getItems()));
         if (uniqueId >= 0) {
             json.put("id", uniqueId);
         }

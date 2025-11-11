@@ -46,8 +46,7 @@ class LabelTest extends AbstractSnapshotTest {
                                 .build()),
                 Label.of("Custom label 2", EXAMPLE_TEXT_INPUT));
 
-        assertWithSnapshot(DataObject.empty()
-                .put("components", DataArray.fromCollection(components.getComponents())));
+        assertWithSnapshot(DataObject.empty().put("components", DataArray.fromCollection(components.getComponents())));
     }
 
     @Nested
@@ -61,16 +60,14 @@ class LabelTest extends AbstractSnapshotTest {
 
         @Test
         void testDescriptionChecks() {
-            assertStringChecks(
-                            "Description", string -> Label.of("Label", string, EXAMPLE_TEXT_INPUT))
+            assertStringChecks("Description", string -> Label.of("Label", string, EXAMPLE_TEXT_INPUT))
                     .checksNotBlank(false)
                     .checksNotLonger(Label.DESCRIPTION_MAX_LENGTH);
         }
 
         @Test
         void testChildChecks() {
-            ChecksHelper.<LabelChildComponent>assertChecks(
-                            "Child", child -> Label.of("Label", child))
+            ChecksHelper.<LabelChildComponent>assertChecks("Child", child -> Label.of("Label", child))
                     .checksNotNull();
         }
     }
@@ -125,10 +122,7 @@ class LabelTest extends AbstractSnapshotTest {
                             .setMaxValues(StringSelectMenu.OPTIONS_MAX_AMOUNT)
                             .setUniqueId(10)
                             .addOption("Option 1", "option-1")
-                            .addOption(
-                                    "Option 2",
-                                    "option-2",
-                                    Emoji.fromCustom("minn", 821355005788684298L, true))
+                            .addOption("Option 2", "option-2", Emoji.fromCustom("minn", 821355005788684298L, true))
                             .addOption("Option 3", "option-3", "Custom description")
                             .build());
 

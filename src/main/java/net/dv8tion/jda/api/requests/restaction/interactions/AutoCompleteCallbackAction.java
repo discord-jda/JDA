@@ -39,8 +39,7 @@ import javax.annotation.Nonnull;
  * @see CommandAutoCompleteInteraction
  */
 public interface AutoCompleteCallbackAction
-        extends InteractionCallbackAction<Void>,
-                FluentRestAction<Void, AutoCompleteCallbackAction> {
+        extends InteractionCallbackAction<Void>, FluentRestAction<Void, AutoCompleteCallbackAction> {
     /**
      * The {@link OptionType} of the choices you can suggest.
      *
@@ -198,9 +197,8 @@ public interface AutoCompleteCallbackAction
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction addChoiceStrings(@Nonnull String... choices) {
-        return addChoices(Arrays.stream(choices)
-                .map(it -> new Command.Choice(it, it))
-                .collect(Collectors.toList()));
+        return addChoices(
+                Arrays.stream(choices).map(it -> new Command.Choice(it, it)).collect(Collectors.toList()));
     }
 
     /**
@@ -225,9 +223,7 @@ public interface AutoCompleteCallbackAction
     @Nonnull
     @CheckReturnValue
     default AutoCompleteCallbackAction addChoiceStrings(@Nonnull Collection<String> choices) {
-        return addChoices(choices.stream()
-                .map(it -> new Command.Choice(it, it))
-                .collect(Collectors.toList()));
+        return addChoices(choices.stream().map(it -> new Command.Choice(it, it)).collect(Collectors.toList()));
     }
 
     /**

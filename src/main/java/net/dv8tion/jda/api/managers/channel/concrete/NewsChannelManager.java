@@ -35,8 +35,7 @@ import javax.annotation.Nonnull;
  *        .queue();
  * }
  */
-public interface NewsChannelManager
-        extends StandardGuildMessageChannelManager<NewsChannel, NewsChannelManager> {
+public interface NewsChannelManager extends StandardGuildMessageChannelManager<NewsChannel, NewsChannelManager> {
     /**
      * Converts the selected channel to a different {@link ChannelType}.
      *

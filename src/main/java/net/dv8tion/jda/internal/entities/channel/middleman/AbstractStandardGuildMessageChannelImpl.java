@@ -21,8 +21,7 @@ import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildMe
 
 import javax.annotation.Nullable;
 
-public abstract class AbstractStandardGuildMessageChannelImpl<
-                T extends AbstractStandardGuildMessageChannelImpl<T>>
+public abstract class AbstractStandardGuildMessageChannelImpl<T extends AbstractStandardGuildMessageChannelImpl<T>>
         extends AbstractStandardGuildChannelImpl<T> implements StandardGuildMessageChannelMixin<T> {
     protected String topic;
     protected boolean nsfw;

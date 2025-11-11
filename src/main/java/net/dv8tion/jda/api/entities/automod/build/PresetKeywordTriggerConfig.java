@@ -31,10 +31,8 @@ import javax.annotation.Nonnull;
 /**
  * Configuration for a {@link AutoModTriggerType#KEYWORD_PRESET KEYWORD_PRESET} trigger.
  */
-public class PresetKeywordTriggerConfig
-        extends AbstractKeywordTriggerConfig<PresetKeywordTriggerConfig> {
-    private final EnumSet<AutoModRule.KeywordPreset> presets =
-            EnumSet.noneOf(AutoModRule.KeywordPreset.class);
+public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<PresetKeywordTriggerConfig> {
+    private final EnumSet<AutoModRule.KeywordPreset> presets = EnumSet.noneOf(AutoModRule.KeywordPreset.class);
 
     protected PresetKeywordTriggerConfig() {
         super(AutoModTriggerType.KEYWORD_PRESET);
@@ -73,8 +71,7 @@ public class PresetKeywordTriggerConfig
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public PresetKeywordTriggerConfig enablePresets(
-            @Nonnull Collection<AutoModRule.KeywordPreset> presets) {
+    public PresetKeywordTriggerConfig enablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets) {
         Checks.notNull(presets, "Presets");
         presets.forEach(PresetKeywordTriggerConfig::checkKnown);
         this.presets.addAll(presets);
@@ -93,8 +90,7 @@ public class PresetKeywordTriggerConfig
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public PresetKeywordTriggerConfig disablePresets(
-            @Nonnull AutoModRule.KeywordPreset... presets) {
+    public PresetKeywordTriggerConfig disablePresets(@Nonnull AutoModRule.KeywordPreset... presets) {
         Checks.noneNull(presets, "Presets");
         for (AutoModRule.KeywordPreset preset : presets) {
             this.presets.remove(preset);
@@ -114,8 +110,7 @@ public class PresetKeywordTriggerConfig
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public PresetKeywordTriggerConfig disablePresets(
-            @Nonnull Collection<AutoModRule.KeywordPreset> presets) {
+    public PresetKeywordTriggerConfig disablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets) {
         Checks.noneNull(presets, "Presets");
         this.presets.removeAll(presets);
         return this;
@@ -137,9 +132,7 @@ public class PresetKeywordTriggerConfig
         DataObject data = super.toData();
         data.put(
                 "presets",
-                presets.stream()
-                        .map(AutoModRule.KeywordPreset::getKey)
-                        .collect(Helpers.toDataArray()));
+                presets.stream().map(AutoModRule.KeywordPreset::getKey).collect(Helpers.toDataArray()));
         return data;
     }
 }
