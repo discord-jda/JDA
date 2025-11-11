@@ -83,7 +83,7 @@ public class ComponentsUtilTest
         );
 
         MessageComponentTree newTree = tree.replace(ComponentReplacer.byUniqueId(1, (Button) null));
-        final ActionRow row = newTree.getComponents().get(0).asActionRow();
+        final ActionRow row = newTree.getComponents().getFirst().asActionRow();
         assertThat(row.getComponents()).hasSize(1);
         assertThat(row.getComponents()).contains((ActionRowChildComponentUnion) button2);
     }

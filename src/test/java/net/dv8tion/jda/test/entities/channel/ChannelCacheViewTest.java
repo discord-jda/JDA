@@ -281,7 +281,7 @@ class ChannelCacheViewTest
         Supplier<List<GuildChannel>> getByName = () -> cache.getElementsByName("TEXT without parent", true);
         Supplier<List<GuildMessageChannel>> getOfType = () -> cache.ofType(GuildMessageChannel.class).asList();
 
-        GuildChannel textWithoutParent = getByName.get().get(0);
+        GuildChannel textWithoutParent = getByName.get().getFirst();
 
         assertThat(textWithoutParent)
             .as("Remove returns instance")
