@@ -53,7 +53,7 @@ public class ComponentConsistencyComplianceTest
 
     private ArchCondition<JavaClass> overrideSupertypeMethodsWhichReturnsTheirDeclaringClass()
     {
-        return new ArchCondition<JavaClass>("Overrides supertype methods which returns their declaring class")
+        return new ArchCondition<>("Overrides supertype methods which returns their declaring class")
         {
             @Override
             public void check(JavaClass item, ConditionEvents events)
