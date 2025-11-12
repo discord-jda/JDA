@@ -122,31 +122,31 @@ public class VoiceStateUpdateHandler extends SocketHandler
         {
             vState.setSelfMuted(selfMuted);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, member, selfMuted));
         }
         if (selfDeafened != vState.isSelfDeafened())
         {
             vState.setSelfDeafened(selfDeafened);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, member, selfDeafened));
         }
         if (guildMuted != vState.isGuildMuted())
         {
             vState.setGuildMuted(guildMuted);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, member, guildMuted));
         }
         if (guildDeafened != vState.isGuildDeafened())
         {
             vState.setGuildDeafened(guildDeafened);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, member, guildDeafened));
         }
         if (suppressed != vState.isSuppressed())
         {
             vState.setSuppressed(suppressed);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            getJDA().handleEvent(new GuildVoiceSuppressEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceSuppressEvent(getJDA(), responseNumber, member, suppressed));
         }
         if (stream != vState.isStream())
         {
@@ -161,9 +161,9 @@ public class VoiceStateUpdateHandler extends SocketHandler
             getJDA().handleEvent(new GuildVoiceVideoEvent(getJDA(), responseNumber, member, video));
         }
         if (wasMute != vState.isMuted())
-            getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, member, vState.isMuted()));
         if (wasDeaf != vState.isDeafened())
-            getJDA().handleEvent(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member, vState.isDeafened()));
         if (requestToSpeakTimestamp != vState.getRequestToSpeak())
         {
             OffsetDateTime oldRequestToSpeak = vState.getRequestToSpeakTimestamp();
