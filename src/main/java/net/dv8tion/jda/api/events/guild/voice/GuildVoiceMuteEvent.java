@@ -39,10 +39,10 @@ public class GuildVoiceMuteEvent extends GenericGuildVoiceEvent
 {
     protected final boolean muted;
 
-    public GuildVoiceMuteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
+    public GuildVoiceMuteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean muted)
     {
         super(api, responseNumber, member);
-        this.muted = member.getVoiceState().isMuted();
+        this.muted = muted;
     }
 
     /**
