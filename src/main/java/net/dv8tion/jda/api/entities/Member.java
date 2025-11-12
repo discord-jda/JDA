@@ -389,6 +389,18 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     Set<Role> getUnsortedRoles();
 
     /**
+     * Checks if this Member has a certain role.
+     *
+     * @param role The role that the Member needs to have.
+     *
+     * @return True, if this Member has the role.
+     *
+     * @see    #getRoles()
+     * @see    #getUnsortedRoles()
+     */
+    boolean hasRole(@Nonnull Role role);
+
+    /**
      * The {@link java.awt.Color Color} of this Member's name in a Guild.
      *
      * <p>This is determined by the color of the highest role assigned to them that does not have the default color.
