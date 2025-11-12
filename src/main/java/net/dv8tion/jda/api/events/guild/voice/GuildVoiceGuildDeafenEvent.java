@@ -36,9 +36,10 @@ import javax.annotation.Nonnull;
 public class GuildVoiceGuildDeafenEvent extends GenericGuildVoiceEvent {
     protected final boolean guildDeafened;
 
-    public GuildVoiceGuildDeafenEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
+    public GuildVoiceGuildDeafenEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean guildDeafened) {
         super(api, responseNumber, member);
-        this.guildDeafened = member.getVoiceState().isGuildDeafened();
+        this.guildDeafened = guildDeafened;
     }
 
     /**
