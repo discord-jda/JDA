@@ -216,12 +216,13 @@ public class ComponentsV2Example extends ListenerAdapter {
                         Thumbnail.fromFile(getResourceAsFileUpload("/Prairie_ButterflyFields.jpg"))
                                 // Set an "alternative text", useful for accessibility
                                 .withDescription("Butterfly Fields"),
-                        // In Java 15+, you can use text blocks instead: https://www.baeldung.com/java-text-blocks
-                        TextDisplay.of(
-                                "The Butterfly Fields is a prairie field covered in bountiful fauna. In the fields, players once again find Butterflies that can help reach otherwise difficult to access places. The field contains gateways into three of Prairie's main locations: Prairie Village, Bird Nest - with a Spirit Gate requiring 4 Prairie Regular Spirits relived - and the Prairie Caves - with a Spirit Gate requiring 2 Isle Regular Spirits and 3 Prairie Regular Spirits relived. A Passage Mask can be found to the left side, near the cave with Prairie Child of Light #1, to light and do Passage Quest #4. For a new player, Village is the only available path.\n"
-                                        + "\n"
-                                        + "*Source: [Daylight_Prairie#Butterfly_Fields](https://sky-children-of-the-light.fandom.com/wiki/Daylight_Prairie#Butterfly_Fields)*\n")),
-                TextDisplay.of("-# Page 2/9"),
+                        TextDisplay.of("""
+                                        The Butterfly Fields is a prairie field covered in bountiful fauna. In the fields, players once again find Butterflies that can help reach otherwise difficult to access places. The field contains gateways into three of Prairie's main locations: Prairie Village, Bird Nest - with a Spirit Gate requiring 4 Prairie Regular Spirits relived - and the Prairie Caves - with a Spirit Gate requiring 2 Isle Regular Spirits and 3 Prairie Regular Spirits relived. A Passage Mask can be found to the left side, near the cave with Prairie Child of Light #1, to light and do Passage Quest #4. For a new player, Village is the only available path.
+
+                                        *Source: [Daylight_Prairie#Butterfly_Fields](https://sky-children-of-the-light.fandom.com/wiki/Daylight_Prairie#Butterfly_Fields)*
+                                        -# Page 2/9
+                                        """)),
+                TextDisplay.of(""),
                 Separator.createDivider(Separator.Spacing.SMALL),
                 ActionRow.of(
                         Button.secondary("previous", "⬅ Social Space"),
