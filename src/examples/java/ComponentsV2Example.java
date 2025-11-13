@@ -42,12 +42,13 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * An example on how to use components version 2.
@@ -113,20 +114,20 @@ import java.util.List;
  * @see MediaGallery
  * @see MediaGalleryItem
  */
-public class ComponentsV2Example extends ListenerAdapter
-{
+public class ComponentsV2Example extends ListenerAdapter {
     private static ApplicationEmoji backEmoji;
 
-    public static void main(String[] args) throws IOException
-    {
-        JDA jda = JDABuilder.createLight("YOUR_BOT_TOKEN_HERE", EnumSet.noneOf(GatewayIntent.class)) // slash commands don't need any intents
+    public static void main(String[] args) throws IOException {
+        JDA jda = JDABuilder.createLight("YOUR_BOT_TOKEN_HERE", EnumSet.noneOf(GatewayIntent.class))
                 .addEventListeners(new ComponentsV2Example())
                 .build();
 
-        final List<ApplicationEmoji> applicationEmojis = jda.retrieveApplicationEmojis().complete();
+        List<ApplicationEmoji> applicationEmojis =
+                jda.retrieveApplicationEmojis().complete();
         backEmoji = getOrCreateEmoji(jda, applicationEmojis, "/back.png");
 
-        // Send the new set of commands to Discord; this will override any existing global commands with the new set provided here
+        // Send the new set of commands to Discord;
+        // this will override any existing global commands with the new set provided here
         // You might need to reload your Discord client if you don't see the commands
         jda.updateCommands()
                 .addCommands(Commands.slash("components_v2_sample", "Yippie!"))
@@ -135,21 +136,18 @@ public class ComponentsV2Example extends ListenerAdapter
     }
 
     @Override
-    public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event)
-    {
-        switch (event.getName())
-        {
-        case "components_v2_sample":
-            onComponentsV2Sample(event);
-            break;
-        case "components_v2_butterfly":
-            onComponentsV2Butterfly(event);
-            break;
+    public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
+        switch (event.getName()) {
+            case "components_v2_sample":
+                onComponentsV2Sample(event);
+                break;
+            case "components_v2_butterfly":
+                onComponentsV2Butterfly(event);
+                break;
         }
     }
 
-    private static void onComponentsV2Sample(@Nonnull SlashCommandInteractionEvent event)
-    {
+    private static void onComponentsV2Sample(@Nonnull SlashCommandInteractionEvent event) {
         // A simple box; looks similar to an embed but...
         Container container = Container.of(
                 // Displays content on the left and an "accessory" on the right.
@@ -160,8 +158,7 @@ public class ComponentsV2Example extends ListenerAdapter
                         // The section's children
                         TextDisplay.of("## A container"),
                         TextDisplay.of("Quite different from embeds"),
-                        TextDisplay.of("-# You can even put small text")
-                ),
+                        TextDisplay.of("-# You can even put small text")),
 
                 // A separator; can be made invisible or be larger.
                 Separator.createDivider(Separator.Spacing.SMALL),
@@ -173,24 +170,25 @@ public class ComponentsV2Example extends ListenerAdapter
                         // For the sake of the example, this button will do nothing.
                         Button.danger("feature_disable:moderation", "Disable moderation"),
                         TextDisplay.of("**Moderation:** Moderates the messages"),
-                        TextDisplay.of("**Status:** Enabled")
-                ),
+                        TextDisplay.of("**Status:** Enabled")),
                 // A row of actionable components.
                 ActionRow.of(
-                        // For the sake of the example, this select menu will do nothing.
-                        StringSelectMenu.create("feature")
-                                .setPlaceholder("Select a module to configure")
-                                .addOption("Moderation", "moderation", "Configure the moderation module")
-                                .addOption("Fun", "fun", "Configure the fun module")
-                                .setDefaultValues("moderation")
-                                .build()
-                ).withUniqueId(42), // Set an identifier, this may be useful to specifically remove this action row later
+                                // For the sake of the example, this select menu will do nothing.
+                                StringSelectMenu.create("feature")
+                                        .setPlaceholder("Select a module to configure")
+                                        .addOption("Moderation", "moderation", "Configure the moderation module")
+                                        .addOption("Fun", "fun", "Configure the fun module")
+                                        .setDefaultValues("moderation")
+                                        .build())
+                        // Set an identifier, this may be useful to specifically remove this action row later
+                        .withUniqueId(42),
 
                 // Separate things a bit.
                 Separator.createDivider(Separator.Spacing.SMALL),
 
                 // Another text display, you are not limited per-component,
-                // there is only a character limit for the whole message (see [[Message#MAX_CONTENT_LENGTH_COMPONENT_V2]]).
+                // there is only a character limit for the whole message (see
+                // [[Message#MAX_CONTENT_LENGTH_COMPONENT_V2]]).
                 TextDisplay.of("Download the current configuration:"),
                 // Displays a simple download component, has no preview.
                 FileDisplay.fromFile(FileUpload.fromData("{}".getBytes(StandardCharsets.UTF_8), "config.json")),
@@ -198,10 +196,7 @@ public class ComponentsV2Example extends ListenerAdapter
                 // A set of pictures to display, display in a mosaic
                 // It can also take one item, in which case it will take the most horizontal space as possible,
                 // depending on the aspect ratio.
-                MediaGallery.of(
-                        MediaGalleryItem.fromFile(getResourceAsFileUpload("/docs.gif"))
-                )
-        );
+                MediaGallery.of(MediaGalleryItem.fromFile(getResourceAsFileUpload("/docs.gif"))));
 
         // No need to upload files here, it's taken care of automatically
         event.replyComponents(container)
@@ -211,45 +206,34 @@ public class ComponentsV2Example extends ListenerAdapter
                 .queue();
     }
 
-    private static void onComponentsV2Butterfly(@Nonnull SlashCommandInteractionEvent event)
-    {
+    private static void onComponentsV2Butterfly(@Nonnull SlashCommandInteractionEvent event) {
         Container container = Container.of(
                 TextDisplay.of("Summary of Daylight Prairie"),
-                TextDisplay.of("### [Butterfly Fields](https://sky-children-of-the-light.fandom.com/wiki/Daylight_Prairie#Butterfly_Fields)"),
-
+                TextDisplay.of(
+                        "### [Butterfly Fields](https://sky-children-of-the-light.fandom.com/wiki/Daylight_Prairie#Butterfly_Fields)"),
                 Separator.createDivider(Separator.Spacing.LARGE),
-
                 Section.of(
                         Thumbnail.fromFile(getResourceAsFileUpload("/Prairie_ButterflyFields.jpg"))
                                 // Set an "alternative text", useful for accessibility
                                 .withDescription("Butterfly Fields"),
                         // In Java 15+, you can use text blocks instead: https://www.baeldung.com/java-text-blocks
-                        TextDisplay.of("The Butterfly Fields is a prairie field covered in bountiful fauna. In the fields, players once again find Butterflies that can help reach otherwise difficult to access places. The field contains gateways into three of Prairie's main locations: Prairie Village, Bird Nest - with a Spirit Gate requiring 4 Prairie Regular Spirits relived - and the Prairie Caves - with a Spirit Gate requiring 2 Isle Regular Spirits and 3 Prairie Regular Spirits relived. A Passage Mask can be found to the left side, near the cave with Prairie Child of Light #1, to light and do Passage Quest #4. For a new player, Village is the only available path.\n" +
-                                "\n" +
-                                "*Source: [Daylight_Prairie#Butterfly_Fields](https://sky-children-of-the-light.fandom.com/wiki/Daylight_Prairie#Butterfly_Fields)*\n")
-                ),
+                        TextDisplay.of(
+                                "The Butterfly Fields is a prairie field covered in bountiful fauna. In the fields, players once again find Butterflies that can help reach otherwise difficult to access places. The field contains gateways into three of Prairie's main locations: Prairie Village, Bird Nest - with a Spirit Gate requiring 4 Prairie Regular Spirits relived - and the Prairie Caves - with a Spirit Gate requiring 2 Isle Regular Spirits and 3 Prairie Regular Spirits relived. A Passage Mask can be found to the left side, near the cave with Prairie Child of Light #1, to light and do Passage Quest #4. For a new player, Village is the only available path.\n"
+                                        + "\n"
+                                        + "*Source: [Daylight_Prairie#Butterfly_Fields](https://sky-children-of-the-light.fandom.com/wiki/Daylight_Prairie#Butterfly_Fields)*\n")),
                 TextDisplay.of("-# Page 2/9"),
-
                 Separator.createDivider(Separator.Spacing.SMALL),
-
                 ActionRow.of(
                         Button.secondary("previous", "⬅ Social Space"),
-                        Button.success("back", "Back")
-                                .withEmoji(backEmoji),
-                        Button.secondary("next", "Prairie Village ➡")
-                ),
-
+                        Button.success("back", "Back").withEmoji(backEmoji),
+                        Button.secondary("next", "Prairie Village ➡")),
                 Separator.createDivider(Separator.Spacing.SMALL),
-
-                ActionRow.of(
-                        StringSelectMenu.create("area")
-                                .addOption("Social Space", "social_space")
-                                .addOption("Butterfly Fields", "butterfly_fields")
-                                .addOption("Prairie Village", "prairie_village")
-                                .setDefaultValues("butterfly_fields")
-                                .build()
-                )
-        );
+                ActionRow.of(StringSelectMenu.create("area")
+                        .addOption("Social Space", "social_space")
+                        .addOption("Butterfly Fields", "butterfly_fields")
+                        .addOption("Prairie Village", "prairie_village")
+                        .setDefaultValues("butterfly_fields")
+                        .build()));
 
         // No need to upload files here, it's taken care of automatically
         event.replyComponents(container)
@@ -272,14 +256,14 @@ public class ComponentsV2Example extends ListenerAdapter
      * @return The {@link FileUpload} made from the resource
      */
     @Nonnull
-    private static FileUpload getResourceAsFileUpload(@Nonnull String path)
-    {
-        final int lastSeparatorIndex = path.lastIndexOf('/');
-        final String fileName = path.substring(lastSeparatorIndex + 1);
+    private static FileUpload getResourceAsFileUpload(@Nonnull String path) {
+        int lastSeparatorIndex = path.lastIndexOf('/');
+        String fileName = path.substring(lastSeparatorIndex + 1);
 
-        final InputStream stream = ComponentsV2Example.class.getResourceAsStream(path);
-        if (stream == null)
+        InputStream stream = ComponentsV2Example.class.getResourceAsStream(path);
+        if (stream == null) {
             throw new IllegalArgumentException("Could not find resource at: " + path);
+        }
 
         return FileUpload.fromData(stream, fileName);
     }
@@ -298,20 +282,22 @@ public class ComponentsV2Example extends ListenerAdapter
      * @return The {@link ApplicationEmoji}
      */
     @Nonnull
-    private static ApplicationEmoji getOrCreateEmoji(@Nonnull JDA jda, @Nonnull List<ApplicationEmoji> applicationEmojis, @Nonnull String path) throws IOException
-    {
-        final int lastSeparatorIndex = path.lastIndexOf('/');
-        final String fileName = path.substring(lastSeparatorIndex + 1);
+    private static ApplicationEmoji getOrCreateEmoji(
+            @Nonnull JDA jda, @Nonnull List<ApplicationEmoji> applicationEmojis, @Nonnull String path)
+            throws IOException {
+        int lastSeparatorIndex = path.lastIndexOf('/');
+        String fileName = path.substring(lastSeparatorIndex + 1);
 
-        final int extensionIndex = fileName.lastIndexOf('.');
-        final String fileNameWithoutExtension = fileName.substring(0, extensionIndex);
+        int extensionIndex = fileName.lastIndexOf('.');
+        String fileNameWithoutExtension = fileName.substring(0, extensionIndex);
 
-        for (ApplicationEmoji emoji : applicationEmojis)
-        {
-            if (emoji.getName().equals(fileNameWithoutExtension))
+        for (ApplicationEmoji emoji : applicationEmojis) {
+            if (emoji.getName().equals(fileNameWithoutExtension)) {
                 return emoji;
+            }
         }
-        return jda.createApplicationEmoji(fileNameWithoutExtension, getResourceAsIcon(path)).complete();
+        return jda.createApplicationEmoji(fileNameWithoutExtension, getResourceAsIcon(path))
+                .complete();
     }
 
     /**
@@ -326,11 +312,11 @@ public class ComponentsV2Example extends ListenerAdapter
      * @return The {@link Icon} made from the resource
      */
     @Nonnull
-    private static Icon getResourceAsIcon(@Nonnull String path) throws IOException
-    {
-        final InputStream stream = ComponentsV2Example.class.getResourceAsStream(path);
-        if (stream == null)
+    private static Icon getResourceAsIcon(@Nonnull String path) throws IOException {
+        InputStream stream = ComponentsV2Example.class.getResourceAsStream(path);
+        if (stream == null) {
             throw new IllegalArgumentException("Could not find resource at: " + path);
+        }
 
         return Icon.from(stream);
     }

@@ -224,7 +224,7 @@ rewrite {
     activeRecipe("org.openrewrite.staticanalysis.NoFinalizedLocalVariables")
     activeRecipe("net.dv8tion.jda.recipe.JavadocFormatter")
 
-    exclusion("**/examples/**", "*.kts", "**/*.kts", "**/*.kt")
+    exclusion("*.kts", "**/*.kts", "**/*.kt")
 }
 
 spotless {
@@ -244,7 +244,7 @@ spotless {
 
         licenseHeaderFile("spotless/licence-header.txt")
 
-        target("src/main/**/*.java", "src/test/**/*.java")
+        target("src/**/*.java")
 
         removeUnusedImports()
         importOrder("",  "java", "javax", "\\#")
