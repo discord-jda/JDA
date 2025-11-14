@@ -23,18 +23,19 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Role Role}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("Administrator")
  *        .setColor(null)
  *        .queue();
@@ -42,24 +43,23 @@ import java.util.Collection;
  *        .setName("Traitor")
  *        .setColor(Color.RED)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see net.dv8tion.jda.api.entities.Role#getManager()
  */
-public interface RoleManager extends Manager<RoleManager>
-{
+public interface RoleManager extends Manager<RoleManager> {
     /** Used to reset the name field */
-    long NAME        = 1;
+    long NAME = 1;
     /** Used to reset the color field */
-    long COLOR       = 1 << 1;
+    long COLOR = 1 << 1;
     /** Used to reset the permission field */
-    long PERMISSION  = 1 << 2;
+    long PERMISSION = 1 << 2;
     /** Used to reset the hoisted field */
-    long HOIST       = 1 << 3;
+    long HOIST = 1 << 3;
     /** Used to reset the mentionable field */
     long MENTIONABLE = 1 << 4;
     /** Used to reset the icon field */
-    long ICON        = 1 << 5;
+    long ICON = 1 << 5;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -127,8 +127,7 @@ public interface RoleManager extends Manager<RoleManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getRole().getGuild();
     }
 
@@ -192,8 +191,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setPermissions(@Nonnull Permission... permissions)
-    {
+    default RoleManager setPermissions(@Nonnull Permission... permissions) {
         Checks.notNull(permissions, "Permissions");
         return setPermissions(Arrays.asList(permissions));
     }
@@ -221,8 +219,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setPermissions(@Nonnull Collection<Permission> permissions)
-    {
+    default RoleManager setPermissions(@Nonnull Collection<Permission> permissions) {
         Checks.noneNull(permissions, "Permissions");
         return setPermissions(Permission.getRaw(permissions));
     }
@@ -237,8 +234,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setColor(@Nullable Color color)
-    {
+    default RoleManager setColor(@Nullable Color color) {
         return setColor(color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB());
     }
 
@@ -320,8 +316,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setIcon(@Nullable UnicodeEmoji emoji)
-    {
+    default RoleManager setIcon(@Nullable UnicodeEmoji emoji) {
         return setIcon(emoji == null ? null : emoji.getFormatted());
     }
 
@@ -345,8 +340,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager givePermissions(@Nonnull Permission... perms)
-    {
+    default RoleManager givePermissions(@Nonnull Permission... perms) {
         Checks.notNull(perms, "Permissions");
         return givePermissions(Arrays.asList(perms));
     }
@@ -394,8 +388,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager revokePermissions(@Nonnull Permission... perms)
-    {
+    default RoleManager revokePermissions(@Nonnull Permission... perms) {
         Checks.notNull(perms, "Permissions");
         return revokePermissions(Arrays.asList(perms));
     }

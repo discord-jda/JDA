@@ -39,12 +39,10 @@ import javax.annotation.Nullable;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdateGlobalNameEvent extends GenericUserUpdateEvent<String>
-{
+public class UserUpdateGlobalNameEvent extends GenericUserUpdateEvent<String> {
     public static final String IDENTIFIER = "global_name";
 
-    public UserUpdateGlobalNameEvent(JDA api, long responseNumber, User user, String oldName)
-    {
+    public UserUpdateGlobalNameEvent(JDA api, long responseNumber, User user, String oldName) {
         super(api, responseNumber, user, oldName, user.getGlobalName(), IDENTIFIER);
     }
 
@@ -54,8 +52,7 @@ public class UserUpdateGlobalNameEvent extends GenericUserUpdateEvent<String>
      * @return The old global name
      */
     @Nullable
-    public String getOldGlobalName()
-    {
+    public String getOldGlobalName() {
         return getOldValue();
     }
 
@@ -65,14 +62,12 @@ public class UserUpdateGlobalNameEvent extends GenericUserUpdateEvent<String>
      * @return The new global name
      */
     @Nullable
-    public String getNewGlobalName()
-    {
+    public String getNewGlobalName() {
         return getNewValue();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "UserUpdateGlobalName(" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

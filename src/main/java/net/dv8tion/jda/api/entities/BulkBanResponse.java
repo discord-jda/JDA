@@ -16,10 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Response to {@link Guild#ban(java.util.Collection, Duration)}
@@ -27,13 +28,11 @@ import java.util.List;
  * <p>This response includes a list of successfully banned users and users which could not be banned.
  * Discord might fail to ban a user due to permission issues or an internal server error.
  */
-public class BulkBanResponse
-{
+public class BulkBanResponse {
     private final List<UserSnowflake> bannedUsers;
     private final List<UserSnowflake> failedUsers;
 
-    public BulkBanResponse(@Nonnull List<UserSnowflake> bannedUsers, @Nonnull List<UserSnowflake> failedUsers)
-    {
+    public BulkBanResponse(@Nonnull List<UserSnowflake> bannedUsers, @Nonnull List<UserSnowflake> failedUsers) {
         this.bannedUsers = Collections.unmodifiableList(bannedUsers);
         this.failedUsers = Collections.unmodifiableList(failedUsers);
     }
@@ -44,8 +43,7 @@ public class BulkBanResponse
      * @return {@link List} of {@link UserSnowflake}
      */
     @Nonnull
-    public List<UserSnowflake> getBannedUsers()
-    {
+    public List<UserSnowflake> getBannedUsers() {
         return bannedUsers;
     }
 
@@ -55,8 +53,7 @@ public class BulkBanResponse
      * @return {@link List} of {@link UserSnowflake}
      */
     @Nonnull
-    public List<UserSnowflake> getFailedUsers()
-    {
+    public List<UserSnowflake> getFailedUsers() {
         return failedUsers;
     }
 }

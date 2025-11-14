@@ -31,16 +31,14 @@ import javax.annotation.Nonnull;
  * @see    TextInput
  * @see    Modal
  */
-public enum TextInputStyle
-{
+public enum TextInputStyle {
     UNKNOWN(-1),
     SHORT(1),
     PARAGRAPH(2);
 
     private final int key;
 
-    TextInputStyle(int type)
-    {
+    TextInputStyle(int type) {
         this.key = type;
     }
 
@@ -51,8 +49,7 @@ public enum TextInputStyle
      *
      * @return The raw int key
      */
-    public int getRaw()
-    {
+    public int getRaw() {
         return key;
     }
 
@@ -66,12 +63,11 @@ public enum TextInputStyle
      * @return The text input style or {@link #UNKNOWN}
      */
     @Nonnull
-    public static TextInputStyle fromKey(int key)
-    {
-        for (TextInputStyle style : values())
-        {
-            if (style.key == key)
+    public static TextInputStyle fromKey(int key) {
+        for (TextInputStyle style : values()) {
+            if (style.key == key) {
                 return style;
+            }
         }
         return UNKNOWN;
     }

@@ -22,40 +22,34 @@ import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-public class InviteDeleteHandler extends SocketHandler
-{
-    public InviteDeleteHandler(JDAImpl api)
-    {
+public class InviteDeleteHandler extends SocketHandler {
+    public InviteDeleteHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
         Guild guild = getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
+        if (guild == null) {
             EventCache.LOG.debug("Caching INVITE_DELETE for unknown guild {}", guildId);
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
         long channelId = content.getUnsignedLong("channel_id");
         GuildChannel channel = guild.getGuildChannelById(channelId);
-        if (channel == null)
-        {
+        if (channel == null) {
             EventCache.LOG.debug("Caching INVITE_DELETE for unknown channel {} in guild {}", channelId, guildId);
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+            getJDA().getEventCache()
+                    .cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             return null;
         }
 
         String code = content.getString("code");
-        getJDA().handleEvent(
-            new GuildInviteDeleteEvent(
-                getJDA(), responseNumber,
-                code, channel));
+        getJDA().handleEvent(new GuildInviteDeleteEvent(getJDA(), responseNumber, code, channel));
         return null;
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
@@ -39,12 +40,14 @@ import javax.annotation.Nonnull;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateStatusEvent extends GenericScheduledEventUpdateEvent<ScheduledEvent.Status>
-{
+public class ScheduledEventUpdateStatusEvent extends GenericScheduledEventUpdateEvent<ScheduledEvent.Status> {
     public static final String IDENTIFIER = "status";
 
-    public ScheduledEventUpdateStatusEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull ScheduledEvent.Status previous)
-    {
+    public ScheduledEventUpdateStatusEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull ScheduledEvent scheduledEvent,
+            @Nonnull ScheduledEvent.Status previous) {
         super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getStatus(), IDENTIFIER);
     }
 
@@ -54,8 +57,7 @@ public class ScheduledEventUpdateStatusEvent extends GenericScheduledEventUpdate
      * @return The old status
      */
     @Nonnull
-    public ScheduledEvent.Status getOldStatus()
-    {
+    public ScheduledEvent.Status getOldStatus() {
         return getOldValue();
     }
 
@@ -65,22 +67,19 @@ public class ScheduledEventUpdateStatusEvent extends GenericScheduledEventUpdate
      * @return The new status
      */
     @Nonnull
-    public ScheduledEvent.Status getNewStatus()
-    {
+    public ScheduledEvent.Status getNewStatus() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public ScheduledEvent.Status getOldValue()
-    {
+    public ScheduledEvent.Status getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public ScheduledEvent.Status getNewValue()
-    {
+    public ScheduledEvent.Status getNewValue() {
         return super.getNewValue();
     }
 }

@@ -24,33 +24,30 @@ import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import static net.dv8tion.jda.internal.entities.EntityBuilder.DEFAULT_COMPONENT_DESERIALIZER;
 
-public class ModalImpl implements Modal
-{
+public class ModalImpl implements Modal {
     private final String id;
     private final String title;
     private final List<ModalTopLevelComponentUnion> components;
 
-    public ModalImpl(DataObject object)
-    {
+    public ModalImpl(DataObject object) {
         this.id = object.getString("custom_id");
         this.title = object.getString("title");
         this.components = object.optArray("components")
-                .map(arr ->
-                        DEFAULT_COMPONENT_DESERIALIZER
-                            .deserializeAs(ModalTopLevelComponentUnion.class, arr)
-                            .collect(Helpers.toUnmodifiableList()))
+                .map(arr -> DEFAULT_COMPONENT_DESERIALIZER
+                        .deserializeAs(ModalTopLevelComponentUnion.class, arr)
+                        .collect(Helpers.toUnmodifiableList()))
                 .orElseGet(Collections::emptyList);
     }
 
-    public ModalImpl(String id, String title, List<ModalTopLevelComponentUnion> components)
-    {
+    public ModalImpl(String id, String title, List<ModalTopLevelComponentUnion> components) {
         this.id = id;
         this.title = title;
         this.components = Collections.unmodifiableList(components);
@@ -58,43 +55,38 @@ public class ModalImpl implements Modal
 
     @Nonnull
     @Override
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
     @Nonnull
     @Override
-    public String getTitle()
-    {
+    public String getTitle() {
         return title;
     }
 
     @Nonnull
     @Override
-    public List<ModalTopLevelComponentUnion> getComponents()
-    {
+    public List<ModalTopLevelComponentUnion> getComponents() {
         return components;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        DataObject object = DataObject.empty()
-                .put("custom_id", id)
-                .put("title", title);
+    public DataObject toData() {
+        DataObject object = DataObject.empty().put("custom_id", id).put("title", title);
 
-        object.put("components", DataArray.fromCollection(components.stream()
-                .map(AbstractComponentImpl.class::cast)
-                .map(AbstractComponentImpl::toData)
-                .collect(Collectors.toList())));
+        object.put(
+                "components",
+                DataArray.fromCollection(components.stream()
+                        .map(AbstractComponentImpl.class::cast)
+                        .map(AbstractComponentImpl::toData)
+                        .collect(Collectors.toList())));
         return object;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("id", id)
                 .addMetadata("title", title)

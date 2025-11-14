@@ -21,18 +21,19 @@ import net.dv8tion.jda.api.entities.GuildWelcomeScreen;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link GuildWelcomeScreen}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setEnabled(false)
  *        .setDescription(null)
  *        .setWelcomeChannels()
@@ -44,18 +45,17 @@ import java.util.List;
  *                GuildWelcomeScreen.Channel.of(generalChannel, "Go have a chat", Emoji.fromUnicode("U+1F4AC"))
  *        ))
  *        .queue();
- * }</pre>
+ * }
  *
  * @see Guild#modifyWelcomeScreen()
  */
-public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenManager>
-{
+public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenManager> {
     /** Used to reset the enabled field */
-    long ENABLED     = 1;
+    long ENABLED = 1;
     /** Used to reset the description field */
     long DESCRIPTION = 1 << 1;
     /** Used to reset the channels field */
-    long CHANNELS    = 1 << 2;
+    long CHANNELS = 1 << 2;
 
     /**
      * The {@link Guild} this Manager's {@link GuildWelcomeScreen} is in.
@@ -198,8 +198,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      */
     @Nonnull
     @CheckReturnValue
-    default GuildWelcomeScreenManager setWelcomeChannels(@Nonnull GuildWelcomeScreen.Channel... channels)
-    {
+    default GuildWelcomeScreenManager setWelcomeChannels(@Nonnull GuildWelcomeScreen.Channel... channels) {
         Checks.notNull(channels, "Welcome channels");
         return setWelcomeChannels(Arrays.asList(channels));
     }

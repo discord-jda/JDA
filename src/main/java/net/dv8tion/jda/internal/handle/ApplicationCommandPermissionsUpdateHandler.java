@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,47 +28,47 @@ import net.dv8tion.jda.internal.requests.WebSocketClient;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler
-{
-    public ApplicationCommandPermissionsUpdateHandler(JDAImpl api)
-    {
+public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler {
+    public ApplicationCommandPermissionsUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         Guild guild;
-        if (!content.isNull("guild_id"))
-        {
+        if (!content.isNull("guild_id")) {
             long guildId = content.getUnsignedLong("guild_id");
             guild = getJDA().getGuildById(guildId);
-            if (getJDA().getGuildSetupController().isLocked(guildId))
+            if (getJDA().getGuildSetupController().isLocked(guildId)) {
                 return guildId;
-            else if (guild == null)
-            {
-                WebSocketClient.LOG.debug("Received APPLICATION_COMMAND_PERMISSIONS_UPDATE for a guild that is not cached: GuildID: {}", guildId);
+            } else if (guild == null) {
+                WebSocketClient.LOG.debug(
+                        "Received APPLICATION_COMMAND_PERMISSIONS_UPDATE for a guild that is not cached: GuildID: {}",
+                        guildId);
                 return null;
             }
-        }
-        else
-        {
+        } else {
             return null;
         }
 
         long id = content.getUnsignedLong("id");
         long applicationId = content.getUnsignedLong("application_id");
 
-        List<IntegrationPrivilege> privileges = content.getArray("permissions")
-                .stream(DataArray::getObject)
-                .map(obj -> new IntegrationPrivilege(guild, IntegrationPrivilege.Type.fromKey(obj.getInt("type")),
-                        obj.getBoolean("permission"), obj.getUnsignedLong("id")))
+        List<IntegrationPrivilege> privileges = content.getArray("permissions").stream(DataArray::getObject)
+                .map(obj -> new IntegrationPrivilege(
+                        guild,
+                        IntegrationPrivilege.Type.fromKey(obj.getInt("type")),
+                        obj.getBoolean("permission"),
+                        obj.getUnsignedLong("id")))
                 .collect(Collectors.toList());
 
-        if (id != applicationId)
-            api.handleEvent(new ApplicationCommandUpdatePrivilegesEvent(api, responseNumber, guild, id, applicationId, privileges));
-        else
-            api.handleEvent(new ApplicationUpdatePrivilegesEvent(api, responseNumber, guild, applicationId, privileges));
+        if (id != applicationId) {
+            api.handleEvent(new ApplicationCommandUpdatePrivilegesEvent(
+                    api, responseNumber, guild, id, applicationId, privileges));
+        } else {
+            api.handleEvent(
+                    new ApplicationUpdatePrivilegesEvent(api, responseNumber, guild, applicationId, privileges));
+        }
         return null;
     }
 }

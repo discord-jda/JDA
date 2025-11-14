@@ -28,13 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code gateway-ping}
  */
-public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
-{
+public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long> {
     public static final String IDENTIFIER = "gateway-ping";
     private final long next, prev;
 
-    public GatewayPingEvent(@Nonnull JDA api, long old)
-    {
+    public GatewayPingEvent(@Nonnull JDA api, long old) {
         super(api);
         this.next = api.getGatewayPing();
         this.prev = old;
@@ -45,8 +43,7 @@ public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
      *
      * @return The new ping in milliseconds
      */
-    public long getNewPing()
-    {
+    public long getNewPing() {
         return next;
     }
 
@@ -55,36 +52,31 @@ public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
      *
      * @return The previous ping in milliseconds, or -1 if no ping was available yet
      */
-    public long getOldPing()
-    {
+    public long getOldPing() {
         return prev;
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return IDENTIFIER;
     }
 
     @Nonnull
     @Override
-    public JDA getEntity()
-    {
+    public JDA getEntity() {
         return getJDA();
     }
 
     @Nonnull
     @Override
-    public Long getOldValue()
-    {
+    public Long getOldValue() {
         return prev;
     }
 
     @Nonnull
     @Override
-    public Long getNewValue()
-    {
+    public Long getNewValue() {
         return next;
     }
 }

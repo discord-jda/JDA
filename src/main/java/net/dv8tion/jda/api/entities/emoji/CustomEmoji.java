@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-import javax.annotation.Nonnull;
 import java.util.Formatter;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents a minimal custom emoji.
@@ -36,8 +37,7 @@ import java.util.Formatter;
  * @see Emoji#fromFormatted(String)
  * @see Emoji#fromData(DataObject)
  */
-public interface CustomEmoji extends Emoji, IMentionable
-{
+public interface CustomEmoji extends Emoji, IMentionable {
     int EMOJI_NAME_MAX_LENGTH = 32;
 
     /** Template for {@link #getImageUrl()} */
@@ -45,8 +45,7 @@ public interface CustomEmoji extends Emoji, IMentionable
 
     @Nonnull
     @Override
-    default Type getType()
-    {
+    default Type getType() {
         return Type.CUSTOM;
     }
 
@@ -64,8 +63,7 @@ public interface CustomEmoji extends Emoji, IMentionable
      * @return Discord CDN link to the emoji's image
      */
     @Nonnull
-    default String getImageUrl()
-    {
+    default String getImageUrl() {
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
 
@@ -77,8 +75,7 @@ public interface CustomEmoji extends Emoji, IMentionable
      * @see    #getImageUrl()
      */
     @Nonnull
-    default ImageProxy getImage()
-    {
+    default ImageProxy getImage() {
         return new ImageProxy(getImageUrl());
     }
 
@@ -92,21 +89,18 @@ public interface CustomEmoji extends Emoji, IMentionable
      */
     @Nonnull
     @Override
-    default String getAsMention()
-    {
+    default String getAsMention() {
         return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getId() + ">";
     }
 
     @Nonnull
     @Override
-    default String getFormatted()
-    {
+    default String getFormatted() {
         return getAsMention();
     }
 
     @Override
-    default void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
+    default void formatTo(Formatter formatter, int flags, int width, int precision) {
         Emoji.super.formatTo(formatter, flags, width, precision);
     }
 }

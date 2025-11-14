@@ -21,13 +21,14 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nonnull;
 
 /**
  * Implementation of {@link SessionController} which respects concurrent shard login.
@@ -45,134 +46,119 @@ import java.util.concurrent.TimeUnit;
  * However, it is rather unlikely to be an issue in most cases. The only time where 64 threads would actually be used
  * is during the initial startup. During runtime its not common for all shards to reconnect at once.
  */
-public class ConcurrentSessionController extends SessionControllerAdapter implements SessionController
-{
+public class ConcurrentSessionController extends SessionControllerAdapter implements SessionController {
     private Worker[] workers = new Worker[1];
 
     @Override
-    public void setConcurrency(int level)
-    {
+    public void setConcurrency(int level) {
         // assertions are ignored at runtime by default, this is a sanity check
         assert level > 0 && level < Integer.MAX_VALUE;
         workers = new Worker[level];
     }
 
     @Override
-    public void appendSession(@Nonnull SessionConnectNode node)
-    {
+    public void appendSession(@Nonnull SessionConnectNode node) {
         getWorker(node).enqueue(node);
     }
 
     @Override
-    public void removeSession(@Nonnull SessionConnectNode node)
-    {
+    public void removeSession(@Nonnull SessionConnectNode node) {
         getWorker(node).dequeue(node);
     }
 
-    private synchronized Worker getWorker(SessionConnectNode node)
-    {
+    private synchronized Worker getWorker(SessionConnectNode node) {
         // get or create worker (synchronously since this should be thread-safe)
         int i = node.getShardInfo().getShardId() % workers.length;
         Worker worker = workers[i];
-        if (worker == null)
-        {
+        if (worker == null) {
             log.debug("Creating new worker handle for shard pool {}", i);
             workers[i] = worker = new Worker(i);
         }
         return worker;
     }
 
-    private static class Worker implements Runnable
-    {
+    private static class Worker implements Runnable {
         private final Queue<SessionConnectNode> queue = new ConcurrentLinkedQueue<>();
         private final int id;
         private Thread thread;
 
-        public Worker(int id)
-        {
+        public Worker(int id) {
             this.id = id;
         }
 
-        public synchronized void start()
-        {
-            if (thread == null)
-            {
+        public synchronized void start() {
+            if (thread == null) {
                 thread = new Thread(this, "ConcurrentSessionController-Worker-" + id);
                 log.debug("Running worker");
                 thread.start();
             }
         }
 
-        public synchronized void stop()
-        {
+        public synchronized void stop() {
             thread = null;
-            if (!queue.isEmpty())
+            if (!queue.isEmpty()) {
                 start();
+            }
         }
 
-        public void enqueue(@Nonnull SessionConnectNode node)
-        {
+        public void enqueue(@Nonnull SessionConnectNode node) {
             log.trace("Appending node to queue {}", node.getShardInfo());
             queue.add(node);
             start();
         }
 
-        public void dequeue(@Nonnull SessionConnectNode node)
-        {
+        public void dequeue(@Nonnull SessionConnectNode node) {
             log.trace("Removing node from queue {}", node.getShardInfo());
             queue.remove(node);
         }
 
         @Override
-        public void run()
-        {
-            try
-            {
-                while (!queue.isEmpty())
-                {
+        public void run() {
+            try {
+                while (!queue.isEmpty()) {
                     processQueue();
-                    // We always sleep here because its possible that we get a new session request before the rate limit expires
+                    // We always sleep here because its possible
+                    // that we get a new session request before the rate limit expires
                     TimeUnit.SECONDS.sleep(SessionController.IDENTIFY_DELAY);
                 }
-            }
-            catch (InterruptedException ex)
-            {
+            } catch (InterruptedException ex) {
                 log.error("Worker failed to process queue", ex);
-            }
-            finally
-            {
+            } finally {
                 stop();
             }
         }
 
-        private void processQueue() throws InterruptedException
-        {
+        private void processQueue() throws InterruptedException {
             SessionConnectNode node = null;
-            try
-            {
+            try {
                 node = queue.remove();
                 log.debug("Running connect node for shard {}", node.getShardInfo());
-                node.run(false); // we don't use isLast anymore because it can be a problem with many reconnecting shards
-            }
-            catch (NoSuchElementException ignored) {/* This means the node was removed before we started it */}
-            catch (InterruptedException e)
-            {
+                // we don't use isLast anymore
+                // because it can be a problem with many reconnecting shards
+                node.run(false);
+            } catch (NoSuchElementException ignored) {
+                /* This means the node was removed before we started it */
+            } catch (InterruptedException e) {
                 queue.add(node);
                 throw e;
-            }
-            catch (IllegalStateException | ErrorResponseException e)
-            {
-                if (Helpers.hasCause(e, OpeningHandshakeException.class))
+            } catch (IllegalStateException | ErrorResponseException e) {
+                if (Helpers.hasCause(e, OpeningHandshakeException.class)) {
                     log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
-                else if (e instanceof ErrorResponseException && e.getCause() instanceof IOException) { /* This is already logged by the Requester */ }
-                else if (Helpers.hasCause(e, UnknownHostException.class))
+                } else if (e instanceof ErrorResponseException && e.getCause() instanceof IOException) {
+                    /* This is already logged by the Requester */
+                } else if (Helpers.hasCause(e, UnknownHostException.class)) {
                     log.error("DNS resolution failed: {}", e.getMessage());
-                else if (e.getCause() != null && !JDA.Status.RECONNECT_QUEUED.name().equals(e.getCause().getMessage()))
+                } else if (e.getCause() != null
+                        && !JDA.Status.RECONNECT_QUEUED
+                                .name()
+                                .equals(e.getCause().getMessage())) {
                     log.error("Failed to establish connection for a node, appending to queue", e);
-                else
+                } else {
                     log.error("Unexpected exception when running connect node", e);
-                if (node != null)
+                }
+                if (node != null) {
                     queue.add(node);
+                }
             }
         }
     }

@@ -40,14 +40,13 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_POLLS DIRECT_MESSAGE_POLLS} to work in private channels</li>
  * </ul>
  */
-public class GenericMessagePollVoteEvent extends GenericMessageEvent
-{
+public class GenericMessagePollVoteEvent extends GenericMessageEvent {
     protected final long userId;
     protected final long messageId;
     protected final long answerId;
 
-    public GenericMessagePollVoteEvent(@Nonnull MessageChannel channel, long responseNumber, long messageId, long userId, long answerId)
-    {
+    public GenericMessagePollVoteEvent(
+            @Nonnull MessageChannel channel, long responseNumber, long messageId, long userId, long answerId) {
         super(channel.getJDA(), responseNumber, messageId, channel);
         this.userId = userId;
         this.messageId = messageId;
@@ -60,8 +59,7 @@ public class GenericMessagePollVoteEvent extends GenericMessageEvent
      * @return The user id
      */
     @Nonnull
-    public String getUserId()
-    {
+    public String getUserId() {
         return Long.toUnsignedString(userId);
     }
 
@@ -70,8 +68,7 @@ public class GenericMessagePollVoteEvent extends GenericMessageEvent
      *
      * @return The user id
      */
-    public long getUserIdLong()
-    {
+    public long getUserIdLong() {
         return userId;
     }
 
@@ -81,8 +78,7 @@ public class GenericMessagePollVoteEvent extends GenericMessageEvent
      *
      * @return The answer id
      */
-    public long getAnswerId()
-    {
+    public long getAnswerId() {
         return answerId;
     }
 
@@ -93,8 +89,7 @@ public class GenericMessagePollVoteEvent extends GenericMessageEvent
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<User> retrieveUser()
-    {
+    public RestAction<User> retrieveUser() {
         return getJDA().retrieveUserById(getUserIdLong());
     }
 
@@ -112,10 +107,10 @@ public class GenericMessagePollVoteEvent extends GenericMessageEvent
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Member> retrieveMember()
-    {
-        if (!getChannel().getType().isGuild())
+    public RestAction<Member> retrieveMember() {
+        if (!getChannel().getType().isGuild()) {
             throw new IllegalStateException("Cannot retrieve member for a vote that happened outside of a guild");
+        }
         return getGuild().retrieveMemberById(getUserIdLong());
     }
 
@@ -130,8 +125,7 @@ public class GenericMessagePollVoteEvent extends GenericMessageEvent
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Message> retrieveMessage()
-    {
+    public RestAction<Message> retrieveMessage() {
         return getChannel().retrieveMessageById(getMessageId());
     }
 }

@@ -42,14 +42,14 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.EnumSet;
 import java.util.Objects;
 
-public class RoleImpl implements Role, RoleMixin<RoleImpl>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     private final long id;
     private final JDAImpl api;
     private Guild guild;
@@ -65,232 +65,223 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
     private int frozenPosition = Integer.MIN_VALUE; // this is used exclusively for delete events
     private RoleIcon icon;
 
-    public RoleImpl(long id, Guild guild)
-    {
+    public RoleImpl(long id, Guild guild) {
         this.id = id;
-        this.api =(JDAImpl) guild.getJDA();
+        this.api = (JDAImpl) guild.getJDA();
         this.guild = guild;
         this.tags = api.isCacheFlagSet(CacheFlag.ROLE_TAGS) ? new RoleTagsImpl() : null;
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return false;
     }
 
     @Override
-    public int getPosition()
-    {
-        if (frozenPosition > Integer.MIN_VALUE)
+    public int getPosition() {
+        if (frozenPosition > Integer.MIN_VALUE) {
             return frozenPosition;
+        }
         Guild guild = getGuild();
-        if (equals(guild.getPublicRole()))
+        if (equals(guild.getPublicRole())) {
             return -1;
+        }
 
-        //Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
+        // Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
         int i = guild.getRoles().size() - 2;
-        for (Role r : guild.getRoles())
-        {
-            if (equals(r))
+        for (Role r : guild.getRoles()) {
+            if (equals(r)) {
                 return i;
+            }
             i--;
         }
-        throw new IllegalStateException("Somehow when determining position we never found the role in the Guild's roles? wtf?");
+        throw new IllegalStateException(
+                "Somehow when determining position we never found the role in the Guild's roles? wtf?");
     }
 
     @Override
-    public int getPositionRaw()
-    {
+    public int getPositionRaw() {
         return rawPosition;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public boolean isManaged()
-    {
+    public boolean isManaged() {
         return managed;
     }
 
     @Override
-    public boolean isHoisted()
-    {
+    public boolean isHoisted() {
         return hoisted;
     }
 
     @Override
-    public boolean isMentionable()
-    {
+    public boolean isMentionable() {
         return mentionable;
     }
 
     @Override
-    public long getPermissionsRaw()
-    {
+    public long getPermissionsRaw() {
         return rawPermissions;
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions()
-    {
+    public EnumSet<Permission> getPermissions() {
         return Permission.getPermissions(rawPermissions);
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
-    {
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel) {
         return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit()
-    {
+    public EnumSet<Permission> getPermissionsExplicit() {
         return getPermissions();
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
-    {
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel) {
         return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
     }
 
     @Override
-    public Color getColor()
-    {
+    public Color getColor() {
         return color != Role.DEFAULT_COLOR_RAW ? new Color(color) : null;
     }
 
     @Override
-    public int getColorRaw()
-    {
+    public int getColorRaw() {
         return color;
     }
 
     @Override
-    public boolean isPublicRole()
-    {
+    public boolean isPublicRole() {
         return this.equals(this.getGuild().getPublicRole());
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Permission... permissions)
-    {
+    public boolean hasPermission(@Nonnull Permission... permissions) {
         long effectivePerms = rawPermissions | getGuild().getPublicRole().getPermissionsRaw();
-        for (Permission perm : permissions)
-        {
-            final long rawValue = perm.getRawValue();
-            if ((effectivePerms & rawValue) != rawValue)
+        for (Permission perm : permissions) {
+            long rawValue = perm.getRawValue();
+            if ((effectivePerms & rawValue) != rawValue) {
                 return false;
+            }
         }
         return true;
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
-    {
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
         long effectivePerms = PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
-        for (Permission perm : permissions)
-        {
-            final long rawValue = perm.getRawValue();
-            if ((effectivePerms & rawValue) != rawValue)
+        for (Permission perm : permissions) {
+            long rawValue = perm.getRawValue();
+            if ((effectivePerms & rawValue) != rawValue) {
                 return false;
+            }
         }
         return true;
     }
 
     @Override
-    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource)
-    {
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
         Checks.check(targetChannel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         Checks.check(syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long rolePerms = PermissionUtil.getEffectivePermission(targetChannel, this);
-        if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+        if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // Role can't manage permissions at all!
-
+        }
         long channelPermissions = PermissionUtil.getExplicitPermission(targetChannel, this, false);
-        // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other permission on the channel
-        boolean hasLocalAdmin = ((rolePerms & Permission.ADMINISTRATOR.getRawValue()) | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue())) != 0;
-        if (hasLocalAdmin)
+        // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS
+        // then it can also set any other permission on the channel
+        boolean hasLocalAdmin = ((rolePerms & Permission.ADMINISTRATOR.getRawValue())
+                        | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
+                != 0;
+        if (hasLocalAdmin) {
             return true;
+        }
 
-        TLongObjectMap<PermissionOverride> existingOverrides = ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
-        for (PermissionOverride override : syncSource.getPermissionOverrides())
-        {
+        TLongObjectMap<PermissionOverride> existingOverrides =
+                ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
+        for (PermissionOverride override : syncSource.getPermissionOverrides()) {
             PermissionOverride existing = existingOverrides.get(override.getIdLong());
             long allow = override.getAllowedRaw();
             long deny = override.getDeniedRaw();
-            if (existing != null)
-            {
+            if (existing != null) {
                 allow ^= existing.getAllowedRaw();
                 deny ^= existing.getDeniedRaw();
             }
-            // If any permissions changed that the role doesn't have in the channel, the role can't sync it :(
-            if (((allow | deny) & ~rolePerms) != 0)
+            // If any permissions changed that the role doesn't have in the channel,
+            // the role can't sync it :(
+            if (((allow | deny) & ~rolePerms) != 0) {
                 return false;
+            }
         }
         return true;
     }
 
     @Override
-    public boolean canSync(@Nonnull IPermissionContainer channel)
-    {
+    public boolean canSync(@Nonnull IPermissionContainer channel) {
         Checks.notNull(channel, "Channel");
         Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long rolePerms = PermissionUtil.getEffectivePermission(channel, this);
-        if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+        if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) {
             return false; // Role can't manage permissions at all!
-
+        }
         long channelPermissions = PermissionUtil.getExplicitPermission(channel, this, false);
-        // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other permission on the channel
-        return ((rolePerms & Permission.ADMINISTRATOR.getRawValue()) | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue())) != 0;
+        // If the role has ADMINISTRATOR or MANAGE_PERMISSIONS
+        // then it can also set any other permission on the channel
+        return ((rolePerms & Permission.ADMINISTRATOR.getRawValue())
+                        | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()))
+                != 0;
     }
 
     @Override
-    public boolean canInteract(@Nonnull Role role)
-    {
+    public boolean canInteract(@Nonnull Role role) {
         return PermissionUtil.canInteract(this, role);
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         Guild realGuild = api.getGuildById(guild.getIdLong());
-        if (realGuild != null)
+        if (realGuild != null) {
             guild = realGuild;
+        }
         return guild;
     }
 
     @Nonnull
     @Override
-    public RoleManager getManager()
-    {
+    public RoleManager getManager() {
         return new RoleManagerImpl(this);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
-    {
+    public AuditableRestAction<Void> delete() {
         Guild guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
-        if(!PermissionUtil.canInteract(guild.getSelfMember(), this))
+        }
+        if (!PermissionUtil.canInteract(guild.getSelfMember(), this)) {
             throw new HierarchyException("Can't delete role >= highest self-role");
-        if (managed)
+        }
+        if (managed) {
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
+        }
 
         Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -298,139 +289,122 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public RoleTags getTags()
-    {
+    public RoleTags getTags() {
         return tags == null ? RoleTagsImpl.EMPTY : tags;
     }
 
     @Nullable
     @Override
-    public RoleIcon getIcon()
-    {
+    public RoleIcon getIcon() {
         return icon;
     }
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
+    public String getAsMention() {
         return isPublicRole() ? "@everyone" : "<@&" + getId() + '>';
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this)
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
-        if (!(o instanceof RoleImpl))
+        }
+        if (!(o instanceof RoleImpl)) {
             return false;
+        }
         RoleImpl oRole = (RoleImpl) o;
         return this.getIdLong() == oRole.getIdLong();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setName(getName())
-                .toString();
+    public String toString() {
+        return new EntityString(this).setName(getName()).toString();
     }
 
     // -- Setters --
 
     @Override
-    public RoleImpl setName(String name)
-    {
+    public RoleImpl setName(String name) {
         this.name = name;
         return this;
     }
 
     @Override
-    public RoleImpl setColor(int color)
-    {
+    public RoleImpl setColor(int color) {
         this.color = color;
         return this;
     }
 
     @Override
-    public RoleImpl setManaged(boolean managed)
-    {
+    public RoleImpl setManaged(boolean managed) {
         this.managed = managed;
         return this;
     }
 
     @Override
-    public RoleImpl setHoisted(boolean hoisted)
-    {
+    public RoleImpl setHoisted(boolean hoisted) {
         this.hoisted = hoisted;
         return this;
     }
 
     @Override
-    public RoleImpl setMentionable(boolean mentionable)
-    {
+    public RoleImpl setMentionable(boolean mentionable) {
         this.mentionable = mentionable;
         return this;
     }
 
     @Override
-    public RoleImpl setRawPermissions(long rawPermissions)
-    {
+    public RoleImpl setRawPermissions(long rawPermissions) {
         this.rawPermissions = rawPermissions;
         return this;
     }
 
     @Override
-    public RoleImpl setRawPosition(int rawPosition)
-    {
-        SortedSnowflakeCacheViewImpl<Role> roleCache = (SortedSnowflakeCacheViewImpl<Role>) getGuild().getRoleCache();
+    public RoleImpl setRawPosition(int rawPosition) {
+        SortedSnowflakeCacheViewImpl<Role> roleCache =
+                (SortedSnowflakeCacheViewImpl<Role>) getGuild().getRoleCache();
         roleCache.clearCachedLists();
         this.rawPosition = rawPosition;
         return this;
     }
 
     @Override
-    public RoleImpl setTags(DataObject tags)
-    {
-        if (this.tags == null)
+    public RoleImpl setTags(DataObject tags) {
+        if (this.tags == null) {
             return this;
+        }
         this.tags = new RoleTagsImpl(tags);
         return this;
     }
 
     @Override
-    public RoleImpl setIcon(RoleIcon icon)
-    {
+    public RoleImpl setIcon(RoleIcon icon) {
         this.icon = icon;
         return this;
     }
 
-    public void freezePosition()
-    {
+    public void freezePosition() {
         this.frozenPosition = getPosition();
     }
 
-    public static class RoleTagsImpl implements RoleTags
-    {
+    public static class RoleTagsImpl implements RoleTags {
         public static final RoleTags EMPTY = new RoleTagsImpl();
         private final long botId;
         private final long integrationId;
@@ -439,8 +413,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
         private final boolean availableForPurchase;
         private final boolean isGuildConnections;
 
-        public RoleTagsImpl()
-        {
+        public RoleTagsImpl() {
             this.botId = 0L;
             this.integrationId = 0L;
             this.subscriptionListingId = 0L;
@@ -449,8 +422,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
             this.isGuildConnections = false;
         }
 
-        public RoleTagsImpl(DataObject tags)
-        {
+        public RoleTagsImpl(DataObject tags) {
             this.botId = tags.getUnsignedLong("bot_id", 0L);
             this.integrationId = tags.getUnsignedLong("integration_id", 0L);
             this.subscriptionListingId = tags.getUnsignedLong("subscription_listing_id", 0L);
@@ -460,78 +432,75 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
         }
 
         @Override
-        public boolean isBot()
-        {
+        public boolean isBot() {
             return botId != 0;
         }
 
         @Override
-        public long getBotIdLong()
-        {
+        public long getBotIdLong() {
             return botId;
         }
 
         @Override
-        public boolean isBoost()
-        {
+        public boolean isBoost() {
             return premiumSubscriber;
         }
 
         @Override
-        public boolean isIntegration()
-        {
+        public boolean isIntegration() {
             return integrationId != 0;
         }
 
         @Override
-        public long getIntegrationIdLong()
-        {
+        public long getIntegrationIdLong() {
             return integrationId;
         }
 
         @Override
-        public long getSubscriptionIdLong()
-        {
+        public long getSubscriptionIdLong() {
             return subscriptionListingId;
         }
 
         @Override
-        public boolean isAvailableForPurchase()
-        {
+        public boolean isAvailableForPurchase() {
             return availableForPurchase;
         }
 
         @Override
-        public boolean isLinkedRole()
-        {
+        public boolean isLinkedRole() {
             return isGuildConnections;
         }
 
         @Override
-        public int hashCode()
-        {
-            return Objects.hash(botId, integrationId, premiumSubscriber, availableForPurchase, subscriptionListingId, isGuildConnections);
+        public int hashCode() {
+            return Objects.hash(
+                    botId,
+                    integrationId,
+                    premiumSubscriber,
+                    availableForPurchase,
+                    subscriptionListingId,
+                    isGuildConnections);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            if (obj == this)
+        public boolean equals(Object obj) {
+            if (obj == this) {
                 return true;
-            if (!(obj instanceof RoleTagsImpl))
+            }
+            if (!(obj instanceof RoleTagsImpl)) {
                 return false;
+            }
             RoleTagsImpl other = (RoleTagsImpl) obj;
             return botId == other.botId
-                && integrationId == other.integrationId
-                && premiumSubscriber == other.premiumSubscriber
-                && availableForPurchase == other.availableForPurchase
-                && subscriptionListingId == other.subscriptionListingId
-                && isGuildConnections == other.isGuildConnections;
+                    && integrationId == other.integrationId
+                    && premiumSubscriber == other.premiumSubscriber
+                    && availableForPurchase == other.availableForPurchase
+                    && subscriptionListingId == other.subscriptionListingId
+                    && isGuildConnections == other.isGuildConnections;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return new EntityString(this)
                     .addMetadata("bot", getBotId())
                     .addMetadata("integration", getIntegrationId())

@@ -27,8 +27,7 @@ import java.util.Arrays;
  *
  * @see <a href="https://tools.ietf.org/html/rfc3550" target="_blank">RFC 3350 - RTP: A Transport Protocol for Real-Time Applications</a>
  */
-public class AudioPacket
-{
+public class AudioPacket {
     public static final int RTP_HEADER_BYTE_LENGTH = 12;
 
     /**
@@ -37,13 +36,13 @@ public class AudioPacket
      * Bit index 3 represents if we use extensions.<br>
      * Bit index 4 to 7 represent the CC or CSRC count. CSRC is Combined SSRC.
      */
-    public static final byte RTP_VERSION_PAD_EXTEND = (byte) 0x80;  //Binary: 1000 0000
+    public static final byte RTP_VERSION_PAD_EXTEND = (byte) 0x80; // Binary: 1000 0000
 
     /**
      * This is Discord's RTP Profile Payload type.<br>
      * I've yet to find actual documentation on what the bits inside this value represent.
      */
-    public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78;        //Binary: 0100 1000
+    public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78; // Binary: 0100 1000
 
     private final byte type;
     private final char seq;
@@ -56,13 +55,11 @@ public class AudioPacket
     private final byte[] rawPacket;
     private final ByteBuffer encodedAudio;
 
-    public AudioPacket(DatagramPacket packet)
-    {
+    public AudioPacket(DatagramPacket packet) {
         this(Arrays.copyOf(packet.getData(), packet.getLength()));
     }
 
-    public AudioPacket(byte[] rawPacket)
-    {
+    public AudioPacket(byte[] rawPacket) {
         this.rawPacket = rawPacket;
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
@@ -81,17 +78,16 @@ public class AudioPacket
         this.ssrc = buffer.getInt();
 
         this.csrc = new int[cc];
-        for (int i = 0; i < cc; i++)
+        for (int i = 0; i < cc; i++) {
             this.csrc[i] = buffer.getInt();
+        }
 
-        // Extract extension length as described by https://datatracker.ietf.org/doc/html/rfc3550#section-5.3.1
-        if (this.hasExtension)
-        {
+        // Extract extension length as described by
+        // https://datatracker.ietf.org/doc/html/rfc3550#section-5.3.1
+        if (this.hasExtension) {
             buffer.position(buffer.position() + 2);
             this.extension = buffer.getShort();
-        }
-        else
-        {
+        } else {
             this.extension = 0;
         }
 
@@ -99,8 +95,7 @@ public class AudioPacket
         this.encodedAudio = buffer;
     }
 
-    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio)
-    {
+    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio) {
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;
@@ -113,33 +108,27 @@ public class AudioPacket
         this.encodedAudio = encodedAudio;
     }
 
-    public byte[] getHeader()
-    {
+    public byte[] getHeader() {
         return Arrays.copyOf(rawPacket, headerLength);
     }
 
-    public ByteBuffer getEncodedAudio()
-    {
+    public ByteBuffer getEncodedAudio() {
         return encodedAudio;
     }
 
-    public char getSequence()
-    {
+    public char getSequence() {
         return seq;
     }
 
-    public int getSSRC()
-    {
+    public int getSSRC() {
         return ssrc;
     }
 
-    public int getTimestamp()
-    {
+    public int getTimestamp() {
         return timestamp;
     }
 
-    public ByteBuffer asEncryptedPacket(CryptoAdapter crypto, ByteBuffer buffer)
-    {
+    public ByteBuffer asEncryptedPacket(CryptoAdapter crypto, ByteBuffer buffer) {
         ((Buffer) buffer).clear();
         writeHeader(seq, timestamp, ssrc, buffer);
         buffer = crypto.encrypt(buffer, encodedAudio);
@@ -147,34 +136,33 @@ public class AudioPacket
         return buffer;
     }
 
-    public static AudioPacket decryptAudioPacket(CryptoAdapter crypto, DatagramPacket packet)
-    {
+    public static AudioPacket decryptAudioPacket(CryptoAdapter crypto, DatagramPacket packet) {
         AudioPacket encryptedPacket = new AudioPacket(packet);
-        if (encryptedPacket.type != RTP_PAYLOAD_TYPE)
+        if (encryptedPacket.type != RTP_PAYLOAD_TYPE) {
             return null;
+        }
 
         byte[] decryptedPayload = crypto.decrypt(encryptedPacket.encodedAudio);
         int offset = 4 * encryptedPacket.extension;
 
         return new AudioPacket(
-            null,
-            encryptedPacket.seq,
-            encryptedPacket.timestamp,
-            encryptedPacket.ssrc,
-            ByteBuffer.wrap(decryptedPayload, offset, decryptedPayload.length - offset).slice()
-        );
+                null,
+                encryptedPacket.seq,
+                encryptedPacket.timestamp,
+                encryptedPacket.ssrc,
+                ByteBuffer.wrap(decryptedPayload, offset, decryptedPayload.length - offset)
+                        .slice());
     }
 
-    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data)
-    {
-        if (buffer == null)
+    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data) {
+        if (buffer == null) {
             buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.remaining());
+        }
         populateBuffer(seq, timestamp, ssrc, data, buffer);
         return buffer.array();
     }
 
-    private static void writeHeader(char seq, int timestamp, int ssrc, ByteBuffer buffer)
-    {
+    private static void writeHeader(char seq, int timestamp, int ssrc, ByteBuffer buffer) {
         buffer.put(RTP_VERSION_PAD_EXTEND);
         buffer.put(RTP_PAYLOAD_TYPE);
         buffer.putChar(seq);
@@ -182,8 +170,7 @@ public class AudioPacket
         buffer.putInt(ssrc);
     }
 
-    private static void populateBuffer(char seq, int timestamp, int ssrc, ByteBuffer data, ByteBuffer buffer)
-    {
+    private static void populateBuffer(char seq, int timestamp, int ssrc, ByteBuffer data, ByteBuffer buffer) {
         writeHeader(seq, timestamp, ssrc, buffer);
         buffer.put(data);
         ((Buffer) data).flip();

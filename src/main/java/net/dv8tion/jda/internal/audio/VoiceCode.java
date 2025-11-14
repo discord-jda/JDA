@@ -16,8 +16,7 @@
 
 package net.dv8tion.jda.internal.audio;
 
-public final class VoiceCode
-{
+public final class VoiceCode {
     // PROTOCOL
     public static final int IDENTIFY = 0;
     public static final int SELECT_PROTOCOL = 1;
@@ -29,12 +28,11 @@ public final class VoiceCode
     public static final int RESUME = 7;
     public static final int HELLO = 8;
     public static final int RESUMED = 9;
-//    public static final int USER_CONNECT = 12;
+    //    public static final int USER_CONNECT = 12;
     public static final int USER_DISCONNECT = 13;
 
     // CLOSE
-    public enum Close
-    {
+    public enum Close {
         HEARTBEAT_TIMEOUT(1000, "We did not heartbeat in time"),
         UNKNOWN_OP_CODE(4001, "Sent an invalid op code"),
         NOT_AUTHENTICATED(4003, "Tried to send payload before authenticating session"),
@@ -56,29 +54,25 @@ public final class VoiceCode
         private final int code;
         private final String meaning;
 
-        Close(final int code, final String meaning)
-        {
+        Close(int code, String meaning) {
             this.code = code;
             this.meaning = meaning;
         }
 
-        public static Close from(int code)
-        {
-            for (Close c : values())
-            {
-                if (c.code == code)
+        public static Close from(int code) {
+            for (Close c : values()) {
+                if (c.code == code) {
                     return c;
+                }
             }
             return UNKNOWN;
         }
 
-        public int getCode()
-        {
+        public int getCode() {
             return code;
         }
 
-        public String getMeaning()
-        {
+        public String getMeaning() {
             return meaning;
         }
     }

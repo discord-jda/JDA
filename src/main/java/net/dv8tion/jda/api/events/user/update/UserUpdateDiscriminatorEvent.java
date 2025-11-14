@@ -39,12 +39,11 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
-{
+public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String> {
     public static final String IDENTIFIER = "discriminator";
 
-    public UserUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull String oldDiscriminator)
-    {
+    public UserUpdateDiscriminatorEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull String oldDiscriminator) {
         super(api, responseNumber, user, oldDiscriminator, user.getDiscriminator(), IDENTIFIER);
     }
 
@@ -54,8 +53,7 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
      * @return The old discriminator
      */
     @Nonnull
-    public String getOldDiscriminator()
-    {
+    public String getOldDiscriminator() {
         return getOldValue();
     }
 
@@ -65,22 +63,19 @@ public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
      * @return The new discriminator
      */
     @Nonnull
-    public String getNewDiscriminator()
-    {
+    public String getNewDiscriminator() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

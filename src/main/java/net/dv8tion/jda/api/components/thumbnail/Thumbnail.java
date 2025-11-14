@@ -25,18 +25,18 @@ import net.dv8tion.jda.internal.components.thumbnail.ThumbnailFileUpload;
 import net.dv8tion.jda.internal.components.thumbnail.ThumbnailImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.io.InputStream;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.InputStream;
 
 /**
  * Component displaying a thumbnail, you can mark it as a spoiler and set a description.
  *
  * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} to be enabled!
  */
-public interface Thumbnail extends SectionAccessoryComponent
-{
+public interface Thumbnail extends SectionAccessoryComponent {
     /**
      * The maximum number of characters a thumbnail's description can have. ({@value})
      */
@@ -66,7 +66,7 @@ public interface Thumbnail extends SectionAccessoryComponent
      * </ol>
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * Thumbnail thumbnail = Thumbnail.fromUrl("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *     .setDescription("This is a cute car :3");
@@ -81,7 +81,7 @@ public interface Thumbnail extends SectionAccessoryComponent
      *     .setComponents(section)
      *     .useComponentsV2()
      *     .queue();
-     * </code></pre>
+     * }
      *
      * @param  url
      *         The URL of the thumbnail to display
@@ -92,8 +92,7 @@ public interface Thumbnail extends SectionAccessoryComponent
      * @return The new {@link Thumbnail}
      */
     @Nonnull
-    static Thumbnail fromUrl(@Nonnull String url)
-    {
+    static Thumbnail fromUrl(@Nonnull String url) {
         Checks.notBlank(url, "URL");
         return new ThumbnailImpl(url);
     }
@@ -109,7 +108,7 @@ public interface Thumbnail extends SectionAccessoryComponent
      * as such, you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * // It's recommended to use a more robust HTTP library instead,
      * // such as Java 11+'s HttpClient, or OkHttp (included with JDA), among many other options.
@@ -124,7 +123,7 @@ public interface Thumbnail extends SectionAccessoryComponent
      * channel.sendComponents(section)
      *     .useComponentsV2()
      *     .queue();
-     * </code></pre>
+     * }
      *
      * @param  file
      *         The {@link FileUpload} to display
@@ -135,8 +134,7 @@ public interface Thumbnail extends SectionAccessoryComponent
      * @return The new {@link Thumbnail}
      */
     @Nonnull
-    static Thumbnail fromFile(@Nonnull FileUpload file)
-    {
+    static Thumbnail fromFile(@Nonnull FileUpload file) {
         Checks.notNull(file, "FileUpload");
         return new ThumbnailFileUpload(file);
     }
@@ -210,5 +208,4 @@ public interface Thumbnail extends SectionAccessoryComponent
      * @return {@code true} if this is hidden by default, {@code false} otherwise
      */
     boolean isSpoiler();
-
 }

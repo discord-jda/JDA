@@ -28,32 +28,28 @@ import javax.annotation.Nonnull;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class GenericContextInteractionEvent<T> extends GenericCommandInteractionEvent implements ContextInteraction<T>
-{
-    public GenericContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ContextInteraction<T> interaction)
-    {
+public class GenericContextInteractionEvent<T> extends GenericCommandInteractionEvent implements ContextInteraction<T> {
+    public GenericContextInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull ContextInteraction<T> interaction) {
         super(api, responseNumber, interaction);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public ContextInteraction<T> getInteraction()
-    {
+    public ContextInteraction<T> getInteraction() {
         return (ContextInteraction<T>) super.getInteraction();
     }
 
     @Nonnull
     @Override
-    public ContextTarget getTargetType()
-    {
+    public ContextTarget getTargetType() {
         return getInteraction().getTargetType();
     }
 
     @Nonnull
     @Override
-    public T getTarget()
-    {
+    public T getTarget() {
         return getInteraction().getTarget();
     }
 }

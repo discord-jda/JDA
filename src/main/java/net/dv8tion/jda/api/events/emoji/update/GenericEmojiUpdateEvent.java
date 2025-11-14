@@ -34,16 +34,18 @@ import javax.annotation.Nullable;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public abstract class GenericEmojiUpdateEvent<T> extends GenericEmojiEvent implements UpdateEvent<RichCustomEmoji, T>
-{
+public abstract class GenericEmojiUpdateEvent<T> extends GenericEmojiEvent implements UpdateEvent<RichCustomEmoji, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
     public GenericEmojiUpdateEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji,
-            @Nullable T previous, @Nullable T next, @Nonnull String identifier)
-    {
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull RichCustomEmoji emoji,
+            @Nullable T previous,
+            @Nullable T next,
+            @Nonnull String identifier) {
         super(api, responseNumber, emoji);
         this.previous = previous;
         this.next = next;
@@ -52,29 +54,25 @@ public abstract class GenericEmojiUpdateEvent<T> extends GenericEmojiEvent imple
 
     @Nonnull
     @Override
-    public RichCustomEmoji getEntity()
-    {
+    public RichCustomEmoji getEntity() {
         return getEmoji();
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 }

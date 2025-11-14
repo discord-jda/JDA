@@ -28,12 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code nsfw_level}
  */
-public class GuildUpdateNSFWLevelEvent extends GenericGuildUpdateEvent<Guild.NSFWLevel>
-{
+public class GuildUpdateNSFWLevelEvent extends GenericGuildUpdateEvent<Guild.NSFWLevel> {
     public static final String IDENTIFIER = "nsfw_level";
 
-    public GuildUpdateNSFWLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.NSFWLevel oldNSFWLevel)
-    {
+    public GuildUpdateNSFWLevelEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.NSFWLevel oldNSFWLevel) {
         super(api, responseNumber, guild, oldNSFWLevel, guild.getNSFWLevel(), IDENTIFIER);
     }
 
@@ -43,8 +42,7 @@ public class GuildUpdateNSFWLevelEvent extends GenericGuildUpdateEvent<Guild.NSF
      * @return The old NSFWLevel
      */
     @Nonnull
-    public Guild.NSFWLevel getOldNSFWLevel()
-    {
+    public Guild.NSFWLevel getOldNSFWLevel() {
         return getOldValue();
     }
 
@@ -54,22 +52,19 @@ public class GuildUpdateNSFWLevelEvent extends GenericGuildUpdateEvent<Guild.NSF
      * @return The new NSFWLevel
      */
     @Nonnull
-    public Guild.NSFWLevel getNewNSFWLevel()
-    {
+    public Guild.NSFWLevel getNewNSFWLevel() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Guild.NSFWLevel getOldValue()
-    {
+    public Guild.NSFWLevel getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Guild.NSFWLevel getNewValue()
-    {
+    public Guild.NSFWLevel getNewValue() {
         return super.getNewValue();
     }
 }

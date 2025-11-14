@@ -23,53 +23,46 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class GuildDeleteHandler extends SocketHandler
-{
-    public GuildDeleteHandler(JDAImpl api)
-    {
+public class GuildDeleteHandler extends SocketHandler {
+    public GuildDeleteHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        final long id = content.getLong("id");
+    protected Long handleInternally(DataObject content) {
+        long id = content.getLong("id");
         GuildSetupController setupController = getJDA().getGuildSetupController();
         boolean wasInit = setupController.onDelete(id, content);
-        if (wasInit || setupController.isUnavailable(id))
-            return null;
-
-        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
-        boolean unavailable = content.getBoolean("unavailable");
-        if (guild == null)
-        {
-            //getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () -> handle(responseNumber, allContent));
-            WebSocketClient.LOG.debug("Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}", id, unavailable);
+        if (wasInit || setupController.isUnavailable(id)) {
             return null;
         }
 
-        //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
-        // ignore the event
-        if (setupController.isUnavailable(id) && unavailable)
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
+        boolean unavailable = content.getBoolean("unavailable");
+        if (guild == null) {
+            // getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () ->
+            // handle(responseNumber, allContent));
+            WebSocketClient.LOG.debug(
+                    "Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}",
+                    id,
+                    unavailable);
             return null;
+        }
+
+        // If the event is attempting to mark the guild as unavailable,
+        // but it is already unavailable, ignore the event
+        if (setupController.isUnavailable(id) && unavailable) {
+            return null;
+        }
 
         // Detach the guild cache from the global cache (also removes users if necessary)
         guild.invalidate();
 
-        if (unavailable)
-        {
+        if (unavailable) {
             setupController.onUnavailable(id);
-            getJDA().handleEvent(
-                    new GuildUnavailableEvent(
-                            getJDA(), responseNumber,
-                            guild));
-        }
-        else
-        {
-            getJDA().handleEvent(
-                    new GuildLeaveEvent(
-                            getJDA(), responseNumber,
-                            guild));
+            getJDA().handleEvent(new GuildUnavailableEvent(getJDA(), responseNumber, guild));
+        } else {
+            getJDA().handleEvent(new GuildLeaveEvent(getJDA(), responseNumber, guild));
         }
         getJDA().getEventCache().clear(EventCache.Type.GUILD, id);
         return null;

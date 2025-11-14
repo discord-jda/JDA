@@ -22,10 +22,11 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 /**
  * Manager abstraction to modify {@link PermissionOverride PermissionOverrides} of a {@link IPermissionContainer permission containing channel}.
@@ -33,8 +34,9 @@ import java.util.Collection;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface IPermissionContainerManager<T extends IPermissionContainer, M extends IPermissionContainerManager<T, M>> extends ChannelManager<T, M>
-{
+public interface IPermissionContainerManager<
+                T extends IPermissionContainer, M extends IPermissionContainerManager<T, M>>
+        extends ChannelManager<T, M> {
     /**
      * Clears the overrides added via {@link #putPermissionOverride(IPermissionHolder, Collection, Collection)}.
      *
@@ -106,10 +108,12 @@ public interface IPermissionContainerManager<T extends IPermissionContainer, M e
      */
     @Nonnull
     @CheckReturnValue
-    default M putPermissionOverride(@Nonnull IPermissionHolder permHolder, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default M putPermissionOverride(
+            @Nonnull IPermissionHolder permHolder,
+            @Nullable Collection<Permission> allow,
+            @Nullable Collection<Permission> deny) {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
-        long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
+        long denyRaw = deny == null ? 0 : Permission.getRaw(deny);
         return putPermissionOverride(permHolder, allowRaw, denyRaw);
     }
 
@@ -159,10 +163,10 @@ public interface IPermissionContainerManager<T extends IPermissionContainer, M e
      */
     @Nonnull
     @CheckReturnValue
-    default M putRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default M putRolePermissionOverride(
+            long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
-        long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
+        long denyRaw = deny == null ? 0 : Permission.getRaw(deny);
         return putRolePermissionOverride(roleId, allowRaw, denyRaw);
     }
 
@@ -212,10 +216,10 @@ public interface IPermissionContainerManager<T extends IPermissionContainer, M e
      */
     @Nonnull
     @CheckReturnValue
-    default M putMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default M putMemberPermissionOverride(
+            long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
-        long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
+        long denyRaw = deny == null ? 0 : Permission.getRaw(deny);
         return putMemberPermissionOverride(memberId, allowRaw, denyRaw);
     }
 

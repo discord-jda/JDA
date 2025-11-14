@@ -20,15 +20,12 @@ import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.InputStream;
 
-public class TestResourceUtil
-{
-    public static InputStream getResource(String path)
-    {
+public class TestResourceUtil {
+    public static InputStream getResource(String path) {
         return TestResourceUtil.class.getResourceAsStream("/" + path);
     }
 
-    public static FileUpload getFileUpload(String name)
-    {
+    public static FileUpload getFileUpload(String name) {
         return FileUpload.fromData(getResource(name), name);
     }
 }

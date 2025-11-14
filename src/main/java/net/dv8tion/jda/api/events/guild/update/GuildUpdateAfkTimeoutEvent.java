@@ -28,12 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code afk_timeout}
  */
-public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Timeout>
-{
+public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Timeout> {
     public static final String IDENTIFIER = "afk_timeout";
 
-    public GuildUpdateAfkTimeoutEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.Timeout oldAfkTimeout)
-    {
+    public GuildUpdateAfkTimeoutEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.Timeout oldAfkTimeout) {
         super(api, responseNumber, guild, oldAfkTimeout, guild.getAfkTimeout(), IDENTIFIER);
     }
 
@@ -43,8 +42,7 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
      * @return The old AFK-Timeout
      */
     @Nonnull
-    public Guild.Timeout getOldAfkTimeout()
-    {
+    public Guild.Timeout getOldAfkTimeout() {
         return getOldValue();
     }
 
@@ -54,22 +52,19 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
      * @return The new AFK-Timeout
      */
     @Nonnull
-    public Guild.Timeout getNewAfkTimeout()
-    {
+    public Guild.Timeout getNewAfkTimeout() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Guild.Timeout getOldValue()
-    {
+    public Guild.Timeout getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Guild.Timeout getNewValue()
-    {
+    public Guild.Timeout getNewValue() {
         return super.getNewValue();
     }
 }

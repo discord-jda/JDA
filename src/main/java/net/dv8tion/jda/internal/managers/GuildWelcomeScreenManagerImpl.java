@@ -27,57 +27,59 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScreenManager> implements GuildWelcomeScreenManager
-{
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScreenManager>
+        implements GuildWelcomeScreenManager {
     private final Guild guild;
 
     protected boolean enabled;
     protected String description;
-    protected final List<GuildWelcomeScreen.Channel> channels = new ArrayList<>(GuildWelcomeScreen.MAX_WELCOME_CHANNELS);
+    protected final List<GuildWelcomeScreen.Channel> channels =
+            new ArrayList<>(GuildWelcomeScreen.MAX_WELCOME_CHANNELS);
 
-    public GuildWelcomeScreenManagerImpl(Guild guild)
-    {
+    public GuildWelcomeScreenManagerImpl(Guild guild) {
         super(guild.getJDA(), Route.Guilds.MODIFY_WELCOME_SCREEN.compile(guild.getId()));
         this.guild = guild;
-        if (isPermissionChecksEnabled())
+        if (isPermissionChecksEnabled()) {
             checkPermissions();
+        }
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildWelcomeScreenManagerImpl reset(long fields)
-    {
+    public GuildWelcomeScreenManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & ENABLED) == ENABLED)
-            this.enabled = false; //Most important is the flag being removed anyway
-        if ((fields & DESCRIPTION) == DESCRIPTION)
+        if ((fields & ENABLED) == ENABLED) {
+            this.enabled = false; // Most important is the flag being removed anyway
+        }
+        if ((fields & DESCRIPTION) == DESCRIPTION) {
             this.description = null;
-        if ((fields & CHANNELS) == CHANNELS)
+        }
+        if ((fields & CHANNELS) == CHANNELS) {
             this.channels.clear();
+        }
         return this;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildWelcomeScreenManagerImpl reset(@Nonnull long... fields)
-    {
+    public GuildWelcomeScreenManagerImpl reset(@Nonnull long... fields) {
         super.reset(fields);
         return this;
     }
@@ -85,16 +87,14 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildWelcomeScreenManagerImpl reset()
-    {
+    public GuildWelcomeScreenManagerImpl reset() {
         super.reset(ENABLED | DESCRIPTION | CHANNELS);
         return this;
     }
 
     @Nonnull
     @Override
-    public GuildWelcomeScreenManager setEnabled(boolean enabled)
-    {
+    public GuildWelcomeScreenManager setEnabled(boolean enabled) {
         this.enabled = enabled;
         set |= ENABLED;
         return this;
@@ -102,10 +102,10 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
 
     @Nonnull
     @Override
-    public GuildWelcomeScreenManager setDescription(@Nullable String description)
-    {
-        if (description != null)
+    public GuildWelcomeScreenManager setDescription(@Nullable String description) {
+        if (description != null) {
             Checks.notLonger(description, GuildWelcomeScreen.MAX_DESCRIPTION_LENGTH, "Description");
+        }
         this.description = description;
         set |= DESCRIPTION;
         return this;
@@ -113,15 +113,13 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
 
     @Nonnull
     @Override
-    public List<GuildWelcomeScreen.Channel> getWelcomeChannels()
-    {
+    public List<GuildWelcomeScreen.Channel> getWelcomeChannels() {
         return Collections.unmodifiableList(channels);
     }
 
     @Nonnull
     @Override
-    public GuildWelcomeScreenManager clearWelcomeChannels()
-    {
+    public GuildWelcomeScreenManager clearWelcomeChannels() {
         withLock(channels, List::clear);
         set |= CHANNELS;
         return this;
@@ -129,12 +127,14 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
 
     @Nonnull
     @Override
-    public GuildWelcomeScreenManager setWelcomeChannels(@Nonnull Collection<? extends GuildWelcomeScreen.Channel> channels)
-    {
+    public GuildWelcomeScreenManager setWelcomeChannels(
+            @Nonnull Collection<? extends GuildWelcomeScreen.Channel> channels) {
         Checks.noneNull(channels, "Welcome channels");
-        Checks.check(channels.size() <= GuildWelcomeScreen.MAX_WELCOME_CHANNELS, "Cannot have more than %d welcome channels", GuildWelcomeScreen.MAX_WELCOME_CHANNELS);
-        withLock(this.channels, c ->
-        {
+        Checks.check(
+                channels.size() <= GuildWelcomeScreen.MAX_WELCOME_CHANNELS,
+                "Cannot have more than %d welcome channels",
+                GuildWelcomeScreen.MAX_WELCOME_CHANNELS);
+        withLock(this.channels, c -> {
             c.clear();
             c.addAll(channels);
         });
@@ -143,27 +143,28 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
-        if (shouldUpdate(ENABLED))
+        if (shouldUpdate(ENABLED)) {
             object.put("enabled", enabled);
-        if (shouldUpdate(DESCRIPTION))
+        }
+        if (shouldUpdate(DESCRIPTION)) {
             object.put("description", description);
-        withLock(this.channels, (list) ->
-        {
-            if (shouldUpdate(CHANNELS))
+        }
+        withLock(this.channels, (list) -> {
+            if (shouldUpdate(CHANNELS)) {
                 object.put("welcome_channels", DataArray.fromCollection(list));
+            }
         });
         reset();
         return getRequestBody(object);
     }
 
     @Override
-    protected boolean checkPermissions()
-    {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+    protected boolean checkPermissions() {
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_SERVER);
+        }
         return super.checkPermissions();
     }
 }

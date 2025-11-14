@@ -22,17 +22,17 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * Represents a {@link GuildChannel GuildChannel} that can be the target of a Guild's invite.
  *
  * <p>Invites have to be targeted at exactly one {@link IInviteContainer}, which will open when the invite is used (unless restricted by permissions).
  */
-public interface IInviteContainer extends GuildChannel
-{
+public interface IInviteContainer extends GuildChannel {
     /**
      * Creates a new {@link InviteAction InviteAction} which can be used to create a
      * new {@link net.dv8tion.jda.api.entities.Invite Invite}.

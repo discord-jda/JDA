@@ -19,16 +19,16 @@ package net.dv8tion.jda.api.interactions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents where commands can be used.
  *
  * @see <a target="_blank" href="https://discord.com/developers/docs/interactions/application-commands#interaction-contexts">Discord docs</a>
  */
-public enum InteractionContextType
-{
+public enum InteractionContextType {
     UNKNOWN("-1"),
     /**
      * Usable in guilds.
@@ -57,8 +57,7 @@ public enum InteractionContextType
 
     private final String key;
 
-    InteractionContextType(String key)
-    {
+    InteractionContextType(String key) {
         this.key = key;
     }
 
@@ -68,8 +67,7 @@ public enum InteractionContextType
      * @return The raw value
      */
     @Nonnull
-    public String getType()
-    {
+    public String getType() {
         return key;
     }
 
@@ -83,12 +81,11 @@ public enum InteractionContextType
      * @return The interaction context corresponding to the key
      */
     @Nonnull
-    public static InteractionContextType fromKey(@Nonnull String key)
-    {
-        for (InteractionContextType value : values())
-        {
-            if (value.key.equals(key))
+    public static InteractionContextType fromKey(@Nonnull String key) {
+        for (InteractionContextType value : values()) {
+            if (value.key.equals(key)) {
                 return value;
+            }
         }
         return UNKNOWN;
     }

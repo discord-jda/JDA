@@ -44,18 +44,17 @@ import javax.annotation.Nonnull;
  *     <li>{@link NewsChannel}</li>
  * </ul>
  */
-public interface DefaultGuildChannelUnion extends StandardGuildChannel
-{
+public interface DefaultGuildChannelUnion extends StandardGuildChannel {
     /**
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * TextChannel channel = union.asTextChannel();
      * TextChannel channel2 = (TextChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#TEXT} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
@@ -73,11 +72,11 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * NewsChannel channel = union.asNewsChannel();
      * NewsChannel channel2 = (NewsChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#NEWS} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
@@ -95,11 +94,11 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * IThreadContainer channel = union.asThreadContainer();
      * IThreadContainer channel2 = (IThreadContainer) union;
-     * </code></pre>
+     * }
      *
      * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
      *
@@ -116,11 +115,11 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * StandardGuildMessageChannel channel = union.asStandardGuildMessageChannel();
      * StandardGuildMessageChannel channel2 = (StandardGuildMessageChannel) union;
-     * </code></pre>
+     * }
      *
      * @throws IllegalStateException
      *         If the channel represented by this union is not actually a {@link StandardGuildMessageChannel}.

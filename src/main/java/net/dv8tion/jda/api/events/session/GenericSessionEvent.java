@@ -25,12 +25,10 @@ import javax.annotation.Nonnull;
  * Events which update the gateway session status.
  * <p>This is primarily used to inform about the connection state and whether a resume happens.
  */
-public abstract class GenericSessionEvent extends Event
-{
+public abstract class GenericSessionEvent extends Event {
     protected final SessionState state;
 
-    public GenericSessionEvent(@Nonnull JDA api, @Nonnull SessionState state)
-    {
+    public GenericSessionEvent(@Nonnull JDA api, @Nonnull SessionState state) {
         super(api);
         this.state = state;
     }
@@ -41,8 +39,7 @@ public abstract class GenericSessionEvent extends Event
      * @return {@link SessionState}
      */
     @Nonnull
-    public SessionState getState()
-    {
+    public SessionState getState() {
         return state;
     }
 }

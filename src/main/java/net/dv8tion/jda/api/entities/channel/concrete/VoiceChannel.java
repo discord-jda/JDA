@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.JDA;
@@ -38,19 +39,23 @@ import javax.annotation.Nonnull;
  * @see GuildChannel
  * @see TextChannel
  * @see Category
- *
  * @see   Guild#getVoiceChannelCache()
  * @see   Guild#getVoiceChannels()
  * @see   Guild#getVoiceChannelsByName(String, boolean)
  * @see   Guild#getVoiceChannelById(long)
- *
  * @see   JDA#getVoiceChannelCache()
  * @see   JDA#getVoiceChannels()
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel, IVoiceStatusChannel
-{
+public interface VoiceChannel
+        extends StandardGuildChannel,
+                GuildMessageChannel,
+                AudioChannel,
+                IWebhookContainer,
+                IAgeRestrictedChannel,
+                ISlowmodeChannel,
+                IVoiceStatusChannel {
     /**
      * The maximum limit you can set with {@link VoiceChannelManager#setUserLimit(int)}. ({@value})
      */
@@ -64,8 +69,7 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelAction<VoiceChannel> createCopy()
-    {
+    default ChannelAction<VoiceChannel> createCopy() {
         return createCopy(getGuild());
     }
 

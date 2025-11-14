@@ -25,11 +25,12 @@ import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
-import javax.annotation.Nonnull;
 import java.util.Formattable;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.regex.Matcher;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents a Discord Emoji.
@@ -39,8 +40,7 @@ import java.util.regex.Matcher;
  *
  * @see #getName()
  */
-public interface Emoji extends SerializableData, Formattable
-{
+public interface Emoji extends SerializableData, Formattable {
     /**
      * Creates a reference for a unicode emoji with the provided unicode.
      * <br>This has to be the unicode characters rather than the emoji name.
@@ -48,14 +48,14 @@ public interface Emoji extends SerializableData, Formattable
      * <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p><b>Examples</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // unicode emoji, escape codes
      * fromUnicode("&#92;uD83D&#92;uDE03");
      * // codepoint notation
      * fromUnicode("U+1F602");
      * // unicode emoji
      * fromUnicode("😃");
-     * }</pre>
+     * }
      *
      * @param  code
      *         The unicode characters, or codepoint notation such as {@code "U+1F602"}
@@ -66,15 +66,14 @@ public interface Emoji extends SerializableData, Formattable
      * @return The new emoji instance
      */
     @Nonnull
-    static UnicodeEmoji fromUnicode(@Nonnull String code)
-    {
+    static UnicodeEmoji fromUnicode(@Nonnull String code) {
         Checks.notEmpty(code, "Unicode");
-        if (code.startsWith("U+") || code.startsWith("u+"))
-        {
+        if (code.startsWith("U+") || code.startsWith("u+")) {
             StringBuilder emoji = new StringBuilder();
             String[] codepoints = code.trim().split("\\s*[uU]\\+");
-            for (String codepoint : codepoints)
+            for (String codepoint : codepoints) {
                 emoji.append(codepoint.isEmpty() ? "" : EncodingUtil.decodeCodepoint("U+" + codepoint));
+            }
             code = emoji.toString();
         }
         return new UnicodeEmojiImpl(code);
@@ -96,8 +95,7 @@ public interface Emoji extends SerializableData, Formattable
      * @return The new emoji instance
      */
     @Nonnull
-    static CustomEmoji fromCustom(@Nonnull String name, long id, boolean animated)
-    {
+    static CustomEmoji fromCustom(@Nonnull String name, long id, boolean animated) {
         Checks.notEmpty(name, "Name");
         return new CustomEmojiImpl(name, id, animated);
     }
@@ -114,8 +112,7 @@ public interface Emoji extends SerializableData, Formattable
      * @return The new emoji instance
      */
     @Nonnull
-    static CustomEmoji fromCustom(@Nonnull CustomEmoji emoji)
-    {
+    static CustomEmoji fromCustom(@Nonnull CustomEmoji emoji) {
         Checks.notNull(emoji, "Emoji");
         return fromCustom(emoji.getName(), emoji.getIdLong(), emoji.isAnimated());
     }
@@ -126,7 +123,7 @@ public interface Emoji extends SerializableData, Formattable
      * Parses the provided markdown formatting, or unicode characters, to an Emoji instance.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // animated custom emoji
      * fromFormatted("<a:dance:123456789123456789>");
      * // not animated custom emoji
@@ -137,7 +134,7 @@ public interface Emoji extends SerializableData, Formattable
      * fromFormatted("U+1F602");
      * // unicode emoji
      * fromFormatted("😃");
-     * }</pre>
+     * }
      *
      * @param  code
      *         The code to parse
@@ -148,14 +145,15 @@ public interface Emoji extends SerializableData, Formattable
      * @return The emoji instance
      */
     @Nonnull
-    static EmojiUnion fromFormatted(@Nonnull String code)
-    {
+    static EmojiUnion fromFormatted(@Nonnull String code) {
         Checks.notEmpty(code, "Formatting Code");
         Matcher matcher = Message.MentionType.EMOJI.getPattern().matcher(code);
-        if (matcher.matches())
-            return (EmojiUnion) fromCustom(matcher.group(1), Long.parseUnsignedLong(matcher.group(2)), code.startsWith("<a"));
-        else
+        if (matcher.matches()) {
+            return (EmojiUnion)
+                    fromCustom(matcher.group(1), Long.parseUnsignedLong(matcher.group(2)), code.startsWith("<a"));
+        } else {
             return (EmojiUnion) fromUnicode(code);
+        }
     }
 
     /**
@@ -163,19 +161,21 @@ public interface Emoji extends SerializableData, Formattable
      *
      * @param  emoji
      *         The emoji json
+     *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the JSON is not a valid emoji
      *
      * @return The emoji instance
      */
     @Nonnull
-    static EmojiUnion fromData(@Nonnull DataObject emoji)
-    {
+    static EmojiUnion fromData(@Nonnull DataObject emoji) {
         Checks.notNull(emoji, "Emoji Data");
-        if (emoji.isNull("id"))
+        if (emoji.isNull("id")) {
             return (EmojiUnion) fromUnicode(emoji.getString("name"));
-        else
-            return (EmojiUnion) fromCustom(emoji.getString("name"), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
+        } else {
+            return (EmojiUnion)
+                    fromCustom(emoji.getString("name"), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
+        }
     }
 
     /**
@@ -215,8 +215,7 @@ public interface Emoji extends SerializableData, Formattable
     String getFormatted();
 
     @Override
-    default void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
+    default void formatTo(Formatter formatter, int flags, int width, int precision) {
         boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
         String out = getFormatted();
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
@@ -225,8 +224,7 @@ public interface Emoji extends SerializableData, Formattable
     /**
      * Possible emoji types.
      */
-    enum Type
-    {
+    enum Type {
         /**
          * Standard Unicode Emoji.
          * <br>This represents emoji such as {@code :smiley:}. These do not have an ID.

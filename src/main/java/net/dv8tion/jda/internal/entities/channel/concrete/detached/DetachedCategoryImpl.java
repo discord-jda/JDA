@@ -32,133 +32,112 @@ import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import javax.annotation.Nonnull;
 
 public class DetachedCategoryImpl extends AbstractGuildChannelImpl<DetachedCategoryImpl>
-    implements
-        Category,
-        CategoryMixin<DetachedCategoryImpl>,
-        IInteractionPermissionMixin<DetachedCategoryImpl>
-{
+        implements Category, CategoryMixin<DetachedCategoryImpl>, IInteractionPermissionMixin<DetachedCategoryImpl> {
     private ChannelInteractionPermissions interactionPermissions;
 
     private int position;
 
-    public DetachedCategoryImpl(long id, DetachedGuildImpl guild)
-    {
+    public DetachedCategoryImpl(long id, DetachedGuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return true;
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.CATEGORY;
     }
 
     @Override
-    public int getPositionRaw()
-    {
+    public int getPositionRaw() {
         return position;
     }
 
     @Nonnull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
-    {
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name)
-    {
+    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
-    {
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
-    {
+    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name)
-    {
+    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name)
-    {
+    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction modifyTextChannelPositions()
-    {
+    public CategoryOrderAction modifyTextChannelPositions() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction modifyVoiceChannelPositions()
-    {
+    public CategoryOrderAction modifyVoiceChannelPositions() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<Category> createCopy()
-    {
+    public ChannelAction<Category> createCopy() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CategoryManager getManager()
-    {
+    public CategoryManager getManager() {
         throw detachedException();
     }
 
     @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
+    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelInteractionPermissions getInteractionPermissions()
-    {
+    public ChannelInteractionPermissions getInteractionPermissions() {
         return interactionPermissions;
     }
 
     @Override
-    public DetachedCategoryImpl setPosition(int position)
-    {
+    public DetachedCategoryImpl setPosition(int position) {
         this.position = position;
         return this;
     }
 
     @Nonnull
     @Override
-    public DetachedCategoryImpl setInteractionPermissions(@Nonnull ChannelInteractionPermissions interactionPermissions)
-    {
+    public DetachedCategoryImpl setInteractionPermissions(
+            @Nonnull ChannelInteractionPermissions interactionPermissions) {
         this.interactionPermissions = interactionPermissions;
         return this;
     }

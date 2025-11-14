@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
@@ -25,7 +26,7 @@ import javax.annotation.Nullable;
 
 /**
  * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
- * 
+ *
  * <p>Can be used to detect a Message is edited in either a private or guild channel. Providing a MessageChannel and Message.
  * <br>This also includes whether a message is being pinned.
  *
@@ -40,12 +41,10 @@ import javax.annotation.Nullable;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
-public class MessageUpdateEvent extends GenericMessageEvent
-{
+public class MessageUpdateEvent extends GenericMessageEvent {
     private final Message message;
 
-    public MessageUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
-    {
+    public MessageUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
         super(api, responseNumber, message.getIdLong(), message.getChannel());
         this.message = message;
     }
@@ -57,8 +56,7 @@ public class MessageUpdateEvent extends GenericMessageEvent
      * @return The updated Message
      */
     @Nonnull
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
@@ -70,8 +68,7 @@ public class MessageUpdateEvent extends GenericMessageEvent
      * @see    net.dv8tion.jda.api.entities.User User
      */
     @Nonnull
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return message.getAuthor();
     }
 
@@ -82,8 +79,7 @@ public class MessageUpdateEvent extends GenericMessageEvent
      * @return The Member instance for the author or null
      */
     @Nullable
-    public Member getMember()
-    {
-        return  message.getMember();
+    public Member getMember() {
+        return message.getMember();
     }
 }

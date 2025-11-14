@@ -21,8 +21,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 /**
  * The query input for an {@link net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback auto-complete interaction}.
@@ -30,14 +31,12 @@ import java.util.Objects;
  * <p>The {@link #getValue() value} of such a query may not be a valid instance of the expected {@link #getType() type}.
  * Discord does not do any validation for auto-complete queries. However, you are required to reply with the correct type.
  */
-public class AutoCompleteQuery
-{
+public class AutoCompleteQuery {
     private final String name;
     private final String value;
     private final OptionType type;
 
-    public AutoCompleteQuery(@Nonnull OptionMapping option)
-    {
+    public AutoCompleteQuery(@Nonnull OptionMapping option) {
         this.name = option.getName();
         this.value = option.getAsString();
         this.type = option.getType();
@@ -49,8 +48,7 @@ public class AutoCompleteQuery
      * @return The option name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -63,8 +61,7 @@ public class AutoCompleteQuery
      * @return The current auto-completable query value
      */
     @Nonnull
-    public String getValue()
-    {
+    public String getValue() {
         return value;
     }
 
@@ -74,31 +71,29 @@ public class AutoCompleteQuery
      * @return The option type expected from this auto-complete response
      */
     @Nonnull
-    public OptionType getType()
-    {
+    public OptionType getType() {
         return type;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(name, value, type);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof AutoCompleteQuery))
+        }
+        if (!(obj instanceof AutoCompleteQuery)) {
             return false;
+        }
         AutoCompleteQuery query = (AutoCompleteQuery) obj;
         return type == query.type && name.equals(query.name) && value.equals(query.value);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setType(getType())
                 .addMetadata("name", getName())

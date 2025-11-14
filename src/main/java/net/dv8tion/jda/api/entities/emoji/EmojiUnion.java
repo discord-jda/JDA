@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
  * but can be converted to a concrete type using either {@link #asUnicode()},
  * {@link #asCustom()}, {@link #asRich()} or {@link #asApplication()}.
  */
-public interface EmojiUnion extends Emoji
-{
+public interface EmojiUnion extends Emoji {
     /**
      * Returns the underlying {@link UnicodeEmoji} if applicable.
      *

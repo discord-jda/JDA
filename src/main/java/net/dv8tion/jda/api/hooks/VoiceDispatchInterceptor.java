@@ -32,11 +32,8 @@ import javax.annotation.Nullable;
  * <br>This will make it impossible to connect to voice channels with
  * the built-in {@link net.dv8tion.jda.api.managers.AudioManager AudioManager}.
  * It is expected that the user has some other means of establishing voice connections when this is used.
- *
- * @since  4.0.0
  */
-public interface VoiceDispatchInterceptor
-{
+public interface VoiceDispatchInterceptor {
     /**
      * Handles the <b>VOICE_SERVER_UPDATE</b>.
      *
@@ -62,8 +59,7 @@ public interface VoiceDispatchInterceptor
      * @see VoiceServerUpdate
      * @see VoiceStateUpdate
      */
-    interface VoiceUpdate extends SerializableData
-    {
+    interface VoiceUpdate extends SerializableData {
         /**
          * The {@link Guild} for this update
          *
@@ -87,8 +83,7 @@ public interface VoiceDispatchInterceptor
          * @return The {@link DirectAudioController} for this JDA instance
          */
         @Nonnull
-        default DirectAudioController getAudioController()
-        {
+        default DirectAudioController getAudioController() {
             return getJDA().getDirectAudioController();
         }
 
@@ -97,8 +92,7 @@ public interface VoiceDispatchInterceptor
          *
          * @return The guild id
          */
-        default long getGuildIdLong()
-        {
+        default long getGuildIdLong() {
             return getGuild().getIdLong();
         }
 
@@ -108,8 +102,7 @@ public interface VoiceDispatchInterceptor
          * @return The guild id
          */
         @Nonnull
-        default String getGuildId()
-        {
+        default String getGuildId() {
             return Long.toUnsignedString(getGuildIdLong());
         }
 
@@ -119,8 +112,7 @@ public interface VoiceDispatchInterceptor
          * @return The JDA instance
          */
         @Nonnull
-        default JDA getJDA()
-        {
+        default JDA getJDA() {
             return getGuild().getJDA();
         }
 
@@ -130,8 +122,7 @@ public interface VoiceDispatchInterceptor
          * @return The shard information, or null if this was not for a sharded client
          */
         @Nullable
-        default JDA.ShardInfo getShardInfo()
-        {
+        default JDA.ShardInfo getShardInfo() {
             return getJDA().getShardInfo();
         }
     }
@@ -139,16 +130,14 @@ public interface VoiceDispatchInterceptor
     /**
      * Wrapper for a <a href="https://discord.com/developers/docs/topics/gateway#voice-server-update" target="_blank">Voice Server Update</a>
      */
-    class VoiceServerUpdate implements VoiceUpdate
-    {
+    class VoiceServerUpdate implements VoiceUpdate {
         private final Guild guild;
         private final String endpoint;
         private final String token;
         private final String sessionId;
         private final DataObject json;
 
-        public VoiceServerUpdate(Guild guild, String endpoint, String token, String sessionId, DataObject json)
-        {
+        public VoiceServerUpdate(Guild guild, String endpoint, String token, String sessionId, DataObject json) {
             this.guild = guild;
             this.endpoint = endpoint;
             this.token = token;
@@ -158,15 +147,13 @@ public interface VoiceDispatchInterceptor
 
         @Nonnull
         @Override
-        public Guild getGuild()
-        {
+        public Guild getGuild() {
             return guild;
         }
 
         @Nonnull
         @Override
-        public DataObject toData()
-        {
+        public DataObject toData() {
             return json;
         }
 
@@ -176,8 +163,7 @@ public interface VoiceDispatchInterceptor
          * @return The endpoint
          */
         @Nonnull
-        public String getEndpoint()
-        {
+        public String getEndpoint() {
             return endpoint;
         }
 
@@ -187,8 +173,7 @@ public interface VoiceDispatchInterceptor
          * @return The access token
          */
         @Nonnull
-        public String getToken()
-        {
+        public String getToken() {
             return token;
         }
 
@@ -198,8 +183,7 @@ public interface VoiceDispatchInterceptor
          * @return The session id
          */
         @Nonnull
-        public String getSessionId()
-        {
+        public String getSessionId() {
             return sessionId;
         }
     }
@@ -207,14 +191,12 @@ public interface VoiceDispatchInterceptor
     /**
      * Wrapper for a <a href="https://discord.com/developers/docs/topics/gateway#voice-state-update" target="_blank">Voice State Update</a>
      */
-    class VoiceStateUpdate implements VoiceUpdate
-    {
+    class VoiceStateUpdate implements VoiceUpdate {
         private final AudioChannel channel;
         private final GuildVoiceState voiceState;
         private final DataObject json;
 
-        public VoiceStateUpdate(AudioChannel channel, GuildVoiceState voiceState, DataObject json)
-        {
+        public VoiceStateUpdate(AudioChannel channel, GuildVoiceState voiceState, DataObject json) {
             this.channel = channel;
             this.voiceState = voiceState;
             this.json = json;
@@ -222,15 +204,13 @@ public interface VoiceDispatchInterceptor
 
         @Nonnull
         @Override
-        public Guild getGuild()
-        {
+        public Guild getGuild() {
             return voiceState.getGuild();
         }
 
         @Nonnull
         @Override
-        public DataObject toData()
-        {
+        public DataObject toData() {
             return json;
         }
 
@@ -240,8 +220,7 @@ public interface VoiceDispatchInterceptor
          * @return The updated voice channel, or null to signal disconnect
          */
         @Nullable
-        public AudioChannel getChannel()
-        {
+        public AudioChannel getChannel() {
             return channel;
         }
 
@@ -251,8 +230,7 @@ public interface VoiceDispatchInterceptor
          * @return The voice state
          */
         @Nonnull
-        public GuildVoiceState getVoiceState()
-        {
+        public GuildVoiceState getVoiceState() {
             return voiceState;
         }
     }

@@ -35,58 +35,46 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class CreateApplicationEmojiTest extends RestActionTest
-{
+public class CreateApplicationEmojiTest extends RestActionTest {
     private static final String EXAMPLE_NAME = "thinking";
-    private static final Icon EXAMPLE_ICON = Icon.from(new byte[]{1, 2, 3});
+    private static final Icon EXAMPLE_ICON = Icon.from(new byte[] {1, 2, 3});
 
     @BeforeEach
-    void setupMocks()
-    {
+    void setupMocks() {
         when(jda.createApplicationEmoji(any(), any())).thenCallRealMethod();
         when(jda.getSelfUser()).thenReturn(new SelfUserImpl(Constants.BUTLER_USER_ID, jda));
     }
 
     @MethodSource
     @ParameterizedTest
-    void testNullArguments(String name, Icon icon)
-    {
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> jda.createApplicationEmoji(name, icon));
+    void testNullArguments(String name, Icon icon) {
+        assertThatIllegalArgumentException().isThrownBy(() -> jda.createApplicationEmoji(name, icon));
     }
 
-    static Stream<Arguments> testNullArguments()
-    {
-        return Stream.of(
-            arguments(null, null),
-            arguments(null, EXAMPLE_ICON),
-            arguments(EXAMPLE_NAME, null)
-        );
+    static Stream<Arguments> testNullArguments() {
+        return Stream.of(arguments(null, null), arguments(null, EXAMPLE_ICON), arguments(EXAMPLE_NAME, null));
     }
 
     @Test
-    void testWrongNameFormat()
-    {
+    void testWrongNameFormat() {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> jda.createApplicationEmoji("test with spaces", EXAMPLE_ICON))
-            .withMessageContaining("must match regex");
+                .isThrownBy(() -> jda.createApplicationEmoji("test with spaces", EXAMPLE_ICON))
+                .withMessageContaining("must match regex");
     }
 
     @Test
-    void testWrongNameLength()
-    {
+    void testWrongNameLength() {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> jda.createApplicationEmoji(StringUtils.repeat('a', 33), EXAMPLE_ICON))
-            .withMessageContaining("must be between 2 and 32 characters long");
+                .isThrownBy(() -> jda.createApplicationEmoji(StringUtils.repeat('a', 33), EXAMPLE_ICON))
+                .withMessageContaining("must be between 2 and 32 characters long");
     }
 
     @Test
-    void testValidEmoji()
-    {
+    void testValidEmoji() {
         assertThatRequestFrom(jda.createApplicationEmoji(EXAMPLE_NAME, EXAMPLE_ICON))
-            .hasMethod(Method.POST)
-            .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/emojis")
-            .hasBodyMatchingSnapshot()
-            .whenQueueCalled();
+                .hasMethod(Method.POST)
+                .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/emojis")
+                .hasBodyMatchingSnapshot()
+                .whenQueueCalled();
     }
 }

@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the role whitelist for a {@link RichCustomEmoji Custom Emoji} changed.
@@ -37,12 +38,11 @@ import java.util.List;
  *
  * <p>Identifier: {@code roles}
  */
-public class EmojiUpdateRolesEvent extends GenericEmojiUpdateEvent<List<Role>>
-{
+public class EmojiUpdateRolesEvent extends GenericEmojiUpdateEvent<List<Role>> {
     public static final String IDENTIFIER = "roles";
 
-    public EmojiUpdateRolesEvent(@Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji, @Nonnull List<Role> oldRoles)
-    {
+    public EmojiUpdateRolesEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull RichCustomEmoji emoji, @Nonnull List<Role> oldRoles) {
         super(api, responseNumber, emoji, oldRoles, emoji.getRoles(), IDENTIFIER);
     }
 
@@ -52,8 +52,7 @@ public class EmojiUpdateRolesEvent extends GenericEmojiUpdateEvent<List<Role>>
      * @return The old role whitelist
      */
     @Nonnull
-    public List<Role> getOldRoles()
-    {
+    public List<Role> getOldRoles() {
         return getOldValue();
     }
 
@@ -63,22 +62,19 @@ public class EmojiUpdateRolesEvent extends GenericEmojiUpdateEvent<List<Role>>
      * @return The new role whitelist
      */
     @Nonnull
-    public List<Role> getNewRoles()
-    {
+    public List<Role> getNewRoles() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public List<Role> getOldValue()
-    {
+    public List<Role> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Role> getNewValue()
-    {
+    public List<Role> getNewValue() {
         return super.getNewValue();
     }
 }

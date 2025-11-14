@@ -22,23 +22,20 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 
-public class GuildAuditLogEntryCreateHandler extends SocketHandler
-{
-    public GuildAuditLogEntryCreateHandler(JDAImpl api)
-    {
+public class GuildAuditLogEntryCreateHandler extends SocketHandler {
+    public GuildAuditLogEntryCreateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        final long id = content.getLong("guild_id");
-        if (getJDA().getGuildSetupController().isLocked(id))
+    protected Long handleInternally(DataObject content) {
+        long id = content.getLong("guild_id");
+        if (getJDA().getGuildSetupController().isLocked(id)) {
             return id;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
-        if (guild == null)
-        {
+        if (guild == null) {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received Guild Audit Log Create event for a Guild not yet cached. GuildId: {}", id);
             return null;
@@ -46,10 +43,7 @@ public class GuildAuditLogEntryCreateHandler extends SocketHandler
 
         AuditLogEntry entry = api.getEntityBuilder().createAuditLogEntry(guild, content, null, null);
 
-        api.handleEvent(
-            new GuildAuditLogEntryCreateEvent(
-                api, responseNumber,
-                entry));
+        api.handleEvent(new GuildAuditLogEntryCreateEvent(api, responseNumber, entry));
 
         return null;
     }

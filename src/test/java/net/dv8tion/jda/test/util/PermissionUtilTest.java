@@ -41,44 +41,47 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-public class PermissionUtilTest extends IntegrationTest
-{
-    private static final EnumSet<Permission> ALL_PERMISSIONS =
-        Arrays.stream(Permission.values())
-              .filter(perm -> perm != Permission.UNKNOWN)
-              .collect(Collectors.toCollection(() -> EnumSet.noneOf(Permission.class)));
+public class PermissionUtilTest extends IntegrationTest {
+    private static final EnumSet<Permission> ALL_PERMISSIONS = Arrays.stream(Permission.values())
+            .filter(perm -> perm != Permission.UNKNOWN)
+            .collect(Collectors.toCollection(() -> EnumSet.noneOf(Permission.class)));
 
-    private static final EnumSet<Permission> ALL_CHANNEL_PERMISSIONS =
-        Arrays.stream(Permission.values())
-              .filter(Permission::isChannel)
-              .collect(Collectors.toCollection(() -> EnumSet.noneOf(Permission.class)));
+    private static final EnumSet<Permission> ALL_CHANNEL_PERMISSIONS = Arrays.stream(Permission.values())
+            .filter(Permission::isChannel)
+            .collect(Collectors.toCollection(() -> EnumSet.noneOf(Permission.class)));
 
     private static final long ALL_PERMISSIONS_RAW = Permission.getRaw(ALL_PERMISSIONS);
     private static final long ALL_CHANNEL_PERMISSIONS_RAW = Permission.getRaw(ALL_CHANNEL_PERMISSIONS);
 
     @Mock
     private Guild guild;
+
     @Mock
     private Member member;
+
     @Mock
     private TextChannel textChannel;
+
     @Mock
     private VoiceChannel voiceChannel;
+
     @Mock
     private Role role;
+
     @Mock
     private Role publicRole;
 
     @Mock
     private PermissionOverride roleOverride;
+
     @Mock
     private PermissionOverride publicRoleOverride;
+
     @Mock
     private PermissionOverride memberOverride;
 
     @BeforeEach
-    void setupMocks()
-    {
+    void setupMocks() {
         when(member.getGuild()).thenReturn(guild);
         when(guild.getPublicRole()).thenReturn(publicRole);
         when(member.getRoles()).thenReturn(Collections.singletonList(role));
@@ -88,8 +91,7 @@ public class PermissionUtilTest extends IntegrationTest
         mockChannel(voiceChannel, ChannelType.VOICE);
     }
 
-    private void mockChannel(IPermissionContainer channel, ChannelType type)
-    {
+    private void mockChannel(IPermissionContainer channel, ChannelType type) {
         when(channel.getType()).thenReturn(type);
         when(channel.getGuild()).thenReturn(guild);
         when(channel.getPermissionContainer()).thenReturn(channel);
@@ -99,26 +101,23 @@ public class PermissionUtilTest extends IntegrationTest
     }
 
     @Test
-    void testNoPermissionHasNoPermission()
-    {
+    void testNoPermissionHasNoPermission() {
         when(role.getPermissionsRaw()).thenReturn(0L);
 
         assertThat(PermissionUtil.getExplicitPermission(member)).isEqualTo(0L);
     }
 
     @Test
-    void testPermissionInheritedFromPublicRole()
-    {
+    void testPermissionInheritedFromPublicRole() {
         when(role.getPermissionsRaw()).thenReturn(Permission.MESSAGE_HISTORY.getRawValue());
         when(publicRole.getPermissionsRaw()).thenReturn(Permission.MESSAGE_SEND.getRawValue());
 
         assertThat(PermissionUtil.getExplicitPermission(member))
-            .isEqualTo(Permission.MESSAGE_HISTORY.getRawValue() | Permission.MESSAGE_SEND.getRawValue());
+                .isEqualTo(Permission.MESSAGE_HISTORY.getRawValue() | Permission.MESSAGE_SEND.getRawValue());
     }
 
     @Test
-    void testAdminHasAllEffectivePermissions()
-    {
+    void testAdminHasAllEffectivePermissions() {
         when(role.getPermissionsRaw()).thenReturn(Permission.ADMINISTRATOR.getRawValue());
         when(roleOverride.getDeniedRaw()).thenReturn(Permission.VIEW_CHANNEL.getRawValue());
         when(memberOverride.getDeniedRaw()).thenReturn(Permission.VIEW_CHANNEL.getRawValue());
@@ -126,64 +125,62 @@ public class PermissionUtilTest extends IntegrationTest
 
         assertThat(PermissionUtil.getEffectivePermission(member)).isEqualTo(ALL_PERMISSIONS_RAW);
         assertThat(PermissionUtil.getEffectivePermission(textChannel, member)).isEqualTo(ALL_PERMISSIONS_RAW);
-        assertThat(ALL_PERMISSIONS).allSatisfy(
-            permission -> assertThat(PermissionUtil.checkPermission(member, permission)).isTrue()
-        );
-        assertThat(ALL_CHANNEL_PERMISSIONS).allSatisfy(
-            permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission)).isTrue()
-        );
+        assertThat(ALL_PERMISSIONS)
+                .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(member, permission))
+                        .isTrue());
+        assertThat(ALL_CHANNEL_PERMISSIONS)
+                .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission))
+                        .isTrue());
     }
 
     @Test
-    void testOwnerHasAllEffectivePermissions()
-    {
+    void testOwnerHasAllEffectivePermissions() {
         when(member.isOwner()).thenReturn(true);
 
         assertThat(PermissionUtil.getEffectivePermission(member)).isEqualTo(ALL_PERMISSIONS_RAW);
         assertThat(PermissionUtil.getEffectivePermission(textChannel, member)).isEqualTo(ALL_PERMISSIONS_RAW);
-        assertThat(ALL_PERMISSIONS).allSatisfy(
-            permission -> assertThat(PermissionUtil.checkPermission(member, permission)).isTrue()
-        );
-        assertThat(ALL_CHANNEL_PERMISSIONS).allSatisfy(
-            permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission)).isTrue()
-        );
+        assertThat(ALL_PERMISSIONS)
+                .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(member, permission))
+                        .isTrue());
+        assertThat(ALL_CHANNEL_PERMISSIONS)
+                .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission))
+                        .isTrue());
     }
 
     @Test
-    void testMemberDoesNotHaveViewChannel()
-    {
+    void testMemberDoesNotHaveViewChannel() {
         when(publicRole.getPermissionsRaw()).thenReturn(Permission.VIEW_CHANNEL.getRawValue());
         when(publicRoleOverride.getDeniedRaw()).thenReturn(Permission.VIEW_CHANNEL.getRawValue());
 
         // denies permissions in all channels
 
         assertThat(PermissionUtil.getEffectivePermission(textChannel, member)).isEqualTo(0L);
-        assertThat(ALL_PERMISSIONS).allSatisfy(
-            permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission)).isFalse()
-        );
+        assertThat(ALL_PERMISSIONS)
+                .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission))
+                        .isFalse());
 
         assertThat(PermissionUtil.getEffectivePermission(voiceChannel, member)).isEqualTo(0L);
-        assertThat(ALL_PERMISSIONS).allSatisfy(
-            permission -> assertThat(PermissionUtil.checkPermission(voiceChannel, member, permission)).isFalse()
-        );
+        assertThat(ALL_PERMISSIONS)
+                .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(voiceChannel, member, permission))
+                        .isFalse());
     }
 
     @Test
-    void testMemberDoesNotHaveConnectChannel()
-    {
+    void testMemberDoesNotHaveConnectChannel() {
         when(publicRole.getPermissionsRaw()).thenReturn(Permission.VIEW_CHANNEL.getRawValue());
         when(publicRoleOverride.getDeniedRaw()).thenReturn(Permission.VOICE_CONNECT.getRawValue());
 
         // denies permissions in voice channels
         assertThat(PermissionUtil.getEffectivePermission(voiceChannel, member)).isEqualTo(0L);
-        assertThat(ALL_PERMISSIONS).allSatisfy(
-            permission -> assertThat(PermissionUtil.checkPermission(voiceChannel, member, permission)).isFalse()
-        );
+        assertThat(ALL_PERMISSIONS)
+                .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(voiceChannel, member, permission))
+                        .isFalse());
 
         // but should not affect text channel
-        assertThat(PermissionUtil.getEffectivePermission(textChannel, member)).isEqualTo(Permission.VIEW_CHANNEL.getRawValue());
-        assertThat(ALL_PERMISSIONS).allSatisfy(
-            permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission)).isEqualTo(permission == Permission.VIEW_CHANNEL)
-        );
+        assertThat(PermissionUtil.getEffectivePermission(textChannel, member))
+                .isEqualTo(Permission.VIEW_CHANNEL.getRawValue());
+        assertThat(ALL_PERMISSIONS)
+                .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission))
+                        .isEqualTo(permission == Permission.VIEW_CHANNEL));
     }
 }

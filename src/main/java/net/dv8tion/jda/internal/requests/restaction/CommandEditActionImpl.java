@@ -37,38 +37,39 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class CommandEditActionImpl extends RestActionImpl<Command> implements CommandEditAction
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class CommandEditActionImpl extends RestActionImpl<Command> implements CommandEditAction {
     private static final String UNDEFINED = "undefined";
-    private static final int NAME_SET                 = 1 << 0;
-    private static final int DESCRIPTION_SET          = 1 << 1;
-    private static final int OPTIONS_SET              = 1 << 2;
-    private static final int PERMISSIONS_SET          = 1 << 3;
-    private static final int NSFW_SET                 = 1 << 4;
+    private static final int NAME_SET = 1 << 0;
+    private static final int DESCRIPTION_SET = 1 << 1;
+    private static final int OPTIONS_SET = 1 << 2;
+    private static final int PERMISSIONS_SET = 1 << 3;
+    private static final int NSFW_SET = 1 << 4;
     private static final int INTERACTION_CONTEXTS_SET = 1 << 5;
-    private static final int INTEGRATION_TYPES_SET    = 1 << 6;
+    private static final int INTEGRATION_TYPES_SET = 1 << 6;
     private final Guild guild;
 
     private int mask;
     private CommandDataImpl data;
 
-    public CommandEditActionImpl(JDA api, Command.Type type, String id)
-    {
+    public CommandEditActionImpl(JDA api, Command.Type type, String id) {
         super(api, Route.Interactions.EDIT_COMMAND.compile(api.getSelfUser().getApplicationId(), id));
         this.guild = null;
         this.data = CommandDataImpl.of(type, UNDEFINED, UNDEFINED);
         this.reset();
     }
 
-    public CommandEditActionImpl(Guild guild, Command.Type type, String id)
-    {
-        super(guild.getJDA(), Route.Interactions.EDIT_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId(), id));
+    public CommandEditActionImpl(Guild guild, Command.Type type, String id) {
+        super(
+                guild.getJDA(),
+                Route.Interactions.EDIT_GUILD_COMMAND.compile(
+                        guild.getJDA().getSelfUser().getApplicationId(), guild.getId(), id));
         this.guild = guild;
         this.data = CommandDataImpl.of(type, UNDEFINED, UNDEFINED);
         this.reset();
@@ -76,48 +77,47 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setCheck(BooleanSupplier checks)
-    {
+    public CommandEditAction setCheck(BooleanSupplier checks) {
         return (CommandEditAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction deadline(long timestamp)
-    {
+    public CommandEditAction deadline(long timestamp) {
         return (CommandEditAction) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction apply(@Nonnull CommandData commandData)
-    {
+    public CommandEditAction apply(@Nonnull CommandData commandData) {
         Checks.notNull(commandData, "Command Data");
-        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET | PERMISSIONS_SET | NSFW_SET | INTERACTION_CONTEXTS_SET | INTEGRATION_TYPES_SET;
+        this.mask = NAME_SET
+                | DESCRIPTION_SET
+                | OPTIONS_SET
+                | PERMISSIONS_SET
+                | NSFW_SET
+                | INTERACTION_CONTEXTS_SET
+                | INTEGRATION_TYPES_SET;
         this.data = (CommandDataImpl) commandData;
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction addCheck(@Nonnull BooleanSupplier checks)
-    {
+    public CommandEditAction addCheck(@Nonnull BooleanSupplier checks) {
         return (CommandEditAction) super.addCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public CommandEditAction timeout(long timeout, @Nonnull TimeUnit unit) {
         return (CommandEditAction) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction setName(@Nullable String name)
-    {
-        if (name == null)
-        {
+    public CommandEditAction setName(@Nullable String name) {
+        if (name == null) {
             mask &= ~NAME_SET;
             return this;
         }
@@ -128,8 +128,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setContexts(@Nonnull Collection<InteractionContextType> contexts)
-    {
+    public CommandEditAction setContexts(@Nonnull Collection<InteractionContextType> contexts) {
         data.setContexts(contexts);
         mask |= INTERACTION_CONTEXTS_SET;
         return this;
@@ -137,8 +136,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes)
-    {
+    public CommandEditAction setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes) {
         data.setIntegrationTypes(integrationTypes);
         mask |= INTEGRATION_TYPES_SET;
         return this;
@@ -146,8 +144,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setNSFW(boolean nsfw)
-    {
+    public CommandEditAction setNSFW(boolean nsfw) {
         data.setNSFW(nsfw);
         mask |= NSFW_SET;
         return this;
@@ -155,8 +152,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission)
-    {
+    public CommandEditAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission) {
         data.setDefaultPermissions(permission);
         mask |= PERMISSIONS_SET;
         return this;
@@ -164,10 +160,8 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setDescription(@Nullable String description)
-    {
-        if (description == null)
-        {
+    public CommandEditAction setDescription(@Nullable String description) {
+        if (description == null) {
             mask &= ~DESCRIPTION_SET;
             return this;
         }
@@ -178,8 +172,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction clearOptions()
-    {
+    public CommandEditAction clearOptions() {
         data.removeAllOptions();
         mask |= OPTIONS_SET;
         return this;
@@ -187,8 +180,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction addOptions(@Nonnull OptionData... options)
-    {
+    public CommandEditAction addOptions(@Nonnull OptionData... options) {
         data.addOptions(options);
         mask |= OPTIONS_SET;
         return this;
@@ -196,8 +188,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction addSubcommands(@Nonnull SubcommandData... subcommands)
-    {
+    public CommandEditAction addSubcommands(@Nonnull SubcommandData... subcommands) {
         data.addSubcommands(subcommands);
         mask |= OPTIONS_SET;
         return this;
@@ -205,49 +196,51 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
-    {
+    public CommandEditAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups) {
         data.addSubcommandGroups(groups);
         mask |= OPTIONS_SET;
         return this;
     }
 
-    private boolean isUnchanged(int flag)
-    {
+    private boolean isUnchanged(int flag) {
         return (mask & flag) != flag;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject json = data.toData();
-        if (isUnchanged(NAME_SET))
+        if (isUnchanged(NAME_SET)) {
             json.remove("name");
-        if (isUnchanged(DESCRIPTION_SET))
+        }
+        if (isUnchanged(DESCRIPTION_SET)) {
             json.remove("description");
-        if (isUnchanged(OPTIONS_SET))
+        }
+        if (isUnchanged(OPTIONS_SET)) {
             json.remove("options");
-        if (isUnchanged(PERMISSIONS_SET))
+        }
+        if (isUnchanged(PERMISSIONS_SET)) {
             json.remove("default_member_permissions");
-        if (isUnchanged(NSFW_SET))
+        }
+        if (isUnchanged(NSFW_SET)) {
             json.remove("nsfw");
-        if (isUnchanged(INTERACTION_CONTEXTS_SET))
+        }
+        if (isUnchanged(INTERACTION_CONTEXTS_SET)) {
             json.remove("contexts");
-        if (isUnchanged(INTEGRATION_TYPES_SET))
+        }
+        if (isUnchanged(INTEGRATION_TYPES_SET)) {
             json.remove("integration_types");
+        }
         reset();
         return getRequestBody(json);
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Command> request)
-    {
+    protected void handleSuccess(Response response, Request<Command> request) {
         DataObject json = response.getObject();
         request.onSuccess(new CommandImpl(api, guild, json));
     }
 
-    private void reset()
-    {
+    private void reset() {
         mask = 0;
         data = CommandDataImpl.of(data.getType(), UNDEFINED, UNDEFINED);
     }

@@ -29,32 +29,25 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-public class AbstractSocketHandlerTest extends IntegrationTest
-{
+public class AbstractSocketHandlerTest extends IntegrationTest {
     @Mock
     protected GuildSetupController setupController;
+
     @Mock
     protected Guild guild;
 
     @BeforeEach
-    final void setupHandlerContext()
-    {
+    final void setupHandlerContext() {
         when(jda.getGuildSetupController()).thenReturn(setupController);
         when(setupController.isLocked(anyLong())).thenReturn(false);
         when(jda.getGuildById(eq(Constants.GUILD_ID))).thenReturn(guild);
     }
 
-    protected DataObject event(String type, DataObject data)
-    {
-        return DataObject.empty()
-            .put("s", 1)
-            .put("op", 0)
-            .put("t", type)
-            .put("d", data);
+    protected DataObject event(String type, DataObject data) {
+        return DataObject.empty().put("s", 1).put("op", 0).put("t", type).put("d", data);
     }
 
-    protected <T> EventFiredAssertions<T> assertThatEvent(Class<T> eventType)
-    {
+    protected <T> EventFiredAssertions<T> assertThatEvent(Class<T> eventType) {
         return new EventFiredAssertions<>(eventType, jda);
     }
 }

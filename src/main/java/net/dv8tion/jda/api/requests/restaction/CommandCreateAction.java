@@ -29,13 +29,14 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.requests.RestAction;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Specialized {@link RestAction} used to create or update commands.
@@ -44,8 +45,7 @@ import java.util.function.BooleanSupplier;
  * <p>This operation is <b>not</b> idempotent!
  * Commands will persist between restarts of your bot, you only have to create a command once.
  */
-public interface CommandCreateAction extends RestAction<Command>, SlashCommandData
-{
+public interface CommandCreateAction extends RestAction<Command>, SlashCommandData {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -109,32 +109,34 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addOptions(@Nonnull Collection<? extends OptionData> options)
-    {
+    default CommandCreateAction addOptions(@Nonnull Collection<? extends OptionData> options) {
         return (CommandCreateAction) SlashCommandData.super.addOptions(options);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required, boolean autoComplete)
-    {
+    default CommandCreateAction addOption(
+            @Nonnull OptionType type,
+            @Nonnull String name,
+            @Nonnull String description,
+            boolean required,
+            boolean autoComplete) {
         return (CommandCreateAction) SlashCommandData.super.addOption(type, name, description, required, autoComplete);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
-    {
+    default CommandCreateAction addOption(
+            @Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required) {
         return (CommandCreateAction) SlashCommandData.super.addOption(type, name, description, required);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
-    {
+    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         return (CommandCreateAction) SlashCommandData.super.addOption(type, name, description, false);
     }
 
@@ -146,8 +148,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
-    {
+    default CommandCreateAction addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands) {
         return (CommandCreateAction) SlashCommandData.super.addSubcommands(subcommands);
     }
 
@@ -159,8 +160,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
-    {
+    default CommandCreateAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups) {
         return (CommandCreateAction) SlashCommandData.super.addSubcommandGroups(groups);
     }
 
@@ -172,8 +172,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction setContexts(@Nonnull InteractionContextType... contexts)
-    {
+    default CommandCreateAction setContexts(@Nonnull InteractionContextType... contexts) {
         return (CommandCreateAction) SlashCommandData.super.setContexts(contexts);
     }
 
@@ -185,8 +184,7 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
-    default CommandCreateAction setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
-    {
+    default CommandCreateAction setIntegrationTypes(@Nonnull IntegrationType... integrationTypes) {
         return (CommandCreateAction) SlashCommandData.super.setIntegrationTypes(integrationTypes);
     }
 

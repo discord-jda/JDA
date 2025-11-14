@@ -29,8 +29,7 @@ import javax.annotation.Nullable;
  *
  * @see net.dv8tion.jda.api.interactions.InteractionHook#getCallbackResponse() InteractionHook#getCallbackResponse
  */
-public interface InteractionCallbackResponse
-{
+public interface InteractionCallbackResponse {
     /**
      * Returns the {@link Message} contained in this callback response, or {@code null} if none was created or updated by the response.
      *

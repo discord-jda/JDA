@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
@@ -31,12 +32,12 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.ScheduledEventMem
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
-public class ScheduledEventImpl implements ScheduledEvent
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ScheduledEventImpl implements ScheduledEvent {
     private final long id;
     private final Guild guild;
 
@@ -50,129 +51,114 @@ public class ScheduledEventImpl implements ScheduledEvent
     private int interestedUserCount;
     private String location;
 
-    public ScheduledEventImpl(long id, Guild guild)
-    {
+    public ScheduledEventImpl(long id, Guild guild) {
         this.id = id;
         this.guild = guild;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Nullable
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
     @Nullable
     @Override
-    public String getImageUrl()
-    {
+    public String getImageUrl() {
         return image == null ? null : String.format(IMAGE_URL, getId(), image, image.startsWith("a_") ? "gif" : "png");
     }
 
     @Nullable
     @Override
-    public User getCreator()
-    {
+    public User getCreator() {
         return creator;
     }
 
     @Override
-    public long getCreatorIdLong()
-    {
+    public long getCreatorIdLong() {
         return creatorId;
     }
 
     @Nonnull
     @Override
-    public Status getStatus()
-    {
+    public Status getStatus() {
         return status;
     }
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return type;
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getStartTime()
-    {
+    public OffsetDateTime getStartTime() {
         return startTime;
     }
 
     @Nullable
     @Override
-    public OffsetDateTime getEndTime()
-    {
+    public OffsetDateTime getEndTime() {
         return endTime;
     }
 
     @Nullable
     @Override
-    public GuildChannelUnion getChannel()
-    {
-        if (type.isChannel())
+    public GuildChannelUnion getChannel() {
+        if (type.isChannel()) {
             return (GuildChannelUnion) guild.getGuildChannelById(location);
+        }
         return null;
     }
 
     @Nonnull
     @Override
-    public String getLocation()
-    {
+    public String getLocation() {
         return location;
     }
 
     @Nonnull
     @Override
-    public String getJumpUrl(){
+    public String getJumpUrl() {
         return Helpers.format(ScheduledEvent.JUMP_URL, getGuild().getId(), getId());
     }
 
     @Override
-    public int getInterestedUserCount()
-    {
+    public int getInterestedUserCount() {
         return interestedUserCount;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public ScheduledEventManager getManager()
-    {
+    public ScheduledEventManager getManager() {
         return new ScheduledEventManagerImpl(this);
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
-    {
+    public AuditableRestAction<Void> delete() {
         Guild guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EVENTS))
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EVENTS)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_EVENTS);
+        }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_SCHEDULED_EVENT.compile(guild.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -180,109 +166,99 @@ public class ScheduledEventImpl implements ScheduledEvent
 
     @Nonnull
     @Override
-    public ScheduledEventMembersPaginationAction retrieveInterestedMembers()
-    {
+    public ScheduledEventMembersPaginationAction retrieveInterestedMembers() {
         return new ScheduledEventMembersPaginationActionImpl(this);
     }
 
-    public ScheduledEventImpl setName(String name)
-    {
+    public ScheduledEventImpl setName(String name) {
         this.name = name;
         return this;
     }
 
-    public ScheduledEventImpl setType(Type type)
-    {
+    public ScheduledEventImpl setType(Type type) {
         this.type = type;
         return this;
     }
 
-    public ScheduledEventImpl setLocation(String location)
-    {
+    public ScheduledEventImpl setLocation(String location) {
         this.location = location;
         return this;
     }
 
-    public ScheduledEventImpl setDescription(String description)
-    {
+    public ScheduledEventImpl setDescription(String description) {
         this.description = description;
         return this;
     }
 
-    public ScheduledEventImpl setImage(String image)
-    {
+    public ScheduledEventImpl setImage(String image) {
         this.image = image;
         return this;
     }
 
-    public ScheduledEventImpl setCreatorId(long creatorId)
-    {
+    public ScheduledEventImpl setCreatorId(long creatorId) {
         this.creatorId = creatorId;
         return this;
     }
 
-    public ScheduledEventImpl setCreator(User creator)
-    {
+    public ScheduledEventImpl setCreator(User creator) {
         this.creator = creator;
         return this;
     }
 
-    public ScheduledEventImpl setStatus(Status status)
-    {
+    public ScheduledEventImpl setStatus(Status status) {
         this.status = status;
         return this;
     }
 
-    public ScheduledEventImpl setStartTime(OffsetDateTime startTime)
-    {
+    public ScheduledEventImpl setStartTime(OffsetDateTime startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public ScheduledEventImpl setEndTime(OffsetDateTime endTime)
-    {
+    public ScheduledEventImpl setEndTime(OffsetDateTime endTime) {
         this.endTime = endTime;
         return this;
     }
 
-    public ScheduledEventImpl setInterestedUserCount(int interestedUserCount)
-    {
+    public ScheduledEventImpl setInterestedUserCount(int interestedUserCount) {
         this.interestedUserCount = interestedUserCount;
         return this;
     }
 
     @Override
-    public int compareTo(@Nonnull ScheduledEvent scheduledEvent)
-    {
+    public int compareTo(@Nonnull ScheduledEvent scheduledEvent) {
         Checks.notNull(scheduledEvent, "Scheduled Event");
-        Checks.check(this.getGuild().equals(scheduledEvent.getGuild()), "Cannot compare two Scheduled Events belonging to seperate guilds!");
+        Checks.check(
+                this.getGuild().equals(scheduledEvent.getGuild()),
+                "Cannot compare two Scheduled Events belonging to seperate guilds!");
 
-        int startTimeComparison = OffsetDateTime.timeLineOrder().compare(this.getStartTime(), scheduledEvent.getStartTime());
-        if (startTimeComparison == 0)
+        int startTimeComparison =
+                OffsetDateTime.timeLineOrder().compare(this.getStartTime(), scheduledEvent.getStartTime());
+        if (startTimeComparison == 0) {
             return Long.compare(this.getIdLong(), scheduledEvent.getIdLong());
-        else
+        } else {
             return startTimeComparison;
+        }
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this)
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
-        if (!(o instanceof ScheduledEventImpl))
+        }
+        if (!(o instanceof ScheduledEventImpl)) {
             return false;
+        }
         return this.id == ((ScheduledEventImpl) o).id;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ScheduledEvent:" + getName() + '(' + id + ')';
     }
 }

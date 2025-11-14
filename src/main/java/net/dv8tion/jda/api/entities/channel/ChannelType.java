@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Enum used to differentiate between the different types of Discord channels.
  */
-public enum ChannelType
-{
+public enum ChannelType {
     /**
      * A {@link TextChannel TextChannel}, Guild-Only.
      */
@@ -80,13 +81,11 @@ public enum ChannelType
     private final boolean isGuild;
     private final Class<? extends Channel> clazz;
 
-    ChannelType(Class<? extends Channel> clazz, int id, int sortBucket)
-    {
+    ChannelType(Class<? extends Channel> clazz, int id, int sortBucket) {
         this(clazz, id, sortBucket, false);
     }
 
-    ChannelType(Class<? extends Channel> clazz, int id, int sortBucket, boolean isGuild)
-    {
+    ChannelType(Class<? extends Channel> clazz, int id, int sortBucket, boolean isGuild) {
         this.clazz = clazz;
         this.id = id;
         this.sortBucket = sortBucket;
@@ -99,8 +98,7 @@ public enum ChannelType
      * @return This channel type's interface
      */
     @Nonnull
-    public Class<? extends Channel> getInterface()
-    {
+    public Class<? extends Channel> getInterface() {
         return this.clazz;
     }
 
@@ -109,8 +107,7 @@ public enum ChannelType
      *
      * @return The sorting bucket
      */
-    public int getSortBucket()
-    {
+    public int getSortBucket() {
         return sortBucket;
     }
 
@@ -119,8 +116,7 @@ public enum ChannelType
      *
      * @return The id key used by discord for this channel type.
      */
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
@@ -129,8 +125,7 @@ public enum ChannelType
      *
      * @return Whether or not this a GuildChannel
      */
-    public boolean isGuild()
-    {
+    public boolean isGuild() {
         return isGuild;
     }
 
@@ -139,10 +134,8 @@ public enum ChannelType
      *
      * @return True, if channels of this type support audio
      */
-    public boolean isAudio()
-    {
-        switch (this)
-        {
+    public boolean isAudio() {
+        switch (this) {
             case VOICE:
             case STAGE:
                 return true;
@@ -156,10 +149,8 @@ public enum ChannelType
      *
      * @return True, if channels of this type support messages
      */
-    public boolean isMessage()
-    {
-        switch (this)
-        {
+    public boolean isMessage() {
+        switch (this) {
             case TEXT:
             case VOICE:
             case STAGE:
@@ -178,10 +169,8 @@ public enum ChannelType
      *
      * @return True, if channels of this type are {@link ThreadChannel ThreadChannel}
      */
-    public boolean isThread()
-    {
-        switch (this)
-        {
+    public boolean isThread() {
+        switch (this) {
             case GUILD_NEWS_THREAD:
             case GUILD_PUBLIC_THREAD:
             case GUILD_PRIVATE_THREAD:
@@ -197,8 +186,7 @@ public enum ChannelType
      * @return {@link EnumSet} of {@link ChannelType}
      */
     @Nonnull
-    public static EnumSet<ChannelType> guildTypes()
-    {
+    public static EnumSet<ChannelType> guildTypes() {
         return EnumSet.complementOf(EnumSet.of(PRIVATE, GROUP, UNKNOWN));
     }
 
@@ -211,12 +199,11 @@ public enum ChannelType
      * @return The ChannelType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
      */
     @Nonnull
-    public static ChannelType fromId(int id)
-    {
-        for (ChannelType type : values())
-        {
-            if (type.id == id)
+    public static ChannelType fromId(int id) {
+        for (ChannelType type : values()) {
+            if (type.id == id) {
                 return type;
+            }
         }
         return UNKNOWN;
     }
@@ -230,13 +217,12 @@ public enum ChannelType
      * @return Possibly-empty {@link java.util.EnumSet} for the bucket
      */
     @Nonnull
-    public static EnumSet<ChannelType> fromSortBucket(int bucket)
-    {
+    public static EnumSet<ChannelType> fromSortBucket(int bucket) {
         EnumSet<ChannelType> types = EnumSet.noneOf(ChannelType.class);
-        for (ChannelType type : values())
-        {
-            if (type.getSortBucket() == bucket)
+        for (ChannelType type : values()) {
+            if (type.getSortBucket() == bucket) {
                 types.add(type);
+            }
         }
         return types;
     }

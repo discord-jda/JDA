@@ -23,27 +23,25 @@ import okio.BufferedSource;
 import okio.Okio;
 import okio.Source;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 
-public class BufferedRequestBody extends TypedBody<BufferedRequestBody>
-{
+import javax.annotation.Nonnull;
+
+public class BufferedRequestBody extends TypedBody<BufferedRequestBody> {
     private final Source source;
     private byte[] data;
 
-    public BufferedRequestBody(Source source, MediaType type)
-    {
+    public BufferedRequestBody(Source source, MediaType type) {
         super(type);
         this.source = source;
     }
 
     @Nonnull
-    public BufferedRequestBody withType(@Nonnull MediaType type)
-    {
-        if (type.equals(this.type))
+    public BufferedRequestBody withType(@Nonnull MediaType type) {
+        if (type.equals(this.type)) {
             return this;
-        synchronized (source)
-        {
+        }
+        synchronized (source) {
             BufferedRequestBody copy = new BufferedRequestBody(source, type);
             copy.data = data;
             return copy;
@@ -51,18 +49,14 @@ public class BufferedRequestBody extends TypedBody<BufferedRequestBody>
     }
 
     @Override
-    public void writeTo(@Nonnull BufferedSink sink) throws IOException
-    {
-        synchronized (source)
-        {
-            if (data != null)
-            {
+    public void writeTo(@Nonnull BufferedSink sink) throws IOException {
+        synchronized (source) {
+            if (data != null) {
                 sink.write(data);
                 return;
             }
 
-            try (BufferedSource s = Okio.buffer(source))
-            {
+            try (BufferedSource s = Okio.buffer(source)) {
                 data = s.readByteArray();
                 sink.write(data);
             }
@@ -71,8 +65,7 @@ public class BufferedRequestBody extends TypedBody<BufferedRequestBody>
 
     @Override
     @SuppressWarnings("deprecation")
-    protected void finalize()
-    {
+    protected void finalize() {
         IOUtil.silentClose(source);
     }
 }

@@ -24,9 +24,10 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 import static net.dv8tion.jda.internal.entities.EntityBuilder.DEFAULT_COMPONENT_DESERIALIZER;
 
@@ -39,8 +40,7 @@ import static net.dv8tion.jda.internal.entities.EntityBuilder.DEFAULT_COMPONENT_
  * @see ComponentDeserializer
  * @see ComponentSerializer
  */
-public class Components
-{
+public class Components {
     /**
      * Converts the provided {@link DataObject} into a component of type {@link T}.
      * <br>Note that any unsupported component will be represented as an {@link net.dv8tion.jda.api.components.UnknownComponent UnknownComponent}.
@@ -56,8 +56,7 @@ public class Components
      * @see ComponentDeserializer#deserializeAs(Class, DataObject)
      */
     @Nonnull
-    public static <T extends Component> T parseComponent(@Nonnull Class<T> componentType, @Nonnull DataObject data)
-    {
+    public static <T extends Component> T parseComponent(@Nonnull Class<T> componentType, @Nonnull DataObject data) {
         return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data);
     }
 
@@ -76,8 +75,8 @@ public class Components
      * @see ComponentDeserializer#deserializeAs(Class, DataArray)
      */
     @Nonnull
-    public static <T extends Component> List<T> parseComponents(@Nonnull Class<T> componentType, @Nonnull DataArray data)
-    {
+    public static <T extends Component> List<T> parseComponents(
+            @Nonnull Class<T> componentType, @Nonnull DataArray data) {
         return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data).collect(Collectors.toList());
     }
 
@@ -98,8 +97,7 @@ public class Components
      * @see ComponentDeserializer#deserializeAsTree(Class, DataArray)
      */
     @Nonnull
-    public static <T extends ComponentTree<?>> T parseTree(@Nonnull Class<T> treeType, @Nonnull DataArray data)
-    {
+    public static <T extends ComponentTree<?>> T parseTree(@Nonnull Class<T> treeType, @Nonnull DataArray data) {
         return DEFAULT_COMPONENT_DESERIALIZER.deserializeAsTree(treeType, data);
     }
 }

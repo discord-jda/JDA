@@ -42,8 +42,7 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      * @see    JDA#retrieveUserById(long)
      */
     @Nonnull
-    static UserSnowflake fromId(long id)
-    {
+    static UserSnowflake fromId(long id) {
         return new UserSnowflakeImpl(id);
     }
 
@@ -61,8 +60,7 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      * @see    JDA#retrieveUserById(String)
      */
     @Nonnull
-    static UserSnowflake fromId(@Nonnull String id)
-    {
+    static UserSnowflake fromId(@Nonnull String id) {
         return fromId(MiscUtil.parseSnowflake(id));
     }
 
@@ -80,8 +78,7 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      * @return Never-null String containing the user's default avatar url.
      */
     @Nonnull
-    default String getDefaultAvatarUrl()
-    {
+    default String getDefaultAvatarUrl() {
         return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
     }
 
@@ -93,8 +90,7 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      * @see    #getDefaultAvatarUrl()
      */
     @Nonnull
-    default ImageProxy getDefaultAvatar()
-    {
+    default ImageProxy getDefaultAvatar() {
         return new ImageProxy(getDefaultAvatarUrl());
     }
 }

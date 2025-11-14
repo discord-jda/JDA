@@ -21,10 +21,11 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} implementation
@@ -35,8 +36,7 @@ import java.util.List;
  *
  * @see CacheView CacheView for details on Efficient Memory Usage
  */
-public interface MemberCacheView extends SnowflakeCacheView<Member>
-{
+public interface MemberCacheView extends SnowflakeCacheView<Member> {
     /**
      * Retrieves the member represented by the provided ID.
      *
@@ -61,8 +61,7 @@ public interface MemberCacheView extends SnowflakeCacheView<Member>
      * @return Possibly-null member for the specified ID
      */
     @Nullable
-    default Member getElementById(@Nonnull String id)
-    {
+    default Member getElementById(@Nonnull String id) {
         return getElementById(MiscUtil.parseSnowflake(id));
     }
 
@@ -98,8 +97,7 @@ public interface MemberCacheView extends SnowflakeCacheView<Member>
      */
     @Nonnull
     @Unmodifiable
-    default List<Member> getElementsByUsername(@Nonnull String name)
-    {
+    default List<Member> getElementsByUsername(@Nonnull String name) {
         return getElementsByUsername(name, false);
     }
 
@@ -133,8 +131,7 @@ public interface MemberCacheView extends SnowflakeCacheView<Member>
      */
     @Nonnull
     @Unmodifiable
-    default List<Member> getElementsByNickname(@Nullable String name)
-    {
+    default List<Member> getElementsByNickname(@Nullable String name) {
         return getElementsByNickname(name, false);
     }
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -25,8 +26,7 @@ import javax.annotation.Nullable;
  * <br>This is used by {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannels} to define where the audio server that hosts the
  * {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel} is located.
  */
-public enum Region
-{
+public enum Region {
     BRAZIL("brazil", "Brazil", "\uD83C\uDDE7\uD83C\uDDF7", false),
     HONG_KONG("hongkong", "Hong Kong", "\uD83C\uDDED\uD83C\uDDF0", false),
     INDIA("india", "India", "\uD83C\uDDEE\uD83C\uDDF3", false),
@@ -68,8 +68,7 @@ public enum Region
     private final String emoji;
     private final boolean vip;
 
-    Region(String key, String name, String emoji, boolean vip)
-    {
+    Region(String key, String name, String emoji, boolean vip) {
         this.key = key;
         this.name = name;
         this.emoji = emoji;
@@ -82,8 +81,7 @@ public enum Region
      * @return The name of this region
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -93,8 +91,7 @@ public enum Region
      * @return The key (internal name) of this region
      */
     @Nonnull
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
@@ -104,8 +101,7 @@ public enum Region
      * @return Possibly-null unicode for the region's flag
      */
     @Nullable
-    public String getEmoji()
-    {
+    public String getEmoji() {
         return emoji;
     }
 
@@ -116,8 +112,7 @@ public enum Region
      *
      * @return True if this region is a VIP audio region.
      */
-    public boolean isVip()
-    {
+    public boolean isVip() {
         return vip;
     }
 
@@ -131,12 +126,9 @@ public enum Region
      *         returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN}.
      */
     @Nonnull
-    public static Region fromKey(@Nullable String key)
-    {
-        for (Region region : values())
-        {
-            if (region.getKey().equals(key))
-            {
+    public static Region fromKey(@Nullable String key) {
+        for (Region region : values()) {
+            if (region.getKey().equals(key)) {
                 return region;
             }
         }
@@ -144,10 +136,7 @@ public enum Region
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setType(this)
-                .toString();
+    public String toString() {
+        return new EntityString(this).setType(this).toString();
     }
 }

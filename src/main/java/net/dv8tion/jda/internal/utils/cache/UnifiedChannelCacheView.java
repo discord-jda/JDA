@@ -24,71 +24,63 @@ import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class UnifiedChannelCacheView<C extends Channel> implements ChannelCacheView<C>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class UnifiedChannelCacheView<C extends Channel> implements ChannelCacheView<C> {
     private final Supplier<Stream<ChannelCacheView<C>>> supplier;
 
-    public UnifiedChannelCacheView(Supplier<Stream<ChannelCacheView<C>>> supplier)
-    {
+    public UnifiedChannelCacheView(Supplier<Stream<ChannelCacheView<C>>> supplier) {
         this.supplier = supplier;
     }
 
     @Override
-    public void forEach(Consumer<? super C> action)
-    {
+    public void forEach(Consumer<? super C> action) {
         Objects.requireNonNull(action, "Consumer");
-        try (ClosableIterator<C> iterator = lockedIterator())
-        {
-            while (iterator.hasNext())
+        try (ClosableIterator<C> iterator = lockedIterator()) {
+            while (iterator.hasNext()) {
                 action.accept(iterator.next());
+            }
         }
     }
 
     @Nonnull
     @Override
-    public List<C> asList()
-    {
+    public List<C> asList() {
         return stream().collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
     @Override
-    public Set<C> asSet()
-    {
+    public Set<C> asSet() {
         return stream().collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
     }
 
     @Nonnull
     @Override
-    public ClosableIterator<C> lockedIterator()
-    {
+    public ClosableIterator<C> lockedIterator() {
         return new ChainedClosableIterator<>(supplier.get().iterator());
     }
 
     @Override
-    public long size()
-    {
+    public long size() {
         return supplier.get().mapToLong(ChannelCacheView::size).sum();
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return supplier.get().allMatch(ChannelCacheView::isEmpty);
     }
 
     @Nonnull
     @Override
-    public List<C> getElementsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    public List<C> getElementsByName(@Nonnull String name, boolean ignoreCase) {
         return supplier.get()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
                 .collect(Helpers.toUnmodifiableList());
@@ -96,31 +88,28 @@ public class UnifiedChannelCacheView<C extends Channel> implements ChannelCacheV
 
     @Nonnull
     @Override
-    public Stream<C> stream()
-    {
+    public Stream<C> stream() {
         return supplier.get().flatMap(ChannelCacheView::stream);
     }
 
     @Nonnull
     @Override
-    public Stream<C> parallelStream()
-    {
+    public Stream<C> parallelStream() {
         return supplier.get().parallel().flatMap(ChannelCacheView::parallelStream);
     }
 
     @Nonnull
     @Override
-    public <T extends C> ChannelCacheView<T> ofType(@Nonnull Class<T> type)
-    {
+    public <T extends C> ChannelCacheView<T> ofType(@Nonnull Class<T> type) {
         Checks.notNull(type, "Type");
         return new UnifiedChannelCacheView<>(() -> supplier.get().map(view -> view.ofType(type)));
     }
 
     @Nullable
     @Override
-    public C getElementById(@Nonnull ChannelType type, long id)
-    {
-        return supplier.get().map(view -> view.getElementById(type, id))
+    public C getElementById(@Nonnull ChannelType type, long id) {
+        return supplier.get()
+                .map(view -> view.getElementById(type, id))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
@@ -128,9 +117,9 @@ public class UnifiedChannelCacheView<C extends Channel> implements ChannelCacheV
 
     @Nullable
     @Override
-    public C getElementById(long id)
-    {
-        return supplier.get().map(view -> view.getElementById(id))
+    public C getElementById(long id) {
+        return supplier.get()
+                .map(view -> view.getElementById(id))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
@@ -138,8 +127,7 @@ public class UnifiedChannelCacheView<C extends Channel> implements ChannelCacheV
 
     @Nonnull
     @Override
-    public Iterator<C> iterator()
-    {
+    public Iterator<C> iterator() {
         return stream().iterator();
     }
 }

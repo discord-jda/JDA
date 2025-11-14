@@ -28,12 +28,14 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code notification_level}
  */
-public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<Guild.NotificationLevel>
-{
+public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<Guild.NotificationLevel> {
     public static final String IDENTIFIER = "notification_level";
 
-    public GuildUpdateNotificationLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.NotificationLevel oldNotificationLevel)
-    {
+    public GuildUpdateNotificationLevelEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            @Nonnull Guild.NotificationLevel oldNotificationLevel) {
         super(api, responseNumber, guild, oldNotificationLevel, guild.getDefaultNotificationLevel(), IDENTIFIER);
     }
 
@@ -43,8 +45,7 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
      * @return The old NotificationLevel
      */
     @Nonnull
-    public Guild.NotificationLevel getOldNotificationLevel()
-    {
+    public Guild.NotificationLevel getOldNotificationLevel() {
         return getOldValue();
     }
 
@@ -54,22 +55,19 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
      * @return The new NotificationLevel
      */
     @Nonnull
-    public Guild.NotificationLevel getNewNotificationLevel()
-    {
+    public Guild.NotificationLevel getNewNotificationLevel() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Guild.NotificationLevel getOldValue()
-    {
+    public Guild.NotificationLevel getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Guild.NotificationLevel getNewValue()
-    {
+    public Guild.NotificationLevel getNewValue() {
         return super.getNewValue();
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -35,34 +36,30 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class GuildUpdateHandler extends SocketHandler
-{
+public class GuildUpdateHandler extends SocketHandler {
 
-    public GuildUpdateHandler(JDAImpl api)
-    {
+    public GuildUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        final long id = content.getLong("id");
-        if (getJDA().getGuildSetupController().isLocked(id))
+    protected Long handleInternally(DataObject content) {
+        long id = content.getLong("id");
+        if (getJDA().getGuildSetupController().isLocked(id)) {
             return id;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
-        if (guild == null)
-        {
+        if (guild == null) {
             EventCache.LOG.debug("Caching GUILD_UPDATE for guild with id: {}", id);
             getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
             return null;
         }
 
-        //When member limits aren't initialized we don't fire an update event for them
+        // When member limits aren't initialized we don't fire an update event for them
         int maxMembers = content.getInt("max_members", 0);
         int maxPresences = content.getInt("max_presences", 5000);
-        if (guild.getMaxMembers() == 0)
-        {
+        if (guild.getMaxMembers() == 0) {
             // Initialize member limits to avoid unwanted update events
             guild.setMaxPresences(maxPresences);
             guild.setMaxMembers(maxMembers);
@@ -77,288 +74,204 @@ public class GuildUpdateHandler extends SocketHandler
         String name = content.getString("name");
         String iconId = content.getString("icon", null);
         String splashId = content.getString("splash", null);
-        SecurityIncidentActions securityIncidentActions = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidentsActions).orElse(SecurityIncidentActions.disabled());
-        SecurityIncidentDetections securityIncidentDetections = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidentsDetections).orElse(SecurityIncidentDetections.EMPTY);
-        Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
-        Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
+        SecurityIncidentActions securityIncidentActions = content.optObject("incidents_data")
+                .map(api.getEntityBuilder()::createSecurityIncidentsActions)
+                .orElse(SecurityIncidentActions.disabled());
+        SecurityIncidentDetections securityIncidentDetections = content.optObject("incidents_data")
+                .map(api.getEntityBuilder()::createSecurityIncidentsDetections)
+                .orElse(SecurityIncidentDetections.EMPTY);
+        Guild.VerificationLevel verificationLevel =
+                Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
+        Guild.NotificationLevel notificationLevel =
+                Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
         Guild.NSFWLevel nsfwLevel = Guild.NSFWLevel.fromKey(content.getInt("nsfw_level", -1));
-        Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
+        Guild.ExplicitContentLevel explicitContentLevel =
+                Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         DiscordLocale locale = DiscordLocale.from(content.getString("preferred_locale", "en-US"));
         VoiceChannel afkChannel = content.isNull("afk_channel_id")
-                ? null : guild.getChannelById(VoiceChannel.class, content.getLong("afk_channel_id"));
+                ? null
+                : guild.getChannelById(VoiceChannel.class, content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
-                ? null : guild.getChannelById(TextChannel.class, content.getLong("system_channel_id"));
+                ? null
+                : guild.getChannelById(TextChannel.class, content.getLong("system_channel_id"));
         TextChannel rulesChannel = content.isNull("rules_channel_id")
-                ? null : guild.getChannelById(TextChannel.class, content.getLong("rules_channel_id"));
+                ? null
+                : guild.getChannelById(TextChannel.class, content.getLong("rules_channel_id"));
         TextChannel communityUpdatesChannel = content.isNull("public_updates_channel_id")
-                ? null : guild.getChannelById(TextChannel.class, content.getLong("public_updates_channel_id"));
+                ? null
+                : guild.getChannelById(TextChannel.class, content.getLong("public_updates_channel_id"));
         TextChannel safetyAlertsChannel = content.isNull("safety_alerts_channel_id")
-                ? null : guild.getChannelById(TextChannel.class, content.getLong("safety_alerts_channel_id"));
+                ? null
+                : guild.getChannelById(TextChannel.class, content.getLong("safety_alerts_channel_id"));
         Set<String> features;
 
-        final int systemChannelFlagBitmask = content.getInt("system_channel_flags", 0);
+        int systemChannelFlagBitmask = content.getInt("system_channel_flags", 0);
 
-        if (!content.isNull("features"))
-        {
+        if (!content.isNull("features")) {
             DataArray featureArr = content.getArray("features");
-            features = featureArr.stream(DataArray::getString).map(String::intern).collect(Collectors.toSet());
-        }
-        else
-        {
+            features =
+                    featureArr.stream(DataArray::getString).map(String::intern).collect(Collectors.toSet());
+        } else {
             features = Collections.emptySet();
         }
 
-        if (ownerId != guild.getOwnerIdLong())
-        {
+        if (ownerId != guild.getOwnerIdLong()) {
             long oldOwnerId = guild.getOwnerIdLong();
             Member oldOwner = guild.getOwner();
             Member newOwner = guild.getMembersView().get(ownerId);
-            if (newOwner == null)
-                WebSocketClient.LOG.debug("Received {} with owner not in cache. UserId: {} GuildId: {}", allContent.get("t"), ownerId, id);
+            if (newOwner == null) {
+                WebSocketClient.LOG.debug(
+                        "Received {} with owner not in cache. UserId: {} GuildId: {}",
+                        allContent.get("t"),
+                        ownerId,
+                        id);
+            }
             guild.setOwner(newOwner);
             guild.setOwnerId(ownerId);
             getJDA().handleEvent(
-                new GuildUpdateOwnerEvent(
-                    getJDA(), responseNumber,
-                    guild, oldOwner,
-                    oldOwnerId, ownerId));
+                            new GuildUpdateOwnerEvent(getJDA(), responseNumber, guild, oldOwner, oldOwnerId, ownerId));
         }
-        if (systemChannelFlagBitmask != guild.getSystemChannelFlagsRaw())
-        {
+        if (systemChannelFlagBitmask != guild.getSystemChannelFlagsRaw()) {
             Set<SystemChannelFlag> oldSystemChannelFlags = guild.getSystemChannelFlags();
-            Set<SystemChannelFlag> systemChannelFlags = Collections.unmodifiableSet(SystemChannelFlag.getFlags(systemChannelFlagBitmask));
+            Set<SystemChannelFlag> systemChannelFlags =
+                    Collections.unmodifiableSet(SystemChannelFlag.getFlags(systemChannelFlagBitmask));
             guild.setSystemChannelFlags(systemChannelFlagBitmask);
-            getJDA().handleEvent(
-                    new GuildUpdateSystemChannelFlagsEvent(
-                            getJDA(), responseNumber,
-                            guild, oldSystemChannelFlags, systemChannelFlags));
+            getJDA().handleEvent(new GuildUpdateSystemChannelFlagsEvent(
+                    getJDA(), responseNumber, guild, oldSystemChannelFlags, systemChannelFlags));
         }
-        if (!Objects.equals(description, guild.getDescription()))
-        {
+        if (!Objects.equals(description, guild.getDescription())) {
             String oldDescription = guild.getDescription();
             guild.setDescription(description);
-            getJDA().handleEvent(
-                new GuildUpdateDescriptionEvent(
-                    getJDA(), responseNumber,
-                    guild, oldDescription));
+            getJDA().handleEvent(new GuildUpdateDescriptionEvent(getJDA(), responseNumber, guild, oldDescription));
         }
-        if (!Objects.equals(bannerId, guild.getBannerId()))
-        {
+        if (!Objects.equals(bannerId, guild.getBannerId())) {
             String oldBanner = guild.getBannerId();
             guild.setBannerId(bannerId);
-            getJDA().handleEvent(
-                new GuildUpdateBannerEvent(
-                    getJDA(), responseNumber,
-                    guild, oldBanner));
+            getJDA().handleEvent(new GuildUpdateBannerEvent(getJDA(), responseNumber, guild, oldBanner));
         }
-        if (!Objects.equals(vanityCode, guild.getVanityCode()))
-        {
+        if (!Objects.equals(vanityCode, guild.getVanityCode())) {
             String oldCode = guild.getVanityCode();
             guild.setVanityCode(vanityCode);
-            getJDA().handleEvent(
-                new GuildUpdateVanityCodeEvent(
-                    getJDA(), responseNumber,
-                    guild, oldCode));
+            getJDA().handleEvent(new GuildUpdateVanityCodeEvent(getJDA(), responseNumber, guild, oldCode));
         }
-        if (maxMembers != guild.getMaxMembers())
-        {
+        if (maxMembers != guild.getMaxMembers()) {
             int oldMax = guild.getMaxMembers();
             guild.setMaxMembers(maxMembers);
-            getJDA().handleEvent(
-                new GuildUpdateMaxMembersEvent(
-                    getJDA(), responseNumber,
-                    guild, oldMax));
+            getJDA().handleEvent(new GuildUpdateMaxMembersEvent(getJDA(), responseNumber, guild, oldMax));
         }
-        if (maxPresences != guild.getMaxPresences())
-        {
+        if (maxPresences != guild.getMaxPresences()) {
             int oldMax = guild.getMaxPresences();
             guild.setMaxPresences(maxPresences);
-            getJDA().handleEvent(
-                new GuildUpdateMaxPresencesEvent(
-                    getJDA(), responseNumber,
-                    guild, oldMax));
+            getJDA().handleEvent(new GuildUpdateMaxPresencesEvent(getJDA(), responseNumber, guild, oldMax));
         }
-        if (boostCount != guild.getBoostCount())
-        {
+        if (boostCount != guild.getBoostCount()) {
             int oldCount = guild.getBoostCount();
             guild.setBoostCount(boostCount);
-            getJDA().handleEvent(
-                new GuildUpdateBoostCountEvent(
-                    getJDA(), responseNumber,
-                    guild, oldCount));
+            getJDA().handleEvent(new GuildUpdateBoostCountEvent(getJDA(), responseNumber, guild, oldCount));
         }
-        if (Guild.BoostTier.fromKey(boostTier) != guild.getBoostTier())
-        {
+        if (Guild.BoostTier.fromKey(boostTier) != guild.getBoostTier()) {
             Guild.BoostTier oldTier = guild.getBoostTier();
             guild.setBoostTier(boostTier);
-            getJDA().handleEvent(
-                new GuildUpdateBoostTierEvent(
-                    getJDA(), responseNumber,
-                    guild, oldTier));
+            getJDA().handleEvent(new GuildUpdateBoostTierEvent(getJDA(), responseNumber, guild, oldTier));
         }
-        if (!Objects.equals(name, guild.getName()))
-        {
+        if (!Objects.equals(name, guild.getName())) {
             String oldName = guild.getName();
             guild.setName(name);
-            getJDA().handleEvent(
-                    new GuildUpdateNameEvent(
-                            getJDA(), responseNumber,
-                            guild, oldName));
+            getJDA().handleEvent(new GuildUpdateNameEvent(getJDA(), responseNumber, guild, oldName));
         }
-        if (!Objects.equals(iconId, guild.getIconId()))
-        {
+        if (!Objects.equals(iconId, guild.getIconId())) {
             String oldIconId = guild.getIconId();
             guild.setIconId(iconId);
-            getJDA().handleEvent(
-                    new GuildUpdateIconEvent(
-                            getJDA(), responseNumber,
-                            guild, oldIconId));
+            getJDA().handleEvent(new GuildUpdateIconEvent(getJDA(), responseNumber, guild, oldIconId));
         }
-        if (!features.equals(guild.getFeatures()))
-        {
+        if (!features.equals(guild.getFeatures())) {
             Set<String> oldFeatures = guild.getFeatures();
             guild.setFeatures(features);
-            getJDA().handleEvent(
-                    new GuildUpdateFeaturesEvent(
-                            getJDA(), responseNumber,
-                            guild, oldFeatures));
+            getJDA().handleEvent(new GuildUpdateFeaturesEvent(getJDA(), responseNumber, guild, oldFeatures));
         }
-        if (!Objects.equals(splashId, guild.getSplashId()))
-        {
+        if (!Objects.equals(splashId, guild.getSplashId())) {
             String oldSplashId = guild.getSplashId();
             guild.setSplashId(splashId);
-            getJDA().handleEvent(
-                    new GuildUpdateSplashEvent(
-                            getJDA(), responseNumber,
-                            guild, oldSplashId));
+            getJDA().handleEvent(new GuildUpdateSplashEvent(getJDA(), responseNumber, guild, oldSplashId));
         }
-        if (!Objects.equals(verificationLevel, guild.getVerificationLevel()))
-        {
+        if (!Objects.equals(verificationLevel, guild.getVerificationLevel())) {
             Guild.VerificationLevel oldVerificationLevel = guild.getVerificationLevel();
             guild.setVerificationLevel(verificationLevel);
-            getJDA().handleEvent(
-                    new GuildUpdateVerificationLevelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldVerificationLevel));
+            getJDA().handleEvent(new GuildUpdateVerificationLevelEvent(
+                    getJDA(), responseNumber, guild, oldVerificationLevel));
         }
-        if (!Objects.equals(notificationLevel, guild.getDefaultNotificationLevel()))
-        {
+        if (!Objects.equals(notificationLevel, guild.getDefaultNotificationLevel())) {
             Guild.NotificationLevel oldNotificationLevel = guild.getDefaultNotificationLevel();
             guild.setDefaultNotificationLevel(notificationLevel);
-            getJDA().handleEvent(
-                    new GuildUpdateNotificationLevelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldNotificationLevel));
+            getJDA().handleEvent(new GuildUpdateNotificationLevelEvent(
+                    getJDA(), responseNumber, guild, oldNotificationLevel));
         }
-        if (!Objects.equals(mfaLevel, guild.getRequiredMFALevel()))
-        {
+        if (!Objects.equals(mfaLevel, guild.getRequiredMFALevel())) {
             Guild.MFALevel oldMfaLevel = guild.getRequiredMFALevel();
             guild.setRequiredMFALevel(mfaLevel);
-            getJDA().handleEvent(
-                    new GuildUpdateMFALevelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldMfaLevel));
+            getJDA().handleEvent(new GuildUpdateMFALevelEvent(getJDA(), responseNumber, guild, oldMfaLevel));
         }
-        if (!Objects.equals(explicitContentLevel, guild.getExplicitContentLevel()))
-        {
+        if (!Objects.equals(explicitContentLevel, guild.getExplicitContentLevel())) {
             Guild.ExplicitContentLevel oldExplicitContentLevel = guild.getExplicitContentLevel();
             guild.setExplicitContentLevel(explicitContentLevel);
-            getJDA().handleEvent(
-                    new GuildUpdateExplicitContentLevelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldExplicitContentLevel));
+            getJDA().handleEvent(new GuildUpdateExplicitContentLevelEvent(
+                    getJDA(), responseNumber, guild, oldExplicitContentLevel));
         }
-        if (!Objects.equals(afkTimeout, guild.getAfkTimeout()))
-        {
+        if (!Objects.equals(afkTimeout, guild.getAfkTimeout())) {
             Guild.Timeout oldAfkTimeout = guild.getAfkTimeout();
             guild.setAfkTimeout(afkTimeout);
-            getJDA().handleEvent(
-                    new GuildUpdateAfkTimeoutEvent(
-                            getJDA(), responseNumber,
-                            guild, oldAfkTimeout));
+            getJDA().handleEvent(new GuildUpdateAfkTimeoutEvent(getJDA(), responseNumber, guild, oldAfkTimeout));
         }
-        if (!Objects.equals(locale, guild.getLocale()))
-        {
-        	DiscordLocale oldLocale = guild.getLocale();
+        if (!Objects.equals(locale, guild.getLocale())) {
+            DiscordLocale oldLocale = guild.getLocale();
             guild.setLocale(locale);
-            getJDA().handleEvent(
-                new GuildUpdateLocaleEvent(
-                    getJDA(), responseNumber,
-                    guild, oldLocale));
+            getJDA().handleEvent(new GuildUpdateLocaleEvent(getJDA(), responseNumber, guild, oldLocale));
         }
-        if (!Objects.equals(afkChannel, guild.getAfkChannel()))
-        {
+        if (!Objects.equals(afkChannel, guild.getAfkChannel())) {
             VoiceChannel oldAfkChannel = guild.getAfkChannel();
             guild.setAfkChannel(afkChannel);
-            getJDA().handleEvent(
-                    new GuildUpdateAfkChannelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldAfkChannel));
+            getJDA().handleEvent(new GuildUpdateAfkChannelEvent(getJDA(), responseNumber, guild, oldAfkChannel));
         }
-        if (!Objects.equals(systemChannel, guild.getSystemChannel()))
-        {
+        if (!Objects.equals(systemChannel, guild.getSystemChannel())) {
             TextChannel oldSystemChannel = guild.getSystemChannel();
             guild.setSystemChannel(systemChannel);
-            getJDA().handleEvent(
-                    new GuildUpdateSystemChannelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldSystemChannel));
+            getJDA().handleEvent(new GuildUpdateSystemChannelEvent(getJDA(), responseNumber, guild, oldSystemChannel));
         }
-        if (!Objects.equals(rulesChannel, guild.getRulesChannel()))
-        {
+        if (!Objects.equals(rulesChannel, guild.getRulesChannel())) {
             TextChannel oldRulesChannel = guild.getRulesChannel();
             guild.setRulesChannel(rulesChannel);
-            getJDA().handleEvent(
-                    new GuildUpdateRulesChannelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldRulesChannel));
+            getJDA().handleEvent(new GuildUpdateRulesChannelEvent(getJDA(), responseNumber, guild, oldRulesChannel));
         }
-        if (!Objects.equals(communityUpdatesChannel, guild.getCommunityUpdatesChannel()))
-        {
+        if (!Objects.equals(communityUpdatesChannel, guild.getCommunityUpdatesChannel())) {
             TextChannel oldCommunityUpdatesChannel = guild.getCommunityUpdatesChannel();
             guild.setCommunityUpdatesChannel(communityUpdatesChannel);
-            getJDA().handleEvent(
-                    new GuildUpdateCommunityUpdatesChannelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldCommunityUpdatesChannel));
+            getJDA().handleEvent(new GuildUpdateCommunityUpdatesChannelEvent(
+                    getJDA(), responseNumber, guild, oldCommunityUpdatesChannel));
         }
-        if (!Objects.equals(safetyAlertsChannel, guild.getSafetyAlertsChannel()))
-        {
+        if (!Objects.equals(safetyAlertsChannel, guild.getSafetyAlertsChannel())) {
             TextChannel oldSafetyAlertsChannel = guild.getSafetyAlertsChannel();
             guild.setSafetyAlertsChannel(safetyAlertsChannel);
-            getJDA().handleEvent(
-                    new GuildUpdateSafetyAlertsChannelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldSafetyAlertsChannel));
+            getJDA().handleEvent(new GuildUpdateSafetyAlertsChannelEvent(
+                    getJDA(), responseNumber, guild, oldSafetyAlertsChannel));
         }
-        if (!Objects.equals(securityIncidentActions, guild.getSecurityIncidentActions()))
-        {
+        if (!Objects.equals(securityIncidentActions, guild.getSecurityIncidentActions())) {
             SecurityIncidentActions oldIncidentActions = guild.getSecurityIncidentActions();
             guild.setSecurityIncidentActions(securityIncidentActions);
             api.handleEvent(
-                new GuildUpdateSecurityIncidentActionsEvent(
-                    getJDA(), responseNumber,
-                    guild, oldIncidentActions));
+                    new GuildUpdateSecurityIncidentActionsEvent(getJDA(), responseNumber, guild, oldIncidentActions));
         }
-        if (!Objects.equals(securityIncidentDetections, guild.getSecurityIncidentDetections()))
-        {
+        if (!Objects.equals(securityIncidentDetections, guild.getSecurityIncidentDetections())) {
             SecurityIncidentDetections oldIncidentDetections = guild.getSecurityIncidentDetections();
             guild.setSecurityIncidentDetections(securityIncidentDetections);
-            api.handleEvent(
-                new GuildUpdateSecurityIncidentDetectionsEvent(
-                    getJDA(), responseNumber,
-                    guild, oldIncidentDetections));
+            api.handleEvent(new GuildUpdateSecurityIncidentDetectionsEvent(
+                    getJDA(), responseNumber, guild, oldIncidentDetections));
         }
-        if (content.hasKey("nsfw_level") && nsfwLevel != guild.getNSFWLevel())
-        {
+        if (content.hasKey("nsfw_level") && nsfwLevel != guild.getNSFWLevel()) {
             Guild.NSFWLevel oldNSFWLevel = guild.getNSFWLevel();
             guild.setNSFWLevel(nsfwLevel);
-            getJDA().handleEvent(
-                    new GuildUpdateNSFWLevelEvent(
-                            getJDA(), responseNumber,
-                            guild, oldNSFWLevel));
+            getJDA().handleEvent(new GuildUpdateNSFWLevelEvent(getJDA(), responseNumber, guild, oldNSFWLevel));
         }
         return null;
     }

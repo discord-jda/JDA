@@ -28,22 +28,23 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.modals.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
 /**
  * Represents a Discord Modal
  *
  * <p>Replying to an interaction with a modal will open an interactive popout on the User's Discord client.
  * This is similar to the ban modal where you can input a ban reason.
-  *
-  * <p><b>Example</b><br>
- * <pre>{@code
+ *
+ * <p><b>Example</b><br>
+ * {@snippet lang="java":
  * public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event)
  * {
  *     if (event.getName().equals("modmail"))
@@ -66,12 +67,11 @@ import java.util.stream.Collectors;
  *
  *         event.replyModal(modal).queue();
  *     }
- * }}</pre>
+ * }}
  *
  * @see    ModalInteractionEvent
  */
-public interface Modal extends SerializableData
-{
+public interface Modal extends SerializableData {
     /**
      * The maximum amount of components a Modal can have. ({@value})
      */
@@ -119,8 +119,7 @@ public interface Modal extends SerializableData
      * @return {@link ModalComponentTree}
      */
     @Nonnull
-    default ModalComponentTree getComponentTree()
-    {
+    default ModalComponentTree getComponentTree() {
         return ModalComponentTree.of(getComponents());
     }
 
@@ -131,17 +130,16 @@ public interface Modal extends SerializableData
      * @return The {@link Modal.Builder} used to create the modal
      */
     @Nonnull
-    default Modal.Builder createCopy()
-    {
-        List<ModalTopLevelComponent> c = getComponents().stream().map(c2 -> (ModalTopLevelComponent) c2).collect(Collectors.toList());
-        return new Builder(getId(), getTitle())
-                .addComponents(c);
+    default Modal.Builder createCopy() {
+        List<ModalTopLevelComponent> c =
+                getComponents().stream().map(c2 -> (ModalTopLevelComponent) c2).collect(Collectors.toList());
+        return new Builder(getId(), getTitle()).addComponents(c);
     }
 
     /**
      * Creates a new Modal. You must add at least one component to a modal before building it.
      *
-     * @param  customId 
+     * @param  customId
      *         The custom id for this modal
      * @param  title
      *         The title for this modal
@@ -157,22 +155,19 @@ public interface Modal extends SerializableData
      */
     @Nonnull
     @CheckReturnValue
-    static Modal.Builder create(@Nonnull String customId, @Nonnull String title)
-    {
+    static Modal.Builder create(@Nonnull String customId, @Nonnull String title) {
         return new Modal.Builder(customId, title);
     }
 
     /**
      * A preconfigured builder for the creation of modals.
      */
-    class Builder
-    {
+    class Builder {
         private final List<ModalTopLevelComponentUnion> components = new ArrayList<>(MAX_COMPONENTS);
         private String id;
         private String title;
 
-        protected Builder(@Nonnull String customId, @Nonnull String title)
-        {
+        protected Builder(@Nonnull String customId, @Nonnull String title) {
             setId(customId);
             setTitle(title);
         }
@@ -189,8 +184,7 @@ public interface Modal extends SerializableData
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setId(@Nonnull String customId)
-        {
+        public Builder setId(@Nonnull String customId) {
             Checks.notBlank(customId, "ID");
             Checks.notLonger(customId, MAX_ID_LENGTH, "ID");
             this.id = customId;
@@ -200,7 +194,7 @@ public interface Modal extends SerializableData
         /**
          * Sets the title for this modal.
          *
-         * @param  title 
+         * @param  title
          *         The title
          *
          * @throws IllegalArgumentException
@@ -209,8 +203,7 @@ public interface Modal extends SerializableData
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setTitle(@Nonnull String title)
-        {
+        public Builder setTitle(@Nonnull String title) {
             Checks.notBlank(title, "Title");
             Checks.notLonger(title, MAX_TITLE_LENGTH, "Title");
             this.title = title;
@@ -235,8 +228,7 @@ public interface Modal extends SerializableData
          * @see    ModalComponentTree
          */
         @Nonnull
-        public Builder addComponents(@Nonnull ModalTopLevelComponent... components)
-        {
+        public Builder addComponents(@Nonnull ModalTopLevelComponent... components) {
             Checks.noneNull(components, "Components");
             return addComponents(Arrays.asList(components));
         }
@@ -258,14 +250,10 @@ public interface Modal extends SerializableData
          * @see    Component#isModalCompatible()
          */
         @Nonnull
-        public Builder addComponents(@Nonnull Collection<? extends ModalTopLevelComponent> components)
-        {
+        public Builder addComponents(@Nonnull Collection<? extends ModalTopLevelComponent> components) {
             Checks.noneNull(components, "Components");
             Checks.checkComponents(
-                    "Some components are incompatible with Modals",
-                    components,
-                    Component::isModalCompatible
-            );
+                    "Some components are incompatible with Modals", components, Component::isModalCompatible);
 
             this.components.addAll(membersToUnion(components));
             return this;
@@ -289,8 +277,7 @@ public interface Modal extends SerializableData
          * @see    Component#isModalCompatible()
          */
         @Nonnull
-        public Builder addComponents(@Nonnull ComponentTree<? extends ModalTopLevelComponent> tree)
-        {
+        public Builder addComponents(@Nonnull ComponentTree<? extends ModalTopLevelComponent> tree) {
             Checks.notNull(tree, "ModalComponentTree");
             return addComponents(tree.getComponents());
         }
@@ -301,8 +288,7 @@ public interface Modal extends SerializableData
          * @return A modifiable list of all components
          */
         @Nonnull
-        public List<ModalTopLevelComponentUnion> getComponents()
-        {
+        public List<ModalTopLevelComponentUnion> getComponents() {
             return components;
         }
 
@@ -312,8 +298,7 @@ public interface Modal extends SerializableData
          * @return the title
          */
         @Nonnull
-        public String getTitle()
-        {
+        public String getTitle() {
             return title;
         }
 
@@ -323,8 +308,7 @@ public interface Modal extends SerializableData
          * @return the id
          */
         @Nonnull
-        public String getId()
-        {
+        public String getId() {
             return id;
         }
 
@@ -340,15 +324,15 @@ public interface Modal extends SerializableData
          * @return A Modal
          */
         @Nonnull
-        public Modal build()
-        {
+        public Modal build() {
             Checks.check(!components.isEmpty(), "Cannot make a modal without components!");
             Checks.check(components.size() <= MAX_COMPONENTS, "Cannot make a modal with more than 5 components!");
 
             return new ModalImpl(id, title, components);
         }
 
-        private static Collection<ModalTopLevelComponentUnion> membersToUnion(Collection<? extends ModalTopLevelComponent> members) {
+        private static Collection<ModalTopLevelComponentUnion> membersToUnion(
+                Collection<? extends ModalTopLevelComponent> members) {
             return ComponentsUtil.membersToUnion(members, ModalTopLevelComponentUnion.class);
         }
     }

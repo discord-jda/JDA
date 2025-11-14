@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.session;
 
 import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.CloseCode;
 
+import java.time.OffsetDateTime;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
 
 /**
  * Indicates that JDA has been disconnected from the remote server.
@@ -31,18 +33,18 @@ import java.time.OffsetDateTime;
  *
  * <p>When reconnecting was successful either a {@link SessionRecreateEvent} <b>or</b> {@link SessionResumeEvent} is fired.
  */
-public class SessionDisconnectEvent extends GenericSessionEvent
-{
+public class SessionDisconnectEvent extends GenericSessionEvent {
     protected final WebSocketFrame serverCloseFrame;
     protected final WebSocketFrame clientCloseFrame;
     protected final boolean closedByServer;
     protected final OffsetDateTime disconnectTime;
 
     public SessionDisconnectEvent(
-        @Nonnull JDA api,
-        @Nullable WebSocketFrame serverCloseFrame, @Nullable WebSocketFrame clientCloseFrame,
-        boolean closedByServer, @Nonnull OffsetDateTime disconnectTime)
-    {
+            @Nonnull JDA api,
+            @Nullable WebSocketFrame serverCloseFrame,
+            @Nullable WebSocketFrame clientCloseFrame,
+            boolean closedByServer,
+            @Nonnull OffsetDateTime disconnectTime) {
         super(api, SessionState.DISCONNECTED);
         this.serverCloseFrame = serverCloseFrame;
         this.clientCloseFrame = clientCloseFrame;
@@ -60,8 +62,7 @@ public class SessionDisconnectEvent extends GenericSessionEvent
      * @return Possibly-null {@link net.dv8tion.jda.api.requests.CloseCode CloseCode}
      */
     @Nullable
-    public CloseCode getCloseCode()
-    {
+    public CloseCode getCloseCode() {
         return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
     }
 
@@ -71,8 +72,7 @@ public class SessionDisconnectEvent extends GenericSessionEvent
      * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} discord sent as closing handshake
      */
     @Nullable
-    public WebSocketFrame getServiceCloseFrame()
-    {
+    public WebSocketFrame getServiceCloseFrame() {
         return serverCloseFrame;
     }
 
@@ -82,8 +82,7 @@ public class SessionDisconnectEvent extends GenericSessionEvent
      * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} we sent as closing handshake
      */
     @Nullable
-    public WebSocketFrame getClientCloseFrame()
-    {
+    public WebSocketFrame getClientCloseFrame() {
         return clientCloseFrame;
     }
 
@@ -92,8 +91,7 @@ public class SessionDisconnectEvent extends GenericSessionEvent
      *
      * @return True, if discord closed our connection
      */
-    public boolean isClosedByServer()
-    {
+    public boolean isClosedByServer() {
         return closedByServer;
     }
 
@@ -103,8 +101,7 @@ public class SessionDisconnectEvent extends GenericSessionEvent
      * @return Time of closure
      */
     @Nonnull
-    public OffsetDateTime getTimeDisconnected()
-    {
+    public OffsetDateTime getTimeDisconnected() {
         return disconnectTime;
     }
 }

@@ -31,8 +31,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link EntitySelectMenu}</li>
  * </ul>
  */
-public interface ActionRowChildComponent extends Component
-{
+public interface ActionRowChildComponent extends Component {
     @Nonnull
     @Override
     ActionRowChildComponent withUniqueId(int uniqueId);

@@ -30,21 +30,21 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Internal class used for representing HTTP requests.
  *
  * @param <T> The expected type of the response
  */
-public class Request<T>
-{
+public class Request<T> {
     private final JDAImpl api;
     private final RestActionImpl<T> restAction;
     private final Consumer<? super T> onSuccess;
@@ -64,20 +64,28 @@ public class Request<T>
     private boolean isCancelled = false;
 
     public Request(
-            RestActionImpl<T> restAction, Consumer<? super T> onSuccess, Consumer<? super Throwable> onFailure,
-            BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody, long deadline, boolean priority,
-            Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
-    {
+            RestActionImpl<T> restAction,
+            Consumer<? super T> onSuccess,
+            Consumer<? super Throwable> onFailure,
+            BooleanSupplier checks,
+            boolean shouldQueue,
+            RequestBody body,
+            Object rawBody,
+            long deadline,
+            boolean priority,
+            Route.CompiledRoute route,
+            CaseInsensitiveMap<String, String> headers) {
         this.deadline = deadline;
         this.priority = priority;
         this.restAction = restAction;
         this.onSuccess = onSuccess;
-        if (onFailure instanceof ContextException.ContextConsumer)
+        if (onFailure instanceof ContextException.ContextConsumer) {
             this.onFailure = onFailure;
-        else if (RestActionImpl.isPassContext())
+        } else if (RestActionImpl.isPassContext()) {
             this.onFailure = ContextException.here(onFailure);
-        else
+        } else {
             this.onFailure = onFailure;
+        }
         this.checks = checks;
         this.shouldQueue = shouldQueue;
         this.body = body;
@@ -89,45 +97,41 @@ public class Request<T>
         this.localReason = ThreadLocalReason.getCurrent();
     }
 
-    private void cleanup()
-    {
+    private void cleanup() {
         // Try closing any open request bodies that were never read from
-        if (body instanceof MultipartBody)
-        {
+        if (body instanceof MultipartBody) {
             MultipartBody multi = (MultipartBody) body;
-            multi.parts()
-                 .stream()
-                 .map(MultipartBody.Part::body)
-                 .filter(AutoCloseable.class::isInstance)
-                 .map(AutoCloseable.class::cast)
-                 .forEach(IOUtil::silentClose);
-        }
-        else if (body instanceof AutoCloseable)
-        {
+            multi.parts().stream()
+                    .map(MultipartBody.Part::body)
+                    .filter(AutoCloseable.class::isInstance)
+                    .map(AutoCloseable.class::cast)
+                    .forEach(IOUtil::silentClose);
+        } else if (body instanceof AutoCloseable) {
             IOUtil.silentClose((AutoCloseable) body);
         }
     }
 
-    public void onSuccess(@Nullable T successObj)
-    {
-        if (done)
+    public void onSuccess(@Nullable T successObj) {
+        if (done) {
             return;
+        }
         done = true;
         cleanup();
-        RestActionImpl.LOG.trace("Scheduling success callback for request with route {}/{}", route.getMethod(), route.getCompiledRoute());
-        api.getCallbackPool().execute(() ->
-        {
+        RestActionImpl.LOG.trace(
+                "Scheduling success callback for request with route {}/{}",
+                route.getMethod(),
+                route.getCompiledRoute());
+        api.getCallbackPool().execute(() -> {
             try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
-                 CallbackContext ___ = CallbackContext.getInstance())
-            {
-                RestActionImpl.LOG.trace("Running success callback for request with route {}/{}", route.getMethod(), route.getCompiledRoute());
+                    CallbackContext ___ = CallbackContext.getInstance()) {
+                RestActionImpl.LOG.trace(
+                        "Running success callback for request with route {}/{}",
+                        route.getMethod(),
+                        route.getCompiledRoute());
                 onSuccess.accept(successObj);
-            }
-            catch (Throwable t)
-            {
+            } catch (Throwable t) {
                 RestActionImpl.LOG.error("Encountered error while processing success consumer", t);
-                if (t instanceof Error)
-                {
+                if (t instanceof Error) {
                     api.handleEvent(new ExceptionEvent(api, t, true));
                     throw (Error) t;
                 }
@@ -135,52 +139,48 @@ public class Request<T>
         });
     }
 
-    public void onFailure(@Nonnull Response response)
-    {
-        if (response.code == 429)
-        {
+    public void onFailure(@Nonnull Response response) {
+        if (response.code == 429) {
             onRateLimited(response);
-        }
-        else
-        {
+        } else {
             onFailure(createErrorResponseException(response));
         }
     }
 
-    public void onRateLimited(@Nonnull Response response)
-    {
+    public void onRateLimited(@Nonnull Response response) {
         onFailure(new RateLimitedException(route, response.retryAfter));
     }
 
     @Nonnull
-    public ErrorResponseException createErrorResponseException(@Nonnull Response response)
-    {
+    public ErrorResponseException createErrorResponseException(@Nonnull Response response) {
         return ErrorResponseException.create(
                 ErrorResponse.fromJSON(response.optObject().orElse(null)), response);
     }
 
-    public void onFailure(@Nonnull Throwable failException)
-    {
-        if (done)
+    public void onFailure(@Nonnull Throwable failException) {
+        if (done) {
             return;
+        }
         done = true;
         cleanup();
-        RestActionImpl.LOG.trace("Scheduling failure callback for request with route {}/{}", route.getMethod(), route.getCompiledRoute());
-        api.getCallbackPool().execute(() ->
-        {
+        RestActionImpl.LOG.trace(
+                "Scheduling failure callback for request with route {}/{}",
+                route.getMethod(),
+                route.getCompiledRoute());
+        api.getCallbackPool().execute(() -> {
             try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
-                 CallbackContext ___ = CallbackContext.getInstance())
-            {
-                RestActionImpl.LOG.trace("Running failure callback for request with route {}/{}", route.getMethod(), route.getCompiledRoute());
+                    CallbackContext ___ = CallbackContext.getInstance()) {
+                RestActionImpl.LOG.trace(
+                        "Running failure callback for request with route {}/{}",
+                        route.getMethod(),
+                        route.getCompiledRoute());
                 onFailure.accept(failException);
-                if (failException instanceof Error)
+                if (failException instanceof Error) {
                     api.handleEvent(new ExceptionEvent(api, failException, false));
-            }
-            catch (Throwable t)
-            {
+                }
+            } catch (Throwable t) {
                 RestActionImpl.LOG.error("Encountered error while processing failure consumer", t);
-                if (t instanceof Error)
-                {
+                if (t instanceof Error) {
                     api.handleEvent(new ExceptionEvent(api, t, true));
                     throw (Error) t;
                 }
@@ -188,121 +188,105 @@ public class Request<T>
         });
     }
 
-    public void onCancelled()
-    {
+    public void onCancelled() {
         onFailure(new CancellationException("RestAction has been cancelled"));
     }
 
-    public void onTimeout()
-    {
+    public void onTimeout() {
         onFailure(new TimeoutException("RestAction has timed out"));
     }
 
     @Nonnull
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return api;
     }
 
     @Nonnull
     @CheckReturnValue
-    public RestAction<T> getRestAction()
-    {
+    public RestAction<T> getRestAction() {
         return restAction;
     }
 
     @Nonnull
-    public Consumer<? super T> getOnSuccess()
-    {
+    public Consumer<? super T> getOnSuccess() {
         return onSuccess;
     }
 
     @Nonnull
-    public Consumer<? super Throwable> getOnFailure()
-    {
+    public Consumer<? super Throwable> getOnFailure() {
         return onFailure;
     }
 
-    public boolean isPriority()
-    {
+    public boolean isPriority() {
         return priority;
     }
 
-    public boolean isSkipped()
-    {
-        if (isTimeout())
-        {
+    public boolean isSkipped() {
+        if (isTimeout()) {
             onTimeout();
             return true;
         }
         boolean skip = runChecks();
-        if (skip)
+        if (skip) {
             onCancelled();
+        }
         return skip;
     }
 
-    private boolean isTimeout()
-    {
+    private boolean isTimeout() {
         return deadline > 0 && deadline < System.currentTimeMillis();
     }
 
-    private boolean runChecks()
-    {
-        try
-        {
+    private boolean runChecks() {
+        try {
             return isCancelled() || (checks != null && !checks.getAsBoolean());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             onFailure(e);
             return true;
         }
     }
 
     @Nullable
-    public CaseInsensitiveMap<String, String> getHeaders()
-    {
+    public CaseInsensitiveMap<String, String> getHeaders() {
         return headers;
     }
 
     @Nonnull
-    public Route.CompiledRoute getRoute()
-    {
+    public Route.CompiledRoute getRoute() {
         return route;
     }
 
     @Nullable
-    public RequestBody getBody()
-    {
+    public RequestBody getBody() {
         return body;
     }
 
     @Nullable
-    public Object getRawBody()
-    {
+    public Object getRawBody() {
         return rawBody;
     }
 
-    public boolean shouldQueue()
-    {
+    public boolean shouldQueue() {
         return shouldQueue;
     }
 
-    public void cancel()
-    {
-        if (!this.isCancelled)
+    public void cancel() {
+        if (!this.isCancelled) {
             onCancelled();
+        }
         this.isCancelled = true;
     }
 
-    public boolean isCancelled()
-    {
+    public boolean isCancelled() {
         return isCancelled;
     }
 
-    public void handleResponse(@Nonnull Response response)
-    {
-        RestActionImpl.LOG.trace("Handling response for request with route {}/{} and code {}", route.getMethod(), route.getCompiledRoute(), response.code);
+    public void handleResponse(@Nonnull Response response) {
+        RestActionImpl.LOG.trace(
+                "Handling response for request with route {}/{} and code {}",
+                route.getMethod(),
+                route.getCompiledRoute(),
+                response.code);
         restAction.handleResponse(response, this);
         api.handleEvent(new HttpRequestEvent(this, response));
     }

@@ -29,59 +29,63 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ScheduledEventMembersPaginationActionImpl extends PaginationActionImpl<Member, ScheduledEventMembersPaginationAction> implements ScheduledEventMembersPaginationAction
-{
+import javax.annotation.Nonnull;
+
+public class ScheduledEventMembersPaginationActionImpl
+        extends PaginationActionImpl<Member, ScheduledEventMembersPaginationAction>
+        implements ScheduledEventMembersPaginationAction {
     protected final Guild guild;
 
-    public ScheduledEventMembersPaginationActionImpl(ScheduledEvent event)
-    {
-        super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getGuild().getId(), event.getId()).withQueryParams("with_member", "true"), 1, 100, 100);
+    public ScheduledEventMembersPaginationActionImpl(ScheduledEvent event) {
+        super(
+                event.getGuild().getJDA(),
+                Route.Guilds.GET_SCHEDULED_EVENT_USERS
+                        .compile(event.getGuild().getId(), event.getId())
+                        .withQueryParams("with_member", "true"),
+                1,
+                100,
+                100);
         this.guild = event.getGuild();
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<Member>> request)
-    {
+    protected void handleSuccess(Response response, Request<List<Member>> request) {
         DataArray array = response.getArray();
         List<Member> members = new ArrayList<>(array.length());
         EntityBuilder builder = api.getEntityBuilder();
-        for (int i = 0; i < array.length(); i++)
-        {
-            try
-            {
+        for (int i = 0; i < array.length(); i++) {
+            try {
                 DataObject object = array.getObject(i);
-                if (object.isNull("member"))
+                if (object.isNull("member")) {
                     continue;
+                }
                 DataObject userObject = object.getObject("user");
                 DataObject memberObject = object.getObject("member");
                 Member member = builder.createMember((GuildImpl) guild, memberObject.put("user", userObject));
                 members.add(member);
-            }
-            catch (ParsingException | NullPointerException e)
-            {
+            } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered an exception in ScheduledEventPagination", e);
             }
         }
 
-        if (order == PaginationOrder.BACKWARD)
+        if (order == PaginationOrder.BACKWARD) {
             Collections.reverse(members);
-        if (useCache)
+        }
+        if (useCache) {
             cached.addAll(members);
+        }
 
-        if (!members.isEmpty())
-        {
+        if (!members.isEmpty()) {
             last = members.get(members.size() - 1);
             lastKey = last.getIdLong();
         }
@@ -89,8 +93,7 @@ public class ScheduledEventMembersPaginationActionImpl extends PaginationActionI
     }
 
     @Override
-    protected long getKey(Member it)
-    {
+    protected long getKey(Member it) {
         return it.getIdLong();
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.EmbedType;
@@ -24,8 +25,6 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
@@ -34,19 +33,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Builder system used to build {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
  *
  * <br>A visual breakdown of an Embed and how it relates to this class is available at
  * <a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/01-Overview.png" target="_blank">Embed Overview</a>.
  *
- * @since  3.0
  * @author John A. Grosh
  */
-public class EmbedBuilder
-{
-    public final static String ZERO_WIDTH_SPACE = "\u200E";
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
+public class EmbedBuilder {
+    public static final String ZERO_WIDTH_SPACE = "\u200E";
+    public static final Pattern URL_PATTERN =
+            Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
 
     private final List<MessageEmbed.Field> fields = new ArrayList<>();
     private final StringBuilder description = new StringBuilder();
@@ -63,7 +64,7 @@ public class EmbedBuilder
      * These can then be sent to a channel using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)}.
      * <br>Every part of an embed can be removed or cleared by providing {@code null} to the setter method.
      */
-    public EmbedBuilder() { }
+    public EmbedBuilder() {}
 
     /**
      * Creates an EmbedBuilder using fields from an existing builder
@@ -71,8 +72,7 @@ public class EmbedBuilder
      * @param  builder
      *         the existing builder
      */
-    public EmbedBuilder(@Nullable EmbedBuilder builder)
-    {
+    public EmbedBuilder(@Nullable EmbedBuilder builder) {
         copyFrom(builder);
     }
 
@@ -82,8 +82,7 @@ public class EmbedBuilder
      * @param  embed
      *         the existing embed
      */
-    public EmbedBuilder(@Nullable MessageEmbed embed)
-    {
+    public EmbedBuilder(@Nullable MessageEmbed embed) {
         copyFrom(embed);
     }
 
@@ -103,8 +102,7 @@ public class EmbedBuilder
      * @return The new builder instance
      */
     @Nonnull
-    public static EmbedBuilder fromData(@Nonnull DataObject data)
-    {
+    public static EmbedBuilder fromData(@Nonnull DataObject data) {
         Checks.notNull(data, "DataObject");
         EmbedBuilder builder = new EmbedBuilder();
 
@@ -114,38 +112,25 @@ public class EmbedBuilder
         builder.setTimestamp(data.isNull("timestamp") ? null : OffsetDateTime.parse(data.getString("timestamp")));
         builder.setColor(data.getInt("color", Role.DEFAULT_COLOR_RAW));
 
-        data.optObject("thumbnail").ifPresent(thumbnail ->
-            builder.setThumbnail(thumbnail.getString("url"))
-        );
+        data.optObject("thumbnail").ifPresent(thumbnail -> builder.setThumbnail(thumbnail.getString("url")));
 
-        data.optObject("author").ifPresent(author ->
-            builder.setAuthor(
-                author.getString("name", ""),
-                author.getString("url", null),
-                author.getString("icon_url", null)
-            )
-        );
+        data.optObject("author")
+                .ifPresent(author -> builder.setAuthor(
+                        author.getString("name", ""),
+                        author.getString("url", null),
+                        author.getString("icon_url", null)));
 
-        data.optObject("footer").ifPresent(footer ->
-            builder.setFooter(
-                footer.getString("text", ""),
-                footer.getString("icon_url", null)
-            )
-        );
+        data.optObject("footer")
+                .ifPresent(
+                        footer -> builder.setFooter(footer.getString("text", ""), footer.getString("icon_url", null)));
 
-        data.optObject("image").ifPresent(image ->
-            builder.setImage(image.getString("url"))
-        );
+        data.optObject("image").ifPresent(image -> builder.setImage(image.getString("url")));
 
-        data.optArray("fields").ifPresent(arr ->
-            arr.stream(DataArray::getObject).forEach(field ->
-                builder.addField(
-                    field.getString("name", ZERO_WIDTH_SPACE),
-                    field.getString("value", ZERO_WIDTH_SPACE),
-                    field.getBoolean("inline", false)
-                )
-            )
-        );
+        data.optArray("fields").ifPresent(arr -> arr.stream(DataArray::getObject)
+                .forEach(field -> builder.addField(
+                        field.getString("name", ZERO_WIDTH_SPACE),
+                        field.getString("value", ZERO_WIDTH_SPACE),
+                        field.getBoolean("inline", false))));
 
         return builder;
     }
@@ -168,20 +153,38 @@ public class EmbedBuilder
      * @return the built, sendable {@link net.dv8tion.jda.api.entities.MessageEmbed}
      */
     @Nonnull
-    public MessageEmbed build()
-    {
-        if (isEmpty())
+    public MessageEmbed build() {
+        if (isEmpty()) {
             throw new IllegalStateException("Cannot build an empty embed!");
-        if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH)
-            throw new IllegalStateException(Helpers.format("Description is longer than %d! Please limit your input!", MessageEmbed.DESCRIPTION_MAX_LENGTH));
-        if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
-            throw new IllegalStateException(Helpers.format("Cannot build an embed with more than %d characters!", MessageEmbed.EMBED_MAX_LENGTH_BOT));
-        if (fields.size() > MessageEmbed.MAX_FIELD_AMOUNT)
-            throw new IllegalStateException(Helpers.format("Cannot build an embed with more than %d embed fields set!", MessageEmbed.MAX_FIELD_AMOUNT));
-        final String description = this.description.length() < 1 ? null : this.description.toString();
+        }
+        if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH) {
+            throw new IllegalStateException(Helpers.format(
+                    "Description is longer than %d! Please limit your input!", MessageEmbed.DESCRIPTION_MAX_LENGTH));
+        }
+        if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT) {
+            throw new IllegalStateException(Helpers.format(
+                    "Cannot build an embed with more than %d characters!", MessageEmbed.EMBED_MAX_LENGTH_BOT));
+        }
+        if (fields.size() > MessageEmbed.MAX_FIELD_AMOUNT) {
+            throw new IllegalStateException(Helpers.format(
+                    "Cannot build an embed with more than %d embed fields set!", MessageEmbed.MAX_FIELD_AMOUNT));
+        }
+        String description = this.description.length() < 1 ? null : this.description.toString();
 
-        return EntityBuilder.createMessageEmbed(url, title, description, EmbedType.RICH, timestamp,
-                color, thumbnail, null, author, null, footer, image, new LinkedList<>(fields));
+        return EntityBuilder.createMessageEmbed(
+                url,
+                title,
+                description,
+                EmbedType.RICH,
+                timestamp,
+                color,
+                thumbnail,
+                null,
+                author,
+                null,
+                footer,
+                image,
+                new LinkedList<>(fields));
     }
 
     /**
@@ -191,8 +194,7 @@ public class EmbedBuilder
      * @return The current EmbedBuilder with default values
      */
     @Nonnull
-    public EmbedBuilder clear()
-    {
+    public EmbedBuilder clear() {
         description.setLength(0);
         fields.clear();
         url = null;
@@ -213,10 +215,8 @@ public class EmbedBuilder
      * @param  builder
      *         the existing builder
      */
-    public void copyFrom(@Nullable EmbedBuilder builder)
-    {
-        if (builder != null)
-        {
+    public void copyFrom(@Nullable EmbedBuilder builder) {
+        if (builder != null) {
             setDescription(builder.description.toString());
             this.clearFields();
             this.fields.addAll(builder.fields);
@@ -238,10 +238,8 @@ public class EmbedBuilder
      * @param  embed
      *         the existing embed
      */
-    public void copyFrom(@Nullable MessageEmbed embed)
-    {
-        if(embed != null)
-        {
+    public void copyFrom(@Nullable MessageEmbed embed) {
+        if (embed != null) {
             setDescription(embed.getDescription());
             this.clearFields();
             this.fields.addAll(embed.getFields());
@@ -261,15 +259,14 @@ public class EmbedBuilder
      *
      * @return true if the embed is empty and cannot be built
      */
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return (title == null || title.trim().isEmpty())
-            && thumbnail == null
-            && author == null
-            && footer == null
-            && image == null
-            && description.toString().trim().isEmpty()
-            && fields.isEmpty();
+                && thumbnail == null
+                && author == null
+                && footer == null
+                && image == null
+                && description.toString().trim().isEmpty()
+                && fields.isEmpty();
     }
 
     /**
@@ -278,19 +275,22 @@ public class EmbedBuilder
      *
      * @return length of the current builder state
      */
-    public int length()
-    {
+    public int length() {
         int length = description.toString().trim().length();
-        synchronized (fields)
-        {
-            length = fields.stream().map(f -> f.getName().length() + f.getValue().length()).reduce(length, Integer::sum);
+        synchronized (fields) {
+            length = fields.stream()
+                    .map(f -> f.getName().length() + f.getValue().length())
+                    .reduce(length, Integer::sum);
         }
-        if (title != null)
+        if (title != null) {
             length += title.length();
-        if (author != null)
+        }
+        if (author != null) {
             length += author.getName().length();
-        if (footer != null)
+        }
+        if (footer != null) {
             length += footer.getText().length();
+        }
         return length;
     }
 
@@ -302,9 +302,8 @@ public class EmbedBuilder
      *
      * @see    MessageEmbed#EMBED_MAX_LENGTH_BOT
      */
-    public boolean isValidLength()
-    {
-        final int length = length();
+    public boolean isValidLength() {
+        int length = length();
         return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
     }
 
@@ -327,8 +326,7 @@ public class EmbedBuilder
      * @return the builder after the title has been set
      */
     @Nonnull
-    public EmbedBuilder setTitle(@Nullable String title)
-    {
+    public EmbedBuilder setTitle(@Nullable String title) {
         return setTitle(title, null);
     }
 
@@ -357,19 +355,19 @@ public class EmbedBuilder
      * @return the builder after the title has been set
      */
     @Nonnull
-    public EmbedBuilder setTitle(@Nullable String title, @Nullable String url)
-    {
-        if (title == null)
-        {
+    public EmbedBuilder setTitle(@Nullable String title, @Nullable String url) {
+        if (title == null) {
             this.title = null;
             this.url = null;
-        }
-        else
-        {
+        } else {
             Checks.notEmpty(title, "Title");
-            Checks.check(title.length() <= MessageEmbed.TITLE_MAX_LENGTH, "Title cannot be longer than %d characters.", MessageEmbed.TITLE_MAX_LENGTH);
-            if (Helpers.isBlank(url))
+            Checks.check(
+                    title.length() <= MessageEmbed.TITLE_MAX_LENGTH,
+                    "Title cannot be longer than %d characters.",
+                    MessageEmbed.TITLE_MAX_LENGTH);
+            if (Helpers.isBlank(url)) {
                 url = null;
+            }
             urlCheck(url);
 
             this.title = title;
@@ -396,10 +394,10 @@ public class EmbedBuilder
      * @see    #setTitle(String, String)
      */
     @Nonnull
-    public EmbedBuilder setUrl(@Nullable String url)
-    {
-        if (Helpers.isBlank(url))
+    public EmbedBuilder setUrl(@Nullable String url) {
+        if (Helpers.isBlank(url)) {
             url = null;
+        }
         urlCheck(url);
         this.url = url;
 
@@ -414,8 +412,7 @@ public class EmbedBuilder
      * @return StringBuilder with current description context
      */
     @Nonnull
-    public StringBuilder getDescriptionBuilder()
-    {
+    public StringBuilder getDescriptionBuilder() {
         return description;
     }
 
@@ -434,11 +431,11 @@ public class EmbedBuilder
      * @return the builder after the description has been set
      */
     @Nonnull
-    public final EmbedBuilder setDescription(@Nullable CharSequence description)
-    {
+    public final EmbedBuilder setDescription(@Nullable CharSequence description) {
         this.description.setLength(0);
-        if (description != null && description.length() >= 1)
+        if (description != null && description.length() >= 1) {
             appendDescription(description);
+        }
         return this;
     }
 
@@ -460,11 +457,12 @@ public class EmbedBuilder
      * @return the builder after the description has been set
      */
     @Nonnull
-    public EmbedBuilder appendDescription(@Nonnull CharSequence description)
-    {
+    public EmbedBuilder appendDescription(@Nonnull CharSequence description) {
         Checks.notNull(description, "description");
-        Checks.check(this.description.length() + description.length() <= MessageEmbed.DESCRIPTION_MAX_LENGTH,
-                "Description cannot be longer than %d characters.", MessageEmbed.DESCRIPTION_MAX_LENGTH);
+        Checks.check(
+                this.description.length() + description.length() <= MessageEmbed.DESCRIPTION_MAX_LENGTH,
+                "Description cannot be longer than %d characters.",
+                MessageEmbed.DESCRIPTION_MAX_LENGTH);
         this.description.append(description);
         return this;
     }
@@ -483,8 +481,7 @@ public class EmbedBuilder
      * @return the builder after the timestamp has been set
      */
     @Nonnull
-    public EmbedBuilder setTimestamp(@Nullable TemporalAccessor temporal)
-    {
+    public EmbedBuilder setTimestamp(@Nullable TemporalAccessor temporal) {
         this.timestamp = Helpers.toOffsetDateTime(temporal);
         return this;
     }
@@ -503,8 +500,7 @@ public class EmbedBuilder
      * @see    #setColor(int)
      */
     @Nonnull
-    public EmbedBuilder setColor(@Nullable Color color)
-    {
+    public EmbedBuilder setColor(@Nullable Color color) {
         this.color = color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB();
         return this;
     }
@@ -522,8 +518,7 @@ public class EmbedBuilder
      * @see    #setColor(java.awt.Color)
      */
     @Nonnull
-    public EmbedBuilder setColor(int color)
-    {
+    public EmbedBuilder setColor(int color) {
         this.color = color;
         return this;
     }
@@ -539,14 +534,14 @@ public class EmbedBuilder
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setThumbnail("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
      * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
-     * </code></pre>
+     * }
      *
      * @param  url
      *         the url of the thumbnail of the embed
@@ -561,14 +556,10 @@ public class EmbedBuilder
      * @return the builder after the thumbnail has been set
      */
     @Nonnull
-    public EmbedBuilder setThumbnail(@Nullable String url)
-    {
-        if (url == null)
-        {
+    public EmbedBuilder setThumbnail(@Nullable String url) {
+        if (url == null) {
             this.thumbnail = null;
-        }
-        else
-        {
+        } else {
             urlCheck(url);
             this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0);
         }
@@ -586,14 +577,14 @@ public class EmbedBuilder
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
      * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
-     * </code></pre>
+     * }
      *
      * @param  url
      *         the url of the image of the embed
@@ -610,14 +601,10 @@ public class EmbedBuilder
      * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)
      */
     @Nonnull
-    public EmbedBuilder setImage(@Nullable String url)
-    {
-        if (url == null)
-        {
+    public EmbedBuilder setImage(@Nullable String url) {
+        if (url == null) {
             this.image = null;
-        }
-        else
-        {
+        } else {
             urlCheck(url);
             this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
         }
@@ -641,8 +628,7 @@ public class EmbedBuilder
      * @return the builder after the author has been set
      */
     @Nonnull
-    public EmbedBuilder setAuthor(@Nullable String name)
-    {
+    public EmbedBuilder setAuthor(@Nullable String name) {
         return setAuthor(name, null, null);
     }
 
@@ -670,8 +656,7 @@ public class EmbedBuilder
      * @return the builder after the author has been set
      */
     @Nonnull
-    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url)
-    {
+    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url) {
         return setAuthor(name, url, null);
     }
 
@@ -687,14 +672,14 @@ public class EmbedBuilder
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setAuthor("Minn", null, "attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
      * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
-     * </code></pre>
+     * }
      *
      * @param  name
      *         the name of the author of the embed. If this is not set, the author will not appear in the embed
@@ -718,15 +703,12 @@ public class EmbedBuilder
      * @return the builder after the author has been set
      */
     @Nonnull
-    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url, @Nullable String iconUrl)
-    {
-        // We only check if the name is null because its presence is what determines if the author will appear in the embed.
-        if (name == null)
-        {
+    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url, @Nullable String iconUrl) {
+        // We only check if the name is null because its presence is what determines if the author
+        // will appear in the embed.
+        if (name == null) {
             this.author = null;
-        }
-        else
-        {
+        } else {
             Checks.notLonger(name, MessageEmbed.AUTHOR_MAX_LENGTH, "Name");
             urlCheck(url);
             urlCheck(iconUrl);
@@ -750,8 +732,7 @@ public class EmbedBuilder
      * @return the builder after the footer has been set
      */
     @Nonnull
-    public EmbedBuilder setFooter(@Nullable String text)
-    {
+    public EmbedBuilder setFooter(@Nullable String text) {
         return setFooter(text, null);
     }
 
@@ -766,14 +747,18 @@ public class EmbedBuilder
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
+     *
      * EmbedBuilder embed = new EmbedBuilder();
      * InputStream file = new URL("https://http.cat/500").openStream();
-     * embed.setFooter("Cool footer!", "attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *
+     * // we specify this in sendFile as "cat.png"
+     * embed.setFooter("Cool footer!", "attachment://cat.png")
      *      .setDescription("This is a cute cat :3");
+     *
      * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
-     * </code></pre>
+     * }
      *
      * @param  text
      *         the text of the footer of the embed. If this is not set, the footer will not appear in the embed.
@@ -792,16 +777,12 @@ public class EmbedBuilder
      * @return the builder after the footer has been set
      */
     @Nonnull
-    public EmbedBuilder setFooter(@Nullable String text, @Nullable String iconUrl)
-    {
-        //We only check if the text is null because its presence is what determines if the
+    public EmbedBuilder setFooter(@Nullable String text, @Nullable String iconUrl) {
+        // We only check if the text is null because its presence is what determines if the
         // footer will appear in the embed.
-        if (text == null)
-        {
+        if (text == null) {
             this.footer = null;
-        }
-        else
-        {
+        } else {
             Checks.notLonger(text, MessageEmbed.TEXT_MAX_LENGTH, "Text");
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
@@ -819,8 +800,7 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addField(@Nullable MessageEmbed.Field field)
-    {
+    public EmbedBuilder addField(@Nullable MessageEmbed.Field field) {
         return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
 
@@ -852,8 +832,7 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addField(@Nonnull String name, @Nonnull String value, boolean inline)
-    {
+    public EmbedBuilder addField(@Nonnull String name, @Nonnull String value, boolean inline) {
         Checks.notNull(name, "Name");
         Checks.notNull(value, "Value");
         this.fields.add(new MessageEmbed.Field(name, value, inline));
@@ -872,8 +851,7 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addBlankField(boolean inline)
-    {
+    public EmbedBuilder addBlankField(boolean inline) {
         this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
         return this;
     }
@@ -887,8 +865,7 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder clearFields()
-    {
+    public EmbedBuilder clearFields() {
         this.fields.clear();
         return this;
     }
@@ -902,15 +879,12 @@ public class EmbedBuilder
      * @return Mutable List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Fields}
      */
     @Nonnull
-    public List<MessageEmbed.Field> getFields()
-    {
+    public List<MessageEmbed.Field> getFields() {
         return fields;
     }
 
-    private void urlCheck(@Nullable String url)
-    {
-        if (url != null)
-        {
+    private void urlCheck(@Nullable String url) {
+        if (url != null) {
             Checks.notLonger(url, MessageEmbed.URL_MAX_LENGTH, "URL");
             Checks.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http(s) or attachment url.");
         }

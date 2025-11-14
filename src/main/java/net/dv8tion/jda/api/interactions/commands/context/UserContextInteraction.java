@@ -25,12 +25,10 @@ import javax.annotation.Nullable;
 /**
  * Interaction with a user context menu command
  */
-public interface UserContextInteraction extends ContextInteraction<User>
-{
+public interface UserContextInteraction extends ContextInteraction<User> {
     @Nonnull
     @Override
-    default ContextTarget getTargetType()
-    {
+    default ContextTarget getTargetType() {
         return ContextTarget.USER;
     }
 

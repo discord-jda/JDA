@@ -18,8 +18,9 @@ package net.dv8tion.jda.api.interactions.commands.localization;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 
-import javax.annotation.Nonnull;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 /**
  * Functional interface accepting a localization key (complete path used to get the appropriate translations)
@@ -42,7 +43,7 @@ import java.util.Map;
  * </ul>
  *
  * <br>Extremely naive implementation of LocalizationFunction
- * <pre><code>
+ * {@snippet lang="java":
  * public class MyFunction implements LocalizationFunction {
  *   &#64;Override
  *   public Map&lt;DiscordLocale, String&gt; apply(String localizationKey) {
@@ -62,10 +63,10 @@ import java.util.Map;
  *     return map;
  *   }
  * }
- * </code></pre>
- * 
+ * }
+ *
  * Also, since this is a functional interface, the following is also possible
- * <pre><code>
+ * {@snippet lang="java":
  * LocalizationFunction myfunc = s -&gt; {
  *   Map&lt;DiscordLocale, String&gt; map = new HashMap&lt;&gt;();
  *    switch (localizationKey) {
@@ -82,7 +83,7 @@ import java.util.Map;
  *
  *    return map;
  * }
- * </code></pre>
+ * }
  *
  * <p>
  * You can look at a complete localization example <a href="https://github.com/discord-jda/JDA/blob/master/src/examples/java/LocalizationExample.java" target="_blank">here</a>
@@ -90,8 +91,7 @@ import java.util.Map;
  * @see ResourceBundleLocalizationFunction
  * @see net.dv8tion.jda.api.interactions.commands.build.CommandData#setLocalizationFunction(LocalizationFunction)
  */
-public interface LocalizationFunction
-{
+public interface LocalizationFunction {
     /**
      * Retrieves the localization mappings of the specified localization key
      *

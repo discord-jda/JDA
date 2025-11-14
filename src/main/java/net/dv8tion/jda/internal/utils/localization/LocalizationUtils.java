@@ -24,27 +24,24 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LocalizationUtils
-{
+import javax.annotation.Nonnull;
+
+public class LocalizationUtils {
     public static final Logger LOG = JDALogger.getLog(LocalizationUtils.class);
 
     @Nonnull
-    public static Map<DiscordLocale, String> mapFromData(@Nonnull DataObject data)
-    {
+    public static Map<DiscordLocale, String> mapFromData(@Nonnull DataObject data) {
         Checks.notNull(data, "Data");
 
-        final Map<DiscordLocale, String> map = new HashMap<>();
+        Map<DiscordLocale, String> map = new HashMap<>();
 
-        for (String key : data.keys())
-        {
-            final DiscordLocale locale = DiscordLocale.from(key);
-            if (locale == DiscordLocale.UNKNOWN)
-            {
+        for (String key : data.keys()) {
+            DiscordLocale locale = DiscordLocale.from(key);
+            if (locale == DiscordLocale.UNKNOWN) {
                 LOG.debug("Discord provided an unknown locale, locale tag: {}", key);
                 continue;
             }
@@ -56,16 +53,16 @@ public class LocalizationUtils
     }
 
     @Nonnull
-    public static Map<DiscordLocale, String> mapFromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty)
-    {
+    public static Map<DiscordLocale, String> mapFromProperty(
+            @Nonnull DataObject json, @Nonnull String localizationProperty) {
         return json.optObject(localizationProperty)
                 .map(LocalizationUtils::mapFromData)
                 .orElse(Collections.emptyMap());
     }
 
     @Nonnull
-    public static LocalizationMap unmodifiableFromProperty(@Nonnull DataObject json, @Nonnull String localizationProperty)
-    {
+    public static LocalizationMap unmodifiableFromProperty(
+            @Nonnull DataObject json, @Nonnull String localizationProperty) {
         return new UnmodifiableLocalizationMap(mapFromProperty(json, localizationProperty));
     }
 }

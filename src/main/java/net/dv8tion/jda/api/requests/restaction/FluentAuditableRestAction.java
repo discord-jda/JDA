@@ -16,11 +16,12 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * Interface used to mixin the customization parameters for {@link AuditableRestAction AuditableRestActions}.
@@ -32,8 +33,8 @@ import java.util.function.BooleanSupplier;
  *        The concrete AuditableRestAction type used for chaining (fluent interface)
  */
 @SuppressWarnings("unchecked")
-public interface FluentAuditableRestAction<T, R extends FluentAuditableRestAction<T, R>> extends AuditableRestAction<T>
-{
+public interface FluentAuditableRestAction<T, R extends FluentAuditableRestAction<T, R>>
+        extends AuditableRestAction<T> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -47,24 +48,21 @@ public interface FluentAuditableRestAction<T, R extends FluentAuditableRestActio
     @Nonnull
     @Override
     @CheckReturnValue
-    default R addCheck(@Nonnull BooleanSupplier checks)
-    {
+    default R addCheck(@Nonnull BooleanSupplier checks) {
         return (R) AuditableRestAction.super.addCheck(checks);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default R timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    default R timeout(long timeout, @Nonnull TimeUnit unit) {
         return (R) AuditableRestAction.super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default R deadline(long timestamp)
-    {
+    default R deadline(long timestamp) {
         return (R) AuditableRestAction.super.deadline(timestamp);
     }
 }

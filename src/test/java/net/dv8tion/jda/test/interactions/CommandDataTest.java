@@ -40,13 +40,15 @@ import static net.dv8tion.jda.test.ChecksHelper.assertStringChecks;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-public class CommandDataTest
-{
-    private static DataObject defaultCommand()
-    {
+public class CommandDataTest {
+    private static DataObject defaultCommand() {
         return DataObject.empty()
                 .put("type", 1)
-                .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType()).add(InteractionContextType.BOT_DM.getType()))
+                .put(
+                        "contexts",
+                        DataArray.empty()
+                                .add(InteractionContextType.GUILD.getType())
+                                .add(InteractionContextType.BOT_DM.getType()))
                 .put("integration_types", DataArray.empty().add(IntegrationType.GUILD_INSTALL.getType()))
                 .put("name_localizations", DataObject.empty())
                 .put("description_localizations", DataObject.empty())
@@ -55,8 +57,7 @@ public class CommandDataTest
                 .put("options", DataArray.empty());
     }
 
-    private static DataObject defaultOption(OptionType type, String name, String description)
-    {
+    private static DataObject defaultOption(OptionType type, String name, String description) {
         return DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
@@ -68,8 +69,7 @@ public class CommandDataTest
     }
 
     @Test
-    void testNormal()
-    {
+    void testNormal() {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
                 .setContexts(InteractionContextType.GUILD)
                 .setIntegrationTypes(IntegrationType.USER_INSTALL)
@@ -81,23 +81,25 @@ public class CommandDataTest
         DataObject data = command.toData();
 
         assertThat(data)
-            .withRepresentation(new PrettyRepresentation())
-            .isEqualTo(defaultCommand()
-                .put("type", 1)
-                .put("name", "ban")
-                .put("description", "Ban a user from this server")
-                .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType()))
-                .put("integration_types", DataArray.empty().add(IntegrationType.USER_INSTALL.getType()))
-                .put("default_member_permissions", "4")
-                .put("options", DataArray.empty()
-                    .add(defaultOption(OptionType.USER, "user", "The user to ban").put("required", true))
-                    .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
-                    .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))));
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(defaultCommand()
+                        .put("type", 1)
+                        .put("name", "ban")
+                        .put("description", "Ban a user from this server")
+                        .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType()))
+                        .put("integration_types", DataArray.empty().add(IntegrationType.USER_INSTALL.getType()))
+                        .put("default_member_permissions", "4")
+                        .put(
+                                "options",
+                                DataArray.empty()
+                                        .add(defaultOption(OptionType.USER, "user", "The user to ban")
+                                                .put("required", true))
+                                        .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
+                                        .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))));
     }
 
     @Test
-    void testDefaultMemberPermissions()
-    {
+    void testDefaultMemberPermissions() {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
 
@@ -109,138 +111,189 @@ public class CommandDataTest
     }
 
     @Test
-    void testSubcommand()
-    {
+    void testSubcommand() {
         CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
-                    .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
-                    .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
-                    .addOption(OptionType.INTEGER, "days", "The duration of the ban", false)); // test with explicit false
-
-        assertThat(command.toData())
-            .withRepresentation(new PrettyRepresentation())
-            .isEqualTo(defaultCommand()
-                .put("name", "mod")
-                .put("description", "Moderation commands")
-                    .put("options", DataArray.empty()
-                        .add(defaultOption(OptionType.SUB_COMMAND, "ban", "Ban a user from this server")
-                            .remove("autocomplete")
-                            .remove("required")
-                            .put("options", DataArray.empty()
-                                .add(defaultOption(OptionType.USER, "user", "The user to ban").put("required", true))
-                                .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
-                                .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))))));
-    }
-
-    @Test
-    void testSubcommandGroup()
-    {
-        CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
-                .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
-                    .addSubcommands(new SubcommandData("add", "Ban a user from this server")
                         .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                         .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
-                        .addOption(OptionType.INTEGER, "days", "The duration of the ban", false))); // test with explicit false
+                        .addOption(
+                                OptionType.INTEGER,
+                                "days",
+                                "The duration of the ban",
+                                false)); // test with explicit false
 
         assertThat(command.toData())
-            .withRepresentation(new PrettyRepresentation())
-            .isEqualTo(defaultCommand()
-                .put("name", "mod")
-                .put("description", "Moderation commands")
-                .put("options", DataArray.empty()
-                    .add(defaultOption(OptionType.SUB_COMMAND_GROUP, "ban", "Ban or unban a user from this server")
-                        .remove("autocomplete")
-                        .remove("required")
-                        .put("options", DataArray.empty()
-                            .add(defaultOption(OptionType.SUB_COMMAND, "add", "Ban a user from this server")
-                                .remove("autocomplete")
-                                .remove("required")
-                                .put("options", DataArray.empty()
-                                    .add(defaultOption(OptionType.USER, "user", "The user to ban").put("required", true))
-                                    .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
-                                    .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))))))));
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(defaultCommand()
+                        .put("name", "mod")
+                        .put("description", "Moderation commands")
+                        .put(
+                                "options",
+                                DataArray.empty()
+                                        .add(defaultOption(OptionType.SUB_COMMAND, "ban", "Ban a user from this server")
+                                                .remove("autocomplete")
+                                                .remove("required")
+                                                .put(
+                                                        "options",
+                                                        DataArray.empty()
+                                                                .add(defaultOption(
+                                                                                OptionType.USER,
+                                                                                "user",
+                                                                                "The user to ban")
+                                                                        .put("required", true))
+                                                                .add(defaultOption(
+                                                                        OptionType.STRING, "reason", "The ban reason"))
+                                                                .add(defaultOption(
+                                                                        OptionType.INTEGER,
+                                                                        "days",
+                                                                        "The duration of the ban"))))));
     }
 
     @Test
-    void testRequiredThrows()
-    {
+    void testSubcommandGroup() {
+        CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
+                .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
+                        .addSubcommands(new SubcommandData("add", "Ban a user from this server")
+                                .addOption(
+                                        OptionType.USER,
+                                        "user",
+                                        "The user to ban",
+                                        true) // required before non-required
+                                .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
+                                .addOption(
+                                        OptionType.INTEGER,
+                                        "days",
+                                        "The duration of the ban",
+                                        false))); // test with explicit false
+
+        assertThat(command.toData())
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(
+                        defaultCommand()
+                                .put("name", "mod")
+                                .put("description", "Moderation commands")
+                                .put(
+                                        "options",
+                                        DataArray.empty()
+                                                .add(
+                                                        defaultOption(
+                                                                        OptionType.SUB_COMMAND_GROUP,
+                                                                        "ban",
+                                                                        "Ban or unban a user from this server")
+                                                                .remove("autocomplete")
+                                                                .remove("required")
+                                                                .put(
+                                                                        "options",
+                                                                        DataArray.empty()
+                                                                                .add(
+                                                                                        defaultOption(
+                                                                                                        OptionType
+                                                                                                                .SUB_COMMAND,
+                                                                                                        "add",
+                                                                                                        "Ban a user from this server")
+                                                                                                .remove("autocomplete")
+                                                                                                .remove("required")
+                                                                                                .put(
+                                                                                                        "options",
+                                                                                                        DataArray
+                                                                                                                .empty()
+                                                                                                                .add(
+                                                                                                                        defaultOption(
+                                                                                                                                        OptionType
+                                                                                                                                                .USER,
+                                                                                                                                        "user",
+                                                                                                                                        "The user to ban")
+                                                                                                                                .put(
+                                                                                                                                        "required",
+                                                                                                                                        true))
+                                                                                                                .add(
+                                                                                                                        defaultOption(
+                                                                                                                                OptionType
+                                                                                                                                        .STRING,
+                                                                                                                                "reason",
+                                                                                                                                "The ban reason"))
+                                                                                                                .add(
+                                                                                                                        defaultOption(
+                                                                                                                                OptionType
+                                                                                                                                        .INTEGER,
+                                                                                                                                "days",
+                                                                                                                                "The duration of the ban"))))))));
+    }
+
+    @Test
+    void testRequiredThrows() {
         CommandDataImpl command = new CommandDataImpl("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> command.addOption(OptionType.STRING, "other", "desc", true))
-            .withMessage("Cannot add required options after non-required options!");
+                .isThrownBy(() -> command.addOption(OptionType.STRING, "other", "desc", true))
+                .withMessage("Cannot add required options after non-required options!");
 
         SubcommandData subcommand = new SubcommandData("sub", "Simple subcommand");
         subcommand.addOption(OptionType.STRING, "opt", "desc");
 
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> subcommand.addOption(OptionType.STRING, "other", "desc", true))
-            .withMessage("Cannot add required options after non-required options!");
+                .isThrownBy(() -> subcommand.addOption(OptionType.STRING, "other", "desc", true))
+                .withMessage("Cannot add required options after non-required options!");
     }
 
     @Test
-    void testNameChecks()
-    {
+    void testNameChecks() {
         assertStringChecks("Name", input -> new CommandDataImpl(input, "Valid description"))
-            .checksNotNull()
-            .checksRange(1, 32)
-            .checksLowercaseOnly()
-            .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
+                .checksNotNull()
+                .checksRange(1, 32)
+                .checksLowercaseOnly()
+                .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
 
         assertStringChecks("Name", input -> new SubcommandData(input, "Valid description"))
-            .checksNotNull()
-            .checksRange(1, 32)
-            .checksLowercaseOnly()
-            .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
+                .checksNotNull()
+                .checksRange(1, 32)
+                .checksLowercaseOnly()
+                .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
 
         assertStringChecks("Name", input -> new SubcommandGroupData(input, "Valid description"))
-            .checksNotNull()
-            .checksRange(1, 32)
-            .checksLowercaseOnly()
-            .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
+                .checksNotNull()
+                .checksRange(1, 32)
+                .checksLowercaseOnly()
+                .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
 
         assertStringChecks("Description", input -> new CommandDataImpl("valid_name", input))
-            .checksNotNull()
-            .checksRange(1, 100);
+                .checksNotNull()
+                .checksRange(1, 100);
 
         assertStringChecks("Description", input -> new SubcommandData("valid_name", input))
-            .checksNotNull()
-            .checksRange(1, 100);
+                .checksNotNull()
+                .checksRange(1, 100);
 
         assertStringChecks("Description", input -> new SubcommandGroupData("valid_name", input))
-            .checksNotNull()
-            .checksRange(1, 100);
+                .checksNotNull()
+                .checksRange(1, 100);
     }
 
     @Test
-    void testChoices()
-    {
+    void testChoices() {
         OptionData stringOption = new OptionData(OptionType.STRING, "choice", "Option with choices!");
 
         assertStringChecks("Value", value -> stringOption.addChoice("valid_name", value))
-            .checksNotEmpty();
+                .checksNotEmpty();
 
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> stringOption.addChoice("invalid name", 0))
-            .withMessage("Cannot add long choice for OptionType.STRING");
+                .isThrownBy(() -> stringOption.addChoice("invalid name", 0))
+                .withMessage("Cannot add long choice for OptionType.STRING");
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> stringOption.addChoice("invalidName", 0.0))
-            .withMessage("Cannot add double choice for OptionType.STRING");
+                .isThrownBy(() -> stringOption.addChoice("invalidName", 0.0))
+                .withMessage("Cannot add double choice for OptionType.STRING");
 
         OptionData intOption = new OptionData(OptionType.INTEGER, "choice", "Option with choices!");
         List<Command.Choice> choices = new ArrayList<>();
-        for (int i = 0; i < 25; i++)
-        {
+        for (int i = 0; i < 25; i++) {
             intOption.addChoice("choice_" + i, i);
             choices.add(new Command.Choice("choice_" + i, i));
         }
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> intOption.addChoice("name", 100))
-            .withMessage("Cannot have more than 25 choices for an option!");
-        assertThat(intOption.getChoices())
-            .hasSize(25);
-        assertThat(intOption.getChoices())
-            .isEqualTo(choices);
+                .isThrownBy(() -> intOption.addChoice("name", 100))
+                .withMessage("Cannot have more than 25 choices for an option!");
+        assertThat(intOption.getChoices()).hasSize(25);
+        assertThat(intOption.getChoices()).isEqualTo(choices);
     }
 }

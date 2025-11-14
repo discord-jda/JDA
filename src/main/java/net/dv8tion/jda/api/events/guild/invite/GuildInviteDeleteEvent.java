@@ -33,10 +33,9 @@ import javax.annotation.Nonnull;
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_INVITES GUILD_INVITES} intent to be enabled.
  * <br>This event will only fire for invites deleted in channels where you can {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}.
  */
-public class GuildInviteDeleteEvent extends GenericGuildInviteEvent
-{
-    public GuildInviteDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel)
-    {
+public class GuildInviteDeleteEvent extends GenericGuildInviteEvent {
+    public GuildInviteDeleteEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel) {
         super(api, responseNumber, code, channel);
     }
 }

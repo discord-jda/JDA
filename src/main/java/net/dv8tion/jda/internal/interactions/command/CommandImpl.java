@@ -38,7 +38,6 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -47,12 +46,17 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class CommandImpl implements Command
-{
-    public static final EnumSet<OptionType> OPTIONS = EnumSet.complementOf(EnumSet.of(OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP));
-    public static final Predicate<DataObject> OPTION_TEST = it -> OPTIONS.contains(OptionType.fromKey(it.getInt("type")));
-    public static final Predicate<DataObject> SUBCOMMAND_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND;
-    public static final Predicate<DataObject> GROUP_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND_GROUP;
+import javax.annotation.Nonnull;
+
+public class CommandImpl implements Command {
+    public static final EnumSet<OptionType> OPTIONS =
+            EnumSet.complementOf(EnumSet.of(OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP));
+    public static final Predicate<DataObject> OPTION_TEST =
+            it -> OPTIONS.contains(OptionType.fromKey(it.getInt("type")));
+    public static final Predicate<DataObject> SUBCOMMAND_TEST =
+            it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND;
+    public static final Predicate<DataObject> GROUP_TEST =
+            it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND_GROUP;
 
     private final JDAImpl api;
     private final Guild guild;
@@ -69,8 +73,7 @@ public class CommandImpl implements Command
     private final Command.Type type;
     private final DefaultMemberPermissions defaultMemberPermissions;
 
-    public CommandImpl(JDAImpl api, Guild guild, DataObject json)
-    {
+    public CommandImpl(JDAImpl api, Guild guild, DataObject json) {
         this.api = api;
         this.guild = guild;
         this.name = json.getString("name");
@@ -80,7 +83,8 @@ public class CommandImpl implements Command
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
-        this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
+        this.applicationId =
+                json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
         this.options = parseOptions(json, OPTION_TEST, Command.Option::new);
         this.groups = parseOptions(json, GROUP_TEST, (DataObject o) -> new SubcommandGroup(this, o));
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
@@ -90,73 +94,69 @@ public class CommandImpl implements Command
                 ? DefaultMemberPermissions.ENABLED
                 : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
-        if (!json.isNull("contexts"))
-        {
-            this.contexts = json.getArray("contexts")
-                    .stream(DataArray::getString)
+        if (!json.isNull("contexts")) {
+            this.contexts = json.getArray("contexts").stream(DataArray::getString)
                     .map(InteractionContextType::fromKey)
                     .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class));
         }
-        // If the command is in a guild, it can only be guild, otherwise up to the dm_permission flag
-        else if (guildId != 0L)
+        // If the command is in a guild, it can only be guild,
+        // otherwise up to the dm_permission flag
+        else if (guildId != 0L) {
             this.contexts = Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
-        else
-        {
-            final boolean dmPermission = json.getBoolean("dm_permission", true);
+        } else {
+            boolean dmPermission = json.getBoolean("dm_permission", true);
             this.contexts = dmPermission
                     ? Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM)
                     : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
         }
 
-        if (!json.isNull("integration_types"))
-        {
-            this.integrationTypes = json.getArray("integration_types")
-                    .stream(DataArray::getString)
+        if (!json.isNull("integration_types")) {
+            this.integrationTypes = json.getArray("integration_types").stream(DataArray::getString)
                     .map(IntegrationType::fromKey)
                     .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class));
-        }
-        else
+        } else {
             this.integrationTypes = Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL);
+        }
 
         this.nsfw = json.getBoolean("nsfw");
     }
 
-    public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
-    {
-        return json.optArray("options").map(arr ->
-            arr.stream(DataArray::getObject)
-               .filter(test)
-               .map(transform)
-               .collect(Collectors.toList())
-        ).orElse(Collections.emptyList());
+    public static <T> List<T> parseOptions(
+            DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform) {
+        return json.optArray("options")
+                .map(arr -> arr.stream(DataArray::getObject)
+                        .filter(test)
+                        .map(transform)
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> delete()
-    {
+    public RestAction<Void> delete() {
         checkSelfUser("Cannot delete a command from another bot!");
         Route.CompiledRoute route;
         String appId = getJDA().getSelfUser().getApplicationId();
-        if (guildId != 0L)
+        if (guildId != 0L) {
             route = Route.Interactions.DELETE_GUILD_COMMAND.compile(appId, Long.toUnsignedString(guildId), getId());
-        else
+        } else {
             route = Route.Interactions.DELETE_COMMAND.compile(appId, getId());
+        }
         return new RestActionImpl<>(api, route);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction editCommand()
-    {
+    public CommandEditAction editCommand() {
         checkSelfUser("Cannot edit a command from another bot!");
-        return guild == null ? new CommandEditActionImpl(api, type, getId()) : new CommandEditActionImpl(guild, type, getId());
+        return guild == null
+                ? new CommandEditActionImpl(api, type, getId())
+                : new CommandEditActionImpl(guild, type, getId());
     }
 
     @Nonnull
     @Override
-    public RestAction<List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild)
-    {
+    public RestAction<List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild) {
         checkSelfUser("Cannot retrieve privileges for a command from another bot!");
         Checks.notNull(guild, "Guild");
         return guild.retrieveIntegrationPrivilegesById(id);
@@ -164,156 +164,135 @@ public class CommandImpl implements Command
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public Command.Type getType()
-    {
+    public Command.Type getType() {
         return type;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Nonnull
     @Override
-    public LocalizationMap getNameLocalizations()
-    {
+    public LocalizationMap getNameLocalizations() {
         return nameLocalizations;
     }
 
     @Nonnull
     @Override
-    public String getFullCommandName()
-    {
+    public String getFullCommandName() {
         return name;
     }
 
     @Nonnull
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
     @Nonnull
     @Override
-    public LocalizationMap getDescriptionLocalizations()
-    {
+    public LocalizationMap getDescriptionLocalizations() {
         return descriptionLocalizations;
     }
 
     @Nonnull
     @Override
-    public List<Command.Option> getOptions()
-    {
+    public List<Command.Option> getOptions() {
         return options;
     }
 
     @Nonnull
     @Override
-    public List<Command.Subcommand> getSubcommands()
-    {
+    public List<Command.Subcommand> getSubcommands() {
         return subcommands;
     }
 
     @Nonnull
     @Override
-    public List<Command.SubcommandGroup> getSubcommandGroups()
-    {
+    public List<Command.SubcommandGroup> getSubcommandGroups() {
         return groups;
     }
 
     @Override
-    public long getApplicationIdLong()
-    {
+    public long getApplicationIdLong() {
         return applicationId;
     }
 
     @Override
-    public long getVersion()
-    {
+    public long getVersion() {
         return version;
     }
 
     @Nonnull
     @Override
-    public DefaultMemberPermissions getDefaultPermissions()
-    {
+    public DefaultMemberPermissions getDefaultPermissions() {
         return defaultMemberPermissions;
     }
 
     @Nonnull
     @Override
-    public EnumSet<InteractionContextType> getContexts()
-    {
+    public EnumSet<InteractionContextType> getContexts() {
         return Helpers.copyEnumSet(InteractionContextType.class, contexts);
     }
 
     @Nonnull
     @Override
-    public EnumSet<IntegrationType> getIntegrationTypes()
-    {
+    public EnumSet<IntegrationType> getIntegrationTypes() {
         return Helpers.copyEnumSet(IntegrationType.class, integrationTypes);
     }
 
     @Override
-    public boolean isNSFW()
-    {
+    public boolean isNSFW() {
         return nsfw;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
-        if (getType() != Type.SLASH)
+    public String getAsMention() {
+        if (getType() != Type.SLASH) {
             throw new IllegalStateException("Only slash commands can be mentioned");
+        }
         return Command.super.getAsMention();
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setType(getType())
-                .setName(getName())
-                .toString();
+    public String toString() {
+        return new EntityString(this).setType(getType()).setName(getName()).toString();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof Command))
+        }
+        if (!(obj instanceof Command)) {
             return false;
+        }
         return id == ((Command) obj).getIdLong();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
-    private void checkSelfUser(String s)
-    {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
+    private void checkSelfUser(String s) {
+        if (applicationId != api.getSelfUser().getApplicationIdLong()) {
             throw new IllegalStateException(s);
+        }
     }
 }

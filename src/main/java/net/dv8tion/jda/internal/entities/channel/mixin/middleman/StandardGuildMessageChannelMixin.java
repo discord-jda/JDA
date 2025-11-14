@@ -26,21 +26,20 @@ import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContain
 
 import javax.annotation.Nonnull;
 
-public interface StandardGuildMessageChannelMixin<T extends StandardGuildMessageChannelMixin<T>> extends
-        StandardGuildMessageChannel,
-        StandardGuildChannelMixin<T>,
-        GuildMessageChannelMixin<T>,
-        IThreadContainerMixin<T>,
-        IAgeRestrictedChannelMixin<T>,
-        IWebhookContainerMixin<T>,
-        ITopicChannelMixin<T>
-{
+public interface StandardGuildMessageChannelMixin<T extends StandardGuildMessageChannelMixin<T>>
+        extends StandardGuildMessageChannel,
+                StandardGuildChannelMixin<T>,
+                GuildMessageChannelMixin<T>,
+                IThreadContainerMixin<T>,
+                IAgeRestrictedChannelMixin<T>,
+                IWebhookContainerMixin<T>,
+                ITopicChannelMixin<T> {
     // ---- Default implementations of interface ----
     @Override
-    default boolean canTalk(@Nonnull Member member)
-    {
-        if (!getGuild().equals(member.getGuild()))
+    default boolean canTalk(@Nonnull Member member) {
+        if (!getGuild().equals(member.getGuild())) {
             throw new IllegalArgumentException("Provided Member is not from the Guild that this channel is part of.");
+        }
 
         return member.hasPermission(this, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
     }

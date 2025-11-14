@@ -23,28 +23,26 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
  * designed to create a {@link net.dv8tion.jda.api.entities.Role Role}.
  * This extension allows setting properties before executing the action.
  *
- * @since  3.0
- *
  * @see    net.dv8tion.jda.api.entities.Guild
  * @see    net.dv8tion.jda.api.entities.Guild#createRole()
  * @see    Role#createCopy()
  * @see    Role#createCopy(Guild)
  */
-public interface RoleAction extends AuditableRestAction<Role>
-{
+public interface RoleAction extends AuditableRestAction<Role> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -118,8 +116,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction setColor(@Nullable Color color)
-    {
+    default RoleAction setColor(@Nullable Color color) {
         return this.setColor(color != null ? color.getRGB() : null);
     }
 
@@ -156,10 +153,10 @@ public interface RoleAction extends AuditableRestAction<Role>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction setPermissions(@Nullable Permission... permissions)
-    {
-        if (permissions != null)
+    default RoleAction setPermissions(@Nullable Permission... permissions) {
+        if (permissions != null) {
             Checks.noneNull(permissions, "Permissions");
+        }
 
         return setPermissions(permissions == null ? null : Permission.getRaw(permissions));
     }
@@ -184,10 +181,10 @@ public interface RoleAction extends AuditableRestAction<Role>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction setPermissions(@Nullable Collection<Permission> permissions)
-    {
-        if (permissions != null)
+    default RoleAction setPermissions(@Nullable Collection<Permission> permissions) {
+        if (permissions != null) {
             Checks.noneNull(permissions, "Permissions");
+        }
 
         return setPermissions(permissions == null ? null : Permission.getRaw(permissions));
     }
@@ -257,8 +254,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction setIcon(@Nullable UnicodeEmoji emoji)
-    {
+    default RoleAction setIcon(@Nullable UnicodeEmoji emoji) {
         return setIcon(emoji == null ? null : emoji.getFormatted());
     }
 }

@@ -16,8 +16,7 @@
 
 package net.dv8tion.jda.test;
 
-public interface Constants
-{
+public interface Constants {
     long GUILD_ID = 125227483518861312L;
     long CHANNEL_ID = 125227483518861312L;
     long MINN_USER_ID = 86699011792191488L;

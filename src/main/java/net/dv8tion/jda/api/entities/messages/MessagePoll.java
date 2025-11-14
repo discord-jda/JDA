@@ -22,11 +22,12 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Poll sent with messages.
@@ -34,8 +35,7 @@ import java.util.List;
  * @see Message#getPoll()
  * @see Message#endPoll()
  */
-public interface MessagePoll
-{
+public interface MessagePoll {
     /** Maximum length of a {@link MessagePollBuilder#setTitle(String) poll question title} ({@value}) */
     int MAX_QUESTION_TEXT_LENGTH = 300;
     /** Maximum length of a {@link MessagePollBuilder#addAnswer(String)} poll answer title} ({@value}) */
@@ -106,21 +106,18 @@ public interface MessagePoll
      *
      * @return True, if this poll is expired.
      */
-    default boolean isExpired()
-    {
+    default boolean isExpired() {
         return getTimeExpiresAt().isBefore(OffsetDateTime.now());
     }
 
     /**
      * The question for a poll.
      */
-    class Question
-    {
+    class Question {
         private final String text;
         private final EmojiUnion emoji;
 
-        public Question(String text, Emoji emoji)
-        {
+        public Question(String text, Emoji emoji) {
             this.text = text;
             this.emoji = (EmojiUnion) emoji;
         }
@@ -133,8 +130,7 @@ public interface MessagePoll
          * @return The question title
          */
         @Nonnull
-        public String getText()
-        {
+        public String getText() {
             return text;
         }
 
@@ -144,8 +140,7 @@ public interface MessagePoll
          * @return Possibly-null emoji
          */
         @Nullable
-        public EmojiUnion getEmoji()
-        {
+        public EmojiUnion getEmoji() {
             return emoji;
         }
     }
@@ -155,16 +150,14 @@ public interface MessagePoll
      *
      * <p>Provides the current {@link #getVotes()} and whether you have voted for it.
      */
-    class Answer
-    {
+    class Answer {
         private final long id;
         private final String text;
         private final EmojiUnion emoji;
         private final int votes;
         private final boolean selfVoted;
 
-        public Answer(long id, String text, EmojiUnion emoji, int votes, boolean selfVoted)
-        {
+        public Answer(long id, String text, EmojiUnion emoji, int votes, boolean selfVoted) {
             this.id = id;
             this.text = text;
             this.emoji = emoji;
@@ -177,8 +170,7 @@ public interface MessagePoll
          *
          * @return The answer id.
          */
-        public long getId()
-        {
+        public long getId() {
             return id;
         }
 
@@ -188,8 +180,7 @@ public interface MessagePoll
          * @return The answer label.
          */
         @Nonnull
-        public String getText()
-        {
+        public String getText() {
             return text;
         }
 
@@ -199,8 +190,7 @@ public interface MessagePoll
          * @return {@link EmojiUnion}
          */
         @Nullable
-        public EmojiUnion getEmoji()
-        {
+        public EmojiUnion getEmoji() {
             return emoji;
         }
 
@@ -211,8 +201,7 @@ public interface MessagePoll
          *
          * @return The current number of votes
          */
-        public int getVotes()
-        {
+        public int getVotes() {
             return votes;
         }
 
@@ -221,8 +210,7 @@ public interface MessagePoll
          *
          * @return True, if the bot has voted for this.
          */
-        public boolean isSelfVoted()
-        {
+        public boolean isSelfVoted() {
             return selfVoted;
         }
     }
@@ -232,15 +220,13 @@ public interface MessagePoll
      *
      * <p>Currently always {@link #DEFAULT}.
      */
-    enum LayoutType
-    {
+    enum LayoutType {
         DEFAULT(1),
         UNKNOWN(-1);
 
         private final int key;
 
-        LayoutType(int key)
-        {
+        LayoutType(int key) {
             this.key = key;
         }
 
@@ -249,8 +235,7 @@ public interface MessagePoll
          *
          * @return The API key
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -263,12 +248,11 @@ public interface MessagePoll
          * @return The layout type or {@link #UNKNOWN}
          */
         @Nonnull
-        public static LayoutType fromKey(int key)
-        {
-            for (LayoutType type : values())
-            {
-                if (type.key == key)
+        public static LayoutType fromKey(int key) {
+            for (LayoutType type : values()) {
+                if (type.key == key) {
                     return type;
+                }
             }
             return UNKNOWN;
         }

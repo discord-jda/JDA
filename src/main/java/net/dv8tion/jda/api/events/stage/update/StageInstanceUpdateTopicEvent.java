@@ -29,26 +29,23 @@ import javax.annotation.Nonnull;
  * <p>Identifier: {@code topic}
  */
 @SuppressWarnings("ConstantConditions")
-public class StageInstanceUpdateTopicEvent extends GenericStageInstanceUpdateEvent<String>
-{
+public class StageInstanceUpdateTopicEvent extends GenericStageInstanceUpdateEvent<String> {
     public static final String IDENTIFIER = "topic";
 
-    public StageInstanceUpdateTopicEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance, String previous)
-    {
+    public StageInstanceUpdateTopicEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance, String previous) {
         super(api, responseNumber, stageInstance, previous, stageInstance.getTopic(), IDENTIFIER);
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

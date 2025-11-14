@@ -19,16 +19,16 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
+
+import javax.annotation.Nullable;
 
 /**
  * An object representing a Role's icon.
  *
  * @see Role#getIcon
  */
-public class RoleIcon
-{
+public class RoleIcon {
     /** Template for {@link #getIconUrl()}. */
     public static final String ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s.png";
 
@@ -36,8 +36,7 @@ public class RoleIcon
     private final String emoji;
     private final long roleId;
 
-    public RoleIcon(String iconId, String emoji, long roleId)
-    {
+    public RoleIcon(String iconId, String emoji, long roleId) {
         this.iconId = iconId;
         this.emoji = emoji;
         this.roleId = roleId;
@@ -49,12 +48,9 @@ public class RoleIcon
      * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Role's icon hash-id.
-     *
-     * @since  4.3.1
      */
     @Nullable
-    public String getIconId()
-    {
+    public String getIconId() {
         return iconId;
     }
 
@@ -64,12 +60,9 @@ public class RoleIcon
      * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Role's icon URL.
-     *
-     * @since  4.3.1
      */
     @Nullable
-    public String getIconUrl()
-    {
+    public String getIconUrl() {
         String iconId = getIconId();
         return iconId == null ? null : String.format(ICON_URL, roleId, iconId);
     }
@@ -82,9 +75,8 @@ public class RoleIcon
      * @see    #getIconUrl()
      */
     @Nullable
-    public ImageProxy getIcon()
-    {
-        final String iconUrl = getIconUrl();
+    public ImageProxy getIcon() {
+        String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
 
@@ -94,12 +86,9 @@ public class RoleIcon
      * <p>The Role emoji can be modified using {@link RoleManager#setIcon(String)}.
      *
      * @return Possibly-null String containing the Role's Unicode Emoji.
-     *
-     * @since  4.3.1
      */
     @Nullable
-    public String getEmoji()
-    {
+    public String getEmoji() {
         return emoji;
     }
 
@@ -108,26 +97,24 @@ public class RoleIcon
      *
      * @return True, if this {@link RoleIcon} is an emoji
      */
-    public boolean isEmoji()
-    {
+    public boolean isEmoji() {
         return emoji != null;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof RoleIcon))
+        }
+        if (!(obj instanceof RoleIcon)) {
             return false;
+        }
         RoleIcon icon = (RoleIcon) obj;
-        return Objects.equals(icon.iconId, iconId)
-            && Objects.equals(icon.emoji, emoji);
+        return Objects.equals(icon.iconId, iconId) && Objects.equals(icon.emoji, emoji);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(iconId, emoji);
     }
 }

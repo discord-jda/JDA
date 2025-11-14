@@ -24,28 +24,26 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 
-public class ScheduledEventUserHandler extends SocketHandler
-{
+public class ScheduledEventUserHandler extends SocketHandler {
     private final boolean add;
 
-    public ScheduledEventUserHandler(JDAImpl api, boolean add)
-    {
+    public ScheduledEventUserHandler(JDAImpl api, boolean add) {
         super(api);
         this.add = add;
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
+    protected Long handleInternally(DataObject content) {
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) {
             return null;
+        }
         long guildId = content.getUnsignedLong("guild_id", 0L);
-        if (getJDA().getGuildSetupController().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
+        if (guild == null) {
             EventCache.LOG.debug("Caching SCHEDULED_EVENT_USER_ADD for uncached guild with id {}", guildId);
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
@@ -53,13 +51,15 @@ public class ScheduledEventUserHandler extends SocketHandler
 
         ScheduledEvent event = guild.getScheduledEventById(content.getUnsignedLong("guild_scheduled_event_id"));
         long userId = content.getUnsignedLong("user_id");
-        if (event == null)
+        if (event == null) {
             return null;
+        }
 
-        if (add)
+        if (add) {
             getJDA().handleEvent(new ScheduledEventUserAddEvent(getJDA(), responseNumber, event, userId));
-        else
+        } else {
             getJDA().handleEvent(new ScheduledEventUserRemoveEvent(getJDA(), responseNumber, event, userId));
+        }
 
         return null;
     }

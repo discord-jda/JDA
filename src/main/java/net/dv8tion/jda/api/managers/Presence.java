@@ -25,11 +25,8 @@ import javax.annotation.Nullable;
 
 /**
  * The Presence associated with the provided JDA instance
- *
- * @since  3.0
  */
-public interface Presence
-{
+public interface Presence {
     /**
      * The JDA instance of this Presence
      *
@@ -71,12 +68,12 @@ public interface Presence
     /**
      * Sets the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} for this session
      *
-     * @throws IllegalArgumentException
-     *         if the provided OnlineStatus is {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}
-     *
      * @param  status
      *         the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
+     *
+     * @throws IllegalArgumentException
+     *         if the provided OnlineStatus is {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}
      */
     void setStatus(@Nullable OnlineStatus status);
 

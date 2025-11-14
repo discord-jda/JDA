@@ -32,42 +32,44 @@ import javax.annotation.Nullable;
  * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(Permission...) IPermissionHolder.hasPermission(Permission...)
  * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(GuildChannel, Permission...) IPermissionHolder.hasPermission(GuildChannel, Permission...)
  */
-public class InsufficientPermissionException extends PermissionException
-{
+public class InsufficientPermissionException extends PermissionException {
     private final long guildId;
     private final long channelId;
     private final ChannelType channelType;
 
-    public InsufficientPermissionException(@Nonnull Guild guild, @Nonnull Permission permission)
-    {
+    public InsufficientPermissionException(@Nonnull Guild guild, @Nonnull Permission permission) {
         this(guild, null, permission);
     }
 
-    public InsufficientPermissionException(@Nonnull Guild guild, @Nonnull Permission permission, @Nonnull String reason)
-    {
+    public InsufficientPermissionException(
+            @Nonnull Guild guild, @Nonnull Permission permission, @Nonnull String reason) {
         this(guild, null, permission, reason);
     }
 
-    public InsufficientPermissionException(@Nonnull GuildChannel channel, @Nonnull Permission permission)
-    {
+    public InsufficientPermissionException(@Nonnull GuildChannel channel, @Nonnull Permission permission) {
         this(channel.getGuild(), channel, permission);
     }
 
-    public InsufficientPermissionException(@Nonnull GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason)
-    {
+    public InsufficientPermissionException(
+            @Nonnull GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason) {
         this(channel.getGuild(), channel, permission, reason);
     }
 
-    private InsufficientPermissionException(@Nonnull Guild guild, @Nullable GuildChannel channel, @Nonnull Permission permission)
-    {
-        super(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
+    private InsufficientPermissionException(
+            @Nonnull Guild guild, @Nullable GuildChannel channel, @Nonnull Permission permission) {
+        super(
+                permission,
+                "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
         this.guildId = guild.getIdLong();
         this.channelId = channel == null ? 0 : channel.getIdLong();
         this.channelType = channel == null ? ChannelType.UNKNOWN : channel.getType();
     }
 
-    private InsufficientPermissionException(@Nonnull Guild guild, @Nullable GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason)
-    {
+    private InsufficientPermissionException(
+            @Nonnull Guild guild,
+            @Nullable GuildChannel channel,
+            @Nonnull Permission permission,
+            @Nonnull String reason) {
         super(permission, reason);
         this.guildId = guild.getIdLong();
         this.channelId = channel == null ? 0 : channel.getIdLong();
@@ -79,12 +81,9 @@ public class InsufficientPermissionException extends PermissionException
      *
      * @return The ID as a long
      *
-     * @since  4.0.0
-     *
      * @see    net.dv8tion.jda.api.JDA#getGuildById(long)
      */
-    public long getGuildId()
-    {
+    public long getGuildId() {
         return guildId;
     }
 
@@ -93,12 +92,9 @@ public class InsufficientPermissionException extends PermissionException
      *
      * @return The ID as a long or 0
      *
-     * @since  4.0.0
-     *
      * @see    #getChannel(net.dv8tion.jda.api.JDA)
      */
-    public long getChannelId()
-    {
+    public long getChannelId() {
         return channelId;
     }
 
@@ -106,12 +102,9 @@ public class InsufficientPermissionException extends PermissionException
      * The {@link ChannelType} for the {@link #getChannelId() channel id}.
      *
      * @return The channel type or {@link ChannelType#UNKNOWN}.
-     *
-     * @since  4.0.0
      */
     @Nonnull
-    public ChannelType getChannelType()
-    {
+    public ChannelType getChannelType() {
         return channelType;
     }
 
@@ -124,13 +117,10 @@ public class InsufficientPermissionException extends PermissionException
      * @throws java.lang.IllegalArgumentException
      *         If the provided JDA instance is null
      *
-     * @since  4.0.0
-     *
      * @return The Guild instance or null
      */
     @Nullable
-    public Guild getGuild(@Nonnull JDA api)
-    {
+    public Guild getGuild(@Nonnull JDA api) {
         Checks.notNull(api, "JDA");
         return api.getGuildById(guildId);
     }
@@ -144,13 +134,10 @@ public class InsufficientPermissionException extends PermissionException
      * @throws java.lang.IllegalArgumentException
      *         If the provided JDA instance is null
      *
-     * @since  4.0.0
-     *
      * @return The GuildChannel instance or null
      */
     @Nullable
-    public GuildChannel getChannel(@Nonnull JDA api)
-    {
+    public GuildChannel getChannel(@Nonnull JDA api) {
         Checks.notNull(api, "JDA");
         return api.getGuildChannelById(channelType, channelId);
     }

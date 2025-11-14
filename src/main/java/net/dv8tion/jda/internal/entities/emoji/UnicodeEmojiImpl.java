@@ -21,65 +21,59 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class UnicodeEmojiImpl implements UnicodeEmoji, EmojiUnion
-{
+import javax.annotation.Nonnull;
+
+public class UnicodeEmojiImpl implements UnicodeEmoji, EmojiUnion {
     private final String name;
 
-    public UnicodeEmojiImpl(String name)
-    {
+    public UnicodeEmojiImpl(String name) {
         this.name = name;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Nonnull
     @Override
-    public String getAsReactionCode()
-    {
+    public String getAsReactionCode() {
         return name;
     }
 
     @Nonnull
     @Override
-    public String getAsCodepoints()
-    {
+    public String getAsCodepoints() {
         return EncodingUtil.encodeCodepoints(name);
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty().put("name", name);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(name);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof UnicodeEmoji))
+        }
+        if (!(obj instanceof UnicodeEmoji)) {
             return false;
+        }
         return name.equals(((UnicodeEmoji) obj).getName());
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("codepoints", getAsCodepoints())
                 .toString();
@@ -87,29 +81,25 @@ public class UnicodeEmojiImpl implements UnicodeEmoji, EmojiUnion
 
     @Nonnull
     @Override
-    public UnicodeEmoji asUnicode()
-    {
+    public UnicodeEmoji asUnicode() {
         return this;
     }
 
     @Nonnull
     @Override
-    public CustomEmoji asCustom()
-    {
+    public CustomEmoji asCustom() {
         throw new IllegalStateException("Cannot convert UnicodeEmoji into CustomEmoji!");
     }
 
     @Nonnull
     @Override
-    public RichCustomEmoji asRich()
-    {
+    public RichCustomEmoji asRich() {
         throw new IllegalStateException("Cannot convert UnicodeEmoji into RichCustomEmoji!");
     }
 
     @Nonnull
     @Override
-    public ApplicationEmoji asApplication()
-    {
+    public ApplicationEmoji asApplication() {
         throw new IllegalStateException("Cannot convert UnicodeEmoji to ApplicationEmoji!");
     }
 }

@@ -33,13 +33,12 @@ import javax.annotation.Nonnull;
  * @see VoiceChannel#getUserLimit()
  * @see ChannelField#USER_LIMIT
  */
-public class ChannelUpdateUserLimitEvent extends GenericChannelUpdateEvent<Integer>
-{
+public class ChannelUpdateUserLimitEvent extends GenericChannelUpdateEvent<Integer> {
     public static final ChannelField FIELD = ChannelField.USER_LIMIT;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateUserLimitEvent(@Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
-    {
+    public ChannelUpdateUserLimitEvent(
+            @Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

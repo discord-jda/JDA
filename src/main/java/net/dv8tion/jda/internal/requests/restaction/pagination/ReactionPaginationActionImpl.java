@@ -28,15 +28,14 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ReactionPaginationActionImpl
-    extends PaginationActionImpl<User, ReactionPaginationAction>
-    implements ReactionPaginationAction
-{
+import javax.annotation.Nonnull;
+
+public class ReactionPaginationActionImpl extends PaginationActionImpl<User, ReactionPaginationAction>
+        implements ReactionPaginationAction {
     protected final MessageReaction reaction;
 
     /**
@@ -45,8 +44,7 @@ public class ReactionPaginationActionImpl
      * @param reaction
      *        The target {@link MessageReaction MessageReaction}
      */
-    public ReactionPaginationActionImpl(MessageReaction reaction)
-    {
+    public ReactionPaginationActionImpl(MessageReaction reaction) {
         this(reaction, MessageReaction.ReactionType.NORMAL);
     }
 
@@ -58,72 +56,71 @@ public class ReactionPaginationActionImpl
      * @param type
      *        Type of {@link MessageReaction.ReactionType MessageReaction.ReactionType} to retrieve users for
      */
-    public ReactionPaginationActionImpl(MessageReaction reaction, MessageReaction.ReactionType type)
-    {
-        super(reaction.getJDA(), getCompiledRoute(reaction.getChannelId(), reaction.getMessageId(), getCode(reaction), type), 1, 100, 100);
+    public ReactionPaginationActionImpl(MessageReaction reaction, MessageReaction.ReactionType type) {
+        super(
+                reaction.getJDA(),
+                getCompiledRoute(reaction.getChannelId(), reaction.getMessageId(), getCode(reaction), type),
+                1,
+                100,
+                100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = reaction;
     }
 
-    public ReactionPaginationActionImpl(Message message, String code, MessageReaction.ReactionType type)
-    {
+    public ReactionPaginationActionImpl(Message message, String code, MessageReaction.ReactionType type) {
         super(message.getJDA(), getCompiledRoute(message.getChannelId(), message.getId(), code, type), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
-    public ReactionPaginationActionImpl(MessageChannel channel, String messageId, String code, MessageReaction.ReactionType type)
-    {
+    public ReactionPaginationActionImpl(
+            MessageChannel channel, String messageId, String code, MessageReaction.ReactionType type) {
         super(channel.getJDA(), getCompiledRoute(channel.getId(), messageId, code, type), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
-    private static Route.CompiledRoute getCompiledRoute(String channelId, String messageId, String code, MessageReaction.ReactionType type)
-    {
-        return Route.Messages.GET_REACTION_USERS.compile(channelId, messageId, code).withQueryParams("type", String.valueOf(type.getId()));
+    private static Route.CompiledRoute getCompiledRoute(
+            String channelId, String messageId, String code, MessageReaction.ReactionType type) {
+        return Route.Messages.GET_REACTION_USERS
+                .compile(channelId, messageId, code)
+                .withQueryParams("type", String.valueOf(type.getId()));
     }
 
-    protected static String getCode(MessageReaction reaction)
-    {
+    protected static String getCode(MessageReaction reaction) {
         return reaction.getEmoji().getAsReactionCode();
     }
 
     @Nonnull
     @Override
-    public MessageReaction getReaction()
-    {
-        if (reaction == null)
+    public MessageReaction getReaction() {
+        if (reaction == null) {
             throw new IllegalStateException("Cannot get reaction for this action");
+        }
         return reaction;
     }
 
     @Nonnull
     @Override
-    public EnumSet<PaginationOrder> getSupportedOrders()
-    {
+    public EnumSet<PaginationOrder> getSupportedOrders() {
         return EnumSet.of(PaginationOrder.FORWARD);
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<User>> request)
-    {
-        final EntityBuilder builder = api.getEntityBuilder();
-        final DataArray array = response.getArray();
-        final List<User> users = new LinkedList<>();
-        for (int i = 0; i < array.length(); i++)
-        {
-            try
-            {
-                final User user = builder.createUser(array.getObject(i));
+    protected void handleSuccess(Response response, Request<List<User>> request) {
+        EntityBuilder builder = api.getEntityBuilder();
+        DataArray array = response.getArray();
+        List<User> users = new LinkedList<>();
+        for (int i = 0; i < array.length(); i++) {
+            try {
+                User user = builder.createUser(array.getObject(i));
                 users.add(user);
-                if (useCache)
+                if (useCache) {
                     cached.add(user);
+                }
                 last = user;
                 lastKey = last.getIdLong();
-            }
-            catch (ParsingException | NullPointerException e)
-            {
+            } catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered exception in ReactionPagination", e);
             }
         }
@@ -132,8 +129,7 @@ public class ReactionPaginationActionImpl
     }
 
     @Override
-    protected long getKey(User it)
-    {
+    protected long getKey(User it) {
         return it.getIdLong();
     }
 }

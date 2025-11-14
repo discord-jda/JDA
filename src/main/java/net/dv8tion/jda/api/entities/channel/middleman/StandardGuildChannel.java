@@ -43,8 +43,14 @@ import javax.annotation.Nonnull;
  * @see StageChannel
  * @see VoiceChannel
  */
-public interface StandardGuildChannel extends GuildChannel, IPermissionContainer, IPositionableChannel, ICopyableChannel, IMemberContainer, IInviteContainer, ICategorizableChannel
-{
+public interface StandardGuildChannel
+        extends GuildChannel,
+                IPermissionContainer,
+                IPositionableChannel,
+                ICopyableChannel,
+                IMemberContainer,
+                IInviteContainer,
+                ICategorizableChannel {
     @Nonnull
     @Override
     @CheckReturnValue

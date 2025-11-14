@@ -20,67 +20,64 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.requests.RestAction;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public abstract class RestActionOperator<I, O> implements RestAction<O>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public abstract class RestActionOperator<I, O> implements RestAction<O> {
     protected BooleanSupplier check;
     protected long deadline = -1;
     protected final RestAction<I> action;
 
-    public RestActionOperator(RestAction<I> action)
-    {
+    public RestActionOperator(RestAction<I> action) {
         this.action = action;
     }
 
-    protected static <E> void doSuccess(Consumer<? super E> callback, E value)
-    {
-        if (callback == null)
+    protected static <E> void doSuccess(Consumer<? super E> callback, E value) {
+        if (callback == null) {
             RestAction.getDefaultSuccess().accept(value);
-        else
+        } else {
             callback.accept(value);
+        }
     }
 
-    protected static void doFailure(Consumer<? super Throwable> callback, Throwable throwable)
-    {
-        if (callback == null)
+    protected static void doFailure(Consumer<? super Throwable> callback, Throwable throwable) {
+        if (callback == null) {
             RestAction.getDefaultFailure().accept(throwable);
-        else
+        } else {
             callback.accept(throwable);
-        if (throwable instanceof Error)
+        }
+        if (throwable instanceof Error) {
             throw (Error) throwable;
+        }
     }
 
-    protected void handle(RestAction<I> action, Consumer<? super Throwable> failure, Consumer<? super I> success)
-    {
+    protected void handle(RestAction<I> action, Consumer<? super Throwable> failure, Consumer<? super I> success) {
         Consumer<? super Throwable> catcher = contextWrap(failure);
-        action.queue((result) -> {
-            try
-            {
-                if (success != null)
-                    success.accept(result);
-            }
-            catch (Throwable ex)
-            {
-                doFailure(catcher, ex);
-            }
-        }, catcher);
+        action.queue(
+                (result) -> {
+                    try {
+                        if (success != null) {
+                            success.accept(result);
+                        }
+                    } catch (Throwable ex) {
+                        doFailure(catcher, ex);
+                    }
+                },
+                catcher);
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return action.getJDA();
     }
 
     @Nonnull
     @Override
-    public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
-    {
+    public RestAction<O> setCheck(@Nullable BooleanSupplier checks) {
         this.check = checks;
         action.setCheck(checks);
         return this;
@@ -88,39 +85,39 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
 
     @Nullable
     @Override
-    public BooleanSupplier getCheck()
-    {
+    public BooleanSupplier getCheck() {
         return action.getCheck();
     }
 
     @Nonnull
     @Override
-    public RestAction<O> deadline(long timestamp)
-    {
+    public RestAction<O> deadline(long timestamp) {
         this.deadline = timestamp;
         action.deadline(timestamp);
         return this;
     }
 
     @Nullable
-    protected <T> RestAction<T> applyContext(RestAction<T> action)
-    {
-        if (action == null)
+    protected <T> RestAction<T> applyContext(RestAction<T> action) {
+        if (action == null) {
             return null;
-        if (check != null)
+        }
+        if (check != null) {
             action.setCheck(check);
-        if (deadline >= 0)
+        }
+        if (deadline >= 0) {
             action.deadline(deadline);
+        }
         return action;
     }
 
     @Nullable
-    protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback)
-    {
-        if (callback instanceof ContextException.ContextConsumer)
+    protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback) {
+        if (callback instanceof ContextException.ContextConsumer) {
             return callback;
-        else if (RestAction.isPassContext())
+        } else if (RestAction.isPassContext()) {
             return ContextException.here(callback == null ? RestAction.getDefaultFailure() : callback);
+        }
         return callback;
     }
 }

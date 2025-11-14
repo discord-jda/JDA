@@ -22,22 +22,21 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 /**
  * Configuration for a {@link net.dv8tion.jda.api.entities.automod.AutoModTriggerType#KEYWORD KEYWORD} trigger.
  */
-public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<CustomKeywordTriggerConfig>
-{
+public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<CustomKeywordTriggerConfig> {
     protected final Set<String> keywords = new HashSet<>();
     protected final Set<String> patterns = new HashSet<>();
 
-    protected CustomKeywordTriggerConfig()
-    {
+    protected CustomKeywordTriggerConfig() {
         super(AutoModTriggerType.KEYWORD);
     }
 
@@ -65,12 +64,15 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public CustomKeywordTriggerConfig addKeywords(@Nonnull String... keywords)
-    {
+    public CustomKeywordTriggerConfig addKeywords(@Nonnull String... keywords) {
         Checks.noneNull(keywords, "Keywords");
-        Checks.check(this.keywords.size() + keywords.length <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
-        for (String keyword : keywords)
+        Checks.check(
+                this.keywords.size() + keywords.length <= AutoModRule.MAX_KEYWORD_AMOUNT,
+                "Cannot add more than %d keywords!",
+                AutoModRule.MAX_KEYWORD_AMOUNT);
+        for (String keyword : keywords) {
             checkKeyword(keyword);
+        }
 
         Collections.addAll(this.keywords, keywords);
         return this;
@@ -100,12 +102,15 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public CustomKeywordTriggerConfig addKeywords(@Nonnull Collection<String> keywords)
-    {
+    public CustomKeywordTriggerConfig addKeywords(@Nonnull Collection<String> keywords) {
         Checks.noneNull(keywords, "Keywords");
-        Checks.check(this.keywords.size() + keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
-        for (String keyword : keywords)
+        Checks.check(
+                this.keywords.size() + keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT,
+                "Cannot add more than %d keywords!",
+                AutoModRule.MAX_KEYWORD_AMOUNT);
+        for (String keyword : keywords) {
             checkKeyword(keyword);
+        }
 
         this.keywords.addAll(keywords);
         return this;
@@ -135,18 +140,20 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public CustomKeywordTriggerConfig setKeywords(@Nonnull Collection<String> keywords)
-    {
+    public CustomKeywordTriggerConfig setKeywords(@Nonnull Collection<String> keywords) {
         Checks.noneNull(keywords, "Keywords");
-        Checks.check(keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
-        for (String keyword : keywords)
+        Checks.check(
+                keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT,
+                "Cannot add more than %d keywords!",
+                AutoModRule.MAX_KEYWORD_AMOUNT);
+        for (String keyword : keywords) {
             checkKeyword(keyword);
+        }
 
         this.keywords.clear();
         this.keywords.addAll(keywords);
         return this;
     }
-
 
     /**
      * Add keywords regex patterns to match against.
@@ -170,12 +177,15 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public CustomKeywordTriggerConfig addPatterns(@Nonnull String... patterns)
-    {
+    public CustomKeywordTriggerConfig addPatterns(@Nonnull String... patterns) {
         Checks.noneNull(patterns, "Patterns");
-        Checks.check(this.patterns.size() + patterns.length <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
-        for (String pattern : patterns)
+        Checks.check(
+                this.patterns.size() + patterns.length <= AutoModRule.MAX_PATTERN_AMOUNT,
+                "Cannot add more than %d patterns!",
+                AutoModRule.MAX_PATTERN_AMOUNT);
+        for (String pattern : patterns) {
             checkPattern(pattern);
+        }
 
         Collections.addAll(this.patterns, patterns);
         return this;
@@ -203,12 +213,15 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public CustomKeywordTriggerConfig addPatterns(@Nonnull Collection<String> patterns)
-    {
+    public CustomKeywordTriggerConfig addPatterns(@Nonnull Collection<String> patterns) {
         Checks.noneNull(patterns, "Patterns");
-        Checks.check(this.patterns.size() + patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
-        for (String pattern : patterns)
+        Checks.check(
+                this.patterns.size() + patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT,
+                "Cannot add more than %d patterns!",
+                AutoModRule.MAX_PATTERN_AMOUNT);
+        for (String pattern : patterns) {
             checkPattern(pattern);
+        }
 
         this.patterns.addAll(patterns);
         return this;
@@ -236,34 +249,34 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public CustomKeywordTriggerConfig setPatterns(@Nonnull Collection<String> patterns)
-    {
+    public CustomKeywordTriggerConfig setPatterns(@Nonnull Collection<String> patterns) {
         Checks.noneNull(patterns, "Patterns");
-        Checks.check(patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
-        for (String pattern : patterns)
+        Checks.check(
+                patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT,
+                "Cannot add more than %d patterns!",
+                AutoModRule.MAX_PATTERN_AMOUNT);
+        for (String pattern : patterns) {
             checkPattern(pattern);
+        }
 
         this.patterns.clear();
         this.patterns.addAll(patterns);
         return this;
     }
 
-    protected static void checkPattern(String pattern)
-    {
+    protected static void checkPattern(String pattern) {
         Checks.notBlank(pattern, "Pattern");
         Checks.notLonger(pattern, AutoModRule.MAX_PATTERN_LENGTH, "Pattern");
     }
 
     @Override
-    protected int maxAllowListAmount()
-    {
+    protected int maxAllowListAmount() {
         return AutoModRule.MAX_ALLOWLIST_CUSTOM_AMOUNT;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         Checks.check(!keywords.isEmpty() || !patterns.isEmpty(), "Must have at least one keyword or pattern!");
         DataObject data = super.toData();
         data.put("keyword_filter", DataArray.fromCollection(keywords));

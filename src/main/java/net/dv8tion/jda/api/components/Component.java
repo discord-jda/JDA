@@ -44,8 +44,7 @@ import javax.annotation.Nonnull;
  * @see SectionContentComponent
  * @see SectionAccessoryComponent
  */
-public interface Component
-{
+public interface Component {
     /**
      * The type of component.
      *
@@ -88,8 +87,7 @@ public interface Component
      *
      * @return True, if this Component (and its children) is compatible with messages.
      */
-    default boolean isMessageCompatible()
-    {
+    default boolean isMessageCompatible() {
         return getType().isMessageCompatible();
     }
 
@@ -99,16 +97,14 @@ public interface Component
      *
      * @return True, if this Component (and its children) is compatible with modals.
      */
-    default boolean isModalCompatible()
-    {
+    default boolean isModalCompatible() {
         return getType().isModalCompatible();
     }
 
     /**
      * The component types
      */
-    enum Type
-    {
+    enum Type {
         UNKNOWN(-1, false, false),
         /** A row of components */
         ACTION_ROW(1, true, false),
@@ -141,8 +137,7 @@ public interface Component
         private final boolean messageCompatible;
         private final boolean modalCompatible;
 
-        Type(int key, boolean messageCompatible, boolean modalCompatible)
-        {
+        Type(int key, boolean messageCompatible, boolean modalCompatible) {
             this.key = key;
             this.messageCompatible = messageCompatible;
             this.modalCompatible = modalCompatible;
@@ -155,8 +150,7 @@ public interface Component
          *
          * @return Raw int representing this ComponentType
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -165,8 +159,7 @@ public interface Component
          *
          * @return Whether this component can be used in Messages.
          */
-        public boolean isMessageCompatible()
-        {
+        public boolean isMessageCompatible() {
             return messageCompatible;
         }
 
@@ -175,8 +168,7 @@ public interface Component
          *
          * @return Whether this component can be used in Modals.
          */
-        public boolean isModalCompatible()
-        {
+        public boolean isModalCompatible() {
             return modalCompatible;
         }
 
@@ -185,8 +177,7 @@ public interface Component
          *
          * @return {@code true} is this is a type of {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}
          */
-        public boolean isEntitySelectMenu()
-        {
+        public boolean isEntitySelectMenu() {
             return this == MENTIONABLE_SELECT || this == CHANNEL_SELECT || this == USER_SELECT || this == ROLE_SELECT;
         }
 
@@ -199,12 +190,11 @@ public interface Component
          * @return The Type or {@link #UNKNOWN}
          */
         @Nonnull
-        public static Type fromKey(int type)
-        {
-            for (Type t : values())
-            {
-                if (t.key == type)
+        public static Type fromKey(int type) {
+            for (Type t : values()) {
+                if (t.key == type) {
                     return t;
+                }
             }
             return UNKNOWN;
         }

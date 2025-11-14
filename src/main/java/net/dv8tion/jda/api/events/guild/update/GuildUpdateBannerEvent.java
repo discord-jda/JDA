@@ -30,12 +30,11 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code banner}
  */
-public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
-{
+public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "banner";
 
-    public GuildUpdateBannerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous)
-    {
+    public GuildUpdateBannerEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous) {
         super(api, responseNumber, guild, previous, guild.getBannerId(), IDENTIFIER);
     }
 
@@ -45,8 +44,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The new banner id, or null if the banner was removed
      */
     @Nullable
-    public String getNewBannerId()
-    {
+    public String getNewBannerId() {
         return getNewValue();
     }
 
@@ -56,9 +54,10 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The new banner url, or null if the banner was removed
      */
     @Nullable
-    public String getNewBannerUrl()
-    {
-        return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
+    public String getNewBannerUrl() {
+        return next == null
+                ? null
+                : String.format(Guild.BANNER_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -69,9 +68,8 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @see    #getNewBannerUrl()
      */
     @Nullable
-    public ImageProxy getNewBanner()
-    {
-        final String newBannerUrl = getNewBannerUrl();
+    public ImageProxy getNewBanner() {
+        String newBannerUrl = getNewBannerUrl();
         return newBannerUrl == null ? null : new ImageProxy(newBannerUrl);
     }
 
@@ -81,8 +79,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The old banner id, or null if the banner didn't exist
      */
     @Nullable
-    public String getOldBannerId()
-    {
+    public String getOldBannerId() {
         return getOldValue();
     }
 
@@ -92,9 +89,10 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The old banner url, or null if the banner didn't exist
      */
     @Nullable
-    public String getOldBannerUrl()
-    {
-        return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
+    public String getOldBannerUrl() {
+        return previous == null
+                ? null
+                : String.format(Guild.BANNER_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -107,9 +105,8 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @see    #getOldBannerUrl()
      */
     @Nullable
-    public ImageProxy getOldBanner()
-    {
-        final String oldBannerUrl = getOldBannerUrl();
+    public ImageProxy getOldBanner() {
+        String oldBannerUrl = getOldBannerUrl();
         return oldBannerUrl == null ? null : new ImageProxy(oldBannerUrl);
     }
 }

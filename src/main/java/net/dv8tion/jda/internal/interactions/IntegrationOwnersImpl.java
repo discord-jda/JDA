@@ -23,37 +23,33 @@ import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nullable;
 
-public class IntegrationOwnersImpl implements IntegrationOwners
-{
+public class IntegrationOwnersImpl implements IntegrationOwners {
     private final Long guildIntegration;
     private final long userIntegration;
 
-    public IntegrationOwnersImpl(DataObject authorizedIntegrationOwners)
-    {
+    public IntegrationOwnersImpl(DataObject authorizedIntegrationOwners) {
         this.userIntegration = authorizedIntegrationOwners.getLong(IntegrationType.USER_INSTALL.getType(), 0);
 
-        if (authorizedIntegrationOwners.hasKey(IntegrationType.GUILD_INSTALL.getType()))
+        if (authorizedIntegrationOwners.hasKey(IntegrationType.GUILD_INSTALL.getType())) {
             this.guildIntegration = authorizedIntegrationOwners.getLong(IntegrationType.GUILD_INSTALL.getType());
-        else
+        } else {
             this.guildIntegration = null;
+        }
     }
 
     @Override
-    public long getAuthorizingUserIdLong()
-    {
+    public long getAuthorizingUserIdLong() {
         return userIntegration;
     }
 
     @Nullable
     @Override
-    public Long getAuthorizingGuildIdLong()
-    {
+    public Long getAuthorizingGuildIdLong() {
         return guildIntegration;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("user", getAuthorizingUserId())
                 .addMetadata("guild", getAuthorizingGuildId())

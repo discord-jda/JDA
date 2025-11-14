@@ -29,8 +29,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload AttachmentUpload}</li>
  * </ul>
  */
-public interface LabelChildComponent extends Component
-{
+public interface LabelChildComponent extends Component {
     @Nonnull
     @Override
     LabelChildComponent withUniqueId(int uniqueId);

@@ -21,17 +21,17 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Meta-data for the team of an application.
  *
  * @see ApplicationInfo#getTeam()
  */
-public interface ApplicationTeam extends ISnowflake
-{
+public interface ApplicationTeam extends ISnowflake {
     /** Template for {@link #getIconUrl()} */
     String ICON_URL = "https://cdn.discordapp.com/team-icons/%s/%s.png";
 
@@ -43,8 +43,7 @@ public interface ApplicationTeam extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} who owns the team
      */
     @Nullable
-    default TeamMember getOwner()
-    {
+    default TeamMember getOwner() {
         return getMemberById(getOwnerIdLong());
     }
 
@@ -54,8 +53,7 @@ public interface ApplicationTeam extends ISnowflake
      * @return The owner id
      */
     @Nonnull
-    default String getOwnerId()
-    {
+    default String getOwnerId() {
         return Long.toUnsignedString(getOwnerIdLong());
     }
 
@@ -82,8 +80,7 @@ public interface ApplicationTeam extends ISnowflake
      * @return The icon url, or null if no icon is applied
      */
     @Nullable
-    default String getIconUrl()
-    {
+    default String getIconUrl() {
         String iconId = getIconId();
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
     }
@@ -96,9 +93,8 @@ public interface ApplicationTeam extends ISnowflake
      * @see    #getIconUrl()
      */
     @Nullable
-    default ImageProxy getIcon()
-    {
-        final String iconUrl = getIconUrl();
+    default ImageProxy getIcon() {
+        String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
 
@@ -122,8 +118,7 @@ public interface ApplicationTeam extends ISnowflake
      *
      * @return True, if the provided user is a member of this team
      */
-    default boolean isMember(@Nonnull User user)
-    {
+    default boolean isMember(@Nonnull User user) {
         return getMember(user) != null;
     }
 
@@ -140,8 +135,7 @@ public interface ApplicationTeam extends ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} for the user or null
      */
     @Nullable
-    default TeamMember getMember(@Nonnull User user)
-    {
+    default TeamMember getMember(@Nonnull User user) {
         Checks.notNull(user, "User");
         return getMemberById(user.getIdLong());
     }
@@ -159,8 +153,7 @@ public interface ApplicationTeam extends ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} for the user or null
      */
     @Nullable
-    default TeamMember getMemberById(@Nonnull String userId)
-    {
+    default TeamMember getMemberById(@Nonnull String userId) {
         return getMemberById(MiscUtil.parseSnowflake(userId));
     }
 
@@ -174,12 +167,11 @@ public interface ApplicationTeam extends ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} for the user or null
      */
     @Nullable
-    default TeamMember getMemberById(long userId)
-    {
-        for (TeamMember member : getMembers())
-        {
-            if (member.getUser().getIdLong() == userId)
+    default TeamMember getMemberById(long userId) {
+        for (TeamMember member : getMembers()) {
+            if (member.getUser().getIdLong() == userId) {
                 return member;
+            }
         }
         return null;
     }

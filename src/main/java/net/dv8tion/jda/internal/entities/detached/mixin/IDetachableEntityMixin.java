@@ -21,23 +21,20 @@ import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 
 import javax.annotation.Nonnull;
 
-public interface IDetachableEntityMixin extends IDetachableEntity
-{
-    default void checkAttached()
-    {
-        if (isDetached())
+public interface IDetachableEntityMixin extends IDetachableEntity {
+    default void checkAttached() {
+        if (isDetached()) {
             throw detachedException();
+        }
     }
 
     @Nonnull
-    default DetachedEntityException detachedException()
-    {
+    default DetachedEntityException detachedException() {
         return new DetachedEntityException();
     }
 
     @Nonnull
-    default DetachedEntityException detachedRequiresChannelException()
-    {
+    default DetachedEntityException detachedRequiresChannelException() {
         return new DetachedEntityException("Getting/checking permissions requires a GuildChannel");
     }
 }

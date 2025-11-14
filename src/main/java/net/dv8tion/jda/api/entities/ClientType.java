@@ -23,8 +23,7 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.entities.Member#getOnlineStatus(ClientType) Member.getOnlineStatus(type)
  */
-public enum ClientType
-{
+public enum ClientType {
     /** The official discord desktop client */
     DESKTOP("desktop"),
     /** The official discord mobile app */
@@ -37,8 +36,7 @@ public enum ClientType
 
     private final String key;
 
-    ClientType(String key)
-    {
+    ClientType(String key) {
         this.key = key;
     }
 
@@ -48,8 +46,7 @@ public enum ClientType
      * @return The raw key
      */
     @Nonnull
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
@@ -62,12 +59,11 @@ public enum ClientType
      * @return The resolved ClientType or {@link #UNKNOWN}
      */
     @Nonnull
-    public static ClientType fromKey(@Nonnull String key)
-    {
-        for (ClientType type : values())
-        {
-            if (type.key.equals(key))
+    public static ClientType fromKey(@Nonnull String key) {
+        for (ClientType type : values()) {
+            if (type.key.equals(key)) {
                 return type;
+            }
         }
         return UNKNOWN;
     }

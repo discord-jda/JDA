@@ -38,12 +38,13 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a Discord slash-command.
@@ -52,8 +53,7 @@ import java.util.stream.Collectors;
  * @see Guild#retrieveCommandById(String)
  * @see Guild#retrieveCommands()
  */
-public interface Command extends ISnowflake, ICommandReference
-{
+public interface Command extends ISnowflake, ICommandReference {
     /**
      * Delete this command.
      *
@@ -188,8 +188,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @return The application id
      */
     @Nonnull
-    default String getApplicationId()
-    {
+    default String getApplicationId() {
         return Long.toUnsignedString(getApplicationIdLong());
     }
 
@@ -212,8 +211,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @see #getVersion()
      */
     @Nonnull
-    default OffsetDateTime getTimeModified()
-    {
+    default OffsetDateTime getTimeModified() {
         return TimeUtil.getTimeCreated(getVersion());
     }
 
@@ -254,8 +252,7 @@ public interface Command extends ISnowflake, ICommandReference
     /**
      * Possible command types
      */
-    enum Type
-    {
+    enum Type {
         UNKNOWN(-1),
         SLASH(1),
         USER(2),
@@ -263,8 +260,7 @@ public interface Command extends ISnowflake, ICommandReference
 
         private final int id;
 
-        Type(int id)
-        {
+        Type(int id) {
             this.id = id;
         }
 
@@ -277,12 +273,11 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The type or {@link #UNKNOWN}
          */
         @Nonnull
-        public static Type fromId(int id)
-        {
-            for (Type type : values())
-            {
-                if (type.id == id)
+        public static Type fromId(int id) {
+            for (Type type : values()) {
+                if (type.id == id) {
                     return type;
+                }
             }
             return UNKNOWN;
         }
@@ -292,8 +287,7 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @return The command type id
          */
-        public int getId()
-        {
+        public int getId() {
             return id;
         }
     }
@@ -304,8 +298,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Command.Choice...)
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Collection)
      */
-    class Choice
-    {
+    class Choice {
         /**
          * The maximum length the name of a choice can be.
          */
@@ -335,8 +328,7 @@ public interface Command extends ISnowflake, ICommandReference
          *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
          *         as defined by {@link #MAX_NAME_LENGTH}
          */
-        public Choice(@Nonnull String name, long value)
-        {
+        public Choice(@Nonnull String name, long value) {
             setName(name);
             setIntValue(value);
         }
@@ -353,8 +345,7 @@ public interface Command extends ISnowflake, ICommandReference
          *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
          *         as defined by {@link #MAX_NAME_LENGTH}
          */
-        public Choice(@Nonnull String name, double value)
-        {
+        public Choice(@Nonnull String name, double value) {
             setName(name);
             setDoubleValue(value);
         }
@@ -374,10 +365,8 @@ public interface Command extends ISnowflake, ICommandReference
          *             <li>If the value is null or longer than {@value #MAX_STRING_VALUE_LENGTH} characters long,
          *                 as defined by {@link #MAX_STRING_VALUE_LENGTH}</li>
          *         </ul>
-         *
          */
-        public Choice(@Nonnull String name, @Nonnull String value)
-        {
+        public Choice(@Nonnull String name, @Nonnull String value) {
             setName(name);
             setStringValue(value);
         }
@@ -393,20 +382,14 @@ public interface Command extends ISnowflake, ICommandReference
          * @throws net.dv8tion.jda.api.exceptions.ParsingException
          *         If the data is not formatted correctly or missing required parameters
          */
-        public Choice(@Nonnull DataObject json)
-        {
+        public Choice(@Nonnull DataObject json) {
             Checks.notNull(json, "DataObject");
             this.name = json.getString("name");
-            if (json.isType("value", DataType.INT))
-            {
+            if (json.isType("value", DataType.INT)) {
                 setIntValue(json.getLong("value"));
-            }
-            else if (json.isType("value", DataType.FLOAT))
-            {
+            } else if (json.isType("value", DataType.FLOAT)) {
                 setDoubleValue(json.getDouble("value"));
-            }
-            else
-            {
+            } else {
                 setStringValue(json.getString("value"));
             }
             setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
@@ -419,8 +402,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The choice name
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -437,8 +419,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The Choice instance, for chaining
          */
         @Nonnull
-        public Choice setName(@Nonnull String name)
-        {
+        public Choice setName(@Nonnull String name) {
             checkName(name);
             this.name = name;
             return this;
@@ -450,8 +431,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
          */
         @Nonnull
-        public LocalizationMap getNameLocalizations()
-        {
+        public LocalizationMap getNameLocalizations() {
             return nameLocalizations;
         }
 
@@ -460,7 +440,6 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @param  locale
          *         The locale to associate the translated name with
-         *
          * @param  name
          *         The translated name to put
          *
@@ -475,8 +454,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return This builder instance, for chaining
          */
         @Nonnull
-        public Choice setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
-        {
+        public Choice setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
             nameLocalizations.setTranslation(locale, name);
             return this;
         }
@@ -497,9 +475,8 @@ public interface Command extends ISnowflake, ICommandReference
          * @return This builder instance, for chaining
          */
         @Nonnull
-        public Choice setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
-        {
-            //Checks are done in LocalizationMap
+        public Choice setNameLocalizations(@Nonnull Map<DiscordLocale, String> map) {
+            // Checks are done in LocalizationMap
             nameLocalizations.setTranslations(map);
             return this;
         }
@@ -509,8 +486,7 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @return The double value, or NaN if this is not a numeric choice value
          */
-        public double getAsDouble()
-        {
+        public double getAsDouble() {
             return doubleValue;
         }
 
@@ -519,8 +495,7 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @return The long value
          */
-        public long getAsLong()
-        {
+        public long getAsLong() {
             return intValue;
         }
 
@@ -530,8 +505,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The String value
          */
         @Nonnull
-        public String getAsString()
-        {
+        public String getAsString() {
             return stringValue;
         }
 
@@ -541,53 +515,50 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The option type of this choice
          */
         @Nonnull
-        public OptionType getType()
-        {
+        public OptionType getType() {
             return type;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(name, stringValue);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            if (obj == this) return true;
-            if (!(obj instanceof Choice)) return false;
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Choice)) {
+                return false;
+            }
             Choice other = (Choice) obj;
             return Objects.equals(other.name, name) && Objects.equals(other.stringValue, stringValue);
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return new EntityString(this)
                     .setName(name)
                     .addMetadata("value", stringValue)
                     .toString();
         }
 
-        private void setIntValue(long value)
-        {
+        private void setIntValue(long value) {
             this.doubleValue = value;
             this.intValue = value;
             this.stringValue = Long.toString(value);
             this.type = OptionType.INTEGER;
         }
 
-        private void setDoubleValue(double value)
-        {
+        private void setDoubleValue(double value) {
             this.doubleValue = value;
             this.intValue = (long) value;
             this.stringValue = Double.toString(value);
             this.type = OptionType.NUMBER;
         }
 
-        private void setStringValue(@Nonnull String value)
-        {
+        private void setStringValue(@Nonnull String value) {
             Checks.notLonger(value, MAX_STRING_VALUE_LENGTH, "Choice string value");
             this.doubleValue = Double.NaN;
             this.intValue = 0;
@@ -595,24 +566,23 @@ public interface Command extends ISnowflake, ICommandReference
             this.type = OptionType.STRING;
         }
 
-        private void checkName(@Nonnull String name)
-        {
+        private void checkName(@Nonnull String name) {
             Checks.notEmpty(name, "Choice name");
             Checks.notLonger(name, MAX_NAME_LENGTH, "Choice name");
         }
 
         @Nonnull
-        public DataObject toData(@Nonnull OptionType optionType)
-        {
-            final Object value;
-            if (optionType == OptionType.INTEGER)
+        public DataObject toData(@Nonnull OptionType optionType) {
+            Object value;
+            if (optionType == OptionType.INTEGER) {
                 value = getAsLong();
-            else if (optionType == OptionType.STRING)
+            } else if (optionType == OptionType.STRING) {
                 value = getAsString();
-            else if (optionType == OptionType.NUMBER)
+            } else if (optionType == OptionType.NUMBER) {
                 value = getAsDouble();
-            else
+            } else {
                 throw new IllegalArgumentException("Cannot transform choice into data for type " + optionType);
+            }
 
             return DataObject.empty()
                     .put("name", name)
@@ -624,8 +594,7 @@ public interface Command extends ISnowflake, ICommandReference
     /**
      * An Option for a command.
      */
-    class Option
-    {
+    class Option {
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
@@ -637,29 +606,35 @@ public interface Command extends ISnowflake, ICommandReference
         private Number maxValue;
         private Integer minLength, maxLength;
 
-        public Option(@Nonnull DataObject json)
-        {
+        public Option(@Nonnull DataObject json) {
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
-            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
+            this.descriptionLocalizations =
+                    LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
             this.autoComplete = json.getBoolean("autocomplete");
             this.channelTypes = Collections.unmodifiableSet(json.optArray("channel_types")
-                    .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
+                    .map(it -> it.stream(DataArray::getInt)
+                            .map(ChannelType::fromId)
+                            .collect(Collectors.toSet()))
                     .orElse(Collections.emptySet()));
             this.choices = json.optArray("choices")
-                .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
-            if (!json.isNull("min_value"))
+                    .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
+                    .orElse(Collections.emptyList());
+            if (!json.isNull("min_value")) {
                 this.minValue = json.getDouble("min_value");
-            if (!json.isNull("max_value"))
+            }
+            if (!json.isNull("max_value")) {
                 this.maxValue = json.getDouble("max_value");
-            if (!json.isNull("min_length"))
+            }
+            if (!json.isNull("min_length")) {
                 this.minLength = json.getInt("min_length");
-            if (!json.isNull("max_length"))
+            }
+            if (!json.isNull("max_length")) {
                 this.maxLength = json.getInt("max_length");
+            }
         }
 
         /**
@@ -668,8 +643,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The name
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -679,8 +653,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
          */
         @Nonnull
-        public LocalizationMap getNameLocalizations()
-        {
+        public LocalizationMap getNameLocalizations() {
             return nameLocalizations;
         }
 
@@ -690,8 +663,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The description
          */
         @Nonnull
-        public String getDescription()
-        {
+        public String getDescription() {
             return description;
         }
 
@@ -701,8 +673,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
          */
         @Nonnull
-        public LocalizationMap getDescriptionLocalizations()
-        {
+        public LocalizationMap getDescriptionLocalizations() {
             return descriptionLocalizations;
         }
 
@@ -711,8 +682,7 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @return The type
          */
-        public int getTypeRaw()
-        {
+        public int getTypeRaw() {
             return type;
         }
 
@@ -721,8 +691,7 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @return True if this option is required
          */
-        public boolean isRequired()
-        {
+        public boolean isRequired() {
             return required;
         }
 
@@ -731,8 +700,7 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @return True if this option supports auto-complete
          */
-        public boolean isAutoComplete()
-        {
+        public boolean isAutoComplete() {
             return autoComplete;
         }
 
@@ -742,8 +710,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The type
          */
         @Nonnull
-        public OptionType getType()
-        {
+        public OptionType getType() {
             return OptionType.fromKey(type);
         }
 
@@ -755,8 +722,7 @@ public interface Command extends ISnowflake, ICommandReference
          */
         @Nonnull
         @Unmodifiable
-        public Set<ChannelType> getChannelTypes()
-        {
+        public Set<ChannelType> getChannelTypes() {
             return channelTypes;
         }
 
@@ -768,8 +734,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The minimum value for this option or {@code null}
          */
         @Nullable
-        public Number getMinValue()
-        {
+        public Number getMinValue() {
             return minValue;
         }
 
@@ -781,8 +746,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The maximum value for this option or {@code null}
          */
         @Nullable
-        public Number getMaxValue()
-        {
+        public Number getMaxValue() {
             return maxValue;
         }
 
@@ -794,8 +758,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The minimum length for strings for this option or {@code null}
          */
         @Nullable
-        public Integer getMinLength()
-        {
+        public Integer getMinLength() {
             return minLength;
         }
 
@@ -807,8 +770,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The maximum length for strings for this option or {@code null}
          */
         @Nullable
-        public Integer getMaxLength()
-        {
+        public Integer getMaxLength() {
             return maxLength;
         }
 
@@ -820,39 +782,50 @@ public interface Command extends ISnowflake, ICommandReference
          */
         @Nonnull
         @Unmodifiable
-        public List<Choice> getChoices()
-        {
+        public List<Choice> getChoices() {
             return choices;
         }
 
         @Override
-        public int hashCode()
-        {
-            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue, minLength, maxLength, required, autoComplete);
+        public int hashCode() {
+            return Objects.hash(
+                    name,
+                    description,
+                    type,
+                    choices,
+                    channelTypes,
+                    minValue,
+                    maxValue,
+                    minLength,
+                    maxLength,
+                    required,
+                    autoComplete);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            if (obj == this) return true;
-            if (!(obj instanceof Option)) return false;
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Option)) {
+                return false;
+            }
             Option other = (Option) obj;
             return Objects.equals(other.name, name)
-                && Objects.equals(other.description, description)
-                && Objects.equals(other.choices, choices)
-                && Objects.equals(other.channelTypes, channelTypes)
-                && Objects.equals(other.minValue, minValue)
-                && Objects.equals(other.maxValue, maxValue)
-                && Objects.equals(other.minLength, minLength)
-                && Objects.equals(other.maxLength, maxLength)
-                && other.required == required
-                && other.autoComplete == autoComplete
-                && other.type == type;
+                    && Objects.equals(other.description, description)
+                    && Objects.equals(other.choices, choices)
+                    && Objects.equals(other.channelTypes, channelTypes)
+                    && Objects.equals(other.minValue, minValue)
+                    && Objects.equals(other.maxValue, maxValue)
+                    && Objects.equals(other.minLength, minLength)
+                    && Objects.equals(other.maxLength, maxLength)
+                    && other.required == required
+                    && other.autoComplete == autoComplete
+                    && other.type == type;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return new EntityString(this)
                     .setType(getType())
                     .addMetadata("name", name)
@@ -863,21 +836,20 @@ public interface Command extends ISnowflake, ICommandReference
     /**
      * An Subcommand for a command.
      */
-    class Subcommand implements ICommandReference
-    {
-        private final ICommandReference parentCommand; //Could be Command or SubcommandGroup
+    class Subcommand implements ICommandReference {
+        private final ICommandReference parentCommand; // Could be Command or SubcommandGroup
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
         private final List<Option> options;
 
-        public Subcommand(ICommandReference parentCommand, DataObject json)
-        {
+        public Subcommand(ICommandReference parentCommand, DataObject json) {
             this.parentCommand = parentCommand;
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
-            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
+            this.descriptionLocalizations =
+                    LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
         }
 
@@ -887,8 +859,7 @@ public interface Command extends ISnowflake, ICommandReference
          * <p><b>This will return the ID of the top level command</b>
          */
         @Override
-        public long getIdLong()
-        {
+        public long getIdLong() {
             return parentCommand.getIdLong();
         }
 
@@ -898,8 +869,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The name
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -909,15 +879,13 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
          */
         @Nonnull
-        public LocalizationMap getNameLocalizations()
-        {
+        public LocalizationMap getNameLocalizations() {
             return nameLocalizations;
         }
 
         @Nonnull
         @Override
-        public String getFullCommandName()
-        {
+        public String getFullCommandName() {
             return parentCommand.getFullCommandName() + " " + getName();
         }
 
@@ -927,8 +895,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The description
          */
         @Nonnull
-        public String getDescription()
-        {
+        public String getDescription() {
             return description;
         }
 
@@ -938,8 +905,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
          */
         @Nonnull
-        public LocalizationMap getDescriptionLocalizations()
-        {
+        public LocalizationMap getDescriptionLocalizations() {
             return descriptionLocalizations;
         }
 
@@ -950,56 +916,54 @@ public interface Command extends ISnowflake, ICommandReference
          */
         @Nonnull
         @Unmodifiable
-        public List<Option> getOptions()
-        {
+        public List<Option> getOptions() {
             return options;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(name, description, options);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            if (obj == this) return true;
-            if (!(obj instanceof Subcommand)) return false;
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof Subcommand)) {
+                return false;
+            }
             Subcommand other = (Subcommand) obj;
             return Objects.equals(other.name, name)
-                && Objects.equals(other.description, description)
-                && Objects.equals(other.options, options);
+                    && Objects.equals(other.description, description)
+                    && Objects.equals(other.options, options);
         }
 
         @Override
-        public String toString()
-        {
-            return new EntityString(this)
-                    .addMetadata("name", name)
-                    .toString();
+        public String toString() {
+            return new EntityString(this).addMetadata("name", name).toString();
         }
     }
 
     /**
      * An Subcommand Group for a command.
      */
-    class SubcommandGroup implements ICommandReference
-    {
+    class SubcommandGroup implements ICommandReference {
         private final Command parentCommand;
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
-        public SubcommandGroup(Command parentCommand, DataObject json)
-        {
+        public SubcommandGroup(Command parentCommand, DataObject json) {
             this.parentCommand = parentCommand;
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
-            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
-            this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
+            this.descriptionLocalizations =
+                    LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
+            this.subcommands = CommandImpl.parseOptions(
+                    json, CommandImpl.SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
         }
 
         /**
@@ -1008,8 +972,7 @@ public interface Command extends ISnowflake, ICommandReference
          * <p><b>This will return the ID of the top level command</b>
          */
         @Override
-        public long getIdLong()
-        {
+        public long getIdLong() {
             return parentCommand.getIdLong();
         }
 
@@ -1019,8 +982,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The name
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -1030,15 +992,13 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
          */
         @Nonnull
-        public LocalizationMap getNameLocalizations()
-        {
+        public LocalizationMap getNameLocalizations() {
             return nameLocalizations;
         }
 
         @Nonnull
         @Override
-        public String getFullCommandName()
-        {
+        public String getFullCommandName() {
             return parentCommand.getFullCommandName() + " " + getName();
         }
 
@@ -1048,8 +1008,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The description
          */
         @Nonnull
-        public String getDescription()
-        {
+        public String getDescription() {
             return description;
         }
 
@@ -1059,8 +1018,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
          */
         @Nonnull
-        public LocalizationMap getDescriptionLocalizations()
-        {
+        public LocalizationMap getDescriptionLocalizations() {
             return descriptionLocalizations;
         }
 
@@ -1071,22 +1029,23 @@ public interface Command extends ISnowflake, ICommandReference
          */
         @Nonnull
         @Unmodifiable
-        public List<Subcommand> getSubcommands()
-        {
+        public List<Subcommand> getSubcommands() {
             return subcommands;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(name, description, subcommands);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            if (obj == this) return true;
-            if (!(obj instanceof SubcommandGroup)) return false;
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (!(obj instanceof SubcommandGroup)) {
+                return false;
+            }
             SubcommandGroup other = (SubcommandGroup) obj;
             return Objects.equals(other.name, name)
                     && Objects.equals(other.description, description)
@@ -1094,11 +1053,8 @@ public interface Command extends ISnowflake, ICommandReference
         }
 
         @Override
-        public String toString()
-        {
-            return new EntityString(this)
-                    .addMetadata("name", name)
-                    .toString();
+        public String toString() {
+            return new EntityString(this).addMetadata("name", name).toString();
         }
     }
 }

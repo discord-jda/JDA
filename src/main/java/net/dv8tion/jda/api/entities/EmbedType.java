@@ -23,8 +23,7 @@ import javax.annotation.Nullable;
  * Represents the embedded resource type.
  * <br>These are typically either Images, Videos or Links.
  */
-public enum EmbedType
-{
+public enum EmbedType {
     IMAGE("image"),
     VIDEO("video"),
     GIFV("gifv"),
@@ -37,8 +36,7 @@ public enum EmbedType
 
     private final String key;
 
-    EmbedType(String key)
-    {
+    EmbedType(String key) {
         this.key = key;
     }
 
@@ -54,12 +52,11 @@ public enum EmbedType
      *         or {@link net.dv8tion.jda.api.entities.EmbedType#UNKNOWN UNKNOWN}.
      */
     @Nonnull
-    public static EmbedType fromKey(@Nullable String key)
-    {
-        for (EmbedType type : values())
-        {
-            if (type.key.equals(key))
+    public static EmbedType fromKey(@Nullable String key) {
+        for (EmbedType type : values()) {
+            if (type.key.equals(key)) {
                 return type;
+            }
         }
         return UNKNOWN;
     }

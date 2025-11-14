@@ -26,35 +26,34 @@ import okhttp3.RequestBody;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> implements StageInstanceManager
-{
+public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> implements StageInstanceManager {
     private final StageInstance instance;
 
     private String topic;
 
-    public StageInstanceManagerImpl(StageInstance instance)
-    {
-        super(instance.getChannel().getJDA(), Route.StageInstances.UPDATE_INSTANCE.compile(instance.getChannel().getId()));
+    public StageInstanceManagerImpl(StageInstance instance) {
+        super(
+                instance.getChannel().getJDA(),
+                Route.StageInstances.UPDATE_INSTANCE.compile(
+                        instance.getChannel().getId()));
         this.instance = instance;
     }
 
     @Nonnull
     @Override
-    public StageInstance getStageInstance()
-    {
+    public StageInstance getStageInstance() {
         return instance;
     }
 
     @Nonnull
     @Override
-    public StageInstanceManager setTopic(@Nullable String topic)
-    {
-        if (topic != null)
-        {
+    public StageInstanceManager setTopic(@Nullable String topic) {
+        if (topic != null) {
             topic = topic.trim();
             Checks.notLonger(topic, 120, "Topic");
-            if (topic.isEmpty())
+            if (topic.isEmpty()) {
                 topic = null;
+            }
         }
         this.topic = topic;
         set |= TOPIC;
@@ -62,11 +61,11 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
-        if (shouldUpdate(TOPIC) && topic != null)
+        if (shouldUpdate(TOPIC) && topic != null) {
             body.put("topic", topic);
+        }
         return getRequestBody(body);
     }
 }

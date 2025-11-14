@@ -20,19 +20,16 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 
 import javax.annotation.Nonnull;
 
-public class DataArrayParsingException extends ParsingException
-{
+public class DataArrayParsingException extends ParsingException {
     private final DataArray data;
 
-    public DataArrayParsingException(@Nonnull DataArray data, @Nonnull String message)
-    {
+    public DataArrayParsingException(@Nonnull DataArray data, @Nonnull String message) {
         super(message + "\n" + data.toShallowString());
         this.data = data;
     }
 
     @Nonnull
-    public DataArray getData()
-    {
+    public DataArray getData() {
         return data;
     }
 }

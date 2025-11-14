@@ -21,99 +21,90 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Contract;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class MapErrorRestAction<T> extends RestActionOperator<T, T>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
     private final Predicate<? super Throwable> check;
     private final Function<? super Throwable, ? extends T> map;
 
-    public MapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends T> map)
-    {
+    public MapErrorRestAction(
+            RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends T> map) {
         super(action);
         this.check = check;
         this.map = map;
     }
 
     @Override
-    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
-    {
-        action.queue(success, contextWrap((error) -> // Use contextWrap so error has a context cause
-        {
-            try
-            {
-                if (check.test(error)) // Check condition
-                    doSuccess(success, map.apply(error)); // Then apply fallback function
-                else // Fallback downstream
-                    doFailure(failure, error); // error already has context so no contextWrap needed
-            }
-            catch (Throwable e)
-            {
-                doFailure(failure, Helpers.appendCause(e, error)); // error already has context so no contextWrap needed
-            }
-        }));
+    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
+        action.queue(
+                success,
+                // Use contextWrap so error has a context cause
+                contextWrap((error) -> {
+                    try {
+                        if (check.test(error)) {
+                            doSuccess(success, map.apply(error));
+                        } else {
+                            doFailure(failure, error);
+                        }
+                    } catch (Throwable e) {
+                        doFailure(failure, Helpers.appendCause(e, error));
+                    }
+                }));
     }
 
     @Override
-    public T complete(boolean shouldQueue) throws RateLimitedException
-    {
-        try
-        {
+    public T complete(boolean shouldQueue) throws RateLimitedException {
+        try {
             return action.complete(shouldQueue);
-        }
-        catch (Throwable error)
-        {
-            try
-            {
-                if (check.test(error))
+        } catch (Throwable error) {
+            try {
+                if (check.test(error)) {
                     return map.apply(error);
-            }
-            catch (Throwable e)
-            {
+                }
+            } catch (Throwable e) {
                 fail(Helpers.appendCause(e, error));
             }
-            if (error instanceof RateLimitedException)
+            if (error instanceof RateLimitedException) {
                 throw (RateLimitedException) error;
-            else
+            } else {
                 fail(error);
+            }
         }
         throw new AssertionError("Unreachable");
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
+    public CompletableFuture<T> submit(boolean shouldQueue) {
         return action.submit(shouldQueue).handle((value, error) -> {
             T result = value;
-            if (error != null)
-            {
+            if (error != null) {
                 error = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
-                if (check.test(error))
+                if (check.test(error)) {
                     result = map.apply(error);
-                else
+                } else {
                     fail(error);
+                }
             }
             return result;
         });
     }
 
-
-
     @Contract("_ -> fail")
-    private void fail(Throwable error)
-    {
-        if (error instanceof RuntimeException)
+    private void fail(Throwable error) {
+        if (error instanceof RuntimeException) {
             throw (RuntimeException) error;
-        else if (error instanceof Error)
+        } else if (error instanceof Error) {
             throw (Error) error;
-        else
+        } else {
             throw new RuntimeException(error);
+        }
     }
 }

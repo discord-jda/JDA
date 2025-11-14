@@ -20,15 +20,15 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Flags for specific channel settings.
  */
-public enum ChannelFlag
-{
+public enum ChannelFlag {
     /**
      * This is a forum post {@link ThreadChannel} which is pinned in the {@link ForumChannel}.
      */
@@ -45,8 +45,7 @@ public enum ChannelFlag
 
     private final int value;
 
-    ChannelFlag(int value)
-    {
+    ChannelFlag(int value) {
         this.value = value;
     }
 
@@ -55,8 +54,7 @@ public enum ChannelFlag
      *
      * @return The raw value
      */
-    public int getRaw()
-    {
+    public int getRaw() {
         return value;
     }
 
@@ -69,16 +67,16 @@ public enum ChannelFlag
      * @return The enum constants of the provided bitset
      */
     @Nonnull
-    public static EnumSet<ChannelFlag> fromRaw(int bitset)
-    {
+    public static EnumSet<ChannelFlag> fromRaw(int bitset) {
         EnumSet<ChannelFlag> set = EnumSet.noneOf(ChannelFlag.class);
-        if (bitset == 0)
+        if (bitset == 0) {
             return set;
+        }
 
-        for (ChannelFlag flag : values())
-        {
-            if (flag.value == bitset)
+        for (ChannelFlag flag : values()) {
+            if (flag.value == bitset) {
                 set.add(flag);
+            }
         }
 
         return set;
@@ -89,12 +87,12 @@ public enum ChannelFlag
      *
      * @return The raw value
      */
-    public static int getRaw(@Nonnull Collection<ChannelFlag> flags)
-    {
+    public static int getRaw(@Nonnull Collection<ChannelFlag> flags) {
         Checks.notNull(flags, "Flags");
         int raw = 0;
-        for (ChannelFlag flag : flags)
+        for (ChannelFlag flag : flags) {
             raw |= flag.getRaw();
+        }
         return raw;
     }
 }

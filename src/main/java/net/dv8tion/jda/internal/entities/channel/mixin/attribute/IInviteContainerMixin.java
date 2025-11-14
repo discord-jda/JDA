@@ -29,18 +29,18 @@ import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMix
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>> extends IInviteContainer, GuildChannelMixin<T>
-{
+import javax.annotation.Nonnull;
+
+public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>>
+        extends IInviteContainer, GuildChannelMixin<T> {
     // ---- Default implementations of interface ----
     @Nonnull
     @Override
-    default InviteAction createInvite()
-    {
+    default InviteAction createInvite() {
         checkAttached();
         checkPermission(Permission.CREATE_INSTANT_INVITE);
 
@@ -49,21 +49,20 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>> exten
 
     @Nonnull
     @Override
-    default RestAction<List<Invite>> retrieveInvites()
-    {
+    default RestAction<List<Invite>> retrieveInvites() {
         checkAttached();
         checkPermission(Permission.MANAGE_CHANNEL);
 
-        final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
+        Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
         JDAImpl jda = (JDAImpl) getJDA();
-        return new RestActionImpl<>(jda, route, (response, request) ->
-        {
+        return new RestActionImpl<>(jda, route, (response, request) -> {
             EntityBuilder entityBuilder = jda.getEntityBuilder();
             DataArray array = response.getArray();
             List<Invite> invites = new ArrayList<>(array.length());
-            for (int i = 0; i < array.length(); i++)
+            for (int i = 0; i < array.length(); i++) {
                 invites.add(entityBuilder.createInvite(array.getObject(i)));
+            }
             return Collections.unmodifiableList(invites);
         });
     }

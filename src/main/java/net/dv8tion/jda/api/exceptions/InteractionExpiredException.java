@@ -22,10 +22,8 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
  * Indicates that an interaction has expired and can no longer be responded to.
  * <br>This is used for follow-up requests sent via {@link InteractionHook}, which expire after 15 minutes.
  */
-public class InteractionExpiredException extends RuntimeException
-{
-    public InteractionExpiredException()
-    {
+public class InteractionExpiredException extends RuntimeException {
+    public InteractionExpiredException() {
         super("The interaction has expired and can no longer be responded to!");
     }
 }

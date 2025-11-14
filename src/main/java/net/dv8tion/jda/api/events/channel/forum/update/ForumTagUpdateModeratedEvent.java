@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link ForumTag#isModerated() moderated status} of a {@link ForumTag} changed.
@@ -33,26 +34,27 @@ import java.util.Collection;
  * <p>Identifier: {@code moderated}
  */
 @SuppressWarnings("ConstantConditions")
-public class ForumTagUpdateModeratedEvent extends GenericForumTagUpdateEvent<Boolean>
-{
+public class ForumTagUpdateModeratedEvent extends GenericForumTagUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "moderated";
 
-    public ForumTagUpdateModeratedEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag, boolean previous)
-    {
+    public ForumTagUpdateModeratedEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull IPostContainer channel,
+            @Nonnull ForumTag tag,
+            boolean previous) {
         super(api, responseNumber, channel, tag, previous, tag.isModerated(), IDENTIFIER);
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue()
-    {
+    public Boolean getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue()
-    {
+    public Boolean getNewValue() {
         return super.getNewValue();
     }
 }

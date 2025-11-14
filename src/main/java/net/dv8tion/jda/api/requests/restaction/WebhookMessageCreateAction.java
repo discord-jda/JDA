@@ -37,8 +37,9 @@ import javax.annotation.Nullable;
  *
  * @see    net.dv8tion.jda.api.entities.WebhookClient#sendMessage(String)
  */
-public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<WebhookMessageCreateAction<T>>, AbstractWebhookMessageAction<T, WebhookMessageCreateAction<T>>
-{
+public interface WebhookMessageCreateAction<T>
+        extends MessageCreateRequest<WebhookMessageCreateAction<T>>,
+                AbstractWebhookMessageAction<T, WebhookMessageCreateAction<T>> {
     /**
      * Set whether this message should be visible to other users.
      * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
@@ -159,9 +160,7 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageCreateAction<T> createThread(@Nonnull String threadName, @Nonnull ForumTagSnowflake... tags)
-    {
+    default WebhookMessageCreateAction<T> createThread(@Nonnull String threadName, @Nonnull ForumTagSnowflake... tags) {
         return createThread(new ThreadCreateMetadata(threadName).addTags(tags));
     }
-
 }

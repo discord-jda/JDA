@@ -21,13 +21,13 @@ import net.dv8tion.jda.api.entities.RichPresence;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Objects;
 
-public class RichPresenceImpl extends ActivityImpl implements RichPresence
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class RichPresenceImpl extends ActivityImpl implements RichPresence {
     protected final long applicationId;
 
     protected final Party party;
@@ -39,10 +39,22 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     protected final int flags;
 
     protected RichPresenceImpl(
-            ActivityType type, String name, String url, long applicationId,
-            EmojiUnion emoji, Party party, String details, String state, Timestamps timestamps, String syncId, String sessionId,
-            int flags, String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
-    {
+            ActivityType type,
+            String name,
+            String url,
+            long applicationId,
+            EmojiUnion emoji,
+            Party party,
+            String details,
+            String state,
+            Timestamps timestamps,
+            String syncId,
+            String sessionId,
+            int flags,
+            String largeImageKey,
+            String largeImageText,
+            String smallImageKey,
+            String smallImageText) {
         super(name, state, url, type, timestamps, emoji);
         this.applicationId = applicationId;
         this.party = party;
@@ -55,88 +67,75 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     }
 
     @Override
-    public boolean isRich()
-    {
+    public boolean isRich() {
         return true;
     }
 
     @Override
-    public RichPresence asRichPresence()
-    {
+    public RichPresence asRichPresence() {
         return this;
     }
 
     @Override
-    public long getApplicationIdLong()
-    {
+    public long getApplicationIdLong() {
         return applicationId;
     }
 
     @Nonnull
     @Override
-    public String getApplicationId()
-    {
+    public String getApplicationId() {
         return Long.toUnsignedString(applicationId);
     }
 
     @Nullable
     @Override
-    public String getSessionId()
-    {
+    public String getSessionId() {
         return sessionId;
     }
 
     @Nullable
     @Override
-    public String getSyncId()
-    {
+    public String getSyncId() {
         return syncId;
     }
 
     @Override
-    public int getFlags()
-    {
+    public int getFlags() {
         return flags;
     }
 
     @Nonnull
     @Override
-    public EnumSet<ActivityFlag> getFlagSet()
-    {
+    public EnumSet<ActivityFlag> getFlagSet() {
         return ActivityFlag.getFlags(getFlags());
     }
 
     @Nullable
     @Override
-    public String getDetails()
-    {
+    public String getDetails() {
         return details;
     }
 
     @Nullable
     @Override
-    public Party getParty()
-    {
+    public Party getParty() {
         return party;
     }
 
     @Nullable
     @Override
-    public Image getLargeImage()
-    {
+    public Image getLargeImage() {
         return largeImage;
     }
 
     @Nullable
     @Override
-    public Image getSmallImage()
-    {
+    public Image getSmallImage() {
         return smallImage;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setName(name)
                 .addMetadata("applicationId", applicationId)
@@ -144,31 +143,32 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     }
 
     @Override
-    public int hashCode()
-    {
-        return Objects.hash(applicationId, state, details, party, sessionId, syncId, flags, timestamps, largeImage, smallImage);
+    public int hashCode() {
+        return Objects.hash(
+                applicationId, state, details, party, sessionId, syncId, flags, timestamps, largeImage, smallImage);
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
-        if (!(o instanceof RichPresenceImpl))
+        }
+        if (!(o instanceof RichPresenceImpl)) {
             return false;
+        }
         RichPresenceImpl p = (RichPresenceImpl) o;
         return applicationId == p.applicationId
-               && Objects.equals(name, p.name)
-               && Objects.equals(url, p.url)
-               && Objects.equals(type, p.type)
-               && Objects.equals(state, p.state)
-               && Objects.equals(details, p.details)
-               && Objects.equals(party, p.party)
-               && Objects.equals(sessionId, p.sessionId)
-               && Objects.equals(syncId, p.syncId)
-               && Objects.equals(flags, p.flags)
-               && Objects.equals(timestamps, p.timestamps)
-               && Objects.equals(largeImage, p.largeImage)
-               && Objects.equals(smallImage, p.smallImage);
+                && Objects.equals(name, p.name)
+                && Objects.equals(url, p.url)
+                && Objects.equals(type, p.type)
+                && Objects.equals(state, p.state)
+                && Objects.equals(details, p.details)
+                && Objects.equals(party, p.party)
+                && Objects.equals(sessionId, p.sessionId)
+                && Objects.equals(syncId, p.syncId)
+                && Objects.equals(flags, p.flags)
+                && Objects.equals(timestamps, p.timestamps)
+                && Objects.equals(largeImage, p.largeImage)
+                && Objects.equals(smallImage, p.smallImage);
     }
 }

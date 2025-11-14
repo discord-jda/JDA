@@ -25,14 +25,12 @@ import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class InteractionCallbackResponseImpl implements InteractionCallbackResponse
-{
+public class InteractionCallbackResponseImpl implements InteractionCallbackResponse {
     private final InteractionCallbackAction.ResponseType type;
 
     private final Message message;
 
-    public InteractionCallbackResponseImpl(InteractionHookImpl hook, DataObject resource)
-    {
+    public InteractionCallbackResponseImpl(InteractionHookImpl hook, DataObject resource) {
         this.type = InteractionCallbackAction.ResponseType.fromId(resource.getInt("type", -1));
 
         this.message = resource.optObject("message").map(hook::buildMessage).orElse(null);
@@ -40,15 +38,13 @@ public class InteractionCallbackResponseImpl implements InteractionCallbackRespo
 
     @Nullable
     @Override
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
     @Nonnull
     @Override
-    public InteractionCallbackAction.ResponseType getResponseType()
-    {
+    public InteractionCallbackAction.ResponseType getResponseType() {
         return type;
     }
 }

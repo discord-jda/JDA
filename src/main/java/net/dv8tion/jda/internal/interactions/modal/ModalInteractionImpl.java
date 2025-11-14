@@ -31,25 +31,23 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCall
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 
-public class ModalInteractionImpl extends DeferrableInteractionImpl implements ModalInteraction
-{
+import javax.annotation.Nonnull;
+
+public class ModalInteractionImpl extends DeferrableInteractionImpl implements ModalInteraction {
     private final String modalId;
     private final List<ModalMapping> mappings;
     private final Message message;
 
-    public ModalInteractionImpl(JDAImpl api, DataObject object)
-    {
+    public ModalInteractionImpl(JDAImpl api, DataObject object) {
         super(api, object);
 
         DataObject data = object.getObject("data");
         this.modalId = data.getString("custom_id");
         DataObject resolved = data.optObject("resolved").orElseGet(DataObject::empty);
-        this.mappings = data.optArray("components").orElseGet(DataArray::empty)
-                .stream(DataArray::getObject)
+        this.mappings = data.optArray("components").orElseGet(DataArray::empty).stream(DataArray::getObject)
                 .map(component -> getMapping(component, resolved))
                 .filter(Objects::nonNull)
                 .collect(Helpers.toUnmodifiableList());
@@ -59,55 +57,49 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
                 .orElse(null);
     }
 
-    private ModalMapping getMapping(DataObject component, DataObject resolved)
-    {
+    private ModalMapping getMapping(DataObject component, DataObject resolved) {
         Component.Type type = Component.Type.fromKey(component.getInt("type"));
 
-        if (type == Component.Type.LABEL)
+        if (type == Component.Type.LABEL) {
             return new ModalMapping(this, resolved, component.getObject("component"));
+        }
 
         return null;
     }
 
     @Nonnull
     @Override
-    public String getModalId()
-    {
+    public String getModalId() {
         return modalId;
     }
 
     @Nonnull
     @Override
-    public List<ModalMapping> getValues()
-    {
+    public List<ModalMapping> getValues() {
         return mappings;
     }
 
     @Override
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
     @Nonnull
     @Override
-    public ReplyCallbackAction deferReply()
-    {
+    public ReplyCallbackAction deferReply() {
         return new ReplyCallbackActionImpl(hook);
     }
 
     @Nonnull
     @Override
-    public MessageEditCallbackAction deferEdit()
-    {
+    public MessageEditCallbackAction deferEdit() {
         return new MessageEditCallbackActionImpl(hook);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return (MessageChannelUnion) super.getChannel();
     }
 }

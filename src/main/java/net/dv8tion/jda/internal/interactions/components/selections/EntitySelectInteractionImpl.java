@@ -25,15 +25,15 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.SelectMenuMentions;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
-public class EntitySelectInteractionImpl extends SelectMenuInteractionImpl<IMentionable, EntitySelectMenu> implements EntitySelectInteraction
-{
+import javax.annotation.Nonnull;
+
+public class EntitySelectInteractionImpl extends SelectMenuInteractionImpl<IMentionable, EntitySelectMenu>
+        implements EntitySelectInteraction {
     private final Mentions mentions;
 
-    public EntitySelectInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public EntitySelectInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, EntitySelectMenu.class, data);
         DataObject content = data.getObject("data");
         this.mentions = new SelectMenuMentions(
@@ -41,21 +41,18 @@ public class EntitySelectInteractionImpl extends SelectMenuInteractionImpl<IMent
                 interactionEntityBuilder,
                 getGuild(),
                 content.optObject("resolved").orElseGet(DataObject::empty),
-                content.optArray("values").orElseGet(DataArray::empty)
-        );
+                content.optArray("values").orElseGet(DataArray::empty));
     }
 
     @Nonnull
     @Override
-    public Mentions getMentions()
-    {
+    public Mentions getMentions() {
         return mentions;
     }
 
     @Nonnull
     @Override
-    public List<IMentionable> getValues()
-    {
+    public List<IMentionable> getValues() {
         return mentions.getMentions();
     }
 }

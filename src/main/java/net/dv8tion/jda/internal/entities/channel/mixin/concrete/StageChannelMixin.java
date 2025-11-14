@@ -32,37 +32,34 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 
 public interface StageChannelMixin<T extends StageChannelMixin<T>>
-    extends StageChannel,
-        AudioChannelMixin<T>,
-        GuildMessageChannelMixin<T>,
-        IWebhookContainerMixin<T>,
-        IAgeRestrictedChannelMixin<T>,
-        ISlowmodeChannelMixin<T>
-{
+        extends StageChannel,
+                AudioChannelMixin<T>,
+                GuildMessageChannelMixin<T>,
+                IWebhookContainerMixin<T>,
+                IAgeRestrictedChannelMixin<T>,
+                ISlowmodeChannelMixin<T> {
     @Nonnull
     @Override
-    default ChannelAction<StageChannel> createCopy(@Nonnull Guild guild)
-    {
+    default ChannelAction<StageChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
 
         ChannelAction<StageChannel> action = guild.createStageChannel(getName()).setBitrate(getBitrate());
 
-        if (getRegionRaw() != null)
-        {
+        if (getRegionRaw() != null) {
             action.setRegion(Region.fromKey(getRegionRaw()));
         }
 
-        if (guild.equals(getGuild()))
-        {
+        if (guild.equals(getGuild())) {
             Category parent = getParentCategory();
-            if (parent != null)
+            if (parent != null) {
                 action.setParent(parent);
-            for (PermissionOverride o : getPermissionOverrideMap().valueCollection())
-            {
-                if (o.isMemberOverride())
+            }
+            for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
+                if (o.isMemberOverride()) {
                     action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
+                } else {
                     action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

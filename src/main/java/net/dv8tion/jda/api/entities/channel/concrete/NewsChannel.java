@@ -44,8 +44,7 @@ import javax.annotation.Nonnull;
  * @see Message#getFlags()
  * @see net.dv8tion.jda.api.entities.Message.MessageFlag#CROSSPOSTED
  */
-public interface NewsChannel extends StandardGuildMessageChannel
-{
+public interface NewsChannel extends StandardGuildMessageChannel {
     /**
      * Subscribes to the crossposted messages in this channel.
      * <br>This will create a {@link Webhook} of type {@link WebhookType#FOLLOWER FOLLOWER} in the target channel.
@@ -71,8 +70,6 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction}
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -101,13 +98,10 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction}
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Webhook.WebhookReference> follow(long targetChannelId)
-    {
+    default RestAction<Webhook.WebhookReference> follow(long targetChannelId) {
         return follow(Long.toUnsignedString(targetChannelId));
     }
 
@@ -140,18 +134,16 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction}
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Webhook.WebhookReference> follow(@Nonnull TextChannel targetChannel)
-    {
+    default RestAction<Webhook.WebhookReference> follow(@Nonnull TextChannel targetChannel) {
         Checks.notNull(targetChannel, "Target Channel");
         Member selfMember = targetChannel.getGuild().getSelfMember();
         Checks.checkAccess(selfMember, targetChannel);
-        if (!selfMember.hasPermission(targetChannel, Permission.MANAGE_WEBHOOKS))
+        if (!selfMember.hasPermission(targetChannel, Permission.MANAGE_WEBHOOKS)) {
             throw new InsufficientPermissionException(targetChannel, Permission.MANAGE_WEBHOOKS);
+        }
         return follow(targetChannel.getId());
     }
 
@@ -195,19 +187,17 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Message> crosspostMessageById(@Nonnull String messageId)
-    {
+    default RestAction<Message> crosspostMessageById(@Nonnull String messageId) {
         Checks.isSnowflake(messageId);
         Checks.checkAccess(getGuild().getSelfMember(), this);
         Checks.checkAttached(this);
         Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<>(getJDA(), route,
-                (response, request) -> request.getJDA().getEntityBuilder().createMessageWithChannel(response.getObject(), this, false));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> request.getJDA()
+                .getEntityBuilder()
+                .createMessageWithChannel(response.getObject(), this, false));
     }
 
     /**
@@ -246,13 +236,10 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
-     *
-     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Message> crosspostMessageById(long messageId)
-    {
+    default RestAction<Message> crosspostMessageById(long messageId) {
         return crosspostMessageById(Long.toUnsignedString(messageId));
     }
 
@@ -264,8 +251,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelAction<NewsChannel> createCopy()
-    {
+    default ChannelAction<NewsChannel> createCopy() {
         return createCopy(getGuild());
     }
 

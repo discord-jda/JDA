@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities.channel.middleman;
 
 import net.dv8tion.jda.api.components.Component;
@@ -53,13 +54,14 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginatio
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.api.entities.Message Messages} and files sent to it.
@@ -93,8 +95,7 @@ import java.util.function.Function;
  * @see TextChannel
  * @see PrivateChannel
  */
-public interface MessageChannel extends Channel, Formattable
-{
+public interface MessageChannel extends Channel, Formattable {
     /**
      * The id for the most recent message sent
      * in this current MessageChannel.
@@ -106,8 +107,7 @@ public interface MessageChannel extends Channel, Formattable
      * @return The most recent message's id or "0" if no messages are present
      */
     @Nonnull
-    default String getLatestMessageId()
-    {
+    default String getLatestMessageId() {
         return Long.toUnsignedString(getLatestMessageIdLong());
     }
 
@@ -159,13 +159,14 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull List<String> messageIds)
-    {
-        if (messageIds == null || messageIds.isEmpty())
+    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull List<String> messageIds) {
+        if (messageIds == null || messageIds.isEmpty()) {
             return Collections.emptyList();
+        }
         long[] ids = new long[messageIds.size()];
-        for (int i = 0; i < ids.length; i++)
+        for (int i = 0; i < ids.length; i++) {
             ids[i] = MiscUtil.parseSnowflake(messageIds.get(i));
+        }
         return purgeMessagesById(ids);
     }
 
@@ -188,10 +189,10 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull String... messageIds)
-    {
-        if (messageIds == null || messageIds.length == 0)
+    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull String... messageIds) {
+        if (messageIds == null || messageIds.length == 0) {
             return Collections.emptyList();
+        }
         return purgeMessagesById(Arrays.asList(messageIds));
     }
 
@@ -218,10 +219,10 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessages(@Nonnull Message... messages)
-    {
-        if (messages == null || messages.length == 0)
+    default List<CompletableFuture<Void>> purgeMessages(@Nonnull Message... messages) {
+        if (messages == null || messages.length == 0) {
             return Collections.emptyList();
+        }
         return purgeMessages(Arrays.asList(messages));
     }
 
@@ -250,10 +251,10 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
-    {
-        if (messages == null || messages.isEmpty())
+    default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages) {
+        if (messages == null || messages.isEmpty()) {
             return Collections.emptyList();
+        }
         return purgeMessagesById(messages.stream()
                 .filter(m -> m.getType().canDelete())
                 .mapToLong(Message::getIdLong)
@@ -293,16 +294,18 @@ public interface MessageChannel extends Channel, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
-    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds)
-    {
-        if (messageIds == null || messageIds.length == 0)
+    default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds) {
+        if (messageIds == null || messageIds.length == 0) {
             return Collections.emptyList();
+        }
         List<CompletableFuture<Void>> list = new ArrayList<>(messageIds.length);
         TreeSet<Long> sortedIds = new TreeSet<>(Comparator.reverseOrder());
-        for (long messageId : messageIds)
+        for (long messageId : messageIds) {
             sortedIds.add(messageId);
-        for (long messageId : sortedIds)
+        }
+        for (long messageId : sortedIds) {
             list.add(deleteMessageById(messageId).submit());
+        }
         return list;
     }
 
@@ -342,8 +345,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessage(@Nonnull CharSequence text)
-    {
+    default MessageCreateAction sendMessage(@Nonnull CharSequence text) {
         Checks.notNull(text, "Content");
         return new MessageCreateActionImpl(this).setContent(text.toString());
     }
@@ -386,8 +388,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg)
-    {
+    default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg) {
         Checks.notNull(msg, "Message");
         return new MessageCreateActionImpl(this).applyData(msg);
     }
@@ -437,8 +438,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    default MessageCreateAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notEmpty(format, "Format");
         return sendMessage(String.format(format, args));
     }
@@ -463,7 +463,7 @@ public interface MessageChannel extends Channel, Formattable
      * </ul>
      *
      * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Make a file upload instance which refers to a local file called "myFile.png"
      * // The second parameter "image.png" is the filename we tell discord to use for the attachment
      * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
@@ -478,7 +478,7 @@ public interface MessageChannel extends Channel, Formattable
      * channel.sendMessageEmbeds(embed) // send the embed
      *        .addFiles(file) // add the file as attachment
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  embed
      *         {@link MessageEmbed} to send
@@ -499,8 +499,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
-    {
+    default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(other, "MessageEmbeds");
         List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
@@ -529,7 +528,7 @@ public interface MessageChannel extends Channel, Formattable
      * </ul>
      *
      * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Make a file upload instance which refers to a local file called "myFile.png"
      * // The second parameter "image.png" is the filename we tell discord to use for the attachment
      * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
@@ -544,7 +543,7 @@ public interface MessageChannel extends Channel, Formattable
      * channel.sendMessageEmbeds(Collections.singleton(embed)) // send the embeds
      *        .addFiles(file) // add the file as attachment
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  embeds
      *         {@link MessageEmbed MessageEmbeds} to use (up to {@value Message#MAX_EMBED_COUNT})
@@ -563,8 +562,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return new MessageCreateActionImpl(this).setEmbeds(embeds);
     }
 
@@ -610,8 +608,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    default MessageCreateAction sendMessageComponents(
+            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.noneNull(components, "MessageTopLevelComponents");
         return new MessageCreateActionImpl(this).setComponents(components);
     }
@@ -660,8 +658,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
-    {
+    default MessageCreateAction sendMessageComponents(
+            @Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other) {
         Checks.notNull(component, "MessageTopLevelComponent");
         Checks.noneNull(other, "MessageTopLevelComponents");
         return sendMessageComponents(Helpers.mergeVararg(component, other));
@@ -711,8 +709,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
-    {
+    default MessageCreateAction sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return sendMessageComponents(tree.getComponents());
     }
@@ -757,8 +754,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessagePoll(@Nonnull MessagePollData poll)
-    {
+    default MessageCreateAction sendMessagePoll(@Nonnull MessagePollData poll) {
         Checks.notNull(poll, "Poll");
         return new MessageCreateActionImpl(this).setPoll(poll);
     }
@@ -791,7 +787,7 @@ public interface MessageChannel extends Channel, Formattable
      * </ul>
      *
      * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Make a file upload instance which refers to a local file called "myFile.png"
      * // The second parameter "image.png" is the filename we tell discord to use for the attachment
      * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
@@ -806,7 +802,7 @@ public interface MessageChannel extends Channel, Formattable
      * channel.sendFiles(Collections.singleton(file)) // send the file upload
      *        .addEmbeds(embed) // add the embed you want to reference the file with
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
@@ -827,8 +823,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendFiles(@Nonnull Collection<? extends FileUpload> files)
-    {
+    default MessageCreateAction sendFiles(@Nonnull Collection<? extends FileUpload> files) {
         Checks.notEmpty(files, "File Collection");
         Checks.noneNull(files, "Files");
         return new MessageCreateActionImpl(this).addFiles(files);
@@ -862,7 +857,7 @@ public interface MessageChannel extends Channel, Formattable
      * </ul>
      *
      * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Make a file upload instance which refers to a local file called "myFile.png"
      * // The second parameter "image.png" is the filename we tell discord to use for the attachment
      * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
@@ -877,7 +872,7 @@ public interface MessageChannel extends Channel, Formattable
      * channel.sendFiles(file) // send the file upload
      *        .addEmbeds(embed) // add the embed you want to reference the file with
      *        .queue();
-     * }</pre>
+     * }
      *
      * @param  files
      *         The {@link FileUpload FileUploads} to attach to the message
@@ -898,8 +893,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendFiles(@Nonnull FileUpload... files)
-    {
+    default MessageCreateAction sendFiles(@Nonnull FileUpload... files) {
         Checks.notEmpty(files, "File Collection");
         Checks.noneNull(files, "Files");
         return sendFiles(Arrays.asList(files));
@@ -950,14 +944,13 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Message> retrieveMessageById(@Nonnull String messageId)
-    {
+    default RestAction<Message> retrieveMessageById(@Nonnull String messageId) {
         Checks.isSnowflake(messageId, "Message ID");
 
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<>(jda, route,
-            (response, request) -> jda.getEntityBuilder().createMessageWithChannel(response.getObject(), MessageChannel.this, false));
+        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder()
+                .createMessageWithChannel(response.getObject(), MessageChannel.this, false));
     }
 
     /**
@@ -1003,8 +996,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Message> retrieveMessageById(long messageId)
-    {
+    default RestAction<Message> retrieveMessageById(long messageId) {
         return retrieveMessageById(Long.toUnsignedString(messageId));
     }
 
@@ -1049,8 +1041,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId)
-    {
+    default AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId) {
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
@@ -1098,8 +1089,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> deleteMessageById(long messageId)
-    {
+    default AuditableRestAction<Void> deleteMessageById(long messageId) {
         return deleteMessageById(Long.toUnsignedString(messageId));
     }
 
@@ -1130,13 +1120,14 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Message> endPollById(@Nonnull String messageId)
-    {
+    default AuditableRestAction<Message> endPollById(@Nonnull String messageId) {
         Checks.isSnowflake(messageId, "Message ID");
-        return new AuditableRestActionImpl<>(getJDA(), Route.Messages.END_POLL.compile(getId(), messageId), (response, request) -> {
-            JDAImpl jda = (JDAImpl) getJDA();
-            return jda.getEntityBuilder().createMessageWithChannel(response.getObject(), MessageChannel.this, false);
-        });
+        return new AuditableRestActionImpl<>(
+                getJDA(), Route.Messages.END_POLL.compile(getId(), messageId), (response, request) -> {
+                    JDAImpl jda = (JDAImpl) getJDA();
+                    return jda.getEntityBuilder()
+                            .createMessageWithChannel(response.getObject(), MessageChannel.this, false);
+                });
     }
 
     /**
@@ -1163,8 +1154,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Message> endPollById(long messageId)
-    {
+    default AuditableRestAction<Message> endPollById(long messageId) {
         return endPollById(Long.toUnsignedString(messageId));
     }
 
@@ -1183,8 +1173,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default PollVotersPaginationAction retrievePollVotersById(@Nonnull String messageId, long answerId)
-    {
+    default PollVotersPaginationAction retrievePollVotersById(@Nonnull String messageId, long answerId) {
         return new PollVotersPaginationActionImpl(getJDA(), getId(), messageId, answerId);
     }
 
@@ -1200,8 +1189,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default PollVotersPaginationAction retrievePollVotersById(long messageId, long answerId)
-    {
+    default PollVotersPaginationAction retrievePollVotersById(long messageId, long answerId) {
         return new PollVotersPaginationActionImpl(getJDA(), getId(), Long.toUnsignedString(messageId), answerId);
     }
 
@@ -1218,8 +1206,7 @@ public interface MessageChannel extends Channel, Formattable
      * @return A {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} related to this channel.
      */
     @Nonnull
-    default MessageHistory getHistory()
-    {
+    default MessageHistory getHistory() {
         return new MessageHistory(this);
     }
 
@@ -1234,7 +1221,7 @@ public interface MessageChannel extends Channel, Formattable
      * overflows in channels with a long message history.</u></b>
      *
      * <p><b>Examples</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public CompletableFuture<List<Message>> getMessagesByUser(MessageChannel channel, User user) {
      *     return channel.getIterableHistory()
      *         .takeAsync(1000) // Collect 1000 messages
@@ -1244,7 +1231,7 @@ public interface MessageChannel extends Channel, Formattable
      *                 .collect(Collectors.toList())
      *         );
      * }
-     * }</pre>
+     * }
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel}
@@ -1256,8 +1243,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessagePaginationAction getIterableHistory()
-    {
+    default MessagePaginationAction getIterableHistory() {
         return new MessagePaginationActionImpl(this);
     }
 
@@ -1324,8 +1310,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull String messageId, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull String messageId, int limit) {
         return MessageHistory.getHistoryAround(this, messageId).limit(limit);
     }
 
@@ -1392,8 +1377,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAround(long messageId, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryAround(long messageId, int limit) {
         return getHistoryAround(Long.toUnsignedString(messageId), limit);
     }
 
@@ -1460,8 +1444,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull Message message, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryAround(@Nonnull Message message, int limit) {
         Checks.notNull(message, "Provided target message");
         return getHistoryAround(message.getId(), limit);
     }
@@ -1521,8 +1504,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull String messageId, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull String messageId, int limit) {
         return MessageHistory.getHistoryAfter(this, messageId).limit(limit);
     }
 
@@ -1578,8 +1560,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAfter(long messageId, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(long messageId, int limit) {
         return getHistoryAfter(Long.toUnsignedString(messageId), limit);
     }
 
@@ -1638,8 +1619,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull Message message, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryAfter(@Nonnull Message message, int limit) {
         Checks.notNull(message, "Message");
         return getHistoryAfter(message.getId(), limit);
     }
@@ -1699,8 +1679,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull String messageId, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull String messageId, int limit) {
         return MessageHistory.getHistoryBefore(this, messageId).limit(limit);
     }
 
@@ -1759,8 +1738,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryBefore(long messageId, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(long messageId, int limit) {
         return getHistoryBefore(Long.toUnsignedString(messageId), limit);
     }
 
@@ -1819,8 +1797,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull Message message, int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryBefore(@Nonnull Message message, int limit) {
         Checks.notNull(message, "Message");
         return getHistoryBefore(message.getId(), limit);
     }
@@ -1830,10 +1807,10 @@ public interface MessageChannel extends Channel, Formattable
      * The {@code limit} determines the amount of messages being retrieved.
      *
      * <p><b>Example</b><br>
-     * <pre><code>
+     * {@snippet lang="java":
      * public void resendFirstMessage(MessageChannel channel)
      * {
-     *     channel.getHistoryFromBeginning(1).queue(history {@literal ->}
+     *     channel.getHistoryFromBeginning(1).queue(history ->
      *     {
      *         if (!history.isEmpty())
      *         {
@@ -1844,7 +1821,7 @@ public interface MessageChannel extends Channel, Formattable
      *             channel.sendMessage("No history for this channel!").queue();
      *     });
      * }
-     * </code></pre>
+     * }
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1885,8 +1862,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageHistory.MessageRetrieveAction getHistoryFromBeginning(int limit)
-    {
+    default MessageHistory.MessageRetrieveAction getHistoryFromBeginning(int limit) {
         return MessageHistory.getHistoryFromBeginning(this).limit(limit);
     }
 
@@ -1922,8 +1898,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> sendTyping()
-    {
+    default RestAction<Void> sendTyping() {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(getId());
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -1981,12 +1956,12 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emoji emoji)
-    {
+    default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emoji emoji) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), "@me");
+        Route.CompiledRoute route =
+                Route.Messages.ADD_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -2043,8 +2018,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> addReactionById(long messageId, @Nonnull Emoji emoji)
-    {
+    default RestAction<Void> addReactionById(long messageId, @Nonnull Emoji emoji) {
         return addReactionById(Long.toUnsignedString(messageId), emoji);
     }
 
@@ -2094,12 +2068,12 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emoji emoji)
-    {
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emoji emoji) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), "@me");
+        Route.CompiledRoute route =
+                Route.Messages.REMOVE_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -2149,8 +2123,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emoji emoji)
-    {
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emoji emoji) {
         return removeReactionById(Long.toUnsignedString(messageId), emoji);
     }
 
@@ -2201,8 +2174,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji)
-    {
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji) {
         return retrieveReactionUsersById(messageId, emoji, MessageReaction.ReactionType.NORMAL);
     }
 
@@ -2252,13 +2224,10 @@ public interface MessageChannel extends Channel, Formattable
      *         If this entity is {@link #isDetached() detached}
      *
      * @return The {@link ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
-     *
-     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji)
-    {
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji) {
         return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji);
     }
 
@@ -2306,8 +2275,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
-    {
+    default ReactionPaginationAction retrieveReactionUsersById(
+            @Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
         Checks.notNull(type, "ReactionType");
@@ -2361,8 +2330,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
-    {
+    default ReactionPaginationAction retrieveReactionUsersById(
+            long messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type) {
         return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji, type);
     }
 
@@ -2407,8 +2376,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> pinMessageById(@Nonnull String messageId)
-    {
+    default AuditableRestAction<Void> pinMessageById(@Nonnull String messageId) {
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.PIN_MESSAGE.compile(getId(), messageId);
@@ -2456,8 +2424,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> pinMessageById(long messageId)
-    {
+    default AuditableRestAction<Void> pinMessageById(long messageId) {
         return pinMessageById(Long.toUnsignedString(messageId));
     }
 
@@ -2502,8 +2469,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> unpinMessageById(@Nonnull String messageId)
-    {
+    default AuditableRestAction<Void> unpinMessageById(@Nonnull String messageId) {
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.UNPIN_MESSAGE.compile(getId(), messageId);
@@ -2551,8 +2517,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> unpinMessageById(long messageId)
-    {
+    default AuditableRestAction<Void> unpinMessageById(long messageId) {
         return unpinMessageById(Long.toUnsignedString(messageId));
     }
 
@@ -2581,8 +2546,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default PinnedMessagePaginationAction retrievePinnedMessages()
-    {
+    default PinnedMessagePaginationAction retrievePinnedMessages() {
         return new PinnedMessagePaginationActionImpl(this);
     }
 
@@ -2632,11 +2596,13 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent)
-    {
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull CharSequence newContent) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(newContent, "Provided message content");
-        Checks.check(newContent.length() <= Message.MAX_CONTENT_LENGTH, "Provided newContent length must be %d or less characters.", Message.MAX_CONTENT_LENGTH);
+        Checks.check(
+                newContent.length() <= Message.MAX_CONTENT_LENGTH,
+                "Provided newContent length must be %d or less characters.",
+                Message.MAX_CONTENT_LENGTH);
         return new MessageEditActionImpl(this, messageId).setContent(newContent.toString());
     }
 
@@ -2685,8 +2651,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageById(long messageId, @Nonnull CharSequence newContent)
-    {
+    default MessageEditAction editMessageById(long messageId, @Nonnull CharSequence newContent) {
         return editMessageById(Long.toUnsignedString(messageId), newContent);
     }
 
@@ -2738,8 +2703,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull MessageEditData data)
-    {
+    default MessageEditAction editMessageById(@Nonnull String messageId, @Nonnull MessageEditData data) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(data, "message");
         return new MessageEditActionImpl(this, messageId).applyData(data);
@@ -2792,8 +2756,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageById(long messageId, @Nonnull MessageEditData data)
-    {
+    default MessageEditAction editMessageById(long messageId, @Nonnull MessageEditData data) {
         return editMessageById(Long.toUnsignedString(messageId), data);
     }
 
@@ -2853,8 +2816,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
-    {
+    default MessageEditAction editMessageFormatById(
+            @Nonnull String messageId, @Nonnull String format, @Nonnull Object... args) {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
     }
@@ -2912,8 +2875,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
-    {
+    default MessageEditAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args) {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
     }
@@ -2965,8 +2927,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... newEmbeds)
-    {
+    default MessageEditAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... newEmbeds) {
         Checks.noneNull(newEmbeds, "MessageEmbeds");
         return editMessageEmbedsById(messageId, Arrays.asList(newEmbeds));
     }
@@ -3018,8 +2979,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... newEmbeds)
-    {
+    default MessageEditAction editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... newEmbeds) {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), newEmbeds);
     }
 
@@ -3070,8 +3030,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
-    {
+    default MessageEditAction editMessageEmbedsById(
+            @Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds) {
         Checks.isSnowflake(messageId, "Message ID");
         return new MessageEditActionImpl(this, messageId).setEmbeds(newEmbeds);
     }
@@ -3123,8 +3083,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageEmbedsById(long messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
-    {
+    default MessageEditAction editMessageEmbedsById(
+            long messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds) {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), newEmbeds);
     }
 
@@ -3135,13 +3095,13 @@ public interface MessageChannel extends Channel, Formattable
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * List<ActionRow> rows = Arrays.asList(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
      *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
      * );
      * channel.editMessageComponentsById(messageId, rows).queue();
-     * }</pre>
+     * }
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3191,8 +3151,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    default MessageEditAction editMessageComponentsById(
+            @Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noneNull(components, "Components");
         return new MessageEditActionImpl(this, messageId).setComponents(components);
@@ -3205,13 +3165,13 @@ public interface MessageChannel extends Channel, Formattable
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * List<ActionRow> rows = Arrays.asList(
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
      *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
      * );
      * channel.editMessageComponentsById(messageId, rows).queue();
-     * }</pre>
+     * }
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3261,8 +3221,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    default MessageEditAction editMessageComponentsById(
+            long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
 
@@ -3273,12 +3233,12 @@ public interface MessageChannel extends Channel, Formattable
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.editMessageComponentsById(messageId,
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
      *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
      * ).queue();
-     * }</pre>
+     * }
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3328,8 +3288,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull MessageTopLevelComponent... components)
-    {
+    default MessageEditAction editMessageComponentsById(
+            @Nonnull String messageId, @Nonnull MessageTopLevelComponent... components) {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
     }
@@ -3341,12 +3301,12 @@ public interface MessageChannel extends Channel, Formattable
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.editMessageComponentsById(messageId,
      *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
      *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
      * ).queue();
-     * }</pre>
+     * }
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3396,8 +3356,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull MessageTopLevelComponent... components)
-    {
+    default MessageEditAction editMessageComponentsById(
+            long messageId, @Nonnull MessageTopLevelComponent... components) {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
     }
@@ -3409,14 +3369,14 @@ public interface MessageChannel extends Channel, Formattable
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.editMessageComponentsById(messageId,
      *   MessageComponentTree.of(
      *     ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
      *     ActionRow.of(Button.link(url, "Help")) // 2nd row below message
      *   )
      * ).queue();
-     * }</pre>
+     * }
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3468,8 +3428,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
-    {
+    default MessageEditAction editMessageComponentsById(
+            @Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
     }
@@ -3481,14 +3441,14 @@ public interface MessageChannel extends Channel, Formattable
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * channel.editMessageComponentsById(messageId,
      *   MessageComponentTree.of(
      *     ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
      *     ActionRow.of(Button.link(url, "Help")) // 2nd row below message
      *   )
      * ).queue();
-     * }</pre>
+     * }
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3540,8 +3500,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
-    {
+    default MessageEditAction editMessageComponentsById(
+            long messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
     }
@@ -3596,8 +3556,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageAttachmentsById(@Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments)
-    {
+    default MessageEditAction editMessageAttachmentsById(
+            @Nonnull String messageId, @Nonnull Collection<? extends AttachedFile> attachments) {
         Checks.isSnowflake(messageId, "Message ID");
         return new MessageEditActionImpl(this, messageId).setAttachments(attachments);
     }
@@ -3652,8 +3612,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageAttachmentsById(@Nonnull String messageId, @Nonnull AttachedFile... attachments)
-    {
+    default MessageEditAction editMessageAttachmentsById(
+            @Nonnull String messageId, @Nonnull AttachedFile... attachments) {
         Checks.noneNull(attachments, "Attachments");
         return editMessageAttachmentsById(messageId, Arrays.asList(attachments));
     }
@@ -3708,8 +3668,8 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageAttachmentsById(long messageId, @Nonnull Collection<? extends AttachedFile> attachments)
-    {
+    default MessageEditAction editMessageAttachmentsById(
+            long messageId, @Nonnull Collection<? extends AttachedFile> attachments) {
         return editMessageAttachmentsById(Long.toUnsignedString(messageId), attachments);
     }
 
@@ -3763,8 +3723,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageAttachmentsById(long messageId, @Nonnull AttachedFile... attachments)
-    {
+    default MessageEditAction editMessageAttachmentsById(long messageId, @Nonnull AttachedFile... attachments) {
         return editMessageAttachmentsById(Long.toUnsignedString(messageId), attachments);
     }
 }

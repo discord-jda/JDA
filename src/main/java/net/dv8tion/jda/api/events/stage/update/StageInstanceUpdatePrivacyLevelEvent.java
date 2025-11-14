@@ -29,26 +29,26 @@ import javax.annotation.Nonnull;
  * <p>Identifier: {@code privacy_level}
  */
 @SuppressWarnings("ConstantConditions")
-public class StageInstanceUpdatePrivacyLevelEvent extends GenericStageInstanceUpdateEvent<StageInstance.PrivacyLevel>
-{
+public class StageInstanceUpdatePrivacyLevelEvent extends GenericStageInstanceUpdateEvent<StageInstance.PrivacyLevel> {
     public static final String IDENTIFIER = "privacy_level";
 
-    public StageInstanceUpdatePrivacyLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance, @Nonnull StageInstance.PrivacyLevel previous)
-    {
+    public StageInstanceUpdatePrivacyLevelEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull StageInstance stageInstance,
+            @Nonnull StageInstance.PrivacyLevel previous) {
         super(api, responseNumber, stageInstance, previous, stageInstance.getPrivacyLevel(), IDENTIFIER);
     }
 
     @Nonnull
     @Override
-    public StageInstance.PrivacyLevel getOldValue()
-    {
+    public StageInstance.PrivacyLevel getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public StageInstance.PrivacyLevel getNewValue()
-    {
+    public StageInstance.PrivacyLevel getNewValue() {
         return super.getNewValue();
     }
 }

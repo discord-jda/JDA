@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -36,8 +37,7 @@ import javax.annotation.Nonnull;
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager
  */
 @FunctionalInterface
-public interface EventListener
-{
+public interface EventListener {
     /**
      * Handles any {@link net.dv8tion.jda.api.events.GenericEvent GenericEvent}.
      *

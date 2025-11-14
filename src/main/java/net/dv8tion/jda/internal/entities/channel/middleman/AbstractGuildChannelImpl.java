@@ -25,29 +25,27 @@ import net.dv8tion.jda.internal.utils.ChannelUtil;
 
 import javax.annotation.Nonnull;
 
-public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImpl<T>> extends AbstractChannelImpl<T> implements GuildChannelMixin<T>
-{
+public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImpl<T>> extends AbstractChannelImpl<T>
+        implements GuildChannelMixin<T> {
     private Guild guild;
 
-    public AbstractGuildChannelImpl(long id, Guild guild)
-    {
+    public AbstractGuildChannelImpl(long id, Guild guild) {
         super(id, guild.getJDA());
         this.guild = guild;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         Guild cachedGuild = getJDA().getGuildById(id);
-        if (cachedGuild instanceof GuildImpl)
+        if (cachedGuild instanceof GuildImpl) {
             return this.guild = cachedGuild;
+        }
         return guild;
     }
 
     @Override
-    public int compareTo(@Nonnull GuildChannel o)
-    {
+    public int compareTo(@Nonnull GuildChannel o) {
         return ChannelUtil.compare(this, o);
     }
 }

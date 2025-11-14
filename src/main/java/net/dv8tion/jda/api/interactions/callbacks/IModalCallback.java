@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Sending a modal using {@link #replyModal(Modal)} will automatically acknowledge this interaction.
  */
-public interface IModalCallback extends Interaction
-{
+public interface IModalCallback extends Interaction {
     /**
      * Acknowledgement of this interaction with a {@link Modal Modal}.
      *
@@ -40,12 +39,12 @@ public interface IModalCallback extends Interaction
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      *
-     * @param  modal 
+     * @param  modal
      *         The Modal to send
      *
      * @throws IllegalArgumentException
      *         If the provided modal is null
-     *        
+     *
      * @return ModalCallbackAction
      */
     @Nonnull

@@ -23,8 +23,7 @@ import javax.annotation.Nonnull;
 /**
  * Represents a mentionable slash command.
  */
-public interface ICommandReference extends IMentionable
-{
+public interface ICommandReference extends IMentionable {
     /**
      * Returns the name of the slash command.
      * <br>If used on a subcommand, it returns the subcommand name.
@@ -62,8 +61,7 @@ public interface ICommandReference extends IMentionable
      */
     @Nonnull
     @Override
-    default String getAsMention()
-    {
+    default String getAsMention() {
         return "</" + getFullCommandName() + ":" + getIdLong() + ">";
     }
 }

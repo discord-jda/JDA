@@ -27,10 +27,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect that a Guild will now start sending events and can be interacted with.
  */
-public class GuildAvailableEvent extends GenericGuildEvent
-{
-    public GuildAvailableEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
-    {
+public class GuildAvailableEvent extends GenericGuildEvent {
+    public GuildAvailableEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild) {
         super(api, responseNumber, guild);
     }
 }

@@ -23,11 +23,12 @@ import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A PrivilegeConfig is the collection of moderator defined {@link IntegrationPrivilege privileges} set on a specific application and its commands
@@ -36,13 +37,11 @@ import java.util.Map;
  *
  * @see Guild#retrieveCommandPrivileges()
  */
-public class PrivilegeConfig
-{
+public class PrivilegeConfig {
     private final Guild guild;
     private final Map<String, List<IntegrationPrivilege>> privileges;
 
-    public PrivilegeConfig(@Nonnull Guild guild, @Nonnull Map<String, List<IntegrationPrivilege>> privileges)
-    {
+    public PrivilegeConfig(@Nonnull Guild guild, @Nonnull Map<String, List<IntegrationPrivilege>> privileges) {
         this.guild = guild;
         this.privileges = Collections.unmodifiableMap(privileges);
     }
@@ -53,8 +52,7 @@ public class PrivilegeConfig
      * @return Guild in which this PrivilegeConfig is applied in.
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
@@ -64,8 +62,7 @@ public class PrivilegeConfig
      * @return The JDA-instance.
      */
     @Nonnull
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return guild.getJDA();
     }
 
@@ -80,8 +77,7 @@ public class PrivilegeConfig
      */
     @Nullable
     @Unmodifiable
-    public List<IntegrationPrivilege> getApplicationPrivileges()
-    {
+    public List<IntegrationPrivilege> getApplicationPrivileges() {
         return getCommandPrivileges(getJDA().getSelfUser().getApplicationId());
     }
 
@@ -102,8 +98,7 @@ public class PrivilegeConfig
      */
     @Nullable
     @Unmodifiable
-    public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull String id)
-    {
+    public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull String id) {
         Checks.notNull(id, "Id");
         return privileges.get(id);
     }
@@ -125,8 +120,7 @@ public class PrivilegeConfig
      */
     @Nullable
     @Unmodifiable
-    public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull Command command)
-    {
+    public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull Command command) {
         Checks.notNull(command, "Command");
         return privileges.get(command.getId());
     }
@@ -140,8 +134,7 @@ public class PrivilegeConfig
      * @return Unmodifiable Map containing all privileges on this guild.
      */
     @Nonnull
-    public Map<String, List<IntegrationPrivilege>> getAsMap()
-    {
+    public Map<String, List<IntegrationPrivilege>> getAsMap() {
         return privileges;
     }
 }

@@ -16,8 +16,9 @@
 
 package net.dv8tion.jda.api.audio.factory;
 
-import javax.annotation.CheckForNull;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.annotation.CheckForNull;
 
 /**
  * Interface that acts as a UDP audio packet sending loop.
@@ -27,8 +28,7 @@ import java.util.concurrent.ConcurrentMap;
  * <br>JDA, by default, uses {@link net.dv8tion.jda.api.audio.factory.DefaultSendSystem DefaultSendSystem} for its
  * UDP audio packet sending loop.
  */
-public interface IAudioSendSystem
-{
+public interface IAudioSendSystem {
     /**
      * This represents the start of the loop, similar to {@link Thread#start()}, and after a call to this method JDA
      * assumes that the instance will be sending UDP audio packets in a loop.

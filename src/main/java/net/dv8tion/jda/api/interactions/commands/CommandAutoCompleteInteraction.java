@@ -35,8 +35,7 @@ import javax.annotation.Nonnull;
  * @see #getFocusedOption()
  * @see OptionData#setAutoComplete(boolean)
  */
-public interface CommandAutoCompleteInteraction extends IAutoCompleteCallback, CommandInteractionPayload
-{
+public interface CommandAutoCompleteInteraction extends IAutoCompleteCallback, CommandInteractionPayload {
     /**
      * The focused option which the user is typing.
      *
@@ -58,8 +57,7 @@ public interface CommandAutoCompleteInteraction extends IAutoCompleteCallback, C
 
     @Nonnull
     @Override
-    default GuildMessageChannelUnion getGuildChannel()
-    {
+    default GuildMessageChannelUnion getGuildChannel() {
         return (GuildMessageChannelUnion) IAutoCompleteCallback.super.getGuildChannel();
     }
 }

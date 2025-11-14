@@ -26,18 +26,18 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * POJO for the guild information provided by a template.
  *
  * @see Template#getGuild()
  */
-public class TemplateGuild implements ISnowflake
-{
+public class TemplateGuild implements ISnowflake {
     private final long id;
     private final String name, description, iconId;
     private final VerificationLevel verificationLevel;
@@ -50,10 +50,20 @@ public class TemplateGuild implements ISnowflake
     private final List<TemplateRole> roles;
     private final List<TemplateChannel> channels;
 
-    public TemplateGuild(final long id, final String name, final String description, final String iconId, final VerificationLevel verificationLevel,
-                         final NotificationLevel notificationLevel, final ExplicitContentLevel explicitContentLevel, final DiscordLocale locale, final Timeout afkTimeout,
-                         final TemplateChannel afkChannel, final TemplateChannel systemChannel, final List<TemplateRole> roles, final List<TemplateChannel> channels)
-    {
+    public TemplateGuild(
+            long id,
+            String name,
+            String description,
+            String iconId,
+            VerificationLevel verificationLevel,
+            NotificationLevel notificationLevel,
+            ExplicitContentLevel explicitContentLevel,
+            DiscordLocale locale,
+            Timeout afkTimeout,
+            TemplateChannel afkChannel,
+            TemplateChannel systemChannel,
+            List<TemplateRole> roles,
+            List<TemplateChannel> channels) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -70,8 +80,7 @@ public class TemplateGuild implements ISnowflake
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return this.id;
     }
 
@@ -81,8 +90,7 @@ public class TemplateGuild implements ISnowflake
      * @return The guild's name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
@@ -93,8 +101,7 @@ public class TemplateGuild implements ISnowflake
      * @return The description
      */
     @Nullable
-    public String getDescription()
-    {
+    public String getDescription() {
         return this.description;
     }
 
@@ -106,8 +113,7 @@ public class TemplateGuild implements ISnowflake
      * @see    #getIconUrl()
      */
     @Nullable
-    public String getIconId()
-    {
+    public String getIconId() {
         return this.iconId;
     }
 
@@ -119,9 +125,9 @@ public class TemplateGuild implements ISnowflake
      * @see    #getIconId()
      */
     @Nullable
-    public String getIconUrl()
-    {
-        return this.iconId == null ? null
+    public String getIconUrl() {
+        return this.iconId == null
+                ? null
                 : String.format(Guild.ICON_URL, this.id, this.iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
@@ -133,9 +139,8 @@ public class TemplateGuild implements ISnowflake
      * @see    #getIconUrl()
      */
     @Nullable
-    public ImageProxy getIcon()
-    {
-        final String iconUrl = getIconUrl();
+    public ImageProxy getIcon() {
+        String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
 
@@ -145,8 +150,7 @@ public class TemplateGuild implements ISnowflake
      * @return the verification level of the guild
      */
     @Nonnull
-    public VerificationLevel getVerificationLevel()
-    {
+    public VerificationLevel getVerificationLevel() {
         return this.verificationLevel;
     }
 
@@ -156,8 +160,7 @@ public class TemplateGuild implements ISnowflake
      * @return the notification level of the guild
      */
     @Nonnull
-    public NotificationLevel getDefaultNotificationLevel()
-    {
+    public NotificationLevel getDefaultNotificationLevel() {
         return this.notificationLevel;
     }
 
@@ -167,8 +170,7 @@ public class TemplateGuild implements ISnowflake
      * @return the explicit content level of the guild
      */
     @Nonnull
-    public ExplicitContentLevel getExplicitContentLevel()
-    {
+    public ExplicitContentLevel getExplicitContentLevel() {
         return this.explicitContentLevel;
     }
 
@@ -178,8 +180,7 @@ public class TemplateGuild implements ISnowflake
      * @return The preferred {@link DiscordLocale} for this guild
      */
     @Nonnull
-    public DiscordLocale getLocale()
-    {
+    public DiscordLocale getLocale() {
         return this.locale;
     }
 
@@ -189,8 +190,7 @@ public class TemplateGuild implements ISnowflake
      * @return the afk timeout for this guild
      */
     @Nonnull
-    public Timeout getAfkTimeout()
-    {
+    public Timeout getAfkTimeout() {
         return this.afkTimeout;
     }
 
@@ -203,8 +203,7 @@ public class TemplateGuild implements ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel} that is the AFK Channel.
      */
     @Nullable
-    public TemplateChannel getAfkChannel()
-    {
+    public TemplateChannel getAfkChannel() {
         return this.afkChannel;
     }
 
@@ -216,8 +215,7 @@ public class TemplateGuild implements ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel} that is the system Channel.
      */
     @Nullable
-    public TemplateChannel getSystemChannel()
-    {
+    public TemplateChannel getSystemChannel() {
         return this.systemChannel;
     }
 
@@ -228,8 +226,7 @@ public class TemplateGuild implements ISnowflake
      */
     @Nonnull
     @Unmodifiable
-    public List<TemplateRole> getRoles()
-    {
+    public List<TemplateRole> getRoles() {
         return this.roles;
     }
 
@@ -240,8 +237,7 @@ public class TemplateGuild implements ISnowflake
      */
     @Nonnull
     @Unmodifiable
-    public List<TemplateChannel> getChannels()
-    {
+    public List<TemplateChannel> getChannels() {
         return this.channels;
     }
 }

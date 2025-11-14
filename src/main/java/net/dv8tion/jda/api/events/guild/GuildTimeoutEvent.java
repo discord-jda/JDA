@@ -34,12 +34,10 @@ import javax.annotation.Nonnull;
  * <p>Discord may also explicitly mark guilds as unavailable during the setup, in which case this event will not fire.
  * It is recommended to check for unavailable guilds in the ready event explicitly to avoid any ambiguity.
  */
-public class GuildTimeoutEvent extends Event
-{
+public class GuildTimeoutEvent extends Event {
     private final long guildId;
 
-    public GuildTimeoutEvent(@Nonnull JDA api, long guildId)
-    {
+    public GuildTimeoutEvent(@Nonnull JDA api, long guildId) {
         super(api);
         this.guildId = guildId;
     }
@@ -49,8 +47,7 @@ public class GuildTimeoutEvent extends Event
      *
      * @return The guild id
      */
-    public long getGuildIdLong()
-    {
+    public long getGuildIdLong() {
         return guildId;
     }
 
@@ -60,8 +57,7 @@ public class GuildTimeoutEvent extends Event
      * @return The guild id
      */
     @Nonnull
-    public String getGuildId()
-    {
+    public String getGuildId() {
         return Long.toUnsignedString(guildId);
     }
 }

@@ -24,88 +24,81 @@ import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
+import javax.annotation.Nonnull;
+
 import static net.dv8tion.jda.api.entities.Message.MessageFlag.EPHEMERAL;
 
-public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implements ReplyCallbackAction, MessageCreateBuilderMixin<ReplyCallbackAction>
-{
+public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl
+        implements ReplyCallbackAction, MessageCreateBuilderMixin<ReplyCallbackAction> {
     private final MessageCreateBuilder builder = new MessageCreateBuilder();
     private int flags;
 
-    public ReplyCallbackActionImpl(InteractionHookImpl hook)
-    {
+    public ReplyCallbackActionImpl(InteractionHookImpl hook) {
         super(hook);
     }
 
     @Override
-    public MessageCreateBuilder getBuilder()
-    {
+    public MessageCreateBuilder getBuilder() {
         return builder;
     }
 
     @Nonnull
     @Override
-    public ReplyCallbackActionImpl closeResources()
-    {
+    public ReplyCallbackActionImpl closeResources() {
         builder.closeFiles();
         return this;
     }
 
     @Nonnull
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject json = DataObject.empty();
-        if (builder.isEmpty())
-        {
+        if (builder.isEmpty()) {
             json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
-            if (flags != 0)
+            if (flags != 0) {
                 json.put("data", DataObject.empty().put("flags", flags));
+            }
             return getRequestBody(json);
         }
 
         json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
-        try (MessageCreateData data = builder.build())
-        {
+        try (MessageCreateData data = builder.build()) {
             DataObject msg = data.toData();
             msg.put("flags", msg.getInt("flags", 0) | flags);
-            json.put("data",msg);
+            json.put("data", msg);
             return getMultipartBody(data.getAllDistinctFiles(), json);
         }
     }
 
     @Nonnull
     @Override
-    public ReplyCallbackActionImpl setEphemeral(boolean ephemeral)
-    {
+    public ReplyCallbackActionImpl setEphemeral(boolean ephemeral) {
         int flag = EPHEMERAL.getValue();
-        if (ephemeral)
+        if (ephemeral) {
             this.flags |= flag;
-        else
+        } else {
             this.flags &= ~flag;
+        }
         return this;
     }
 
     @Nonnull
     @Override
-    public ReplyCallbackAction setCheck(BooleanSupplier checks)
-    {
+    public ReplyCallbackAction setCheck(BooleanSupplier checks) {
         return (ReplyCallbackAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public ReplyCallbackAction timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public ReplyCallbackAction timeout(long timeout, @Nonnull TimeUnit unit) {
         return (ReplyCallbackAction) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public ReplyCallbackAction deadline(long timestamp)
-    {
+    public ReplyCallbackAction deadline(long timestamp) {
         return (ReplyCallbackAction) super.deadline(timestamp);
     }
 }

@@ -23,16 +23,13 @@ import net.dv8tion.jda.internal.entities.SelfUserImpl;
 
 import java.util.Objects;
 
-public class UserUpdateHandler extends SocketHandler
-{
-    public UserUpdateHandler(JDAImpl api)
-    {
+public class UserUpdateHandler extends SocketHandler {
+    public UserUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         SelfUserImpl self = (SelfUserImpl) getJDA().getSelfUser();
 
         String name = content.getString("username");
@@ -42,64 +39,40 @@ public class UserUpdateHandler extends SocketHandler
         Boolean verified = content.hasKey("verified") ? content.getBoolean("verified") : null;
         Boolean mfaEnabled = content.hasKey("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
-        if (!Objects.equals(name, self.getName()))
-        {
+        if (!Objects.equals(name, self.getName())) {
             String oldName = self.getName();
             self.setName(name);
-            getJDA().handleEvent(
-                new SelfUpdateNameEvent(
-                    getJDA(), responseNumber,
-                    oldName));
+            getJDA().handleEvent(new SelfUpdateNameEvent(getJDA(), responseNumber, oldName));
         }
 
-        if (!Objects.equals(discriminator, self.getDiscriminator()))
-        {
+        if (!Objects.equals(discriminator, self.getDiscriminator())) {
             String oldDiscriminator = self.getDiscriminator();
             self.setDiscriminator(Short.parseShort(discriminator));
-            getJDA().handleEvent(
-                new SelfUpdateDiscriminatorEvent(
-                    getJDA(), responseNumber,
-                    oldDiscriminator));
+            getJDA().handleEvent(new SelfUpdateDiscriminatorEvent(getJDA(), responseNumber, oldDiscriminator));
         }
 
-        if (!Objects.equals(globalName, self.getGlobalName()))
-        {
+        if (!Objects.equals(globalName, self.getGlobalName())) {
             String oldGlobalName = self.getGlobalName();
             self.setGlobalName(globalName);
-            getJDA().handleEvent(
-                    new SelfUpdateGlobalNameEvent(
-                            getJDA(), responseNumber,
-                            oldGlobalName));
+            getJDA().handleEvent(new SelfUpdateGlobalNameEvent(getJDA(), responseNumber, oldGlobalName));
         }
 
-        if (!Objects.equals(avatarId, self.getAvatarId()))
-        {
+        if (!Objects.equals(avatarId, self.getAvatarId())) {
             String oldAvatarId = self.getAvatarId();
             self.setAvatarId(avatarId);
-            getJDA().handleEvent(
-                new SelfUpdateAvatarEvent(
-                    getJDA(), responseNumber,
-                    oldAvatarId));
+            getJDA().handleEvent(new SelfUpdateAvatarEvent(getJDA(), responseNumber, oldAvatarId));
         }
 
-        if (verified != null && verified != self.isVerified())
-        {
+        if (verified != null && verified != self.isVerified()) {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
-            getJDA().handleEvent(
-                new SelfUpdateVerifiedEvent(
-                    getJDA(), responseNumber,
-                    wasVerified));
+            getJDA().handleEvent(new SelfUpdateVerifiedEvent(getJDA(), responseNumber, wasVerified));
         }
 
-        if (mfaEnabled != null && mfaEnabled != self.isMfaEnabled())
-        {
+        if (mfaEnabled != null && mfaEnabled != self.isMfaEnabled()) {
             boolean wasMfaEnabled = self.isMfaEnabled();
             self.setMfaEnabled(mfaEnabled);
-            getJDA().handleEvent(
-                new SelfUpdateMFAEvent(
-                    getJDA(), responseNumber,
-                    wasMfaEnabled));
+            getJDA().handleEvent(new SelfUpdateMFAEvent(getJDA(), responseNumber, wasMfaEnabled));
         }
         return null;
     }

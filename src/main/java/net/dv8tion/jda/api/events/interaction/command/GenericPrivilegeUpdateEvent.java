@@ -22,24 +22,28 @@ import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.interactions.commands.privileges.PrivilegeTargetType;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the privileges of an integration or its commands changed.
  *
  * <p>Can be used to get affected {@link Guild} and the new {@link IntegrationPrivilege IntegrationPrivileges}
  */
-public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
-{
+public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent {
     private final long targetId;
     private final long applicationId;
     private final List<IntegrationPrivilege> privileges;
 
-    public GenericPrivilegeUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild,
-                                       long targetId, long applicationId, @Nonnull List<IntegrationPrivilege> privileges)
-    {
+    public GenericPrivilegeUpdateEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            long targetId,
+            long applicationId,
+            @Nonnull List<IntegrationPrivilege> privileges) {
         super(api, responseNumber, guild);
         this.targetId = targetId;
         this.applicationId = applicationId;
@@ -69,8 +73,7 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
      *
      * @see #getTargetType()
      */
-    public long getTargetIdLong()
-    {
+    public long getTargetIdLong() {
         return targetId;
     }
 
@@ -84,8 +87,7 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
      * @see #getTargetType()
      */
     @Nonnull
-    public String getTargetId()
-    {
+    public String getTargetId() {
         return Long.toUnsignedString(targetId);
     }
 
@@ -94,8 +96,7 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
      *
      * @return id of the application of which privileges have been changed.
      */
-    public long getApplicationIdLong()
-    {
+    public long getApplicationIdLong() {
         return applicationId;
     }
 
@@ -105,8 +106,7 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
      * @return id of the application of which privileges have been changed.
      */
     @Nonnull
-    public String getApplicationId()
-    {
+    public String getApplicationId() {
         return Long.toUnsignedString(applicationId);
     }
 
@@ -116,8 +116,7 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
      * @return Unmodifiable list containing the new IntegrationPrivileges.
      */
     @Nonnull
-    public List<IntegrationPrivilege> getPrivileges()
-    {
+    public List<IntegrationPrivilege> getPrivileges() {
         return privileges;
     }
 }

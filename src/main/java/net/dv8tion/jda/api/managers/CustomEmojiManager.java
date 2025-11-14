@@ -20,16 +20,17 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
+import java.util.Set;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Set;
 
 /**
  * Manager providing functionality to update one or more fields for an {@link RichCustomEmoji}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("minn")
  *        .setRoles(null)
  *        .queue();
@@ -37,14 +38,13 @@ import java.util.Set;
  *        .setName("dv8")
  *        .setRoles(roles)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see RichCustomEmoji#getManager()
  */
-public interface CustomEmojiManager extends Manager<CustomEmojiManager>
-{
+public interface CustomEmojiManager extends Manager<CustomEmojiManager> {
     /** Used to reset the name field */
-    long NAME  = 1;
+    long NAME = 1;
     /** Used to reset the roles field */
     long ROLES = 1 << 1;
 
@@ -97,8 +97,7 @@ public interface CustomEmojiManager extends Manager<CustomEmojiManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getEmoji().getGuild();
     }
 

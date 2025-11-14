@@ -19,40 +19,36 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-public class ForumTagSnowflakeImpl implements ForumTagSnowflake
-{
+public class ForumTagSnowflakeImpl implements ForumTagSnowflake {
     protected final long id;
 
-    public ForumTagSnowflakeImpl(long id)
-    {
+    public ForumTagSnowflakeImpl(long id) {
         this.id = id;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this).toString();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof ForumTagSnowflakeImpl))
+        }
+        if (!(obj instanceof ForumTagSnowflakeImpl)) {
             return false;
+        }
         return ((ForumTagSnowflakeImpl) obj).id == id;
     }
 }

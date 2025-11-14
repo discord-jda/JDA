@@ -29,10 +29,11 @@ import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Represents a Custom Emoji.
@@ -44,14 +45,12 @@ import java.util.List;
  * @see    Guild#getEmojiById(long)
  * @see    Guild#getEmojisByName(String, boolean)
  * @see    Guild#getEmojis()
- *
  * @see    JDA#getEmojiCache()
  * @see    JDA#getEmojiById(long)
  * @see    JDA#getEmojisByName(String, boolean)
  * @see    JDA#getEmojis()
  */
-public interface RichCustomEmoji extends CustomEmoji
-{
+public interface RichCustomEmoji extends CustomEmoji {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emoji is attached to.
      *
@@ -83,14 +82,14 @@ public interface RichCustomEmoji extends CustomEmoji
      * Whether this emoji is available. When an emoji becomes unavailable, it cannot be used in messages. An emoji becomes
      * unavailable when the {@link net.dv8tion.jda.api.entities.Guild.BoostTier BoostTier} of the guild drops such that
      * the maximum allowed emojis is lower than the total amount of emojis added to the guild.
-     * 
+     *
      * <p>If an emoji is added to the guild when the boost tier allows for more than 50 normal and 50 animated emojis
      * (BoostTier is at least {@link net.dv8tion.jda.api.entities.Guild.BoostTier#TIER_1 TIER_1}) and the emoji is at least
      * the 51st one added, then the emoji becomes unavailable when the BoostTier drops below a level that allows those emojis
      * to be used.
      * <br>emojis that where added as part of a lower BoostTier (i.e. the 51st emoji on BoostTier 2) will remain available,
      * as long as the BoostTier stays above the required level.
-     * 
+     *
      * @return True, if this emoji is available
      */
     boolean isAvailable();
@@ -186,8 +185,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(@Nonnull Member issuer)
-    {
+    default boolean canInteract(@Nonnull Member issuer) {
         return PermissionUtil.canInteract(issuer, this);
     }
 
@@ -202,8 +200,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel)
-    {
+    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel) {
         return PermissionUtil.canInteract(issuer, this, channel);
     }
 
@@ -220,8 +217,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel, boolean botOverride)
-    {
+    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel, boolean botOverride) {
         return PermissionUtil.canInteract(issuer, this, channel, botOverride);
     }
 }

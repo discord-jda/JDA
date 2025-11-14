@@ -24,59 +24,58 @@ import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
-public class ComponentIteratorTests
-{
+public class ComponentIteratorTests {
     /**
      * This test only makes sure that a contributor adding a new component type is alerted
      * that this code needs to be updated if necessary.
      */
     @Test
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    void testIteratorIsUpdated()
-    {
-        for (Component.Type type : Component.Type.values())
-        {
-            switch (type)
-            {
-            case UNKNOWN:
-            case BUTTON:
-            case STRING_SELECT:
-            case TEXT_INPUT:
-            case USER_SELECT:
-            case ROLE_SELECT:
-            case MENTIONABLE_SELECT:
-            case CHANNEL_SELECT:
-            case TEXT_DISPLAY:
-            case THUMBNAIL:
-            case MEDIA_GALLERY:
-            case FILE_DISPLAY:
-            case SEPARATOR:
-            case LABEL:
-            case FILE_UPLOAD:
-                break;
-            case ACTION_ROW:
-                final ActionRow row = mock(ActionRow.class);
-                ComponentIterator.createStream(Collections.singleton(row)).toList();
-                verify(row, times(1)).getComponents();
-                break;
-            case SECTION:
-                final Section section = mock(Section.class);
-                ComponentIterator.createStream(Collections.singleton(section)).toList();
-                verify(section, times(1)).getContentComponents();
-                verify(section, times(1)).getAccessory();
-                break;
-            case CONTAINER:
-                final Container container = mock(Container.class);
-                ComponentIterator.createStream(Collections.singleton(container)).toList();
-                verify(container, times(1)).getComponents();
-                break;
-            default:
-                fail("Please update this test with the new component type, then update ComponentIterator if necessary " + type.name());
+    void testIteratorIsUpdated() {
+        for (Component.Type type : Component.Type.values()) {
+            switch (type) {
+                case UNKNOWN:
+                case BUTTON:
+                case STRING_SELECT:
+                case TEXT_INPUT:
+                case USER_SELECT:
+                case ROLE_SELECT:
+                case MENTIONABLE_SELECT:
+                case CHANNEL_SELECT:
+                case TEXT_DISPLAY:
+                case THUMBNAIL:
+                case MEDIA_GALLERY:
+                case FILE_DISPLAY:
+                case SEPARATOR:
+                case LABEL:
+                case FILE_UPLOAD:
+                    break;
+                case ACTION_ROW:
+                    ActionRow row = mock(ActionRow.class);
+                    ComponentIterator.createStream(Collections.singleton(row)).toList();
+                    verify(row, times(1)).getComponents();
+                    break;
+                case SECTION:
+                    Section section = mock(Section.class);
+                    ComponentIterator.createStream(Collections.singleton(section))
+                            .toList();
+                    verify(section, times(1)).getContentComponents();
+                    verify(section, times(1)).getAccessory();
+                    break;
+                case CONTAINER:
+                    Container container = mock(Container.class);
+                    ComponentIterator.createStream(Collections.singleton(container))
+                            .toList();
+                    verify(container, times(1)).getComponents();
+                    break;
+                default:
+                    fail(
+                            "Please update this test with the new component type, then update ComponentIterator if necessary "
+                                    + type.name());
             }
         }
     }

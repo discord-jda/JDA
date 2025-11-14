@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
@@ -23,8 +24,7 @@ import javax.annotation.Nonnull;
  * Represents the different types of {@link net.dv8tion.jda.api.entities.Message Messages} that can be received from Discord.
  * <br>A normal text based message is {@link #DEFAULT}.
  */
-public enum MessageType
-{
+public enum MessageType {
     /**
      * The normal text messages received when a user or bot sends a Message.
      */
@@ -195,20 +195,21 @@ public enum MessageType
      */
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, true),
 
-//    /**
-//     * Sent when an application is added as integration to a private channel or group channel.
-//     */
-//    PRIVATE_CHANNEL_INTEGRATION_ADDED(33, true, true),
-//
-//    /**
-//     * Sent when an application integration is removed from a private channel or group channel.
-//     */
-//    PRIVATE_CHANNEL_INTEGRATION_REMOVED(34, true, true),
+    //    /**
+    //     * Sent when an application is added as integration to a private channel or group channel.
+    //     */
+    //    PRIVATE_CHANNEL_INTEGRATION_ADDED(33, true, true),
+    //
+    //    /**
+    //     * Sent when an application integration is removed from a private channel or group
+    // channel.
+    //     */
+    //    PRIVATE_CHANNEL_INTEGRATION_REMOVED(34, true, true),
 
-//    /**
-//     * Unclear what this is for or if its used at all
-//     */
-//    PREMIUM_REFERRAL(35, true, true),
+    //    /**
+    //     * Unclear what this is for or if its used at all
+    //     */
+    //    PREMIUM_REFERRAL(35, true, true),
 
     /**
      * Sent when a moderator activates a temporary security measure, such as pausing invites or direct messages.
@@ -253,8 +254,7 @@ public enum MessageType
     private final boolean system;
     private final boolean deletable;
 
-    MessageType(int id, boolean system, boolean deletable)
-    {
+    MessageType(int id, boolean system, boolean deletable) {
         this.id = id;
         this.system = system;
         this.deletable = deletable;
@@ -265,8 +265,7 @@ public enum MessageType
      *
      * @return the Discord id key.
      */
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
@@ -277,8 +276,7 @@ public enum MessageType
      *
      * @return True, if this type is for a system message
      */
-    public boolean isSystem()
-    {
+    public boolean isSystem() {
         return system;
     }
 
@@ -304,8 +302,7 @@ public enum MessageType
      *
      * @return True, if delete is supported
      */
-    public boolean canDelete()
-    {
+    public boolean canDelete() {
         return deletable;
     }
 
@@ -319,12 +316,11 @@ public enum MessageType
      * @return A MessageType with the same Discord id key as the one provided, or {@link #UNKNOWN}.
      */
     @Nonnull
-    public static MessageType fromId(int id)
-    {
-        for (MessageType type : values())
-        {
-            if (type.id == id)
+    public static MessageType fromId(int id) {
+        for (MessageType type : values()) {
+            if (type.id == id) {
                 return type;
+            }
         }
         return UNKNOWN;
     }

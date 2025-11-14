@@ -26,13 +26,11 @@ import javax.annotation.Nonnull;
 /**
  * Configuration for {@link AutoModTriggerType#MENTION_SPAM MENTION_SPAM} trigger.
  */
-public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamTriggerConfig> implements TriggerConfig
-{
+public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamTriggerConfig> implements TriggerConfig {
     private int mentionLimit;
     private boolean isMentionRaidProtectionEnabled;
 
-    public MentionSpamTriggerConfig(int mentionLimit)
-    {
+    public MentionSpamTriggerConfig(int mentionLimit) {
         super(AutoModTriggerType.MENTION_SPAM);
         this.mentionLimit = mentionLimit;
     }
@@ -49,10 +47,13 @@ public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamT
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public MentionSpamTriggerConfig setMentionLimit(int mentionLimit)
-    {
+    public MentionSpamTriggerConfig setMentionLimit(int mentionLimit) {
         Checks.positive(mentionLimit, "Mention Limit");
-        Checks.check(mentionLimit <= AutoModRule.MAX_MENTION_LIMIT, "Mention Limit cannot be higher than %d. Provided: %d", AutoModRule.MAX_MENTION_LIMIT, mentionLimit);
+        Checks.check(
+                mentionLimit <= AutoModRule.MAX_MENTION_LIMIT,
+                "Mention Limit cannot be higher than %d. Provided: %d",
+                AutoModRule.MAX_MENTION_LIMIT,
+                mentionLimit);
         this.mentionLimit = mentionLimit;
         return this;
     }
@@ -66,16 +67,14 @@ public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamT
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public MentionSpamTriggerConfig setMentionRaidProtectionEnabled(boolean enabled)
-    {
+    public MentionSpamTriggerConfig setMentionRaidProtectionEnabled(boolean enabled) {
         this.isMentionRaidProtectionEnabled = enabled;
         return this;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject data = super.toData();
         data.put("mention_total_limit", mentionLimit);
         data.put("mention_raid_protection_enabled", isMentionRaidProtectionEnabled);

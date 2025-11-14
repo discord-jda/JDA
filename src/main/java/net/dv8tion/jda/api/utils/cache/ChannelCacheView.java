@@ -32,8 +32,7 @@ import javax.annotation.Nullable;
  * @param <T>
  *        The channel type
  */
-public interface ChannelCacheView<T extends Channel> extends SnowflakeCacheView<T>
-{
+public interface ChannelCacheView<T extends Channel> extends SnowflakeCacheView<T> {
     /**
      * Creates a decorator around this cache, filtered to only provide access to the given type.
      *
@@ -78,8 +77,7 @@ public interface ChannelCacheView<T extends Channel> extends SnowflakeCacheView<
      * @return Possibly-null entity for the specified ID, null if the expected type is different from the actual type
      */
     @Nullable
-    default T getElementById(@Nonnull ChannelType type, @Nonnull String id)
-    {
+    default T getElementById(@Nonnull ChannelType type, @Nonnull String id) {
         return getElementById(type, MiscUtil.parseSnowflake(id));
     }
 }

@@ -22,11 +22,12 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * Extension of RestAction to allow setting a reason.
@@ -36,11 +37,8 @@ import java.util.function.BooleanSupplier;
  *
  * @param  <T>
  *         The return type
- *
- * @since  3.3.0
  */
-public interface AuditableRestAction<T> extends RestAction<T>
-{
+public interface AuditableRestAction<T> extends RestAction<T> {
     /**
      * The maximum length of an audit-log reason
      */
@@ -84,8 +82,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
     @Nonnull
     @Override
     @CheckReturnValue
-    default AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    default AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit) {
         return (AuditableRestAction<T>) RestAction.super.timeout(timeout, unit);
     }
 
@@ -95,8 +92,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
     @Nonnull
     @Override
     @CheckReturnValue
-    default AuditableRestAction<T> deadline(long timestamp)
-    {
+    default AuditableRestAction<T> deadline(long timestamp) {
         return (AuditableRestAction<T>) RestAction.super.deadline(timestamp);
     }
 }

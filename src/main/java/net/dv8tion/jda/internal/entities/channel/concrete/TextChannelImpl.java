@@ -28,66 +28,56 @@ import net.dv8tion.jda.internal.entities.channel.mixin.concrete.TextChannelMixin
 import net.dv8tion.jda.internal.managers.channel.concrete.TextChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
-public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<TextChannelImpl> implements
-        TextChannel,
-        DefaultGuildChannelUnion,
-        TextChannelMixin<TextChannelImpl>
-{
+import javax.annotation.Nonnull;
+
+public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<TextChannelImpl>
+        implements TextChannel, DefaultGuildChannelUnion, TextChannelMixin<TextChannelImpl> {
     private int slowmode;
 
-    public TextChannelImpl(long id, GuildImpl guild)
-    {
+    public TextChannelImpl(long id, GuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return false;
     }
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.TEXT;
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         return getGuild().getMembersView().stream()
-            .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
-            .collect(Helpers.toUnmodifiableList());
+                .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Override
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return slowmode;
     }
 
     @Nonnull
     @Override
-    public TextChannelManager getManager()
-    {
+    public TextChannelManager getManager() {
         return new TextChannelManagerImpl(this);
     }
 
     @Override
-    public TextChannelImpl setSlowmode(int slowmode)
-    {
+    public TextChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
         return this;
     }

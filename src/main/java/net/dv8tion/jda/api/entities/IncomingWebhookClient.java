@@ -22,6 +22,4 @@ package net.dv8tion.jda.api.entities;
  *
  * <p>These webhooks are primarily used to integrate external services.
  */
-public interface IncomingWebhookClient extends WebhookClient<Message>
-{
-}
+public interface IncomingWebhookClient extends WebhookClient<Message> {}

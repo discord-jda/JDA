@@ -21,8 +21,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.interactions.commands.privileges.PrivilegeTargetType;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link IntegrationPrivilege Privileges} of an application-command on a guild changed.
@@ -30,18 +31,20 @@ import java.util.List;
  *
  * <p>Can be used to get affected Guild and {@link List} of new {@link IntegrationPrivilege Privileges}
  */
-public class ApplicationCommandUpdatePrivilegesEvent extends GenericPrivilegeUpdateEvent
-{
-    public ApplicationCommandUpdatePrivilegesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild,
-                                                   long targetId, long applicationId, @Nonnull List<IntegrationPrivilege> privileges)
-    {
+public class ApplicationCommandUpdatePrivilegesEvent extends GenericPrivilegeUpdateEvent {
+    public ApplicationCommandUpdatePrivilegesEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Guild guild,
+            long targetId,
+            long applicationId,
+            @Nonnull List<IntegrationPrivilege> privileges) {
         super(api, responseNumber, guild, targetId, applicationId, privileges);
     }
 
     @Nonnull
     @Override
-    public PrivilegeTargetType getTargetType()
-    {
+    public PrivilegeTargetType getTargetType() {
         return PrivilegeTargetType.COMMAND;
     }
 
@@ -50,8 +53,7 @@ public class ApplicationCommandUpdatePrivilegesEvent extends GenericPrivilegeUpd
      *
      * @return id of the command whose privileges have been changed.
      */
-    public long getCommandIdLong()
-    {
+    public long getCommandIdLong() {
         return getTargetIdLong();
     }
 
@@ -61,8 +63,7 @@ public class ApplicationCommandUpdatePrivilegesEvent extends GenericPrivilegeUpd
      * @return id of the command whose privileges have been changed.
      */
     @Nonnull
-    public String getCommandId()
-    {
+    public String getCommandId() {
         return getTargetId();
     }
 }

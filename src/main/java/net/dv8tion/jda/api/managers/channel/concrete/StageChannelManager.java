@@ -26,16 +26,14 @@ import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManage
  * Manager providing methods to modify a {@link StageChannel}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("School Presentations")
  *        .setBitrate(96000)
  *        .queue();
- * }</pre>
+ * }
  */
-public interface StageChannelManager extends
-        AudioChannelManager<StageChannel, StageChannelManager>,
-        StandardGuildChannelManager<StageChannel, StageChannelManager>,
-        IAgeRestrictedChannelManager<StageChannel, StageChannelManager>,
-        ISlowmodeChannelManager<StageChannel, StageChannelManager>
-{
-}
+public interface StageChannelManager
+        extends AudioChannelManager<StageChannel, StageChannelManager>,
+                StandardGuildChannelManager<StageChannel, StageChannelManager>,
+                IAgeRestrictedChannelManager<StageChannel, StageChannelManager>,
+                ISlowmodeChannelManager<StageChannel, StageChannelManager> {}

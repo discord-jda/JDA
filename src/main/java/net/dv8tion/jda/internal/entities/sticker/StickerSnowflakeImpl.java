@@ -19,40 +19,36 @@ package net.dv8tion.jda.internal.entities.sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-public class StickerSnowflakeImpl implements StickerSnowflake
-{
+public class StickerSnowflakeImpl implements StickerSnowflake {
     private final long id;
 
-    public StickerSnowflakeImpl(long id)
-    {
+    public StickerSnowflakeImpl(long id) {
         this.id = id;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof StickerSnowflakeImpl))
+        }
+        if (!(obj instanceof StickerSnowflakeImpl)) {
             return false;
+        }
         return ((StickerSnowflakeImpl) obj).id == id;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this).toString();
     }
 }

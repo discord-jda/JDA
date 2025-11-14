@@ -34,10 +34,9 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_POLLS DIRECT_MESSAGE_POLLS} to work in private channels</li>
  * </ul>
  */
-public class MessagePollVoteRemoveEvent extends GenericMessagePollVoteEvent
-{
-    public MessagePollVoteRemoveEvent(@Nonnull MessageChannel channel, long responseNumber, long messageId, long userId, long answerId)
-    {
+public class MessagePollVoteRemoveEvent extends GenericMessagePollVoteEvent {
+    public MessagePollVoteRemoveEvent(
+            @Nonnull MessageChannel channel, long responseNumber, long messageId, long userId, long answerId) {
         super(channel, responseNumber, messageId, userId, answerId);
     }
 }

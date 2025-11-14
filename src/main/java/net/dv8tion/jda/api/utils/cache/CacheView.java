@@ -26,8 +26,6 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UnifiedCacheViewImpl;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,6 +33,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Read-only view on internal JDA cache of items.
@@ -62,8 +63,7 @@ import java.util.stream.StreamSupport;
  * @param  <T>
  *         The cache type
  */
-public interface CacheView<T> extends Iterable<T>
-{
+public interface CacheView<T> extends Iterable<T> {
     /**
      * Creates an immutable snapshot of the current cache state.
      * <br>This will copy all elements contained in this cache into a list.
@@ -94,8 +94,6 @@ public interface CacheView<T> extends Iterable<T>
      * if order is desired use {@link #iterator()} instead!</b>
      *
      * @return {@link ClosableIterator} holding a read-lock on the data structure.
-     *
-     * @since  4.0.0
      */
     @Nonnull
     ClosableIterator<T> lockedIterator();
@@ -109,11 +107,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @throws NullPointerException
      *         If provided with null
-     *
-     * @since  4.0.0
      */
-    default void forEachUnordered(@Nonnull final Consumer<? super T> action)
-    {
+    default void forEachUnordered(@Nonnull Consumer<? super T> action) {
         forEach(action);
     }
 
@@ -123,12 +118,17 @@ public interface CacheView<T> extends Iterable<T>
      *
      * <p>The stream will be closed once this method returns and cannot be used anymore.
      *
-     * <p><b>Example</b><br>
-     * <code>
-     * {@literal CacheView<User>} view = jda.getUserCache();<br>
-     * long shortNames = view.applyStream(stream {@literal ->} stream.filter(it {@literal ->} it.getName().length() {@literal <} 4).count());<br>
+     * <p><b>Example</b>
+     * {@snippet lang="java":
+     * CacheView<User> view = jda.getUserCache();
+     * long shortNames = view.applyStream(stream ->
+     *     stream
+     *         .filter(it -> it.getName().length() < 4)
+     *         .count()
+     * );
+     *
      * System.out.println(shortNames + " users with less than 4 characters in their name");
-     * </code>
+     * }
      *
      * @param  action
      *         The action to perform on the stream
@@ -140,17 +140,14 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return The resulting value after the action was performed
      *
-     * @since  4.0.0
-     *
      * @see    #acceptStream(Consumer)
      */
     @UnknownNullability
-    default <R> R applyStream(@Nonnull Function<? super Stream<T>, ? extends R> action)
-    {
+    default <R> R applyStream(@Nonnull Function<? super Stream<T>, ? extends R> action) {
         Checks.notNull(action, "Action");
-        try (ClosableIterator<T> it = lockedIterator())
-        {
-            Spliterator<T> spliterator = Spliterators.spliterator(it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
+        try (ClosableIterator<T> it = lockedIterator()) {
+            Spliterator<T> spliterator =
+                    Spliterators.spliterator(it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
             Stream<T> stream = StreamSupport.stream(spliterator, false);
             return action.apply(stream);
         }
@@ -162,11 +159,15 @@ public interface CacheView<T> extends Iterable<T>
      *
      * <p>The stream will be closed once this method returns and cannot be used anymore.
      *
-     * <p><b>Example</b><br>
-     * <code>
-     * {@literal CacheView<TextChannel>} view = guild.getTextChannelCache();<br>
-     * view.acceptStream(stream {@literal ->} stream.filter(it {@literal ->} it.isNSFW()).forEach(it {@literal ->} it.sendMessage("lewd").queue()));
-     * </code>
+     * <p><b>Example</b>
+     * {@snippet lang="java":
+     * CacheView<TextChannel> view = guild.getTextChannelCache();
+     * view.acceptStream(stream ->
+     *     stream
+     *         .filter(it -> it.isNSFW())
+     *         .forEach(it -> it.sendMessage("lewd").queue())
+     * );
+     * }
      *
      * @param  action
      *         The action to perform on the stream
@@ -174,16 +175,13 @@ public interface CacheView<T> extends Iterable<T>
      * @throws IllegalArgumentException
      *         If the action is null
      *
-     * @since  4.0.0
-     *
      * @see    #applyStream(Function)
      */
-    default void acceptStream(@Nonnull Consumer<? super Stream<T>> action)
-    {
+    default void acceptStream(@Nonnull Consumer<? super Stream<T>> action) {
         Checks.notNull(action, "Action");
-        try (ClosableIterator<T> it = lockedIterator())
-        {
-            Spliterator<T> spliterator = Spliterators.spliterator(it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
+        try (ClosableIterator<T> it = lockedIterator()) {
+            Spliterator<T> spliterator =
+                    Spliterators.spliterator(it, size(), Spliterator.IMMUTABLE | Spliterator.NONNULL);
             Stream<T> stream = StreamSupport.stream(spliterator, false);
             action.accept(stream);
         }
@@ -247,8 +245,7 @@ public interface CacheView<T> extends Iterable<T>
      */
     @Nonnull
     @Unmodifiable
-    default List<T> getElementsByName(@Nonnull String name)
-    {
+    default List<T> getElementsByName(@Nonnull String name) {
         return getElementsByName(name, false);
     }
 
@@ -277,7 +274,6 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @param  collector
      *         The collector used to collect the elements
-     *
      * @param  <R>
      *         The output type
      * @param  <A>
@@ -289,8 +285,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Resulting collections
      */
     @Nonnull
-    default <R, A> R collect(@Nonnull Collector<? super T, A, R> collector)
-    {
+    default <R, A> R collect(@Nonnull Collector<? super T, A, R> collector) {
         return stream().collect(collector);
     }
 
@@ -301,15 +296,13 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @param  cacheViews
      *         Collection of {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} implementations
-     *
      * @param  <E>
      *         The target type of the projection
      *
      * @return Combined CacheView spanning over all provided implementation instances
      */
     @Nonnull
-    static <E> CacheView<E> all(@Nonnull Collection<? extends CacheView<E>> cacheViews)
-    {
+    static <E> CacheView<E> all(@Nonnull Collection<? extends CacheView<E>> cacheViews) {
         Checks.noneNull(cacheViews, "Collection");
         return new UnifiedCacheViewImpl<>(cacheViews::stream);
     }
@@ -321,15 +314,13 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @param  generator
      *         Stream generator of {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} implementations
-     *
      * @param  <E>
      *         The target type of the projection
      *
      * @return Combined CacheView spanning over all provided implementation instances
      */
     @Nonnull
-    static <E> CacheView<E> all(@Nonnull Supplier<? extends Stream<? extends CacheView<E>>> generator)
-    {
+    static <E> CacheView<E> all(@Nonnull Supplier<? extends Stream<? extends CacheView<E>>> generator) {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl<>(generator);
     }
@@ -344,8 +335,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Combined ShardCacheView spanning over all provided implementation instances
      */
     @Nonnull
-    static ShardCacheView allShards(@Nonnull Collection<ShardCacheView> cacheViews)
-    {
+    static ShardCacheView allShards(@Nonnull Collection<ShardCacheView> cacheViews) {
         Checks.noneNull(cacheViews, "Collection");
         return new ShardCacheViewImpl.UnifiedShardCacheViewImpl(cacheViews::stream);
     }
@@ -360,8 +350,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Combined ShardCacheView spanning over all provided implementation instances
      */
     @Nonnull
-    static ShardCacheView allShards(@Nonnull Supplier<? extends Stream<? extends ShardCacheView>> generator)
-    {
+    static ShardCacheView allShards(@Nonnull Supplier<? extends Stream<? extends ShardCacheView>> generator) {
         Checks.notNull(generator, "Generator");
         return new ShardCacheViewImpl.UnifiedShardCacheViewImpl(generator);
     }
@@ -373,15 +362,14 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @param  cacheViews
      *         Collection of {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} implementations
-     *
      * @param  <E>
      *         The target type of the chain
      *
      * @return Combined SnowflakeCacheView spanning over all provided implementation instances
      */
     @Nonnull
-    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(@Nonnull Collection<? extends SnowflakeCacheView<E>> cacheViews)
-    {
+    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(
+            @Nonnull Collection<? extends SnowflakeCacheView<E>> cacheViews) {
         Checks.noneNull(cacheViews, "Collection");
         return new UnifiedCacheViewImpl.UnifiedSnowflakeCacheView<>(cacheViews::stream);
     }
@@ -393,15 +381,14 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @param  generator
      *         Stream generator of {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} implementations
-     *
      * @param  <E>
      *         The target type of the chain
      *
      * @return Combined SnowflakeCacheView spanning over all provided implementation instances
      */
     @Nonnull
-    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(@Nonnull Supplier<? extends Stream<? extends SnowflakeCacheView<E>>> generator)
-    {
+    static <E extends ISnowflake> SnowflakeCacheView<E> allSnowflakes(
+            @Nonnull Supplier<? extends Stream<? extends SnowflakeCacheView<E>>> generator) {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl.UnifiedSnowflakeCacheView<>(generator);
     }
@@ -417,8 +404,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Combined MemberCacheView spanning over all provided instances
      */
     @Nonnull
-    static UnifiedMemberCacheView allMembers(@Nonnull Collection<? extends MemberCacheView> cacheViews)
-    {
+    static UnifiedMemberCacheView allMembers(@Nonnull Collection<? extends MemberCacheView> cacheViews) {
         Checks.noneNull(cacheViews, "Collection");
         return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(cacheViews::stream);
     }
@@ -434,8 +420,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Combined MemberCacheView spanning over all provided instances
      */
     @Nonnull
-    static UnifiedMemberCacheView allMembers(@Nonnull Supplier<? extends Stream<? extends MemberCacheView>> generator)
-    {
+    static UnifiedMemberCacheView allMembers(@Nonnull Supplier<? extends Stream<? extends MemberCacheView>> generator) {
         Checks.notNull(generator, "Generator");
         return new UnifiedCacheViewImpl.UnifiedMemberCacheViewImpl(generator);
     }
@@ -447,10 +432,8 @@ public interface CacheView<T> extends Iterable<T>
      * @param <T>
      *        The type this should cache
      */
-    class SimpleCacheView<T> extends AbstractCacheView<T>
-    {
-        public SimpleCacheView(@Nonnull Class<T> type, @Nullable Function<T, String> nameMapper)
-        {
+    class SimpleCacheView<T> extends AbstractCacheView<T> {
+        public SimpleCacheView(@Nonnull Class<T> type, @Nullable Function<T, String> nameMapper) {
             super(type, nameMapper);
         }
     }

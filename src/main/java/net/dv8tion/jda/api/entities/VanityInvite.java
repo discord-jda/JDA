@@ -18,21 +18,18 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 /**
  * Meta data for the vanity invite of a guild
- *
- * @since  4.2.1
  */
-public class VanityInvite
-{
+public class VanityInvite {
     private final String code;
     private final int uses;
 
-    public VanityInvite(@Nonnull String code, int uses)
-    {
+    public VanityInvite(@Nonnull String code, int uses) {
         this.code = code;
         this.uses = uses;
     }
@@ -43,8 +40,7 @@ public class VanityInvite
      * @return The code
      */
     @Nonnull
-    public String getCode()
-    {
+    public String getCode() {
         return code;
     }
 
@@ -54,8 +50,7 @@ public class VanityInvite
      *
      * @return The invite uses
      */
-    public int getUses()
-    {
+    public int getUses() {
         return uses;
     }
 
@@ -65,33 +60,29 @@ public class VanityInvite
      * @return The invite url
      */
     @Nonnull
-    public String getUrl()
-    {
+    public String getUrl() {
         return "https://discord.gg/" + getCode();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
-        if (!(obj instanceof VanityInvite))
+        }
+        if (!(obj instanceof VanityInvite)) {
             return false;
+        }
         VanityInvite other = (VanityInvite) obj;
         return uses == other.uses && code.equals(other.code);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(code, uses);
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .addMetadata("code", code)
-                .toString();
+    public String toString() {
+        return new EntityString(this).addMetadata("code", code).toString();
     }
 }

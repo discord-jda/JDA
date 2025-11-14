@@ -20,35 +20,31 @@ import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+import javax.annotation.Nonnull;
+
 /**
  * Icon containing a base64 encoded jpeg/png/gif/gifv image.
  * <br>Used to represent various base64 images in the Discord api.
  * <br>Example: {@link AccountManager#setAvatar(Icon)}.
  *
- * @since 3.0
- *
  * @see #from(File)
  * @see #from(byte[])
  * @see #from(InputStream)
- *
  * @see #from(File, IconType)
  * @see #from(byte[], IconType)
  * @see #from(InputStream, IconType)
  */
-public class Icon
-{
+public class Icon {
     protected final String encoding;
 
-    protected Icon(@Nonnull IconType type, @Nonnull String base64Encoding)
-    {
-        //Note: the usage of `image/jpeg` does not mean png/gif are not supported!
+    protected Icon(@Nonnull IconType type, @Nonnull String base64Encoding) {
+        // Note: the usage of `image/jpeg` does not mean png/gif are not supported!
         this.encoding = type.getHeader() + base64Encoding;
     }
 
@@ -58,8 +54,7 @@ public class Icon
      * @return String representation of the encoded data for this icon
      */
     @Nonnull
-    public String getEncoding()
-    {
+    public String getEncoding() {
         return encoding;
     }
 
@@ -78,13 +73,13 @@ public class Icon
      * @return An Icon instance representing the specified File
      */
     @Nonnull
-    public static Icon from(@Nonnull File file) throws IOException
-    {
+    public static Icon from(@Nonnull File file) throws IOException {
         Checks.notNull(file, "Provided File");
         Checks.check(file.exists(), "Provided file does not exist!");
         int index = file.getName().lastIndexOf('.');
-        if (index < 0)
+        if (index < 0) {
             return from(file, IconType.JPEG);
+        }
         String ext = file.getName().substring(index + 1);
         IconType type = IconType.fromExtension(ext);
         return from(file, type);
@@ -108,8 +103,7 @@ public class Icon
      * @return An Icon instance representing the specified InputStream
      */
     @Nonnull
-    public static Icon from(@Nonnull InputStream stream) throws IOException
-    {
+    public static Icon from(@Nonnull InputStream stream) throws IOException {
         return from(stream, IconType.JPEG);
     }
 
@@ -127,8 +121,7 @@ public class Icon
      * @return An Icon instance representing the specified image data
      */
     @Nonnull
-    public static Icon from(@Nonnull byte[] data)
-    {
+    public static Icon from(@Nonnull byte[] data) {
         return from(data, IconType.JPEG);
     }
 
@@ -149,8 +142,7 @@ public class Icon
      * @return An Icon instance representing the specified File
      */
     @Nonnull
-    public static Icon from(@Nonnull File file, @Nonnull IconType type) throws IOException
-    {
+    public static Icon from(@Nonnull File file, @Nonnull IconType type) throws IOException {
         Checks.notNull(file, "Provided File");
         Checks.notNull(type, "IconType");
         Checks.check(file.exists(), "Provided file does not exist!");
@@ -176,8 +168,7 @@ public class Icon
      * @return An Icon instance representing the specified InputStream
      */
     @Nonnull
-    public static Icon from(@Nonnull InputStream stream, @Nonnull IconType type) throws IOException
-    {
+    public static Icon from(@Nonnull InputStream stream, @Nonnull IconType type) throws IOException {
         Checks.notNull(stream, "InputStream");
         Checks.notNull(type, "IconType");
 
@@ -198,8 +189,7 @@ public class Icon
      * @return An Icon instance representing the specified image data
      */
     @Nonnull
-    public static Icon from(@Nonnull byte[] data, @Nonnull IconType type)
-    {
+    public static Icon from(@Nonnull byte[] data, @Nonnull IconType type) {
         Checks.notNull(data, "Provided byte[]");
         Checks.notNull(type, "IconType");
 
@@ -209,8 +199,7 @@ public class Icon
     /**
      * Supported image types for the Discord API.
      */
-    public enum IconType
-    {
+    public enum IconType {
         /** JPEG */
         JPEG("image/jpeg"),
         /** PNG */
@@ -226,8 +215,7 @@ public class Icon
         private final String mime;
         private final String header;
 
-        IconType(@Nonnull String mime)
-        {
+        IconType(@Nonnull String mime) {
             this.mime = mime;
             this.header = "data:" + mime + ";base64,";
         }
@@ -240,8 +228,7 @@ public class Icon
          * @see    <a href="https://en.wikipedia.org/wiki/MIME" target="_blank">MIME</a>
          */
         @Nonnull
-        public String getMIME()
-        {
+        public String getMIME() {
             return mime;
         }
 
@@ -251,8 +238,7 @@ public class Icon
          * @return The data header
          */
         @Nonnull
-        public String getHeader()
-        {
+        public String getHeader() {
             return header;
         }
 
@@ -266,13 +252,12 @@ public class Icon
          * @return The resolved IconType or {@link #UNKNOWN}.
          */
         @Nonnull
-        public static IconType fromMIME(@Nonnull String mime)
-        {
+        public static IconType fromMIME(@Nonnull String mime) {
             Checks.notNull(mime, "MIME Type");
-            for (IconType type : values())
-            {
-                if (type.mime.equalsIgnoreCase(mime))
+            for (IconType type : values()) {
+                if (type.mime.equalsIgnoreCase(mime)) {
                     return type;
+                }
             }
             return UNKNOWN;
         }
@@ -287,11 +272,9 @@ public class Icon
          * @return The resolved IconType or {@link #UNKNOWN}.
          */
         @Nonnull
-        public static IconType fromExtension(@Nonnull String extension)
-        {
+        public static IconType fromExtension(@Nonnull String extension) {
             Checks.notNull(extension, "Extension Type");
-            switch (extension.toLowerCase())
-            {
+            switch (extension.toLowerCase()) {
                 case "jpe":
                 case "jif":
                 case "jfif":

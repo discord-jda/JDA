@@ -18,23 +18,23 @@ package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.StringJoiner;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a slash command mention, such as {@code </ban soft:1021082477038678126>}
  */
-public class SlashCommandReference implements ICommandReference
-{
+public class SlashCommandReference implements ICommandReference {
     private final long id;
     private final String name;
     private final String subcommand;
     private final String subcommandGroup;
 
-    public SlashCommandReference(@Nonnull String name, @Nullable String subcommandGroup, @Nullable String subcommand, long id)
-    {
+    public SlashCommandReference(
+            @Nonnull String name, @Nullable String subcommandGroup, @Nullable String subcommand, long id) {
         this.name = name;
         this.subcommandGroup = subcommandGroup;
         this.subcommand = subcommand;
@@ -42,15 +42,13 @@ public class SlashCommandReference implements ICommandReference
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -60,8 +58,7 @@ public class SlashCommandReference implements ICommandReference
      * @return the subcommand of the slash command
      */
     @Nullable
-    public String getSubcommandName()
-    {
+    public String getSubcommandName() {
         return subcommand;
     }
 
@@ -71,50 +68,49 @@ public class SlashCommandReference implements ICommandReference
      * @return the subcommand group of the slash command
      */
     @Nullable
-    public String getSubcommandGroup()
-    {
+    public String getSubcommandGroup() {
         return subcommandGroup;
     }
 
     @Nonnull
     @Override
-    public String getFullCommandName()
-    {
-        final StringJoiner joiner = new StringJoiner(" ");
+    public String getFullCommandName() {
+        StringJoiner joiner = new StringJoiner(" ");
         joiner.add(name);
-        if (subcommandGroup != null)
+        if (subcommandGroup != null) {
             joiner.add(subcommandGroup);
-        if (subcommand != null)
+        }
+        if (subcommand != null) {
             joiner.add(subcommand);
+        }
 
         return joiner.toString();
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setName(getFullCommandName())
-                .toString();
+    public String toString() {
+        return new EntityString(this).setName(getFullCommandName()).toString();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) return true;
-        if (!(o instanceof SlashCommandReference)) return false;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SlashCommandReference)) {
+            return false;
+        }
 
         SlashCommandReference that = (SlashCommandReference) o;
 
         return id == that.id
-            && name.equals(that.name)
-            && Objects.equals(subcommand, that.subcommand)
-            && Objects.equals(subcommandGroup, that.subcommandGroup);
+                && name.equals(that.name)
+                && Objects.equals(subcommand, that.subcommand)
+                && Objects.equals(subcommandGroup, that.subcommandGroup);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(id, name, subcommand, subcommandGroup);
     }
 }

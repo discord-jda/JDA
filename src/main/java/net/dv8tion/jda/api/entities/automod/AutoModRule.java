@@ -26,10 +26,11 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AutoModRuleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.List;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Rule used for auto-moderation in a {@link Guild}.
@@ -37,8 +38,7 @@ import java.util.List;
  * @see Guild#retrieveAutoModRules()
  * @see Guild#createAutoModRule(AutoModRuleData)
  */
-public interface AutoModRule extends ISnowflake
-{
+public interface AutoModRule extends ISnowflake {
     /**
      * The maximum length of a rule name. ({@value})
      */
@@ -101,8 +101,7 @@ public interface AutoModRule extends ISnowflake
      * @return The owner id
      */
     @Nonnull
-    default String getCreatorId()
-    {
+    default String getCreatorId() {
         return Long.toUnsignedString(getCreatorIdLong());
     }
 
@@ -227,8 +226,7 @@ public interface AutoModRule extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AutoModRuleManager getManager()
-    {
+    default AutoModRuleManager getManager() {
         return getGuild().modifyAutoModRuleById(getId());
     }
 
@@ -242,16 +240,14 @@ public interface AutoModRule extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> delete()
-    {
+    default AuditableRestAction<Void> delete() {
         return getGuild().deleteAutoModRuleById(getId());
     }
 
     /**
      * Keyword presets that can be used in {@link AutoModRule#getFilteredPresets()}.
      */
-    enum KeywordPreset
-    {
+    enum KeywordPreset {
         /**
          * Words that can be considered as swearing or cursing.
          */
@@ -271,8 +267,7 @@ public interface AutoModRule extends ISnowflake
 
         private final int key;
 
-        KeywordPreset(int key)
-        {
+        KeywordPreset(int key) {
             this.key = key;
         }
 
@@ -281,8 +276,7 @@ public interface AutoModRule extends ISnowflake
          *
          * @return The raw value
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -295,12 +289,11 @@ public interface AutoModRule extends ISnowflake
          * @return The {@link KeywordPreset} or {@link #UNKNOWN}
          */
         @Nonnull
-        public static KeywordPreset fromKey(int key)
-        {
-            for (KeywordPreset preset : values())
-            {
-                if (preset.key == key)
+        public static KeywordPreset fromKey(int key) {
+            for (KeywordPreset preset : values()) {
+                if (preset.key == key) {
                     return preset;
+                }
             }
             return UNKNOWN;
         }

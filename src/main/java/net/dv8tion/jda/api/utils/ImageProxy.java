@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.entities.Icon;
@@ -21,8 +22,6 @@ import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,14 +29,16 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
 /**
  * A utility class to retrieve images.
  * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific size.
  *
  * @see <a href="https://discord.com/developers/docs/reference#image-formatting" target="_blank">Discord docs on image formatting</a>
  */
-public class ImageProxy extends FileProxy
-{
+public class ImageProxy extends FileProxy {
     /**
      * Constructs a new {@link ImageProxy} for the provided URL.
      *
@@ -47,15 +48,13 @@ public class ImageProxy extends FileProxy
      * @throws IllegalArgumentException
      *         If the provided URL is null
      */
-    public ImageProxy(@Nonnull String url)
-    {
+    public ImageProxy(@Nonnull String url) {
         super(url);
     }
 
     @Nonnull
     @Override
-    public ImageProxy withClient(@Nonnull OkHttpClient customHttpClient)
-    {
+    public ImageProxy withClient(@Nonnull OkHttpClient customHttpClient) {
         return (ImageProxy) super.withClient(customHttpClient);
     }
 
@@ -72,8 +71,7 @@ public class ImageProxy extends FileProxy
      * @return URL of the image with the specified size
      */
     @Nonnull
-    public String getUrl(int size)
-    {
+    public String getUrl(int size) {
         Checks.positive(size, "Image size");
 
         return IOUtil.addQuery(getUrl(), "size", size);
@@ -93,8 +91,7 @@ public class ImageProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<InputStream> download(int size)
-    {
+    public CompletableFuture<InputStream> download(int size) {
         return download(getUrl(size));
     }
 
@@ -123,8 +120,7 @@ public class ImageProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Path> downloadToPath(int size)
-    {
+    public CompletableFuture<Path> downloadToPath(int size) {
         return downloadToPath(getUrl(size));
     }
 
@@ -157,11 +153,10 @@ public class ImageProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<File> downloadToFile(@Nonnull File file, int size)
-    {
+    public CompletableFuture<File> downloadToFile(@Nonnull File file, int size) {
         Checks.notNull(file, "File");
 
-        final CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(size), file.toPath());
+        CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(size), file.toPath());
         return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
     }
 
@@ -195,8 +190,7 @@ public class ImageProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int size)
-    {
+    public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int size) {
         Checks.notNull(path, "Path");
 
         return downloadToPath(getUrl(size), path);
@@ -209,8 +203,7 @@ public class ImageProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Icon> downloadAsIcon()
-    {
+    public CompletableFuture<Icon> downloadAsIcon() {
         return downloadAsIcon(getUrl());
     }
 
@@ -231,8 +224,7 @@ public class ImageProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Icon> downloadAsIcon(int size)
-    {
+    public CompletableFuture<Icon> downloadAsIcon(int size) {
         return downloadAsIcon(getUrl(size));
     }
 
@@ -255,12 +247,11 @@ public class ImageProxy extends FileProxy
      * @return {@link FileUpload} from this attachment.
      */
     @Nonnull
-    public FileUpload downloadAsFileUpload(@Nonnull String name, int size)
-    {
-        final String url = getUrl(size); // So the checks are also done outside the FileUpload
-        return FileUpload.fromStreamSupplier(name, () ->
-        {
-            // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+    public FileUpload downloadAsFileUpload(@Nonnull String name, int size) {
+        String url = getUrl(size); // So the checks are also done outside the FileUpload
+        return FileUpload.fromStreamSupplier(name, () -> {
+            // Blocking is fine on the elastic rate limit thread pool
+            // [[JDABuilder#setRateLimitElastic]]
             return download(url).join();
         });
     }

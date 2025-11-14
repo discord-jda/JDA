@@ -25,9 +25,10 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import java.util.function.Consumer;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.function.Consumer;
 
 /**
  * Common features of all {@link RestAction RestActions} that create a new thread.
@@ -37,8 +38,7 @@ import java.util.function.Consumer;
  * @param <R>
  *        The common return type of setters, allowing for fluid interface design
  */
-public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAction<T, R>> extends RestAction<T>
-{
+public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAction<T, R>> extends RestAction<T> {
     /**
      * The guild to create this {@link GuildChannel} for.
      *

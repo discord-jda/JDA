@@ -26,10 +26,11 @@ import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Indicates that a {@link Modal} was submitted.
@@ -40,71 +41,61 @@ import java.util.List;
  *
  * @see    ModalInteraction
  */
-public class ModalInteractionEvent extends GenericInteractionCreateEvent implements ModalInteraction
-{
+public class ModalInteractionEvent extends GenericInteractionCreateEvent implements ModalInteraction {
     private final ModalInteraction interaction;
 
-    public ModalInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ModalInteraction interaction)
-    {
+    public ModalInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ModalInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public ModalInteraction getInteraction()
-    {
+    public ModalInteraction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public String getModalId()
-    {
+    public String getModalId() {
         return interaction.getModalId();
     }
 
     @Nonnull
     @Override
-    public List<ModalMapping> getValues()
-    {
+    public List<ModalMapping> getValues() {
         return interaction.getValues();
     }
 
     @Nullable
     @Override
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return interaction.getMessage();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ReplyCallbackAction deferReply()
-    {
+    public ReplyCallbackAction deferReply() {
         return interaction.deferReply();
     }
 
     @Nonnull
     @Override
-    public InteractionHook getHook()
-    {
+    public InteractionHook getHook() {
         return interaction.getHook();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public MessageEditCallbackAction deferEdit()
-    {
+    public MessageEditCallbackAction deferEdit() {
         return interaction.deferEdit();
     }
 
     @Nonnull
     @Override
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return interaction.getChannel();
     }
 }

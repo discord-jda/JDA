@@ -30,12 +30,11 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code afk_channel}
  */
-public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceChannel>
-{
+public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceChannel> {
     public static final String IDENTIFIER = "afk_channel";
 
-    public GuildUpdateAfkChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable VoiceChannel oldAfkChannel)
-    {
+    public GuildUpdateAfkChannelEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable VoiceChannel oldAfkChannel) {
         super(api, responseNumber, guild, oldAfkChannel, guild.getAfkChannel(), IDENTIFIER);
     }
 
@@ -45,8 +44,7 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
      * @return The old afk channel, or null
      */
     @Nullable
-    public VoiceChannel getOldAfkChannel()
-    {
+    public VoiceChannel getOldAfkChannel() {
         return getOldValue();
     }
 
@@ -56,8 +54,7 @@ public class GuildUpdateAfkChannelEvent extends GenericGuildUpdateEvent<VoiceCha
      * @return The new afk channel, or null
      */
     @Nullable
-    public VoiceChannel getNewAfkChannel()
-    {
+    public VoiceChannel getNewAfkChannel() {
         return getNewValue();
     }
 }

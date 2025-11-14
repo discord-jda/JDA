@@ -28,44 +28,36 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static net.dv8tion.jda.test.ChecksHelper.assertChecks;
 import static org.assertj.core.api.Assertions.*;
 
-class ChannelCacheViewTest
-{
-    @ValueSource(classes = {
-        Channel.class,
-        MessageChannel.class,
-        TextChannel.class,
-    })
+class ChannelCacheViewTest {
+    @ValueSource(
+            classes = {
+                Channel.class,
+                MessageChannel.class,
+                TextChannel.class,
+            })
     @ParameterizedTest
     @SuppressWarnings("unchecked")
-    void testValidChannelInterfaceFilters(Class<?> interfaceType)
-    {
+    void testValidChannelInterfaceFilters(Class<?> interfaceType) {
         ChannelCacheViewImpl<Channel> cache = new ChannelCacheViewImpl<>(Channel.class);
         assertThatNoException()
-            .isThrownBy(() -> cache.ofType((Class<Channel>) interfaceType).getElementById(0L));
+                .isThrownBy(() -> cache.ofType((Class<Channel>) interfaceType).getElementById(0L));
     }
 
-    @ValueSource(classes = {
-        TextChannelImpl.class,
-        String.class
-    })
+    @ValueSource(classes = {TextChannelImpl.class, String.class})
     @ParameterizedTest
     @SuppressWarnings("unchecked")
-    void testInvalidChannelInterfaceFilters(Class<?> interfaceType)
-    {
+    void testInvalidChannelInterfaceFilters(Class<?> interfaceType) {
         ChannelCacheViewImpl<Channel> cache = new ChannelCacheViewImpl<>(Channel.class);
 
         assertThatThrownBy(() -> cache.ofType((Class<Channel>) interfaceType).getElementById(0L))
-            .hasMessage(String.format("Type %s is not a valid channel interface", interfaceType.getSimpleName()));
+                .hasMessage(String.format("Type %s is not a valid channel interface", interfaceType.getSimpleName()));
     }
-
 
     @Test
     @SuppressWarnings("unchecked")
-    void testNullChannelInterfaceFilters()
-    {
+    void testNullChannelInterfaceFilters() {
         ChannelCacheViewImpl<Channel> cache = new ChannelCacheViewImpl<>(Channel.class);
 
-        assertChecks("Type", (value) -> cache.ofType((Class<Channel>) value))
-            .checksNotNull();
+        assertChecks("Type", (value) -> cache.ofType((Class<Channel>) value)).checksNotNull();
     }
 }

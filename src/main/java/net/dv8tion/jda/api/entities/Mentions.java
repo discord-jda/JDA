@@ -25,14 +25,14 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandReference;
 import org.apache.commons.collections4.Bag;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Interface to access the mentions of various entities.
  */
-public interface Mentions
-{
+public interface Mentions {
     /**
      * The corresponding JDA instance
      *
@@ -72,7 +72,7 @@ public interface Mentions
      * <p>This might also contain users which are not present in {@link #getMembers()}.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * void sendCount(Message msg)
      * {
      *     List<User> mentions = msg.getMentions().getUsers(); // distinct list, in order of appearance
@@ -87,7 +87,7 @@ public interface Mentions
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
-     * }</pre>
+     * }
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned users
      *
@@ -115,7 +115,7 @@ public interface Mentions
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * void sendCount(Message msg)
      * {
      *     Bag<GuildChannel> mentions = msg.getMentions().getChannelsBag();
@@ -130,7 +130,7 @@ public interface Mentions
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
-     * }</pre>
+     * }
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels
      *
@@ -146,7 +146,7 @@ public interface Mentions
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * List<GuildMessageChannel> getCoolMessageChannels(Message msg)
      * {
      *     List<GuildMessageChannel> channels = msg.getMentions().getChannels(GuildMessageChannel.class);
@@ -154,7 +154,7 @@ public interface Mentions
      *         .filter(channel -> channel.getName().contains("cool"))
      *         .collect(Collectors.toList());
      * }
-     * }</pre>
+     * }
      *
      * @param  clazz
      *         The {@link GuildChannel} sub-class {@link Class class object} of the type of channel desired
@@ -175,7 +175,7 @@ public interface Mentions
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * void sendCount(Message msg)
      * {
      *     Bag<GuildMessageChannel> mentions = msg.getMentions().getChannelsBag(GuildMessageChannel.class);
@@ -190,7 +190,7 @@ public interface Mentions
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
-     * }</pre>
+     * }
      *
      * @param  clazz
      *         The {@link GuildChannel} sub-class {@link Class class object} of the type of channel desired
@@ -226,7 +226,7 @@ public interface Mentions
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * void sendCount(Message msg)
      * {
      *     List<Role> mentions = msg.getMentions().getRoles(); // distinct list, in order of appearance
@@ -241,7 +241,7 @@ public interface Mentions
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
-     * }</pre>
+     * }
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned roles
      *
@@ -268,7 +268,7 @@ public interface Mentions
      * <br>This can be used to retrieve the amount of times an emoji was used.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * void sendCount(Message msg)
      * {
      *     List<CustomEmoji> emojis = msg.getMentions().getCustomEmojis(); // distinct list, in order of appearance
@@ -283,7 +283,7 @@ public interface Mentions
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
-     * }</pre>
+     * }
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of used custom emojis
      *
@@ -311,7 +311,7 @@ public interface Mentions
      * The count may be {@code 1}, if the user was mentioned through a message reply.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * void sendCount(Message msg)
      * {
      *     List<Member> mentions = msg.getMentions().getMembers(); // distinct list, in order of appearance
@@ -326,7 +326,7 @@ public interface Mentions
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
-     * }</pre>
+     * }
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned members
      *
@@ -354,7 +354,7 @@ public interface Mentions
      * <p>Be aware these mentions could be mentioning a non-existent command
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * void sendCount(Message msg)
      * {
      *     List<SlashCommandReference> mentions = msg.getMentions().getSlashCommands(); // distinct list, in order of appearance
@@ -369,7 +369,7 @@ public interface Mentions
      *     }
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
-     * }</pre>
+     * }
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned slash commands
      *

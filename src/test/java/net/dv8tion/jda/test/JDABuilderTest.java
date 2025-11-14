@@ -30,13 +30,11 @@ import static net.dv8tion.jda.api.requests.GatewayIntent.ALL_INTENTS;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
-public class JDABuilderTest extends AbstractSnapshotTest
-{
+public class JDABuilderTest extends AbstractSnapshotTest {
     private static final String TOKEN = "invalid.token.here";
 
     @Test
-    void testCreateWithAllIntents()
-    {
+    void testCreateWithAllIntents() {
         TestJDABuilder builder = new TestJDABuilder(ALL_INTENTS);
         builder.applyIntents();
 
@@ -44,8 +42,7 @@ public class JDABuilderTest extends AbstractSnapshotTest
     }
 
     @Test
-    void testCreateWithMinimalIntents()
-    {
+    void testCreateWithMinimalIntents() {
         TestJDABuilder builder = new TestJDABuilder(0);
         builder.applyIntents();
 
@@ -53,8 +50,7 @@ public class JDABuilderTest extends AbstractSnapshotTest
     }
 
     @Test
-    void testCreateWithAllCacheAllIntents()
-    {
+    void testCreateWithAllCacheAllIntents() {
         TestJDABuilder builder = new TestJDABuilder(ALL_INTENTS);
         builder.applyIntents();
         builder.enableCache(EnumSet.allOf(CacheFlag.class));
@@ -63,41 +59,37 @@ public class JDABuilderTest extends AbstractSnapshotTest
     }
 
     @Test
-    void testCreateWithAllCacheNoIntents()
-    {
+    void testCreateWithAllCacheNoIntents() {
         TestJDABuilder builder = new TestJDABuilder(0);
         builder.applyIntents();
         builder.enableCache(EnumSet.allOf(CacheFlag.class));
 
         assertThatIllegalArgumentException()
-            .isThrownBy(builder::checkIntents)
-            .withMessage("Cannot use CacheFlag.ACTIVITY without GatewayIntent.GUILD_PRESENCES!");
+                .isThrownBy(builder::checkIntents)
+                .withMessage("Cannot use CacheFlag.ACTIVITY without GatewayIntent.GUILD_PRESENCES!");
     }
 
     @ParameterizedTest
     @EnumSource(CacheFlag.class)
-    void testRequiredIntentForCacheFlagMissing(CacheFlag cacheFlag)
-    {
+    void testRequiredIntentForCacheFlagMissing(CacheFlag cacheFlag) {
         TestJDABuilder builder = new TestJDABuilder(0);
         builder.applyIntents();
         builder.enableCache(cacheFlag);
 
-        if (cacheFlag.getRequiredIntent() != null)
-        {
+        if (cacheFlag.getRequiredIntent() != null) {
             assertThatIllegalArgumentException()
                     .isThrownBy(builder::checkIntents)
-                    .withMessage(String.format("Cannot use CacheFlag.%s without GatewayIntent.%s!", cacheFlag, cacheFlag.getRequiredIntent()));
-        }
-        else
-        {
+                    .withMessage(String.format(
+                            "Cannot use CacheFlag.%s without GatewayIntent.%s!",
+                            cacheFlag, cacheFlag.getRequiredIntent()));
+        } else {
             assertThatNoException().isThrownBy(builder::checkIntents);
         }
     }
 
     @ParameterizedTest
     @EnumSource(CacheFlag.class)
-    void testRequiredIntentForCacheFlagEnabled(CacheFlag cacheFlag)
-    {
+    void testRequiredIntentForCacheFlagEnabled(CacheFlag cacheFlag) {
         GatewayIntent requiredIntent = cacheFlag.getRequiredIntent();
         TestJDABuilder builder = new TestJDABuilder(requiredIntent != null ? requiredIntent.getRawValue() : 0);
         builder.applyIntents();
@@ -107,16 +99,16 @@ public class JDABuilderTest extends AbstractSnapshotTest
 
         builder = new TestJDABuilder(0);
         builder.applyIntents();
-        if (requiredIntent != null)
+        if (requiredIntent != null) {
             builder.setEnabledIntents(requiredIntent);
+        }
         builder.enableCache(cacheFlag);
 
         assertThatNoException().isThrownBy(builder::checkIntents);
     }
 
     @Test
-    void testDefaultMinimal()
-    {
+    void testDefaultMinimal() {
         TestJDABuilder builder = new TestJDABuilder(0);
         builder.applyIntents();
         builder.applyDefault();
@@ -129,45 +121,38 @@ public class JDABuilderTest extends AbstractSnapshotTest
     }
 
     @Test
-    void testChunkingWithMissingIntent()
-    {
+    void testChunkingWithMissingIntent() {
         TestJDABuilder builder = new TestJDABuilder(0);
         builder.applyIntents();
         builder.setChunkingFilter(ChunkingFilter.ALL);
 
         assertThatLoggingFrom(builder::checkIntents)
-            .containsLine("Member chunking is disabled due to missing GUILD_MEMBERS intent.")
-            .matchesSnapshot();
+                .containsLine("Member chunking is disabled due to missing GUILD_MEMBERS intent.")
+                .matchesSnapshot();
     }
 
-    static class TestJDABuilder extends JDABuilder
-    {
-        public TestJDABuilder(int intents)
-        {
+    static class TestJDABuilder extends JDABuilder {
+        public TestJDABuilder(int intents) {
             super(TOKEN, intents);
         }
 
         @Override
-        public JDABuilder applyDefault()
-        {
+        public JDABuilder applyDefault() {
             return super.applyDefault();
         }
 
         @Override
-        public JDABuilder applyLight()
-        {
+        public JDABuilder applyLight() {
             return super.applyLight();
         }
 
         @Override
-        public JDABuilder applyIntents()
-        {
+        public JDABuilder applyIntents() {
             return super.applyIntents();
         }
 
         @Override
-        public void checkIntents()
-        {
+        public void checkIntents() {
             super.checkIntents();
         }
     }

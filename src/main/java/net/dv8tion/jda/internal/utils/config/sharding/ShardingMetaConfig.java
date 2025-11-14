@@ -22,25 +22,27 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.IntFunction;
 
-public class ShardingMetaConfig extends MetaConfig
-{
-    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(2048, null, null, ConfigFlag.getDefault(), Compression.ZLIB, GatewayEncoding.JSON);
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ShardingMetaConfig extends MetaConfig {
+    private static final ShardingMetaConfig defaultConfig =
+            new ShardingMetaConfig(2048, null, null, ConfigFlag.getDefault(), Compression.ZLIB, GatewayEncoding.JSON);
     private final Compression compression;
     private final GatewayEncoding encoding;
     private final IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
     public ShardingMetaConfig(
-        int maxBufferSize,
-        @Nullable IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
-        @Nullable EnumSet<CacheFlag> cacheFlags, EnumSet<ConfigFlag> flags,
-        Compression compression, GatewayEncoding encoding)
-    {
+            int maxBufferSize,
+            @Nullable IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
+            @Nullable EnumSet<CacheFlag> cacheFlags,
+            EnumSet<ConfigFlag> flags,
+            Compression compression,
+            GatewayEncoding encoding) {
         super(maxBufferSize, null, cacheFlags, flags);
 
         this.compression = compression;
@@ -49,30 +51,25 @@ public class ShardingMetaConfig extends MetaConfig
     }
 
     @Nullable
-    public ConcurrentMap<String, String> getContextMap(int shardId)
-    {
+    public ConcurrentMap<String, String> getContextMap(int shardId) {
         return contextProvider == null ? null : contextProvider.apply(shardId);
     }
 
-    public Compression getCompression()
-    {
+    public Compression getCompression() {
         return compression;
     }
 
-    public GatewayEncoding getEncoding()
-    {
+    public GatewayEncoding getEncoding() {
         return encoding;
     }
 
     @Nullable
-    public IntFunction<? extends ConcurrentMap<String, String>> getContextProvider()
-    {
+    public IntFunction<? extends ConcurrentMap<String, String>> getContextProvider() {
         return contextProvider;
     }
 
     @Nonnull
-    public static ShardingMetaConfig getDefault()
-    {
+    public static ShardingMetaConfig getDefault() {
         return defaultConfig;
     }
 }

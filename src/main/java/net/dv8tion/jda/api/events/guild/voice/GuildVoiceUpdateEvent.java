@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * <p>Can be used to detect when a Member leaves/joins an AudioChannel.
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * AudioChannelUnion joinedChannel = event.getChannelJoined();
  * AudioChannelUnion leftChannel = event.getChannelLeft();
  *
@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
  * if (joinedChannel != null && leftChannel != null) {
  *   // the member moved between two audio channels in the same guild
  * }
- * }</pre>
+ * }
  *
  * <p><b>Requirements</b><br>
  *
@@ -54,15 +54,14 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code audio-channel}
  */
-public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements UpdateEvent<Member, AudioChannel>
-{
+public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements UpdateEvent<Member, AudioChannel> {
     public static final String IDENTIFIER = "audio-channel";
 
     private final AudioChannel previous;
     private final AudioChannel next;
 
-    public GuildVoiceUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable AudioChannel previous)
-    {
+    public GuildVoiceUpdateEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable AudioChannel previous) {
         super(api, responseNumber, member);
         this.previous = previous;
         this.next = member.getVoiceState().getChannel();
@@ -74,8 +73,7 @@ public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements Upd
      * @return The {@link AudioChannelUnion}, or {@code null} if the member was not connected to a channel before
      */
     @Nullable
-    public AudioChannelUnion getChannelLeft()
-    {
+    public AudioChannelUnion getChannelLeft() {
         return (AudioChannelUnion) previous;
     }
 
@@ -85,36 +83,31 @@ public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements Upd
      * @return The {@link AudioChannelUnion}, or {@code null} if the member has disconnected
      */
     @Nullable
-    public AudioChannelUnion getChannelJoined()
-    {
+    public AudioChannelUnion getChannelJoined() {
         return (AudioChannelUnion) next;
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return IDENTIFIER;
     }
 
     @Nonnull
     @Override
-    public Member getEntity()
-    {
+    public Member getEntity() {
         return member;
     }
 
     @Nullable
     @Override
-    public AudioChannel getOldValue()
-    {
+    public AudioChannel getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public AudioChannel getNewValue()
-    {
+    public AudioChannel getNewValue() {
         return next;
     }
 }

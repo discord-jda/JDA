@@ -35,26 +35,22 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
-public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl implements ComponentInteraction
-{
+public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl implements ComponentInteraction {
     protected final String customId;
     protected final Message message;
     protected final long messageId;
 
-    public ComponentInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public ComponentInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         this.customId = data.getObject("data").getString("custom_id");
-        // message might be just id and flags for ephemeral messages in which case our "message" is null
+        // message might be just id and flags for ephemeral messages
+        // in which case our "message" is null
         DataObject messageJson = data.getObject("message");
         messageId = messageJson.getUnsignedLong("id");
 
-        if (messageJson.isNull("type"))
-        {
+        if (messageJson.isNull("type")) {
             message = null;
-        }
-        else
-        {
+        } else {
             Guild guild = getGuild();
             MessageChannel channel = getChannel();
             message = jda.getEntityBuilder().createMessageBestEffort(messageJson, channel, guild);
@@ -65,49 +61,42 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return (MessageChannelUnion) super.getChannel();
     }
 
     @Nonnull
     @Override
-    public String getComponentId()
-    {
+    public String getComponentId() {
         return customId;
     }
 
     @Nonnull
     @Override
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
     @Override
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return messageId;
     }
 
     @Nonnull
     @Override
-    public MessageEditCallbackActionImpl deferEdit()
-    {
+    public MessageEditCallbackActionImpl deferEdit() {
         return new MessageEditCallbackActionImpl(this.hook);
     }
 
     @Nonnull
     @Override
-    public ReplyCallbackAction deferReply()
-    {
+    public ReplyCallbackAction deferReply() {
         return new ReplyCallbackActionImpl(this.hook);
     }
 
     @Nonnull
     @Override
-    public ModalCallbackAction replyModal(@Nonnull Modal modal)
-    {
+    public ModalCallbackAction replyModal(@Nonnull Modal modal) {
         Checks.notNull(modal, "Modal");
 
         return new ModalCallbackActionImpl(this, modal);

@@ -28,10 +28,8 @@ import javax.annotation.Nonnull;
  *
  * @see ThreadRevealedEvent
  */
- public class ThreadHiddenEvent extends GenericThreadEvent
-{
-    public ThreadHiddenEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread)
-    {
+public class ThreadHiddenEvent extends GenericThreadEvent {
+    public ThreadHiddenEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread) {
         super(api, responseNumber, thread);
     }
 }

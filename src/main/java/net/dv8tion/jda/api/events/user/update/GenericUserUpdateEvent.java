@@ -42,16 +42,18 @@ import javax.annotation.Nullable;
  * @param <T>
  *        The type of the updated value
  */
-public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent implements UpdateEvent<User, T>
-{
+public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent implements UpdateEvent<User, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
     public GenericUserUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nonnull User user,
-        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
-    {
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull User user,
+            @Nullable T previous,
+            @Nullable T next,
+            @Nonnull String identifier) {
         super(api, responseNumber, user);
         this.previous = previous;
         this.next = next;
@@ -60,29 +62,25 @@ public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent impleme
 
     @Nonnull
     @Override
-    public User getEntity()
-    {
+    public User getEntity() {
         return getUser();
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 }

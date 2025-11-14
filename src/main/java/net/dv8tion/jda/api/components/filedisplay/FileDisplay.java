@@ -27,10 +27,11 @@ import net.dv8tion.jda.internal.components.filedisplay.FileDisplayFileUpload;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.io.InputStream;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.InputStream;
 
 /**
  * Component displaying a file, you can mark it as a spoiler.
@@ -41,8 +42,7 @@ import java.io.InputStream;
  *
  * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  */
-public interface FileDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent
-{
+public interface FileDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent {
     /**
      * Constructs a new {@link FileDisplay} from the {@link FileUpload}.
      *
@@ -54,7 +54,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
      * as such you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * // It's recommended to use a more robust HTTP library instead,
      * // such as Java 11+'s HttpClient, or OkHttp (included with JDA), among many other options.
@@ -65,7 +65,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
      * channel.sendComponents(fileDisplay)
      *     .useComponentsV2()
      *     .queue();
-     * </code></pre>
+     * }
      *
      * @param  file
      *         The {@link FileUpload} to display
@@ -76,8 +76,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
      * @return The new {@link FileDisplay}
      */
     @Nonnull
-    static FileDisplay fromFile(@Nonnull FileUpload file)
-    {
+    static FileDisplay fromFile(@Nonnull FileUpload file) {
         Checks.notNull(file, "FileUpload");
         return new FileDisplayFileUpload(file);
     }
@@ -89,7 +88,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
      * such as with {@link MessageCreateBuilder#addFiles(FileUpload...)}, for example.
      *
      * <p><u>Example</u>
-     * <pre><code>
+     * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
      * // It's recommended to use a more robust HTTP library instead,
      * // such as Java 11+'s HttpClient, or OkHttp (included with JDA), among many other options.
@@ -101,7 +100,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
      *     .addFiles(FileUpload.fromData(file, "cat.png"))
      *     .useComponentsV2()
      *     .queue();
-     * </code></pre>
+     * }
      *
      * @param  fileName
      *         The name of the file to display
@@ -112,8 +111,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
      * @return The new {@link FileDisplay}
      */
     @Nonnull
-    static FileDisplay fromFileName(@Nonnull String fileName)
-    {
+    static FileDisplay fromFileName(@Nonnull String fileName) {
         Checks.notNull(fileName, "File name");
         return new FileDisplayImpl("attachment://" + fileName);
     }

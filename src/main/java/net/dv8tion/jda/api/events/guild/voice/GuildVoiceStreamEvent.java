@@ -33,12 +33,10 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public class GuildVoiceStreamEvent extends GenericGuildVoiceEvent
-{
+public class GuildVoiceStreamEvent extends GenericGuildVoiceEvent {
     private final boolean stream;
 
-    public GuildVoiceStreamEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean stream)
-    {
+    public GuildVoiceStreamEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean stream) {
         super(api, responseNumber, member);
         this.stream = stream;
     }
@@ -48,8 +46,7 @@ public class GuildVoiceStreamEvent extends GenericGuildVoiceEvent
      *
      * @return True, if the stream started
      */
-    public boolean isStream()
-    {
+    public boolean isStream() {
         return stream;
     }
 }

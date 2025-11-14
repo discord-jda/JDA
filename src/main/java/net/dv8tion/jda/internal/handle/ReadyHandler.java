@@ -25,45 +25,41 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class ReadyHandler extends SocketHandler
-{
+public class ReadyHandler extends SocketHandler {
 
-    public ReadyHandler(JDAImpl api)
-    {
+    public ReadyHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         EntityBuilder builder = getJDA().getEntityBuilder();
 
         DataArray guilds = content.getArray("guilds");
-        //Make sure we don't have any duplicates here!
+        // Make sure we don't have any duplicates here!
         TLongObjectMap<DataObject> distinctGuilds = new TLongObjectHashMap<>();
-        for (int i = 0; i < guilds.length(); i++)
-        {
+        for (int i = 0; i < guilds.length(); i++) {
             DataObject guild = guilds.getObject(i);
             long id = guild.getUnsignedLong("id");
             DataObject previous = distinctGuilds.put(id, guild);
-            if (previous != null)
+            if (previous != null) {
                 WebSocketClient.LOG.warn("Found duplicate guild for id {} in ready payload", id);
+            }
         }
 
         DataObject selfJson = content.getObject("user");
         // Inject the application id which isn't added to the self user by default
-        selfJson.put("application_id", // Used to update SelfUser#getApplicationId
-            content.optObject("application")
-                .map(obj -> obj.getUnsignedLong("id"))
-                .orElse(selfJson.getUnsignedLong("id"))
-        );
-        // SelfUser is already created in login(...) but this just updates it to the current state from the api, and injects the application id
+        selfJson.put(
+                "application_id", // Used to update SelfUser#getApplicationId
+                content.optObject("application")
+                        .map(obj -> obj.getUnsignedLong("id"))
+                        .orElse(selfJson.getUnsignedLong("id")));
+        // SelfUser is already created in login(...) but this just updates it to the current state
+        // from the api, and injects the application id
         builder.createSelfUser(selfJson);
 
-        if (getJDA().getGuildSetupController().setIncompleteCount(distinctGuilds.size()))
-        {
-            distinctGuilds.forEachEntry((id, guild) ->
-            {
+        if (getJDA().getGuildSetupController().setIncompleteCount(distinctGuilds.size())) {
+            distinctGuilds.forEachEntry((id, guild) -> {
                 getJDA().getGuildSetupController().onReady(id, guild);
                 return true;
             });
@@ -73,24 +69,23 @@ public class ReadyHandler extends SocketHandler
         return null;
     }
 
-    public void handleReady(DataObject content)
-    {
+    public void handleReady(DataObject content) {
         EntityBuilder builder = getJDA().getEntityBuilder();
         DataArray privateChannels = content.getArray("private_channels");
 
-        for (int i = 0; i < privateChannels.length(); i++)
-        {
+        for (int i = 0; i < privateChannels.length(); i++) {
             DataObject chan = privateChannels.getObject(i);
             ChannelType type = ChannelType.fromId(chan.getInt("type"));
 
             //noinspection SwitchStatementWithTooFewBranches
-            switch (type)
-            {
+            switch (type) {
                 case PRIVATE:
                     builder.createPrivateChannel(chan);
                     break;
                 default:
-                    WebSocketClient.LOG.warn("Received a Channel in the private_channels array in READY of an unknown type! Type: {}", type);
+                    WebSocketClient.LOG.warn(
+                            "Received a Channel in the private_channels array in READY of an unknown type! Type: {}",
+                            type);
             }
         }
     }

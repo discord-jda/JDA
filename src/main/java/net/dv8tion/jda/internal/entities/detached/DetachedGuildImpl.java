@@ -56,9 +56,6 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActi
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.cache.SortedChannelCacheViewImpl;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
@@ -67,1018 +64,886 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
-{
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
     private final long id;
     private final JDAImpl api;
 
     private Set<String> features;
     private DiscordLocale preferredLocale = DiscordLocale.ENGLISH_US;
 
-    public DetachedGuildImpl(JDAImpl api, long id)
-    {
+    public DetachedGuildImpl(JDAImpl api, long id) {
         this.id = id;
         this.api = api;
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return true;
     }
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
-    {
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Command> retrieveCommandById(@Nonnull String id)
-    {
+    public RestAction<Command> retrieveCommandById(@Nonnull String id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
-    {
+    public CommandCreateAction upsertCommand(@Nonnull CommandData command) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction updateCommands()
-    {
+    public CommandListUpdateAction updateCommands() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CommandEditAction editCommandById(@Nonnull Command.Type type, @Nonnull String id)
-    {
+    public CommandEditAction editCommandById(@Nonnull Command.Type type, @Nonnull String id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteCommandById(@Nonnull String commandId)
-    {
+    public RestAction<Void> deleteCommandById(@Nonnull String commandId) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId)
-    {
+    public RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<PrivilegeConfig> retrieveCommandPrivileges()
-    {
+    public RestAction<PrivilegeConfig> retrieveCommandPrivileges() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
-    {
+    public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<List<AutoModRule>> retrieveAutoModRules()
-    {
+    public RestAction<List<AutoModRule>> retrieveAutoModRules() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<AutoModRule> retrieveAutoModRuleById(@Nonnull String id)
-    {
+    public RestAction<AutoModRule> retrieveAutoModRuleById(@Nonnull String id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData rule)
-    {
+    public AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData rule) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AutoModRuleManager modifyAutoModRuleById(@Nonnull String id)
-    {
+    public AutoModRuleManager modifyAutoModRuleById(@Nonnull String id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> deleteAutoModRuleById(@Nonnull String id)
-    {
+    public AuditableRestAction<Void> deleteAutoModRuleById(@Nonnull String id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public MemberAction addMember(@Nonnull String accessToken, @Nonnull UserSnowflake user)
-    {
+    public MemberAction addMember(@Nonnull String accessToken, @Nonnull UserSnowflake user) {
         throw detachedException();
     }
 
     @Override
-    public boolean isLoaded()
-    {
+    public boolean isLoaded() {
         throw detachedException();
     }
 
     @Override
-    public void pruneMemberCache()
-    {
+    public void pruneMemberCache() {
         throw detachedException();
     }
 
     @Override
-    public boolean unloadMember(long userId)
-    {
+    public boolean unloadMember(long userId) {
         throw detachedException();
     }
 
     @Override
-    public int getMemberCount()
-    {
+    public int getMemberCount() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         throw detachedException();
     }
 
     @Override
-    public String getIconId()
-    {
+    public String getIconId() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public Set<String> getFeatures()
-    {
+    public Set<String> getFeatures() {
         return features;
     }
 
     @Override
-    public String getSplashId()
-    {
+    public String getSplashId() {
         throw detachedException();
     }
 
     @Nullable
     @Override
-    public String getVanityCode()
-    {
+    public String getVanityCode() {
         throw detachedException();
     }
 
     @Override
     @Nonnull
-    public RestAction<VanityInvite> retrieveVanityInvite()
-    {
+    public RestAction<VanityInvite> retrieveVanityInvite() {
         throw detachedException();
     }
 
     @Nullable
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public DiscordLocale getLocale()
-    {
+    public DiscordLocale getLocale() {
         return preferredLocale;
     }
 
     @Nullable
     @Override
-    public String getBannerId()
-    {
+    public String getBannerId() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public BoostTier getBoostTier()
-    {
+    public BoostTier getBoostTier() {
         throw detachedException();
     }
 
     @Override
-    public int getBoostCount()
-    {
+    public int getBoostCount() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions") // can't be null here
-    public List<Member> getBoosters()
-    {
+    public List<Member> getBoosters() {
         throw detachedException();
     }
 
     @Override
-    public int getMaxMembers()
-    {
+    public int getMaxMembers() {
         throw detachedException();
     }
 
     @Override
-    public int getMaxPresences()
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<MetaData> retrieveMetaData()
-    {
-        throw detachedException();
-    }
-
-    @Override
-    public VoiceChannel getAfkChannel()
-    {
-        throw detachedException();
-    }
-
-    @Override
-    public TextChannel getSystemChannel()
-    {
-        throw detachedException();
-    }
-
-    @Override
-    public TextChannel getRulesChannel()
-    {
+    public int getMaxPresences() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id)
-    {
+    public RestAction<MetaData> retrieveMetaData() {
+        throw detachedException();
+    }
+
+    @Override
+    public VoiceChannel getAfkChannel() {
+        throw detachedException();
+    }
+
+    @Override
+    public TextChannel getSystemChannel() {
+        throw detachedException();
+    }
+
+    @Override
+    public TextChannel getRulesChannel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(long id)
-    {
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime)
-    {
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(long id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime)
-    {
+    public ScheduledEventAction createScheduledEvent(
+            @Nonnull String name,
+            @Nonnull String location,
+            @Nonnull OffsetDateTime startTime,
+            @Nonnull OffsetDateTime endTime) {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(
+            @Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime) {
         throw detachedException();
     }
 
     @Override
-    public TextChannel getCommunityUpdatesChannel()
-    {
+    public TextChannel getCommunityUpdatesChannel() {
         throw detachedException();
     }
 
     @Nullable
     @Override
-    public TextChannel getSafetyAlertsChannel()
-    {
+    public TextChannel getSafetyAlertsChannel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<List<Webhook>> retrieveWebhooks()
-    {
+    public RestAction<List<Webhook>> retrieveWebhooks() {
         throw detachedException();
     }
 
     @Override
-    public Member getOwner()
-    {
+    public Member getOwner() {
         throw detachedException();
     }
 
     @Override
-    public long getOwnerIdLong()
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public Timeout getAfkTimeout()
-    {
+    public long getOwnerIdLong() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SecurityIncidentActions getSecurityIncidentActions()
-    {
+    public Timeout getAfkTimeout() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SecurityIncidentDetections getSecurityIncidentDetections()
-    {
-        throw detachedException();
-    }
-
-    @Override
-    public boolean isMember(@Nonnull UserSnowflake user)
-    {
+    public SecurityIncidentActions getSecurityIncidentActions() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SelfMember getSelfMember()
-    {
+    public SecurityIncidentDetections getSecurityIncidentDetections() {
         throw detachedException();
     }
 
     @Override
-    public Member getMember(@Nonnull UserSnowflake user)
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public Task<List<Member>> findMembers(@Nonnull Predicate<? super Member> filter)
-    {
+    public boolean isMember(@Nonnull UserSnowflake user) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public MemberCacheView getMemberCache()
-    {
+    public SelfMember getSelfMember() {
+        throw detachedException();
+    }
+
+    @Override
+    public Member getMember(@Nonnull UserSnowflake user) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
-    {
+    public Task<List<Member>> findMembers(@Nonnull Predicate<? super Member> filter) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount)
-    {
+    public MemberCacheView getMemberCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<Category> getCategoryCache()
-    {
+    public SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<TextChannel> getTextChannelCache()
-    {
+    public RestAction<List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<NewsChannel> getNewsChannelCache()
-    {
+    public SortedSnowflakeCacheView<Category> getCategoryCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
-    {
+    public SortedSnowflakeCacheView<TextChannel> getTextChannelCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<ForumChannel> getForumChannelCache()
-    {
+    public SortedSnowflakeCacheView<NewsChannel> getNewsChannelCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<MediaChannel> getMediaChannelCache()
-    {
+    public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<StageChannel> getStageChannelCache()
-    {
+    public SortedSnowflakeCacheView<ForumChannel> getForumChannelCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedSnowflakeCacheView<ThreadChannel> getThreadChannelCache()
-    {
+    public SnowflakeCacheView<MediaChannel> getMediaChannelCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SortedChannelCacheViewImpl<GuildChannel> getChannelCache()
-    {
+    public SortedSnowflakeCacheView<StageChannel> getStageChannelCache() {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public SortedSnowflakeCacheView<ThreadChannel> getThreadChannelCache() {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public SortedChannelCacheViewImpl<GuildChannel> getChannelCache() {
         throw detachedException();
     }
 
     @Nullable
     @Override
-    public GuildChannel getGuildChannelById(long id)
-    {
+    public GuildChannel getGuildChannelById(long id) {
         throw detachedException();
     }
 
     @Override
-    public GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public SortedSnowflakeCacheView<Role> getRoleCache()
-    {
+    public GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
-    {
+    public SortedSnowflakeCacheView<Role> getRoleCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<GuildSticker> getStickerCache()
-    {
+    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public List<GuildChannel> getChannels(boolean includeHidden)
-    {
+    public SnowflakeCacheView<GuildSticker> getStickerCache() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<List<RichCustomEmoji>> retrieveEmojis()
-    {
+    public List<GuildChannel> getChannels(boolean includeHidden) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<RichCustomEmoji> retrieveEmojiById(@Nonnull String id)
-    {
+    public RestAction<List<RichCustomEmoji>> retrieveEmojis() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<RichCustomEmoji> retrieveEmoji(@Nonnull CustomEmoji emoji)
-    {
+    public RestAction<RichCustomEmoji> retrieveEmojiById(@Nonnull String id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<List<GuildSticker>> retrieveStickers()
-    {
+    public RestAction<RichCustomEmoji> retrieveEmoji(@Nonnull CustomEmoji emoji) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<GuildSticker> retrieveSticker(@Nonnull StickerSnowflake sticker)
-    {
+    public RestAction<List<GuildSticker>> retrieveStickers() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public GuildStickerManager editSticker(@Nonnull StickerSnowflake sticker)
-    {
+    public RestAction<GuildSticker> retrieveSticker(@Nonnull StickerSnowflake sticker) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public BanPaginationActionImpl retrieveBanList()
-    {
+    public GuildStickerManager editSticker(@Nonnull StickerSnowflake sticker) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Ban> retrieveBan(@Nonnull UserSnowflake user)
-    {
+    public BanPaginationActionImpl retrieveBanList() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Integer> retrievePrunableMemberCount(int days)
-    {
+    public RestAction<Ban> retrieveBan(@Nonnull UserSnowflake user) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public Role getPublicRole()
-    {
+    public RestAction<Integer> retrievePrunableMemberCount(int days) {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public Role getPublicRole() {
         throw detachedException();
     }
 
     @Nullable
     @Override
-    public DefaultGuildChannelUnion getDefaultChannel()
-    {
+    public DefaultGuildChannelUnion getDefaultChannel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public GuildManager getManager()
-    {
+    public GuildManager getManager() {
         throw detachedException();
     }
 
     @Override
-    public boolean isBoostProgressBarEnabled()
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public AuditLogPaginationAction retrieveAuditLogs()
-    {
+    public boolean isBoostProgressBarEnabled() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> leave()
-    {
+    public AuditLogPaginationAction retrieveAuditLogs() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AudioManager getAudioManager()
-    {
+    public RestAction<Void> leave() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public synchronized Task<Void> requestToSpeak()
-    {
+    public AudioManager getAudioManager() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public synchronized Task<Void> cancelRequestToSpeak()
-    {
+    public synchronized Task<Void> requestToSpeak() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public JDAImpl getJDA()
-    {
+    public synchronized Task<Void> cancelRequestToSpeak() {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public JDAImpl getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public List<GuildVoiceState> getVoiceStates()
-    {
+    public List<GuildVoiceState> getVoiceStates() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
-    {
+    public CacheRestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public VerificationLevel getVerificationLevel()
-    {
+    public VerificationLevel getVerificationLevel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public NSFWLevel getNSFWLevel()
-    {
+    public NSFWLevel getNSFWLevel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public Set<SystemChannelFlag> getSystemChannelFlags()
-    {
+    public Set<SystemChannelFlag> getSystemChannelFlags() {
         throw detachedException();
     }
 
     @Override
-    public int getSystemChannelFlagsRaw()
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public NotificationLevel getDefaultNotificationLevel()
-    {
+    public int getSystemChannelFlagsRaw() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public MFALevel getRequiredMFALevel()
-    {
+    public NotificationLevel getDefaultNotificationLevel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ExplicitContentLevel getExplicitContentLevel()
-    {
+    public MFALevel getRequiredMFALevel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public Task<Void> loadMembers(@Nonnull Consumer<Member> callback)
-    {
+    public ExplicitContentLevel getExplicitContentLevel() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<Member> retrieveMemberById(long id)
-    {
+    public Task<Void> loadMembers(@Nonnull Consumer<Member> callback) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids)
-    {
+    public CacheRestAction<Member> retrieveMemberById(long id) {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
-    {
+    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<List<ThreadChannel>> retrieveActiveThreads()
-    {
+    public RestAction<List<ThreadChannel>> retrieveActiveThreads() {
         throw detachedException();
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public RestAction<List<Invite>> retrieveInvites()
-    {
+    public RestAction<List<Invite>> retrieveInvites() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<List<Template>> retrieveTemplates()
-    {
+    public RestAction<List<Template>> retrieveTemplates() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Template> createTemplate(@Nonnull String name, @Nullable String description)
-    {
+    public RestAction<Template> createTemplate(@Nonnull String name, @Nullable String description) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<GuildWelcomeScreen> retrieveWelcomeScreen()
-    {
+    public RestAction<GuildWelcomeScreen> retrieveWelcomeScreen() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> moveVoiceMember(@Nonnull UserSnowflake user, @Nullable AudioChannel audioChannel)
-    {
+    public RestAction<Void> moveVoiceMember(@Nonnull UserSnowflake user, @Nullable AudioChannel audioChannel) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifyNickname(@Nonnull Member member, String nickname)
-    {
+    public AuditableRestAction<Void> modifyNickname(@Nonnull Member member, String nickname) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles)
-    {
+    public AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidentActions incidents)
-    {
+    public AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidentActions incidents) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user)
-    {
+    public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int duration, @Nonnull TimeUnit unit)
-    {
+    public AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int duration, @Nonnull TimeUnit unit) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<? extends UserSnowflake> users, @Nullable Duration deletionTime)
-    {
+    public AuditableRestAction<BulkBanResponse> ban(
+            @Nonnull Collection<? extends UserSnowflake> users, @Nullable Duration deletionTime) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> unban(@Nonnull UserSnowflake user)
-    {
+    public AuditableRestAction<Void> unban(@Nonnull UserSnowflake user) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> timeoutUntil(@Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal)
-    {
+    public AuditableRestAction<Void> timeoutUntil(@Nonnull UserSnowflake user, @Nonnull TemporalAccessor temporal) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeTimeout(@Nonnull UserSnowflake user)
-    {
+    public AuditableRestAction<Void> removeTimeout(@Nonnull UserSnowflake user) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> deafen(@Nonnull UserSnowflake user, boolean deafen)
-    {
+    public AuditableRestAction<Void> deafen(@Nonnull UserSnowflake user, boolean deafen) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> mute(@Nonnull UserSnowflake user, boolean mute)
-    {
+    public AuditableRestAction<Void> mute(@Nonnull UserSnowflake user, boolean mute) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> addRoleToMember(@Nonnull UserSnowflake user, @Nonnull Role role)
-    {
+    public AuditableRestAction<Void> addRoleToMember(@Nonnull UserSnowflake user, @Nonnull Role role) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserSnowflake user, @Nonnull Role role)
-    {
+    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserSnowflake user, @Nonnull Role role) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
-    {
+    public AuditableRestAction<Void> modifyMemberRoles(
+            @Nonnull Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles)
-    {
+    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent)
-    {
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, Category parent)
-    {
+    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, Category parent) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, Category parent)
-    {
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, Category parent) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name, Category parent)
-    {
+    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name, Category parent) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, Category parent)
-    {
+    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, Category parent) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name, @Nullable Category parent)
-    {
+    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name, @Nullable Category parent) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelAction<Category> createCategory(@Nonnull String name)
-    {
+    public ChannelAction<Category> createCategory(@Nonnull String name) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RoleAction createRole()
-    {
+    public RoleAction createRole() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
-    {
+    public AuditableRestAction<RichCustomEmoji> createEmoji(
+            @Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
-    {
+    public AuditableRestAction<GuildSticker> createSticker(
+            @Nonnull String name,
+            @Nonnull String description,
+            @Nonnull FileUpload file,
+            @Nonnull Collection<String> tags) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id)
-    {
+    public AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelOrderAction modifyCategoryPositions()
-    {
+    public ChannelOrderAction modifyCategoryPositions() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelOrderAction modifyTextChannelPositions()
-    {
+    public ChannelOrderAction modifyTextChannelPositions() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public ChannelOrderAction modifyVoiceChannelPositions()
-    {
+    public ChannelOrderAction modifyVoiceChannelPositions() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction modifyTextChannelPositions(@Nonnull Category category)
-    {
+    public CategoryOrderAction modifyTextChannelPositions(@Nonnull Category category) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction modifyVoiceChannelPositions(@Nonnull Category category)
-    {
+    public CategoryOrderAction modifyVoiceChannelPositions(@Nonnull Category category) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RoleOrderAction modifyRolePositions(boolean useAscendingOrder)
-    {
+    public RoleOrderAction modifyRolePositions(boolean useAscendingOrder) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public GuildWelcomeScreenManager modifyWelcomeScreen()
-    {
+    public GuildWelcomeScreenManager modifyWelcomeScreen() {
         throw detachedException();
     }
 
     // ---- Setters -----
 
-    public DetachedGuildImpl setFeatures(Set<String> features)
-    {
+    public DetachedGuildImpl setFeatures(Set<String> features) {
         this.features = Collections.unmodifiableSet(features);
         return this;
     }
 
-    public DetachedGuildImpl setLocale(DiscordLocale locale)
-    {
+    public DetachedGuildImpl setLocale(DiscordLocale locale) {
         this.preferredLocale = locale;
         return this;
     }
@@ -1086,25 +951,24 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
     // -- Object overrides --
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this)
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
-        if (!(o instanceof DetachedGuildImpl))
+        }
+        if (!(o instanceof DetachedGuildImpl)) {
             return false;
+        }
         DetachedGuildImpl oGuild = (DetachedGuildImpl) o;
         return this.id == oGuild.id;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this).toString();
     }
 }

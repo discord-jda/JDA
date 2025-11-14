@@ -28,49 +28,48 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiManager> implements ApplicationEmojiManager
-{
+public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiManager>
+        implements ApplicationEmojiManager {
     protected final ApplicationEmoji emoji;
 
     protected String name;
 
-    public ApplicationEmojiManagerImpl(ApplicationEmoji emoji)
-    {
-        super(emoji.getJDA(), Route.Applications.MODIFY_APPLICATION_EMOJI.compile(emoji.getJDA().getSelfUser().getApplicationId(), emoji.getId()));
+    public ApplicationEmojiManagerImpl(ApplicationEmoji emoji) {
+        super(
+                emoji.getJDA(),
+                Route.Applications.MODIFY_APPLICATION_EMOJI.compile(
+                        emoji.getJDA().getSelfUser().getApplicationId(), emoji.getId()));
         this.emoji = emoji;
     }
 
     @NotNull
     @Override
-    public ApplicationEmoji getEmoji()
-    {
+    public ApplicationEmoji getEmoji() {
         return emoji;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ApplicationEmojiManagerImpl reset(long fields)
-    {
+    public ApplicationEmojiManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & NAME) == NAME)
+        if ((fields & NAME) == NAME) {
             this.name = null;
+        }
         return this;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ApplicationEmojiManagerImpl reset(@Nonnull long... fields)
-    {
+    public ApplicationEmojiManagerImpl reset(@Nonnull long... fields) {
         super.reset(fields);
         return this;
     }
 
     @NotNull
     @Override
-    public ApplicationEmojiManager setName(@NotNull String name)
-    {
+    public ApplicationEmojiManager setName(@NotNull String name) {
         Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Emoji name");
         this.name = name;
@@ -79,11 +78,11 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
-        if (shouldUpdate(NAME))
+        if (shouldUpdate(NAME)) {
             object.put("name", name);
+        }
         reset();
         return getRequestBody(object);
     }
