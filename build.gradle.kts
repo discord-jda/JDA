@@ -276,6 +276,13 @@ tasks.named("check").configure {
     dependsOn(checkFormat)
 }
 
+tasks.named("versionCatalogFormat").configure {
+    val versionCatalogFile = file("$projectDir/gradle/libs.versions.toml")
+
+    inputs.file(versionCatalogFile)
+    outputs.file(versionCatalogFile)
+}
+
 
 ////////////////////////////////////
 //                                //
