@@ -65,6 +65,7 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.automod.AutoModRuleImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.emoji.ApplicationEmojiImpl;
@@ -2603,7 +2604,8 @@ public class EntityBuilder extends AbstractEntityBuilder
         return new ApplicationTeamImpl(iconId, members, id, ownerId);
     }
 
-    public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, DataObject userJson, DataObject webhookJson)
+    public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, TLongObjectMap<DataObject> userMap, TLongObjectMap<DataObject> webhookMap,
+            TLongObjectMap<DataObject> threadMap, TLongObjectMap<DataObject> scheduledEventMap, TLongObjectMap<DataObject> autoModerationRulesMap)
     {
         final long targetId = entryJson.getLong("target_id", 0);
         final long userId = entryJson.getLong("user_id", 0);
@@ -2613,10 +2615,39 @@ public class EntityBuilder extends AbstractEntityBuilder
         final DataObject options = entryJson.isNull("options") ? null : entryJson.getObject("options");
         final String reason = entryJson.getString("reason", null);
 
+        final DataObject userJson = userMap == null ? null : userMap.get(userId);
         final UserImpl user = userJson == null ? null : createUser(userJson);
-        final WebhookImpl webhook = webhookJson == null ? null : createWebhook(webhookJson);
         final Set<AuditLogChange> changesList;
         final ActionType type = ActionType.from(typeKey);
+
+        ISnowflake target;
+        DataObject targetJson;
+        switch (type.getTargetType()) {
+        case AUTO_MODERATION_RULE:
+            targetJson = autoModerationRulesMap == null ? null : autoModerationRulesMap.get(targetId);
+            target = targetJson == null ? null : AutoModRuleImpl.fromData(guild, targetJson);
+            break;
+        case CHANNEL:
+            target = guild.getGuildChannelById(targetId);
+            break;
+        case MEMBER:
+            target = guild.getMemberById(targetId);
+            break;
+        case SCHEDULED_EVENT:
+            targetJson = scheduledEventMap == null ? null : scheduledEventMap.get(targetId);
+            target = targetJson == null ? null : createScheduledEvent(guild, targetJson);
+            break;
+        case THREAD:
+            targetJson = threadMap == null ? null : threadMap.get(targetId);
+            target = targetJson == null ? null : createThreadChannel(guild, targetJson, guild.getIdLong());
+            break;
+        case WEBHOOK:
+            targetJson = webhookMap == null ? null : webhookMap.get(targetId);
+            target = targetJson == null ? null : createWebhook(targetJson);
+            break;
+        default:
+            target = null;
+        }
 
         if (changes != null)
         {
@@ -2637,7 +2668,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         CaseInsensitiveMap<String, Object> optionMap = options != null
                 ? new CaseInsensitiveMap<>(options.toMap()) : null;
 
-        return new AuditLogEntry(type, typeKey, id, userId, targetId, guild, user, webhook, reason, changeMap, optionMap);
+        return new AuditLogEntry(type, typeKey, id, userId, targetId, guild, user, target, reason, changeMap, optionMap);
     }
 
     public AuditLogChange createAuditLogChange(DataObject change)
