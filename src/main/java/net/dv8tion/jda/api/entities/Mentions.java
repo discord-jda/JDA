@@ -26,6 +26,9 @@ import org.apache.commons.collections4.Bag;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -396,7 +399,29 @@ public interface Mentions
      */
     @Nonnull
     @Unmodifiable
-    List<IMentionable> getMentions(@Nonnull Message.MentionType... types);
+    List<IMentionable> getMentions(@Nonnull Collection<Message.MentionType> types);
+
+    /**
+     * Combines all instances of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
+     * filtered by the specified {@link net.dv8tion.jda.api.entities.Message.MentionType MentionType} values.
+     * <br>If a {@link Member} is available, it will be taken in favor of a {@link User}.
+     * This only provides either the Member or the User instance, rather than both.
+     *
+     * <p>If no MentionType values are given, all types are used.
+     *
+     * @param  types
+     *         {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} to include
+     *
+     * @return Immutable list of filtered {@link net.dv8tion.jda.api.entities.IMentionable IMentionable} instances
+     */
+    @Nonnull
+    @SuppressWarnings("ConstantConditions")
+    default List<IMentionable> getMentions(@Nonnull Message.MentionType... types)
+    {
+        if (types == null || types.length == 0)
+            return getMentions(EnumSet.allOf(Message.MentionType.class));
+        return getMentions(EnumSet.copyOf(Arrays.asList(types)));
+    }
 
     /**
      * Checks if given {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
@@ -415,7 +440,40 @@ public interface Mentions
      *         The types to include when checking whether this type was mentioned.
      *         This will be used with {@link #getMentions(Message.MentionType...) getMentions(MentionType...)}
      *
+     * @throws IllegalArgumentException
+     *         If the mentionable or the types are {@code null}
+     *
      * @return True, if the given mentionable was mentioned in this message
      */
-    boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull Message.MentionType... types);
+    boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull Collection<Message.MentionType> types);
+
+    /**
+     * Checks if given {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
+     * was mentioned in any way (@User, @everyone, @here, @Role).
+     * <br>If no filtering {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} are
+     * specified, all types are used.
+     *
+     * <p>{@link Message.MentionType#HERE MentionType.HERE} and {@link Message.MentionType#EVERYONE MentionType.EVERYONE}
+     * will only be checked, if the given {@link net.dv8tion.jda.api.entities.IMentionable IMentionable} is of type
+     * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.Member Member}.
+     * <br>Online status of Users/Members is <b>NOT</b> considered when checking {@link Message.MentionType#HERE MentionType.HERE}.
+     *
+     * @param  mentionable
+     *         The mentionable entity to check on.
+     * @param  types
+     *         The types to include when checking whether this type was mentioned.
+     *         This will be used with {@link #getMentions(Message.MentionType...) getMentions(MentionType...)}
+     *
+     * @throws IllegalArgumentException
+     *         If the mentionable is {@code null}
+     *
+     * @return True, if the given mentionable was mentioned in this message
+     */
+    @SuppressWarnings("ConstantConditions")
+    default boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull Message.MentionType... types)
+    {
+        if (types == null || types.length == 0)
+            return isMentioned(mentionable, EnumSet.allOf(Message.MentionType.class));
+        return isMentioned(mentionable, EnumSet.copyOf(Arrays.asList(types)));
+    }
 }
