@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -76,6 +78,7 @@ public class Requester
     private final Consumer<? super okhttp3.Request.Builder> customBuilder;
 
     private final OkHttpClient httpClient;
+    private volatile String superProperties;
 
     //when we actually set the shard info we can also set the mdc context map, before it makes no sense
     private boolean isContextReady = false;
@@ -328,6 +331,38 @@ public class Requester
             for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
                 builder.header(header.getKey(), header.getValue());
         }
+    }
+
+    public String getSuperProperties()
+    {
+        if (superProperties != null)
+            return superProperties;
+
+        synchronized (this)
+        {
+            if (superProperties != null)
+                return superProperties;
+
+            superProperties = new String(Base64.getEncoder().encode(DataObject.empty()
+                    .put("os", "Windows")
+                    .put("browser", "Discord Client")
+                    .put("release_channel", "stable")
+                    .put("client_version", "1.0.9024")
+                    .put("os_version", "10.0.22621")
+                    .put("os_arch", "x64")
+                    .put("app_arch", "ia32")
+                    .put("system_locale", "en-US")
+                    .put("browser_user_agent", userAgent)
+                    .put("browser_version", "22.3.26")
+                    .put("client_build_number", 247232)
+                    .put("native_build_number", 39566)
+                    .put("client_event_source", null)
+                    .put("design_id", 0)
+                    .toJson()
+            ), StandardCharsets.UTF_8);
+        }
+
+        return superProperties;
     }
 
     public OkHttpClient getHttpClient()
