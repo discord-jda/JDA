@@ -13,6 +13,8 @@ fun Project.configureJavadoc(
         failOnError: Boolean,
         overviewFile: String?,
 ) = tasks.getting(Javadoc::class) {
+    val currentJavaVersion = JavaVersion.current().majorVersion
+
     isFailOnError = failOnError
 
     (options as? StandardJavadocDocletOptions)?.apply {
@@ -21,11 +23,7 @@ fun Project.configureJavadoc(
 
         author()
         tags("incubating:a:Incubating:")
-        // We compile to Java 8 but JDK 8 docs don't seem to supply `element-list` anymore, failing the build
-        // so we'll be using the closest valid link (JDK 11) instead.
-        // Failing: https://docs.oracle.com/javase/8/docs/api/element-list
-        val effectiveJdkDocsVersion = max(11, targetVersion.majorVersion.toInt())
-        links("https://docs.oracle.com/en/java/javase/${effectiveJdkDocsVersion}/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
+        links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
         addBooleanOption("html5", true) // Adds search bar
         addStringOption("-release", targetVersion.majorVersion)
