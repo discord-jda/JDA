@@ -25,6 +25,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -43,6 +45,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
+@RequiredIntents(sometimes = {GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES})
 public abstract class GenericMessageEvent extends Event
 {
     protected final long messageId;

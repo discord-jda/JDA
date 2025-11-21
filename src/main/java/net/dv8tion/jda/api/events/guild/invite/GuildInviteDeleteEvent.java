@@ -17,9 +17,13 @@
 package net.dv8tion.jda.api.events.guild.invite;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiredPermissions;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -33,6 +37,8 @@ import javax.annotation.Nonnull;
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_INVITES GUILD_INVITES} intent to be enabled.
  * <br>This event will only fire for invites deleted in channels where you can {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_INVITES)
+@RequiredPermissions(always = Permission.MANAGE_CHANNEL)
 public class GuildInviteDeleteEvent extends GenericGuildInviteEvent
 {
     public GuildInviteDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel)

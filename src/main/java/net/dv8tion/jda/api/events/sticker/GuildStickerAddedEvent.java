@@ -19,6 +19,10 @@ package net.dv8tion.jda.api.events.sticker;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
@@ -32,6 +36,8 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
+@RequiredIntents(always = GatewayIntent.GUILD_EXPRESSIONS)
+@RequiredCacheFlags(always = CacheFlag.STICKER)
 public class GuildStickerAddedEvent extends GenericGuildStickerEvent
 {
     public GuildStickerAddedEvent(@Nonnull JDA api, long responseNumber,

@@ -15,10 +15,14 @@
  */
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.annotations.RequiredPermissions;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 
 /**
@@ -257,5 +261,49 @@ public enum Permission
         Checks.notNull(permissions, "Permission Collection");
 
         return getRaw(permissions.toArray(EMPTY_PERMISSIONS));
+    }
+
+    /**
+     * Parse the required permissions from the provided {@link GenericEvent Event Types}.
+     *
+     * @param  events
+     *         The event types
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required permissions
+     */
+    @Nonnull
+    @SafeVarargs
+    public static EnumSet<Permission> fromEvents(@Nonnull Class<? extends GenericEvent>... events)
+    {
+        Checks.noneNull(events, "Event");
+        return fromEvents(Arrays.asList(events));
+    }
+
+    /**
+     * Parse the required permissions from the provided {@link GenericEvent Event Types}.
+     *
+     * @param  events
+     *         The event types
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required permissions
+     */
+    @Nonnull
+    public static EnumSet<Permission> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events)
+    {
+        Checks.noneNull(events, "Events");
+        EnumSet<Permission> flags = EnumSet.noneOf(Permission.class);
+        for (Class<? extends GenericEvent> event : events)
+        {
+            final RequiredPermissions requiredPermissions = event.getDeclaredAnnotation(RequiredPermissions.class);
+            if (requiredPermissions != null)
+                Collections.addAll(flags, requiredPermissions.always());
+        }
+        return flags;
     }
 }

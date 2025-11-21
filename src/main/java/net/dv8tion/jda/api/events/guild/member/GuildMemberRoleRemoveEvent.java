@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.events.guild.member;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -39,6 +42,8 @@ import java.util.List;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_MEMBERS)
+@RequiresCachedMember
 public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
 {
     private final List<Role> removedRoles;

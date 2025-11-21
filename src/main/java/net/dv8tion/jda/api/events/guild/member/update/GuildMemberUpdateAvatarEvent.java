@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.events.guild.member.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
@@ -41,6 +44,8 @@ import javax.annotation.Nullable;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_MEMBERS)
+@RequiresCachedMember
 public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<String>
 {
     public static final String IDENTIFIER = "avatar";

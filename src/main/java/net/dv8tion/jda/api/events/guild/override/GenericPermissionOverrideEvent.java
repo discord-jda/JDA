@@ -25,7 +25,9 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,7 +37,14 @@ import javax.annotation.Nullable;
  * <br>Every guild channel override event is a subclass of this event and can be casted
  *
  * <p>Can be used to detect that any guild channel override event was fired
+ *
+ * <p><b>Requirements</b><br>
+ *
+ * <p>These events require {@link CacheFlag#MEMBER_OVERRIDES} to be enabled for member overrides,
+ * unless the member is the {@link net.dv8tion.jda.api.entities.Guild#getSelfMember() self member}.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this by default!
  */
+@RequiredCacheFlags(sometimes = CacheFlag.MEMBER_OVERRIDES)
 public class GenericPermissionOverrideEvent extends GenericGuildEvent
 {
     protected final IPermissionContainer channel;

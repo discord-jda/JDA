@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.guild.member;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -38,6 +40,7 @@ import javax.annotation.Nonnull;
  *
  * @since  4.2.1
  */
+@RequiredIntents(always = GatewayIntent.GUILD_MEMBERS)
 public class GuildMemberUpdateEvent extends GenericGuildMemberEvent
 {
     public GuildMemberUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)

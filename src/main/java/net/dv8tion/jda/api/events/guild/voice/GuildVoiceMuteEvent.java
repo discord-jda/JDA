@@ -18,6 +18,11 @@ package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
@@ -35,6 +40,9 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
+@RequiredIntents(always = GatewayIntent.GUILD_VOICE_STATES)
+@RequiredCacheFlags(always = CacheFlag.VOICE_STATE)
+@RequiresCachedMember
 public class GuildVoiceMuteEvent extends GenericGuildVoiceEvent
 {
     protected final boolean muted;
