@@ -161,7 +161,7 @@ public interface Invite
      * An {@link Invite.Channel Invite.Channel} object
      * containing information about this invite's origin channel.
      *
-     * @return Information about this invite's origin channel or null in case of a group invite
+     * @return Information about this invite's origin channel or null in case of a non-guild invite
      * 
      * @see    Invite.Channel
      */
@@ -172,7 +172,7 @@ public interface Invite
      * An {@link Invite.Group Invite.Group} object
      * containing information about this invite's origin group.
      *
-     * @return Information about this invite's origin group or null in case of a guild invite
+     * @return Information about this invite's origin group or null in case of a non-group invite
      *
      * @see    Invite.Group
      */
@@ -215,7 +215,7 @@ public interface Invite
      * An {@link Invite.Guild Invite.Guild} object
      * containing information about this invite's origin guild.
      *
-     * @return Information about this invite's origin guild or null in case of a group invite
+     * @return Information about this invite's origin guild or null in case of a non-guild invite
      * 
      * @see    Invite.Guild
      */
@@ -223,9 +223,9 @@ public interface Invite
     Guild getGuild();
 
     /**
-     * The user who created this invite. For not expanded invites this may be null.
+     * The user who created this invite. For a non-expanded invite, this may be null.
      *
-     * @return The user who created this invite
+     * @return The user who created this invite. If this is a {@link Invite.InviteType#FRIEND Friend invite} this is the target.
      */
     @Nullable
     User getInviter();
@@ -254,18 +254,15 @@ public interface Invite
     int getMaxAge();
 
     /**
-    * The max uses of this invite. If there is no limit thus will return {@code 0}.
-    *
-    * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-    *
-    * @throws IllegalStateException
-     *        if this invite is not expanded
-    *
-    * @return The max uses of this invite or {@code 0} if there is no limit
-    *
-    * @see    #expand()
-    * @see    #isExpanded()
-    */
+     * The max uses of this invite.
+     * If there is no limit this will return {@code 0}.
+     *
+     * <p>This works only for expanded invites, and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
+     *
+     * @throws java.lang.IllegalStateException
+     *         if this is not an expanded invite
+     * @return The max uses of this invite or {@code 0} if there is no limit
+     */
     int getMaxUses();
 
     /**
@@ -285,15 +282,22 @@ public interface Invite
     OffsetDateTime getTimeCreated();
 
     /**
+     * Returns the expiration date of this invite, if it expires
+     *
+     * @return The expiration date of this invite, or null if it doesn't expire
+     */
+    @Nullable
+    OffsetDateTime getTimeExpires();
+
+    /**
      * How often this invite has been used.
      *
      * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
-     * @throws IllegalStateException
+     * @throws java.lang.IllegalStateException
      *         if this invite is not expanded
      *
      * @return The uses of this invite
-     *
      * @see    #expand()
      * @see    #isExpanded()
      */
@@ -317,13 +321,12 @@ public interface Invite
     /**
      * Whether this Invite grants only temporary access or not.
      *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!</p>
      *
      * @throws IllegalStateException
      *         if this invite is not expanded
      *
      * @return Whether this invite is temporary or not
-     *
      * @see    #expand()
      * @see    #isExpanded()
      */
@@ -773,7 +776,22 @@ public interface Invite
     {
         GUILD,
         GROUP,
-        UNKNOWN
+        FRIEND,
+        UNKNOWN;
+
+        /**
+         * Static accessor for retrieving a invite type based on its Discord id key.
+         *
+         * @param  id
+         *         The id key of the requested invite type.
+         *
+         * @return The InviteType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
+         */
+        @Nonnull
+        public static InviteType fromId(int id)
+        {
+            return id < UNKNOWN.ordinal() ? values()[id] : UNKNOWN;
+        }
     }
 
     /**
