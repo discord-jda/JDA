@@ -106,9 +106,9 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public DataObject toData()
     {
-        DataArray options = DataArray.fromCollection(this.options);
+        if (localizationMapper != null) localizationMapper.localizeCommand(this);
 
-        if (localizationMapper != null) localizationMapper.localizeCommand(this, options);
+        DataArray options = DataArray.fromCollection(this.options);
 
         DataObject json = DataObject.empty()
                 .put("type", type.getId())
