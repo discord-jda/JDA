@@ -45,7 +45,7 @@ junit-java8 = [
 
 [plugins]
 download = "de.undercouch.download:5.6.0"
-jreleaser = "org.jreleaser:1.21.0"
+jreleaser = "org.jreleaser:1.20.0"
 openrewrite = "org.openrewrite.rewrite:7.20.0"
 shadow = "com.gradleup.shadow:9.2.2"
 spotless = "com.diffplug.spotless:8.0.0"
