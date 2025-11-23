@@ -23,6 +23,7 @@ import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
 import org.jreleaser.model.Active
+import org.openrewrite.gradle.AbstractRewriteTask
 
 plugins {
     environment
@@ -283,6 +284,12 @@ tasks.named("versionCatalogFormat").configure {
     outputs.file(versionCatalogFile)
 }
 
+tasks.withType(AbstractRewriteTask::class).configureEach {
+    inputs.files(fileTree("src") {
+        include("**/*.java")
+    })
+    outputs.upToDateWhen { true }
+}
 
 ////////////////////////////////////
 //                                //
