@@ -29,87 +29,73 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class RestActionTest extends IntegrationTest
-{
+public class RestActionTest extends IntegrationTest {
     @Test
-    void testMapOperator()
-    {
-        assertThat(
-            new CompletedRestAction<>(jda, "12345")
-                .map(Integer::parseInt)
-                .complete()
-        ).isEqualTo(12345);
+    void testMapOperator() {
+        assertThat(new CompletedRestAction<>(jda, "12345")
+                        .map(Integer::parseInt)
+                        .complete())
+                .isEqualTo(12345);
     }
 
     @Test
-    void testFlatMapOperator()
-    {
-        assertThat(
-            new CompletedRestAction<>(jda, "12345")
-                .flatMap(value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
-                .complete()
-        ).isEqualTo(12345);
+    void testFlatMapOperator() {
+        assertThat(new CompletedRestAction<>(jda, "12345")
+                        .flatMap(value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
+                        .complete())
+                .isEqualTo(12345);
 
-        assertThat(
-            new CompletedRestAction<>(jda, "12345")
-                .flatMap(
-                    value -> value.startsWith("123"),
-                    value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
-                .complete()
-        ).isEqualTo(12345);
+        assertThat(new CompletedRestAction<>(jda, "12345")
+                        .flatMap(
+                                value -> value.startsWith("123"),
+                                value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
+                        .complete())
+                .isEqualTo(12345);
 
-        assertThatThrownBy(() ->
-            new CompletedRestAction<>(jda, "12345")
-                .flatMap(
-                    value -> value.startsWith("wrong"),
-                    value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
-                .complete()
-        ).isInstanceOf(CancellationException.class).hasMessage("FlatMap condition failed");
+        assertThatThrownBy(() -> new CompletedRestAction<>(jda, "12345")
+                        .flatMap(
+                                value -> value.startsWith("wrong"),
+                                value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
+                        .complete())
+                .isInstanceOf(CancellationException.class)
+                .hasMessage("FlatMap condition failed");
 
-        assertThat(
-            new CompletedRestAction<>(jda, "12345")
-                .flatMap(
-                    value -> value.startsWith("wrong"),
-                    value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
-                .submit()
-        )
-            .failsWithin(Duration.ZERO)
-            .withThrowableThat()
-            .havingRootCause()
-            .isInstanceOf(CancellationException.class);
+        assertThat(new CompletedRestAction<>(jda, "12345")
+                        .flatMap(
+                                value -> value.startsWith("wrong"),
+                                value -> new CompletedRestAction<>(jda, Integer.parseInt(value)))
+                        .submit())
+                .failsWithin(Duration.ZERO)
+                .withThrowableThat()
+                .havingRootCause()
+                .isInstanceOf(CancellationException.class);
     }
 
     @Test
-    void testDelayOperator()
-    {
+    void testDelayOperator() {
         when(scheduledExecutorService.schedule(any(Runnable.class), anyLong(), any()))
-            .thenReturn(null);
+                .thenReturn(null);
 
         new CompletedRestAction<>(jda, "12345")
-            .delay(Duration.ofSeconds(2), scheduledExecutorService)
-            .queue();
+                .delay(Duration.ofSeconds(2), scheduledExecutorService)
+                .queue();
 
         new CompletedRestAction<>(jda, "12345")
-            .delay(3, TimeUnit.SECONDS, scheduledExecutorService)
-            .queue();
+                .delay(3, TimeUnit.SECONDS, scheduledExecutorService)
+                .queue();
 
-        verify(scheduledExecutorService, times(1))
-            .schedule(any(Runnable.class), eq(2000L), eq(TimeUnit.MILLISECONDS));
+        verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), eq(2000L), eq(TimeUnit.MILLISECONDS));
 
-        verify(scheduledExecutorService, times(1))
-            .schedule(any(Runnable.class), eq(3L), eq(TimeUnit.SECONDS));
+        verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), eq(3L), eq(TimeUnit.SECONDS));
     }
 
     @Test
-    void testQueueAfter()
-    {
+    void testQueueAfter() {
         when(scheduledExecutorService.schedule(any(Runnable.class), anyLong(), any()))
-            .thenReturn(null);
+                .thenReturn(null);
 
-        new CompletedRestAction<>(jda, "12345")
-            .queueAfter(2, TimeUnit.SECONDS, scheduledExecutorService);
+        new CompletedRestAction<>(jda, "12345").queueAfter(2, TimeUnit.SECONDS, scheduledExecutorService);
 
-        verify(scheduledExecutorService, times(1))
-            .schedule(any(Runnable.class), eq(2L), eq(TimeUnit.SECONDS));
+        verify(scheduledExecutorService, times(1)).schedule(any(Runnable.class), eq(2L), eq(TimeUnit.SECONDS));
     }
 }

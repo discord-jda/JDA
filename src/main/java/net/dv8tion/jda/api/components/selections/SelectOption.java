@@ -24,16 +24,16 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Objects;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 /**
  * One of the possible options provided in a {@link SelectMenu}.
  */
-public class SelectOption implements SerializableData
-{
+public class SelectOption implements SerializableData {
     /**
      * The maximum length a select option label can have
      */
@@ -66,8 +66,7 @@ public class SelectOption implements SerializableData
      * @throws IllegalArgumentException
      *         If the null is provided, or any of the individual parameter requirements are violated.
      */
-    protected SelectOption(@Nonnull String label, @Nonnull String value)
-    {
+    protected SelectOption(@Nonnull String label, @Nonnull String value) {
         this(label, value, null, false, null);
     }
 
@@ -89,14 +88,19 @@ public class SelectOption implements SerializableData
      * @throws IllegalArgumentException
      *         If an unexpected null is provided, or any of the individual parameter requirements are violated.
      */
-    protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable Emoji emoji)
-    {
+    protected SelectOption(
+            @Nonnull String label,
+            @Nonnull String value,
+            @Nullable String description,
+            boolean isDefault,
+            @Nullable Emoji emoji) {
         Checks.notEmpty(label, "Label");
         Checks.notEmpty(value, "Value");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         Checks.notLonger(value, VALUE_MAX_LENGTH, "Value");
-        if (description != null)
+        if (description != null) {
             Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
+        }
         this.label = label;
         this.value = value;
         this.description = description;
@@ -121,8 +125,7 @@ public class SelectOption implements SerializableData
      */
     @Nonnull
     @CheckReturnValue
-    public static SelectOption of(@Nonnull String label, @Nonnull String value)
-    {
+    public static SelectOption of(@Nonnull String label, @Nonnull String value) {
         return new SelectOption(label, value);
     }
 
@@ -139,8 +142,7 @@ public class SelectOption implements SerializableData
      */
     @Nonnull
     @CheckReturnValue
-    public SelectOption withLabel(@Nonnull String label)
-    {
+    public SelectOption withLabel(@Nonnull String label) {
         return new SelectOption(label, value, description, isDefault, emoji);
     }
 
@@ -158,8 +160,7 @@ public class SelectOption implements SerializableData
      */
     @Nonnull
     @CheckReturnValue
-    public SelectOption withValue(@Nonnull String value)
-    {
+    public SelectOption withValue(@Nonnull String value) {
         return new SelectOption(label, value, description, isDefault, emoji);
     }
 
@@ -178,8 +179,7 @@ public class SelectOption implements SerializableData
      */
     @Nonnull
     @CheckReturnValue
-    public SelectOption withDescription(@Nullable String description)
-    {
+    public SelectOption withDescription(@Nullable String description) {
         return new SelectOption(label, value, description, isDefault, emoji);
     }
 
@@ -194,8 +194,7 @@ public class SelectOption implements SerializableData
      */
     @Nonnull
     @CheckReturnValue
-    public SelectOption withDefault(boolean isDefault)
-    {
+    public SelectOption withDefault(boolean isDefault) {
         return new SelectOption(label, value, description, isDefault, emoji);
     }
 
@@ -210,8 +209,7 @@ public class SelectOption implements SerializableData
      */
     @Nonnull
     @CheckReturnValue
-    public SelectOption withEmoji(@Nullable Emoji emoji)
-    {
+    public SelectOption withEmoji(@Nullable Emoji emoji) {
         return new SelectOption(label, value, description, isDefault, emoji);
     }
 
@@ -221,8 +219,7 @@ public class SelectOption implements SerializableData
      * @return The label
      */
     @Nonnull
-    public String getLabel()
-    {
+    public String getLabel() {
         return label;
     }
 
@@ -232,8 +229,7 @@ public class SelectOption implements SerializableData
      * @return The option value
      */
     @Nonnull
-    public String getValue()
-    {
+    public String getValue() {
         return value;
     }
 
@@ -243,8 +239,7 @@ public class SelectOption implements SerializableData
      * @return The description
      */
     @Nullable
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -253,8 +248,7 @@ public class SelectOption implements SerializableData
      *
      * @return True, if this option is selected by default
      */
-    public boolean isDefault()
-    {
+    public boolean isDefault() {
         return isDefault;
     }
 
@@ -264,23 +258,23 @@ public class SelectOption implements SerializableData
      * @return The attached emoji
      */
     @Nullable
-    public EmojiUnion getEmoji()
-    {
+    public EmojiUnion getEmoji() {
         return emoji;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject object = DataObject.empty();
         object.put("label", label);
         object.put("value", value);
         object.put("default", isDefault);
-        if (emoji != null)
+        if (emoji != null) {
             object.put("emoji", emoji);
-        if (description != null && !description.isEmpty())
+        }
+        if (description != null && !description.isEmpty()) {
             object.put("description", description);
+        }
         return object;
     }
 
@@ -299,34 +293,34 @@ public class SelectOption implements SerializableData
      */
     @Nonnull
     @CheckReturnValue
-    public static SelectOption fromData(@Nonnull DataObject data)
-    {
+    public static SelectOption fromData(@Nonnull DataObject data) {
         Checks.notNull(data, "DataObject");
         return new SelectOption(
-            data.getString("label"),
-            data.getString("value"),
-            data.getString("description", null),
-            data.getBoolean("default", false),
-            data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null)
-        );
+                data.getString("label"),
+                data.getString("value"),
+                data.getString("description", null),
+                data.getBoolean("default", false),
+                data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof SelectOption)) return false;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof SelectOption)) {
+            return false;
+        }
         SelectOption that = (SelectOption) o;
         return isDefault == that.isDefault
-            && Objects.equals(label, that.label)
-            && Objects.equals(value, that.value)
-            && Objects.equals(description, that.description)
-            && Objects.equals(emoji, that.emoji);
+                && Objects.equals(label, that.label)
+                && Objects.equals(value, that.value)
+                && Objects.equals(description, that.description)
+                && Objects.equals(emoji, that.emoji);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(label, value, description, isDefault, emoji);
     }
 }

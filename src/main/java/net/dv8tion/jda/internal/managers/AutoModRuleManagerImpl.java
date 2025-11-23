@@ -30,15 +30,15 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> implements AutoModRuleManager
-{
+import javax.annotation.Nonnull;
+
+public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> implements AutoModRuleManager {
     protected final Guild guild;
     protected String name;
     protected boolean enabled;
@@ -47,16 +47,14 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
     protected List<GuildChannel> exemptChannels;
     protected TriggerConfig triggerConfig;
 
-    public AutoModRuleManagerImpl(Guild guild, String ruleId)
-    {
+    public AutoModRuleManagerImpl(Guild guild, String ruleId) {
         super(guild.getJDA(), Route.AutoModeration.UPDATE_RULE.compile(guild.getId(), ruleId));
         this.guild = guild;
     }
 
     @Nonnull
     @Override
-    public AutoModRuleManager setName(@Nonnull String name)
-    {
+    public AutoModRuleManager setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, AutoModRule.MAX_RULE_NAME_LENGTH, "Name");
         this.name = name;
@@ -66,8 +64,7 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
 
     @Nonnull
     @Override
-    public AutoModRuleManager setEnabled(boolean enabled)
-    {
+    public AutoModRuleManager setEnabled(boolean enabled) {
         this.enabled = enabled;
         set |= ENABLED;
         return this;
@@ -75,13 +72,11 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
 
     @Nonnull
     @Override
-    public AutoModRuleManager setResponses(@Nonnull Collection<? extends AutoModResponse> responses)
-    {
+    public AutoModRuleManager setResponses(@Nonnull Collection<? extends AutoModResponse> responses) {
         Checks.noneNull(responses, "Responses");
         Checks.notEmpty(responses, "Responses");
         this.responses = new EnumMap<>(AutoModResponse.Type.class);
-        for (AutoModResponse response : responses)
-        {
+        for (AutoModResponse response : responses) {
             AutoModResponse.Type type = response.getType();
             Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot add response with unknown response type!");
             this.responses.put(type, response);
@@ -92,12 +87,15 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
 
     @Nonnull
     @Override
-    public AutoModRuleManager setExemptRoles(@Nonnull Collection<Role> roles)
-    {
+    public AutoModRuleManager setExemptRoles(@Nonnull Collection<Role> roles) {
         Checks.noneNull(roles, "Roles");
-        Checks.check(roles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot have more than %d exempt roles!", AutoModRule.MAX_EXEMPT_ROLES);
-        for (Role role : roles)
+        Checks.check(
+                roles.size() <= AutoModRule.MAX_EXEMPT_ROLES,
+                "Cannot have more than %d exempt roles!",
+                AutoModRule.MAX_EXEMPT_ROLES);
+        for (Role role : roles) {
             Checks.check(role.getGuild().equals(guild), "Role %s is not from the same guild as this rule!", role);
+        }
         this.exemptRoles = new ArrayList<>(roles);
         set |= EXEMPT_ROLES;
         return this;
@@ -105,12 +103,16 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
 
     @Nonnull
     @Override
-    public AutoModRuleManager setExemptChannels(@Nonnull Collection<? extends GuildChannel> channels)
-    {
+    public AutoModRuleManager setExemptChannels(@Nonnull Collection<? extends GuildChannel> channels) {
         Checks.noneNull(channels, "Channels");
-        Checks.check(channels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot have more than %d exempt channels!", AutoModRule.MAX_EXEMPT_CHANNELS);
-        for (GuildChannel channel : channels)
-            Checks.check(channel.getGuild().equals(guild), "Channel %s is not from the same guild as this rule!", channel);
+        Checks.check(
+                channels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS,
+                "Cannot have more than %d exempt channels!",
+                AutoModRule.MAX_EXEMPT_CHANNELS);
+        for (GuildChannel channel : channels) {
+            Checks.check(
+                    channel.getGuild().equals(guild), "Channel %s is not from the same guild as this rule!", channel);
+        }
         this.exemptChannels = new ArrayList<>(channels);
         set |= EXEMPT_CHANNELS;
         return this;
@@ -118,8 +120,7 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
 
     @Nonnull
     @Override
-    public AutoModRuleManager setTriggerConfig(@Nonnull TriggerConfig config)
-    {
+    public AutoModRuleManager setTriggerConfig(@Nonnull TriggerConfig config) {
         Checks.notNull(config, "TriggerConfig");
         Checks.check(config.getType() != AutoModTriggerType.UNKNOWN, "Unknown trigger type!");
         this.triggerConfig = config;
@@ -128,22 +129,31 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
 
-        if (shouldUpdate(NAME))
+        if (shouldUpdate(NAME)) {
             body.put("name", name);
-        if (shouldUpdate(ENABLED))
+        }
+        if (shouldUpdate(ENABLED)) {
             body.put("enabled", enabled);
-        if (shouldUpdate(RESPONSE))
+        }
+        if (shouldUpdate(RESPONSE)) {
             body.put("actions", DataArray.fromCollection(responses.values()));
-        if (shouldUpdate(EXEMPT_ROLES))
-            body.put("exempt_roles", DataArray.fromCollection(exemptRoles.stream().map(Role::getId).collect(Collectors.toList())));
-        if (shouldUpdate(EXEMPT_CHANNELS))
-            body.put("exempt_channels", DataArray.fromCollection(exemptChannels.stream().map(GuildChannel::getId).collect(Collectors.toList())));
-        if (shouldUpdate(TRIGGER_METADATA))
-        {
+        }
+        if (shouldUpdate(EXEMPT_ROLES)) {
+            body.put(
+                    "exempt_roles",
+                    DataArray.fromCollection(
+                            exemptRoles.stream().map(Role::getId).collect(Collectors.toList())));
+        }
+        if (shouldUpdate(EXEMPT_CHANNELS)) {
+            body.put(
+                    "exempt_channels",
+                    DataArray.fromCollection(
+                            exemptChannels.stream().map(GuildChannel::getId).collect(Collectors.toList())));
+        }
+        if (shouldUpdate(TRIGGER_METADATA)) {
             body.put("trigger_type", triggerConfig.getType().getKey());
             body.put("trigger_metadata", triggerConfig.toData());
         }

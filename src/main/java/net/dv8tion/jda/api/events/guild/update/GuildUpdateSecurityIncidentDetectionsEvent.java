@@ -29,12 +29,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code security_incident_detections}
  */
-public class GuildUpdateSecurityIncidentDetectionsEvent extends GenericGuildUpdateEvent<SecurityIncidentDetections>
-{
+public class GuildUpdateSecurityIncidentDetectionsEvent extends GenericGuildUpdateEvent<SecurityIncidentDetections> {
     public static final String IDENTIFIER = "security_incident_detections";
 
-    public GuildUpdateSecurityIncidentDetectionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull SecurityIncidentDetections previous)
-    {
+    public GuildUpdateSecurityIncidentDetectionsEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull SecurityIncidentDetections previous) {
         super(api, responseNumber, guild, previous, guild.getSecurityIncidentDetections(), IDENTIFIER);
     }
 
@@ -44,8 +43,7 @@ public class GuildUpdateSecurityIncidentDetectionsEvent extends GenericGuildUpda
      * @return The old incident actions
      */
     @Nonnull
-    public SecurityIncidentDetections getOldSecurityIncidentDetections()
-    {
+    public SecurityIncidentDetections getOldSecurityIncidentDetections() {
         return getOldValue();
     }
 
@@ -55,8 +53,7 @@ public class GuildUpdateSecurityIncidentDetectionsEvent extends GenericGuildUpda
      * @return The new incident actions
      */
     @Nonnull
-    public SecurityIncidentDetections getNewSecurityIncidentDetections()
-    {
+    public SecurityIncidentDetections getNewSecurityIncidentDetections() {
         return getNewValue();
     }
 }

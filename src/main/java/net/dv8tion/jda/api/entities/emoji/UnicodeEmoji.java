@@ -22,15 +22,14 @@ import javax.annotation.Nonnull;
 
 /**
  * Represents a standard unicode emoji such as 😃 (client alias: {@code :smiley:}).
- * 
+ *
  * <p>This type only encapsulates the unicode character and is unaware of the human-readable aliases used by the discord client.
- * 
- * @see Emoji#fromUnicode(String) 
- * @see Emoji#fromFormatted(String) 
- * @see Emoji#fromData(DataObject) 
+ *
+ * @see Emoji#fromUnicode(String)
+ * @see Emoji#fromFormatted(String)
+ * @see Emoji#fromData(DataObject)
  */
-public interface UnicodeEmoji extends Emoji
-{
+public interface UnicodeEmoji extends Emoji {
     /**
      * Converts the unicode name into codepoint notation like {@code U+1F602}.
      *
@@ -41,15 +40,13 @@ public interface UnicodeEmoji extends Emoji
 
     @Nonnull
     @Override
-    default Type getType()
-    {
+    default Type getType() {
         return Type.UNICODE;
     }
 
     @Nonnull
     @Override
-    default String getFormatted()
-    {
+    default String getFormatted() {
         return getName();
     }
 }

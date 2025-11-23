@@ -27,31 +27,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.Mockito.*;
 
-public class EventFiredAssertions<T>
-{
+public class EventFiredAssertions<T> {
     private final Class<T> eventType;
     private final JDAImpl jda;
     private final List<ThrowingConsumer<T>> assertions = new ArrayList<>();
 
-    public EventFiredAssertions(Class<T> eventType, JDAImpl jda)
-    {
+    public EventFiredAssertions(Class<T> eventType, JDAImpl jda) {
         this.eventType = eventType;
         this.jda = jda;
     }
 
-    public <V> EventFiredAssertions<T> hasGetterWithValueEqualTo(Function<T, V> getter, V value)
-    {
+    public <V> EventFiredAssertions<T> hasGetterWithValueEqualTo(Function<T, V> getter, V value) {
         assertions.add(event -> assertThat(getter.apply(event)).isEqualTo(value));
         return this;
     }
 
-    public void isFiredBy(Runnable runnable)
-    {
+    public void isFiredBy(Runnable runnable) {
         doNothing().when(jda).handleEvent(assertArg(arg -> {
             assertThat(arg).isInstanceOf(eventType);
             T casted = eventType.cast(arg);
-            for (ThrowingConsumer<T> assertion : assertions)
+            for (ThrowingConsumer<T> assertion : assertions) {
                 assertion.accept(casted);
+            }
         }));
 
         runnable.run();

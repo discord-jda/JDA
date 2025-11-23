@@ -32,13 +32,10 @@ import javax.annotation.Nonnull;
  *
  * <p><b>This uses descending order!</b>
  *
- * @since 3.0
- *
  * @see   net.dv8tion.jda.api.entities.Guild#modifyRolePositions()
  * @see   net.dv8tion.jda.api.entities.Guild#modifyRolePositions(boolean)
  */
-public interface RoleOrderAction extends OrderAction<Role, RoleOrderAction>
-{
+public interface RoleOrderAction extends OrderAction<Role, RoleOrderAction> {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} which holds
      * the roles from {@link #getCurrentOrder()}

@@ -33,12 +33,10 @@ import javax.annotation.Nonnull;
  *
  * @see Guild#getGuildChannelById(long)
  * @see Guild#getGuildChannelById(ChannelType, long)
- *
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends Channel, Comparable<GuildChannel>
-{
+public interface GuildChannel extends Channel, Comparable<GuildChannel> {
     /** Template for {@link #getJumpUrl()}.*/
     String JUMP_URL = "https://discord.com/channels/%s/%s";
 
@@ -85,7 +83,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the currently logged in account doesn't have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      *         for the channel.
-     *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
@@ -116,8 +113,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @return A String representing the jump-to URL for the channel.
      */
     @Nonnull
-    default String getJumpUrl()
-    {
+    default String getJumpUrl() {
         return Helpers.format(JUMP_URL, getGuild().getId(), getId());
     }
 }

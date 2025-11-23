@@ -24,7 +24,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-
 /**
  * Represents a channel that can be a member of a {@link Category}.
  * Channels represented by this interface can have a parent {@link Category}.
@@ -32,8 +31,7 @@ import javax.annotation.Nullable;
  * @see Category
  * @see net.dv8tion.jda.api.entities.Guild#getCategories()
  */
-public interface ICategorizableChannel extends GuildChannel, IPermissionContainer, IPositionableChannel
-{
+public interface ICategorizableChannel extends GuildChannel, IPermissionContainer, IPositionableChannel {
     @Override
     @Nonnull
     @CheckReturnValue
@@ -48,8 +46,7 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      *
      * @return The relative position in the parent category, or {@code -1} if no parent is set
      */
-    default int getPositionInCategory()
-    {
+    default int getPositionInCategory() {
         Category parent = getParentCategory();
         return parent == null ? -1 : parent.getChannels().indexOf(this);
     }
@@ -71,11 +68,11 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      * @return Possibly-null String representation of the Discord ID snowflake of the parent channel.
      */
     @Nullable
-    default String getParentCategoryId()
-    {
+    default String getParentCategoryId() {
         long parentID = getParentCategoryIdLong();
-        if (parentID == 0L)
+        if (parentID == 0L) {
             return null;
+        }
         return Long.toUnsignedString(parentID);
     }
 
@@ -91,8 +88,7 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      * @return Possibly-null {@link Category Category} for this GuildChannel
      */
     @Nullable
-    default Category getParentCategory()
-    {
+    default Category getParentCategory() {
         return getGuild().getCategoryById(getParentCategoryIdLong());
     }
 
@@ -107,8 +103,6 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this channel is synced with its parent category
-     *
-     * @since  4.2.1
      */
     boolean isSynced();
 }

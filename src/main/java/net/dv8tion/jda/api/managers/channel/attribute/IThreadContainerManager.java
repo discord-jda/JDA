@@ -31,8 +31,8 @@ import javax.annotation.Nonnull;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface IThreadContainerManager<T extends IThreadContainer, M extends IThreadContainerManager<T, M>> extends ChannelManager<T, M>
-{
+public interface IThreadContainerManager<T extends IThreadContainer, M extends IThreadContainerManager<T, M>>
+        extends ChannelManager<T, M> {
     /**
      * Sets the <b><u>default thread slowmode</u></b> of the selected channel.
      * This is applied to newly created threads by default.

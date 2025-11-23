@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
@@ -38,12 +39,11 @@ import javax.annotation.Nonnull;
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class ScheduledEventUpdateImageEvent extends GenericScheduledEventUpdateEvent<String>
-{
+public class ScheduledEventUpdateImageEvent extends GenericScheduledEventUpdateEvent<String> {
     public static final String IDENTIFIER = "image";
 
-    public ScheduledEventUpdateImageEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous)
-    {
+    public ScheduledEventUpdateImageEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous) {
         super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getImageUrl(), IDENTIFIER);
     }
 
@@ -53,8 +53,7 @@ public class ScheduledEventUpdateImageEvent extends GenericScheduledEventUpdateE
      * @return The old image
      */
     @Nonnull
-    public String getOldImageUrl()
-    {
+    public String getOldImageUrl() {
         return getOldValue();
     }
 
@@ -64,22 +63,19 @@ public class ScheduledEventUpdateImageEvent extends GenericScheduledEventUpdateE
      * @return The new image
      */
     @Nonnull
-    public String getNewImageUrl()
-    {
+    public String getNewImageUrl() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

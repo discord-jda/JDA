@@ -34,15 +34,14 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class ChannelOrderActionImpl
-    extends OrderActionImpl<GuildChannel, ChannelOrderAction>
-    implements ChannelOrderAction
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ChannelOrderActionImpl extends OrderActionImpl<GuildChannel, ChannelOrderAction>
+        implements ChannelOrderAction {
     protected final Guild guild;
     protected final int bucket;
     protected final TLongSet lockPermissions = new TLongHashSet();
@@ -57,8 +56,7 @@ public class ChannelOrderActionImpl
      * @param  bucket
      *         The sorting bucket
      */
-    public ChannelOrderActionImpl(Guild guild, int bucket)
-    {
+    public ChannelOrderActionImpl(Guild guild, int bucket) {
         this(guild, bucket, getChannelsOfType(guild, bucket));
     }
 
@@ -82,16 +80,17 @@ public class ChannelOrderActionImpl
      *         or any of them do not have the same ChannelType as the one
      *         provided.
      */
-    public ChannelOrderActionImpl(Guild guild, int bucket, Collection<? extends GuildChannel> channels)
-    {
+    public ChannelOrderActionImpl(Guild guild, int bucket, Collection<? extends GuildChannel> channels) {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
 
         Checks.notNull(channels, "Channels to order");
         Checks.notEmpty(channels, "Channels to order");
-        Checks.check(channels.stream().allMatch(c -> guild.equals(c.getGuild())),
-            "One or more channels are not from the correct guild");
-        Checks.check(channels.stream().allMatch(c -> c.getType().getSortBucket() == bucket),
-            "One or more channels did not match the expected bucket " + bucket);
+        Checks.check(
+                channels.stream().allMatch(c -> guild.equals(c.getGuild())),
+                "One or more channels are not from the correct guild");
+        Checks.check(
+                channels.stream().allMatch(c -> c.getType().getSortBucket() == bucket),
+                "One or more channels did not match the expected bucket " + bucket);
 
         this.guild = guild;
         this.bucket = bucket;
@@ -100,51 +99,47 @@ public class ChannelOrderActionImpl
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Override
-    public int getSortBucket()
-    {
+    public int getSortBucket() {
         return bucket;
     }
 
     @Nonnull
     @Override
-    public ChannelOrderAction setCategory(@Nullable Category category, boolean syncPermissions)
-    {
+    public ChannelOrderAction setCategory(@Nullable Category category, boolean syncPermissions) {
         GuildChannel channel = getSelectedEntity();
-        if (!(channel instanceof ICategorizableChannel) && category != null)
+        if (!(channel instanceof ICategorizableChannel) && category != null) {
             throw new IllegalStateException("Cannot move channel of type " + channel.getType() + " to category!");
-        if (category != null)
+        }
+        if (category != null) {
             Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild!");
+        }
 
         long id = channel.getIdLong();
         parent.put(id, category == null ? 0 : category.getIdLong());
-        if (syncPermissions)
+        if (syncPermissions) {
             lockPermissions.add(id);
-        else
+        } else {
             lockPermissions.remove(id);
+        }
         return this;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
-        final Member self = guild.getSelfMember();
-        if (!self.hasPermission(Permission.MANAGE_CHANNEL))
+    protected RequestBody finalizeData() {
+        Member self = guild.getSelfMember();
+        if (!self.hasPermission(Permission.MANAGE_CHANNEL)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_CHANNEL);
+        }
         DataArray array = DataArray.empty();
-        for (int i = 0; i < orderList.size(); i++)
-        {
+        for (int i = 0; i < orderList.size(); i++) {
             GuildChannel chan = orderList.get(i);
-            DataObject json = DataObject.empty()
-                    .put("id", chan.getId())
-                    .put("position", i);
-            if (parent.containsKey(chan.getIdLong()))
-            {
+            DataObject json = DataObject.empty().put("id", chan.getId()).put("position", i);
+            if (parent.containsKey(chan.getIdLong())) {
                 long parentId = parent.get(chan.getIdLong());
                 json.put("parent_id", parentId == 0 ? null : parentId);
                 json.put("lock_permissions", lockPermissions.contains(chan.getIdLong()));
@@ -156,17 +151,15 @@ public class ChannelOrderActionImpl
     }
 
     @Override
-    protected void validateInput(GuildChannel entity)
-    {
+    protected void validateInput(GuildChannel entity) {
         Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    protected static Collection<GuildChannel> getChannelsOfType(Guild guild, int bucket)
-    {
+    protected static Collection<GuildChannel> getChannelsOfType(Guild guild, int bucket) {
         return guild.getChannels().stream()
-            .filter(it -> it.getType().getSortBucket() == bucket)
-            .sorted()
-            .collect(Collectors.toList());
+                .filter(it -> it.getType().getSortBucket() == bucket)
+                .sorted()
+                .collect(Collectors.toList());
     }
 }

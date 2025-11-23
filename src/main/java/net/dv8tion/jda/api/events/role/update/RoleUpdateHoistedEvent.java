@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code hoist}
  */
-public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent<Boolean>
-{
+public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "hoist";
 
-    public RoleUpdateHoistedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, boolean wasHoisted)
-    {
+    public RoleUpdateHoistedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, boolean wasHoisted) {
         super(api, responseNumber, role, wasHoisted, !wasHoisted, IDENTIFIER);
     }
 
@@ -42,22 +40,19 @@ public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent<Boolean>
      *
      * @return True, if the role was hoisted before this update
      */
-    public boolean wasHoisted()
-    {
+    public boolean wasHoisted() {
         return getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue()
-    {
+    public Boolean getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue()
-    {
+    public Boolean getNewValue() {
         return super.getNewValue();
     }
 }

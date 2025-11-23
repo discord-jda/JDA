@@ -26,10 +26,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the deleted Role and its Guild.
  */
-public class RoleDeleteEvent extends GenericRoleEvent
-{
-    public RoleDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role deletedRole)
-    {
+public class RoleDeleteEvent extends GenericRoleEvent {
+    public RoleDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role deletedRole) {
         super(api, responseNumber, deletedRole);
     }
 }

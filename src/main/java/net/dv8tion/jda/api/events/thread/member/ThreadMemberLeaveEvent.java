@@ -29,23 +29,25 @@ import javax.annotation.Nonnull;
  * @see ThreadChannel
  * @see ThreadMember
  */
-public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
-{
-    public ThreadMemberLeaveEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
-    {
+public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent {
+    public ThreadMemberLeaveEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            ThreadChannel thread,
+            long threadMemberId,
+            ThreadMember threadMember) {
         super(api, responseNumber, thread, threadMemberId, threadMember);
     }
 
     /**
      * The {@link ThreadMember} that just left the thread.
      * This entity will not be present in {@link ThreadChannel#getThreadMembers()} list.
-     * 
+     *
      * @return The {@link ThreadMember} that just left the thread
      */
     @Nonnull
     @Override
-    public ThreadMember getThreadMember()
-    {
+    public ThreadMember getThreadMember() {
         return super.getThreadMember();
     }
 
@@ -56,11 +58,11 @@ public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
      */
     @Nonnull
     @Override
-    public Member getMember()
-    {
-        //Explicitly override the getter from the super class to use the member return in the thread member itself because
-        // the ThreadMember will always have the Member while the Guild itself might not because of
-        // the ChunkingFilter or a lack of GUILD_MEMBERS intent.
+    public Member getMember() {
+        // Explicitly override the getter from the super class
+        // to use the member return in the thread member itself,
+        // because the ThreadMember will always have the Member while the Guild itself might not,
+        // because of the ChunkingFilter or a lack of GUILD_MEMBERS intent.
         return getThreadMember().getMember();
     }
 }

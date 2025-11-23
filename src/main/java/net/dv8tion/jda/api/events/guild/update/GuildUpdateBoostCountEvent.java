@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code boost_count}
  */
-public class GuildUpdateBoostCountEvent extends GenericGuildUpdateEvent<Integer>
-{
+public class GuildUpdateBoostCountEvent extends GenericGuildUpdateEvent<Integer> {
     public static final String IDENTIFIER = "boost_count";
 
-    public GuildUpdateBoostCountEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, int previous)
-    {
+    public GuildUpdateBoostCountEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, int previous) {
         super(api, responseNumber, guild, previous, guild.getBoostCount(), IDENTIFIER);
     }
 
@@ -42,8 +40,7 @@ public class GuildUpdateBoostCountEvent extends GenericGuildUpdateEvent<Integer>
      *
      * @return The old boost count
      */
-    public int getOldBoostCount()
-    {
+    public int getOldBoostCount() {
         return getOldValue();
     }
 
@@ -52,22 +49,19 @@ public class GuildUpdateBoostCountEvent extends GenericGuildUpdateEvent<Integer>
      *
      * @return The new boost count
      */
-    public int getNewBoostCount()
-    {
+    public int getNewBoostCount() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Integer getOldValue()
-    {
+    public Integer getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Integer getNewValue()
-    {
+    public Integer getNewValue() {
         return super.getNewValue();
     }
 }

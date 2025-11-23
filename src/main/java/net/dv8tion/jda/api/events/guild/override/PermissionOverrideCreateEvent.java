@@ -27,10 +27,12 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the new override.
  */
-public class PermissionOverrideCreateEvent extends GenericPermissionOverrideEvent
-{
-    public PermissionOverrideCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPermissionContainer channel, @Nonnull PermissionOverride override)
-    {
+public class PermissionOverrideCreateEvent extends GenericPermissionOverrideEvent {
+    public PermissionOverrideCreateEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull IPermissionContainer channel,
+            @Nonnull PermissionOverride override) {
         super(api, responseNumber, channel, override);
     }
 }

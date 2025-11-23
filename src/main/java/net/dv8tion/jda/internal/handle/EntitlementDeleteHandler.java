@@ -20,17 +20,15 @@ import net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-public class EntitlementDeleteHandler extends SocketHandler
-{
-    public EntitlementDeleteHandler(JDAImpl api)
-    {
+public class EntitlementDeleteHandler extends SocketHandler {
+    public EntitlementDeleteHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        getJDA().handleEvent(new EntitlementDeleteEvent(getJDA(), responseNumber, getJDA().getEntityBuilder().createEntitlement(content)));
+    protected Long handleInternally(DataObject content) {
+        getJDA().handleEvent(new EntitlementDeleteEvent(
+                getJDA(), responseNumber, getJDA().getEntityBuilder().createEntitlement(content)));
         return null;
     }
 }

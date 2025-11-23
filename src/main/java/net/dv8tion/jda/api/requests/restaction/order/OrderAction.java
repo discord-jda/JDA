@@ -19,13 +19,14 @@ package net.dv8tion.jda.api.requests.restaction.order;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
@@ -42,11 +43,8 @@ import java.util.function.BooleanSupplier;
  *        implementation rather than a mask of this class. It allows us to implement
  *        chaining operations in this class instead of having to implement it in every
  *        inheriting class!
- *
- * @since 3.0
  */
-public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void>
-{
+public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -325,5 +323,5 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      */
     @Nonnull
     @CheckReturnValue
-    M sortOrder(@Nonnull final Comparator<T> comparator);
+    M sortOrder(@Nonnull Comparator<T> comparator);
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.entities.Icon;
@@ -21,8 +22,6 @@ import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,12 +29,14 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
 /**
  * A utility class to retrieve attachments.
  * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific width and height.
  */
-public class AttachmentProxy extends FileProxy
-{
+public class AttachmentProxy extends FileProxy {
     /**
      * Constructs a new {@link AttachmentProxy} for the provided URL.
      *
@@ -45,15 +46,13 @@ public class AttachmentProxy extends FileProxy
      * @throws IllegalArgumentException
      *         If the provided URL is null
      */
-    public AttachmentProxy(@Nonnull String url)
-    {
+    public AttachmentProxy(@Nonnull String url) {
         super(url);
     }
 
     @Nonnull
     @Override
-    public AttachmentProxy withClient(@Nonnull OkHttpClient customHttpClient)
-    {
+    public AttachmentProxy withClient(@Nonnull OkHttpClient customHttpClient) {
         return (AttachmentProxy) super.withClient(customHttpClient);
     }
 
@@ -76,8 +75,7 @@ public class AttachmentProxy extends FileProxy
      * @return URL of the attachment with the specified width and height
      */
     @Nonnull
-    public String getUrl(int width, int height)
-    {
+    public String getUrl(int width, int height) {
         Checks.positive(width, "Image width");
         Checks.positive(height, "Image height");
 
@@ -105,8 +103,7 @@ public class AttachmentProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<InputStream> download(int width, int height)
-    {
+    public CompletableFuture<InputStream> download(int width, int height) {
         return download(getUrl(width, height));
     }
 
@@ -132,12 +129,10 @@ public class AttachmentProxy extends FileProxy
      *         </ul>
      *
      * @return {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
-     *
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Path> downloadToPath(int width, int height)
-    {
+    public CompletableFuture<Path> downloadToPath(int width, int height) {
         return downloadToPath(getUrl(width, height));
     }
 
@@ -171,11 +166,10 @@ public class AttachmentProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height)
-    {
+    public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height) {
         Checks.notNull(file, "File");
 
-        final CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(width, height), file.toPath());
+        CompletableFuture<Path> downloadToPathFuture = downloadToPath(getUrl(width, height), file.toPath());
         return FutureUtil.thenApplyCancellable(downloadToPathFuture, Path::toFile);
     }
 
@@ -210,8 +204,7 @@ public class AttachmentProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int width, int height)
-    {
+    public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int width, int height) {
         Checks.notNull(path, "Path");
 
         return downloadToPath(getUrl(width, height), path);
@@ -224,8 +217,7 @@ public class AttachmentProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Icon> downloadAsIcon()
-    {
+    public CompletableFuture<Icon> downloadAsIcon() {
         return downloadAsIcon(getUrl());
     }
 
@@ -250,8 +242,7 @@ public class AttachmentProxy extends FileProxy
      */
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<Icon> downloadAsIcon(int width, int height)
-    {
+    public CompletableFuture<Icon> downloadAsIcon(int width, int height) {
         return downloadAsIcon(getUrl(width, height));
     }
 
@@ -281,12 +272,11 @@ public class AttachmentProxy extends FileProxy
      * @return {@link FileUpload} from this attachment.
      */
     @Nonnull
-    public FileUpload downloadAsFileUpload(@Nonnull String name, int width, int height)
-    {
-        final String url = getUrl(width, height); // So the checks are also done outside the FileUpload
-        return FileUpload.fromStreamSupplier(name, () ->
-        {
-            // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+    public FileUpload downloadAsFileUpload(@Nonnull String name, int width, int height) {
+        String url = getUrl(width, height); // So the checks are also done outside the FileUpload
+        return FileUpload.fromStreamSupplier(name, () -> {
+            // Blocking is fine on the elastic rate limit thread pool
+            // [[JDABuilder#setRateLimitElastic]]
             return download(url).join();
         });
     }

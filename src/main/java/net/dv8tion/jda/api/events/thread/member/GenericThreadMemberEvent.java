@@ -38,13 +38,16 @@ import javax.annotation.Nullable;
  * @see ThreadChannel
  * @see ThreadMember
  */
-public class GenericThreadMemberEvent extends GenericThreadEvent
-{
+public class GenericThreadMemberEvent extends GenericThreadEvent {
     protected final long threadMemberId;
     protected final ThreadMember threadMember;
 
-    public GenericThreadMemberEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
-    {
+    public GenericThreadMemberEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            ThreadChannel thread,
+            long threadMemberId,
+            ThreadMember threadMember) {
         super(api, responseNumber, thread);
 
         this.threadMemberId = threadMemberId;
@@ -57,8 +60,7 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
      * @return Never-null String containing the ID.
      */
     @Nonnull
-    public String getThreadMemberId()
-    {
+    public String getThreadMemberId() {
         return Long.toUnsignedString(getThreadMemberIdLong());
     }
 
@@ -67,8 +69,7 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
      *
      * @return Long containing the Id.
      */
-    public long getThreadMemberIdLong()
-    {
+    public long getThreadMemberIdLong() {
         return threadMemberId;
     }
 
@@ -78,8 +79,7 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
      * @return The {@link ThreadMember} of the event that has been fired.
      */
     @Nullable
-    public ThreadMember getThreadMember()
-    {
+    public ThreadMember getThreadMember() {
         return threadMember;
     }
 
@@ -89,8 +89,7 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
      * @return The {@link ThreadMember} as a guild {@link Member}.
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return getGuild().getMemberById(threadMemberId);
     }
 }

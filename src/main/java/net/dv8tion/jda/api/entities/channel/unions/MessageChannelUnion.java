@@ -41,18 +41,17 @@ import javax.annotation.Nonnull;
  *     <li>{@link GroupChannel}</li>
  * </ul>
  */
-public interface MessageChannelUnion extends MessageChannel
-{
+public interface MessageChannelUnion extends MessageChannel {
     /**
      * Casts this union to a {@link PrivateChannel}.
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * PrivateChannel channel = union.asPrivateChannel();
      * PrivateChannel channel2 = (PrivateChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#PRIVATE} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof PrivateChannel</code>
@@ -70,11 +69,11 @@ public interface MessageChannelUnion extends MessageChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * GroupChannel channel = union.asGroupChannel();
      * GroupChannel channel2 = (GroupChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#GROUP} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof GroupChannel</code>
@@ -92,11 +91,11 @@ public interface MessageChannelUnion extends MessageChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * TextChannel channel = union.asTextChannel();
      * TextChannel channel2 = (TextChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#TEXT} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof TextChannel</code>
@@ -114,11 +113,11 @@ public interface MessageChannelUnion extends MessageChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * NewsChannel channel = union.asNewsChannel();
      * NewsChannel channel2 = (NewsChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#NEWS} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof NewsChannel</code>
@@ -136,11 +135,11 @@ public interface MessageChannelUnion extends MessageChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * ThreadChannel channel = union.asThreadChannel();
      * ThreadChannel channel2 = (ThreadChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()}{@link ChannelType#isThread() .isThread()} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof ThreadChannel</code>
@@ -158,11 +157,11 @@ public interface MessageChannelUnion extends MessageChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * VoiceChannel channel = union.asVoiceChannel();
      * VoiceChannel channel2 = (VoiceChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#VOICE} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof VoiceChannel</code>
@@ -180,11 +179,11 @@ public interface MessageChannelUnion extends MessageChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * StageChannel channel = union.asStageChannel();
      * StageChannel channel2 = (StageChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#STAGE} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof StageChannel</code>
@@ -202,11 +201,11 @@ public interface MessageChannelUnion extends MessageChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * IThreadContainer channel = union.asThreadContainer();
      * IThreadContainer channel2 = (IThreadContainer) union;
-     * </code></pre>
+     * }
      *
      * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
      *
@@ -228,11 +227,11 @@ public interface MessageChannelUnion extends MessageChannel
      * </ul>
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * GuildMessageChannel channel = union.asGuildMessageChannel();
      * GuildMessageChannel channel2 = (GuildMessageChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()}{@link ChannelType#isGuild() .isGuild()} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof GuildMessageChannel</code>
@@ -250,11 +249,11 @@ public interface MessageChannelUnion extends MessageChannel
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * AudioChannel channel = union.asAudioChannel();
      * AudioChannel channel2 = (AudioChannel) union;
-     * </code></pre>
+     * }
      *
      * You can use <code>channel instanceof AudioChannel</code> to validate whether you can call this method.
      *

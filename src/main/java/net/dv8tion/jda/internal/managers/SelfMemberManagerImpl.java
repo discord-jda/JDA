@@ -31,8 +31,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implements SelfMemberManager
-{
+public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implements SelfMemberManager {
     protected final SelfMember selfMember;
 
     protected String nickname;
@@ -40,41 +39,43 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     protected Icon banner;
     protected String bio;
 
-    public SelfMemberManagerImpl(@Nonnull SelfMember selfMember)
-    {
-        super(selfMember.getJDA(), Route.Guilds.MODIFY_SELF.compile(selfMember.getGuild().getId()));
+    public SelfMemberManagerImpl(@Nonnull SelfMember selfMember) {
+        super(
+                selfMember.getJDA(),
+                Route.Guilds.MODIFY_SELF.compile(selfMember.getGuild().getId()));
         this.selfMember = selfMember;
     }
 
     @Nonnull
     @Override
-    public SelfMember getMember()
-    {
+    public SelfMember getMember() {
         return selfMember;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public SelfMemberManagerImpl reset(long fields)
-    {
+    public SelfMemberManagerImpl reset(long fields) {
         super.reset(fields);
-        if ((fields & NICKNAME) == NICKNAME)
+        if ((fields & NICKNAME) == NICKNAME) {
             nickname = null;
-        if ((fields & AVATAR) == AVATAR)
+        }
+        if ((fields & AVATAR) == AVATAR) {
             avatar = null;
-        if ((fields & BANNER) == BANNER)
+        }
+        if ((fields & BANNER) == BANNER) {
             banner = null;
-        if ((fields & BIO) == BIO)
+        }
+        if ((fields & BIO) == BIO) {
             bio = null;
+        }
         return this;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public SelfMemberManagerImpl reset(@Nonnull long... fields)
-    {
+    public SelfMemberManagerImpl reset(@Nonnull long... fields) {
         super.reset(fields);
         return this;
     }
@@ -82,8 +83,7 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     @Nonnull
     @Override
     @CheckReturnValue
-    public SelfMemberManagerImpl reset()
-    {
+    public SelfMemberManagerImpl reset() {
         super.reset();
         nickname = null;
         avatar = null;
@@ -95,10 +95,10 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     @Nonnull
     @Override
     @CheckReturnValue
-    public SelfMemberManagerImpl setNickname(@Nullable String nickname)
-    {
-        if (nickname != null)
+    public SelfMemberManagerImpl setNickname(@Nullable String nickname) {
+        if (nickname != null) {
             Checks.notLonger(nickname, Member.MAX_NICKNAME_LENGTH, "Nickname");
+        }
         this.nickname = nickname;
         set |= NICKNAME;
         return this;
@@ -107,8 +107,7 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     @Nonnull
     @Override
     @CheckReturnValue
-    public SelfMemberManagerImpl setAvatar(@Nullable Icon avatar)
-    {
+    public SelfMemberManagerImpl setAvatar(@Nullable Icon avatar) {
         this.avatar = avatar;
         set |= AVATAR;
         return this;
@@ -117,8 +116,7 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     @Nonnull
     @Override
     @CheckReturnValue
-    public SelfMemberManagerImpl setBanner(@Nullable Icon banner)
-    {
+    public SelfMemberManagerImpl setBanner(@Nullable Icon banner) {
         this.banner = banner;
         set |= BANNER;
         return this;
@@ -127,36 +125,38 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     @Nonnull
     @Override
     @CheckReturnValue
-    public SelfMemberManagerImpl setBio(@Nullable String bio)
-    {
-        if (bio != null)
+    public SelfMemberManagerImpl setBio(@Nullable String bio) {
+        if (bio != null) {
             Checks.notLonger(bio, SelfMember.MAX_BIO_LENGTH, "Bio");
+        }
         this.bio = bio;
         set |= BIO;
         return this;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
 
-        if (shouldUpdate(NICKNAME))
+        if (shouldUpdate(NICKNAME)) {
             body.put("nick", nickname);
-        if (shouldUpdate(AVATAR))
+        }
+        if (shouldUpdate(AVATAR)) {
             body.put("avatar", avatar == null ? null : avatar.getEncoding());
-        if (shouldUpdate(BANNER))
+        }
+        if (shouldUpdate(BANNER)) {
             body.put("banner", banner == null ? null : banner.getEncoding());
-        if (shouldUpdate(BIO))
+        }
+        if (shouldUpdate(BIO)) {
             body.put("bio", bio);
+        }
 
         reset();
         return getRequestBody(body);
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Void> request)
-    {
+    protected void handleSuccess(Response response, Request<Void> request) {
         request.onSuccess(null);
     }
 }

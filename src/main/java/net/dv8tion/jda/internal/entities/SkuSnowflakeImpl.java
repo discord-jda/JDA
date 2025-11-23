@@ -19,40 +19,36 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-public class SkuSnowflakeImpl implements SkuSnowflake
-{
+public class SkuSnowflakeImpl implements SkuSnowflake {
     protected final long id;
 
-    public SkuSnowflakeImpl(long id)
-    {
+    public SkuSnowflakeImpl(long id) {
         this.id = id;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return this.id;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof SkuSnowflakeImpl))
+        }
+        if (!(obj instanceof SkuSnowflakeImpl)) {
             return false;
+        }
         return ((SkuSnowflakeImpl) obj).getIdLong() == this.id;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this).toString();
     }
 }

@@ -20,8 +20,7 @@ package net.dv8tion.jda.api;
  * Represents the type of account that is logged in.
  * <br>Used to differentiate between Bots and Client accounts.
  */
-public enum AccountType
-{
+public enum AccountType {
     /** An OAuth2 Bot which was created by an application */
     BOT
 }

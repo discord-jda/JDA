@@ -40,12 +40,10 @@ import javax.annotation.Nonnull;
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setRawEventsEnabled(boolean) DefaultShardManagerBuilder.setRawEventsEnabled(boolean)
  * @see <a href="https://discord.com/developers/docs/topics/gateway" target="_blank">Gateway Documentation</a>
  */
-public class RawGatewayEvent extends Event
-{
+public class RawGatewayEvent extends Event {
     private final DataObject data;
 
-    public RawGatewayEvent(@Nonnull JDA api, long responseNumber, @Nonnull DataObject data)
-    {
+    public RawGatewayEvent(@Nonnull JDA api, long responseNumber, @Nonnull DataObject data) {
         super(api, responseNumber);
         this.data = data;
     }
@@ -63,8 +61,7 @@ public class RawGatewayEvent extends Event
      * @return The data object
      */
     @Nonnull
-    public DataObject getPackage()
-    {
+    public DataObject getPackage() {
         return data;
     }
 
@@ -74,8 +71,7 @@ public class RawGatewayEvent extends Event
      * @return The payload as a {@link net.dv8tion.jda.api.utils.data.DataObject} instance
      */
     @Nonnull
-    public DataObject getPayload()
-    {
+    public DataObject getPayload() {
         return data.getObject("d");
     }
 
@@ -85,8 +81,7 @@ public class RawGatewayEvent extends Event
      * @return The type of event.
      */
     @Nonnull
-    public String getType()
-    {
+    public String getType() {
         return data.getString("t");
     }
 }

@@ -27,8 +27,7 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-public interface CryptoAdapter
-{
+public interface CryptoAdapter {
     String AES_GCM_NO_PADDING = "AES_256/GCM/NOPADDING";
 
     AudioEncryption getMode();
@@ -37,45 +36,39 @@ public interface CryptoAdapter
 
     byte[] decrypt(ByteBuffer packet);
 
-    static AudioEncryption negotiate(EnumSet<AudioEncryption> supportedModes)
-    {
-        for (AudioEncryption mode : AudioEncryption.values())
-        {
-            if (supportedModes.contains(mode) && isModeSupported(mode))
+    static AudioEncryption negotiate(EnumSet<AudioEncryption> supportedModes) {
+        for (AudioEncryption mode : AudioEncryption.values()) {
+            if (supportedModes.contains(mode) && isModeSupported(mode)) {
                 return mode;
+            }
         }
 
         return null;
     }
 
-    static boolean isModeSupported(AudioEncryption mode)
-    {
-        switch (mode)
-        {
-        case AEAD_AES256_GCM_RTPSIZE:
-            return Security.getAlgorithms("Cipher").contains(AES_GCM_NO_PADDING);
-        case AEAD_XCHACHA20_POLY1305_RTPSIZE:
-            return true;
-        default:
-            return false;
+    static boolean isModeSupported(AudioEncryption mode) {
+        switch (mode) {
+            case AEAD_AES256_GCM_RTPSIZE:
+                return Security.getAlgorithms("Cipher").contains(AES_GCM_NO_PADDING);
+            case AEAD_XCHACHA20_POLY1305_RTPSIZE:
+                return true;
+            default:
+                return false;
         }
     }
 
-    static CryptoAdapter getAdapter(AudioEncryption mode, byte[] secretKey)
-    {
-        switch (mode)
-        {
-        case AEAD_AES256_GCM_RTPSIZE:
-            return new CryptoAdapter.AES_GCM_Adapter(secretKey);
-        case AEAD_XCHACHA20_POLY1305_RTPSIZE:
-            return new XChaCha20Poly1305Adapter(secretKey);
-        default:
-            throw new IllegalStateException("Unsupported encryption mode: " + mode);
+    static CryptoAdapter getAdapter(AudioEncryption mode, byte[] secretKey) {
+        switch (mode) {
+            case AEAD_AES256_GCM_RTPSIZE:
+                return new CryptoAdapter.AES_GCM_Adapter(secretKey);
+            case AEAD_XCHACHA20_POLY1305_RTPSIZE:
+                return new XChaCha20Poly1305Adapter(secretKey);
+            default:
+                throw new IllegalStateException("Unsupported encryption mode: " + mode);
         }
     }
 
-    abstract class AbstractAaedAdapter implements CryptoAdapter
-    {
+    abstract class AbstractAaedAdapter implements CryptoAdapter {
         protected static final int nonceBytes = 4;
         protected static final SecureRandom random = new SecureRandom();
 
@@ -85,8 +78,7 @@ public interface CryptoAdapter
         protected final int paddedNonceBytes;
         protected int encryptCounter;
 
-        protected AbstractAaedAdapter(byte[] secretKey, int tagBytes, int paddedNonceBytes)
-        {
+        protected AbstractAaedAdapter(byte[] secretKey, int tagBytes, int paddedNonceBytes) {
             this.secretKey = secretKey;
             this.tagBytes = tagBytes;
             this.paddedNonceBytes = paddedNonceBytes;
@@ -95,12 +87,10 @@ public interface CryptoAdapter
         }
 
         @Override
-        public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio)
-        {
+        public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio) {
             int minimumOutputSize = audio.remaining() + this.tagBytes + nonceBytes;
 
-            if (output.remaining() < minimumOutputSize)
-            {
+            if (output.remaining() < minimumOutputSize) {
                 ByteBuffer newBuffer = ByteBuffer.allocate(output.capacity() + minimumOutputSize);
                 output.flip();
                 newBuffer.put(output);
@@ -109,23 +99,18 @@ public interface CryptoAdapter
 
             IOUtil.setIntBigEndian(nonceBuffer, 0, encryptCounter);
 
-            try
-            {
+            try {
                 encryptInternally(output, audio, nonceBuffer);
                 output.putInt(encryptCounter++);
                 return output;
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        public byte[] decrypt(ByteBuffer packet)
-        {
-            try
-            {
+        public byte[] decrypt(ByteBuffer packet) {
+            try {
                 int headerLength = packet.position();
                 packet.position(0);
                 byte[] associatedData = new byte[headerLength];
@@ -135,43 +120,38 @@ public interface CryptoAdapter
                 byte[] nonce = new byte[paddedNonceBytes];
                 packet.get(nonce, 0, nonceBytes);
                 return decryptInternally(cipherText, associatedData, nonce);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
         protected abstract void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce) throws Exception;
-        protected abstract byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce) throws Exception;
 
-        protected byte[] getAssociatedData(ByteBuffer output)
-        {
+        protected abstract byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce)
+                throws Exception;
+
+        protected byte[] getAssociatedData(ByteBuffer output) {
             return Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
         }
 
-        protected byte[] getPlaintextCopy(ByteBuffer audio)
-        {
-            return Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
+        protected byte[] getPlaintextCopy(ByteBuffer audio) {
+            return Arrays.copyOfRange(
+                    audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
         }
     }
 
-    class AES_GCM_Adapter extends AbstractAaedAdapter implements CryptoAdapter
-    {
-        public AES_GCM_Adapter(byte[] secretKey)
-        {
+    class AES_GCM_Adapter extends AbstractAaedAdapter implements CryptoAdapter {
+        public AES_GCM_Adapter(byte[] secretKey) {
             super(secretKey, 16, 12);
         }
 
         @Override
-        public AudioEncryption getMode()
-        {
+        public AudioEncryption getMode() {
             return AudioEncryption.AEAD_AES256_GCM_RTPSIZE;
         }
 
         @Override
-        protected void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce) throws Exception
-        {
+        protected void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce) throws Exception {
             InsecureNonceAesGcmJce cipher = getCipher();
             byte[] input = getPlaintextCopy(audio);
             byte[] associatedData = getAssociatedData(output);
@@ -179,34 +159,28 @@ public interface CryptoAdapter
         }
 
         @Override
-        public byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce) throws Exception
-        {
+        public byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce) throws Exception {
             InsecureNonceAesGcmJce cipher = getCipher();
             return cipher.decrypt(nonce, cipherText, associatedData);
         }
 
-        private InsecureNonceAesGcmJce getCipher() throws GeneralSecurityException
-        {
+        private InsecureNonceAesGcmJce getCipher() throws GeneralSecurityException {
             return new InsecureNonceAesGcmJce(secretKey);
         }
     }
 
-    class XChaCha20Poly1305Adapter extends AbstractAaedAdapter implements CryptoAdapter
-    {
-        public XChaCha20Poly1305Adapter(byte[] secretKey)
-        {
+    class XChaCha20Poly1305Adapter extends AbstractAaedAdapter implements CryptoAdapter {
+        public XChaCha20Poly1305Adapter(byte[] secretKey) {
             super(secretKey, 16, 24);
         }
 
         @Override
-        public AudioEncryption getMode()
-        {
+        public AudioEncryption getMode() {
             return AudioEncryption.AEAD_XCHACHA20_POLY1305_RTPSIZE;
         }
 
         @Override
-        public void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce) throws Exception
-        {
+        public void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] nonce) throws Exception {
             InsecureNonceXChaCha20Poly1305 cipher = getCipher();
             byte[] input = getPlaintextCopy(audio);
             byte[] associatedData = getAssociatedData(output);
@@ -214,14 +188,12 @@ public interface CryptoAdapter
         }
 
         @Override
-        public byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce) throws Exception
-        {
+        public byte[] decryptInternally(byte[] cipherText, byte[] associatedData, byte[] nonce) throws Exception {
             InsecureNonceXChaCha20Poly1305 cipher = getCipher();
             return cipher.decrypt(nonce, cipherText, associatedData);
         }
 
-        private InsecureNonceXChaCha20Poly1305 getCipher() throws GeneralSecurityException
-        {
+        private InsecureNonceXChaCha20Poly1305 getCipher() throws GeneralSecurityException {
             return new InsecureNonceXChaCha20Poly1305(secretKey);
         }
     }

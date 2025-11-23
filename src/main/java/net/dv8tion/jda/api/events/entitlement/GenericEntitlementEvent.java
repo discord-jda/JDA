@@ -29,12 +29,10 @@ import javax.annotation.Nonnull;
  * @see EntitlementUpdateEvent
  * @see EntitlementDeleteEvent
  */
-public abstract class GenericEntitlementEvent extends Event
-{
+public abstract class GenericEntitlementEvent extends Event {
     protected final Entitlement entitlement;
 
-    protected GenericEntitlementEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement)
-    {
+    protected GenericEntitlementEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
         super(api, responseNumber);
         this.entitlement = entitlement;
     }
@@ -45,8 +43,7 @@ public abstract class GenericEntitlementEvent extends Event
      * @return The {@link Entitlement Entitlement}
      */
     @Nonnull
-    public Entitlement getEntitlement()
-    {
+    public Entitlement getEntitlement() {
         return entitlement;
     }
 }

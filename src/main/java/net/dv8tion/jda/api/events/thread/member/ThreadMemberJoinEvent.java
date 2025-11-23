@@ -29,10 +29,9 @@ import javax.annotation.Nonnull;
  * @see ThreadChannel
  * @see ThreadMember
  */
-public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
-{
-    public ThreadMemberJoinEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, ThreadMember threadMember)
-    {
+public class ThreadMemberJoinEvent extends GenericThreadMemberEvent {
+    public ThreadMemberJoinEvent(
+            @Nonnull JDA api, long responseNumber, ThreadChannel thread, ThreadMember threadMember) {
         super(api, responseNumber, thread, threadMember.getIdLong(), threadMember);
     }
 
@@ -44,8 +43,7 @@ public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
      */
     @Nonnull
     @Override
-    public ThreadMember getThreadMember()
-    {
+    public ThreadMember getThreadMember() {
         return super.getThreadMember();
     }
 
@@ -56,11 +54,11 @@ public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
      */
     @Nonnull
     @Override
-    public Member getMember()
-    {
-        //Explicitly override the getter from the super class to use the member return in the thread member itself because
-        // the ThreadMember will always have the Member while the Guild itself might not because of
-        // the ChunkingFilter or a lack of GUILD_MEMBERS intent.
+    public Member getMember() {
+        // Explicitly override the getter from the super class
+        // to use the member return in the thread member itself,
+        // because the ThreadMember will always have the Member while the Guild itself might not,
+        // because of the ChunkingFilter or a lack of GUILD_MEMBERS intent.
         return getThreadMember().getMember();
     }
 }

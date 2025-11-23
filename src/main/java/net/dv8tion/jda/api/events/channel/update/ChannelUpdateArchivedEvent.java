@@ -33,13 +33,12 @@ import javax.annotation.Nonnull;
  * @see ThreadChannel#isArchived()
  * @see ChannelField#ARCHIVED
  */
-public class ChannelUpdateArchivedEvent extends GenericChannelUpdateEvent<Boolean>
-{
+public class ChannelUpdateArchivedEvent extends GenericChannelUpdateEvent<Boolean> {
     public static final ChannelField FIELD = ChannelField.ARCHIVED;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateArchivedEvent(@Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue)
-    {
+    public ChannelUpdateArchivedEvent(
+            @Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

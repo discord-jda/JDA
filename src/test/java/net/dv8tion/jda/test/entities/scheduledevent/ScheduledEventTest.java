@@ -27,14 +27,12 @@ import org.mockito.Mock;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class ScheduledEventTest extends IntegrationTest
-{
+public class ScheduledEventTest extends IntegrationTest {
     @Mock
     Guild guild;
 
     @Test
-    void testGetJumpUrl()
-    {
+    void testGetJumpUrl() {
         String eventId = randomSnowflake();
         String guildId = Long.toUnsignedString(Constants.GUILD_ID);
 
@@ -42,8 +40,6 @@ public class ScheduledEventTest extends IntegrationTest
 
         ScheduledEvent scheduledEvent = new ScheduledEventImpl(Long.parseUnsignedLong(eventId), guild);
 
-        assertThat(scheduledEvent.getJumpUrl())
-            .isEqualTo("https://discord.com/events/" + guildId + "/" + eventId);
+        assertThat(scheduledEvent.getJumpUrl()).isEqualTo("https://discord.com/events/" + guildId + "/" + eventId);
     }
-
 }

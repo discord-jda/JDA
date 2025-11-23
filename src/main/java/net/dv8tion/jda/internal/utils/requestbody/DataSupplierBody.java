@@ -20,36 +20,32 @@ import okhttp3.MediaType;
 import okio.BufferedSink;
 import okio.Source;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.function.Supplier;
 
-public class DataSupplierBody extends TypedBody<DataSupplierBody>
-{
+import javax.annotation.Nonnull;
+
+public class DataSupplierBody extends TypedBody<DataSupplierBody> {
     private final Supplier<? extends Source> streamSupply;
 
-    public DataSupplierBody(MediaType type, Supplier<? extends Source> streamSupply)
-    {
+    public DataSupplierBody(MediaType type, Supplier<? extends Source> streamSupply) {
         super(type);
         this.streamSupply = streamSupply;
     }
 
     @Nonnull
     @Override
-    public DataSupplierBody withType(@Nonnull MediaType newType)
-    {
-        if (this.type.equals(newType))
+    public DataSupplierBody withType(@Nonnull MediaType newType) {
+        if (this.type.equals(newType)) {
             return this;
+        }
         return new DataSupplierBody(newType, streamSupply);
     }
 
     @Override
-    public void writeTo(@Nonnull BufferedSink bufferedSink) throws IOException
-    {
-        synchronized (streamSupply)
-        {
-            try (Source stream = streamSupply.get())
-            {
+    public void writeTo(@Nonnull BufferedSink bufferedSink) throws IOException {
+        synchronized (streamSupply) {
+            try (Source stream = streamSupply.get()) {
                 bufferedSink.writeAll(stream);
             }
         }

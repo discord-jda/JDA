@@ -18,21 +18,19 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Used to hold additional information about a users {@link Activity Activity}
  * relevant to <a href="https://discord.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>.
  *
- * @since  3.4.0
- *
  * @see    Activity#asRichPresence()
  */
-public interface RichPresence extends Activity
-{
+public interface RichPresence extends Activity {
     /**
      * The ID for the responsible application.
      *
@@ -123,14 +121,12 @@ public interface RichPresence extends Activity
     /**
      * Used to hold information on images within a Rich Presence profile
      */
-    class Image
-    {
+    class Image {
         protected final String key;
         protected final String text;
         protected final String applicationId;
 
-        public Image(long applicationId, String key, String text)
-        {
+        public Image(long applicationId, String key, String text) {
             this.applicationId = Long.toUnsignedString(applicationId);
             this.key = key;
             this.text = text;
@@ -142,8 +138,7 @@ public interface RichPresence extends Activity
          * @return The key for this image
          */
         @Nonnull
-        public String getKey()
-        {
+        public String getKey() {
             return key;
         }
 
@@ -153,8 +148,7 @@ public interface RichPresence extends Activity
          * @return Hover text for this image, or {@code null}
          */
         @Nullable
-        public String getText()
-        {
+        public String getText() {
             return text;
         }
 
@@ -164,18 +158,20 @@ public interface RichPresence extends Activity
          * @return URL for this image
          */
         @Nonnull
-        public String getUrl()
-        {
-            if (key.startsWith("spotify:"))
+        public String getUrl() {
+            if (key.startsWith("spotify:")) {
                 return "https://i.scdn.co/image/" + key.substring("spotify:".length());
-            if (key.startsWith("twitch:"))
-                return String.format("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-1920x1080.png", key.substring("twitch:".length()));
+            }
+            if (key.startsWith("twitch:")) {
+                return String.format(
+                        "https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-1920x1080.png",
+                        key.substring("twitch:".length()));
+            }
             return "https://cdn.discordapp.com/app-assets/" + applicationId + "/" + key + ".png";
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return new EntityString(this)
                     .addMetadata("key", getKey())
                     .addMetadata("text", getText())
@@ -183,17 +179,16 @@ public interface RichPresence extends Activity
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            if (!(obj instanceof Image))
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Image)) {
                 return false;
+            }
             Image i = (Image) obj;
             return Objects.equals(key, i.key) && Objects.equals(text, i.text);
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(key, text);
         }
     }
@@ -201,14 +196,12 @@ public interface RichPresence extends Activity
     /**
      * Holds information on a player's party
      */
-    class Party
-    {
+    class Party {
         protected final String id;
         protected final long size;
         protected final long max;
 
-        public Party(String id, long size, long max)
-        {
+        public Party(String id, long size, long max) {
             this.id = id;
             this.size = size;
             this.max = max;
@@ -220,8 +213,7 @@ public interface RichPresence extends Activity
          * @return The ID for this party, or {@code null} if unset
          */
         @Nullable
-        public String getId()
-        {
+        public String getId() {
             return id;
         }
 
@@ -230,8 +222,7 @@ public interface RichPresence extends Activity
          *
          * @return The current size of this party, or {@code 0} if unset
          */
-        public long getSize()
-        {
+        public long getSize() {
             return size;
         }
 
@@ -240,14 +231,12 @@ public interface RichPresence extends Activity
          *
          * @return The maximum size of this party, or {@code 0} if unset
          */
-        public long getMax()
-        {
+        public long getMax() {
             return max;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return new EntityString(this)
                     .addMetadata("id", getId())
                     .addMetadata("size", getSize())
@@ -256,17 +245,16 @@ public interface RichPresence extends Activity
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
-            if (!(obj instanceof Party))
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Party)) {
                 return false;
+            }
             Party p = (Party) obj;
             return size == p.size && max == p.max && Objects.equals(id, p.id);
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(id, size, max);
         }
     }

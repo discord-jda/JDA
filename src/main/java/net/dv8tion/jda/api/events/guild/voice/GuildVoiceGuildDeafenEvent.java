@@ -33,12 +33,10 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-public class GuildVoiceGuildDeafenEvent extends GenericGuildVoiceEvent
-{
+public class GuildVoiceGuildDeafenEvent extends GenericGuildVoiceEvent {
     protected final boolean guildDeafened;
 
-    public GuildVoiceGuildDeafenEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+    public GuildVoiceGuildDeafenEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member);
         this.guildDeafened = member.getVoiceState().isGuildDeafened();
     }
@@ -49,8 +47,7 @@ public class GuildVoiceGuildDeafenEvent extends GenericGuildVoiceEvent
      * @return True, if a moderator deafened this member,
      *         <br>False, if a moderator un-deafened this member
      */
-    public boolean isGuildDeafened()
-    {
+    public boolean isGuildDeafened() {
         return guildDeafened;
     }
 }

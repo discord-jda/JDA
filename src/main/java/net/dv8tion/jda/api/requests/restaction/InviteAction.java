@@ -22,11 +22,12 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * {@link net.dv8tion.jda.api.entities.Invite Invite} Builder system created as an extension of {@link net.dv8tion.jda.api.requests.RestAction}
@@ -34,8 +35,7 @@ import java.util.function.BooleanSupplier;
  *
  * @see net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer#createInvite()
  */
-public interface InviteAction extends AuditableRestAction<Invite>
-{
+public interface InviteAction extends AuditableRestAction<Invite> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -65,7 +65,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    InviteAction setMaxAge(@Nullable final Integer maxAge);
+    InviteAction setMaxAge(@Nullable Integer maxAge);
 
     /**
      * Sets the max age for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
@@ -83,7 +83,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    InviteAction setMaxAge(@Nullable final Long maxAge, @Nonnull final TimeUnit timeUnit);
+    InviteAction setMaxAge(@Nullable Long maxAge, @Nonnull TimeUnit timeUnit);
 
     /**
      * Sets the max uses for the invite. Set this to {@code 0} if the invite should have unlimited uses. Default is {@code 0}.
@@ -99,7 +99,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    InviteAction setMaxUses(@Nullable final Integer maxUses);
+    InviteAction setMaxUses(@Nullable Integer maxUses);
 
     /**
      * Sets whether the invite should only grant temporary membership. Default is {@code false}.
@@ -111,7 +111,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    InviteAction setTemporary(@Nullable final Boolean temporary);
+    InviteAction setTemporary(@Nullable Boolean temporary);
 
     /**
      * Sets whether discord should reuse a similar invite. Default is {@code false}.
@@ -123,7 +123,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    InviteAction setUnique(@Nullable final Boolean unique);
+    InviteAction setUnique(@Nullable Boolean unique);
 
     /**
      * Sets the id of the targeted application.
@@ -137,7 +137,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    InviteAction setTargetApplication(final long applicationId);
+    InviteAction setTargetApplication(long applicationId);
 
     /**
      * Sets the id of the targeted application.
@@ -156,8 +156,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetApplication(@Nonnull final String applicationId)
-    {
+    default InviteAction setTargetApplication(@Nonnull String applicationId) {
         return setTargetApplication(MiscUtil.parseSnowflake(applicationId));
     }
 
@@ -173,7 +172,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    InviteAction setTargetStream(final long userId);
+    InviteAction setTargetStream(long userId);
 
     /**
      * Sets the user whose stream to display for this invite.
@@ -192,8 +191,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetStream(@Nonnull final String userId)
-    {
+    default InviteAction setTargetStream(@Nonnull String userId) {
         return setTargetStream(MiscUtil.parseSnowflake(userId));
     }
 
@@ -212,8 +210,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetStream(@Nonnull final User user)
-    {
+    default InviteAction setTargetStream(@Nonnull User user) {
         Checks.notNull(user, "User");
         return setTargetStream(user.getIdLong());
     }
@@ -233,10 +230,8 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetStream(@Nonnull final Member member)
-    {
+    default InviteAction setTargetStream(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return setTargetStream(member.getIdLong());
     }
-
 }

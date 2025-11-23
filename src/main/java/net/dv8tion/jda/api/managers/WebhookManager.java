@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("GitHub Webhook")
  *        .setChannel(channel)
  *        .queue();
@@ -38,18 +38,17 @@ import javax.annotation.Nullable;
  *        .setName("Meme Feed")
  *        .setAvatar(null)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see net.dv8tion.jda.api.entities.Webhook#getManager()
  */
-public interface WebhookManager extends Manager<WebhookManager>
-{
+public interface WebhookManager extends Manager<WebhookManager> {
     /** Used to reset the name field */
-    long NAME    = 1;
+    long NAME = 1;
     /** Used to reset the channel field */
     long CHANNEL = 1 << 1;
     /** Used to reset the avatar field */
-    long AVATAR  = 1 << 2;
+    long AVATAR = 1 << 2;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -111,8 +110,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer} instance.
      */
     @Nonnull
-    default IWebhookContainerUnion getChannel()
-    {
+    default IWebhookContainerUnion getChannel() {
         return getWebhook().getChannel();
     }
 
@@ -124,8 +122,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getWebhook().getGuild();
     }
 

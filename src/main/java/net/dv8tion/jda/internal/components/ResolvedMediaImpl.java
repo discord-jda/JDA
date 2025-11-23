@@ -21,32 +21,30 @@ import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class ResolvedMediaImpl implements ResolvedMedia
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ResolvedMediaImpl implements ResolvedMedia {
     private final String attachmentId;
     private final String url;
     private final String proxyUrl;
     private final int width, height;
     private final String contentType;
 
-    public ResolvedMediaImpl(DataObject data)
-    {
+    public ResolvedMediaImpl(DataObject data) {
         this(
                 data.getString("attachment_id", null),
                 data.getString("url"),
                 data.getString("proxy_url"),
                 data.getInt("width", 0),
                 data.getInt("height", 0),
-                data.getString("content_type", null)
-        );
+                data.getString("content_type", null));
     }
 
-    public ResolvedMediaImpl(String attachmentId, String url, String proxyUrl, int width, int height, String contentType)
-    {
+    public ResolvedMediaImpl(
+            String attachmentId, String url, String proxyUrl, int width, int height, String contentType) {
         this.attachmentId = attachmentId;
         this.url = url;
         this.proxyUrl = proxyUrl;
@@ -57,68 +55,60 @@ public class ResolvedMediaImpl implements ResolvedMedia
 
     @Nullable
     @Override
-    public String getAttachmentId()
-    {
+    public String getAttachmentId() {
         return attachmentId;
     }
 
     @Nonnull
     @Override
-    public String getUrl()
-    {
+    public String getUrl() {
         return url;
     }
 
     @Nonnull
     @Override
-    public String getProxyUrl()
-    {
+    public String getProxyUrl() {
         return proxyUrl;
     }
 
     @Nonnull
     @Override
-    public AttachmentProxy getProxy()
-    {
+    public AttachmentProxy getProxy() {
         return new AttachmentProxy(width > 0 && height > 0 ? proxyUrl : url);
     }
 
     @Override
-    public int getWidth()
-    {
+    public int getWidth() {
         return width;
     }
 
     @Override
-    public int getHeight()
-    {
+    public int getHeight() {
         return height;
     }
 
     @Nullable
     @Override
-    public String getContentType()
-    {
+    public String getContentType() {
         return contentType;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof ResolvedMediaImpl)) return false;
+    public boolean equals(Object o) {
+        if (!(o instanceof ResolvedMediaImpl)) {
+            return false;
+        }
         ResolvedMediaImpl that = (ResolvedMediaImpl) o;
         return Objects.equals(url, that.url);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(url);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 // url is already shown by the classes containing resolved medias
                 .addMetadata("proxy_url", url)

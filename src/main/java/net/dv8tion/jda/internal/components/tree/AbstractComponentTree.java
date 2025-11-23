@@ -22,30 +22,27 @@ import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractComponentTree<E extends Component> implements ComponentTree<E>
-{
+import javax.annotation.Nonnull;
+
+public abstract class AbstractComponentTree<E extends Component> implements ComponentTree<E> {
     protected final List<E> components;
 
-    protected AbstractComponentTree(Collection<E> components)
-    {
+    protected AbstractComponentTree(Collection<E> components) {
         this.components = Helpers.copyAsUnmodifiableList(components);
     }
 
     @Nonnull
     @Override
-    public List<E> getComponents()
-    {
+    public List<E> getComponents() {
         return components;
     }
 
     @Nonnull
     @Override
-    public ComponentTree<E> withDisabled(boolean disabled)
-    {
+    public ComponentTree<E> withDisabled(boolean disabled) {
         return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
     }
 }

@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
  * The id has to be provided by the user and can be used to identify the button in the {@link ButtonInteractionEvent ButtonInteractionEvent}.
  *
  * <p><b>Example Usage</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * public class HelloBot extends ListenerAdapter {
  *   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
  *       if (event.getName().equals("hello")) {
@@ -67,7 +67,7 @@ import javax.annotation.Nullable;
  *       }
  *   }
  * }
- * }</pre>
+ * }
  *
  * To see what each button looks like here is an example cheatsheet:
  * <br>
@@ -75,8 +75,7 @@ import javax.annotation.Nullable;
  *
  * @see ReplyCallbackAction#addComponents(MessageTopLevelComponent...)
  */
-public interface Button extends ActionComponent, ActionRowChildComponent, SectionAccessoryComponent
-{
+public interface Button extends ActionComponent, ActionRowChildComponent, SectionAccessoryComponent {
     /**
      * The maximum length a button label can have
      */
@@ -138,23 +137,22 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
 
     @Nonnull
     @CheckReturnValue
-    default Button asDisabled()
-    {
+    default Button asDisabled() {
         return (Button) ActionComponent.super.asDisabled();
     }
 
     @Nonnull
     @CheckReturnValue
-    default Button asEnabled()
-    {
+    default Button asEnabled() {
         return (Button) ActionComponent.super.asEnabled();
     }
 
     @Nonnull
     @CheckReturnValue
-    default Button withDisabled(boolean disabled)
-    {
-        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji()).checkValid();
+    default Button withDisabled(boolean disabled) {
+        return new ButtonImpl(
+                        getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji())
+                .checkValid();
     }
 
     /**
@@ -170,9 +168,10 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      */
     @Nonnull
     @CheckReturnValue
-    default Button withEmoji(@Nullable Emoji emoji)
-    {
-        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji).checkValid();
+    default Button withEmoji(@Nullable Emoji emoji) {
+        return new ButtonImpl(
+                        getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji)
+                .checkValid();
     }
 
     /**
@@ -193,9 +192,10 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      */
     @Nonnull
     @CheckReturnValue
-    default Button withLabel(@Nonnull String label)
-    {
-        return new ButtonImpl(getCustomId(), getUniqueId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+    default Button withLabel(@Nonnull String label) {
+        return new ButtonImpl(
+                        getCustomId(), getUniqueId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji())
+                .checkValid();
     }
 
     /**
@@ -216,20 +216,23 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      */
     @Nonnull
     @CheckReturnValue
-    default Button withCustomId(@Nonnull String customId)
-    {
-        return new ButtonImpl(customId, getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+    default Button withCustomId(@Nonnull String customId) {
+        return new ButtonImpl(
+                        customId, getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji())
+                .checkValid();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default Button withUniqueId(int uniqueId)
-    {
-        // This is not done in checkValid() because the button gets constructed with an invalid unique ID on purpose
+    default Button withUniqueId(int uniqueId) {
+        // This is not done in checkValid()
+        // because the button gets constructed with an invalid unique ID on purpose
         // (as Discord generates one if none was passed)
         Checks.positive(uniqueId, "Unique ID");
-        return new ButtonImpl(getCustomId(), uniqueId, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(
+                        getCustomId(), uniqueId, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji())
+                .checkValid();
     }
 
     /**
@@ -250,9 +253,10 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      */
     @Nonnull
     @CheckReturnValue
-    default Button withUrl(@Nonnull String url)
-    {
-        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji()).checkValid();
+    default Button withUrl(@Nonnull String url) {
+        return new ButtonImpl(
+                        getCustomId(), getUniqueId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji())
+                .checkValid();
     }
 
     /**
@@ -268,9 +272,10 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      */
     @Nonnull
     @CheckReturnValue
-    default Button withSku(@Nonnull SkuSnowflake sku)
-    {
-        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji()).checkValid();
+    default Button withSku(@Nonnull SkuSnowflake sku) {
+        return new ButtonImpl(
+                        getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji())
+                .checkValid();
     }
 
     /**
@@ -291,19 +296,24 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      */
     @Nonnull
     @CheckReturnValue
-    default Button withStyle(@Nonnull ButtonStyle style)
-    {
+    default Button withStyle(@Nonnull ButtonStyle style) {
         Checks.notNull(style, "Style");
         Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
-        if (getStyle() == ButtonStyle.LINK && style != ButtonStyle.LINK)
+        if (getStyle() == ButtonStyle.LINK && style != ButtonStyle.LINK) {
             throw new IllegalArgumentException("You cannot change a link button to another style!");
-        if (getStyle() != ButtonStyle.LINK && style == ButtonStyle.LINK)
+        }
+        if (getStyle() != ButtonStyle.LINK && style == ButtonStyle.LINK) {
             throw new IllegalArgumentException("You cannot change a styled button to a link button!");
-        if (getStyle() == ButtonStyle.PREMIUM && style != ButtonStyle.PREMIUM)
+        }
+        if (getStyle() == ButtonStyle.PREMIUM && style != ButtonStyle.PREMIUM) {
             throw new IllegalArgumentException("You cannot change a premium button to another style!");
-        if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM)
+        }
+        if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM) {
             throw new IllegalArgumentException("You cannot change a styled button to a premium button!");
-        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        }
+        return new ButtonImpl(
+                        getCustomId(), getUniqueId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji())
+                .checkValid();
     }
 
     /**
@@ -328,8 +338,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button primary(@Nonnull String id, @Nonnull String label)
-    {
+    static Button primary(@Nonnull String id, @Nonnull String label) {
         return new ButtonImpl(id, label, ButtonStyle.PRIMARY, false, null).checkValid();
     }
 
@@ -355,8 +364,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button primary(@Nonnull String id, @Nonnull Emoji emoji)
-    {
+    static Button primary(@Nonnull String id, @Nonnull Emoji emoji) {
         return new ButtonImpl(id, null, ButtonStyle.PRIMARY, false, emoji).checkValid();
     }
 
@@ -382,8 +390,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button secondary(@Nonnull String id, @Nonnull String label)
-    {
+    static Button secondary(@Nonnull String id, @Nonnull String label) {
         return new ButtonImpl(id, label, ButtonStyle.SECONDARY, false, null).checkValid();
     }
 
@@ -409,8 +416,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button secondary(@Nonnull String id, @Nonnull Emoji emoji)
-    {
+    static Button secondary(@Nonnull String id, @Nonnull Emoji emoji) {
         return new ButtonImpl(id, null, ButtonStyle.SECONDARY, false, emoji).checkValid();
     }
 
@@ -436,8 +442,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button success(@Nonnull String id, @Nonnull String label)
-    {
+    static Button success(@Nonnull String id, @Nonnull String label) {
         return new ButtonImpl(id, label, ButtonStyle.SUCCESS, false, null).checkValid();
     }
 
@@ -463,8 +468,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button success(@Nonnull String id, @Nonnull Emoji emoji)
-    {
+    static Button success(@Nonnull String id, @Nonnull Emoji emoji) {
         return new ButtonImpl(id, null, ButtonStyle.SUCCESS, false, emoji).checkValid();
     }
 
@@ -490,8 +494,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button danger(@Nonnull String id, @Nonnull String label)
-    {
+    static Button danger(@Nonnull String id, @Nonnull String label) {
         return new ButtonImpl(id, label, ButtonStyle.DANGER, false, null).checkValid();
     }
 
@@ -517,8 +520,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button danger(@Nonnull String id, @Nonnull Emoji emoji)
-    {
+    static Button danger(@Nonnull String id, @Nonnull Emoji emoji) {
         return new ButtonImpl(id, null, ButtonStyle.DANGER, false, emoji).checkValid();
     }
 
@@ -547,8 +549,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button link(@Nonnull String url, @Nonnull String label)
-    {
+    static Button link(@Nonnull String url, @Nonnull String label) {
         return new ButtonImpl(null, label, ButtonStyle.LINK, url, null, false, null).checkValid();
     }
 
@@ -577,8 +578,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button link(@Nonnull String url, @Nonnull Emoji emoji)
-    {
+    static Button link(@Nonnull String url, @Nonnull Emoji emoji) {
         return new ButtonImpl(null, null, ButtonStyle.LINK, url, null, false, emoji).checkValid();
     }
 
@@ -599,8 +599,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button premium(@Nonnull SkuSnowflake sku)
-    {
+    static Button premium(@Nonnull SkuSnowflake sku) {
         return new ButtonImpl(null, null, ButtonStyle.PREMIUM, null, sku, false, null).checkValid();
     }
 
@@ -633,11 +632,11 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label)
-    {
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label) {
         Checks.check(style != ButtonStyle.PREMIUM, "Premium buttons don't support labels");
-        if (style == ButtonStyle.LINK)
+        if (style == ButtonStyle.LINK) {
             return link(idOrUrl, label);
+        }
         return new ButtonImpl(idOrUrl, label, style, false, null).checkValid();
     }
 
@@ -668,11 +667,11 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull Emoji emoji)
-    {
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull Emoji emoji) {
         Checks.check(style != ButtonStyle.PREMIUM, "Premium buttons don't support emojis");
-        if (style == ButtonStyle.LINK)
+        if (style == ButtonStyle.LINK) {
             return link(idOrUrl, emoji);
+        }
         return new ButtonImpl(idOrUrl, null, style, false, emoji).checkValid();
     }
 
@@ -707,18 +706,18 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
      * @return The button instance
      */
     @Nonnull
-    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrlOrSku, @Nullable String label, @Nullable Emoji emoji)
-    {
+    static Button of(
+            @Nonnull ButtonStyle style, @Nonnull String idOrUrlOrSku, @Nullable String label, @Nullable Emoji emoji) {
         Checks.notNull(style, "ButtonStyle");
 
-        switch (style)
-        {
-        case LINK:
-            return new ButtonImpl(null, label, style, idOrUrlOrSku, null, false, emoji).checkValid();
-        case PREMIUM:
-            return new ButtonImpl(null, label, style, null, SkuSnowflake.fromId(idOrUrlOrSku), false, emoji).checkValid();
-        default:
-            return new ButtonImpl(idOrUrlOrSku, label, style, null, null, false, emoji).checkValid();
+        switch (style) {
+            case LINK:
+                return new ButtonImpl(null, label, style, idOrUrlOrSku, null, false, emoji).checkValid();
+            case PREMIUM:
+                return new ButtonImpl(null, label, style, null, SkuSnowflake.fromId(idOrUrlOrSku), false, emoji)
+                        .checkValid();
+            default:
+                return new ButtonImpl(idOrUrlOrSku, label, style, null, null, false, emoji).checkValid();
         }
     }
 }

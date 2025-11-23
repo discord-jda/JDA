@@ -12,5 +12,10 @@ Depending on your changes there are certain rules you have to follow if you expe
 1. Try to limit your PR to one logical change or closely related changes.  
     For instance, do not refactor other code that is irrelevant to your changes. If you want to refactor something, make a dedicated PR.
 
+### Before opening your Pull Request:
+
+1. Apply the formatter using `./gradlew format`
+1. Run `./gradlew build` to ensure your code compiles and passes the test suite
+
 > [!TIP]
 > Before starting to implement your changes, you can post in our [lib-dev](https://discord.gg/qcy8K58zWb) channel on our Discord Server. Getting early feedback will help you and the reviewers save a lot of time.

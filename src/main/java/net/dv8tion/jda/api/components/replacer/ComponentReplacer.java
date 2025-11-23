@@ -24,12 +24,13 @@ import net.dv8tion.jda.internal.components.replacer.TypedComponentReplacerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Functional interface similar to a {@link Function},
@@ -39,8 +40,7 @@ import java.util.function.Predicate;
  * <p>This interface also provides static factories to help you use the most common replacers.
  */
 @FunctionalInterface
-public interface ComponentReplacer
-{
+public interface ComponentReplacer {
     /**
      * Attempts to replace or remove the given component.
      *
@@ -77,16 +77,13 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} running all the provided replacers
      */
     @Nonnull
-    static ComponentReplacer all(@Nonnull Collection<? extends ComponentReplacer> replacers)
-    {
+    static ComponentReplacer all(@Nonnull Collection<? extends ComponentReplacer> replacers) {
         Checks.notEmpty(replacers, "ComponentReplacers");
         Checks.noneNull(replacers, "ComponentReplacers");
-        return oldComponent ->
-        {
-            final Iterator<? extends ComponentReplacer> iterator = replacers.iterator();
+        return oldComponent -> {
+            Iterator<? extends ComponentReplacer> iterator = replacers.iterator();
             Component newComponent = oldComponent;
-            do
-            {
+            do {
                 newComponent = iterator.next().apply(newComponent);
             } while (iterator.hasNext() && newComponent != null);
             return newComponent;
@@ -111,8 +108,7 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} running all the provided replacers
      */
     @Nonnull
-    static ComponentReplacer all(@Nonnull ComponentReplacer first, @Nonnull ComponentReplacer... others)
-    {
+    static ComponentReplacer all(@Nonnull ComponentReplacer first, @Nonnull ComponentReplacer... others) {
         Checks.notNull(first, "ComponentReplacer");
         Checks.noneNull(others, "ComponentReplacers");
         return all(Helpers.mergeVararg(first, others));
@@ -137,8 +133,10 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} with the provided functions
      */
     @Nonnull
-    static <T extends Component> ComponentReplacer of(@Nonnull Class<? super T> type, @Nonnull Predicate<? super T> filter, @Nonnull Function<? super T, Component> update)
-    {
+    static <T extends Component> ComponentReplacer of(
+            @Nonnull Class<? super T> type,
+            @Nonnull Predicate<? super T> filter,
+            @Nonnull Function<? super T, Component> update) {
         Checks.notNull(type, "Component type");
         Checks.notNull(filter, "Component filter");
         Checks.notNull(update, "Component updater");
@@ -160,8 +158,7 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
     @Nonnull
-    static ComponentReplacer byUniqueId(@Nonnull Component oldComponent, @Nullable Component newComponent)
-    {
+    static ComponentReplacer byUniqueId(@Nonnull Component oldComponent, @Nullable Component newComponent) {
         return byUniqueId(oldComponent.getUniqueId(), newComponent);
     }
 
@@ -177,11 +174,8 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
     @Nonnull
-    static ComponentReplacer byUniqueId(int id, @Nullable Component newComponent)
-    {
-        return of(Component.class,
-                component -> component.getUniqueId() == id,
-                component -> newComponent);
+    static ComponentReplacer byUniqueId(int id, @Nullable Component newComponent) {
+        return of(Component.class, component -> component.getUniqueId() == id, component -> newComponent);
     }
 
     /**
@@ -201,11 +195,8 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
     @Nonnull
-    static ComponentReplacer byUniqueId(int id, @Nonnull Function<? super Component, Component> update)
-    {
+    static ComponentReplacer byUniqueId(int id, @Nonnull Function<? super Component, Component> update) {
         Checks.notNull(update, "Component updater");
-        return of(Component.class,
-                component -> component.getUniqueId() == id,
-                update);
+        return of(Component.class, component -> component.getUniqueId() == id, update);
     }
 }

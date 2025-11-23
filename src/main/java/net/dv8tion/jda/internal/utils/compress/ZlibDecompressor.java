@@ -29,8 +29,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
-public class ZlibDecompressor implements Decompressor
-{
+public class ZlibDecompressor implements Decompressor {
     private static final int Z_SYNC_FLUSH = 0x0000FFFF;
 
     private final int maxBufferSize;
@@ -38,91 +37,81 @@ public class ZlibDecompressor implements Decompressor
     private ByteBuffer flushBuffer = null;
     private SoftReference<ByteArrayOutputStream> decompressBuffer = null;
 
-    public ZlibDecompressor(int maxBufferSize)
-    {
+    public ZlibDecompressor(int maxBufferSize) {
         this.maxBufferSize = maxBufferSize;
     }
 
-    private SoftReference<ByteArrayOutputStream> newDecompressBuffer()
-    {
+    private SoftReference<ByteArrayOutputStream> newDecompressBuffer() {
         return new SoftReference<>(new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
     }
 
-    private ByteArrayOutputStream getDecompressBuffer()
-    {
+    private ByteArrayOutputStream getDecompressBuffer() {
         // If no buffer has been allocated yet we do that here (lazy init)
-        if (decompressBuffer == null)
+        if (decompressBuffer == null) {
             decompressBuffer = newDecompressBuffer();
+        }
         // Check if the buffer has been collected by the GC or not
         ByteArrayOutputStream buffer = decompressBuffer.get();
-        if (buffer == null) // create a ne buffer because the GC got it
+        if (buffer == null) { // create a ne buffer because the GC got it
             decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
+        }
         return buffer;
     }
 
-    private boolean isFlush(byte[] data)
-    {
-        if (data.length < 4)
+    private boolean isFlush(byte[] data) {
+        if (data.length < 4) {
             return false;
+        }
         int suffix = IOUtil.getIntBigEndian(data, data.length - 4);
         return suffix == Z_SYNC_FLUSH;
     }
 
-    private void buffer(byte[] data)
-    {
-        if (flushBuffer == null)
+    private void buffer(byte[] data) {
+        if (flushBuffer == null) {
             flushBuffer = ByteBuffer.allocate(data.length * 2);
+        }
 
-        //Ensure the capacity can hold the new data, ByteBuffer doesn't grow automatically
-        if (flushBuffer.capacity() < data.length + flushBuffer.position())
-        {
-            //Flip to make it a read buffer
+        // Ensure the capacity can hold the new data, ByteBuffer doesn't grow automatically
+        if (flushBuffer.capacity() < data.length + flushBuffer.position()) {
+            // Flip to make it a read buffer
             flushBuffer.flip();
-            //Reallocate for the new capacity
+            // Reallocate for the new capacity
             flushBuffer = IOUtil.reallocate(flushBuffer, (flushBuffer.capacity() + data.length) * 2);
         }
 
         flushBuffer.put(data);
     }
 
-    private Object lazy(byte[] data)
-    {
+    private Object lazy(byte[] data) {
         return JDALogger.getLazyString(() -> Arrays.toString(data));
     }
 
     @Override
-    public Compression getType()
-    {
+    public Compression getType() {
         return Compression.ZLIB;
     }
 
     @Override
-    public void reset()
-    {
+    public void reset() {
         inflater.reset();
     }
 
     @Override
-    public void shutdown()
-    {
+    public void shutdown() {
         reset();
     }
 
     @Override
-    public byte[] decompress(byte[] data) throws DataFormatException
-    {
-        //Handle split messages
-        if (!isFlush(data))
-        {
-            //There is no flush suffix so this is not the end of the message
+    public byte[] decompress(byte[] data) throws DataFormatException {
+        // Handle split messages
+        if (!isFlush(data)) {
+            // There is no flush suffix so this is not the end of the message
             LOG.debug("Received incomplete data, writing to buffer. Length: {}", data.length);
             buffer(data);
             return null; // signal failure to decompress
-        }
-        else if (flushBuffer != null)
-        {
-            //This has a flush suffix and we have an incomplete package buffered
-            //concatenate the package with the new data and decompress it below
+        } else if (flushBuffer != null) {
+            // This has a flush suffix and we have an incomplete package buffered
+            // concatenate the package with the new data and decompress it below
             LOG.debug("Received final part of incomplete data");
             buffer(data);
             byte[] arr = flushBuffer.array();
@@ -131,28 +120,26 @@ public class ZlibDecompressor implements Decompressor
             flushBuffer = null;
         }
         LOG.trace("Decompressing data {}", lazy(data));
-        //Get the compressed message and inflate it
-        //We use the same buffer here to optimize gc use
+        // Get the compressed message and inflate it
+        // We use the same buffer here to optimize gc use
         ByteArrayOutputStream buffer = getDecompressBuffer();
-        try (InflaterOutputStream decompressor = new InflaterOutputStream(buffer, inflater))
-        {
+        try (InflaterOutputStream decompressor = new InflaterOutputStream(buffer, inflater)) {
             // This decompressor writes the received data and inflates it
             decompressor.write(data);
-            // Once decompressed we re-interpret the data as a String which can be used for JSON parsing
+            // Once decompressed we re-interpret the data as a String which can be used for JSON
+            // parsing
             return buffer.toByteArray();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             // Some issue appeared during decompression that caused a failure
             throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
-        }
-        finally
-        {
-            // When done with decompression we want to reset the buffer so it can be used again later
-            if (buffer.size() > maxBufferSize)
+        } finally {
+            // When done with decompression we want to reset the buffer so it can be used again
+            // later
+            if (buffer.size() > maxBufferSize) {
                 decompressBuffer = newDecompressBuffer();
-            else
+            } else {
                 buffer.reset();
+            }
         }
     }
 }

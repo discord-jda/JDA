@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can only be used inside {@link net.dv8tion.jda.api.components.label.Label Labels}!
  */
-public interface AttachmentUpload extends Component, ICustomId, LabelChildComponent
-{
+public interface AttachmentUpload extends Component, ICustomId, LabelChildComponent {
     /** The maximum number of files the user can upload at once ({@value}) */
     int MAX_UPLOADS = 10;
 
@@ -53,8 +52,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
      * @return The new {@link AttachmentUpload.Builder}
      */
     @Nonnull
-    static AttachmentUpload.Builder create(@Nonnull String customId)
-    {
+    static AttachmentUpload.Builder create(@Nonnull String customId) {
         return new AttachmentUpload.Builder(customId);
     }
 
@@ -71,8 +69,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
      * @return The new {@link AttachmentUpload}
      */
     @Nonnull
-    static AttachmentUpload of(@Nonnull String customId)
-    {
+    static AttachmentUpload of(@Nonnull String customId) {
         return create(customId).build();
     }
 
@@ -109,22 +106,19 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
     /**
      * Builder for {@link AttachmentUpload AttachmentUploads}.
      */
-    class Builder
-    {
+    class Builder {
         protected int uniqueId = -1;
         protected String customId;
         protected int minValues = 1;
         protected int maxValues = 1;
         protected boolean required = true;
 
-        protected Builder(@Nonnull String customId)
-        {
+        protected Builder(@Nonnull String customId) {
             setCustomId(customId);
         }
 
         @Nonnull
-        public Builder setUniqueId(int uniqueId)
-        {
+        public Builder setUniqueId(int uniqueId) {
             Checks.positive(uniqueId, "Unique ID");
             this.uniqueId = uniqueId;
             return this;
@@ -143,8 +137,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          * @return The same instance, for chaining purposes
          */
         @Nonnull
-        public Builder setCustomId(@Nonnull String customId)
-        {
+        public Builder setCustomId(@Nonnull String customId) {
             Checks.notBlank(customId, "Custom ID");
             Checks.notLonger(customId, ID_MAX_LENGTH, "Custom ID");
             this.customId = customId;
@@ -164,8 +157,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          * @return The same instance, for chaining purposes
          */
         @Nonnull
-        public Builder setMinValues(int minValues)
-        {
+        public Builder setMinValues(int minValues) {
             Checks.notNegative(minValues, "Min values");
             Checks.check(minValues <= MAX_UPLOADS, "Min values (%s) must be lower than %s", minValues, MAX_UPLOADS);
             this.minValues = minValues;
@@ -185,8 +177,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          * @return The same instance, for chaining purposes
          */
         @Nonnull
-        public Builder setMaxValues(int maxValues)
-        {
+        public Builder setMaxValues(int maxValues) {
             Checks.positive(maxValues, "Max values");
             Checks.check(maxValues <= MAX_UPLOADS, "Max values (%s) must be lower than %s", maxValues, MAX_UPLOADS);
             this.maxValues = maxValues;
@@ -211,8 +202,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          * @return The same instance, for chaining purposes
          */
         @Nonnull
-        public Builder setRequiredRange(int min, int max)
-        {
+        public Builder setRequiredRange(int min, int max) {
             return setMinValues(min).setMaxValues(max);
         }
 
@@ -230,8 +220,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          * @return The same instance, for chaining purposes
          */
         @Nonnull
-        public Builder setRequired(boolean required)
-        {
+        public Builder setRequired(boolean required) {
             this.required = required;
             return this;
         }
@@ -243,8 +232,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          *
          * @return The unique identifier of this component, or {@code -1} if not assigned yet
          */
-        public int getUniqueId()
-        {
+        public int getUniqueId() {
             return uniqueId;
         }
 
@@ -254,8 +242,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          * @return The custom ID
          */
         @Nonnull
-        public String getCustomId()
-        {
+        public String getCustomId() {
             return customId;
         }
 
@@ -264,8 +251,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          *
          * @return Minimum amount of attachments the user must send
          */
-        public int getMinValues()
-        {
+        public int getMinValues() {
             return minValues;
         }
 
@@ -274,8 +260,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          *
          * @return Maximum amount of attachments the user can send
          */
-        public int getMaxValues()
-        {
+        public int getMaxValues() {
             return maxValues;
         }
 
@@ -288,8 +273,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          *
          * @return {@code true} if files must be uploaded, {@code false} if not
          */
-        public boolean isRequired()
-        {
+        public boolean isRequired() {
             return required;
         }
 
@@ -302,8 +286,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
          * @return The new {@link AttachmentUpload}
          */
         @Nonnull
-        public AttachmentUpload build()
-        {
+        public AttachmentUpload build() {
             Checks.check(maxValues >= minValues, "Max (%s) must be higher or equal to min (%s)", maxValues, minValues);
             return new AttachmentUploadImpl(uniqueId, customId, minValues, maxValues, required);
         }

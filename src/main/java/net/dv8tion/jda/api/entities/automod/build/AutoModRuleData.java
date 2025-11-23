@@ -28,11 +28,12 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Data class used to create new {@link AutoModRule AutoModRules}.
@@ -41,12 +42,12 @@ import java.util.EnumSet;
  *
  * <p><b>Example</b><br>
  *
- * <pre>{@code
+ * {@snippet lang="java":
  * TriggerConfig config = TriggerConfig.keywordFilter("discord.gg/*").addAllowList("gateway.discord.gg/*");
  * AutoModRuleData data = AutoModRuleData.onMessage("Invite Block", config);
  * data.addExemptRoles(guild.getRolesByName("Moderator", true));
  * data.putResponse(AutoModResponse.blockMessage());
- * }</pre>
+ * }
  *
  * <ol>
  *   <li>The {@link TriggerConfig} defines under what conditions the rule should be triggered and execute a response.
@@ -58,8 +59,7 @@ import java.util.EnumSet;
  *
  * @see net.dv8tion.jda.api.entities.Guild#createAutoModRule(AutoModRuleData)
  */
-public class AutoModRuleData implements SerializableData
-{
+public class AutoModRuleData implements SerializableData {
     protected final AutoModEventType eventType;
     protected String name;
     protected boolean enabled = true;
@@ -69,8 +69,7 @@ public class AutoModRuleData implements SerializableData
     protected final Collection<String> exemptChannels = new ArrayList<>();
     protected final Collection<String> exemptRoles = new ArrayList<>();
 
-    protected AutoModRuleData(AutoModEventType eventType, String name, TriggerConfig triggerMetadata)
-    {
+    protected AutoModRuleData(AutoModEventType eventType, String name, TriggerConfig triggerMetadata) {
         this.eventType = eventType;
         this.setName(name);
         this.setTriggerConfig(triggerMetadata);
@@ -90,8 +89,7 @@ public class AutoModRuleData implements SerializableData
      * @return The new {@link AutoModRuleData} instance
      */
     @Nonnull
-    public static AutoModRuleData onMessage(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
-    {
+    public static AutoModRuleData onMessage(@Nonnull String name, @Nonnull TriggerConfig triggerConfig) {
         return new AutoModRuleData(AutoModEventType.MESSAGE_SEND, name, triggerConfig);
     }
 
@@ -109,12 +107,10 @@ public class AutoModRuleData implements SerializableData
      * @return The new {@link AutoModRuleData} instance
      */
     @Nonnull
-    public static AutoModRuleData onMemberProfile(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
-    {
+    public static AutoModRuleData onMemberProfile(@Nonnull String name, @Nonnull TriggerConfig triggerConfig) {
         return new AutoModRuleData(AutoModEventType.MEMBER_UPDATE, name, triggerConfig)
                 .putResponses(AutoModResponse.blockMemberInteraction());
     }
-
 
     /**
      * Change the name of the rule.
@@ -128,8 +124,7 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData setName(@Nonnull String name)
-    {
+    public AutoModRuleData setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, AutoModRule.MAX_RULE_NAME_LENGTH, "Name");
         this.name = name;
@@ -145,8 +140,7 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData setEnabled(boolean enabled)
-    {
+    public AutoModRuleData setEnabled(boolean enabled) {
         this.enabled = enabled;
         return this;
     }
@@ -167,11 +161,9 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData putResponses(@Nonnull AutoModResponse... responses)
-    {
+    public AutoModRuleData putResponses(@Nonnull AutoModResponse... responses) {
         Checks.noneNull(responses, "Responses");
-        for (AutoModResponse response : responses)
-        {
+        for (AutoModResponse response : responses) {
             AutoModResponse.Type type = response.getType();
             Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
             actions.put(type, response);
@@ -195,11 +187,9 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData putResponses(@Nonnull Collection<? extends AutoModResponse> responses)
-    {
+    public AutoModRuleData putResponses(@Nonnull Collection<? extends AutoModResponse> responses) {
         Checks.noneNull(responses, "Responses");
-        for (AutoModResponse response : responses)
-        {
+        for (AutoModResponse response : responses) {
             AutoModResponse.Type type = response.getType();
             Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
             actions.put(type, response);
@@ -223,14 +213,13 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData setResponses(@Nonnull Collection<? extends AutoModResponse> responses)
-    {
+    public AutoModRuleData setResponses(@Nonnull Collection<? extends AutoModResponse> responses) {
         Checks.noneNull(responses, "Responses");
         actions.clear();
-        if (eventType == AutoModEventType.MEMBER_UPDATE)
+        if (eventType == AutoModEventType.MEMBER_UPDATE) {
             actions.put(AutoModResponse.Type.BLOCK_MEMBER_INTERACTION, AutoModResponse.blockMemberInteraction());
-        for (AutoModResponse response : responses)
-        {
+        }
+        for (AutoModResponse response : responses) {
             AutoModResponse.Type type = response.getType();
             Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
             actions.put(type, response);
@@ -252,12 +241,15 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData addExemptRoles(@Nonnull Role... roles)
-    {
+    public AutoModRuleData addExemptRoles(@Nonnull Role... roles) {
         Checks.noneNull(roles, "Roles");
-        Checks.check(roles.length + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot add more than %d roles", AutoModRule.MAX_EXEMPT_ROLES);
-        for (Role role : roles)
+        Checks.check(
+                roles.length + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES,
+                "Cannot add more than %d roles",
+                AutoModRule.MAX_EXEMPT_ROLES);
+        for (Role role : roles) {
             exemptRoles.add(role.getId());
+        }
         return this;
     }
 
@@ -275,12 +267,15 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData addExemptRoles(@Nonnull Collection<? extends Role> roles)
-    {
+    public AutoModRuleData addExemptRoles(@Nonnull Collection<? extends Role> roles) {
         Checks.noneNull(roles, "Roles");
-        Checks.check(roles.size() + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot add more than %d roles", AutoModRule.MAX_EXEMPT_ROLES);
-        for (Role role : roles)
+        Checks.check(
+                roles.size() + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES,
+                "Cannot add more than %d roles",
+                AutoModRule.MAX_EXEMPT_ROLES);
+        for (Role role : roles) {
             exemptRoles.add(role.getId());
+        }
         return this;
     }
 
@@ -298,13 +293,16 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData setExemptRoles(@Nonnull Collection<? extends Role> roles)
-    {
+    public AutoModRuleData setExemptRoles(@Nonnull Collection<? extends Role> roles) {
         Checks.noneNull(roles, "Roles");
-        Checks.check(roles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot add more than %d roles", AutoModRule.MAX_EXEMPT_ROLES);
+        Checks.check(
+                roles.size() <= AutoModRule.MAX_EXEMPT_ROLES,
+                "Cannot add more than %d roles",
+                AutoModRule.MAX_EXEMPT_ROLES);
         exemptRoles.clear();
-        for (Role role : roles)
+        for (Role role : roles) {
             exemptRoles.add(role.getId());
+        }
         return this;
     }
 
@@ -322,12 +320,15 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData addExemptChannels(@Nonnull GuildChannel... channels)
-    {
+    public AutoModRuleData addExemptChannels(@Nonnull GuildChannel... channels) {
         Checks.noneNull(channels, "Channels");
-        Checks.check(channels.length + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot add more than %d channels", AutoModRule.MAX_EXEMPT_CHANNELS);
-        for (GuildChannel channel : channels)
+        Checks.check(
+                channels.length + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS,
+                "Cannot add more than %d channels",
+                AutoModRule.MAX_EXEMPT_CHANNELS);
+        for (GuildChannel channel : channels) {
             exemptChannels.add(channel.getId());
+        }
         return this;
     }
 
@@ -345,12 +346,15 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData addExemptChannels(@Nonnull Collection<? extends GuildChannel> channels)
-    {
+    public AutoModRuleData addExemptChannels(@Nonnull Collection<? extends GuildChannel> channels) {
         Checks.noneNull(channels, "Channels");
-        Checks.check(channels.size() + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot add more than %d channels", AutoModRule.MAX_EXEMPT_CHANNELS);
-        for (GuildChannel channel : channels)
+        Checks.check(
+                channels.size() + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS,
+                "Cannot add more than %d channels",
+                AutoModRule.MAX_EXEMPT_CHANNELS);
+        for (GuildChannel channel : channels) {
             exemptChannels.add(channel.getId());
+        }
         return this;
     }
 
@@ -368,13 +372,16 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData setExemptChannels(@Nonnull Collection<? extends GuildChannel> channels)
-    {
+    public AutoModRuleData setExemptChannels(@Nonnull Collection<? extends GuildChannel> channels) {
         Checks.noneNull(channels, "Channels");
-        Checks.check(channels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot add more than %d channels", AutoModRule.MAX_EXEMPT_CHANNELS);
+        Checks.check(
+                channels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS,
+                "Cannot add more than %d channels",
+                AutoModRule.MAX_EXEMPT_CHANNELS);
         exemptChannels.clear();
-        for (GuildChannel channel : channels)
+        for (GuildChannel channel : channels) {
             exemptChannels.add(channel.getId());
+        }
         return this;
     }
 
@@ -390,10 +397,13 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    public AutoModRuleData setTriggerConfig(@Nonnull TriggerConfig config)
-    {
+    public AutoModRuleData setTriggerConfig(@Nonnull TriggerConfig config) {
         Checks.notNull(config, "TriggerConfig");
-        Checks.check(config.getType().isEventTypeSupported(eventType), "Cannot use trigger type %s with event type %s", config.getType(), eventType);
+        Checks.check(
+                config.getType().isEventTypeSupported(eventType),
+                "Cannot use trigger type %s with event type %s",
+                config.getType(),
+                eventType);
         this.triggerMetadata = config;
         return this;
     }
@@ -406,40 +416,41 @@ public class AutoModRuleData implements SerializableData
      * @return The required permissions to create this rule
      */
     @Nonnull
-    public EnumSet<Permission> getRequiredPermissions()
-    {
-        if (actions.containsKey(AutoModResponse.Type.TIMEOUT))
+    public EnumSet<Permission> getRequiredPermissions() {
+        if (actions.containsKey(AutoModResponse.Type.TIMEOUT)) {
             return EnumSet.of(Permission.MANAGE_SERVER, Permission.MODERATE_MEMBERS);
-        else
+        } else {
             return EnumSet.of(Permission.MANAGE_SERVER);
+        }
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         AutoModTriggerType triggerType = triggerMetadata.getType();
-        if (eventType == AutoModEventType.MEMBER_UPDATE)
-        {
-            if (triggerType == AutoModTriggerType.KEYWORD)
+        if (eventType == AutoModEventType.MEMBER_UPDATE) {
+            if (triggerType == AutoModTriggerType.KEYWORD) {
                 triggerType = AutoModTriggerType.MEMBER_PROFILE_KEYWORD;
-            else
-                throw new IllegalStateException("Cannot create rule of trigger type " + triggerType + " with event type " + eventType);
+            } else {
+                throw new IllegalStateException(
+                        "Cannot create rule of trigger type " + triggerType + " with event type " + eventType);
+            }
         }
 
-        for (AutoModResponse response : actions.values())
-        {
-            if (!response.getType().isSupportedTrigger(triggerType))
-                throw new IllegalStateException("Cannot create a rule of trigger type " + triggerType + " with response type " + response.getType());
+        for (AutoModResponse response : actions.values()) {
+            if (!response.getType().isSupportedTrigger(triggerType)) {
+                throw new IllegalStateException("Cannot create a rule of trigger type " + triggerType
+                        + " with response type " + response.getType());
+            }
         }
 
-        if (actions.isEmpty())
-            throw new IllegalStateException("Cannot create a rule with no responses. Add at least one response with putResponses(...)");
+        if (actions.isEmpty()) {
+            throw new IllegalStateException(
+                    "Cannot create a rule with no responses. Add at least one response with putResponses(...)");
+        }
 
-        DataObject data = DataObject.empty()
-                .put("name", name)
-                .put("enabled", enabled)
-                .put("event_type", eventType.getKey());
+        DataObject data =
+                DataObject.empty().put("name", name).put("enabled", enabled).put("event_type", eventType.getKey());
 
         data.put("actions", DataArray.fromCollection(actions.values()));
 

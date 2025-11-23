@@ -27,70 +27,80 @@ import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void> implements AutoCompleteCallbackAction
-{
+import javax.annotation.Nonnull;
+
+public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void>
+        implements AutoCompleteCallbackAction {
     private final OptionType type;
     private final List<Command.Choice> choices = new ArrayList<>(26);
 
-    public AutoCompleteCallbackActionImpl(IAutoCompleteCallback interaction, OptionType type)
-    {
+    public AutoCompleteCallbackActionImpl(IAutoCompleteCallback interaction, OptionType type) {
         super((InteractionImpl) interaction);
         this.type = type;
     }
 
     @Nonnull
     @Override
-    public OptionType getOptionType()
-    {
+    public OptionType getOptionType() {
         return type;
     }
 
     @Nonnull
     @Override
-    public AutoCompleteCallbackAction addChoices(@Nonnull Collection<Command.Choice> choices)
-    {
+    public AutoCompleteCallbackAction addChoices(@Nonnull Collection<Command.Choice> choices) {
         Checks.noneNull(choices, "Choices");
-        Checks.check(choices.size() + this.choices.size() <= OptionData.MAX_CHOICES,
-                     "Can only reply with up to %d choices. Limit your suggestions!", OptionData.MAX_CHOICES);
-        for (Command.Choice choice : choices)
-        {
+        Checks.check(
+                choices.size() + this.choices.size() <= OptionData.MAX_CHOICES,
+                "Can only reply with up to %d choices. Limit your suggestions!",
+                OptionData.MAX_CHOICES);
+        for (Command.Choice choice : choices) {
             Checks.inRange(choice.getName(), 1, OptionData.MAX_CHOICE_NAME_LENGTH, "Choice name");
 
-            switch (type)
-            {
-            case INTEGER:
-                Checks.check(choice.getType() == OptionType.INTEGER,
-                             "Choice of type %s cannot be converted to INTEGER", choice.getType());
-                long valueLong = choice.getAsLong();
-                Checks.check(valueLong <= OptionData.MAX_POSITIVE_NUMBER,
-                             "Choice value cannot be larger than %f Provided: %d",
-                             OptionData.MAX_POSITIVE_NUMBER, valueLong);
-                Checks.check(valueLong >= OptionData.MIN_NEGATIVE_NUMBER,
-                             "Choice value cannot be smaller than %f. Provided: %d",
-                             OptionData.MIN_NEGATIVE_NUMBER, valueLong);
-                break;
-            case NUMBER:
-                Checks.check(choice.getType() == OptionType.NUMBER || choice.getType() == OptionType.INTEGER,
-                             "Choice of type %s cannot be converted to NUMBER", choice.getType());
-                double valueDouble = choice.getAsDouble();
-                Checks.check(valueDouble <= OptionData.MAX_POSITIVE_NUMBER,
-                             "Choice value cannot be larger than %f Provided: %f",
-                             OptionData.MAX_POSITIVE_NUMBER, valueDouble);
-                Checks.check(valueDouble >= OptionData.MIN_NEGATIVE_NUMBER,
-                             "Choice value cannot be smaller than %f. Provided: %f",
-                             OptionData.MIN_NEGATIVE_NUMBER, valueDouble);
-                break;
-            case STRING:
-                // String can be any type, we just toString it
-                String valueString = choice.getAsString();
-                Checks.inRange(valueString, 1, OptionData.MAX_CHOICE_VALUE_LENGTH, "Choice value");
-                break;
+            switch (type) {
+                case INTEGER:
+                    Checks.check(
+                            choice.getType() == OptionType.INTEGER,
+                            "Choice of type %s cannot be converted to INTEGER",
+                            choice.getType());
+                    long valueLong = choice.getAsLong();
+                    Checks.check(
+                            valueLong <= OptionData.MAX_POSITIVE_NUMBER,
+                            "Choice value cannot be larger than %f Provided: %d",
+                            OptionData.MAX_POSITIVE_NUMBER,
+                            valueLong);
+                    Checks.check(
+                            valueLong >= OptionData.MIN_NEGATIVE_NUMBER,
+                            "Choice value cannot be smaller than %f. Provided: %d",
+                            OptionData.MIN_NEGATIVE_NUMBER,
+                            valueLong);
+                    break;
+                case NUMBER:
+                    Checks.check(
+                            choice.getType() == OptionType.NUMBER || choice.getType() == OptionType.INTEGER,
+                            "Choice of type %s cannot be converted to NUMBER",
+                            choice.getType());
+                    double valueDouble = choice.getAsDouble();
+                    Checks.check(
+                            valueDouble <= OptionData.MAX_POSITIVE_NUMBER,
+                            "Choice value cannot be larger than %f Provided: %f",
+                            OptionData.MAX_POSITIVE_NUMBER,
+                            valueDouble);
+                    Checks.check(
+                            valueDouble >= OptionData.MIN_NEGATIVE_NUMBER,
+                            "Choice value cannot be smaller than %f. Provided: %f",
+                            OptionData.MIN_NEGATIVE_NUMBER,
+                            valueDouble);
+                    break;
+                case STRING:
+                    // String can be any type, we just toString it
+                    String valueString = choice.getAsString();
+                    Checks.inRange(valueString, 1, OptionData.MAX_CHOICE_VALUE_LENGTH, "Choice value");
+                    break;
             }
         }
         this.choices.addAll(choices);
@@ -98,8 +108,7 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject data = DataObject.empty();
         DataArray array = DataArray.empty();
         choices.forEach(choice -> array.add(choice.toData(type)));
@@ -111,15 +120,13 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
 
     @Nonnull
     @Override
-    public AutoCompleteCallbackAction setCheck(BooleanSupplier checks)
-    {
+    public AutoCompleteCallbackAction setCheck(BooleanSupplier checks) {
         return (AutoCompleteCallbackAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public AutoCompleteCallbackAction deadline(long timestamp)
-    {
+    public AutoCompleteCallbackAction deadline(long timestamp) {
         return (AutoCompleteCallbackAction) super.deadline(timestamp);
     }
 }

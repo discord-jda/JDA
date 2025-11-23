@@ -27,8 +27,10 @@ import javax.annotation.Nonnull;
  * A {@link InteractionCallbackAction} which can be used to send a message reply for an interaction.
  * <br>You can use {@link #setEphemeral(boolean)} to hide this message from other users.
  */
-public interface ReplyCallbackAction extends InteractionCallbackAction<InteractionHook>, MessageCreateRequest<ReplyCallbackAction>, FluentRestAction<InteractionHook, ReplyCallbackAction>
-{
+public interface ReplyCallbackAction
+        extends InteractionCallbackAction<InteractionHook>,
+                MessageCreateRequest<ReplyCallbackAction>,
+                FluentRestAction<InteractionHook, ReplyCallbackAction> {
     @Nonnull
     @Override
     @CheckReturnValue

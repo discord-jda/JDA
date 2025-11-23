@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -21,25 +22,22 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
-public class GuildMemberAddHandler extends SocketHandler
-{
+public class GuildMemberAddHandler extends SocketHandler {
 
-    public GuildMemberAddHandler(JDAImpl api)
-    {
+    public GuildMemberAddHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
-        final long id = content.getLong("guild_id");
+    protected Long handleInternally(DataObject content) {
+        long id = content.getLong("guild_id");
         boolean setup = getJDA().getGuildSetupController().onAddMember(id, content);
-        if (setup)
+        if (setup) {
             return null;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
-        if (guild == null)
-        {
+        if (guild == null) {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Caching member for guild that is not yet cached. Guild ID: {} JSON: {}", id, content);
             return null;
@@ -49,10 +47,7 @@ public class GuildMemberAddHandler extends SocketHandler
         guild.onMemberAdd();
         MemberImpl member = getJDA().getEntityBuilder().createMember(guild, content);
         getJDA().getEntityBuilder().updateMemberCache(member);
-        getJDA().handleEvent(
-            new GuildMemberJoinEvent(
-                getJDA(), responseNumber,
-                member));
+        getJDA().handleEvent(new GuildMemberJoinEvent(getJDA(), responseNumber, member));
         return null;
     }
 }

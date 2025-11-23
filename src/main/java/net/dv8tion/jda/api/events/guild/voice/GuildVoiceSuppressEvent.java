@@ -35,12 +35,10 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.entities.GuildVoiceState#isSuppressed() GuildVoiceState.isSuppressed()
  */
-public class GuildVoiceSuppressEvent extends GenericGuildVoiceEvent
-{
+public class GuildVoiceSuppressEvent extends GenericGuildVoiceEvent {
     protected final boolean suppressed;
 
-    public GuildVoiceSuppressEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+    public GuildVoiceSuppressEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member);
         this.suppressed = member.getVoiceState().isSuppressed();
     }
@@ -51,8 +49,7 @@ public class GuildVoiceSuppressEvent extends GenericGuildVoiceEvent
      * @return True, if the member was suppressed,
      *         <br>False, if the member was un-suppressed
      */
-    public boolean isSuppressed()
-    {
+    public boolean isSuppressed() {
         return suppressed;
     }
 }

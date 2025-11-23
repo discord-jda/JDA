@@ -21,17 +21,18 @@ import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Manager providing functionality to update one or more fields for {@link GuildSticker}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("catDance")
  *        .setDescription("Cat dancing")
  *        .queue();
@@ -39,13 +40,12 @@ import java.util.Collection;
  *        .setName("dogDance")
  *        .setTags("dancing", "dog")
  *        .queue();
- * }</pre>
+ * }
  *
  * @see GuildSticker#getManager()
  * @see Guild#editSticker(StickerSnowflake)
  */
-public interface GuildStickerManager extends Manager<GuildStickerManager>
-{
+public interface GuildStickerManager extends Manager<GuildStickerManager> {
     /** Used to reset name field */
     long NAME = 1;
     /** Used to reset description field */
@@ -121,8 +121,7 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
      * @return The guild id
      */
     @Nonnull
-    default String getGuildId()
-    {
+    default String getGuildId() {
         return Long.toUnsignedString(getGuildIdLong());
     }
 
@@ -144,7 +143,6 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
     @Nonnull
     @CheckReturnValue
     GuildStickerManager setName(@Nonnull String name);
-
 
     /**
      * Sets the <b><u>description</u></b> of the sticker.
@@ -211,8 +209,7 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
      */
     @Nonnull
     @CheckReturnValue
-    default GuildStickerManager setTags(@Nonnull String... tags)
-    {
+    default GuildStickerManager setTags(@Nonnull String... tags) {
         Checks.noneNull(tags, "Tags");
         return setTags(Arrays.asList(tags));
     }

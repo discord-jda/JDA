@@ -19,19 +19,19 @@ package net.dv8tion.jda.api.entities.templates;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * POJO for the roles information provided by a template.
  *
  * @see TemplateGuild#getRoles()
  */
-public class TemplateRole implements ISnowflake
-{
+public class TemplateRole implements ISnowflake {
     private final long id;
     private final String name;
     private final int color;
@@ -39,8 +39,7 @@ public class TemplateRole implements ISnowflake
     private final boolean mentionable;
     private final long rawPermissions;
 
-    public TemplateRole(final long id, final String name, final int color, final boolean hoisted, final boolean mentionable, final long rawPermissions)
-    {
+    public TemplateRole(long id, String name, int color, boolean hoisted, boolean mentionable, long rawPermissions) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -55,8 +54,7 @@ public class TemplateRole implements ISnowflake
      * @return The id of the role as stored by Discord
      */
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return this.id;
     }
 
@@ -68,8 +66,7 @@ public class TemplateRole implements ISnowflake
      */
     @Nonnull
     @Override
-    public OffsetDateTime getTimeCreated()
-    {
+    public OffsetDateTime getTimeCreated() {
         throw new UnsupportedOperationException("The date of creation cannot be calculated");
     }
 
@@ -79,8 +76,7 @@ public class TemplateRole implements ISnowflake
      * @return Never-null String containing the name of this {@link TemplateRole Role}.
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
@@ -92,8 +88,7 @@ public class TemplateRole implements ISnowflake
      * @see    #getColorRaw()
      */
     @Nullable
-    public Color getColor()
-    {
+    public Color getColor() {
         return this.color == net.dv8tion.jda.api.entities.Role.DEFAULT_COLOR_RAW ? null : new Color(this.color);
     }
 
@@ -103,8 +98,7 @@ public class TemplateRole implements ISnowflake
      *
      * @return The raw RGB color value or default
      */
-    public int getColorRaw()
-    {
+    public int getColorRaw() {
         return this.color;
     }
 
@@ -114,8 +108,7 @@ public class TemplateRole implements ISnowflake
      *
      * @return True, if this {@link TemplateRole Role} is hoisted.
      */
-    public boolean isHoisted()
-    {
+    public boolean isHoisted() {
         return this.hoisted;
     }
 
@@ -124,8 +117,7 @@ public class TemplateRole implements ISnowflake
      *
      * @return True, if Role is mentionable.
      */
-    public boolean isMentionable()
-    {
+    public boolean isMentionable() {
         return this.mentionable;
     }
 
@@ -136,8 +128,7 @@ public class TemplateRole implements ISnowflake
      * @return An EnumSet of Permissions granted to this PermissionHolder.
      */
     @Nonnull
-    public EnumSet<Permission> getPermissions()
-    {
+    public EnumSet<Permission> getPermissions() {
         return Permission.getPermissions(rawPermissions);
     }
 
@@ -146,8 +137,7 @@ public class TemplateRole implements ISnowflake
      *
      * @return Never-negative long containing offset permissions of this role.
      */
-    public long getPermissionsRaw()
-    {
+    public long getPermissionsRaw() {
         return rawPermissions;
     }
 }

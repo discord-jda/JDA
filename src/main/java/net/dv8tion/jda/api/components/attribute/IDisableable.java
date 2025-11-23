@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Component which supports being disabled or having its children be disabled.
  */
-public interface IDisableable extends Component
-{
+public interface IDisableable extends Component {
     /**
      * Whether this component is disabled.
      *
@@ -50,8 +49,7 @@ public interface IDisableable extends Component
      *
      * @return {@code true} if this component is enabled
      */
-    default boolean isEnabled()
-    {
+    default boolean isEnabled() {
         return !isDisabled();
     }
 
@@ -81,8 +79,7 @@ public interface IDisableable extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default IDisableable asDisabled()
-    {
+    default IDisableable asDisabled() {
         return withDisabled(true);
     }
 
@@ -96,8 +93,7 @@ public interface IDisableable extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default IDisableable asEnabled()
-    {
+    default IDisableable asEnabled() {
         return withDisabled(false);
     }
 }

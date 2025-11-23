@@ -30,14 +30,19 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect any StageInstanceUpdateEvent.
  */
-public abstract class GenericStageInstanceUpdateEvent<T> extends GenericStageInstanceEvent implements UpdateEvent<StageInstance, T>
-{
+public abstract class GenericStageInstanceUpdateEvent<T> extends GenericStageInstanceEvent
+        implements UpdateEvent<StageInstance, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
-    public GenericStageInstanceUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance, T previous, T next, String identifier)
-    {
+    public GenericStageInstanceUpdateEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull StageInstance stageInstance,
+            T previous,
+            T next,
+            String identifier) {
         super(api, responseNumber, stageInstance);
         this.previous = previous;
         this.next = next;
@@ -46,29 +51,25 @@ public abstract class GenericStageInstanceUpdateEvent<T> extends GenericStageIns
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nonnull
     @Override
-    public StageInstance getEntity()
-    {
+    public StageInstance getEntity() {
         return getInstance();
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 }

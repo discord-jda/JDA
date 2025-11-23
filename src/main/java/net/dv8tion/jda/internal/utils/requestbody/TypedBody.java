@@ -22,12 +22,10 @@ import okhttp3.RequestBody;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class TypedBody<T extends TypedBody<T>> extends RequestBody
-{
+public abstract class TypedBody<T extends TypedBody<T>> extends RequestBody {
     protected final MediaType type;
 
-    protected TypedBody(MediaType type)
-    {
+    protected TypedBody(MediaType type) {
         this.type = type;
     }
 
@@ -36,8 +34,7 @@ public abstract class TypedBody<T extends TypedBody<T>> extends RequestBody
 
     @Nullable
     @Override
-    public MediaType contentType()
-    {
+    public MediaType contentType() {
         return type;
     }
 }

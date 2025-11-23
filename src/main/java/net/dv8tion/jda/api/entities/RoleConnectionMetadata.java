@@ -25,10 +25,11 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
 
 /**
  * A metadata record used for role connections.
@@ -36,8 +37,7 @@ import java.util.Objects;
  * @see <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
  * @see Role.RoleTags#isLinkedRole()
  */
-public class RoleConnectionMetadata implements SerializableData
-{
+public class RoleConnectionMetadata implements SerializableData {
     /** The maximum length a name can be ({@value}) */
     public static final int MAX_NAME_LENGTH = 100;
     /** The maximum length a description can be ({@value}) */
@@ -52,7 +52,8 @@ public class RoleConnectionMetadata implements SerializableData
     private final String name;
     private final String description;
     private final LocalizationMap nameLocalization = new LocalizationMap(RoleConnectionMetadata::checkName);
-    private final LocalizationMap descriptionLocalization = new LocalizationMap(RoleConnectionMetadata::checkDescription);
+    private final LocalizationMap descriptionLocalization =
+            new LocalizationMap(RoleConnectionMetadata::checkDescription);
 
     /**
      * Creates a new RoleConnectionMetadata instance.
@@ -76,8 +77,8 @@ public class RoleConnectionMetadata implements SerializableData
      *             <li>If the provided key contains any characters other than {@code a-z}, {@code 0-9}, or {@code _}</li>
      *         </ul>
      */
-    public RoleConnectionMetadata(@Nonnull MetadataType type, @Nonnull String name, @Nonnull String key, @Nonnull String description)
-    {
+    public RoleConnectionMetadata(
+            @Nonnull MetadataType type, @Nonnull String name, @Nonnull String key, @Nonnull String description) {
         Checks.check(type != MetadataType.UNKNOWN, "Type must not be UNKNOWN");
         Checks.notNull(type, "Type");
         Checks.notNull(key, "Key");
@@ -92,14 +93,12 @@ public class RoleConnectionMetadata implements SerializableData
         this.description = description;
     }
 
-    private static void checkName(String name)
-    {
+    private static void checkName(String name) {
         Checks.notNull(name, "Name");
         Checks.inRange(name, 1, MAX_NAME_LENGTH, "Name");
     }
 
-    private static void checkDescription(String description)
-    {
+    private static void checkDescription(String description) {
         Checks.notNull(description, "Description");
         Checks.inRange(description, 1, MAX_DESCRIPTION_LENGTH, "Description");
     }
@@ -110,8 +109,7 @@ public class RoleConnectionMetadata implements SerializableData
      * @return The type, or {@link MetadataType#UNKNOWN} if unknown
      */
     @Nonnull
-    public MetadataType getType()
-    {
+    public MetadataType getType() {
         return type;
     }
 
@@ -121,8 +119,7 @@ public class RoleConnectionMetadata implements SerializableData
      * @return The display name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -132,8 +129,7 @@ public class RoleConnectionMetadata implements SerializableData
      * @return The key
      */
     @Nonnull
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
@@ -143,8 +139,7 @@ public class RoleConnectionMetadata implements SerializableData
      * @return The description
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -154,8 +149,7 @@ public class RoleConnectionMetadata implements SerializableData
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
     @Nonnull
-    public LocalizationMap getNameLocalizations()
-    {
+    public LocalizationMap getNameLocalizations() {
         return nameLocalization;
     }
 
@@ -165,8 +159,7 @@ public class RoleConnectionMetadata implements SerializableData
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */
     @Nonnull
-    public LocalizationMap getDescriptionLocalizations()
-    {
+    public LocalizationMap getDescriptionLocalizations() {
         return descriptionLocalization;
     }
 
@@ -191,8 +184,7 @@ public class RoleConnectionMetadata implements SerializableData
      * @return This updated record instance
      */
     @Nonnull
-    public RoleConnectionMetadata setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
-    {
+    public RoleConnectionMetadata setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
         this.nameLocalization.setTranslation(locale, name);
         return this;
     }
@@ -215,8 +207,7 @@ public class RoleConnectionMetadata implements SerializableData
      * @return This updated record instance
      */
     @Nonnull
-    public RoleConnectionMetadata setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
-    {
+    public RoleConnectionMetadata setNameLocalizations(@Nonnull Map<DiscordLocale, String> map) {
         this.nameLocalization.setTranslations(map);
         return this;
     }
@@ -242,8 +233,8 @@ public class RoleConnectionMetadata implements SerializableData
      * @return This updated record instance
      */
     @Nonnull
-    public RoleConnectionMetadata setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
-    {
+    public RoleConnectionMetadata setDescriptionLocalization(
+            @Nonnull DiscordLocale locale, @Nonnull String description) {
         this.descriptionLocalization.setTranslation(locale, description);
         return this;
     }
@@ -266,53 +257,50 @@ public class RoleConnectionMetadata implements SerializableData
      * @return This updated record instance
      */
     @Nonnull
-    public RoleConnectionMetadata setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
-    {
+    public RoleConnectionMetadata setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map) {
         this.descriptionLocalization.setTranslations(map);
         return this;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
-            .setType(type)
-            .setName(name)
-            .addMetadata("key", key)
-            .toString();
+                .setType(type)
+                .setName(name)
+                .addMetadata("key", key)
+                .toString();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (!(obj instanceof RoleConnectionMetadata))
+    public boolean equals(Object obj) {
+        if (!(obj instanceof RoleConnectionMetadata)) {
             return false;
-        if (this == obj)
+        }
+        if (this == obj) {
             return true;
+        }
         RoleConnectionMetadata o = (RoleConnectionMetadata) obj;
         return this.type == o.type
-            && this.key.equals(o.key)
-            && this.name.equals(o.name)
-            && this.description.equals(o.description);
+                && this.key.equals(o.key)
+                && this.name.equals(o.name)
+                && this.description.equals(o.description);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(type, key, name, description);
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty()
-            .put("type", type.value)
-            .put("name", name)
-            .put("key", key)
-            .put("description", description)
-            .put("name_localizations", nameLocalization)
-            .put("description_localizations", descriptionLocalization);
+                .put("type", type.value)
+                .put("name", name)
+                .put("key", key)
+                .put("description", description)
+                .put("name_localizations", nameLocalization)
+                .put("description_localizations", descriptionLocalization);
     }
 
     /**
@@ -330,17 +318,15 @@ public class RoleConnectionMetadata implements SerializableData
      * @return The parsed metadata instance
      */
     @Nonnull
-    public static RoleConnectionMetadata fromData(@Nonnull DataObject data)
-    {
+    public static RoleConnectionMetadata fromData(@Nonnull DataObject data) {
         Checks.notNull(data, "Data");
         RoleConnectionMetadata metadata = new RoleConnectionMetadata(
-            MetadataType.fromValue(data.getInt("type")),
-            data.getString("name", null),
-            data.getString("key", null),
-            data.getString("description", null)
-        );
+                MetadataType.fromValue(data.getInt("type")),
+                data.getString("name", null),
+                data.getString("key", null),
+                data.getString("description", null));
         return metadata.setNameLocalizations(LocalizationUtils.mapFromProperty(data, "name_localizations"))
-                       .setDescriptionLocalizations(LocalizationUtils.mapFromProperty(data, "description_localizations"));
+                .setDescriptionLocalizations(LocalizationUtils.mapFromProperty(data, "description_localizations"));
     }
 
     /**
@@ -350,8 +336,7 @@ public class RoleConnectionMetadata implements SerializableData
      *
      * <p>For example, you could use {@link #INTEGER_GREATER_THAN_OR_EQUAL} on a connection to require a certain metadata value to be at least the desired minimum value.
      */
-    public enum MetadataType
-    {
+    public enum MetadataType {
         INTEGER_LESS_THAN_OR_EQUAL(1),
         INTEGER_GREATER_THAN_OR_EQUAL(2),
         INTEGER_EQUALS(3),
@@ -364,19 +349,16 @@ public class RoleConnectionMetadata implements SerializableData
 
         private final int value;
 
-        MetadataType(int value)
-        {
+        MetadataType(int value) {
             this.value = value;
         }
-
 
         /**
          * The raw value used by Discord.
          *
          * @return The raw value
          */
-        public int getValue()
-        {
+        public int getValue() {
             return value;
         }
 
@@ -389,12 +371,11 @@ public class RoleConnectionMetadata implements SerializableData
          * @return The MetadataType for the provided raw value, or {@link #UNKNOWN} if none is found
          */
         @Nonnull
-        public static MetadataType fromValue(int value)
-        {
-            for (MetadataType type : values())
-            {
-                if (type.value == value)
+        public static MetadataType fromValue(int value) {
+            for (MetadataType type : values()) {
+                if (type.value == value) {
                     return type;
+                }
             }
             return UNKNOWN;
         }

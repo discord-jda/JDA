@@ -34,66 +34,58 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<NewsChannelImpl>
-        implements NewsChannel,
-        DefaultGuildChannelUnion,
-        NewsChannelMixin<NewsChannelImpl>
-{
-    public NewsChannelImpl(long id, GuildImpl guild)
-    {
+        implements NewsChannel, DefaultGuildChannelUnion, NewsChannelMixin<NewsChannelImpl> {
+    public NewsChannelImpl(long id, GuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return false;
     }
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.NEWS;
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         return getGuild().getMembersView().stream()
-            .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
-            .collect(Helpers.toUnmodifiableList());
+                .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
     @Override
-    public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId)
-    {
+    public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId) {
         Checks.notNull(targetChannelId, "Target Channel ID");
 
         Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
         DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
         return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
             DataObject json = response.getObject();
-            return new Webhook.WebhookReference(request.getJDA(), json.getUnsignedLong("webhook_id") , json.getUnsignedLong("channel_id"));
+            return new Webhook.WebhookReference(
+                    request.getJDA(), json.getUnsignedLong("webhook_id"), json.getUnsignedLong("channel_id"));
         });
     }
 
     @Nonnull
     @Override
-    public NewsChannelManager getManager()
-    {
+    public NewsChannelManager getManager() {
         return new NewsChannelManagerImpl(this);
     }
 }

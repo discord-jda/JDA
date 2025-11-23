@@ -34,11 +34,12 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackAc
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Interactions which allow message replies in the channel they were used in.
@@ -56,8 +57,7 @@ import java.util.Collection;
  * This means all the methods with {@code original} in the name, such as {@link InteractionHook#editOriginal(String)},
  * will affect that original reply.
  */
-public interface IReplyCallback extends IDeferrableCallback
-{
+public interface IReplyCallback extends IDeferrableCallback {
     /**
      * Acknowledge this interaction and defer the reply to a later time.
      * <br>This will send a {@code <Bot> is thinking...} message in chat that will be updated later through either {@link InteractionHook#editOriginal(String)} or {@link InteractionHook#sendMessage(String)}.
@@ -111,8 +111,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction deferReply(boolean ephemeral)
-    {
+    default ReplyCallbackAction deferReply(boolean ephemeral) {
         return deferReply().setEphemeral(ephemeral);
     }
 
@@ -150,8 +149,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction reply(@Nonnull MessageCreateData message)
-    {
+    default ReplyCallbackAction reply(@Nonnull MessageCreateData message) {
         Checks.notNull(message, "Message");
         ReplyCallbackActionImpl action = (ReplyCallbackActionImpl) deferReply();
         return action.applyData(message);
@@ -198,8 +196,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyPoll(@Nonnull MessagePollData poll)
-    {
+    default ReplyCallbackAction replyPoll(@Nonnull MessagePollData poll) {
         Checks.notNull(poll, "Message Poll");
         return deferReply().setPoll(poll);
     }
@@ -236,8 +233,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction reply(@Nonnull String content)
-    {
+    default ReplyCallbackAction reply(@Nonnull String content) {
         Checks.notNull(content, "Content");
         return deferReply().setContent(content);
     }
@@ -274,8 +270,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default ReplyCallbackAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return deferReply().addEmbeds(embeds);
     }
 
@@ -313,8 +308,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
-    {
+    default ReplyCallbackAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds) {
         Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");
         return deferReply().addEmbeds(embed).addEmbeds(embeds);
@@ -358,8 +352,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    default ReplyCallbackAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         return deferReply().setComponents(components);
     }
 
@@ -403,8 +396,8 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
-    {
+    default ReplyCallbackAction replyComponents(
+            @Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other) {
         Checks.notNull(component, "MessageTopLevelComponent");
         Checks.noneNull(other, "MessageTopLevelComponents");
         return replyComponents(Helpers.mergeVararg(component, other));
@@ -449,8 +442,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
-    {
+    default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return replyComponents(tree.getComponents());
     }
@@ -489,8 +481,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    default ReplyCallbackAction replyFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return reply(String.format(format, args));
     }
@@ -537,8 +528,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyFiles(@Nonnull Collection<? extends FileUpload> files)
-    {
+    default ReplyCallbackAction replyFiles(@Nonnull Collection<? extends FileUpload> files) {
         Checks.notEmpty(files, "File Collection");
         return deferReply().setFiles(files);
     }
@@ -585,8 +575,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyFiles(@Nonnull FileUpload... files)
-    {
+    default ReplyCallbackAction replyFiles(@Nonnull FileUpload... files) {
         Checks.notEmpty(files, "File Collection");
         Checks.noneNull(files, "FileUpload");
         return deferReply().setFiles(files);

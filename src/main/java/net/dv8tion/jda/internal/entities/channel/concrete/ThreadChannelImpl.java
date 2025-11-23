@@ -48,20 +48,20 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadMemberPagin
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.LongStream;
 
-public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements
-        ThreadChannel,
-        ThreadChannelMixin<ThreadChannelImpl>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl>
+        implements ThreadChannel, ThreadChannelMixin<ThreadChannelImpl> {
     private final ChannelType type;
-    private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
+    private final CacheView.SimpleCacheView<ThreadMember> threadMembers =
+            new CacheView.SimpleCacheView<>(ThreadMember.class, null);
 
     private TLongSet appliedTags = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
     private AutoArchiveDuration autoArchiveDuration;
@@ -79,217 +79,191 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     private int slowmode;
     private int flags;
 
-    public ThreadChannelImpl(long id, GuildImpl guild, ChannelType type)
-    {
+    public ThreadChannelImpl(long id, GuildImpl guild, ChannelType type) {
         super(id, guild);
         this.type = type;
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return false;
     }
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
     @Override
-    public EnumSet<ChannelFlag> getFlags()
-    {
+    public EnumSet<ChannelFlag> getFlags() {
         return ChannelFlag.fromRaw(flags);
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return type;
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         return latestMessageId;
     }
 
     @Override
-    public int getMessageCount()
-    {
+    public int getMessageCount() {
         return messageCount;
     }
 
     @Override
-    public int getTotalMessageCount()
-    {
+    public int getTotalMessageCount() {
         return totalMessageCount;
     }
 
     @Override
-    public int getMemberCount()
-    {
+    public int getMemberCount() {
         return memberCount;
     }
 
     @Override
-    public boolean isLocked()
-    {
+    public boolean isLocked() {
         return locked;
     }
 
     @Override
-    public boolean canTalk(@Nonnull Member member)
-    {
+    public boolean canTalk(@Nonnull Member member) {
         Checks.notNull(member, "Member");
-        if (type == ChannelType.GUILD_PRIVATE_THREAD && threadMembers.get(member.getIdLong()) == null)
-            return member.hasPermission(getParentChannel(), Permission.MANAGE_THREADS, Permission.MESSAGE_SEND_IN_THREADS);
+        if (type == ChannelType.GUILD_PRIVATE_THREAD && threadMembers.get(member.getIdLong()) == null) {
+            return member.hasPermission(
+                    getParentChannel(), Permission.MANAGE_THREADS, Permission.MESSAGE_SEND_IN_THREADS);
+        }
         return member.hasPermission(getParentChannel(), Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND_IN_THREADS);
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         return Collections.emptyList();
     }
 
     @Nonnull
     @Override
-    public IThreadContainerUnion getParentChannel()
-    {
+    public IThreadContainerUnion getParentChannel() {
         IThreadContainer realChannel = getGuild().getChannelById(IThreadContainer.class, parentChannel.getIdLong());
-        if (realChannel != null)
+        if (realChannel != null) {
             parentChannel = (IThreadContainerUnion) realChannel;
+        }
         return parentChannel;
     }
 
     @Nonnull
     @Override
-    public List<ForumTag> getAppliedTags()
-    {
+    public List<ForumTag> getAppliedTags() {
         IThreadContainerUnion parent = getParentChannel();
-        if (parent.getType() != ChannelType.FORUM)
+        if (parent.getType() != ChannelType.FORUM) {
             return Collections.emptyList();
-        return parent.asForumChannel()
-                .getAvailableTagCache()
-                .stream()
+        }
+        return parent.asForumChannel().getAvailableTagCache().stream()
                 .filter(tag -> this.appliedTags.contains(tag.getIdLong()))
                 .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveParentMessage()
-    {
+    public RestAction<Message> retrieveParentMessage() {
         return this.getParentMessageChannel().retrieveMessageById(this.getIdLong());
     }
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveStartMessage()
-    {
+    public RestAction<Message> retrieveStartMessage() {
         return retrieveMessageById(getId());
     }
 
     @Nonnull
     @Override
-    public IPermissionContainer getPermissionContainer()
-    {
+    public IPermissionContainer getPermissionContainer() {
         return getParentChannel();
     }
 
     @Nonnull
     @Override
-    public List<ThreadMember> getThreadMembers()
-    {
+    public List<ThreadMember> getThreadMembers() {
         return threadMembers.asList();
     }
 
     @Nullable
     @Override
-    public ThreadMember getThreadMemberById(long id)
-    {
+    public ThreadMember getThreadMemberById(long id) {
         return threadMembers.get(id);
     }
 
     @Nonnull
     @Override
-    public CacheRestAction<ThreadMember> retrieveThreadMemberById(long id)
-    {
+    public CacheRestAction<ThreadMember> retrieveThreadMemberById(long id) {
         JDAImpl jda = (JDAImpl) getJDA();
-        return new DeferredRestAction<>(jda, ThreadMember.class,
-                () -> getThreadMemberById(id),
-                () -> {
-                    Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id)).withQueryParams("with_member", "true");
-                    return new RestActionImpl<>(jda, route, (resp, req) ->
-                        jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject()));
-                });
+        return new DeferredRestAction<>(jda, ThreadMember.class, () -> getThreadMemberById(id), () -> {
+            Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER
+                    .compile(getId(), Long.toUnsignedString(id))
+                    .withQueryParams("with_member", "true");
+            return new RestActionImpl<>(jda, route, (resp, req) -> jda.getEntityBuilder()
+                    .createThreadMember(getGuild(), this, resp.getObject()));
+        });
     }
 
     @Nonnull
     @Override
-    public ThreadMemberPaginationAction retrieveThreadMembers()
-    {
+    public ThreadMemberPaginationAction retrieveThreadMembers() {
         return new ThreadMemberPaginationActionImpl(this);
     }
 
     @Override
-    public long getOwnerIdLong()
-    {
+    public long getOwnerIdLong() {
         return ownerId;
     }
 
     @Override
-    public boolean isArchived()
-    {
+    public boolean isArchived() {
         return archived;
     }
 
     @Override
-    public boolean isInvitable()
-    {
-        if (type != ChannelType.GUILD_PRIVATE_THREAD)
+    public boolean isInvitable() {
+        if (type != ChannelType.GUILD_PRIVATE_THREAD) {
             throw new UnsupportedOperationException("Only private threads support the concept of invitable.");
+        }
 
         return invitable;
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getTimeArchiveInfoLastModified()
-    {
+    public OffsetDateTime getTimeArchiveInfoLastModified() {
         return Helpers.toOffset(archiveTimestamp);
     }
 
     @Nonnull
     @Override
-    public AutoArchiveDuration getAutoArchiveDuration()
-    {
+    public AutoArchiveDuration getAutoArchiveDuration() {
         return autoArchiveDuration;
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getTimeCreated()
-    {
+    public OffsetDateTime getTimeCreated() {
         return creationTimestamp == 0 ? TimeUtil.getTimeCreated(getIdLong()) : Helpers.toOffset(creationTimestamp);
     }
 
     @Override
-    public int getSlowmode()
-    {
+    public int getSlowmode() {
         return slowmode;
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> join()
-    {
+    public RestAction<Void> join() {
         checkUnarchived();
 
         Route.CompiledRoute route = Route.Channels.JOIN_THREAD.compile(getId());
@@ -298,8 +272,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Nonnull
     @Override
-    public RestAction<Void> leave()
-    {
+    public RestAction<Void> leave() {
         checkUnarchived();
 
         Route.CompiledRoute route = Route.Channels.LEAVE_THREAD.compile(getId());
@@ -308,8 +281,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Nonnull
     @Override
-    public RestAction<Void> addThreadMemberById(long id)
-    {
+    public RestAction<Void> addThreadMemberById(long id) {
         checkUnarchived();
         checkInvitable();
         checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
@@ -320,13 +292,14 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Nonnull
     @Override
-    public RestAction<Void> removeThreadMemberById(long id)
-    {
+    public RestAction<Void> removeThreadMemberById(long id) {
         checkUnarchived();
 
-        boolean privateThreadOwner = type == ChannelType.GUILD_PRIVATE_THREAD && ownerId == api.getSelfUser().getIdLong();
-        if (!privateThreadOwner)
+        boolean privateThreadOwner = type == ChannelType.GUILD_PRIVATE_THREAD
+                && ownerId == api.getSelfUser().getIdLong();
+        if (!privateThreadOwner) {
             checkPermission(Permission.MANAGE_THREADS);
+        }
 
         Route.CompiledRoute route = Route.Channels.REMOVE_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
         return new RestActionImpl<>(api, route);
@@ -334,117 +307,101 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Nonnull
     @Override
-    public ThreadChannelManager getManager()
-    {
+    public ThreadChannelManager getManager() {
         return new ThreadChannelManagerImpl(this);
     }
 
     @Override
-    public void checkCanManage()
-    {
-        if (isOwner())
+    public void checkCanManage() {
+        if (isOwner()) {
             return;
+        }
 
         checkPermission(Permission.MANAGE_THREADS);
     }
 
-    public CacheView.SimpleCacheView<ThreadMember> getThreadMemberView()
-    {
+    public CacheView.SimpleCacheView<ThreadMember> getThreadMemberView() {
         return threadMembers;
     }
 
     @Override
-    public ThreadChannelImpl setLatestMessageIdLong(long latestMessageId)
-    {
+    public ThreadChannelImpl setLatestMessageIdLong(long latestMessageId) {
         this.latestMessageId = latestMessageId;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setAutoArchiveDuration(AutoArchiveDuration autoArchiveDuration)
-    {
+    public ThreadChannelImpl setAutoArchiveDuration(AutoArchiveDuration autoArchiveDuration) {
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
     }
 
-    public ThreadChannelImpl setParentChannel(IThreadContainer channel)
-    {
+    public ThreadChannelImpl setParentChannel(IThreadContainer channel) {
         this.parentChannel = (IThreadContainerUnion) channel;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setLocked(boolean locked)
-    {
+    public ThreadChannelImpl setLocked(boolean locked) {
         this.locked = locked;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setArchived(boolean archived)
-    {
+    public ThreadChannelImpl setArchived(boolean archived) {
         this.archived = archived;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setInvitable(boolean invitable)
-    {
+    public ThreadChannelImpl setInvitable(boolean invitable) {
         this.invitable = invitable;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setArchiveTimestamp(long archiveTimestamp)
-    {
+    public ThreadChannelImpl setArchiveTimestamp(long archiveTimestamp) {
         this.archiveTimestamp = archiveTimestamp;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setCreationTimestamp(long creationTimestamp)
-    {
+    public ThreadChannelImpl setCreationTimestamp(long creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setOwnerId(long ownerId)
-    {
+    public ThreadChannelImpl setOwnerId(long ownerId) {
         this.ownerId = ownerId;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setMessageCount(int messageCount)
-    {
+    public ThreadChannelImpl setMessageCount(int messageCount) {
         this.messageCount = messageCount;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setTotalMessageCount(int messageCount)
-    {
+    public ThreadChannelImpl setTotalMessageCount(int messageCount) {
         this.totalMessageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setMemberCount(int memberCount)
-    {
+    public ThreadChannelImpl setMemberCount(int memberCount) {
         this.memberCount = memberCount;
         return this;
     }
 
     @Override
-    public ThreadChannelImpl setSlowmode(int slowmode)
-    {
+    public ThreadChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
         return this;
     }
 
-    public ThreadChannelImpl setAppliedTags(LongStream tags)
-    {
+    public ThreadChannelImpl setAppliedTags(LongStream tags) {
         TLongSet set = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
         tags.forEach(set::add);
         this.appliedTags = set;
@@ -452,38 +409,36 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     }
 
     @Override
-    public ThreadChannelImpl setFlags(int flags)
-    {
+    public ThreadChannelImpl setFlags(int flags) {
         this.flags = flags;
         return this;
     }
 
-    public long getArchiveTimestamp()
-    {
+    public long getArchiveTimestamp() {
         return archiveTimestamp;
     }
 
-    public TLongSet getAppliedTagsSet()
-    {
+    public TLongSet getAppliedTagsSet() {
         return appliedTags;
     }
 
-    public int getRawFlags()
-    {
+    public int getRawFlags() {
         return flags;
     }
 
-    private void checkUnarchived()
-    {
-        if (archived)
+    private void checkUnarchived() {
+        if (archived) {
             throw new IllegalStateException("Cannot modify a ThreadChannel while it is archived!");
+        }
     }
 
-    private void checkInvitable()
-    {
-        if (ownerId == api.getSelfUser().getIdLong()) return;
+    private void checkInvitable() {
+        if (ownerId == api.getSelfUser().getIdLong()) {
+            return;
+        }
 
-        if (!isPublic() && !isInvitable())
+        if (!isPublic() && !isInvitable()) {
             checkPermission(Permission.MANAGE_THREADS);
+        }
     }
 }

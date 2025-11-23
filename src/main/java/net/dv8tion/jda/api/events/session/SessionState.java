@@ -21,8 +21,7 @@ package net.dv8tion.jda.api.events.session;
  *
  * @see GenericSessionEvent
  */
-public enum SessionState
-{
+public enum SessionState {
     /**
      * The session is fully loaded, including all guilds.
      *

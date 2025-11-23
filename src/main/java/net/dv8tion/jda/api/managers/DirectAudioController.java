@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>For normal operation use {@link Guild#getAudioManager()} instead.
  */
-public interface DirectAudioController
-{
+public interface DirectAudioController {
     /**
      * The associated JDA instance
      *

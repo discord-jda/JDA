@@ -26,10 +26,11 @@ import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Indicates that a {@link CommandInteraction} was used.
@@ -38,87 +39,75 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class GenericCommandInteractionEvent extends GenericInteractionCreateEvent implements CommandInteraction
-{
-    public GenericCommandInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteraction interaction)
-    {
+public class GenericCommandInteractionEvent extends GenericInteractionCreateEvent implements CommandInteraction {
+    public GenericCommandInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull CommandInteraction interaction) {
         super(api, responseNumber, interaction);
     }
 
     @Nonnull
     @Override
-    public CommandInteraction getInteraction()
-    {
+    public CommandInteraction getInteraction() {
         return (CommandInteraction) super.getInteraction();
     }
 
     @Nonnull
     @Override
-    public Command.Type getCommandType()
-    {
+    public Command.Type getCommandType() {
         return getInteraction().getCommandType();
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return getInteraction().getName();
     }
 
     @Nullable
     @Override
-    public String getSubcommandName()
-    {
+    public String getSubcommandName() {
         return getInteraction().getSubcommandName();
     }
 
     @Nullable
     @Override
-    public String getSubcommandGroup()
-    {
+    public String getSubcommandGroup() {
         return getInteraction().getSubcommandGroup();
     }
 
     @Override
-    public long getCommandIdLong()
-    {
+    public long getCommandIdLong() {
         return getInteraction().getCommandIdLong();
     }
 
     @Override
-    public boolean isGuildCommand()
-    {
+    public boolean isGuildCommand() {
         return getInteraction().isGuildCommand();
     }
 
     @Nonnull
     @Override
-    public List<OptionMapping> getOptions()
-    {
+    public List<OptionMapping> getOptions() {
         return getInteraction().getOptions();
     }
 
     @Nonnull
     @Override
-    public InteractionHook getHook()
-    {
+    public InteractionHook getHook() {
         return getInteraction().getHook();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ReplyCallbackAction deferReply()
-    {
+    public ReplyCallbackAction deferReply() {
         return getInteraction().deferReply();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ModalCallbackAction replyModal(@Nonnull Modal modal)
-    {
+    public ModalCallbackAction replyModal(@Nonnull Modal modal) {
         return getInteraction().replyModal(modal);
     }
 }

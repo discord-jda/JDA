@@ -28,27 +28,26 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 
 public interface TextChannelMixin<T extends TextChannelMixin<T>>
-    extends TextChannel,
-        StandardGuildMessageChannelMixin<T>,
-        ISlowmodeChannelMixin<T>
-{
+        extends TextChannel, StandardGuildMessageChannelMixin<T>, ISlowmodeChannelMixin<T> {
     @Nonnull
     @Override
-    default ChannelAction<TextChannel> createCopy(@Nonnull Guild guild)
-    {
+    default ChannelAction<TextChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
-        ChannelAction<TextChannel> action = guild.createTextChannel(getName()).setNSFW(isNSFW()).setTopic(getTopic()).setSlowmode(getSlowmode());
-        if (guild.equals(getGuild()))
-        {
+        ChannelAction<TextChannel> action = guild.createTextChannel(getName())
+                .setNSFW(isNSFW())
+                .setTopic(getTopic())
+                .setSlowmode(getSlowmode());
+        if (guild.equals(getGuild())) {
             Category parent = getParentCategory();
-            if (parent != null)
+            if (parent != null) {
                 action.setParent(parent);
-            for (PermissionOverride o : getPermissionOverrideMap().valueCollection())
-            {
-                if (o.isMemberOverride())
+            }
+            for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
+                if (o.isMemberOverride()) {
                     action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
+                } else {
                     action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

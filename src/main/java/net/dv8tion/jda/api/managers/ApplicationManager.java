@@ -24,34 +24,34 @@ import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
+import java.util.*;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
 
 /**
  * Manager providing functionality to update one or more fields for the application associated with the bot.
  *
  * @see JDA#getApplicationManager()
  */
-public interface ApplicationManager extends Manager<ApplicationManager>
-{
+public interface ApplicationManager extends Manager<ApplicationManager> {
     /** Used to set description field */
-    long DESCRIPTION               = 1;
+    long DESCRIPTION = 1;
     /** Used to set icon field */
-    long ICON                      = 1 << 1;
+    long ICON = 1 << 1;
     /** Used to set cover image field */
-    long COVER_IMAGE               = 1 << 2;
+    long COVER_IMAGE = 1 << 2;
     /** Used to set interaction endpoint url field */
     long INTERACTIONS_ENDPOINT_URL = 1 << 3;
     /** Used to set tags field */
-    long TAGS                      = 1 << 4;
+    long TAGS = 1 << 4;
     /** Used to set custom install url field */
-    long CUSTOM_INSTALL_URL        = 1 << 5;
+    long CUSTOM_INSTALL_URL = 1 << 5;
     /** Used to set install params field */
-    long INSTALL_PARAMS            = 1 << 6;
+    long INSTALL_PARAMS = 1 << 6;
     /** Used to set integration types config field */
-    long INTEGRATION_TYPES_CONFIG  = 1 << 7;
+    long INTEGRATION_TYPES_CONFIG = 1 << 7;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -232,13 +232,11 @@ public interface ApplicationManager extends Manager<ApplicationManager>
     /**
      * A config describing how the application is installed.
      */
-    class IntegrationTypeConfig implements SerializableData
-    {
+    class IntegrationTypeConfig implements SerializableData {
         private final Set<String> scopes;
         private final long permissions;
 
-        private IntegrationTypeConfig(Set<String> scopes, long permissions)
-        {
+        private IntegrationTypeConfig(Set<String> scopes, long permissions) {
             this.scopes = scopes;
             this.permissions = permissions;
         }
@@ -254,21 +252,17 @@ public interface ApplicationManager extends Manager<ApplicationManager>
          * @return IntegrationTypeConfig instance
          */
         @Nonnull
-        public static IntegrationTypeConfig of(@Nullable Collection<String> scopes, @Nullable Collection<Permission> permissions)
-        {
+        public static IntegrationTypeConfig of(
+                @Nullable Collection<String> scopes, @Nullable Collection<Permission> permissions) {
             return new IntegrationTypeConfig(
-                scopes == null ? Collections.emptySet() : new LinkedHashSet<>(scopes),
-                permissions == null ? 0L : Permission.getRaw(permissions)
-            );
+                    scopes == null ? Collections.emptySet() : new LinkedHashSet<>(scopes),
+                    permissions == null ? 0L : Permission.getRaw(permissions));
         }
 
         @Nonnull
         @Override
-        public DataObject toData()
-        {
-            return DataObject.empty()
-                .put("scopes", scopes)
-                .put("permissions", permissions);
+        public DataObject toData() {
+            return DataObject.empty().put("scopes", scopes).put("permissions", permissions);
         }
     }
 }

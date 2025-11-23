@@ -20,17 +20,18 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Utility class to simplify error handling with {@link RestAction RestActions} and {@link ErrorResponse ErrorResponses}.
  *
  * <p><b>Example</b><br>
- * <pre>{@code
+ * {@snippet lang="java":
  * // Send message to user and delete it 30 seconds later, handles blocked messages in context channel.
  * public void sendMessage(TextChannel context, User user, String content) {
  *     user.openPrivateChannel()
@@ -43,16 +44,13 @@ import java.util.function.Predicate;
  *                 ErrorResponse.CANNOT_SEND_TO_USER,  // Fallback handling for blocked messages
  *                 (e) -> context.sendMessage("Failed to send message, you block private messages!").queue()));
  * }
- * }</pre>
+ * }
  *
  * @see ErrorResponse
  * @see ErrorResponseException
  * @see RestAction#queue(Consumer, Consumer)
- *
- * @since 4.2.0
  */
-public class ErrorHandler implements Consumer<Throwable>
-{
+public class ErrorHandler implements Consumer<Throwable> {
     private static final Consumer<? super Throwable> empty = (e) -> {};
     private final Consumer<? super Throwable> base;
     private final Map<Predicate<? super Throwable>, Consumer<? super Throwable>> cases = new LinkedHashMap<>();
@@ -61,8 +59,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * Create an ErrorHandler with {@link RestAction#getDefaultFailure()} as base consumer.
      * <br>If none of the provided ignore/handle cases apply, the base consumer is applied instead.
      */
-    public ErrorHandler()
-    {
+    public ErrorHandler() {
         this(RestAction.getDefaultFailure());
     }
 
@@ -73,8 +70,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * @param base
      *        The base {@link Consumer}
      */
-    public ErrorHandler(@Nonnull Consumer<? super Throwable> base)
-    {
+    public ErrorHandler(@Nonnull Consumer<? super Throwable> base) {
         Checks.notNull(base, "Consumer");
         this.base = base;
     }
@@ -83,7 +79,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * Ignore the specified set of error responses.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
      *     channel.sendMessage(content)
@@ -91,7 +87,7 @@ public class ErrorHandler implements Consumer<Throwable>
      *         .flatMap(Message::delete)
      *         .queue(null, new ErrorHandler().ignore(UNKNOWN_MESSAGE));
      * }
-     * }</pre>
+     * }
      *
      * @param  ignored
      *         Ignored error response
@@ -104,8 +100,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * @return This ErrorHandler with the applied ignore cases
      */
     @Nonnull
-    public ErrorHandler ignore(@Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses)
-    {
+    public ErrorHandler ignore(@Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses) {
         Checks.notNull(ignored, "ErrorResponse");
         Checks.noneNull(errorResponses, "ErrorResponse");
         return ignore(EnumSet.of(ignored, errorResponses));
@@ -115,7 +110,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * Ignore the specified set of error responses.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(User user, String content) {
      *     user.openPrivateChannel()
@@ -124,7 +119,7 @@ public class ErrorHandler implements Consumer<Throwable>
      *         .flatMap(Message::delete)
      *         .queue(null, new ErrorHandler().ignore(EnumSet.of(UNKNOWN_MESSAGE, CANNOT_SEND_TO_USER)));
      * }
-     * }</pre>
+     * }
      *
      * @param  errorResponses
      *         The error responses to ignore
@@ -135,8 +130,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * @return This ErrorHandler with the applied ignore cases
      */
     @Nonnull
-    public ErrorHandler ignore(@Nonnull Collection<ErrorResponse> errorResponses)
-    {
+    public ErrorHandler ignore(@Nonnull Collection<ErrorResponse> errorResponses) {
         return handle(errorResponses, empty);
     }
 
@@ -144,12 +138,12 @@ public class ErrorHandler implements Consumer<Throwable>
      * Ignore exceptions of the specified types.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Ignore SocketTimeoutException
      * public static void ban(Guild guild, String userId) {
      *     guild.ban(userId).queue(null, new ErrorHandler().ignore(SocketTimeoutException.class);
      * }
-     * }</pre>
+     * }
      *
      * @param  clazz
      *         The class to ignore
@@ -164,17 +158,17 @@ public class ErrorHandler implements Consumer<Throwable>
      * @see    java.net.SocketTimeoutException
      */
     @Nonnull
-    public ErrorHandler ignore(@Nonnull Class<?> clazz, @Nonnull Class<?>... classes)
-    {
+    public ErrorHandler ignore(@Nonnull Class<?> clazz, @Nonnull Class<?>... classes) {
         Checks.notNull(clazz, "Classes");
         Checks.noneNull(classes, "Classes");
         return ignore(it -> {
-            if (clazz.isInstance(it))
+            if (clazz.isInstance(it)) {
                 return true;
-            for (Class<?> e : classes)
-            {
-                if (e.isInstance(it))
+            }
+            for (Class<?> e : classes) {
+                if (e.isInstance(it)) {
                     return true;
+                }
             }
             return false;
         });
@@ -184,12 +178,12 @@ public class ErrorHandler implements Consumer<Throwable>
      * Ignore exceptions on specific conditions.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * // Ignore all exceptions except for ErrorResponseException
      * public static void ban(Guild guild, String userId) {
      *     guild.ban(userId).queue(null, new ErrorHandler().ignore((ex) -> !(ex instanceof ErrorResponseException));
      * }
-     * }</pre>
+     * }
      *
      * @param  condition
      *         The condition to check
@@ -202,8 +196,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * @see    ErrorResponseException
      */
     @Nonnull
-    public ErrorHandler ignore(@Nonnull Predicate<? super Throwable> condition)
-    {
+    public ErrorHandler ignore(@Nonnull Predicate<? super Throwable> condition) {
         return handle(condition, empty);
     }
 
@@ -212,7 +205,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * <br>This will apply the specified handler to use instead of the base consumer if one of the provided ErrorResponses happens.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void sendMessage(TextChannel context, User user, String content) {
      *     user.openPrivateChannel()
      *         .flatMap(channel -> channel.sendMessage(content))
@@ -220,7 +213,7 @@ public class ErrorHandler implements Consumer<Throwable>
      *             .handle(ErrorResponse.CANNOT_SEND_TO_USER,
      *                 (ex) -> context.sendMessage("Cannot send direct message, please enable direct messages from server members!").queue()));
      * }
-     * }</pre>
+     * }
      *
      * @param  response
      *         The first {@link ErrorResponse} to match
@@ -233,8 +226,8 @@ public class ErrorHandler implements Consumer<Throwable>
      * @return This ErrorHandler with the applied handler
      */
     @Nonnull
-    public ErrorHandler handle(@Nonnull ErrorResponse response, @Nonnull Consumer<? super ErrorResponseException> handler)
-    {
+    public ErrorHandler handle(
+            @Nonnull ErrorResponse response, @Nonnull Consumer<? super ErrorResponseException> handler) {
         Checks.notNull(response, "ErrorResponse");
         return handle(EnumSet.of(response), handler);
     }
@@ -244,7 +237,7 @@ public class ErrorHandler implements Consumer<Throwable>
      * <br>This will apply the specified handler to use instead of the base consumer if one of the provided ErrorResponses happens.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void sendMessage(TextChannel context, User user, String content) {
      *     user.openPrivateChannel()
      *         .flatMap(channel -> channel.sendMessage(content))
@@ -252,7 +245,7 @@ public class ErrorHandler implements Consumer<Throwable>
      *             .handle(EnumSet.of(ErrorResponse.CANNOT_SEND_TO_USER),
      *                 (ex) -> context.sendMessage("Cannot send direct message, please enable direct messages from server members!").queue()));
      * }
-     * }</pre>
+     * }
      *
      * @param  errorResponses
      *         The {@link ErrorResponse ErrorResponses} to match
@@ -265,8 +258,9 @@ public class ErrorHandler implements Consumer<Throwable>
      * @return This ErrorHandler with the applied handler
      */
     @Nonnull
-    public ErrorHandler handle(@Nonnull Collection<ErrorResponse> errorResponses, @Nonnull Consumer<? super ErrorResponseException> handler)
-    {
+    public ErrorHandler handle(
+            @Nonnull Collection<ErrorResponse> errorResponses,
+            @Nonnull Consumer<? super ErrorResponseException> handler) {
         Checks.notNull(handler, "Handler");
         Checks.noneNull(errorResponses, "ErrorResponse");
         return handle(ErrorResponseException.class, (it) -> errorResponses.contains(it.getErrorResponse()), handler);
@@ -277,27 +271,25 @@ public class ErrorHandler implements Consumer<Throwable>
      * <br>This will apply the specified handler if the throwable is of the specified type. The check is done using {@link Class#isInstance(Object)}.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void logErrorResponse(RestAction<?> action) {
      *     action.queue(null, new ErrorHandler()
      *         .handle(ErrorResponseException.class,
      *             (ex) -> System.out.println(ex.getErrorResponse())));
      * }
-     * }</pre>
+     * }
      *
      * @param  clazz
      *         The throwable type
      * @param  handler
      *         The alternative handler
-     *
      * @param  <T>
      *         The type
      *
      * @return This ErrorHandler with the applied handler
      */
     @Nonnull
-    public <T> ErrorHandler handle(@Nonnull Class<T> clazz, @Nonnull Consumer<? super T> handler)
-    {
+    public <T> ErrorHandler handle(@Nonnull Class<T> clazz, @Nonnull Consumer<? super T> handler) {
         Checks.notNull(clazz, "Class");
         Checks.notNull(handler, "Handler");
         return handle(clazz::isInstance, (ex) -> handler.accept(clazz.cast(ex)));
@@ -308,14 +300,14 @@ public class ErrorHandler implements Consumer<Throwable>
      * <br>This will apply the specified handler if the throwable is of the specified type. The check is done using {@link Class#isInstance(Object)}.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void logErrorResponse(RestAction<?> action) {
      *     action.queue(null, new ErrorHandler()
      *         .handle(ErrorResponseException.class,
      *             ErrorResponseException::isServerError,
      *             (ex) -> System.out.println(ex.getErrorCode() + ": " + ex.getMeaning())));
      * }
-     * }</pre>
+     * }
      *
      * @param  clazz
      *         The throwable type
@@ -323,20 +315,18 @@ public class ErrorHandler implements Consumer<Throwable>
      *         Additional condition that must apply to use this handler
      * @param  handler
      *         The alternative handler
-     *
      * @param  <T>
      *         The type
      *
      * @return This ErrorHandler with the applied handler
      */
     @Nonnull
-    public <T> ErrorHandler handle(@Nonnull Class<T> clazz, @Nonnull Predicate<? super T> condition, @Nonnull Consumer<? super T> handler)
-    {
+    public <T> ErrorHandler handle(
+            @Nonnull Class<T> clazz, @Nonnull Predicate<? super T> condition, @Nonnull Consumer<? super T> handler) {
         Checks.notNull(clazz, "Class");
         Checks.notNull(handler, "Handler");
         return handle(
-            (it) -> clazz.isInstance(it) && condition.test(clazz.cast(it)),
-            (ex) -> handler.accept(clazz.cast(ex)));
+                (it) -> clazz.isInstance(it) && condition.test(clazz.cast(it)), (ex) -> handler.accept(clazz.cast(ex)));
     }
 
     /**
@@ -344,14 +334,14 @@ public class ErrorHandler implements Consumer<Throwable>
      * <br>This will apply the specified handler if the throwable is of the specified type. The check is done using {@link Class#isInstance(Object)}.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void logErrorResponse(RestAction<?> action) {
      *     action.queue(null, new ErrorHandler()
      *         .handle(Arrays.asList(Throwable.class),
      *             (ex) -> ex instanceof Error,
      *             (ex) -> ex.printStackTrace()));
      * }
-     * }</pre>
+     * }
      *
      * @param  clazz
      *         The throwable types
@@ -363,12 +353,15 @@ public class ErrorHandler implements Consumer<Throwable>
      * @return This ErrorHandler with the applied handler
      */
     @Nonnull
-    public ErrorHandler handle(@Nonnull Collection<Class<?>> clazz, @Nullable Predicate<? super Throwable> condition, @Nonnull Consumer<? super Throwable> handler)
-    {
+    public ErrorHandler handle(
+            @Nonnull Collection<Class<?>> clazz,
+            @Nullable Predicate<? super Throwable> condition,
+            @Nonnull Consumer<? super Throwable> handler) {
         Checks.noneNull(clazz, "Class");
         Checks.notNull(handler, "Handler");
         List<Class<?>> classes = new ArrayList<>(clazz);
-        Predicate<? super Throwable> check = (it) -> classes.stream().anyMatch(c -> c.isInstance(it)) && (condition == null || condition.test(it));
+        Predicate<? super Throwable> check =
+                (it) -> classes.stream().anyMatch(c -> c.isInstance(it)) && (condition == null || condition.test(it));
         return handle(check, handler);
     }
 
@@ -376,14 +369,14 @@ public class ErrorHandler implements Consumer<Throwable>
      * Handle specific conditions.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public static void logErrorResponse(RestAction<?> action) {
      *     action.queue(null, new ErrorHandler()
      *         .handle(
      *             (ex) -> !(ex instanceof ErrorResponseException),
      *             Throwable::printStackTrace));
      * }
-     * }</pre>
+     * }
      *
      * @param  condition
      *         Condition that must apply to use this handler
@@ -393,8 +386,8 @@ public class ErrorHandler implements Consumer<Throwable>
      * @return This ErrorHandler with the applied handler
      */
     @Nonnull
-    public ErrorHandler handle(@Nonnull Predicate<? super Throwable> condition, @Nonnull Consumer<? super Throwable> handler)
-    {
+    public ErrorHandler handle(
+            @Nonnull Predicate<? super Throwable> condition, @Nonnull Consumer<? super Throwable> handler) {
         Checks.notNull(condition, "Condition");
         Checks.notNull(handler, "Handler");
         cases.put(condition, handler);
@@ -402,14 +395,11 @@ public class ErrorHandler implements Consumer<Throwable>
     }
 
     @Override
-    public void accept(Throwable t)
-    {
-        for (Map.Entry<Predicate<? super Throwable>, Consumer<? super Throwable>> entry : cases.entrySet())
-        {
+    public void accept(Throwable t) {
+        for (Map.Entry<Predicate<? super Throwable>, Consumer<? super Throwable>> entry : cases.entrySet()) {
             Predicate<? super Throwable> condition = entry.getKey();
             Consumer<? super Throwable> callback = entry.getValue();
-            if (condition.test(t))
-            {
+            if (condition.test(t)) {
                 callback.accept(t);
                 return;
             }

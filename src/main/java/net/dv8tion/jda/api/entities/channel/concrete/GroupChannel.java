@@ -32,8 +32,7 @@ import javax.annotation.Nullable;
  *
  * <p>This is only used for user-installed apps.
  */
-public interface GroupChannel extends MessageChannel, IDetachableEntity
-{
+public interface GroupChannel extends MessageChannel, IDetachableEntity {
     /** Template for {@link #getIconUrl()}. */
     String ICON_URL = "https://cdn.discordapp.com/channel-icons/%s/%s.png";
 
@@ -53,8 +52,7 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
      * @return Possibly-null String containing the group channel's icon URL.
      */
     @Nullable
-    default String getIconUrl()
-    {
+    default String getIconUrl() {
         String iconId = getIconId();
         return iconId == null ? null : Helpers.format(ICON_URL, getId(), iconId);
     }
@@ -67,9 +65,8 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
      * @see    #getIconUrl()
      */
     @Nullable
-    default ImageProxy getIcon()
-    {
-        final String iconUrl = getIconUrl();
+    default ImageProxy getIcon() {
+        String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
 
@@ -86,8 +83,7 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
      * @return The ID of the user which owns this {@link GroupChannel}
      */
     @Nonnull
-    default String getOwnerId()
-    {
+    default String getOwnerId() {
         return Long.toUnsignedString(getOwnerIdLong());
     }
 
@@ -98,8 +94,7 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<User> retrieveOwner()
-    {
+    default RestAction<User> retrieveOwner() {
         return getJDA().retrieveUserById(getOwnerIdLong());
     }
 }

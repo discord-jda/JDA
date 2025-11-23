@@ -31,23 +31,21 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code system_channel}
  */
-public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextChannel>
-{
+public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextChannel> {
     public static final String IDENTIFIER = "system_channel";
 
-    public GuildUpdateSystemChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldSystemChannel)
-    {
+    public GuildUpdateSystemChannelEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldSystemChannel) {
         super(api, responseNumber, guild, oldSystemChannel, guild.getSystemChannel(), IDENTIFIER);
     }
 
     /**
      * The previous system channel.
-     * 
+     *
      * @return The previous system channel
      */
     @Nullable
-    public TextChannel getOldSystemChannel()
-    {
+    public TextChannel getOldSystemChannel() {
         return getOldValue();
     }
 
@@ -57,8 +55,7 @@ public class GuildUpdateSystemChannelEvent extends GenericGuildUpdateEvent<TextC
      * @return The new system channel
      */
     @Nullable
-    public TextChannel getNewSystemChannel()
-    {
+    public TextChannel getNewSystemChannel() {
         return getNewValue();
     }
 }

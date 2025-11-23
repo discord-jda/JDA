@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that a custom {@link SelectMenu} on one of the bots messages was used by a user.
@@ -37,34 +38,31 @@ import java.util.List;
  * @param <S>
  *        The type of select menu
  */
-public class GenericSelectMenuInteractionEvent<T, S extends SelectMenu> extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction<T, S>
-{
+public class GenericSelectMenuInteractionEvent<T, S extends SelectMenu> extends GenericComponentInteractionCreateEvent
+        implements SelectMenuInteraction<T, S> {
     private final SelectMenuInteraction<T, S> menuInteraction;
 
-    public GenericSelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction<T, S> interaction)
-    {
+    public GenericSelectMenuInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction<T, S> interaction) {
         super(api, responseNumber, interaction);
         this.menuInteraction = interaction;
     }
 
     @Nonnull
     @Override
-    public SelectMenuInteraction<T, S> getInteraction()
-    {
+    public SelectMenuInteraction<T, S> getInteraction() {
         return menuInteraction;
     }
 
     @Nonnull
     @Override
-    public S getComponent()
-    {
+    public S getComponent() {
         return menuInteraction.getComponent();
     }
 
     @Nonnull
     @Override
-    public List<T> getValues()
-    {
+    public List<T> getValues() {
         return menuInteraction.getValues();
     }
 }

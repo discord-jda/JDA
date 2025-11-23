@@ -26,8 +26,10 @@ import javax.annotation.Nonnull;
 /**
  * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
  */
-public interface MessageEditCallbackAction extends InteractionCallbackAction<InteractionHook>, MessageEditRequest<MessageEditCallbackAction>, FluentRestAction<InteractionHook, MessageEditCallbackAction>
-{
+public interface MessageEditCallbackAction
+        extends InteractionCallbackAction<InteractionHook>,
+                MessageEditRequest<MessageEditCallbackAction>,
+                FluentRestAction<InteractionHook, MessageEditCallbackAction> {
     @Nonnull
     @Override
     @CheckReturnValue

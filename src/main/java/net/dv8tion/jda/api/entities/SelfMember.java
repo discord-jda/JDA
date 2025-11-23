@@ -27,8 +27,7 @@ import javax.annotation.Nonnull;
  *
  * @see Member
  */
-public interface SelfMember extends Member
-{
+public interface SelfMember extends Member {
     /** Max length of a member bio */
     int MAX_BIO_LENGTH = 190;
 

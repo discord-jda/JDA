@@ -28,8 +28,7 @@ import javax.annotation.Nullable;
  *
  * @see <a href="https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-authorizing-integration-owners-object" target="_blank">Discord Docs about Authorizing Integration Owners Object</a>
  */
-public interface IntegrationOwners
-{
+public interface IntegrationOwners {
 
     /**
      * Whether this interaction was first authorized by a command with the {@link IntegrationType#USER_INSTALL USER_INSTALL} integration type.
@@ -38,8 +37,7 @@ public interface IntegrationOwners
      *
      * @return {@code true} if this interaction started from a user-installable command.
      */
-    default boolean isUserIntegration()
-    {
+    default boolean isUserIntegration() {
         return getAuthorizingUserIdLong() != 0;
     }
 
@@ -62,9 +60,10 @@ public interface IntegrationOwners
      *         or {@code null} for non-user-installable commands
      */
     @Nullable
-    default String getAuthorizingUserId()
-    {
-        if (getAuthorizingUserIdLong() == 0) return null;
+    default String getAuthorizingUserId() {
+        if (getAuthorizingUserIdLong() == 0) {
+            return null;
+        }
         return Long.toUnsignedString(getAuthorizingUserIdLong());
     }
 
@@ -76,8 +75,7 @@ public interface IntegrationOwners
      *
      * @return {@code true} if this interaction started from a guild-installable command.
      */
-    default boolean isGuildIntegration()
-    {
+    default boolean isGuildIntegration() {
         return getAuthorizingGuildIdLong() != null;
     }
 
@@ -103,9 +101,10 @@ public interface IntegrationOwners
      *         or {@code null} for non-guild-installable commands
      */
     @Nullable
-    default String getAuthorizingGuildId()
-    {
-        if (getAuthorizingGuildIdLong() == null) return null;
+    default String getAuthorizingGuildId() {
+        if (getAuthorizingGuildIdLong() == null) {
+            return null;
+        }
         return Long.toUnsignedString(getAuthorizingGuildIdLong());
     }
 }

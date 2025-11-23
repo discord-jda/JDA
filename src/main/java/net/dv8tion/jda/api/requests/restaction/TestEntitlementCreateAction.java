@@ -31,8 +31,7 @@ import javax.annotation.Nonnull;
  * @see    net.dv8tion.jda.api.JDA
  * @see    net.dv8tion.jda.api.JDA#createTestEntitlement(long, long, OwnerType)
  */
-public interface TestEntitlementCreateAction extends RestAction<Entitlement>
-{
+public interface TestEntitlementCreateAction extends RestAction<Entitlement> {
 
     /**
      * Set the SKU's id to create the entitlement in
@@ -47,8 +46,7 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      */
     @CheckReturnValue
     @Nonnull
-    default TestEntitlementCreateAction setSkuId(@Nonnull String skuId)
-    {
+    default TestEntitlementCreateAction setSkuId(@Nonnull String skuId) {
         return setSkuId(MiscUtil.parseSnowflake(skuId));
     }
 
@@ -77,8 +75,7 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      */
     @CheckReturnValue
     @Nonnull
-    default TestEntitlementCreateAction setOwnerId(@Nonnull String ownerId)
-    {
+    default TestEntitlementCreateAction setOwnerId(@Nonnull String ownerId) {
         return setOwnerId(MiscUtil.parseSnowflake(ownerId));
     }
 
@@ -112,15 +109,13 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
     /**
      * The type of the owner for the entitlement
      */
-    enum OwnerType
-    {
+    enum OwnerType {
         GUILD_SUBSCRIPTION(1),
         USER_SUBSCRIPTION(2);
 
         private final int key;
 
-        OwnerType(int key)
-        {
+        OwnerType(int key) {
             this.key = key;
         }
 
@@ -129,8 +124,7 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
          *
          * @return the id key.
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
     }

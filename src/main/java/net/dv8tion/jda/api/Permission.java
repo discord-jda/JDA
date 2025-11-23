@@ -13,85 +13,85 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents the bit offsets used by Discord for Permissions.
  */
-public enum Permission
-{
+public enum Permission {
     // General Server / Channel Permissions
-    MANAGE_CHANNEL(                      4, true,  true,  "Manage Channels"),
-    MANAGE_SERVER(                       5, true,  false, "Manage Server"),
-    VIEW_AUDIT_LOGS(                     7, true,  false, "View Audit Log"),
-    VIEW_CHANNEL(                       10, true,  true,  "View Channels"),
-    VIEW_GUILD_INSIGHTS(                19, true,  false, "View Server Insights"),
-    MANAGE_ROLES(                       28, true,  false, "Manage Roles"),
-    MANAGE_PERMISSIONS(                 28, false, true,  "Manage Permissions"),
-    MANAGE_WEBHOOKS(                    29, true,  true,  "Manage Webhooks"),
-    MANAGE_GUILD_EXPRESSIONS(           30, true,  false, "Manage Expressions"),
-    MANAGE_EVENTS(                      33, true,  true,  "Manage Events"),
-    USE_EMBEDDED_ACTIVITIES(            39, true,  true,  "Use Activities"),
-    VIEW_CREATOR_MONETIZATION_ANALYTICS(41, true,  false, "View Creator Analytics"),
-    CREATE_GUILD_EXPRESSIONS(           43, true,  false, "Create Expressions"),
-    CREATE_SCHEDULED_EVENTS(            44, true,  false, "Create Events"),
+    MANAGE_CHANNEL(4, true, true, "Manage Channels"),
+    MANAGE_SERVER(5, true, false, "Manage Server"),
+    VIEW_AUDIT_LOGS(7, true, false, "View Audit Log"),
+    VIEW_CHANNEL(10, true, true, "View Channels"),
+    VIEW_GUILD_INSIGHTS(19, true, false, "View Server Insights"),
+    MANAGE_ROLES(28, true, false, "Manage Roles"),
+    MANAGE_PERMISSIONS(28, false, true, "Manage Permissions"),
+    MANAGE_WEBHOOKS(29, true, true, "Manage Webhooks"),
+    MANAGE_GUILD_EXPRESSIONS(30, true, false, "Manage Expressions"),
+    MANAGE_EVENTS(33, true, true, "Manage Events"),
+    USE_EMBEDDED_ACTIVITIES(39, true, true, "Use Activities"),
+    VIEW_CREATOR_MONETIZATION_ANALYTICS(41, true, false, "View Creator Analytics"),
+    CREATE_GUILD_EXPRESSIONS(43, true, false, "Create Expressions"),
+    CREATE_SCHEDULED_EVENTS(44, true, false, "Create Events"),
 
     // Membership Permissions
-    CREATE_INSTANT_INVITE(0, true, true,  "Create Instant Invite"),
-    KICK_MEMBERS(         1, true, false, "Kick Members"),
-    BAN_MEMBERS(          2, true, false, "Ban Members"),
-    NICKNAME_CHANGE(     26, true, false, "Change Nickname"),
-    NICKNAME_MANAGE(     27, true, false, "Manage Nicknames"),
-    MODERATE_MEMBERS(    40, true, false, "Timeout Members"),
+    CREATE_INSTANT_INVITE(0, true, true, "Create Instant Invite"),
+    KICK_MEMBERS(1, true, false, "Kick Members"),
+    BAN_MEMBERS(2, true, false, "Ban Members"),
+    NICKNAME_CHANGE(26, true, false, "Change Nickname"),
+    NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
+    MODERATE_MEMBERS(40, true, false, "Timeout Members"),
 
     // Text Permissions
-    MESSAGE_ADD_REACTION(         6, true, true, "Add Reactions"),
-    MESSAGE_SEND(                11, true, true, "Send Messages"),
-    MESSAGE_TTS(                 12, true, true, "Send TTS Messages"),
-    MESSAGE_MANAGE(              13, true, true, "Manage Messages"),
-    MESSAGE_EMBED_LINKS(         14, true, true, "Embed Links"),
-    MESSAGE_ATTACH_FILES(        15, true, true, "Attach Files"),
-    MESSAGE_HISTORY(             16, true, true, "Read History"),
-    MESSAGE_MENTION_EVERYONE(    17, true, true, "Mention Everyone"),
-    MESSAGE_EXT_EMOJI(           18, true, true, "Use External Emojis"),
-    USE_APPLICATION_COMMANDS(    31, true, true, "Use Application Commands"),
-    MESSAGE_EXT_STICKER(         37, true, true, "Use External Stickers"),
+    MESSAGE_ADD_REACTION(6, true, true, "Add Reactions"),
+    MESSAGE_SEND(11, true, true, "Send Messages"),
+    MESSAGE_TTS(12, true, true, "Send TTS Messages"),
+    MESSAGE_MANAGE(13, true, true, "Manage Messages"),
+    MESSAGE_EMBED_LINKS(14, true, true, "Embed Links"),
+    MESSAGE_ATTACH_FILES(15, true, true, "Attach Files"),
+    MESSAGE_HISTORY(16, true, true, "Read History"),
+    MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
+    MESSAGE_EXT_EMOJI(18, true, true, "Use External Emojis"),
+    USE_APPLICATION_COMMANDS(31, true, true, "Use Application Commands"),
+    MESSAGE_EXT_STICKER(37, true, true, "Use External Stickers"),
     MESSAGE_ATTACH_VOICE_MESSAGE(46, true, true, "Send Voice Messages"),
-    MESSAGE_SEND_POLLS(          49, true, true, "Create Polls"),
-    USE_EXTERNAL_APPLICATIONS(   50, true, true, "Use External Apps"),
-    PIN_MESSAGES(                51, true, true, "Pin Messages"),
+    MESSAGE_SEND_POLLS(49, true, true, "Create Polls"),
+    USE_EXTERNAL_APPLICATIONS(50, true, true, "Use External Apps"),
+    PIN_MESSAGES(51, true, true, "Pin Messages"),
 
     // Thread Permissions
-    MANAGE_THREADS(          34, true, true, "Manage Threads"),
-    CREATE_PUBLIC_THREADS(   35, true, true, "Create Public Threads"),
-    CREATE_PRIVATE_THREADS(  36, true, true, "Create Private Threads"),
-    MESSAGE_SEND_IN_THREADS( 38, true, true, "Send Messages in Threads"),
+    MANAGE_THREADS(34, true, true, "Manage Threads"),
+    CREATE_PUBLIC_THREADS(35, true, true, "Create Public Threads"),
+    CREATE_PRIVATE_THREADS(36, true, true, "Create Private Threads"),
+    MESSAGE_SEND_IN_THREADS(38, true, true, "Send Messages in Threads"),
 
     // Voice Permissions
-    PRIORITY_SPEAKER(          8, true, true, "Priority Speaker"),
-    VOICE_STREAM(              9, true, true, "Video"),
-    VOICE_CONNECT(            20, true, true, "Connect"),
-    VOICE_SPEAK(              21, true, true, "Speak"),
-    VOICE_MUTE_OTHERS(        22, true, true, "Mute Members"),
-    VOICE_DEAF_OTHERS(        23, true, true, "Deafen Members"),
-    VOICE_MOVE_OTHERS(        24, true, true, "Move Members"),
-    VOICE_USE_VAD(            25, true, true, "Use Voice Activity"),
-    VOICE_USE_SOUNDBOARD(     42, true, true, "Use Soundboard"),
+    PRIORITY_SPEAKER(8, true, true, "Priority Speaker"),
+    VOICE_STREAM(9, true, true, "Video"),
+    VOICE_CONNECT(20, true, true, "Connect"),
+    VOICE_SPEAK(21, true, true, "Speak"),
+    VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
+    VOICE_DEAF_OTHERS(23, true, true, "Deafen Members"),
+    VOICE_MOVE_OTHERS(24, true, true, "Move Members"),
+    VOICE_USE_VAD(25, true, true, "Use Voice Activity"),
+    VOICE_USE_SOUNDBOARD(42, true, true, "Use Soundboard"),
     VOICE_USE_EXTERNAL_SOUNDS(45, true, true, "Use External Sounds"),
-    VOICE_SET_STATUS(         48, true, true, "Set Voice Channel Status"),
+    VOICE_SET_STATUS(48, true, true, "Set Voice Channel Status"),
 
     // Stage Channel Permissions
-    REQUEST_TO_SPEAK(      32, true, true, "Request to Speak"),
+    REQUEST_TO_SPEAK(32, true, true, "Request to Speak"),
 
     // Advanced Permissions
     ADMINISTRATOR(3, true, false, "Administrator"),
-
 
     UNKNOWN(-1, false, false, "Unknown");
 
@@ -106,8 +106,7 @@ public enum Permission
     private final boolean isGuild, isChannel;
     private final String name;
 
-    Permission(int offset, boolean isGuild, boolean isChannel, @Nonnull String name)
-    {
+    Permission(int offset, boolean isGuild, boolean isChannel, @Nonnull String name) {
         this.offset = offset;
         this.raw = 1L << offset;
         this.isGuild = isGuild;
@@ -121,8 +120,7 @@ public enum Permission
      * @return The readable name of this {@link net.dv8tion.jda.api.Permission Permission}.
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
@@ -133,8 +131,7 @@ public enum Permission
      *
      * @return The offset that represents this {@link net.dv8tion.jda.api.Permission Permission}.
      */
-    public int getOffset()
-    {
+    public int getOffset() {
         return offset;
     }
 
@@ -144,8 +141,7 @@ public enum Permission
      *
      * @return The raw value of this specific permission.
      */
-    public long getRawValue()
-    {
+    public long getRawValue() {
         return raw;
     }
 
@@ -155,8 +151,7 @@ public enum Permission
      *
      * @return True if this permission is present at the Guild level.
      */
-    public boolean isGuild()
-    {
+    public boolean isGuild() {
         return isGuild;
     }
 
@@ -166,8 +161,7 @@ public enum Permission
      *
      * @return True if this permission is present at the Channel level.
      */
-    public boolean isChannel()
-    {
+    public boolean isChannel() {
         return isChannel;
     }
 
@@ -182,12 +176,11 @@ public enum Permission
      * @return {@link net.dv8tion.jda.api.Permission Permission} relating to the provided offset.
      */
     @Nonnull
-    public static Permission getFromOffset(int offset)
-    {
-        for (Permission perm : values())
-        {
-            if (perm.offset == offset)
+    public static Permission getFromOffset(int offset) {
+        for (Permission perm : values()) {
+            if (perm.offset == offset) {
                 return perm;
+            }
         }
         return UNKNOWN;
     }
@@ -203,18 +196,17 @@ public enum Permission
      *         The raw {@code long} representation of permissions.
      *
      * @return Possibly-empty EnumSet of {@link net.dv8tion.jda.api.Permission Permissions}.
-     *
      */
     @Nonnull
-    public static EnumSet<Permission> getPermissions(long permissions)
-    {
-        if (permissions == 0)
+    public static EnumSet<Permission> getPermissions(long permissions) {
+        if (permissions == 0) {
             return EnumSet.noneOf(Permission.class);
+        }
         EnumSet<Permission> perms = EnumSet.noneOf(Permission.class);
-        for (Permission perm : Permission.values())
-        {
-            if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw)
+        for (Permission perm : Permission.values()) {
+            if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw) {
                 perms.add(perm);
+            }
         }
         return perms;
     }
@@ -228,13 +220,12 @@ public enum Permission
      *
      * @return Unsigned long representing the provided permissions.
      */
-    public static long getRaw(@Nonnull Permission... permissions)
-    {
+    public static long getRaw(@Nonnull Permission... permissions) {
         long raw = 0;
-        for (Permission perm : permissions)
-        {
-            if (perm != null && perm != UNKNOWN)
+        for (Permission perm : permissions) {
+            if (perm != null && perm != UNKNOWN) {
                 raw |= perm.raw;
+            }
         }
 
         return raw;
@@ -252,8 +243,7 @@ public enum Permission
      *
      * @see    java.util.EnumSet EnumSet
      */
-    public static long getRaw(@Nonnull Collection<Permission> permissions)
-    {
+    public static long getRaw(@Nonnull Collection<Permission> permissions) {
         Checks.notNull(permissions, "Permission Collection");
 
         return getRaw(permissions.toArray(EMPTY_PERMISSIONS));

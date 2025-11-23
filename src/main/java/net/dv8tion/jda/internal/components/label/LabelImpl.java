@@ -27,158 +27,148 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class LabelImpl
-        extends AbstractComponentImpl
-        implements Label, ModalTopLevelComponentUnion
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class LabelImpl extends AbstractComponentImpl implements Label, ModalTopLevelComponentUnion {
     private final int uniqueId;
     private final String label;
     private final String description;
     private final LabelChildComponentUnion child;
 
-    public LabelImpl(@Nonnull ComponentDeserializer deserializer, @Nonnull DataObject object)
-    {
+    public LabelImpl(@Nonnull ComponentDeserializer deserializer, @Nonnull DataObject object) {
         this(
-            object.getInt("id", -1),
-            object.getString("label"),
-            object.getString("description", null),
-            deserializer.deserializeAs(LabelChildComponentUnion.class, object.getObject("component"))
-        );
+                object.getInt("id", -1),
+                object.getString("label"),
+                object.getString("description", null),
+                deserializer.deserializeAs(LabelChildComponentUnion.class, object.getObject("component")));
     }
 
-    public LabelImpl(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponentUnion child)
-    {
+    public LabelImpl(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponentUnion child) {
         this(-1, label, description, child);
     }
 
-    private LabelImpl(int uniqueId, @Nonnull String label, @Nullable String description, @Nonnull LabelChildComponentUnion child)
-    {
+    private LabelImpl(
+            int uniqueId,
+            @Nonnull String label,
+            @Nullable String description,
+            @Nonnull LabelChildComponentUnion child) {
         this.uniqueId = uniqueId;
         this.label = label;
         this.description = description;
         this.child = child;
     }
 
-    public static Label validated(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
-    {
+    public static Label validated(
+            @Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child) {
         Checks.notBlank(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         Checks.notNull(child, "Child");
-        if (description != null)
-        {
+        if (description != null) {
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
         }
 
-        LabelChildComponentUnion childUnion = ComponentsUtil.safeUnionCast("child", child, LabelChildComponentUnion.class);
+        LabelChildComponentUnion childUnion =
+                ComponentsUtil.safeUnionCast("child", child, LabelChildComponentUnion.class);
         return new LabelImpl(label, description, childUnion);
     }
 
     @Nonnull
     @Override
-    public Label withLabel(@Nonnull String label)
-    {
+    public Label withLabel(@Nonnull String label) {
         return validated(label, this.description, this.child);
     }
 
     @Nonnull
     @Override
-    public Label withDescription(@Nullable String description)
-    {
+    public Label withDescription(@Nullable String description) {
         return validated(this.label, description, this.child);
     }
 
     @Nonnull
     @Override
-    public Label withChild(@Nonnull LabelChildComponent child)
-    {
+    public Label withChild(@Nonnull LabelChildComponent child) {
         return validated(this.label, this.description, child);
     }
 
     @Nonnull
     @Override
-    public LabelImpl withUniqueId(int uniqueId)
-    {
+    public LabelImpl withUniqueId(int uniqueId) {
         return new LabelImpl(uniqueId, label, description, child);
     }
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.LABEL;
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nonnull
     @Override
-    public String getLabel()
-    {
+    public String getLabel() {
         return label;
     }
 
     @Nullable
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
     @Nonnull
     @Override
-    public LabelChildComponentUnion getChild()
-    {
+    public LabelChildComponentUnion getChild() {
         return child;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject obj = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("label", label)
                 .put("description", description)
                 .put("component", child);
-        if (uniqueId >= 0)
+        if (uniqueId >= 0) {
             obj.put("id", uniqueId);
+        }
 
         return obj;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
-            .addMetadata("id", uniqueId)
-            .addMetadata("label", label)
-            .toString();
+                .addMetadata("id", uniqueId)
+                .addMetadata("label", label)
+                .toString();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof LabelImpl)) return false;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof LabelImpl)) {
+            return false;
+        }
         LabelImpl that = (LabelImpl) o;
         return uniqueId == that.uniqueId
-            && Objects.equals(label, that.label)
-            && Objects.equals(description, that.description)
-            && Objects.equals(child, that.child);
+                && Objects.equals(label, that.label)
+                && Objects.equals(description, that.description)
+                && Objects.equals(child, that.child);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(uniqueId, label, description, child);
     }
 }

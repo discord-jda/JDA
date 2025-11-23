@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.api.Permission;
@@ -24,8 +25,7 @@ import javax.annotation.Nonnull;
  * Indicates that the currently logged in account does not meet the specified {@link net.dv8tion.jda.api.Permission Permission}
  * from {@link #getPermission()}
  */
-public class PermissionException extends RuntimeException
-{
+public class PermissionException extends RuntimeException {
     private final Permission permission;
 
     /**
@@ -34,8 +34,7 @@ public class PermissionException extends RuntimeException
      * @param reason
      *        The reason for this Exception
      */
-    public PermissionException(String reason)
-    {
+    public PermissionException(String reason) {
         this(Permission.UNKNOWN, reason);
     }
 
@@ -45,9 +44,10 @@ public class PermissionException extends RuntimeException
      * @param permission
      *        The required {@link net.dv8tion.jda.api.Permission Permission}
      */
-    protected PermissionException(@Nonnull Permission permission)
-    {
-        this(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
+    protected PermissionException(@Nonnull Permission permission) {
+        this(
+                permission,
+                "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
     }
 
     /**
@@ -58,8 +58,7 @@ public class PermissionException extends RuntimeException
      * @param reason
      *        The reason for this Exception
      */
-    protected PermissionException(@Nonnull Permission permission, String reason)
-    {
+    protected PermissionException(@Nonnull Permission permission, String reason) {
         super(reason);
         Checks.notNull(permission, "permission");
         this.permission = permission;
@@ -74,8 +73,7 @@ public class PermissionException extends RuntimeException
      * @return The required {@link net.dv8tion.jda.api.Permission Permission}
      */
     @Nonnull
-    public Permission getPermission()
-    {
+    public Permission getPermission() {
         return permission;
     }
 }

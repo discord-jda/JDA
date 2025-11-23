@@ -20,15 +20,15 @@ import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Used to monitor an audio connection, ping, and speaking users.
  * <br>This provides functionality similar to the functionalities present in the Discord client related to an audio connection.
  */
-public interface ConnectionListener
-{
+public interface ConnectionListener {
     /**
      * Called when JDA send a heartbeat packet to Discord and Discord sends an acknowledgement. The time difference
      * between sending and receiving the acknowledgement is calculated as the ping.

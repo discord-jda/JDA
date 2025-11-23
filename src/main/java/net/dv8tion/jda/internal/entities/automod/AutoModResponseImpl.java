@@ -21,51 +21,46 @@ import net.dv8tion.jda.api.entities.automod.AutoModResponse;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Duration;
 
-public class AutoModResponseImpl implements AutoModResponse
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class AutoModResponseImpl implements AutoModResponse {
     private final Type type;
     private final GuildMessageChannel channel;
     private final String customMessage;
     private final long timeoutDuration;
 
-    public AutoModResponseImpl(Type type)
-    {
+    public AutoModResponseImpl(Type type) {
         this.type = type;
         this.channel = null;
         this.customMessage = null;
         this.timeoutDuration = 0;
     }
 
-    public AutoModResponseImpl(Type type, GuildMessageChannel channel)
-    {
+    public AutoModResponseImpl(Type type, GuildMessageChannel channel) {
         this.type = type;
         this.channel = channel;
         this.customMessage = null;
         this.timeoutDuration = 0;
     }
 
-    public AutoModResponseImpl(Type type, String customMessage)
-    {
+    public AutoModResponseImpl(Type type, String customMessage) {
         this.type = type;
         this.customMessage = customMessage;
         this.channel = null;
         this.timeoutDuration = 0;
     }
 
-    public AutoModResponseImpl(Type type, Duration duration)
-    {
+    public AutoModResponseImpl(Type type, Duration duration) {
         this.type = type;
         this.timeoutDuration = duration.getSeconds();
         this.customMessage = null;
         this.channel = null;
     }
 
-    public AutoModResponseImpl(Guild guild, DataObject json)
-    {
+    public AutoModResponseImpl(Guild guild, DataObject json) {
         DataObject metadata = json.optObject("metadata").orElseGet(DataObject::empty);
         this.type = AutoModResponse.Type.fromKey(json.getInt("type", -1));
         this.channel = guild.getChannelById(GuildMessageChannel.class, metadata.getUnsignedLong("channel_id", 0L));
@@ -75,65 +70,64 @@ public class AutoModResponseImpl implements AutoModResponse
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return type;
     }
 
     @Nullable
     @Override
-    public GuildMessageChannel getChannel()
-    {
+    public GuildMessageChannel getChannel() {
         return channel;
     }
 
     @Nullable
     @Override
-    public String getCustomMessage()
-    {
+    public String getCustomMessage() {
         return customMessage;
     }
 
     @Nullable
     @Override
-    public Duration getTimeoutDuration()
-    {
+    public Duration getTimeoutDuration() {
         return timeoutDuration == 0 ? null : Duration.ofSeconds(timeoutDuration);
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject action = DataObject.empty();
         action.put("type", type.getKey());
-        if (type == Type.BLOCK_MESSAGE && customMessage == null)
+        if (type == Type.BLOCK_MESSAGE && customMessage == null) {
             return action;
+        }
 
         DataObject metadata = DataObject.empty();
-        if (customMessage != null)
+        if (customMessage != null) {
             metadata.put("custom_message", customMessage);
-        if (channel != null)
+        }
+        if (channel != null) {
             metadata.put("channel_id", channel.getId());
-        if (timeoutDuration > 0)
+        }
+        if (timeoutDuration > 0) {
             metadata.put("duration_seconds", timeoutDuration);
+        }
         action.put("metadata", metadata);
         return action;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return type.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
-        if (!(obj instanceof AutoModResponseImpl))
+        }
+        if (!(obj instanceof AutoModResponseImpl)) {
             return false;
+        }
         AutoModResponseImpl o = (AutoModResponseImpl) obj;
         return type == o.type;
     }

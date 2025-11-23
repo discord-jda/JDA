@@ -27,33 +27,32 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class PinnedMessagePaginationActionImpl extends PaginationActionImpl<PinnedMessagePaginationAction.PinnedMessage, PinnedMessagePaginationAction> implements PinnedMessagePaginationAction
-{
+import javax.annotation.Nonnull;
+
+public class PinnedMessagePaginationActionImpl
+        extends PaginationActionImpl<PinnedMessagePaginationAction.PinnedMessage, PinnedMessagePaginationAction>
+        implements PinnedMessagePaginationAction {
     protected final MessageChannel channel;
 
-    public PinnedMessagePaginationActionImpl(MessageChannel channel)
-    {
+    public PinnedMessagePaginationActionImpl(MessageChannel channel) {
         super(channel.getJDA(), Route.Messages.GET_MESSAGE_PINS.compile(channel.getId()), 1, 50, 50);
         this.channel = channel;
     }
 
     @Nonnull
     @Override
-    public EnumSet<PaginationOrder> getSupportedOrders()
-    {
+    public EnumSet<PaginationOrder> getSupportedOrders() {
         return EnumSet.of(PaginationOrder.BACKWARD);
     }
 
     @Override
-    protected long getKey(PinnedMessage it)
-    {
+    protected long getKey(PinnedMessage it) {
         OffsetDateTime timestamp = it.getTimePinned();
         long epochMillis = timestamp.toInstant().toEpochMilli();
         return TimeUtil.getDiscordTimestamp(epochMillis);
@@ -61,38 +60,35 @@ public class PinnedMessagePaginationActionImpl extends PaginationActionImpl<Pinn
 
     @Nonnull
     @Override
-    protected String getPaginationLastEvaluatedKey(long lastId, PinnedMessage last)
-    {
-        if (last == null)
+    protected String getPaginationLastEvaluatedKey(long lastId, PinnedMessage last) {
+        if (last == null) {
             return OffsetDateTime.now(ZoneOffset.UTC).toString();
+        }
         return last.getTimePinned().toString();
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<PinnedMessage>> request)
-    {
+    protected void handleSuccess(Response response, Request<List<PinnedMessage>> request) {
         DataObject object = response.getObject();
         DataArray items = object.getArray("items");
         EntityBuilder entityBuilder = api.getEntityBuilder();
         List<PinnedMessage> messages = new ArrayList<>(items.length());
 
-        for (int i = 0; i < items.length(); i++)
-        {
-            try
-            {
+        for (int i = 0; i < items.length(); i++) {
+            try {
                 DataObject item = items.getObject(i);
-                ReceivedMessage message = entityBuilder.createMessageWithChannel(item.getObject("message"), channel, false);
+                ReceivedMessage message =
+                        entityBuilder.createMessageWithChannel(item.getObject("message"), channel, false);
                 OffsetDateTime pinnedAt = item.getOffsetDateTime("pinned_at");
                 PinnedMessage pinnedMessage = new PinnedMessage(pinnedAt, message);
 
                 messages.add(pinnedMessage);
                 this.last = pinnedMessage;
                 this.lastKey = getKey(last);
-                if (useCache)
+                if (useCache) {
                     this.cached.add(pinnedMessage);
-            }
-            catch (Exception e)
-            {
+                }
+            } catch (Exception e) {
                 EntityBuilder.LOG.error("Failed to parse pinned message", e);
             }
         }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.utils;
 
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
@@ -23,7 +24,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Formatter;
@@ -32,11 +32,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+
 /**
  * Utility methods for various aspects of the API.
  */
-public class MiscUtil
-{
+public class MiscUtil {
     /**
      * Returns the shard id the given guild will be loaded on for the given amount of shards.
      *
@@ -48,11 +49,10 @@ public class MiscUtil
      *        The guild id.
      * @param shards
      *        The amount of shards.
-     * 
+     *
      * @return The shard id for the guild.
      */
-    public static int getShardForGuild(long guildId, int shards)
-    {
+    public static int getShardForGuild(long guildId, int shards) {
         return (int) ((guildId >>> 22) % shards);
     }
 
@@ -70,8 +70,7 @@ public class MiscUtil
      *
      * @return The shard id for the guild.
      */
-    public static int getShardForGuild(@Nonnull String guildId, int shards)
-    {
+    public static int getShardForGuild(@Nonnull String guildId, int shards) {
         return getShardForGuild(parseSnowflake(guildId), shards);
     }
 
@@ -89,8 +88,7 @@ public class MiscUtil
      *
      * @return The shard id for the guild.
      */
-    public static int getShardForGuild(@Nonnull Guild guild, int shards)
-    {
+    public static int getShardForGuild(@Nonnull Guild guild, int shards) {
         return getShardForGuild(guild.getIdLong(), shards);
     }
 
@@ -103,56 +101,43 @@ public class MiscUtil
      * @return a new thread-safe {@link gnu.trove.map.TLongObjectMap TLongObjectMap}
      */
     @Nonnull
-    public static <T> TLongObjectMap<T> newLongMap()
-    {
+    public static <T> TLongObjectMap<T> newLongMap() {
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
     }
 
-    public static long parseLong(@Nonnull String input)
-    {
-        if (input.startsWith("-"))
+    public static long parseLong(@Nonnull String input) {
+        if (input.startsWith("-")) {
             return Long.parseLong(input);
-        else
+        } else {
             return Long.parseUnsignedLong(input);
+        }
     }
 
-    public static long parseSnowflake(@Nonnull String input)
-    {
+    public static long parseSnowflake(@Nonnull String input) {
         Checks.notEmpty(input, "ID");
-        try
-        {
+        try {
             return parseLong(input);
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new NumberFormatException(
-                Helpers.format("The specified ID is not a valid snowflake (%s). Expecting a valid long value!", input));
+        } catch (NumberFormatException ex) {
+            throw new NumberFormatException(Helpers.format(
+                    "The specified ID is not a valid snowflake (%s). Expecting a valid long value!", input));
         }
     }
 
     @UnknownNullability
-    public static <E> E locked(@Nonnull ReentrantLock lock, @Nonnull Supplier<E> task)
-    {
+    public static <E> E locked(@Nonnull ReentrantLock lock, @Nonnull Supplier<E> task) {
         tryLock(lock);
-        try
-        {
+        try {
             return task.get();
-        }
-        finally
-        {
+        } finally {
             lock.unlock();
         }
     }
 
-    public static void locked(@Nonnull ReentrantLock lock, @Nonnull Runnable task)
-    {
+    public static void locked(@Nonnull ReentrantLock lock, @Nonnull Runnable task) {
         tryLock(lock);
-        try
-        {
+        try {
             task.run();
-        }
-        finally
-        {
+        } finally {
             lock.unlock();
         }
     }
@@ -166,15 +151,12 @@ public class MiscUtil
      * @throws IllegalStateException
      *         If the lock could not be acquired
      */
-    public static void tryLock(@Nonnull Lock lock)
-    {
-        try
-        {
-            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS))
+    public static void tryLock(@Nonnull Lock lock) {
+        try {
+            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS)) {
                 throw new IllegalStateException("Could not acquire lock in a reasonable timeframe! (10 seconds)");
-        }
-        catch (InterruptedException e)
-        {
+            }
+        } catch (InterruptedException e) {
             throw new IllegalStateException("Unable to acquire lock while thread is interrupted!");
         }
     }
@@ -193,24 +175,21 @@ public class MiscUtil
      * @param out
      *        The String to append
      */
-    public static void appendTo(@Nonnull Formatter formatter, int width, int precision, boolean leftJustified, @Nonnull String out)
-    {
-        try
-        {
+    public static void appendTo(
+            @Nonnull Formatter formatter, int width, int precision, boolean leftJustified, @Nonnull String out) {
+        try {
             Appendable appendable = formatter.out();
-            if (precision > -1 && out.length() > precision)
-            {
+            if (precision > -1 && out.length() > precision) {
                 appendable.append(Helpers.truncate(out, precision));
                 return;
             }
 
-            if (leftJustified)
+            if (leftJustified) {
                 appendable.append(Helpers.rightPad(out, width));
-            else
+            } else {
                 appendable.append(Helpers.leftPad(out, width));
-        }
-        catch (IOException e)
-        {
+            }
+        } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }

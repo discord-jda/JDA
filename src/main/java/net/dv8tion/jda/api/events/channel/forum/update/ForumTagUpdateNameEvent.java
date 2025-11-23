@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link ForumTag#getName() name} of a {@link ForumTag} changed.
@@ -33,38 +34,37 @@ import java.util.Collection;
  * <p>Identifier: {@code name}
  */
 @SuppressWarnings("ConstantConditions")
-public class ForumTagUpdateNameEvent extends GenericForumTagUpdateEvent<String>
-{
+public class ForumTagUpdateNameEvent extends GenericForumTagUpdateEvent<String> {
     public static final String IDENTIFIER = "name";
 
-    public ForumTagUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag, @Nonnull String previous)
-    {
+    public ForumTagUpdateNameEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull IPostContainer channel,
+            @Nonnull ForumTag tag,
+            @Nonnull String previous) {
         super(api, responseNumber, channel, tag, previous, tag.getName(), IDENTIFIER);
     }
 
     @Nonnull
-    public String getOldName()
-    {
+    public String getOldName() {
         return getOldValue();
     }
 
     @Nonnull
-    public String getNewName()
-    {
+    public String getNewName() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

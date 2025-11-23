@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild.member.update;
 
 import net.dv8tion.jda.api.JDA;
@@ -40,16 +41,19 @@ import javax.annotation.Nullable;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMemberEvent implements UpdateEvent<Member, T>
-{
+public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMemberEvent
+        implements UpdateEvent<Member, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
     public GenericGuildMemberUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nonnull Member member,
-        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
-    {
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Member member,
+            @Nullable T previous,
+            @Nullable T next,
+            @Nonnull String identifier) {
         super(api, responseNumber, member);
         this.previous = previous;
         this.next = next;
@@ -58,29 +62,25 @@ public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMembe
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nonnull
     @Override
-    public Member getEntity()
-    {
+    public Member getEntity() {
         return getMember();
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 }

@@ -25,31 +25,32 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class SelectMenuImpl
-        extends AbstractComponentImpl
-        implements SelectMenu, ActionRowChildComponentUnion
-{
+public abstract class SelectMenuImpl extends AbstractComponentImpl implements SelectMenu, ActionRowChildComponentUnion {
     protected final String id, placeholder;
     protected final int uniqueId;
     protected final int minValues, maxValues;
     protected final boolean disabled;
     protected final Boolean required;
 
-    public SelectMenuImpl(DataObject data)
-    {
+    public SelectMenuImpl(DataObject data) {
         this(
-            data.getString("custom_id"),
-            data.getInt("id", -1),
-            data.getString("placeholder", null),
-            data.getInt("min_values", 1),
-            data.getInt("max_values", 1),
-            data.getBoolean("disabled"),
-            data.isNull("required") ? null : data.getBoolean("required")
-        );
+                data.getString("custom_id"),
+                data.getInt("id", -1),
+                data.getString("placeholder", null),
+                data.getInt("min_values", 1),
+                data.getInt("max_values", 1),
+                data.getBoolean("disabled"),
+                data.isNull("required") ? null : data.getBoolean("required"));
     }
 
-    public SelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, Boolean required)
-    {
+    public SelectMenuImpl(
+            String id,
+            int uniqueId,
+            String placeholder,
+            int minValues,
+            int maxValues,
+            boolean disabled,
+            Boolean required) {
         this.id = id;
         this.uniqueId = uniqueId;
         this.placeholder = placeholder;
@@ -65,69 +66,63 @@ public abstract class SelectMenuImpl
 
     @Nonnull
     @Override
-    public String getCustomId()
-    {
+    public String getCustomId() {
         return id;
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nullable
     @Override
-    public String getPlaceholder()
-    {
+    public String getPlaceholder() {
         return placeholder;
     }
 
     @Override
-    public int getMinValues()
-    {
+    public int getMinValues() {
         return minValues;
     }
 
     @Override
-    public int getMaxValues()
-    {
+    public int getMaxValues() {
         return maxValues;
     }
 
     @Override
-    public boolean isDisabled()
-    {
+    public boolean isDisabled() {
         return disabled;
     }
 
     @Override
-    public Boolean isRequired()
-    {
+    public Boolean isRequired() {
         return required;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject data = DataObject.empty();
         data.put("custom_id", id);
-        if (uniqueId >= 0)
+        if (uniqueId >= 0) {
             data.put("id", uniqueId);
+        }
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
         data.put("disabled", disabled);
-        if (placeholder != null)
+        if (placeholder != null) {
             data.put("placeholder", placeholder);
-        if (required != null)
+        }
+        if (required != null) {
             data.put("required", required);
+        }
         return data;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(SelectMenu.class)
                 .setType(getType())
                 .addMetadata("id", uniqueId)

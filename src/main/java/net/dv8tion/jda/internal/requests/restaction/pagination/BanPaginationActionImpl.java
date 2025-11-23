@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -25,19 +26,17 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BanPaginationActionImpl
-    extends PaginationActionImpl<Guild.Ban, BanPaginationAction>
-    implements BanPaginationAction
-{
+import javax.annotation.Nonnull;
+
+public class BanPaginationActionImpl extends PaginationActionImpl<Guild.Ban, BanPaginationAction>
+        implements BanPaginationAction {
     protected final Guild guild;
 
-    public BanPaginationActionImpl(Guild guild)
-    {
+    public BanPaginationActionImpl(Guild guild) {
         super(guild.getJDA(), Route.Guilds.GET_BANS.compile(guild.getId()), 1, 1000, 1000);
         this.guild = guild;
         this.lastKey = Long.MAX_VALUE;
@@ -45,53 +44,52 @@ public class BanPaginationActionImpl
 
     @Nonnull
     @Override
-    public BanPaginationAction order(@Nonnull PaginationAction.PaginationOrder order)
-    {
-        if (order == PaginationOrder.BACKWARD && lastKey == 0)
+    public BanPaginationAction order(@Nonnull PaginationAction.PaginationOrder order) {
+        if (order == PaginationOrder.BACKWARD && lastKey == 0) {
             lastKey = Long.MAX_VALUE;
-        else if (order == PaginationOrder.FORWARD && lastKey == Long.MAX_VALUE)
+        } else if (order == PaginationOrder.FORWARD && lastKey == Long.MAX_VALUE) {
             lastKey = 0;
+        }
         return super.order(order);
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<Guild.Ban>> request)
-    {
+    protected void handleSuccess(Response response, Request<List<Guild.Ban>> request) {
         EntityBuilder builder = api.getEntityBuilder();
         DataArray bannedArr = response.getArray();
         List<Guild.Ban> bans = new ArrayList<>(bannedArr.length());
 
-        for (int i = 0; i < bannedArr.length(); i++)
-        {
-            final DataObject object = bannedArr.getObject(i);
-            try
-            {
+        for (int i = 0; i < bannedArr.length(); i++) {
+            DataObject object = bannedArr.getObject(i);
+            try {
                 DataObject user = object.getObject("user");
                 Guild.Ban ban = new Guild.Ban(builder.createUser(user), object.getString("reason", null));
 
                 bans.add(ban);
-            }
-            catch (Exception t)
-            {
-                LOG.error("Got an unexpected error while decoding ban index {} for guild {}:\nData: {}",
-                          i, guild.getId(), object, t);
+            } catch (Exception t) {
+                LOG.error(
+                        "Got an unexpected error while decoding ban index {} for guild {}:\nData: {}",
+                        i,
+                        guild.getId(),
+                        object,
+                        t);
             }
         }
 
-        if (order == PaginationOrder.BACKWARD)
+        if (order == PaginationOrder.BACKWARD) {
             Collections.reverse(bans);
-        if (useCache)
+        }
+        if (useCache) {
             cached.addAll(bans);
+        }
 
-        if (!bans.isEmpty())
-        {
+        if (!bans.isEmpty()) {
             last = bans.get(bans.size() - 1);
             lastKey = last.getUser().getIdLong();
         }
@@ -100,8 +98,7 @@ public class BanPaginationActionImpl
     }
 
     @Override
-    protected long getKey(Guild.Ban it)
-    {
+    protected long getKey(Guild.Ban it) {
         return it.getUser().getIdLong();
     }
 }

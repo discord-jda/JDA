@@ -18,12 +18,12 @@ package net.dv8tion.jda.internal.entities.messages;
 
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public class MessagePollImpl implements MessagePoll
-{
+import javax.annotation.Nonnull;
+
+public class MessagePollImpl implements MessagePoll {
     private final LayoutType layout;
     private final Question question;
     private final List<Answer> answers;
@@ -31,8 +31,13 @@ public class MessagePollImpl implements MessagePoll
     private final boolean isMultiAnswer;
     private final boolean isFinalizedVotes;
 
-    public MessagePollImpl(LayoutType layout, Question question, List<Answer> answers, OffsetDateTime expiresAt, boolean isMultiAnswer, boolean isFinalizedVotes)
-    {
+    public MessagePollImpl(
+            LayoutType layout,
+            Question question,
+            List<Answer> answers,
+            OffsetDateTime expiresAt,
+            boolean isMultiAnswer,
+            boolean isFinalizedVotes) {
         this.layout = layout;
         this.question = question;
         this.answers = answers;
@@ -43,41 +48,35 @@ public class MessagePollImpl implements MessagePoll
 
     @Nonnull
     @Override
-    public LayoutType getLayout()
-    {
+    public LayoutType getLayout() {
         return layout;
     }
 
     @Nonnull
     @Override
-    public Question getQuestion()
-    {
+    public Question getQuestion() {
         return question;
     }
 
     @Nonnull
     @Override
-    public List<Answer> getAnswers()
-    {
+    public List<Answer> getAnswers() {
         return answers;
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getTimeExpiresAt()
-    {
+    public OffsetDateTime getTimeExpiresAt() {
         return expiresAt;
     }
 
     @Override
-    public boolean isMultiAnswer()
-    {
+    public boolean isMultiAnswer() {
         return isMultiAnswer;
     }
 
     @Override
-    public boolean isFinalizedVotes()
-    {
+    public boolean isFinalizedVotes() {
         return isFinalizedVotes;
     }
 }

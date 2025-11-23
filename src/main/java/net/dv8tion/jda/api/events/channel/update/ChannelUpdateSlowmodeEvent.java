@@ -33,13 +33,12 @@ import javax.annotation.Nonnull;
  * @see ISlowmodeChannel#getSlowmode()
  * @see ChannelField#SLOWMODE
  */
-public class ChannelUpdateSlowmodeEvent extends GenericChannelUpdateEvent<Integer>
-{
+public class ChannelUpdateSlowmodeEvent extends GenericChannelUpdateEvent<Integer> {
     public static final ChannelField FIELD = ChannelField.SLOWMODE;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateSlowmodeEvent(@Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
-    {
+    public ChannelUpdateSlowmodeEvent(
+            @Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

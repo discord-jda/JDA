@@ -33,13 +33,12 @@ import javax.annotation.Nonnull;
  * @see ThreadChannel#isInvitable()
  * @see ChannelField#INVITABLE
  */
-public class ChannelUpdateInvitableEvent extends GenericChannelUpdateEvent<Boolean>
-{
+public class ChannelUpdateInvitableEvent extends GenericChannelUpdateEvent<Boolean> {
     public static final ChannelField FIELD = ChannelField.INVITABLE;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateInvitableEvent(@Nonnull JDA api, long responseNumber, Channel channel, boolean oldValue, boolean newValue)
-    {
+    public ChannelUpdateInvitableEvent(
+            @Nonnull JDA api, long responseNumber, Channel channel, boolean oldValue, boolean newValue) {
         super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 }

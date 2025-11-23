@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.hooks;
 
 import java.lang.annotation.*;
@@ -28,6 +29,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Inherited
-public @interface SubscribeEvent
-{
-}
+public @interface SubscribeEvent {}

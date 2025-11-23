@@ -29,12 +29,11 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code description}
  */
-public class GuildUpdateDescriptionEvent extends GenericGuildUpdateEvent<String>
-{
+public class GuildUpdateDescriptionEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "description";
 
-    public GuildUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous)
-    {
+    public GuildUpdateDescriptionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous) {
         super(api, responseNumber, guild, previous, guild.getDescription(), IDENTIFIER);
     }
 
@@ -44,8 +43,7 @@ public class GuildUpdateDescriptionEvent extends GenericGuildUpdateEvent<String>
      * @return The old description for this guild, or null if none was set
      */
     @Nullable
-    public String getOldDescription()
-    {
+    public String getOldDescription() {
         return getOldValue();
     }
 
@@ -55,8 +53,7 @@ public class GuildUpdateDescriptionEvent extends GenericGuildUpdateEvent<String>
      * @return The new description, or null if it was removed
      */
     @Nullable
-    public String getNewDescription()
-    {
+    public String getNewDescription() {
         return getNewValue();
     }
 }

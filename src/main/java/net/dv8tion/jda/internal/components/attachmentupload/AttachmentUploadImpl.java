@@ -23,32 +23,27 @@ import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class AttachmentUploadImpl
-        extends AbstractComponentImpl
-        implements AttachmentUpload, LabelChildComponentUnion
-{
+import javax.annotation.Nonnull;
+
+public class AttachmentUploadImpl extends AbstractComponentImpl implements AttachmentUpload, LabelChildComponentUnion {
     protected final int uniqueId;
     protected final String customId;
     protected final int minValues;
     protected final int maxValues;
     protected final boolean required;
 
-    public AttachmentUploadImpl(DataObject data)
-    {
+    public AttachmentUploadImpl(DataObject data) {
         this(
                 data.getInt("id", -1),
                 data.getString("custom_id"),
                 data.getInt("min_values", 1),
                 data.getInt("max_values", 1),
-                data.getBoolean("required", true)
-        );
+                data.getBoolean("required", true));
     }
 
-    public AttachmentUploadImpl(int uniqueId, String customId, int minValues, int maxValues, boolean required)
-    {
+    public AttachmentUploadImpl(int uniqueId, String customId, int minValues, int maxValues, boolean required) {
         this.uniqueId = uniqueId;
         this.customId = customId;
         this.minValues = minValues;
@@ -58,70 +53,62 @@ public class AttachmentUploadImpl
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.FILE_UPLOAD;
     }
 
     @Nonnull
     @Override
-    public AttachmentUploadImpl withUniqueId(int uniqueId)
-    {
+    public AttachmentUploadImpl withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
         return new AttachmentUploadImpl(uniqueId, customId, minValues, maxValues, required);
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nonnull
     @Override
-    public String getCustomId()
-    {
+    public String getCustomId() {
         return customId;
     }
 
     @Override
-    public int getMinValues()
-    {
+    public int getMinValues() {
         return minValues;
     }
 
     @Override
-    public int getMaxValues()
-    {
+    public int getMaxValues() {
         return maxValues;
     }
 
     @Override
-    public boolean isRequired()
-    {
+    public boolean isRequired() {
         return required;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        final DataObject json = DataObject.empty()
+    public DataObject toData() {
+        DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("custom_id", customId)
                 .put("required", required)
                 .put("min_values", minValues)
                 .put("max_values", maxValues);
 
-        if (uniqueId >= 0)
+        if (uniqueId >= 0) {
             json.put("id", uniqueId);
+        }
 
         return json;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("custom_id", customId)
                 .addMetadata("required", required)
@@ -129,10 +116,13 @@ public class AttachmentUploadImpl
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof AttachmentUploadImpl)) return false;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof AttachmentUploadImpl)) {
+            return false;
+        }
         AttachmentUploadImpl that = (AttachmentUploadImpl) o;
         return uniqueId == that.uniqueId
                 && minValues == that.minValues
@@ -142,8 +132,7 @@ public class AttachmentUploadImpl
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(uniqueId, customId, minValues, maxValues, required);
     }
 }

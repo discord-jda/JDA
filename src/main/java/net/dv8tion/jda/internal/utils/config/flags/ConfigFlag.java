@@ -18,8 +18,7 @@ package net.dv8tion.jda.internal.utils.config.flags;
 
 import java.util.EnumSet;
 
-public enum ConfigFlag
-{
+public enum ConfigFlag {
     RAW_EVENTS,
     EVENT_PASSTHROUGH,
     USE_RELATIVE_RATELIMIT(true),
@@ -31,23 +30,20 @@ public enum ConfigFlag
 
     private final boolean isDefault;
 
-    ConfigFlag()
-    {
+    ConfigFlag() {
         this(false);
     }
 
-    ConfigFlag(boolean isDefault)
-    {
+    ConfigFlag(boolean isDefault) {
         this.isDefault = isDefault;
     }
 
-    public static EnumSet<ConfigFlag> getDefault()
-    {
+    public static EnumSet<ConfigFlag> getDefault() {
         EnumSet<ConfigFlag> set = EnumSet.noneOf(ConfigFlag.class);
-        for (ConfigFlag flag : values())
-        {
-            if (flag.isDefault)
+        for (ConfigFlag flag : values()) {
+            if (flag.isDefault) {
                 set.add(flag);
+            }
         }
         return set;
     }

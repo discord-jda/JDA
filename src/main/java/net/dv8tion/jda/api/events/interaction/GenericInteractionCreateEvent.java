@@ -28,9 +28,10 @@ import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Indicates that an {@link Interaction} was created.
@@ -42,12 +43,10 @@ import java.util.List;
  *
  * @see Interaction
  */
-public class GenericInteractionCreateEvent extends Event implements Interaction
-{
+public class GenericInteractionCreateEvent extends Event implements Interaction {
     private final Interaction interaction;
 
-    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction)
-    {
+    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction) {
         super(api, responseNumber);
         this.interaction = interaction;
     }
@@ -59,102 +58,87 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
      * @return The {@link Interaction}
      */
     @Nonnull
-    public Interaction getInteraction()
-    {
+    public Interaction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public String getToken()
-    {
+    public String getToken() {
         return interaction.getToken();
     }
 
     @Override
-    public int getTypeRaw()
-    {
+    public int getTypeRaw() {
         return interaction.getTypeRaw();
     }
 
     @Nullable
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return interaction.getGuild();
     }
 
     @Nullable
     @Override
-    public Channel getChannel()
-    {
+    public Channel getChannel() {
         return interaction.getChannel();
     }
 
     @Override
-    public long getChannelIdLong()
-    {
+    public long getChannelIdLong() {
         return interaction.getChannelIdLong();
     }
 
     @Nonnull
     @Override
-    public DiscordLocale getUserLocale()
-    {
+    public DiscordLocale getUserLocale() {
         return interaction.getUserLocale();
     }
 
     @Nonnull
     @Override
-    public DiscordLocale getGuildLocale()
-    {
+    public DiscordLocale getGuildLocale() {
         return interaction.getGuildLocale();
     }
 
     @Nonnull
     @Override
-    public InteractionContextType getContext()
-    {
+    public InteractionContextType getContext() {
         return interaction.getContext();
     }
 
     @Nonnull
     @Override
-    public IntegrationOwners getIntegrationOwners()
-    {
+    public IntegrationOwners getIntegrationOwners() {
         return interaction.getIntegrationOwners();
     }
 
     @Nullable
     @Override
-    public Member getMember()
-    {
+    public Member getMember() {
         return interaction.getMember();
     }
 
     @Nonnull
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         return interaction.getUser();
     }
 
     @Nonnull
     @Override
-    public List<Entitlement> getEntitlements()
-    {
+    public List<Entitlement> getEntitlements() {
         return interaction.getEntitlements();
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return interaction.getIdLong();
     }
 
     @Override
-    public boolean isAcknowledged()
-    {
+    public boolean isAcknowledged() {
         return interaction.isAcknowledged();
     }
 }

@@ -28,9 +28,10 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Collection;
 
 /**
  * A Forum Channel which contains {@link #createForumPost(String, MessageCreateData) Forum Posts}.
@@ -42,8 +43,8 @@ import java.util.Collection;
  * @see Guild#createForumChannel(String, Category)
  * @see #createForumPost(String, MessageCreateData)
  */
-public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
-{
+public interface ForumChannel
+        extends StandardGuildChannel, IPostContainer, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel {
     /**
      * The maximum length of a forum topic ({@value #MAX_FORUM_TOPIC_LENGTH})
      */
@@ -55,8 +56,7 @@ public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWeb
 
     @Nonnull
     @Override
-    default ChannelType getType()
-    {
+    default ChannelType getType() {
         return ChannelType.FORUM;
     }
 
@@ -73,8 +73,7 @@ public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWeb
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelAction<ForumChannel> createCopy()
-    {
+    default ChannelAction<ForumChannel> createCopy() {
         return createCopy(getGuild());
     }
 
@@ -89,8 +88,7 @@ public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWeb
     /**
      * The layout used to sort forum posts.
      */
-    enum Layout
-    {
+    enum Layout {
         /**
          * Displayed as default (not set).
          */
@@ -111,8 +109,7 @@ public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWeb
 
         private final int key;
 
-        Layout(int key)
-        {
+        Layout(int key) {
             this.key = key;
         }
 
@@ -121,8 +118,7 @@ public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWeb
          *
          * @return The raw order key
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -135,12 +131,11 @@ public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWeb
          * @return The {@link Layout} for the provided key, or {@link #UNKNOWN} if the key is not known
          */
         @Nonnull
-        public static Layout fromKey(int key)
-        {
-            for (Layout layout : values())
-            {
-                if (layout.key == key)
+        public static Layout fromKey(int key) {
+            for (Layout layout : values()) {
+                if (layout.key == key) {
                     return layout;
+                }
             }
 
             return UNKNOWN;

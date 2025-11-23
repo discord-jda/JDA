@@ -24,10 +24,8 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link Channel} was created.
  */
-public class ChannelCreateEvent extends GenericChannelEvent
-{
-    public ChannelCreateEvent(@Nonnull JDA api, long responseNumber, Channel channel)
-    {
+public class ChannelCreateEvent extends GenericChannelEvent {
+    public ChannelCreateEvent(@Nonnull JDA api, long responseNumber, Channel channel) {
         super(api, responseNumber, channel);
     }
 }

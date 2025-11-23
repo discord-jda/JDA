@@ -29,8 +29,7 @@ package net.dv8tion.jda.api.entities.detached;
  * <p>Most methods of detached entities that would otherwise return a {@link net.dv8tion.jda.api.requests.RestAction RestAction}
  * will throw a {@link net.dv8tion.jda.api.exceptions.DetachedEntityException DetachedEntityException} instead.
  */
-public interface IDetachableEntity
-{
+public interface IDetachableEntity {
     /**
      * Whether this entity is detached.
      *

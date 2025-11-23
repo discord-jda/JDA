@@ -31,8 +31,7 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
-{
+public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion {
     private final long id;
     private final JDAImpl api;
     private final User owner;
@@ -40,8 +39,7 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
     boolean animated = false;
     private String name;
 
-    public ApplicationEmojiImpl(long id, JDAImpl api, User owner)
-    {
+    public ApplicationEmojiImpl(long id, JDAImpl api, User owner) {
         this.id = id;
         this.api = api;
         this.owner = owner;
@@ -49,86 +47,72 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.CUSTOM;
     }
 
     @Nonnull
     @Override
-    public String getAsReactionCode()
-    {
+    public String getAsReactionCode() {
         return name + ":" + id;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        return DataObject.empty()
-                .put("name", name)
-                .put("animated", animated)
-                .put("id", id);
+    public DataObject toData() {
+        return DataObject.empty().put("name", name).put("animated", animated).put("id", id);
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nullable
     @Override
-    public User getOwner()
-    {
+    public User getOwner() {
         return owner;
     }
 
     @Nonnull
     @Override
-    public ApplicationEmojiManager getManager()
-    {
+    public ApplicationEmojiManager getManager() {
         return new ApplicationEmojiManagerImpl(this);
     }
 
     @Override
-    public boolean isAnimated()
-    {
+    public boolean isAnimated() {
         return animated;
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> delete()
-    {
-        Route.CompiledRoute route = Route.Applications.DELETE_APPLICATION_EMOJI.compile(getJDA().getSelfUser().getApplicationId(), getId());
+    public RestAction<Void> delete() {
+        Route.CompiledRoute route = Route.Applications.DELETE_APPLICATION_EMOJI.compile(
+                getJDA().getSelfUser().getApplicationId(), getId());
         return new RestActionImpl<>(getJDA(), route);
     }
 
     // -- Setters --
 
-    public ApplicationEmojiImpl setName(String name)
-    {
+    public ApplicationEmojiImpl setName(String name) {
         this.name = name;
         return this;
     }
 
-    public ApplicationEmojiImpl setAnimated(boolean animated)
-    {
+    public ApplicationEmojiImpl setAnimated(boolean animated) {
         this.animated = animated;
         return this;
     }
@@ -136,56 +120,49 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
     // -- Object overrides --
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof ApplicationEmojiImpl))
+        }
+        if (!(obj instanceof ApplicationEmojiImpl)) {
             return false;
+        }
 
         ApplicationEmojiImpl other = (ApplicationEmojiImpl) obj;
         return this.id == other.getIdLong();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setName(name)
-                .toString();
+    public String toString() {
+        return new EntityString(this).setName(name).toString();
     }
 
     @Nonnull
     @Override
-    public UnicodeEmoji asUnicode()
-    {
+    public UnicodeEmoji asUnicode() {
         throw new IllegalStateException("Cannot convert ApplicationEmoji to UnicodeEmoji!");
     }
 
     @Nonnull
     @Override
-    public CustomEmoji asCustom()
-    {
+    public CustomEmoji asCustom() {
         return this;
     }
 
     @Nonnull
     @Override
-    public RichCustomEmoji asRich()
-    {
+    public RichCustomEmoji asRich() {
         throw new IllegalStateException("Cannot convert ApplicationEmoji to RichCustomEmoji!");
     }
 
     @Nonnull
     @Override
-    public ApplicationEmoji asApplication()
-    {
+    public ApplicationEmoji asApplication() {
         return this;
     }
 }

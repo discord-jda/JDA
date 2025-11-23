@@ -33,79 +33,72 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class EventConsistencyComplianceTest
-{
+public class EventConsistencyComplianceTest {
     static SoftAssertions softly = new SoftAssertions();
     static Set<Class<? extends GenericEvent>> eventTypes;
     static Set<Class<? extends GenericEvent>> excludedTypes;
 
     @BeforeAll
-    static void setup()
-    {
+    static void setup() {
         Reflections events = new Reflections("net.dv8tion.jda.api.events");
         eventTypes = events.getSubTypesOf(GenericEvent.class);
         excludedTypes = new HashSet<>(Arrays.asList(
-            // Special casing
-            UpdateEvent.class, Event.class, GenericEvent.class
-        ));
+                // Special casing
+                UpdateEvent.class, Event.class, GenericEvent.class));
     }
 
     @AfterEach
-    void assertAllSoftly()
-    {
+    void assertAllSoftly() {
         softly.assertAll();
     }
 
     @Test
-    void testListenerAdapter()
-    {
+    void testListenerAdapter() {
         Class<ListenerAdapter> adapter = ListenerAdapter.class;
         Set<String> found = new HashSet<>();
 
         found.add("onGenericEvent");
         found.add("onGenericUpdate");
 
-        for (Class<? extends GenericEvent> type : eventTypes)
-        {
-            if (excludedTypes.contains(type))
+        for (Class<? extends GenericEvent> type : eventTypes) {
+            if (excludedTypes.contains(type)) {
                 continue;
+            }
             String name = type.getSimpleName();
             String methodName = "on" + name.substring(0, name.length() - "Event".length());
 
             AtomicReference<Method> methodRef = new AtomicReference<>();
             softly.assertThatCode(() -> methodRef.set(adapter.getDeclaredMethod(methodName, type)))
-                .as("Method for event " + type + " is missing!")
-                .doesNotThrowAnyException();
+                    .as("Method for event " + type + " is missing!")
+                    .doesNotThrowAnyException();
 
             Method method = methodRef.get();
-            if (method != null)
-            {
+            if (method != null) {
                 validateHookMethod(method);
                 found.add(methodName);
             }
         }
 
-        for (Method method : adapter.getDeclaredMethods())
-        {
+        for (Method method : adapter.getDeclaredMethods()) {
             int modifiers = method.getModifiers();
-            boolean isHookMethod =  Modifier.isPublic(modifiers) && !Modifier.isFinal(modifiers);
-            if (!isHookMethod || method.getAnnotation(Deprecated.class) != null)
+            boolean isHookMethod = Modifier.isPublic(modifiers) && !Modifier.isFinal(modifiers);
+            if (!isHookMethod || method.getAnnotation(Deprecated.class) != null) {
                 continue;
+            }
 
             softly.assertThat(found.contains(method.getName()))
-                .as("Dangling method found in ListenerAdapter " + method.getName())
-                .isTrue();
+                    .as("Dangling method found in ListenerAdapter " + method.getName())
+                    .isTrue();
         }
     }
 
-    private static void validateHookMethod(Method method)
-    {
+    private static void validateHookMethod(Method method) {
         int modifiers = method.getModifiers();
         softly.assertThat(modifiers)
-            .as("Modifiers for method %s", method.getName())
-            .isEqualTo(Modifier.PUBLIC);
+                .as("Modifiers for method %s", method.getName())
+                .isEqualTo(Modifier.PUBLIC);
         softly.assertThat(method.getReturnType())
-            .as("Return type for method %s", method.getName())
-            .isSameAs(Void.TYPE);
+                .as("Return type for method %s", method.getName())
+                .isSameAs(Void.TYPE);
     }
 }

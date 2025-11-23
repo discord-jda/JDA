@@ -29,14 +29,13 @@ import javax.annotation.Nonnull;
  * Manager providing methods to modify a {@link NewsChannel}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("no-more-news")
  *        .setType(ChannelType.TEXT) // Changes channel type to TextChannel
  *        .queue();
- * }</pre>
+ * }
  */
-public interface NewsChannelManager extends StandardGuildMessageChannelManager<NewsChannel, NewsChannelManager>
-{
+public interface NewsChannelManager extends StandardGuildMessageChannelManager<NewsChannel, NewsChannelManager> {
     /**
      * Converts the selected channel to a different {@link ChannelType}.
      *

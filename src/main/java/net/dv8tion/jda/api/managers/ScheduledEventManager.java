@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -20,43 +21,42 @@ import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
+import java.time.temporal.TemporalAccessor;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.temporal.TemporalAccessor;
-
 
 /**
  * The Manager is providing functionality to update one or more fields of a {@link ScheduledEvent}.
  * <br>The manager may also be used to start, cancel or end events.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setLocation("at the beach")
  *     .setStartTime(OffsetDateTime.now().plusHours(1))
  *     .setEndTime(OffsetDateTime.now().plusHours(3))
  *     .setName("Discussing Turtle Shells")
  *     .queue();
- * }</pre>
+ * }
  *
  * @see    ScheduledEvent#getManager()
  */
-public interface ScheduledEventManager extends Manager<ScheduledEventManager>
-{
+public interface ScheduledEventManager extends Manager<ScheduledEventManager> {
     /** Used to reset the name field */
-    long NAME         = 1;
+    long NAME = 1;
     /** Used to reset the description field */
-    long DESCRIPTION  = 1 << 1;
+    long DESCRIPTION = 1 << 1;
     /** Used to reset the location field */
-    long LOCATION     = 1 << 2;
+    long LOCATION = 1 << 2;
     /** Used to reset the start time field */
-    long START_TIME   = 1 << 3;
+    long START_TIME = 1 << 3;
     /** Used to reset the end time field */
-    long END_TIME     = 1 << 4;
+    long END_TIME = 1 << 4;
     /** Used to reset the image field */
-    long IMAGE        = 1 << 5;
+    long IMAGE = 1 << 5;
     /** Used to reset the status field */
-    long STATUS       = 1 << 6;
+    long STATUS = 1 << 6;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -124,8 +124,7 @@ public interface ScheduledEventManager extends Manager<ScheduledEventManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getScheduledEvent().getGuild();
     }
 
@@ -246,6 +245,7 @@ public interface ScheduledEventManager extends Manager<ScheduledEventManager>
      *             <li>If the provided start time is before the end time</li>
      *             <li>If the provided start time is before the current time</li>
      *         </ul>
+     *
      * @return ScheduledEventManager for chaining convenience
      *
      * @see    #setEndTime(TemporalAccessor)

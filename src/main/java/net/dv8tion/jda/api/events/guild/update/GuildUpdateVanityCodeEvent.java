@@ -29,12 +29,11 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code vanity_code}
  */
-public class GuildUpdateVanityCodeEvent extends GenericGuildUpdateEvent<String>
-{
+public class GuildUpdateVanityCodeEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "vanity_code";
 
-    public GuildUpdateVanityCodeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous)
-    {
+    public GuildUpdateVanityCodeEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous) {
         super(api, responseNumber, guild, previous, guild.getVanityCode(), IDENTIFIER);
     }
 
@@ -44,8 +43,7 @@ public class GuildUpdateVanityCodeEvent extends GenericGuildUpdateEvent<String>
      * @return The old vanity code
      */
     @Nullable
-    public String getOldVanityCode()
-    {
+    public String getOldVanityCode() {
         return getOldValue();
     }
 
@@ -55,8 +53,7 @@ public class GuildUpdateVanityCodeEvent extends GenericGuildUpdateEvent<String>
      * @return The old vanity url
      */
     @Nullable
-    public String getOldVanityUrl()
-    {
+    public String getOldVanityUrl() {
         return getOldVanityCode() == null ? null : "https://discord.gg/" + getOldVanityCode();
     }
 
@@ -66,8 +63,7 @@ public class GuildUpdateVanityCodeEvent extends GenericGuildUpdateEvent<String>
      * @return The new vanity code
      */
     @Nullable
-    public String getNewVanityCode()
-    {
+    public String getNewVanityCode() {
         return getNewValue();
     }
 
@@ -77,8 +73,7 @@ public class GuildUpdateVanityCodeEvent extends GenericGuildUpdateEvent<String>
      * @return The new vanity url
      */
     @Nullable
-    public String getNewVanityUrl()
-    {
+    public String getNewVanityUrl() {
         return getNewVanityCode() == null ? null : "https://discord.gg/" + getNewVanityCode();
     }
 }

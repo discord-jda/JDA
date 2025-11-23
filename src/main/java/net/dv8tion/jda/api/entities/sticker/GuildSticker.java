@@ -33,12 +33,10 @@ import javax.annotation.Nullable;
 /**
  * Custom guild sticker created by a user.
  */
-public interface GuildSticker extends RichSticker
-{
+public interface GuildSticker extends RichSticker {
     @Nonnull
     @Override
-    default Type getType()
-    {
+    default Type getType() {
         return Type.GUILD;
     }
 
@@ -63,8 +61,7 @@ public interface GuildSticker extends RichSticker
      * @return The guild id
      */
     @Nonnull
-    default String getGuildId()
-    {
+    default String getGuildId() {
         return Long.toUnsignedString(getGuildIdLong());
     }
 

@@ -33,13 +33,13 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Represents all message channels present in guilds.
@@ -48,11 +48,9 @@ import java.util.stream.Collectors;
  *
  * @see StandardGuildMessageChannel
  */
-public interface GuildMessageChannel extends GuildChannel, MessageChannel
-{
+public interface GuildMessageChannel extends GuildChannel, MessageChannel {
     @Override
-    default boolean canTalk()
-    {
+    default boolean canTalk() {
         return canTalk(getGuild().getSelfMember());
     }
 
@@ -62,6 +60,9 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * <br>Checks for both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} and
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
      *
+     * @param  member
+     *         The Member to check
+     *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this channel is a thread,
      *         and the bot {@link #isDetached() isn't in the guild}.
@@ -69,9 +70,6 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         if the bot {@link #isDetached() isn't in the guild},
      *         and the combination of the provided Member and this GuildChannel doesn't have permission data,
      *         see {@link net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException MissingEntityInteractionPermissionsException}.
-     *
-     * @param  member
-     *         The Member to check
      *
      * @return True, if the specified member is able to read and send messages in this channel
      */
@@ -187,8 +185,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emoji emoji, @Nonnull User user)
-    {
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emoji emoji, @Nonnull User user) {
         return removeReactionById(Long.toUnsignedString(messageId), emoji, user);
     }
 
@@ -239,13 +236,10 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
-    {
+    default RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages) {
         Checks.notEmpty(messages, "Messages collection");
 
-        return deleteMessagesByIds(messages.stream()
-                .map(ISnowflake::getId)
-                .collect(Collectors.toList()));
+        return deleteMessagesByIds(messages.stream().map(ISnowflake::getId).collect(Collectors.toList()));
     }
 
     /**
@@ -370,8 +364,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> clearReactionsById(long messageId)
-    {
+    default RestAction<Void> clearReactionsById(long messageId) {
         return clearReactionsById(Long.toUnsignedString(messageId));
     }
 
@@ -441,8 +434,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> clearReactionsById(long messageId, @Nonnull Emoji emoji)
-    {
+    default RestAction<Void> clearReactionsById(long messageId, @Nonnull Emoji emoji) {
         return clearReactionsById(Long.toUnsignedString(messageId), emoji);
     }
 
@@ -510,8 +502,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendStickers(@Nonnull StickerSnowflake... stickers)
-    {
+    default MessageCreateAction sendStickers(@Nonnull StickerSnowflake... stickers) {
         Checks.notEmpty(stickers, "Stickers");
         return sendStickers(Arrays.asList(stickers));
     }

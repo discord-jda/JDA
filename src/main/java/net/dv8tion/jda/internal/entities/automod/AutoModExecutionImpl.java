@@ -27,8 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class AutoModExecutionImpl implements AutoModExecution
-{
+public class AutoModExecutionImpl implements AutoModExecution {
     private final Guild guild;
     private final GuildMessageChannel channel;
     private final AutoModResponse response;
@@ -36,8 +35,7 @@ public class AutoModExecutionImpl implements AutoModExecution
     private final long userId, ruleId, messageId, alertMessageId;
     private final String content, matchedContent, matchedKeyword;
 
-    public AutoModExecutionImpl(Guild guild, DataObject json)
-    {
+    public AutoModExecutionImpl(Guild guild, DataObject json) {
         this.guild = guild;
         this.channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id", 0L));
         this.response = new AutoModResponseImpl(guild, json.getObject("action"));
@@ -53,74 +51,63 @@ public class AutoModExecutionImpl implements AutoModExecution
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Nullable
     @Override
-    public GuildMessageChannelUnion getChannel()
-    {
+    public GuildMessageChannelUnion getChannel() {
         return (GuildMessageChannelUnion) channel;
     }
 
     @Nonnull
     @Override
-    public AutoModResponse getResponse()
-    {
+    public AutoModResponse getResponse() {
         return response;
     }
 
     @Nonnull
     @Override
-    public AutoModTriggerType getTriggerType()
-    {
+    public AutoModTriggerType getTriggerType() {
         return type;
     }
 
     @Override
-    public long getUserIdLong()
-    {
+    public long getUserIdLong() {
         return userId;
     }
 
     @Override
-    public long getRuleIdLong()
-    {
+    public long getRuleIdLong() {
         return ruleId;
     }
 
     @Override
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return messageId;
     }
 
     @Override
-    public long getAlertMessageIdLong()
-    {
+    public long getAlertMessageIdLong() {
         return alertMessageId;
     }
 
     @Nonnull
     @Override
-    public String getContent()
-    {
+    public String getContent() {
         return content;
     }
 
     @Nullable
     @Override
-    public String getMatchedContent()
-    {
+    public String getMatchedContent() {
         return matchedContent;
     }
 
     @Nullable
     @Override
-    public String getMatchedKeyword()
-    {
+    public String getMatchedKeyword() {
         return matchedKeyword;
     }
 }

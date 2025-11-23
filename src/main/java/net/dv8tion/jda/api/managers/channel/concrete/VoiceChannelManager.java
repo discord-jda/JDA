@@ -26,16 +26,14 @@ import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManage
  * Manager providing methods to modify a {@link VoiceChannel}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("Music")
  *        .setBitrate(96000)
  *        .queue();
- * }</pre>
+ * }
  */
-public interface VoiceChannelManager extends
-        AudioChannelManager<VoiceChannel, VoiceChannelManager>,
-        StandardGuildChannelManager<VoiceChannel, VoiceChannelManager>,
-        IAgeRestrictedChannelManager<VoiceChannel, VoiceChannelManager>,
-        ISlowmodeChannelManager<VoiceChannel, VoiceChannelManager>
-{
-}
+public interface VoiceChannelManager
+        extends AudioChannelManager<VoiceChannel, VoiceChannelManager>,
+                StandardGuildChannelManager<VoiceChannel, VoiceChannelManager>,
+                IAgeRestrictedChannelManager<VoiceChannel, VoiceChannelManager>,
+                ISlowmodeChannelManager<VoiceChannel, VoiceChannelManager> {}

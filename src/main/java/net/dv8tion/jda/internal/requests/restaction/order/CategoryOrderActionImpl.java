@@ -22,14 +22,12 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class CategoryOrderActionImpl
-    extends ChannelOrderActionImpl
-    implements CategoryOrderAction
-{
+import javax.annotation.Nonnull;
+
+public class CategoryOrderActionImpl extends ChannelOrderActionImpl implements CategoryOrderAction {
     protected final Category category;
 
     /**
@@ -41,37 +39,35 @@ public class CategoryOrderActionImpl
      * @param  bucket
      *         The sorting bucket
      */
-    public CategoryOrderActionImpl(Category category, int bucket)
-    {
+    public CategoryOrderActionImpl(Category category, int bucket) {
         super(category.getGuild(), bucket, getChannelsOfType(category, bucket));
         this.category = category;
     }
 
     @Nonnull
     @Override
-    public Category getCategory()
-    {
+    public Category getCategory() {
         return category;
     }
 
     @Override
-    protected void validateInput(GuildChannel entity)
-    {
+    protected void validateInput(GuildChannel entity) {
         Checks.notNull(entity, "Provided channel");
         Checks.check(entity instanceof ICategorizableChannel, "Provided channel is not an ICategorizableChannel");
-        Checks.check(getCategory().equals(((ICategorizableChannel) entity).getParentCategory()), "Provided channel's Category is not this Category!");
+        Checks.check(
+                getCategory().equals(((ICategorizableChannel) entity).getParentCategory()),
+                "Provided channel's Category is not this Category!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
     @Nonnull
-    private static Collection<GuildChannel> getChannelsOfType(Category category, int bucket)
-    {
+    private static Collection<GuildChannel> getChannelsOfType(Category category, int bucket) {
         Checks.notNull(category, "Category");
         return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), bucket).stream()
-             .filter(ICategorizableChannel.class::isInstance)
-             .map(ICategorizableChannel.class::cast)
-             .filter(it -> category.equals(it.getParentCategory()))
-             .sorted()
-             .collect(Collectors.toList());
+                .filter(ICategorizableChannel.class::isInstance)
+                .map(ICategorizableChannel.class::cast)
+                .filter(it -> category.equals(it.getParentCategory()))
+                .sorted()
+                .collect(Collectors.toList());
     }
 }

@@ -30,16 +30,18 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect any RoleUpdateEvent.
  */
-public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent implements UpdateEvent<Role, T>
-{
+public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent implements UpdateEvent<Role, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
     public GenericRoleUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nonnull Role role,
-        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
-    {
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Role role,
+            @Nullable T previous,
+            @Nullable T next,
+            @Nonnull String identifier) {
         super(api, responseNumber, role);
         this.previous = previous;
         this.next = next;
@@ -48,29 +50,25 @@ public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent impleme
 
     @Nonnull
     @Override
-    public Role getEntity()
-    {
+    public Role getEntity() {
         return role;
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 }

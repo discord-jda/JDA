@@ -28,6 +28,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
  * @see   net.dv8tion.jda.api.interactions.InteractionHook#editOriginal(String)
  * @see   net.dv8tion.jda.api.entities.WebhookClient#editMessageById(long, String)
  */
-public interface WebhookMessageEditAction<T> extends MessageEditRequest<WebhookMessageEditAction<T>>, AbstractWebhookMessageAction<T, WebhookMessageEditAction<T>>
-{
-}
+public interface WebhookMessageEditAction<T>
+        extends MessageEditRequest<WebhookMessageEditAction<T>>,
+                AbstractWebhookMessageAction<T, WebhookMessageEditAction<T>> {}

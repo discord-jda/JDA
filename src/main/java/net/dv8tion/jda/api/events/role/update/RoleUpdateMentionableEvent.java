@@ -28,12 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code mentionable}
  */
-public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent<Boolean>
-{
+public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "mentionable";
 
-    public RoleUpdateMentionableEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, boolean wasMentionable)
-    {
+    public RoleUpdateMentionableEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Role role, boolean wasMentionable) {
         super(api, responseNumber, role, wasMentionable, !wasMentionable, IDENTIFIER);
     }
 
@@ -42,22 +41,19 @@ public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent<Boolean>
      *
      * @return True, if this role was mentionable before this update
      */
-    public boolean wasMentionable()
-    {
+    public boolean wasMentionable() {
         return getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue()
-    {
+    public Boolean getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue()
-    {
+    public Boolean getNewValue() {
         return super.getNewValue();
     }
 }

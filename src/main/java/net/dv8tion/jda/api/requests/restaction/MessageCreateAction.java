@@ -29,19 +29,20 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Specialized {@link net.dv8tion.jda.api.requests.RestAction RestAction} used for sending messages to {@link MessageChannel MessageChannels}.
  *
  * @see MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(...)
  */
-public interface MessageCreateAction extends MessageCreateRequest<MessageCreateAction>, FluentRestAction<Message, MessageCreateAction>
-{
+public interface MessageCreateAction
+        extends MessageCreateRequest<MessageCreateAction>, FluentRestAction<Message, MessageCreateAction> {
     /**
      * Sets the default value for {@link #failOnInvalidReply(boolean)}
      *
@@ -50,8 +51,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      * @param fail
      *        True, to throw a exception if the referenced message does not exist
      */
-    static void setDefaultFailOnInvalidReply(boolean fail)
-    {
+    static void setDefaultFailOnInvalidReply(boolean fail) {
         MessageCreateActionImpl.setDefaultFailOnInvalidReply(fail);
     }
 
@@ -120,7 +120,11 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      */
     @Nonnull
     @CheckReturnValue
-    MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nullable String guildId, @Nonnull String channelId, @Nonnull String messageId);
+    MessageCreateAction setMessageReference(
+            @Nonnull MessageReferenceType type,
+            @Nullable String guildId,
+            @Nonnull String channelId,
+            @Nonnull String messageId);
 
     /**
      * Message reference used for a reply or forwarded message.
@@ -166,9 +170,13 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, long guildId, long channelId, long messageId)
-    {
-        return setMessageReference(type, Long.toUnsignedString(guildId), Long.toUnsignedString(channelId), Long.toUnsignedString(messageId));
+    default MessageCreateAction setMessageReference(
+            @Nonnull MessageReferenceType type, long guildId, long channelId, long messageId) {
+        return setMessageReference(
+                type,
+                Long.toUnsignedString(guildId),
+                Long.toUnsignedString(channelId),
+                Long.toUnsignedString(messageId));
     }
 
     /**
@@ -211,10 +219,10 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nonnull Message message)
-    {
+    default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nonnull Message message) {
         Checks.notNull(message, "Message");
-        return setMessageReference(type, message.getGuildId(), message.getChannel().getId(), message.getId());
+        return setMessageReference(
+                type, message.getGuildId(), message.getChannel().getId(), message.getId());
     }
 
     /**
@@ -262,8 +270,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction setMessageReference(long messageId)
-    {
+    default MessageCreateAction setMessageReference(long messageId) {
         return setMessageReference(Long.toUnsignedString(messageId));
     }
 
@@ -287,8 +294,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction setMessageReference(@Nullable Message message)
-    {
+    default MessageCreateAction setMessageReference(@Nullable Message message) {
         return setMessageReference(message == null ? null : message.getId());
     }
 
@@ -355,10 +361,10 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction setStickers(@Nullable StickerSnowflake... stickers)
-    {
-        if (stickers != null)
+    default MessageCreateAction setStickers(@Nullable StickerSnowflake... stickers) {
+        if (stickers != null) {
             Checks.noneNull(stickers, "Sticker");
+        }
         return setStickers(stickers == null ? null : Arrays.asList(stickers));
     }
 }

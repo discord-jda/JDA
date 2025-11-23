@@ -29,23 +29,22 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * {@link net.dv8tion.jda.api.entities.Webhook Webhook} Builder system created as an extension of {@link net.dv8tion.jda.api.requests.RestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.api.entities.Webhook Webhooks}.
  */
-public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implements WebhookAction
-{
+public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implements WebhookAction {
     protected final IWebhookContainer channel;
     protected String name;
     protected Icon avatar = null;
 
-    public WebhookActionImpl(JDA api, IWebhookContainer channel, String name)
-    {
+    public WebhookActionImpl(JDA api, IWebhookContainer channel, String name) {
         super(api, Route.Channels.CREATE_WEBHOOK.compile(channel.getId()));
         this.channel = channel;
         this.name = name;
@@ -53,37 +52,32 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
 
     @Nonnull
     @Override
-    public WebhookActionImpl setCheck(BooleanSupplier checks)
-    {
+    public WebhookActionImpl setCheck(BooleanSupplier checks) {
         return (WebhookActionImpl) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public WebhookActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public WebhookActionImpl timeout(long timeout, @Nonnull TimeUnit unit) {
         return (WebhookActionImpl) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public WebhookActionImpl deadline(long timestamp)
-    {
+    public WebhookActionImpl deadline(long timestamp) {
         return (WebhookActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public IWebhookContainerUnion getChannel()
-    {
+    public IWebhookContainerUnion getChannel() {
         return (IWebhookContainerUnion) channel;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public WebhookActionImpl setName(@Nonnull String name)
-    {
+    public WebhookActionImpl setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
 
@@ -94,25 +88,22 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     @Nonnull
     @Override
     @CheckReturnValue
-    public WebhookActionImpl setAvatar(Icon icon)
-    {
+    public WebhookActionImpl setAvatar(Icon icon) {
         this.avatar = icon;
         return this;
     }
 
     @Override
-    public RequestBody finalizeData()
-    {
+    public RequestBody finalizeData() {
         DataObject object = DataObject.empty();
-        object.put("name",   name);
+        object.put("name", name);
         object.put("avatar", avatar != null ? avatar.getEncoding() : null);
 
         return getRequestBody(object);
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Webhook> request)
-    {
+    protected void handleSuccess(Response response, Request<Webhook> request) {
         DataObject json = response.getObject();
         Webhook webhook = api.getEntityBuilder().createWebhook(json);
 

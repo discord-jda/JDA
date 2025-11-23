@@ -19,19 +19,19 @@ package net.dv8tion.jda.internal.components.replacer;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class TypedComponentReplacerImpl<T extends Component> implements ComponentReplacer
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class TypedComponentReplacerImpl<T extends Component> implements ComponentReplacer {
     private final Class<? super T> type;
     private final Predicate<? super T> filter;
     private final Function<? super T, ? extends Component> updater;
 
-    public TypedComponentReplacerImpl(Class<? super T> type, Predicate<? super T> filter, Function<? super T, ? extends Component> updater)
-    {
+    public TypedComponentReplacerImpl(
+            Class<? super T> type, Predicate<? super T> filter, Function<? super T, ? extends Component> updater) {
         this.type = type;
         this.filter = filter;
         this.updater = updater;
@@ -40,13 +40,14 @@ public class TypedComponentReplacerImpl<T extends Component> implements Componen
     @SuppressWarnings("unchecked")
     @Nullable
     @Override
-    public Component apply(@Nonnull Component oldComponent)
-    {
-        if (!type.isInstance(oldComponent))
+    public Component apply(@Nonnull Component oldComponent) {
+        if (!type.isInstance(oldComponent)) {
             return oldComponent;
+        }
 
-        if (filter.test((T) oldComponent))
+        if (filter.test((T) oldComponent)) {
             return updater.apply((T) oldComponent);
+        }
 
         return oldComponent;
     }

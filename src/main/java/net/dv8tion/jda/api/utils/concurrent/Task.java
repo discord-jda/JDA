@@ -19,10 +19,11 @@ package net.dv8tion.jda.api.utils.concurrent;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Blocking;
 
-import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import javax.annotation.Nonnull;
 
 /**
  * Represents an asynchronous task.
@@ -31,8 +32,7 @@ import java.util.function.Consumer;
  * @param <T>
  *        The result type
  */
-public interface Task<T>
-{
+public interface Task<T> {
     /**
      * Whether this task has started.
      *
@@ -109,8 +109,7 @@ public interface Task<T>
      * @return The current Task instance for chaining
      */
     @Nonnull
-    default Task<T> setTimeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    default Task<T> setTimeout(long timeout, @Nonnull TimeUnit unit) {
         Checks.notNull(unit, "TimeUnit");
         return setTimeout(Duration.ofMillis(unit.toMillis(timeout)));
     }

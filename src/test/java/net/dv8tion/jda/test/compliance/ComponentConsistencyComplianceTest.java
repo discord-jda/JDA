@@ -27,84 +27,82 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
-public class ComponentConsistencyComplianceTest
-{
+public class ComponentConsistencyComplianceTest {
     @Test
-    void testComponentMethodsThatThemselvesAreOverridden()
-    {
+    void testComponentMethodsThatThemselvesAreOverridden() {
         classes()
-            .that(areComponents())
-            .should(overrideSupertypeMethodsWhichReturnsTheirDeclaringClass())
-            .check(SourceSets.getApiClasses());
+                .that(areComponents())
+                .should(overrideSupertypeMethodsWhichReturnsTheirDeclaringClass())
+                .check(SourceSets.getApiClasses());
     }
 
-    private DescribedPredicate<JavaClass> areComponents()
-    {
-        return DescribedPredicate.describe(
-                "Is a Component",
-                clazz -> clazz.isAssignableTo(Component.class)
-        );
+    private DescribedPredicate<JavaClass> areComponents() {
+        return DescribedPredicate.describe("Is a Component", clazz -> clazz.isAssignableTo(Component.class));
     }
 
-    private ArchCondition<JavaClass> overrideSupertypeMethodsWhichReturnsTheirDeclaringClass()
-    {
-        return new ArchCondition<>("Overrides supertype methods which returns their declaring class")
-        {
+    private ArchCondition<JavaClass> overrideSupertypeMethodsWhichReturnsTheirDeclaringClass() {
+        return new ArchCondition<>("Overrides supertype methods which returns their declaring class") {
             @Override
-            public void check(JavaClass item, ConditionEvents events)
-            {
-                final List<JavaMethod> supertypeMethodsReturningDeclClass = getComponentSupertypes(item)
+            public void check(JavaClass item, ConditionEvents events) {
+                List<JavaMethod> supertypeMethodsReturningDeclClass = getComponentSupertypes(item)
                         // Methods declared by the supertypes
                         .flatMap(c -> c.getMethods().stream())
                         // Only keep root declarations
                         .filter(this::isRootDeclaration)
                         // Methods that return the class they are defined in
-                        .filter(m -> m.getRawReturnType().getFullName().equals(m.getOwner().getFullName()))
+                        .filter(m -> m.getRawReturnType()
+                                .getFullName()
+                                .equals(m.getOwner().getFullName()))
                         .toList();
 
                 // The method may exist but have a diff return type, or it may not be overridden
-                for (JavaMethod supertypeMethodReturningDeclClass : supertypeMethodsReturningDeclClass)
-                {
-                    final Optional<JavaMethod> optDeclaredMethod = item.tryGetMethod(supertypeMethodReturningDeclClass.getName(), getParameterTypeNames(supertypeMethodReturningDeclClass));
-                    if (!optDeclaredMethod.isPresent())
-                    {
-                        events.add(SimpleConditionEvent.violated(item, item.getFullName() + " does not override " + supertypeMethodReturningDeclClass.getFullName()));
+                for (JavaMethod supertypeMethodReturningDeclClass : supertypeMethodsReturningDeclClass) {
+                    Optional<JavaMethod> optDeclaredMethod = item.tryGetMethod(
+                            supertypeMethodReturningDeclClass.getName(),
+                            getParameterTypeNames(supertypeMethodReturningDeclClass));
+                    if (!optDeclaredMethod.isPresent()) {
+                        events.add(SimpleConditionEvent.violated(
+                                item,
+                                item.getFullName() + " does not override "
+                                        + supertypeMethodReturningDeclClass.getFullName()));
                         continue;
                     }
 
-                    final JavaMethod declaredMethod = optDeclaredMethod.get();
-                    if (!declaredMethod.getRawReturnType().getFullName().equals(declaredMethod.getOwner().getFullName()))
-                    {
-                        events.add(SimpleConditionEvent.violated(declaredMethod, declaredMethod.getFullName() + " must override return type with " + declaredMethod.getOwner().getFullName()));
+                    JavaMethod declaredMethod = optDeclaredMethod.get();
+                    if (!declaredMethod
+                            .getRawReturnType()
+                            .getFullName()
+                            .equals(declaredMethod.getOwner().getFullName())) {
+                        events.add(SimpleConditionEvent.violated(
+                                declaredMethod,
+                                declaredMethod.getFullName() + " must override return type with "
+                                        + declaredMethod.getOwner().getFullName()));
                         continue;
                     }
                 }
             }
 
-            private Stream<JavaClass> getComponentSupertypes(JavaClass clazz)
-            {
+            private Stream<JavaClass> getComponentSupertypes(JavaClass clazz) {
                 return Stream.concat(clazz.getAllRawSuperclasses().stream(), clazz.getAllRawInterfaces().stream())
                         .filter(c -> c.isAssignableTo(Component.class));
             }
 
-            private String[] getParameterTypeNames(JavaMethod method)
-            {
+            private String[] getParameterTypeNames(JavaMethod method) {
                 return method.getRawParameterTypes().stream()
                         .map(JavaClass::getFullName)
                         .toArray(String[]::new);
             }
 
-            private boolean isRootDeclaration(JavaMethod method)
-            {
+            private boolean isRootDeclaration(JavaMethod method) {
                 // return true if no supertype has the same method
                 return getComponentSupertypes(method.getOwner())
                         .flatMap(c -> c.getMethods().stream())
-                        .noneMatch(m -> m.getName().equals(method.getName()) && m.getRawParameterTypes().equals(method.getRawParameterTypes()));
+                        .noneMatch(m -> m.getName().equals(method.getName())
+                                && m.getRawParameterTypes().equals(method.getRawParameterTypes()));
             }
         };
     }

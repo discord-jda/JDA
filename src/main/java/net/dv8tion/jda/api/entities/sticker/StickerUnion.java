@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
  * <p>This delegates the sticker methods for a rich sticker type,
  * but can be converted to a concrete type using either {@link #asGuildSticker()} or {@link #asStandardSticker()}.
  */
-public interface StickerUnion extends RichSticker
-{
+public interface StickerUnion extends RichSticker {
     /**
      * Returns the underlying {@link StandardSticker} if applicable.
      *

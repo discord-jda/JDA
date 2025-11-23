@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  * @param <B>
  *        The builder type
  */
-public class AbstractTriggerConfig<B extends AbstractTriggerConfig<B>> implements TriggerConfig
-{
+public class AbstractTriggerConfig<B extends AbstractTriggerConfig<B>> implements TriggerConfig {
     protected final AutoModTriggerType type;
 
-    protected AbstractTriggerConfig(AutoModTriggerType type)
-    {
+    protected AbstractTriggerConfig(AutoModTriggerType type) {
         this.type = type;
     }
 
@@ -43,15 +41,13 @@ public class AbstractTriggerConfig<B extends AbstractTriggerConfig<B>> implement
      */
     @Nonnull
     @Override
-    public AutoModTriggerType getType()
-    {
+    public AutoModTriggerType getType() {
         return type;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty();
     }
 }

@@ -29,16 +29,18 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 
-public class TestEntitlementCreateActionImpl extends RestActionImpl<Entitlement> implements TestEntitlementCreateAction
-{
+public class TestEntitlementCreateActionImpl extends RestActionImpl<Entitlement>
+        implements TestEntitlementCreateAction {
 
     private long skuId;
     private long ownerId;
     private OwnerType type;
 
-    public TestEntitlementCreateActionImpl(JDA api, long skuId, long ownerId, OwnerType type)
-    {
-        super(api, Route.Applications.CREATE_TEST_ENTITLEMENT.compile(api.getSelfUser().getApplicationId()));
+    public TestEntitlementCreateActionImpl(JDA api, long skuId, long ownerId, OwnerType type) {
+        super(
+                api,
+                Route.Applications.CREATE_TEST_ENTITLEMENT.compile(
+                        api.getSelfUser().getApplicationId()));
 
         this.skuId = skuId;
         this.ownerId = ownerId;
@@ -47,24 +49,21 @@ public class TestEntitlementCreateActionImpl extends RestActionImpl<Entitlement>
 
     @Nonnull
     @Override
-    public TestEntitlementCreateAction setSkuId(long skuId)
-    {
+    public TestEntitlementCreateAction setSkuId(long skuId) {
         this.skuId = skuId;
         return this;
     }
 
     @Nonnull
     @Override
-    public TestEntitlementCreateAction setOwnerId(long ownerId)
-    {
+    public TestEntitlementCreateAction setOwnerId(long ownerId) {
         this.ownerId = ownerId;
         return this;
     }
 
     @Nonnull
     @Override
-    public TestEntitlementCreateAction setOwnerType(@Nonnull OwnerType type)
-    {
+    public TestEntitlementCreateAction setOwnerType(@Nonnull OwnerType type) {
         Checks.notNull(type, "type");
 
         this.type = type;
@@ -72,15 +71,13 @@ public class TestEntitlementCreateActionImpl extends RestActionImpl<Entitlement>
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Entitlement> request)
-    {
+    protected void handleSuccess(Response response, Request<Entitlement> request) {
         DataObject object = response.getObject();
         request.onSuccess(api.getEntityBuilder().createEntitlement(object));
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
         object.put("sku_id", skuId);
         object.put("owner_id", ownerId);

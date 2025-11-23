@@ -18,24 +18,21 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.utils.TimeUtil;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
+
+import javax.annotation.Nonnull;
 
 /**
  * Marks a snowflake entity. Snowflake entities are ones that have an id that uniquely identifies them.
- *
- * @since 3.0
  */
-public interface ISnowflake
-{
+public interface ISnowflake {
     /**
      * The Snowflake id of this entity. This is unique to every entity and will never change.
      *
      * @return Never-null String containing the Id.
      */
     @Nonnull
-    default String getId()
-    {
+    default String getId() {
         return Long.toUnsignedString(getIdLong());
     }
 
@@ -54,8 +51,7 @@ public interface ISnowflake
      * @see    TimeUtil#getTimeCreated(long)
      */
     @Nonnull
-    default OffsetDateTime getTimeCreated()
-    {
+    default OffsetDateTime getTimeCreated() {
         return TimeUtil.getTimeCreated(getIdLong());
     }
 }

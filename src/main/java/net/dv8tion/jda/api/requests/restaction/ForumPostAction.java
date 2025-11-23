@@ -25,10 +25,11 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
@@ -39,8 +40,10 @@ import java.util.Collection;
  *
  * @see IPostContainer#createForumPost(String, MessageCreateData)
  */
-public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, ForumPostAction>, MessageCreateRequest<ForumPostAction>, FluentRestAction<ForumPost, ForumPostAction>
-{
+public interface ForumPostAction
+        extends AbstractThreadCreateAction<ForumPost, ForumPostAction>,
+                MessageCreateRequest<ForumPostAction>,
+                FluentRestAction<ForumPost, ForumPostAction> {
     /**
      * The {@link IPostContainer} to create the post in
      *
@@ -85,8 +88,7 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
      */
     @Nonnull
     @CheckReturnValue
-    default ForumPostAction setTags(@Nonnull ForumTagSnowflake... tags)
-    {
+    default ForumPostAction setTags(@Nonnull ForumTagSnowflake... tags) {
         Checks.noneNull(tags, "Tags");
         return setTags(Arrays.asList(tags));
     }

@@ -34,18 +34,17 @@ import javax.annotation.Nonnull;
  *     <li>{@link AttachmentUpload}</li>
  * </ul>
  */
-public interface LabelChildComponentUnion extends LabelChildComponent, IComponentUnion
-{
+public interface LabelChildComponentUnion extends LabelChildComponent, IComponentUnion {
     /**
      * Casts this union to a {@link TextInput}.
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * TextInput input = union.asTextInput();
      * TextInput input2 = (TextInput) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#TEXT_INPUT} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof TextInput</code>
@@ -63,11 +62,11 @@ public interface LabelChildComponentUnion extends LabelChildComponent, IComponen
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * StringSelectMenu menu = union.asStringSelectMenu();
      * StringSelectMenu menu2 = (StringSelectMenu) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#STRING_SELECT} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof StringSelectMenu</code>
@@ -85,11 +84,11 @@ public interface LabelChildComponentUnion extends LabelChildComponent, IComponen
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * EntitySelectMenu menu = union.asEntitySelectMenu();
      * EntitySelectMenu menu2 = (EntitySelectMenu) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is one of:
      * <ul>
@@ -113,11 +112,11 @@ public interface LabelChildComponentUnion extends LabelChildComponent, IComponen
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
+     * {@snippet lang="java":
      * //These are the same!
      * AttachmentUpload menu = union.asAttachmentUpload();
      * AttachmentUpload menu2 = (AttachmentUpload) union;
-     * </code></pre>
+     * }
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#FILE_UPLOAD} to validate
      * whether you can call this method in addition to normal instanceof checks: <code>component instanceof AttachmentUpload</code>

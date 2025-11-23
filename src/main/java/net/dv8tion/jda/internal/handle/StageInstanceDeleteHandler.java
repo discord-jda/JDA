@@ -23,23 +23,20 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.StageChannelImpl;
 
-public class StageInstanceDeleteHandler extends SocketHandler
-{
-    public StageInstanceDeleteHandler(JDAImpl api)
-    {
+public class StageInstanceDeleteHandler extends SocketHandler {
+    public StageInstanceDeleteHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id", 0L);
-        if (getJDA().getGuildSetupController().isLocked(guildId))
+        if (getJDA().getGuildSetupController().isLocked(guildId)) {
             return guildId;
+        }
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
+        if (guild == null) {
             EventCache.LOG.debug("Caching STAGE_INSTANCE_DELETE for uncached guild with id {}", guildId);
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
@@ -47,12 +44,14 @@ public class StageInstanceDeleteHandler extends SocketHandler
 
         long channelId = content.getUnsignedLong("channel_id", 0L);
         StageChannelImpl channel = (StageChannelImpl) guild.getStageChannelById(channelId);
-        if (channel == null)
+        if (channel == null) {
             return null;
+        }
         StageInstance instance = channel.getStageInstance();
         channel.setStageInstance(null);
-        if (instance != null)
+        if (instance != null) {
             getJDA().handleEvent(new StageInstanceDeleteEvent(getJDA(), responseNumber, instance));
+        }
         return null;
     }
 }

@@ -26,27 +26,24 @@ import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class ThumbnailFileUpload
-        extends AbstractComponentImpl
-        implements Thumbnail, SectionAccessoryComponentUnion, FileContainerMixin
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ThumbnailFileUpload extends AbstractComponentImpl
+        implements Thumbnail, SectionAccessoryComponentUnion, FileContainerMixin {
     private final int uniqueId;
     private final FileUpload file;
     private final String description;
     private final boolean spoiler;
 
-    public ThumbnailFileUpload(FileUpload file)
-    {
+    public ThumbnailFileUpload(FileUpload file) {
         this(-1, file, null, false);
     }
 
-    public ThumbnailFileUpload(int uniqueId, FileUpload file, String description, boolean spoiler)
-    {
+    public ThumbnailFileUpload(int uniqueId, FileUpload file, String description, boolean spoiler) {
         this.uniqueId = uniqueId;
         this.file = file;
         this.description = description;
@@ -55,25 +52,21 @@ public class ThumbnailFileUpload
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.THUMBNAIL;
     }
 
     @Nonnull
     @Override
-    public ThumbnailFileUpload withUniqueId(int uniqueId)
-    {
+    public ThumbnailFileUpload withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
         return new ThumbnailFileUpload(uniqueId, file, description, spoiler);
     }
 
     @Nonnull
     @Override
-    public Thumbnail withDescription(@Nullable String description)
-    {
-        if (description != null)
-        {
+    public Thumbnail withDescription(@Nullable String description) {
+        if (description != null) {
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
         }
@@ -82,85 +75,84 @@ public class ThumbnailFileUpload
 
     @Nonnull
     @Override
-    public Thumbnail withSpoiler(boolean spoiler)
-    {
+    public Thumbnail withSpoiler(boolean spoiler) {
         return new ThumbnailFileUpload(uniqueId, file, description, spoiler);
     }
 
     @Override
-    public int getUniqueId()
-    {
+    public int getUniqueId() {
         return uniqueId;
     }
 
     @Nonnull
     @Override
-    public String getUrl()
-    {
+    public String getUrl() {
         return "attachment://" + file.getName();
     }
 
     @Override
-    public Stream<FileUpload> getFiles()
-    {
+    public Stream<FileUpload> getFiles() {
         return Stream.of(file);
     }
 
     @Nullable
     @Override
-    public ResolvedMedia getResolvedMedia()
-    {
+    public ResolvedMedia getResolvedMedia() {
         return null;
     }
 
     @Nullable
     @Override
-    public String getDescription()
-    {
-        if (description != null)
+    public String getDescription() {
+        if (description != null) {
             return description;
+        }
         return file.getDescription(); // FileUpload is mutable
     }
 
     @Override
-    public boolean isSpoiler()
-    {
+    public boolean isSpoiler() {
         return spoiler;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        final DataObject json = DataObject.empty()
+    public DataObject toData() {
+        DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("media", DataObject.empty().put("url", getUrl()))
                 .put("spoiler", spoiler);
-        if (uniqueId >= 0)
+        if (uniqueId >= 0) {
             json.put("id", uniqueId);
-        if (getDescription() != null)
+        }
+        if (getDescription() != null) {
             json.put("description", getDescription());
+        }
         return json;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof ThumbnailFileUpload)) return false;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ThumbnailFileUpload)) {
+            return false;
+        }
         ThumbnailFileUpload thumbnail = (ThumbnailFileUpload) o;
-        return uniqueId == thumbnail.uniqueId && spoiler == thumbnail.spoiler && Objects.equals(file, thumbnail.file) && Objects.equals(description, thumbnail.description);
+        return uniqueId == thumbnail.uniqueId
+                && spoiler == thumbnail.spoiler
+                && Objects.equals(file, thumbnail.file)
+                && Objects.equals(description, thumbnail.description);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(uniqueId, file, description, spoiler);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("id", uniqueId)
                 .addMetadata("file", file)

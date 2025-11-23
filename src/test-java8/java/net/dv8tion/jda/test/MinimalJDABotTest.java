@@ -25,40 +25,31 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-class MinimalJDABotTest
-{
+class MinimalJDABotTest {
     @Test
-    void testCurrentJavaVersion()
-    {
+    void testCurrentJavaVersion() {
         assertThat(System.getProperty("java.version")).startsWith("1.8");
     }
 
     @Test
-    void testFailedLogin()
-    {
+    void testFailedLogin() {
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new RequestInterceptor())
                 .build();
 
         assertThatExceptionOfType(ErrorResponseException.class)
-            .isThrownBy(() ->
-                JDABuilder
-                    .createLight("INVALID_TOKEN")
-                    .setHttpClient(httpClient)
-                    .build()
-            ).withCauseExactlyInstanceOf(RequestInterceptedException.class);
+                .isThrownBy(() -> JDABuilder.createLight("INVALID_TOKEN")
+                        .setHttpClient(httpClient)
+                        .build())
+                .withCauseExactlyInstanceOf(RequestInterceptedException.class);
     }
 
-    private static class RequestInterceptor implements Interceptor
-    {
+    private static class RequestInterceptor implements Interceptor {
         @Override
-        public Response intercept(Chain chain)
-        {
+        public Response intercept(Chain chain) {
             throw new RequestInterceptedException();
         }
     }
 
-    private static class RequestInterceptedException extends RuntimeException
-    {
-    }
+    private static class RequestInterceptedException extends RuntimeException {}
 }

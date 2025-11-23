@@ -31,12 +31,13 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 /**
  * Interactions which allow a target message to be edited on use.
@@ -53,8 +54,7 @@ import java.util.Collection;
  * This means all the methods with {@code original} in the name, such as {@link InteractionHook#editOriginal(String)},
  * will affect that original message you edited.
  */
-public interface IMessageEditCallback extends IDeferrableCallback
-{
+public interface IMessageEditCallback extends IDeferrableCallback {
     /**
      * No-op acknowledgement of this interaction.
      * <br>This tells discord you intend to update the message that the triggering component is a part of using the {@link #getHook() InteractionHook} instead of sending a reply message.
@@ -99,8 +99,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessage(@Nonnull MessageEditData message)
-    {
+    default MessageEditCallbackAction editMessage(@Nonnull MessageEditData message) {
         Checks.notNull(message, "Message");
         MessageEditCallbackActionImpl action = (MessageEditCallbackActionImpl) deferEdit();
         return action.applyData(message);
@@ -133,8 +132,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessage(@Nonnull String content)
-    {
+    default MessageEditCallbackAction editMessage(@Nonnull String content) {
         Checks.notNull(content, "Content");
         return deferEdit().setContent(content);
     }
@@ -174,8 +172,8 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    default MessageEditCallbackAction editComponents(
+            @Nonnull Collection<? extends MessageTopLevelComponent> components) {
         Checks.noneNull(components, "Components");
         return deferEdit().setComponents(components);
     }
@@ -215,8 +213,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull MessageTopLevelComponent... components)
-    {
+    default MessageEditCallbackAction editComponents(@Nonnull MessageTopLevelComponent... components) {
         Checks.noneNull(components, "components");
         return editComponents(Arrays.asList(components));
     }
@@ -258,8 +255,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
-    {
+    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree) {
         Checks.notNull(tree, "ComponentTree");
         return editComponents(tree.getComponents());
     }
@@ -291,8 +287,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default MessageEditCallbackAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
     }
@@ -324,8 +319,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default MessageEditCallbackAction editMessageEmbeds(@Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
     }
@@ -359,8 +353,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    default MessageEditCallbackAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return editMessage(String.format(format, args));
     }
@@ -400,8 +393,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
-    {
+    default MessageEditCallbackAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments) {
         Checks.noneNull(attachments, "Attachments");
         return deferEdit().setAttachments(attachments);
     }
@@ -441,8 +433,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editMessageAttachments(@Nonnull AttachedFile... attachments)
-    {
+    default MessageEditCallbackAction editMessageAttachments(@Nonnull AttachedFile... attachments) {
         Checks.noneNull(attachments, "Attachments");
         return deferEdit().setAttachments(attachments);
     }

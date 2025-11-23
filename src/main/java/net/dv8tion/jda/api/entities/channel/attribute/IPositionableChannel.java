@@ -29,8 +29,7 @@ import javax.annotation.Nonnull;
  *
  * <p>In the case of identical position values, the natural order of the channel snowflakes is used.
  */
-public interface IPositionableChannel extends GuildChannel
-{
+public interface IPositionableChannel extends GuildChannel {
     @Override
     @Nonnull
     @CheckReturnValue
@@ -50,12 +49,13 @@ public interface IPositionableChannel extends GuildChannel
      *
      * @return Zero-based int of position of the GuildChannel.
      */
-    default int getPosition()
-    {
+    default int getPosition() {
         int position = getGuild().getChannels().indexOf(this);
-        if (position > -1)
+        if (position > -1) {
             return position;
-        throw new IllegalStateException("Somehow when determining position we never found the " + getType().name() + " in the Guild's channels? wtf?");
+        }
+        throw new IllegalStateException("Somehow when determining position we never found the "
+                + getType().name() + " in the Guild's channels? wtf?");
     }
 
     /**

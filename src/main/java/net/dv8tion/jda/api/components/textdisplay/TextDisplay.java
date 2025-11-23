@@ -39,9 +39,11 @@ import javax.annotation.Nonnull;
  * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  */
 public interface TextDisplay
-        extends Component, MessageTopLevelComponent, ModalTopLevelComponent,
-        ContainerChildComponent, SectionContentComponent
-{
+        extends Component,
+                MessageTopLevelComponent,
+                ModalTopLevelComponent,
+                ContainerChildComponent,
+                SectionContentComponent {
     /**
      * Constructs a new {@link TextDisplay} from the given content.
      *
@@ -54,8 +56,7 @@ public interface TextDisplay
      * @return The new {@link TextDisplay}
      */
     @Nonnull
-    static TextDisplay of(@Nonnull String content)
-    {
+    static TextDisplay of(@Nonnull String content) {
         Checks.notBlank(content, "Content");
         return new TextDisplayImpl(content);
     }
@@ -83,8 +84,7 @@ public interface TextDisplay
      * @return The new {@link TextDisplay}
      */
     @Nonnull
-    static TextDisplay ofFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    static TextDisplay ofFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format string");
         Checks.notNull(args, "Format args"); // Null array elements are allowed
         return of(String.format(format, args));

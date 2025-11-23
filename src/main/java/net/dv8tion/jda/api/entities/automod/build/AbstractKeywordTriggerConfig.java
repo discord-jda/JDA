@@ -22,8 +22,9 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.*;
+
+import javax.annotation.Nonnull;
 
 /**
  * Abstract for all keyword trigger types.
@@ -32,12 +33,11 @@ import java.util.*;
  *        The builder type
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTriggerConfig<B>> extends AbstractTriggerConfig<B>
-{
+public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTriggerConfig<B>>
+        extends AbstractTriggerConfig<B> {
     protected final List<String> allowList = new ArrayList<>();
 
-    protected AbstractKeywordTriggerConfig(AutoModTriggerType triggerType)
-    {
+    protected AbstractKeywordTriggerConfig(AutoModTriggerType triggerType) {
         super(triggerType);
     }
 
@@ -62,10 +62,12 @@ public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTrig
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public B addAllowList(@Nonnull String... keywords)
-    {
+    public B addAllowList(@Nonnull String... keywords) {
         Checks.noneNull(keywords, "Keywords");
-        Checks.check(this.allowList.size() + keywords.length <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
+        Checks.check(
+                this.allowList.size() + keywords.length <= maxAllowListAmount(),
+                "Cannot add more than %d keywords!",
+                maxAllowListAmount());
         Arrays.stream(keywords).forEach(AbstractKeywordTriggerConfig::checkKeyword);
         Collections.addAll(allowList, keywords);
         return (B) this;
@@ -92,10 +94,12 @@ public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTrig
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public B addAllowList(@Nonnull Collection<String> keywords)
-    {
+    public B addAllowList(@Nonnull Collection<String> keywords) {
         Checks.noneNull(keywords, "Keywords");
-        Checks.check(this.allowList.size() + keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
+        Checks.check(
+                this.allowList.size() + keywords.size() <= maxAllowListAmount(),
+                "Cannot add more than %d keywords!",
+                maxAllowListAmount());
         keywords.forEach(AbstractKeywordTriggerConfig::checkKeyword);
         allowList.addAll(keywords);
         return (B) this;
@@ -122,10 +126,10 @@ public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTrig
      * @return The current config for chaining convenience
      */
     @Nonnull
-    public B setAllowList(@Nonnull Collection<String> keywords)
-    {
+    public B setAllowList(@Nonnull Collection<String> keywords) {
         Checks.noneNull(keywords, "Keywords");
-        Checks.check(keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
+        Checks.check(
+                keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
         keywords.forEach(AbstractKeywordTriggerConfig::checkKeyword);
         allowList.clear();
         allowList.addAll(keywords);
@@ -134,16 +138,14 @@ public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTrig
 
     protected abstract int maxAllowListAmount();
 
-    protected static void checkKeyword(String keyword)
-    {
+    protected static void checkKeyword(String keyword) {
         Checks.notEmpty(keyword, "Keyword");
         Checks.notLonger(keyword, AutoModRule.MAX_KEYWORD_LENGTH, "Keyword");
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject data = super.toData();
         data.put("allow_list", DataArray.fromCollection(allowList));
         return data;

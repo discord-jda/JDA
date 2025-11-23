@@ -32,17 +32,17 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.RequestBody;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledEvent> implements ScheduledEventAction
-{
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledEvent> implements ScheduledEventAction {
     protected final Guild guild;
     protected String name, description;
     protected Icon image;
@@ -51,8 +51,8 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
     protected OffsetDateTime startTime, endTime;
     protected final ScheduledEvent.Type entityType;
 
-    public ScheduledEventActionImpl(String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild)
-    {
+    public ScheduledEventActionImpl(
+            String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild) {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
         setName(name);
@@ -66,72 +66,59 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
         this.entityType = ScheduledEvent.Type.EXTERNAL;
     }
 
-    public ScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild)
-    {
+    public ScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild) {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
         setName(name);
         setStartTime(startTime);
         Checks.notNull(channel, "Channel");
-        if (!channel.getGuild().equals(guild))
-        {
-            throw new IllegalArgumentException("Invalid parameter: Channel has to be from the same guild as the scheduled event!");
-        }
-        else if (channel instanceof StageChannel)
-        {
+        if (!channel.getGuild().equals(guild)) {
+            throw new IllegalArgumentException(
+                    "Invalid parameter: Channel has to be from the same guild as the scheduled event!");
+        } else if (channel instanceof StageChannel) {
             this.channelId = channel.getIdLong();
             this.entityType = ScheduledEvent.Type.STAGE_INSTANCE;
-        }
-        else if (channel instanceof VoiceChannel)
-        {
+        } else if (channel instanceof VoiceChannel) {
             this.channelId = channel.getIdLong();
             this.entityType = ScheduledEvent.Type.VOICE;
-        }
-        else
-        {
+        } else {
             throw new IllegalArgumentException("Invalid parameter: Can only set location to Voice and Stage Channels!");
         }
     }
 
     @Nonnull
     @Override
-    public ScheduledEventActionImpl setCheck(BooleanSupplier checks)
-    {
+    public ScheduledEventActionImpl setCheck(BooleanSupplier checks) {
         return (ScheduledEventActionImpl) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public ScheduledEventActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public ScheduledEventActionImpl timeout(long timeout, @Nonnull TimeUnit unit) {
         return (ScheduledEventActionImpl) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public ScheduledEventActionImpl deadline(long timestamp)
-    {
+    public ScheduledEventActionImpl deadline(long timestamp) {
         return (ScheduledEventActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public ScheduledEventActionImpl reason(@Nullable String reason)
-    {
+    public ScheduledEventActionImpl reason(@Nullable String reason) {
         return (ScheduledEventActionImpl) super.reason(reason);
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Nonnull
     @Override
-    public ScheduledEventActionImpl setName(@Nullable String name)
-    {
+    public ScheduledEventActionImpl setName(@Nullable String name) {
         Checks.notBlank(name, "Name");
         Checks.notLonger(name, ScheduledEvent.MAX_NAME_LENGTH, "Name");
         this.name = name;
@@ -141,81 +128,82 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
     @Nonnull
     @Override
     @CheckReturnValue
-    public ScheduledEventActionImpl setDescription(@Nullable String description)
-    {
-        if (description != null)
+    public ScheduledEventActionImpl setDescription(@Nullable String description) {
+        if (description != null) {
             Checks.notLonger(description, ScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
+        }
         this.description = description;
         return this;
     }
 
     @Nonnull
     @Override
-    public ScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime)
-    {
+    public ScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime) {
         Checks.notNull(startTime, "Start Time");
         OffsetDateTime offsetStartTime = Helpers.toOffsetDateTime(startTime);
         Checks.check(offsetStartTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
-        Checks.check(offsetStartTime.isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
+        Checks.check(
+                offsetStartTime.isBefore(OffsetDateTime.now().plusYears(5)),
+                "Scheduled start and end times must be within five years.");
         this.startTime = offsetStartTime;
         return this;
     }
 
     @Nonnull
     @Override
-    public ScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime)
-    {
+    public ScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime) {
         Checks.notNull(endTime, "End Time");
         OffsetDateTime offsetEndTime = Helpers.toOffsetDateTime(endTime);
         Checks.check(offsetEndTime.isAfter(startTime), "Cannot schedule event to end before its starting!");
-        Checks.check(offsetEndTime.isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
+        Checks.check(
+                offsetEndTime.isBefore(OffsetDateTime.now().plusYears(5)),
+                "Scheduled start and end times must be within five years.");
         this.endTime = offsetEndTime;
         return this;
     }
 
     @Nonnull
     @Override
-    public ScheduledEventAction setImage(@Nullable Icon icon)
-    {
+    public ScheduledEventAction setImage(@Nullable Icon icon) {
         this.image = icon;
         return this;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
         object.put("entity_type", entityType.getKey());
         object.put("privacy_level", 2);
         object.put("name", name);
         object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
 
-        switch (entityType)
-        {
-        case STAGE_INSTANCE:
-        case VOICE:
-            object.put("channel_id", channelId);
-            break;
-        case EXTERNAL:
-            object.put("entity_metadata", DataObject.empty().put("location", location));
-            break;
-        default:
-            throw new IllegalStateException("ScheduledEventType " + entityType + " is not supported!");
+        switch (entityType) {
+            case STAGE_INSTANCE:
+            case VOICE:
+                object.put("channel_id", channelId);
+                break;
+            case EXTERNAL:
+                object.put("entity_metadata", DataObject.empty().put("location", location));
+                break;
+            default:
+                throw new IllegalStateException("ScheduledEventType " + entityType + " is not supported!");
         }
 
-        if (description != null)
+        if (description != null) {
             object.put("description", description);
-        if (image != null)
+        }
+        if (image != null) {
             object.put("image", image.getEncoding());
-        if (endTime != null)
+        }
+        if (endTime != null) {
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
+        }
 
         return getRequestBody(object);
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<ScheduledEvent> request)
-    {
+    protected void handleSuccess(Response response, Request<ScheduledEvent> request) {
         request.onSuccess(api.getEntityBuilder().createScheduledEvent((GuildImpl) guild, response.getObject()));
     }
 }

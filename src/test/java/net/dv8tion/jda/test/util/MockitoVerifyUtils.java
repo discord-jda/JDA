@@ -18,45 +18,42 @@ package net.dv8tion.jda.test.util;
 
 import org.intellij.lang.annotations.Language;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mockingDetails;
 
-public class MockitoVerifyUtils
-{
-    public static Set<String> getMethodsByPattern(@Nonnull Class<?> clazz, @Language("RegExp") String regex)
-    {
+public class MockitoVerifyUtils {
+    public static Set<String> getMethodsByPattern(@Nonnull Class<?> clazz, @Language("RegExp") String regex) {
         Pattern pattern = Pattern.compile(regex);
         return Stream.of(clazz.getMethods())
-            .map(Method::getName)
-            .filter(name -> pattern.matcher(name).matches())
-            .collect(Collectors.toSet());
+                .map(Method::getName)
+                .filter(name -> pattern.matcher(name).matches())
+                .collect(Collectors.toSet());
     }
 
     @Nonnull
-    public static Set<String> getSetters(@Nonnull Class<?> clazz)
-    {
+    public static Set<String> getSetters(@Nonnull Class<?> clazz) {
         return getMethodsByPattern(clazz, "^set.+$");
     }
 
-    public static void assertInteractionsContainMethods(@Nonnull Object spy, @Nonnull Set<String> methodNames)
-    {
+    public static void assertInteractionsContainMethods(@Nonnull Object spy, @Nonnull Set<String> methodNames) {
         assertThat(methodNames).isNotEmpty();
 
-        Set<String> actualCalls = mockingDetails(spy)
-            .getInvocations()
-            .stream()
-            .map(invocation -> invocation.getMethod().getName())
-            .collect(Collectors.toSet());
+        Set<String> actualCalls = mockingDetails(spy).getInvocations().stream()
+                .map(invocation -> invocation.getMethod().getName())
+                .collect(Collectors.toSet());
 
         assertThat(actualCalls)
-            .as("Invocations on %s should include expected calls", spy.getClass().getSimpleName())
-            .containsAll(methodNames);
+                .as(
+                        "Invocations on %s should include expected calls",
+                        spy.getClass().getSimpleName())
+                .containsAll(methodNames);
     }
 }

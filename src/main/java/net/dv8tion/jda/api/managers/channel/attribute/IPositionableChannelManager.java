@@ -30,8 +30,9 @@ import javax.annotation.Nonnull;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface IPositionableChannelManager<T extends IPositionableChannel, M extends IPositionableChannelManager<T, M>> extends ChannelManager<T, M>
-{
+public interface IPositionableChannelManager<
+                T extends IPositionableChannel, M extends IPositionableChannelManager<T, M>>
+        extends ChannelManager<T, M> {
     /**
      * Sets the <b><u>position</u></b> of the selected {@link GuildChannel GuildChannel}.
      *

@@ -19,72 +19,62 @@ package net.dv8tion.jda.internal.entities.sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class StickerItemImpl implements StickerItem
-{
+import javax.annotation.Nonnull;
+
+public class StickerItemImpl implements StickerItem {
     protected final long id;
     protected final StickerFormat format;
     protected String name;
 
-    public StickerItemImpl(long id, StickerFormat format, String name)
-    {
+    public StickerItemImpl(long id, StickerFormat format, String name) {
         this.id = id;
         this.format = format;
         this.name = name;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public StickerFormat getFormatType()
-    {
+    public StickerFormat getFormatType() {
         return format;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public StickerItemImpl setName(String name)
-    {
+    public StickerItemImpl setName(String name) {
         this.name = name;
         return this;
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setName(name)
-                .toString();
+    public String toString() {
+        return new EntityString(this).setName(name).toString();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(id, format, name);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof StickerItemImpl))
+        }
+        if (!(obj instanceof StickerItemImpl)) {
             return false;
+        }
         StickerItemImpl other = (StickerItemImpl) obj;
-        return id == other.id
-            && format == other.format
-            && Objects.equals(name, other.name);
+        return id == other.id && format == other.format && Objects.equals(name, other.name);
     }
 }

@@ -35,18 +35,24 @@ import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.EnumSet;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumSet;
 
 /**
  * Represents a Stage Channel.
  *
  * <p>This is a specialized AudioChannel that can be used to host events with speakers and listeners.
  */
-public interface StageChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
-{
+public interface StageChannel
+        extends StandardGuildChannel,
+                GuildMessageChannel,
+                AudioChannel,
+                IWebhookContainer,
+                IAgeRestrictedChannel,
+                ISlowmodeChannel {
     /**
      * The maximum limit you can set with {@link StageChannelManager#setUserLimit(int)}. ({@value})
      */
@@ -87,15 +93,18 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
      */
     @Nonnull
     @CheckReturnValue
-    default StageInstanceAction createStageInstance(@Nonnull String topic)
-    {
+    default StageInstanceAction createStageInstance(@Nonnull String topic) {
         Checks.checkAttached(this);
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
-        EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
-        for (Permission perm : required)
-        {
-            if (!permissions.contains(perm))
-                throw new InsufficientPermissionException(this, perm, "You must be a stage moderator to create a stage instance! Missing Permission: " + perm);
+        EnumSet<Permission> required =
+                EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
+        for (Permission perm : required) {
+            if (!permissions.contains(perm)) {
+                throw new InsufficientPermissionException(
+                        this,
+                        perm,
+                        "You must be a stage moderator to create a stage instance! Missing Permission: " + perm);
+            }
         }
 
         return new StageInstanceActionImpl(this).setTopic(topic);
@@ -122,10 +131,10 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
      *
      * @return True, if the provided member is a stage moderator
      */
-    default boolean isModerator(@Nonnull Member member)
-    {
+    default boolean isModerator(@Nonnull Member member) {
         Checks.notNull(member, "Member");
-        return member.hasPermission(this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
+        return member.hasPermission(
+                this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
     }
 
     @Nonnull
@@ -136,8 +145,7 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelAction<StageChannel> createCopy()
-    {
+    default ChannelAction<StageChannel> createCopy() {
         return createCopy(getGuild());
     }
 

@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
  * Implementations of this interface are provided to
  * {@link net.dv8tion.jda.api.JDABuilder#setAudioSendFactory(IAudioSendFactory) JDABuilder.setAudioSendFactory(IAudioSendFactory)}.
  */
-public interface IAudioSendFactory
-{
+public interface IAudioSendFactory {
     /**
      * Called by JDA's audio system when a new {@link net.dv8tion.jda.api.audio.factory.IAudioSendSystem IAudioSendSystem}
      * instance is needed to handle the sending of UDP audio packets to discord.

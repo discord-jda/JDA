@@ -19,18 +19,22 @@ package net.dv8tion.jda.internal.entities.sticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.internal.utils.EntityString;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 
-public class StandardStickerImpl extends RichStickerImpl implements StandardSticker
-{
+import javax.annotation.Nonnull;
+
+public class StandardStickerImpl extends RichStickerImpl implements StandardSticker {
     private final long packId;
     private final int sortValue;
 
-    public StandardStickerImpl(long id, StickerFormat format, String name,
-                               Set<String> tags, String description,
-                               long packId, int sortValue)
-    {
+    public StandardStickerImpl(
+            long id,
+            StickerFormat format,
+            String name,
+            Set<String> tags,
+            String description,
+            long packId,
+            int sortValue) {
         super(id, format, name, tags, description);
         this.packId = packId;
         this.sortValue = sortValue;
@@ -38,26 +42,22 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
 
     @Nonnull
     @Override
-    public StandardSticker asStandardSticker()
-    {
+    public StandardSticker asStandardSticker() {
         return this;
     }
 
     @Override
-    public long getPackIdLong()
-    {
+    public long getPackIdLong() {
         return packId;
     }
 
     @Override
-    public int getSortValue()
-    {
+    public int getSortValue() {
         return sortValue;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .setName(name)
                 .addMetadata("pack", getPackId())
@@ -65,18 +65,18 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
-        if (!(obj instanceof StandardStickerImpl))
+        }
+        if (!(obj instanceof StandardStickerImpl)) {
             return false;
+        }
         StandardStickerImpl other = (StandardStickerImpl) obj;
         return id == other.id; // Standard stickers shouldn't change, so we can just compare id
     }

@@ -27,16 +27,16 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+
 /**
  * Builder for a Slash-Command group.
  */
-public class SubcommandGroupData implements SerializableData
-{
+public class SubcommandGroupData implements SerializableData {
     private final List<SubcommandData> subcommands = new ArrayList<>(CommandData.MAX_OPTIONS);
     private String name, description;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
@@ -57,8 +57,7 @@ public class SubcommandGroupData implements SerializableData
      *             <li>The description must be 1-100 characters long</li>
      *         </ul>
      */
-    public SubcommandGroupData(@Nonnull String name, @Nonnull String description)
-    {
+    public SubcommandGroupData(@Nonnull String name, @Nonnull String description) {
         Checks.inRange(name, 1, 32, "Name");
         Checks.isLowercase(name, "Name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
@@ -67,16 +66,14 @@ public class SubcommandGroupData implements SerializableData
         this.description = description;
     }
 
-    protected void checkName(@Nonnull String name)
-    {
+    protected void checkName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
         Checks.isLowercase(name, "Name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
     }
 
-    protected void checkDescription(@Nonnull String description)
-    {
+    protected void checkDescription(@Nonnull String description) {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
     }
@@ -93,8 +90,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setName(@Nonnull String name)
-    {
+    public SubcommandGroupData setName(@Nonnull String name) {
         checkName(name);
         this.name = name;
         return this;
@@ -105,7 +101,6 @@ public class SubcommandGroupData implements SerializableData
      *
      * @param  locale
      *         The locale to associate the translated name with
-     *
      * @param  name
      *         The translated name to put
      *
@@ -120,9 +115,8 @@ public class SubcommandGroupData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
-    {
-        //Checks are done in LocalizationMap
+    public SubcommandGroupData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name) {
+        // Checks are done in LocalizationMap
         nameLocalizations.setTranslation(locale, name);
         return this;
     }
@@ -143,9 +137,8 @@ public class SubcommandGroupData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
-    {
-        //Checks are done in LocalizationMap
+    public SubcommandGroupData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map) {
+        // Checks are done in LocalizationMap
         nameLocalizations.setTranslations(map);
         return this;
     }
@@ -162,8 +155,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescription(@Nonnull String description)
-    {
+    public SubcommandGroupData setDescription(@Nonnull String description) {
         checkDescription(description);
         this.description = description;
         return this;
@@ -174,7 +166,6 @@ public class SubcommandGroupData implements SerializableData
      *
      * @param  locale
      *         The locale to associate the translated description with
-     *
      * @param  description
      *         The translated description to put
      *
@@ -189,9 +180,8 @@ public class SubcommandGroupData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
-    {
-        //Checks are done in LocalizationMap
+    public SubcommandGroupData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description) {
+        // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslation(locale, description);
         return this;
     }
@@ -212,9 +202,8 @@ public class SubcommandGroupData implements SerializableData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
-    {
-        //Checks are done in LocalizationMap
+    public SubcommandGroupData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map) {
+        // Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(map);
         return this;
     }
@@ -225,8 +214,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -236,8 +224,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
      */
     @Nonnull
-    public LocalizationMap getNameLocalizations()
-    {
+    public LocalizationMap getNameLocalizations() {
         return nameLocalizations;
     }
 
@@ -247,8 +234,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The description
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -258,8 +244,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */
     @Nonnull
-    public LocalizationMap getDescriptionLocalizations()
-    {
+    public LocalizationMap getDescriptionLocalizations() {
         return descriptionLocalizations;
     }
 
@@ -267,9 +252,9 @@ public class SubcommandGroupData implements SerializableData
      * Removes all subcommands that evaluate to {@code true} under the provided {@code condition}.
      *
      * <p><b>Example: Remove all subcommands</b>
-     * <pre>{@code
+     * {@snippet lang="java":
      * command.removeSubcommands(subcommand -> true);
-     * }</pre>
+     * }
      *
      * @param  condition
      *         The removal condition (must not throw)
@@ -279,8 +264,7 @@ public class SubcommandGroupData implements SerializableData
      *
      * @return True, if any subcommands were removed
      */
-    public boolean removeSubcommand(@Nonnull Predicate<? super SubcommandData> condition)
-    {
+    public boolean removeSubcommand(@Nonnull Predicate<? super SubcommandData> condition) {
         Checks.notNull(condition, "Condition");
         return subcommands.removeIf(condition);
     }
@@ -293,8 +277,7 @@ public class SubcommandGroupData implements SerializableData
      *
      * @return True, if any subcommands were removed
      */
-    public boolean removeSubcommandByName(@Nonnull String name)
-    {
+    public boolean removeSubcommandByName(@Nonnull String name) {
         return removeSubcommand(subcommand -> subcommand.getName().equals(name));
     }
 
@@ -305,8 +288,7 @@ public class SubcommandGroupData implements SerializableData
      */
     @Nonnull
     @Unmodifiable
-    public List<SubcommandData> getSubcommands()
-    {
+    public List<SubcommandData> getSubcommands() {
         return Collections.unmodifiableList(subcommands);
     }
 
@@ -322,15 +304,17 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData addSubcommands(@Nonnull SubcommandData... subcommands)
-    {
+    public SubcommandGroupData addSubcommands(@Nonnull SubcommandData... subcommands) {
         Checks.noneNull(subcommands, "Subcommand");
-        Checks.check(subcommands.length + this.subcommands.size() <= CommandData.MAX_OPTIONS, "Cannot have more than %d subcommands in one group!", CommandData.MAX_OPTIONS);
+        Checks.check(
+                subcommands.length + this.subcommands.size() <= CommandData.MAX_OPTIONS,
+                "Cannot have more than %d subcommands in one group!",
+                CommandData.MAX_OPTIONS);
         Checks.checkUnique(
-            Stream.concat(getSubcommands().stream(), Arrays.stream(subcommands)).map(SubcommandData::getName),
-            "Cannot have multiple subcommands with the same name. Name: \"%s\" appeared %d times!",
-            (count, value) -> new Object[]{ value, count }
-        );
+                Stream.concat(getSubcommands().stream(), Arrays.stream(subcommands))
+                        .map(SubcommandData::getName),
+                "Cannot have multiple subcommands with the same name. Name: \"%s\" appeared %d times!",
+                (count, value) -> new Object[] {value, count});
         this.subcommands.addAll(Arrays.asList(subcommands));
         return this;
     }
@@ -347,16 +331,14 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
-    {
+    public SubcommandGroupData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands) {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty()
                 .put("type", OptionType.SUB_COMMAND_GROUP.getKey())
                 .put("name", name)
@@ -381,16 +363,13 @@ public class SubcommandGroupData implements SerializableData
      * @return The parsed SubcommandGroupData instance, which can be further configured through setters
      */
     @Nonnull
-    public static SubcommandGroupData fromData(@Nonnull DataObject json)
-    {
+    public static SubcommandGroupData fromData(@Nonnull DataObject json) {
         String name = json.getString("name");
         String description = json.getString("description");
         SubcommandGroupData group = new SubcommandGroupData(name, description);
-        json.optArray("options").ifPresent(arr ->
-                arr.stream(DataArray::getObject)
-                        .map(SubcommandData::fromData)
-                        .forEach(group::addSubcommands)
-        );
+        json.optArray("options").ifPresent(arr -> arr.stream(DataArray::getObject)
+                .map(SubcommandData::fromData)
+                .forEach(group::addSubcommands));
         group.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
         group.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
 
@@ -409,16 +388,12 @@ public class SubcommandGroupData implements SerializableData
      * @return An instance of SubcommandGroupData
      */
     @Nonnull
-    public static SubcommandGroupData fromGroup(@Nonnull Command.SubcommandGroup group)
-    {
+    public static SubcommandGroupData fromGroup(@Nonnull Command.SubcommandGroup group) {
         Checks.notNull(group, "Subcommand Group");
         SubcommandGroupData data = new SubcommandGroupData(group.getName(), group.getDescription());
         data.setNameLocalizations(group.getNameLocalizations().toMap());
         data.setDescriptionLocalizations(group.getDescriptionLocalizations().toMap());
-        group.getSubcommands()
-                .stream()
-                .map(SubcommandData::fromSubcommand)
-                .forEach(data::addSubcommands);
+        group.getSubcommands().stream().map(SubcommandData::fromSubcommand).forEach(data::addSubcommands);
         return data;
     }
 }

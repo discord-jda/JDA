@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
  *
  * <p>This is implemented by {@link IReplyCallback} and {@link IMessageEditCallback}.
  */
-public interface IDeferrableCallback extends Interaction
-{
+public interface IDeferrableCallback extends Interaction {
     /**
      * The {@link InteractionHook} which can be used to send deferred replies or followup messages.
      *

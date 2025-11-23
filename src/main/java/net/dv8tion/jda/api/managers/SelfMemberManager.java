@@ -28,16 +28,15 @@ import javax.annotation.Nullable;
  * @see Guild#getSelfMember()
  * @see SelfUser#getManager()
  */
-public interface SelfMemberManager extends Manager<SelfMemberManager>
-{
+public interface SelfMemberManager extends Manager<SelfMemberManager> {
     /** Used to reset the name field */
     long NICKNAME = 1;
     /** Used to reset the avatar field */
-    long AVATAR   = 1 << 1;
+    long AVATAR = 1 << 1;
     /** Used to reset the banner field */
-    long BANNER   = 1 << 2;
+    long BANNER = 1 << 2;
     /** Used to reset the bio field */
-    long BIO      = 1 << 3;
+    long BIO = 1 << 3;
 
     /**
      * The {@link SelfMember} that will be modified by this SelfMemberManager.
@@ -112,7 +111,6 @@ public interface SelfMemberManager extends Manager<SelfMemberManager>
      *                 the {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE NICKNAME_CHANGE} permission
      *             </li>
      *         </ul>
-     *
      *
      * @return SelfMemberManager for chaining convenience
      */

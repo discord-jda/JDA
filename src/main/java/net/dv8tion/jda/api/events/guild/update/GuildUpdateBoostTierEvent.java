@@ -28,12 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code boost_tier}
  */
-public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.BoostTier>
-{
+public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.BoostTier> {
     public static final String IDENTIFIER = "boost_tier";
 
-    public GuildUpdateBoostTierEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.BoostTier previous)
-    {
+    public GuildUpdateBoostTierEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.BoostTier previous) {
         super(api, responseNumber, guild, previous, guild.getBoostTier(), IDENTIFIER);
     }
 
@@ -43,8 +42,7 @@ public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.Boo
      * @return The old BoostTier
      */
     @Nonnull
-    public Guild.BoostTier getOldBoostTier()
-    {
+    public Guild.BoostTier getOldBoostTier() {
         return getOldValue();
     }
 
@@ -54,22 +52,19 @@ public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.Boo
      * @return The new BoostTier
      */
     @Nonnull
-    public Guild.BoostTier getNewBoostTier()
-    {
+    public Guild.BoostTier getNewBoostTier() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Guild.BoostTier getOldValue()
-    {
+    public Guild.BoostTier getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Guild.BoostTier getNewValue()
-    {
+    public Guild.BoostTier getNewValue() {
         return super.getNewValue();
     }
 }

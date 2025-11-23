@@ -32,8 +32,8 @@ import javax.annotation.Nullable;
  * @param <R>
  *        The action type
  */
-public interface AbstractWebhookMessageAction<T, R extends AbstractWebhookMessageAction<T, R>> extends FluentRestAction<T, R>
-{
+public interface AbstractWebhookMessageAction<T, R extends AbstractWebhookMessageAction<T, R>>
+        extends FluentRestAction<T, R> {
     /**
      * Set the target thread id for the webhook message.
      * <br>This allows sending webhook messages in the target thread,
@@ -72,8 +72,7 @@ public interface AbstractWebhookMessageAction<T, R extends AbstractWebhookMessag
      */
     @Nonnull
     @CheckReturnValue
-    default R setThreadId(long threadId)
-    {
+    default R setThreadId(long threadId) {
         return setThreadId(threadId == 0 ? null : Long.toUnsignedString(threadId));
     }
 
@@ -94,8 +93,7 @@ public interface AbstractWebhookMessageAction<T, R extends AbstractWebhookMessag
      */
     @Nonnull
     @CheckReturnValue
-    default R setThread(@Nullable ThreadChannel channel)
-    {
+    default R setThread(@Nullable ThreadChannel channel) {
         return setThreadId(channel == null ? null : channel.getId());
     }
 }

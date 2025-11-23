@@ -41,12 +41,11 @@ import javax.annotation.Nullable;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
-{
+public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
     public static final String IDENTIFIER = "avatar";
 
-    public UserUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nullable String oldAvatar)
-    {
+    public UserUpdateAvatarEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull User user, @Nullable String oldAvatar) {
         super(api, responseNumber, user, oldAvatar, user.getAvatarId(), IDENTIFIER);
     }
 
@@ -56,8 +55,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      * @return The previous avatar id
      */
     @Nullable
-    public String getOldAvatarId()
-    {
+    public String getOldAvatarId() {
         return getOldValue();
     }
 
@@ -67,9 +65,11 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      * @return The previous avatar url
      */
     @Nullable
-    public String getOldAvatarUrl()
-    {
-        return previous == null ? null : String.format(User.AVATAR_URL, getUser().getId(), previous, previous.startsWith("a_") ? "gif" : "png");
+    public String getOldAvatarUrl() {
+        return previous == null
+                ? null
+                : String.format(
+                        User.AVATAR_URL, getUser().getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -82,9 +82,8 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      * @see    #getOldAvatarUrl()
      */
     @Nullable
-    public ImageProxy getOldAvatar()
-    {
-        final String oldAvatarUrl = getOldAvatarUrl();
+    public ImageProxy getOldAvatar() {
+        String oldAvatarUrl = getOldAvatarUrl();
         return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
     }
 
@@ -94,8 +93,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      * @return The new avatar id
      */
     @Nullable
-    public String getNewAvatarId()
-    {
+    public String getNewAvatarId() {
         return getNewValue();
     }
 
@@ -105,9 +103,10 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      * @return The url of the new avatar
      */
     @Nullable
-    public String getNewAvatarUrl()
-    {
-        return next == null ? null : String.format(User.AVATAR_URL, getUser().getId(), next, next.startsWith("a_") ? "gif" : "png");
+    public String getNewAvatarUrl() {
+        return next == null
+                ? null
+                : String.format(User.AVATAR_URL, getUser().getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -118,9 +117,8 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String>
      * @see    #getNewAvatarUrl()
      */
     @Nullable
-    public ImageProxy getNewAvatar()
-    {
-        final String newAvatarUrl = getNewAvatarUrl();
+    public ImageProxy getNewAvatar() {
+        String newAvatarUrl = getNewAvatarUrl();
         return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);
     }
 }

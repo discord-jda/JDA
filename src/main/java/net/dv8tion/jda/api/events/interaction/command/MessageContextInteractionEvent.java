@@ -35,24 +35,22 @@ import javax.annotation.Nullable;
  * @see MessageContextInteraction
  * @see IReplyCallback
  */
-public class MessageContextInteractionEvent extends GenericContextInteractionEvent<Message> implements MessageContextInteraction
-{
-    public MessageContextInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageContextInteraction interaction)
-    {
+public class MessageContextInteractionEvent extends GenericContextInteractionEvent<Message>
+        implements MessageContextInteraction {
+    public MessageContextInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull MessageContextInteraction interaction) {
         super(api, responseNumber, interaction);
     }
 
     @Nonnull
     @Override
-    public MessageContextInteraction getInteraction()
-    {
+    public MessageContextInteraction getInteraction() {
         return (MessageContextInteraction) super.getInteraction();
     }
 
     @Nullable
     @Override
-    public MessageChannelUnion getChannel()
-    {
+    public MessageChannelUnion getChannel() {
         return (MessageChannelUnion) getInteraction().getChannel();
     }
 }

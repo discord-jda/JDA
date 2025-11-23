@@ -25,14 +25,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.Map;
 
-public class SerializationUtil
-{
+public class SerializationUtil {
     private static final String TRUNCATED_ARRAY = "[…truncated array…]";
     private static final String TRUNCATED_OBJECT = "{…truncated object…}";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static String toShallowJsonString(Object object) throws JsonProcessingException
-    {
+    public static String toShallowJsonString(Object object) throws JsonProcessingException {
         JsonNode root = objectMapper.valueToTree(object);
         JsonNode shallowRoot = pruneOneLevel(root);
         return objectMapper
@@ -41,35 +39,30 @@ public class SerializationUtil
                 .writeValueAsString(shallowRoot);
     }
 
-    private static JsonNode pruneOneLevel(JsonNode n)
-    {
-        if (n.isObject())
-        {
+    private static JsonNode pruneOneLevel(JsonNode n) {
+        if (n.isObject()) {
             ObjectNode out = objectMapper.createObjectNode();
-            for (Map.Entry<String, JsonNode> e : n.properties())
-            {
+            for (Map.Entry<String, JsonNode> e : n.properties()) {
                 JsonNode v = e.getValue();
-                if (v.isValueNode())
+                if (v.isValueNode()) {
                     out.set(e.getKey(), v);
-                else if (v.isArray())
+                } else if (v.isArray()) {
                     out.put(e.getKey(), TRUNCATED_ARRAY);
-                else
+                } else {
                     out.put(e.getKey(), TRUNCATED_OBJECT);
+                }
             }
             return out;
-        }
-        else if (n.isArray())
-        {
+        } else if (n.isArray()) {
             ArrayNode out = objectMapper.createArrayNode();
-            n.values().forEachRemaining(v ->
-            {
-                if (v.isValueNode())
+            n.values().forEachRemaining(v -> {
+                if (v.isValueNode()) {
                     out.add(v);
-                else if (v.isArray())
+                } else if (v.isArray()) {
                     out.add(TRUNCATED_ARRAY);
-                else
+                } else {
                     out.add(TRUNCATED_OBJECT);
-
+                }
             });
             return out;
         }

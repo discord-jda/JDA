@@ -33,41 +33,33 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> extends
-        IWebhookContainer,
-        IWebhookContainerUnion,
-        GuildChannelMixin<T>
-{
+import javax.annotation.Nonnull;
+
+public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>>
+        extends IWebhookContainer, IWebhookContainerUnion, GuildChannelMixin<T> {
     // ---- Default implementations of interface ----
     @Nonnull
     @Override
-    default RestAction<List<Webhook>> retrieveWebhooks()
-    {
+    default RestAction<List<Webhook>> retrieveWebhooks() {
         checkAttached();
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
         JDAImpl jda = (JDAImpl) getJDA();
-        return new RestActionImpl<>(jda, route, (response, request) ->
-        {
+        return new RestActionImpl<>(jda, route, (response, request) -> {
             DataArray array = response.getArray();
             List<Webhook> webhooks = new ArrayList<>(array.length());
             EntityBuilder builder = jda.getEntityBuilder();
 
-            for (int i = 0; i < array.length(); i++)
-            {
-                try
-                {
+            for (int i = 0; i < array.length(); i++) {
+                try {
                     webhooks.add(builder.createWebhook(array.getObject(i)));
-                }
-                catch (UncheckedIOException | NullPointerException e)
-                {
+                } catch (UncheckedIOException | NullPointerException e) {
                     JDAImpl.LOG.error("Error while creating websocket from json", e);
                 }
             }
@@ -78,8 +70,7 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> ext
 
     @Nonnull
     @Override
-    default WebhookAction createWebhook(@Nonnull String name)
-    {
+    default WebhookAction createWebhook(@Nonnull String name) {
         Checks.notBlank(name, "Webhook name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
@@ -93,8 +84,7 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> ext
 
     @Nonnull
     @Override
-    default AuditableRestAction<Void> deleteWebhookById(@Nonnull String id)
-    {
+    default AuditableRestAction<Void> deleteWebhookById(@Nonnull String id) {
         Checks.isSnowflake(id, "Webhook ID");
 
         checkAttached();

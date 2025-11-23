@@ -23,53 +23,44 @@ import net.dv8tion.jda.api.components.tree.ModalComponentTree;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public class ModalComponentTreeImpl
-        extends AbstractComponentTree<ModalTopLevelComponentUnion>
-        implements ModalComponentTree
-{
-    private ModalComponentTreeImpl(Collection<ModalTopLevelComponentUnion> components)
-    {
+import javax.annotation.Nonnull;
+
+public class ModalComponentTreeImpl extends AbstractComponentTree<ModalTopLevelComponentUnion>
+        implements ModalComponentTree {
+    private ModalComponentTreeImpl(Collection<ModalTopLevelComponentUnion> components) {
         super(components);
     }
 
     @Nonnull
-    public static ModalComponentTree of(@Nonnull Collection<? extends ModalTopLevelComponent> components)
-    {
+    public static ModalComponentTree of(@Nonnull Collection<? extends ModalTopLevelComponent> components) {
         Checks.notEmpty(components, "Components");
         Checks.noneNull(components, "Components");
 
         // Allow unknown components so [[Modal#getComponentTree]] works
-        final Collection<ModalTopLevelComponentUnion> componentUnions = ComponentsUtil.membersToUnionWithUnknownType(components, ModalTopLevelComponentUnion.class);
+        Collection<ModalTopLevelComponentUnion> componentUnions =
+                ComponentsUtil.membersToUnionWithUnknownType(components, ModalTopLevelComponentUnion.class);
         return new ModalComponentTreeImpl(componentUnions);
     }
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.MODAL;
     }
 
     @Nonnull
     @Override
-    public ModalComponentTree replace(@Nonnull ComponentReplacer replacer)
-    {
+    public ModalComponentTree replace(@Nonnull ComponentReplacer replacer) {
         Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(
-                ModalTopLevelComponent.class,
-                components,
-                replacer,
-                ModalComponentTreeImpl::new
-        );
+                ModalTopLevelComponent.class, components, replacer, ModalComponentTreeImpl::new);
     }
 
     @Nonnull
     @Override
-    public ModalComponentTree withDisabled(boolean disabled)
-    {
+    public ModalComponentTree withDisabled(boolean disabled) {
         return (ModalComponentTree) super.withDisabled(disabled);
     }
 }

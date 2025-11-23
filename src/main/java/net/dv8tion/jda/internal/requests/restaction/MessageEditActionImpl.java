@@ -37,12 +37,13 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 
-public class MessageEditActionImpl extends RestActionImpl<Message> implements MessageEditAction, MessageEditBuilderMixin<MessageEditAction>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class MessageEditActionImpl extends RestActionImpl<Message>
+        implements MessageEditAction, MessageEditBuilderMixin<MessageEditAction> {
     private final String messageId;
     private final Guild guild;
     private final MessageChannel channel;
@@ -50,44 +51,42 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     private WebhookClient<Message> webhook;
     private String threadId;
 
-    public MessageEditActionImpl(@Nonnull JDA jda, @Nullable Guild guild, @Nonnull String channelId, @Nonnull String messageId)
-    {
+    public MessageEditActionImpl(
+            @Nonnull JDA jda, @Nullable Guild guild, @Nonnull String channelId, @Nonnull String messageId) {
         super(jda, Route.Messages.EDIT_MESSAGE.compile(channelId, messageId));
         this.channel = null;
         this.guild = guild;
         this.messageId = messageId;
     }
 
-    public MessageEditActionImpl(@Nonnull MessageChannel channel, @Nonnull String messageId)
-    {
+    public MessageEditActionImpl(@Nonnull MessageChannel channel, @Nonnull String messageId) {
         super(channel.getJDA(), Route.Messages.EDIT_MESSAGE.compile(channel.getId(), messageId));
         this.channel = channel;
         this.guild = channel instanceof GuildChannel ? ((GuildChannel) channel).getGuild() : null;
         this.messageId = messageId;
     }
 
-    public MessageEditActionImpl withHook(WebhookClient<Message> hook, ChannelType channelType, long channelId)
-    {
+    public MessageEditActionImpl withHook(WebhookClient<Message> hook, ChannelType channelType, long channelId) {
         this.webhook = hook;
-        if (!(hook instanceof InteractionHook) && channelType.isThread())
+        if (!(hook instanceof InteractionHook) && channelType.isThread()) {
             this.threadId = Long.toUnsignedString(channelId);
+        }
         return this;
     }
 
     @Override
-    public MessageEditBuilder getBuilder()
-    {
+    public MessageEditBuilder getBuilder() {
         return builder;
     }
 
     @Override
-    protected Route.CompiledRoute finalizeRoute()
-    {
-        if (webhook != null && (!(webhook instanceof InteractionHook) || !((InteractionHook) webhook).isExpired()))
-        {
-            Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), messageId);
-            if (this.threadId != null)
+    protected Route.CompiledRoute finalizeRoute() {
+        if (webhook != null && (!(webhook instanceof InteractionHook) || !((InteractionHook) webhook).isExpired())) {
+            Route.CompiledRoute route =
+                    Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), messageId);
+            if (this.threadId != null) {
                 route = route.withQueryParams("thread_id", threadId);
+            }
 
             return route;
         }
@@ -96,17 +95,14 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
-        try (MessageEditData data = builder.build())
-        {
+    protected RequestBody finalizeData() {
+        try (MessageEditData data = builder.build()) {
             return getMultipartBody(data.getAllDistinctFiles(), data.toData());
         }
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Message> request)
-    {
+    protected void handleSuccess(Response response, Request<Message> request) {
         EntityBuilder entityBuilder = api.getEntityBuilder();
         DataObject json = response.getObject();
         ReceivedMessage message = entityBuilder.createMessageBestEffort(json, channel, guild);
@@ -115,15 +111,13 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
 
     @Nonnull
     @Override
-    public MessageEditAction setCheck(BooleanSupplier checks)
-    {
+    public MessageEditAction setCheck(BooleanSupplier checks) {
         return (MessageEditAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public MessageEditAction deadline(long timestamp)
-    {
+    public MessageEditAction deadline(long timestamp) {
         return (MessageEditAction) super.deadline(timestamp);
     }
 }

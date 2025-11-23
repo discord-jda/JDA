@@ -29,18 +29,16 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 
 public interface ForumChannelMixin<T extends ForumChannelMixin<T>>
-    extends ForumChannel,
-        StandardGuildChannelMixin<T>,
-        IAgeRestrictedChannelMixin<T>,
-        ISlowmodeChannelMixin<T>,
-        IWebhookContainerMixin<T>,
-        IPostContainerMixin<T>,
-        ITopicChannelMixin<T>
-{
+        extends ForumChannel,
+                StandardGuildChannelMixin<T>,
+                IAgeRestrictedChannelMixin<T>,
+                ISlowmodeChannelMixin<T>,
+                IWebhookContainerMixin<T>,
+                IPostContainerMixin<T>,
+                ITopicChannelMixin<T> {
     @Nonnull
     @Override
-    default ChannelAction<ForumChannel> createCopy(@Nonnull Guild guild)
-    {
+    default ChannelAction<ForumChannel> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
         ChannelAction<ForumChannel> action = guild.createForumChannel(getName())
                 .setNSFW(isNSFW())
@@ -48,22 +46,24 @@ public interface ForumChannelMixin<T extends ForumChannelMixin<T>>
                 .setSlowmode(getSlowmode())
                 .setAvailableTags(getAvailableTags())
                 .setDefaultLayout(getDefaultLayout());
-        if (getRawSortOrder() != -1)
+        if (getRawSortOrder() != -1) {
             action.setDefaultSortOrder(SortOrder.fromKey(getRawSortOrder()));
-        if (getDefaultReaction() instanceof UnicodeEmoji)
+        }
+        if (getDefaultReaction() instanceof UnicodeEmoji) {
             action.setDefaultReaction(getDefaultReaction());
-        if (guild.equals(getGuild()))
-        {
+        }
+        if (guild.equals(getGuild())) {
             Category parent = getParentCategory();
             action.setDefaultReaction(getDefaultReaction());
-            if (parent != null)
+            if (parent != null) {
                 action.setParent(parent);
-            for (PermissionOverride o : getPermissionOverrideMap().valueCollection())
-            {
-                if (o.isMemberOverride())
+            }
+            for (PermissionOverride o : getPermissionOverrideMap().valueCollection()) {
+                if (o.isMemberOverride()) {
                     action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
+                } else {
                     action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+                }
             }
         }
         return action;

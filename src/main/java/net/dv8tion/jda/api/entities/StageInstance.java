@@ -22,17 +22,17 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.List;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * A Stage Instance holds information about a live stage.
  *
  * <p>This instance indicates an active stage channel with speakers, usually to host events such as presentations or meetings.
  */
-public interface StageInstance extends ISnowflake
-{
+public interface StageInstance extends ISnowflake {
     /**
      * The {@link Guild} this stage instance is in
      *
@@ -79,11 +79,11 @@ public interface StageInstance extends ISnowflake
      */
     @Nonnull
     @Unmodifiable
-    default List<Member> getSpeakers()
-    {
-        return getChannel().getMembers()
-                .stream()
-                .filter(member -> !member.getVoiceState().isSuppressed()) // voice states should not be null since getMembers() checks only for connected members in the channel
+    default List<Member> getSpeakers() {
+        return getChannel().getMembers().stream()
+                // voice states should not be null
+                // since getMembers() checks only for connected members in the channel
+                .filter(member -> !member.getVoiceState().isSuppressed())
                 .collect(Helpers.toUnmodifiableList());
     }
 
@@ -101,11 +101,11 @@ public interface StageInstance extends ISnowflake
      */
     @Nonnull
     @Unmodifiable
-    default List<Member> getAudience()
-    {
-        return getChannel().getMembers()
-                .stream()
-                .filter(member -> member.getVoiceState().isSuppressed()) // voice states should not be null since getMembers() checks only for connected members in the channel
+    default List<Member> getAudience() {
+        return getChannel().getMembers().stream()
+                // voice states should not be null
+                // since getMembers() checks only for connected members in the channel
+                .filter(member -> member.getVoiceState().isSuppressed())
                 .collect(Helpers.toUnmodifiableList());
     }
 
@@ -149,8 +149,7 @@ public interface StageInstance extends ISnowflake
      *
      * <p>This indicates from where people can join the stage instance.
      */
-    enum PrivacyLevel
-    {
+    enum PrivacyLevel {
         /** Placeholder for future privacy levels, indicates that this version of JDA does not support this privacy level yet */
         UNKNOWN(-1),
         /** This stage instance can only be accessed by guild members */
@@ -158,8 +157,7 @@ public interface StageInstance extends ISnowflake
 
         private final int key;
 
-        PrivacyLevel(int key)
-        {
+        PrivacyLevel(int key) {
             this.key = key;
         }
 
@@ -168,8 +166,7 @@ public interface StageInstance extends ISnowflake
          *
          * @return The raw API value or {@code -1} if this is {@link #UNKNOWN}
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -182,12 +179,11 @@ public interface StageInstance extends ISnowflake
          * @return The enum value or {@link #UNKNOWN}
          */
         @Nonnull
-        public static PrivacyLevel fromKey(int key)
-        {
-            for (PrivacyLevel level : values())
-            {
-                if (level.key == key)
+        public static PrivacyLevel fromKey(int key) {
+            for (PrivacyLevel level : values()) {
+                if (level.key == key) {
                     return level;
+                }
             }
             return UNKNOWN;
         }

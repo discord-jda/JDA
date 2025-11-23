@@ -30,12 +30,11 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code safety_alerts_channel}
  */
-public class GuildUpdateSafetyAlertsChannelEvent extends GenericGuildUpdateEvent<TextChannel>
-{
+public class GuildUpdateSafetyAlertsChannelEvent extends GenericGuildUpdateEvent<TextChannel> {
     public static final String IDENTIFIER = "safety_alerts_channel";
 
-    public GuildUpdateSafetyAlertsChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldSafetyAlertsChannel)
-    {
+    public GuildUpdateSafetyAlertsChannelEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable TextChannel oldSafetyAlertsChannel) {
         super(api, responseNumber, guild, oldSafetyAlertsChannel, guild.getSafetyAlertsChannel(), IDENTIFIER);
     }
 
@@ -45,8 +44,7 @@ public class GuildUpdateSafetyAlertsChannelEvent extends GenericGuildUpdateEvent
      * @return The previous safety alert channel
      */
     @Nullable
-    public TextChannel getOldSafetyAlertsChannel()
-    {
+    public TextChannel getOldSafetyAlertsChannel() {
         return getOldValue();
     }
 
@@ -56,8 +54,7 @@ public class GuildUpdateSafetyAlertsChannelEvent extends GenericGuildUpdateEvent
      * @return The new safety alert channel
      */
     @Nullable
-    public TextChannel getNewSafetyAlertsChannel()
-    {
+    public TextChannel getNewSafetyAlertsChannel() {
         return getNewValue();
     }
 }

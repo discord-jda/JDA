@@ -18,18 +18,19 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
+
+import javax.annotation.Nonnull;
 
 /**
  * Utility to strategically split strings.
  *
  * <p><b>Example</b>
  *
- * <pre>{@code
+ * {@snippet lang="java":
  * // Given some arbitrary input string
  * String input = "Hello World";
  *
@@ -43,11 +44,11 @@ import java.util.function.Predicate;
  *
  * // ["Hello World"]
  * SplitUtil.split(input, 50, true, Strategy.SPACE);
- * }</pre>
+ * }
  *
  * <p>In a more applied use-case, you can also define a smaller limit so it can fit into codeblocks of a message:
  *
- * <pre>{@code
+ * {@snippet lang="java":
  * public List<String> getRoleNames(Guild guild)
  * {
  *    // Create a newline separated list of role names from the guild
@@ -65,13 +66,12 @@ import java.util.function.Predicate;
  *                 .map(block -> "```\n" + block + "```")
  *                 .collect(Collectors.toList());
  * }
- * }</pre>
+ * }
  *
  * @see #split(String, int, Strategy...)
  * @see #split(String, int, boolean, Strategy...)
  */
-public class SplitUtil
-{
+public class SplitUtil {
     /**
      * Apply a list of {@link Strategy Strategies} to split the provided string into chunks of a maximum {@code limit} characters.
      * <br>The substring chunks will not be trimmed of whitespace, you can use {@link #split(String, int, boolean, Strategy...)} to trim them.
@@ -100,8 +100,7 @@ public class SplitUtil
      * @see    Strategy#WHITESPACE
      */
     @Nonnull
-    public static List<String> split(@Nonnull String input, int limit, @Nonnull Strategy... strategies)
-    {
+    public static List<String> split(@Nonnull String input, int limit, @Nonnull Strategy... strategies) {
         return split(input, limit, false, strategies);
     }
 
@@ -134,32 +133,27 @@ public class SplitUtil
      * @see    Strategy#WHITESPACE
      */
     @Nonnull
-    public static List<String> split(@Nonnull String input, int limit, boolean trim, @Nonnull Strategy... strategies)
-    {
+    public static List<String> split(@Nonnull String input, int limit, boolean trim, @Nonnull Strategy... strategies) {
         Checks.notNull(input, "Input string");
-        if (input.isEmpty() || input.length() <= limit)
+        if (input.isEmpty() || input.length() <= limit) {
             return Collections.singletonList(input);
-        if (strategies.length == 0)
-            strategies = new Strategy[] { Strategy.ANYWHERE };
+        }
+        if (strategies.length == 0) {
+            strategies = new Strategy[] {Strategy.ANYWHERE};
+        }
         int offset = 0;
         List<String> chunks = new LinkedList<>();
 
-        while (offset < input.length())
-        {
+        while (offset < input.length()) {
             String chunk = null;
 
-            if (input.length() - offset <= limit)
-            {
+            if (input.length() - offset <= limit) {
                 chunk = input.substring(offset);
                 offset = input.length();
-            }
-            else
-            {
-                for (Strategy strategy : strategies)
-                {
+            } else {
+                for (Strategy strategy : strategies) {
                     int newOffset = strategy.apply(input, offset, limit);
-                    if (newOffset > offset)
-                    {
+                    if (newOffset > offset) {
                         newOffset = Math.min(newOffset, input.length());
                         chunk = input.substring(offset, newOffset);
                         offset = newOffset;
@@ -168,12 +162,16 @@ public class SplitUtil
                 }
             }
 
-            if (chunk == null)
-                throw new IllegalStateException("None of the strategies successfully split the string. Try adding Strategy.ANYWHERE to the end of your strategy list.");
-            if (trim)
+            if (chunk == null) {
+                throw new IllegalStateException(
+                        "None of the strategies successfully split the string. Try adding Strategy.ANYWHERE to the end of your strategy list.");
+            }
+            if (trim) {
                 chunk = chunk.trim();
-            if (chunk.isEmpty())
+            }
+            if (chunk.isEmpty()) {
                 continue;
+            }
             chunks.add(chunk);
         }
 
@@ -187,8 +185,7 @@ public class SplitUtil
      * @see #NEWLINE
      * @see #WHITESPACE
      */
-    public interface Strategy
-    {
+    public interface Strategy {
         /**
          * Implements a splitting strategy.
          *
@@ -234,8 +231,7 @@ public class SplitUtil
          * @return The strategy to split on that character
          */
         @Nonnull
-        static Strategy onChar(char c)
-        {
+        static Strategy onChar(char c) {
             return (string, offset, limit) -> string.lastIndexOf(c, offset + limit);
         }
 
@@ -251,15 +247,13 @@ public class SplitUtil
          * @return The strategy to split on characters that pass the test
          */
         @Nonnull
-        static Strategy onChar(@Nonnull Predicate<Character> predicate)
-        {
+        static Strategy onChar(@Nonnull Predicate<Character> predicate) {
             Checks.notNull(predicate, "Predicate");
-            return (string, offset, limit) ->
-            {
-                for (int i = offset + limit; i > offset; i--)
-                {
-                    if (predicate.test(string.charAt(i)))
+            return (string, offset, limit) -> {
+                for (int i = offset + limit; i > offset; i--) {
+                    if (predicate.test(string.charAt(i))) {
                         return i;
+                    }
                 }
                 return -1;
             };

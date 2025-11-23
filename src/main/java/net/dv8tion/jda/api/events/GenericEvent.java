@@ -27,8 +27,7 @@ import javax.annotation.Nullable;
  *
  * @see net.dv8tion.jda.api.hooks.EventListener#onEvent(GenericEvent)
  */
-public interface GenericEvent
-{
+public interface GenericEvent {
     /**
      * The current JDA instance corresponding to this Event
      *

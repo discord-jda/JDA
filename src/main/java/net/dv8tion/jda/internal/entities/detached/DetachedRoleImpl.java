@@ -34,13 +34,13 @@ import net.dv8tion.jda.internal.entities.mixin.RoleMixin;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.EnumSet;
 
-public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
-{
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
     private final long id;
     private final JDAImpl api;
     private final DetachedGuildImpl guild;
@@ -55,8 +55,7 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
     private int rawPosition;
     private RoleIcon icon;
 
-    public DetachedRoleImpl(long id, DetachedGuildImpl guild)
-    {
+    public DetachedRoleImpl(long id, DetachedGuildImpl guild) {
         this.id = id;
         this.api = guild.getJDA();
         this.guild = guild;
@@ -64,283 +63,244 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
     }
 
     @Override
-    public boolean isDetached()
-    {
+    public boolean isDetached() {
         return true;
     }
 
     @Override
-    public int getPosition()
-    {
-        throw new DetachedEntityException("Cannot get the position of a detached role, only the raw position is available");
+    public int getPosition() {
+        throw new DetachedEntityException(
+                "Cannot get the position of a detached role, only the raw position is available");
     }
 
     @Override
-    public int getPositionRaw()
-    {
+    public int getPositionRaw() {
         return rawPosition;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public boolean isManaged()
-    {
+    public boolean isManaged() {
         return managed;
     }
 
     @Override
-    public boolean isHoisted()
-    {
+    public boolean isHoisted() {
         return hoisted;
     }
 
     @Override
-    public boolean isMentionable()
-    {
+    public boolean isMentionable() {
         return mentionable;
     }
 
     @Override
-    public long getPermissionsRaw()
-    {
+    public long getPermissionsRaw() {
         return rawPermissions;
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions()
-    {
+    public EnumSet<Permission> getPermissions() {
         return Permission.getPermissions(rawPermissions);
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
-    {
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel) {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit()
-    {
+    public EnumSet<Permission> getPermissionsExplicit() {
         return getPermissions();
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
-    {
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel) {
         throw detachedException();
     }
 
     @Override
-    public Color getColor()
-    {
+    public Color getColor() {
         return color != Role.DEFAULT_COLOR_RAW ? new Color(color) : null;
     }
 
     @Override
-    public int getColorRaw()
-    {
+    public int getColorRaw() {
         return color;
     }
 
     @Override
-    public boolean isPublicRole()
-    {
+    public boolean isPublicRole() {
         return getIdLong() == this.getGuild().getIdLong();
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Permission... permissions)
-    {
+    public boolean hasPermission(@Nonnull Permission... permissions) {
         long effectivePerms = rawPermissions;
-        for (Permission perm : permissions)
-        {
-            final long rawValue = perm.getRawValue();
-            if ((effectivePerms & rawValue) != rawValue)
+        for (Permission perm : permissions) {
+            long rawValue = perm.getRawValue();
+            if ((effectivePerms & rawValue) != rawValue) {
                 return false;
+            }
         }
         return true;
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
-    {
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
         throw detachedException();
     }
 
     @Override
-    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource)
-    {
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource) {
         throw detachedException();
     }
 
     @Override
-    public boolean canSync(@Nonnull IPermissionContainer channel)
-    {
+    public boolean canSync(@Nonnull IPermissionContainer channel) {
         throw detachedException();
     }
 
     @Override
-    public boolean canInteract(@Nonnull Role role)
-    {
+    public boolean canInteract(@Nonnull Role role) {
         // Works, depends on compareTo
         return PermissionUtil.canInteract(this, role);
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Nonnull
     @Override
-    public RoleManager getManager()
-    {
+    public RoleManager getManager() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
-    {
+    public AuditableRestAction<Void> delete() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public RoleTags getTags()
-    {
+    public RoleTags getTags() {
         return tags == null ? RoleTagsImpl.EMPTY : tags;
     }
 
     @Nullable
     @Override
-    public RoleIcon getIcon()
-    {
+    public RoleIcon getIcon() {
         return icon;
     }
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
+    public String getAsMention() {
         return isPublicRole() ? "@everyone" : "<@&" + getId() + '>';
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this)
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
-        if (!(o instanceof DetachedRoleImpl))
+        }
+        if (!(o instanceof DetachedRoleImpl)) {
             return false;
+        }
         DetachedRoleImpl oRole = (DetachedRoleImpl) o;
         return this.getIdLong() == oRole.getIdLong();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setName(getName())
-                .toString();
+    public String toString() {
+        return new EntityString(this).setName(getName()).toString();
     }
 
     // -- Setters --
 
     @Override
-    public DetachedRoleImpl setName(String name)
-    {
+    public DetachedRoleImpl setName(String name) {
         this.name = name;
         return this;
     }
 
     @Override
-    public DetachedRoleImpl setColor(int color)
-    {
+    public DetachedRoleImpl setColor(int color) {
         this.color = color;
         return this;
     }
 
     @Override
-    public DetachedRoleImpl setManaged(boolean managed)
-    {
+    public DetachedRoleImpl setManaged(boolean managed) {
         this.managed = managed;
         return this;
     }
 
     @Override
-    public DetachedRoleImpl setHoisted(boolean hoisted)
-    {
+    public DetachedRoleImpl setHoisted(boolean hoisted) {
         this.hoisted = hoisted;
         return this;
     }
 
     @Override
-    public DetachedRoleImpl setMentionable(boolean mentionable)
-    {
+    public DetachedRoleImpl setMentionable(boolean mentionable) {
         this.mentionable = mentionable;
         return this;
     }
 
     @Override
-    public DetachedRoleImpl setRawPermissions(long rawPermissions)
-    {
+    public DetachedRoleImpl setRawPermissions(long rawPermissions) {
         this.rawPermissions = rawPermissions;
         return this;
     }
 
     @Override
-    public DetachedRoleImpl setRawPosition(int rawPosition)
-    {
+    public DetachedRoleImpl setRawPosition(int rawPosition) {
         this.rawPosition = rawPosition;
         return this;
     }
 
     @Override
-    public DetachedRoleImpl setTags(DataObject tags)
-    {
-        if (this.tags == null)
+    public DetachedRoleImpl setTags(DataObject tags) {
+        if (this.tags == null) {
             return this;
+        }
         this.tags = new RoleTagsImpl(tags);
         return this;
     }
 
     @Override
-    public DetachedRoleImpl setIcon(RoleIcon icon)
-    {
+    public DetachedRoleImpl setIcon(RoleIcon icon) {
         this.icon = icon;
         return this;
     }
-
 }

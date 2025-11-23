@@ -23,96 +23,86 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 @SuppressWarnings("unchecked")
-public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> extends AbstractMessageBuilderMixin<R, MessageCreateBuilder>, MessageCreateRequest<R>
-{
+public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>>
+        extends AbstractMessageBuilderMixin<R, MessageCreateBuilder>, MessageCreateRequest<R> {
     @Nonnull
     @Override
-    default R addContent(@Nonnull String content)
-    {
+    default R addContent(@Nonnull String content) {
         getBuilder().addContent(content);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default R addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         getBuilder().addEmbeds(embeds);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
-    {
+    default R addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components) {
         getBuilder().addComponents(components);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R addFiles(@Nonnull Collection<? extends FileUpload> files)
-    {
+    default R addFiles(@Nonnull Collection<? extends FileUpload> files) {
         getBuilder().addFiles(files);
         return (R) this;
     }
 
     @Nullable
     @Override
-    default MessagePollData getPoll()
-    {
+    default MessagePollData getPoll() {
         return getBuilder().getPoll();
     }
 
     @Nonnull
     @Override
-    default R setPoll(@Nullable MessagePollData poll)
-    {
+    default R setPoll(@Nullable MessagePollData poll) {
         getBuilder().setPoll(poll);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R setTTS(boolean tts)
-    {
+    default R setTTS(boolean tts) {
         getBuilder().setTTS(tts);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R setFiles(@Nullable Collection<? extends FileUpload> files)
-    {
+    default R setFiles(@Nullable Collection<? extends FileUpload> files) {
         getBuilder().setFiles(files);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default List<FileUpload> getAttachments()
-    {
+    default List<FileUpload> getAttachments() {
         return getBuilder().getAttachments();
     }
 
     @Nonnull
     @Override
-    default R setSuppressedNotifications(boolean suppressed)
-    {
+    default R setSuppressedNotifications(boolean suppressed) {
         getBuilder().setSuppressedNotifications(suppressed);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R setVoiceMessage(boolean voiceMessage)
-    {
+    default R setVoiceMessage(boolean voiceMessage) {
         getBuilder().setVoiceMessage(voiceMessage);
         return (R) this;
     }

@@ -30,12 +30,10 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code icon}
  */
-public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
-{
+public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon> {
     public static final String IDENTIFIER = "icon";
 
-    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nullable RoleIcon oldIcon)
-    {
+    public RoleUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nullable RoleIcon oldIcon) {
         super(api, responseNumber, role, oldIcon, role.getIcon(), IDENTIFIER);
     }
 
@@ -45,8 +43,7 @@ public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
      * @return The old icon
      */
     @Nullable
-    public RoleIcon getOldIcon()
-    {
+    public RoleIcon getOldIcon() {
         return getOldValue();
     }
 
@@ -56,8 +53,7 @@ public class RoleUpdateIconEvent extends GenericRoleUpdateEvent<RoleIcon>
      * @return The new icon
      */
     @Nullable
-    public RoleIcon getNewIcon()
-    {
+    public RoleIcon getNewIcon() {
         return getNewValue();
     }
 }

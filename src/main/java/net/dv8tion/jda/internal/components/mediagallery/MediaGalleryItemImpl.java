@@ -28,37 +28,33 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents either an external link, an attachment:// link, or an existing item (which is also a link)
  */
-public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixin, SerializableData
-{
+public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixin, SerializableData {
     private final String url, description;
     private final ResolvedMedia media;
     private final boolean spoiler;
 
-    public MediaGalleryItemImpl(DataObject obj)
-    {
+    public MediaGalleryItemImpl(DataObject obj) {
         this(
                 obj.getObject("media").getString("url"),
                 obj.getString("description", null),
                 new ResolvedMediaImpl(obj.getObject("media")),
-                obj.getBoolean("spoiler", false)
-        );
+                obj.getBoolean("spoiler", false));
     }
 
-    public MediaGalleryItemImpl(String url)
-    {
+    public MediaGalleryItemImpl(String url) {
         this(url, null, null, false);
     }
 
-    public MediaGalleryItemImpl(String url, String description, ResolvedMedia media, boolean spoiler)
-    {
+    public MediaGalleryItemImpl(String url, String description, ResolvedMedia media, boolean spoiler) {
         this.url = url;
         this.media = media;
         this.description = description;
@@ -67,10 +63,8 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
 
     @Nonnull
     @Override
-    public MediaGalleryItem withDescription(@Nullable String description)
-    {
-        if (description != null)
-        {
+    public MediaGalleryItem withDescription(@Nullable String description) {
+        if (description != null) {
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
         }
@@ -79,53 +73,47 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
 
     @Nonnull
     @Override
-    public MediaGalleryItem withSpoiler(boolean spoiler)
-    {
+    public MediaGalleryItem withSpoiler(boolean spoiler) {
         return new MediaGalleryItemImpl(url, description, media, spoiler);
     }
 
     @Nonnull
     @Override
-    public String getUrl()
-    {
+    public String getUrl() {
         return url;
     }
 
     @Nullable
     @Override
-    public ResolvedMedia getResolvedMedia()
-    {
+    public ResolvedMedia getResolvedMedia() {
         return media;
     }
 
     @Override
-    public Stream<FileUpload> getFiles()
-    {
+    public Stream<FileUpload> getFiles() {
         return ComponentsUtil.getFilesFromMedia(media);
     }
 
     @Nullable
     @Override
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
     @Override
-    public boolean isSpoiler()
-    {
+    public boolean isSpoiler() {
         return spoiler;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
-        final String outputUrl;
-        if (media != null) // Retain or reupload the entire file, both cases uses attachment://
+    public DataObject toData() {
+        String outputUrl;
+        if (media != null) { // Retain or reupload the entire file, both cases uses attachment://
             outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
-        else // External URL or user-managed attachment
+        } else { // External URL or user-managed attachment
             outputUrl = url;
+        }
         return DataObject.empty()
                 .put("media", DataObject.empty().put("url", outputUrl))
                 .put("description", description)
@@ -133,23 +121,26 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this) return true;
-        if (!(o instanceof MediaGalleryItemImpl)) return false;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof MediaGalleryItemImpl)) {
+            return false;
+        }
         MediaGalleryItemImpl that = (MediaGalleryItemImpl) o;
-        return spoiler == that.spoiler && Objects.equals(url, that.url) && Objects.equals(description, that.description);
+        return spoiler == that.spoiler
+                && Objects.equals(url, that.url)
+                && Objects.equals(description, that.description);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(url, description, spoiler);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new EntityString(this)
                 .addMetadata("url", url)
                 .addMetadata("media", media)

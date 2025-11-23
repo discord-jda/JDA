@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  * Manager providing functionality common for all {@link net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel StandardGuildMessageChannels}.
  *
  * <p><b>Example</b>
- * <pre>{@code
+ * {@snippet lang="java":
  * manager.setName("help")
  *        .setTopic("Java is to Javascript as ham is to hamster")
  *        .queue();
@@ -36,14 +36,14 @@ import javax.annotation.Nullable;
  *        .setTopic("nsfw-commits")
  *        .setNSFW(true)
  *        .queue();
- * }</pre>
+ * }
  *
  * @see StandardGuildMessageChannel#getManager()
  */
-public interface StandardGuildMessageChannelManager<T extends StandardGuildMessageChannel, M extends StandardGuildMessageChannelManager<T, M>>
-        extends StandardGuildChannelManager<T, M>, IAgeRestrictedChannelManager<T, M>, IThreadContainerManager<T, M>
-{
-     /**
+public interface StandardGuildMessageChannelManager<
+                T extends StandardGuildMessageChannel, M extends StandardGuildMessageChannelManager<T, M>>
+        extends StandardGuildChannelManager<T, M>, IAgeRestrictedChannelManager<T, M>, IThreadContainerManager<T, M> {
+    /**
      * Sets the <b><u>topic</u></b> of the selected {@link StandardGuildMessageChannel channel}.
      *
      * @param  topic

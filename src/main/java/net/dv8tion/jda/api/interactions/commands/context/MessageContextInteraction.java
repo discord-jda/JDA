@@ -26,12 +26,10 @@ import javax.annotation.Nullable;
 /**
  * Interaction with a message context menu command
  */
-public interface MessageContextInteraction extends ContextInteraction<Message>
-{
+public interface MessageContextInteraction extends ContextInteraction<Message> {
     @Nonnull
     @Override
-    default ContextTarget getTargetType()
-    {
+    default ContextTarget getTargetType() {
         return ContextTarget.MESSAGE;
     }
 
@@ -41,8 +39,7 @@ public interface MessageContextInteraction extends ContextInteraction<Message>
 
     @Nonnull
     @Override
-    default GuildMessageChannelUnion getGuildChannel()
-    {
+    default GuildMessageChannelUnion getGuildChannel() {
         return (GuildMessageChannelUnion) ContextInteraction.super.getGuildChannel();
     }
 }

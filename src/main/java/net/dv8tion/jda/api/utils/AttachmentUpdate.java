@@ -23,21 +23,20 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import okhttp3.MultipartBody;
 
+import java.util.Objects;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 /**
  * Represents existing message attachment.
  * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
  */
-public class AttachmentUpdate implements AttachedFile, ISnowflake
-{
+public class AttachmentUpdate implements AttachedFile, ISnowflake {
     private final long id;
     private final String name;
 
-    protected AttachmentUpdate(long id, String name)
-    {
+    protected AttachmentUpdate(long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -52,8 +51,7 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
      * @return {@link AttachmentUpdate}
      */
     @Nonnull
-    public static AttachmentUpdate fromAttachment(long id)
-    {
+    public static AttachmentUpdate fromAttachment(long id) {
         return new AttachmentUpdate(id, null);
     }
 
@@ -70,8 +68,7 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
      * @return {@link AttachmentUpdate}
      */
     @Nonnull
-    public static AttachmentUpdate fromAttachment(@Nonnull String id)
-    {
+    public static AttachmentUpdate fromAttachment(@Nonnull String id) {
         return fromAttachment(MiscUtil.parseSnowflake(id));
     }
 
@@ -85,8 +82,7 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
      * @return {@link AttachmentUpdate}
      */
     @Nonnull
-    public static AttachmentUpdate fromAttachment(@Nonnull Message.Attachment attachment)
-    {
+    public static AttachmentUpdate fromAttachment(@Nonnull Message.Attachment attachment) {
         Checks.notNull(attachment, "Attachment");
         return new AttachmentUpdate(attachment.getIdLong(), attachment.getFileName());
     }
@@ -97,14 +93,12 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
      * @return The filename, or {@code null} if not provided
      */
     @Nullable
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
@@ -113,11 +107,11 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
 
     @Nonnull
     @Override
-    public DataObject toAttachmentData(int index)
-    {
+    public DataObject toAttachmentData(int index) {
         DataObject object = DataObject.empty().put("id", getId());
-        if (name != null)
+        if (name != null) {
             object.put("filename", name);
+        }
         return object;
     }
 
@@ -128,25 +122,25 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
     public void forceClose() {}
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof AttachmentUpdate)) return false;
+    public boolean equals(Object o) {
+        if (!(o instanceof AttachmentUpdate)) {
+            return false;
+        }
         AttachmentUpdate that = (AttachmentUpdate) o;
         return id == that.id && Objects.equals(name, that.name);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(id, name);
     }
 
     @Override
-    public String toString()
-    {
-        final EntityString entityString = new EntityString("AttachedFile").setType("Attachment");
-        if (name != null)
+    public String toString() {
+        EntityString entityString = new EntityString("AttachedFile").setType("Attachment");
+        if (name != null) {
             entityString.setName(name);
+        }
         return entityString.toString();
     }
 }

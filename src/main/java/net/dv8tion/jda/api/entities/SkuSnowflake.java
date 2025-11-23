@@ -26,8 +26,7 @@ import javax.annotation.Nonnull;
  *
  * <p>This is used for methods which only need a SKU ID to function, you cannot use this for getting any properties.
  */
-public interface SkuSnowflake extends ISnowflake
-{
+public interface SkuSnowflake extends ISnowflake {
     /**
      * Creates a SKU instance which only wraps an ID.
      *
@@ -37,8 +36,7 @@ public interface SkuSnowflake extends ISnowflake
      * @return A SKU snowflake instance
      */
     @Nonnull
-    static SkuSnowflake fromId(long id)
-    {
+    static SkuSnowflake fromId(long id) {
         return new SkuSnowflakeImpl(id);
     }
 
@@ -54,8 +52,7 @@ public interface SkuSnowflake extends ISnowflake
      * @return A SKU snowflake instance
      */
     @Nonnull
-    static SkuSnowflake fromId(@Nonnull String id)
-    {
+    static SkuSnowflake fromId(@Nonnull String id) {
         return fromId(MiscUtil.parseSnowflake(id));
     }
 }

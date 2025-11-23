@@ -23,9 +23,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.Unmodifiable;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +33,10 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * {@link net.dv8tion.jda.api.requests.RestAction RestAction} specification used
  * to retrieve entities for paginated endpoints (before, after, limit).
@@ -43,50 +44,41 @@ import java.util.stream.StreamSupport;
  * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
  * <p><b>Examples</b>
- * <pre><code>
- * /**
- *   * Retrieves messages until the specified limit is reached. The messages will be limited after being filtered by the user.
- *   * If the user hasn't sent enough messages this will go through all messages so it is recommended to add an additional end condition.
- *   *&#47;
- * public static {@literal List<Message>} getMessagesByUser(MessageChannel channel, User user, int limit)
- * {
- *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
- *     Stream{@literal <Message>} messageStream = action.stream()
+ * {@snippet lang="java":
+ * // Retrieves messages until the specified limit is reached. The messages will be limited after being filtered by the user.
+ * // If the user hasn't sent enough messages this will go through all messages so it is recommended to add an additional end condition.
+ * public static List<Message> getMessagesByUser(MessageChannel channel, User user, int limit) {
+ *     MessagePaginationAction action = channel.getIterableHistory();
+ *     Stream<Message> messageStream = action.stream()
  *             .limit(limit * 2) // used to limit amount of messages to check, if user hasn't sent enough messages it would go on forever
- *             .filter( message{@literal ->} message.getAuthor().equals(user) )
+ *             .filter(message -> message.getAuthor().equals(user))
  *             .limit(limit); // limit on filtered stream will be checked independently from previous limit
  *     return messageStream.collect(Collectors.toList());
  * }
- * </code></pre>
+ * }
  *
- * <pre><code>
- * /**
- *  * Iterates messages in an async stream and stops once the limit has been reached.
- *  *&#47;
- * public static void onEachMessageAsync(MessageChannel channel, {@literal Consumer<Message>} consumer, int limit)
- * {
- *     if (limit{@literal <} 1)
+ * {@snippet lang="java":
+ * // Iterates messages in an async stream and stops once the limit has been reached.
+ * public static void onEachMessageAsync(MessageChannel channel, Consumer<Message> consumer, int limit) {
+ *     if (limit < 1)
  *         return;
- *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
+ *     MessagePaginationAction action = channel.getIterableHistory();
  *     AtomicInteger counter = new AtomicInteger(limit);
- *     action.forEachAsync( (message){@literal ->}
- *     {
+ *     action.forEachAsync((message) -> {
  *         consumer.accept(message);
  *         // if false the iteration is terminated; else it continues
  *         return counter.decrementAndGet() == 0;
  *     });
  * }
- * </code></pre>
+ * }
  *
  * @param  <M>
  *         The current implementation used as chaining return value
  * @param  <T>
  *         The type of entity to paginate
- *
- * @since  3.1
  */
-public interface PaginationAction<T, M extends PaginationAction<T, M>> extends RestAction<@Unmodifiable List<T>>, Iterable<T>
-{
+public interface PaginationAction<T, M extends PaginationAction<T, M>>
+        extends RestAction<@Unmodifiable List<T>>, Iterable<T> {
     /**
      * Skips past the specified ID for successive requests.
      * This will reset the {@link #getLast()} entity and cause a {@link NoSuchElementException} to be thrown
@@ -97,7 +89,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * <p>Fails if cache is enabled and the target id is newer than the current last id {@literal (id > last)}.
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * public MessagePaginationAction getOlderThan(MessageChannel channel, long time) {
      *     final long timestamp = TimeUtil.getDiscordTimestamp(time);
      *     final MessagePaginationAction paginator = channel.getIterableHistory();
@@ -111,7 +103,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *             System.out.printf("%#s%n", message); // means: print display content
      *         return !empty; // means: continue if not empty
      *     });
-     * }</pre>
+     * }
      *
      * @param  id
      *         The snowflake ID to skip before, this is exclusive rather than inclusive
@@ -162,8 +154,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @return {@link EnumSet} of {@link PaginationOrder} (Modifying this set does not affect this class)
      */
     @Nonnull
-    default EnumSet<PaginationOrder> getSupportedOrders()
-    {
+    default EnumSet<PaginationOrder> getSupportedOrders() {
         return EnumSet.allOf(PaginationOrder.class);
     }
 
@@ -210,10 +201,10 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    default M reverse()
-    {
-        if (getOrder() == PaginationOrder.BACKWARD)
+    default M reverse() {
+        if (getOrder() == PaginationOrder.BACKWARD) {
             return order(PaginationOrder.FORWARD);
+        }
         return order(PaginationOrder.BACKWARD);
     }
 
@@ -281,7 +272,6 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * <br>is not the same as
      * <br>{@code action.stream().limit(50).collect(collector)}
      *
-     *
      * @param  limit
      *         The limit to use
      *
@@ -292,7 +282,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    M limit(final int limit);
+    M limit(int limit);
 
     /**
      * Whether already retrieved entities should be stored
@@ -310,7 +300,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    M cache(final boolean enableCache);
+    M cache(boolean enableCache);
 
     /**
      * Whether retrieved entities are stored within an
@@ -374,8 +364,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeWhileAsync(@Nonnull final Predicate<? super T> rule)
-    {
+    default CompletableFuture<List<T>> takeWhileAsync(@Nonnull Predicate<? super T> rule) {
         Checks.notNull(rule, "Rule");
         return takeUntilAsync(rule.negate());
     }
@@ -400,8 +389,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeWhileAsync(int limit, @Nonnull final Predicate<? super T> rule)
-    {
+    default CompletableFuture<List<T>> takeWhileAsync(int limit, @Nonnull Predicate<? super T> rule) {
         Checks.notNull(rule, "Rule");
         return takeUntilAsync(limit, rule.negate());
     }
@@ -424,8 +412,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeUntilAsync(@Nonnull final Predicate<? super T> rule)
-    {
+    default CompletableFuture<List<T>> takeUntilAsync(@Nonnull Predicate<? super T> rule) {
         return takeUntilAsync(0, rule);
     }
 
@@ -449,23 +436,24 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeUntilAsync(int limit, @Nonnull final Predicate<? super T> rule)
-    {
+    default CompletableFuture<List<T>> takeUntilAsync(int limit, @Nonnull Predicate<? super T> rule) {
         Checks.notNull(rule, "Rule");
         Checks.notNegative(limit, "Limit");
         List<T> result = new ArrayList<>();
         CompletableFuture<List<T>> future = new CompletableFuture<>();
         CompletableFuture<?> handle = forEachAsync((element) -> {
-            if (rule.test(element))
+            if (rule.test(element)) {
                 return false;
+            }
             result.add(element);
             return limit == 0 || limit > result.size();
         });
         handle.whenComplete((r, t) -> {
-           if (t != null)
-               future.completeExceptionally(t);
-           else
-               future.complete(result);
+            if (t != null) {
+                future.completeExceptionally(t);
+            } else {
+                future.complete(result);
+            }
         });
         return future;
     }
@@ -510,7 +498,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * entities use {@link #forEachRemainingAsync(Procedure)}</b>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * //deletes messages until it finds a user that is still in guild
      * public void cleanupMessages(MessagePaginationAction action)
      * {
@@ -524,7 +512,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         return true;
      *     });
      * }
-     * }</pre>
+     * }
      *
      * @param  action
      *         {@link net.dv8tion.jda.api.utils.Procedure Procedure} returning {@code true} if iteration should continue!
@@ -536,8 +524,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<?> forEachAsync(@Nonnull final Procedure<? super T> action)
-    {
+    default CompletableFuture<?> forEachAsync(@Nonnull Procedure<? super T> action) {
         return forEachAsync(action, RestActionImpl.getDefaultFailure());
     }
 
@@ -552,7 +539,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * entities use {@link #forEachRemainingAsync(Procedure, Consumer)}</b>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * //deletes messages until it finds a user that is still in guild
      * public void cleanupMessages(MessagePaginationAction action)
      * {
@@ -566,7 +553,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         return true;
      *     }, Throwable::printStackTrace);
      * }
-     * }</pre>
+     * }
      *
      * @param  action
      *         {@link net.dv8tion.jda.api.utils.Procedure Procedure} returning {@code true} if iteration should continue!
@@ -580,7 +567,8 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    CompletableFuture<?> forEachAsync(@Nonnull final Procedure<? super T> action, @Nonnull final Consumer<? super Throwable> failure);
+    CompletableFuture<?> forEachAsync(
+            @Nonnull Procedure<? super T> action, @Nonnull Consumer<? super Throwable> failure);
 
     /**
      * Iterates over all remaining entities until the provided action returns {@code false}!
@@ -593,7 +581,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * entities use {@link #forEachAsync(Procedure)}</b>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * //deletes messages until it finds a user that is still in guild
      * public void cleanupMessages(MessagePaginationAction action)
      * {
@@ -607,7 +595,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         return true;
      *     });
      * }
-     * }</pre>
+     * }
      *
      * @param  action
      *         {@link net.dv8tion.jda.api.utils.Procedure Procedure} returning {@code true} if iteration should continue!
@@ -619,8 +607,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<?> forEachRemainingAsync(@Nonnull final Procedure<? super T> action)
-    {
+    default CompletableFuture<?> forEachRemainingAsync(@Nonnull Procedure<? super T> action) {
         return forEachRemainingAsync(action, RestActionImpl.getDefaultFailure());
     }
 
@@ -635,7 +622,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * entities use {@link #forEachAsync(Procedure, Consumer)}</b>
      *
      * <p><b>Example</b><br>
-     * <pre>{@code
+     * {@snippet lang="java":
      * //deletes messages until it finds a user that is still in guild
      * public void cleanupMessages(MessagePaginationAction action)
      * {
@@ -649,7 +636,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         return true;
      *     }, Throwable::printStackTrace);
      * }
-     * }</pre>
+     * }
      *
      * @param  action
      *         {@link net.dv8tion.jda.api.utils.Procedure Procedure} returning {@code true} if iteration should continue!
@@ -663,7 +650,8 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @CheckReturnValue
-    CompletableFuture<?> forEachRemainingAsync(@Nonnull final Procedure<? super T> action, @Nonnull final Consumer<? super Throwable> failure);
+    CompletableFuture<?> forEachRemainingAsync(
+            @Nonnull Procedure<? super T> action, @Nonnull Consumer<? super Throwable> failure);
 
     /**
      * Iterates over all remaining entities until the provided action returns {@code false}!
@@ -676,13 +664,12 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         which should return {@code true} to continue iterating
      */
     @Blocking
-    void forEachRemaining(@Nonnull final Procedure<? super T> action);
+    void forEachRemaining(@Nonnull Procedure<? super T> action);
 
     @Nonnull
     @Override
     @Blocking
-    default Spliterator<T> spliterator()
-    {
+    default Spliterator<T> spliterator() {
         return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.IMMUTABLE);
     }
 
@@ -693,8 +680,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @Blocking
-    default Stream<T> stream()
-    {
+    default Stream<T> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
 
@@ -706,8 +692,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @Blocking
-    default Stream<T> parallelStream()
-    {
+    default Stream<T> parallelStream() {
         return StreamSupport.stream(spliterator(), true);
     }
 
@@ -725,8 +710,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     /**
      * Defines the pagination order for a pagination endpoint.
      */
-    enum PaginationOrder
-    {
+    enum PaginationOrder {
         /**
          * Iterates backwards in time, listing the most recent entities first.
          */
@@ -738,8 +722,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
 
         private final String key;
 
-        PaginationOrder(String key)
-        {
+        PaginationOrder(String key) {
             this.key = key;
         }
 
@@ -749,8 +732,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
          * @return The query key
          */
         @Nonnull
-        public String getKey()
-        {
+        public String getKey() {
             return key;
         }
     }
@@ -764,27 +746,27 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * request a List of new entities through a call of {@link net.dv8tion.jda.api.requests.RestAction#complete() RestAction.complete()}.
      * <br><b>It is recommended to use the highest possible limit for this task. (see {@link #limit(int)})</b>
      */
-    class PaginationIterator<E> implements Iterator<E>
-    {
+    class PaginationIterator<E> implements Iterator<E> {
         protected Queue<E> items;
         protected final Supplier<List<E>> supply;
 
-        public PaginationIterator(Collection<E> queue, Supplier<List<E>> supply)
-        {
+        public PaginationIterator(Collection<E> queue, Supplier<List<E>> supply) {
             this.items = new LinkedList<>(queue);
             this.supply = supply;
         }
 
         @Override
-        public boolean hasNext()
-        {
-            if (items == null)
+        public boolean hasNext() {
+            if (items == null) {
                 return false;
-            if (!hitEnd())
+            }
+            if (!hitEnd()) {
                 return true;
+            }
 
-            if (items.addAll(supply.get()))
+            if (items.addAll(supply.get())) {
                 return true;
+            }
 
             // null indicates that the real end has been reached
             items = null;
@@ -794,15 +776,14 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
         @Nonnull
         @Override
         @SuppressWarnings("DataFlowIssue")
-        public E next()
-        {
-            if (!hasNext())
+        public E next() {
+            if (!hasNext()) {
                 throw new NoSuchElementException("Reached End of pagination task!");
+            }
             return items.poll();
         }
 
-        protected boolean hitEnd()
-        {
+        protected boolean hitEnd() {
             return items.isEmpty();
         }
     }

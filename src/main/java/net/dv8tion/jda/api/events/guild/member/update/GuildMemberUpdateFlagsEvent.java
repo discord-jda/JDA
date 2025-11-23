@@ -19,8 +19,9 @@ package net.dv8tion.jda.api.events.guild.member.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link Member#getFlags()} flags for a {@link Member} were updated.
@@ -38,12 +39,14 @@ import java.util.EnumSet;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberUpdateFlagsEvent extends GenericGuildMemberUpdateEvent<EnumSet<Member.MemberFlag>>
-{
+public class GuildMemberUpdateFlagsEvent extends GenericGuildMemberUpdateEvent<EnumSet<Member.MemberFlag>> {
     public static final String IDENTIFIER = "flags";
 
-    public GuildMemberUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull EnumSet<Member.MemberFlag> previous)
-    {
+    public GuildMemberUpdateFlagsEvent(
+            @Nonnull JDA api,
+            long responseNumber,
+            @Nonnull Member member,
+            @Nonnull EnumSet<Member.MemberFlag> previous) {
         super(api, responseNumber, member, previous, member.getFlags(), IDENTIFIER);
     }
 }

@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.interactions.commands.privileges;
 /**
  * Targets of a {@link net.dv8tion.jda.api.events.interaction.command.GenericPrivilegeUpdateEvent GenericPrivilegeUpdateEvent}
  */
-public enum PrivilegeTargetType
-{
+public enum PrivilegeTargetType {
     /**
      * Indicates that privileges have been updated on the application itself.
      */
