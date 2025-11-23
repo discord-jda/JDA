@@ -1,20 +1,8 @@
-[contributing]: https://jda.wiki/contributing/contributing/
-
 ## Pull Request Etiquette
 
-<!--
-  There are several guidelines you should follow in order for your
-  Pull Request to be merged.
--->
-
 - [ ] I have checked the PRs for upcoming features/bug fixes.
-- [ ] I have read the [contributing guidelines][contributing].
-
-<!--
-  It is sometimes better to include more changes in a single commit. 
-  If you find yourself having an overwhelming amount of commits, you
-  can **rebase** your branch.
--->
+- [ ] I have read the [contributing guidelines](https://github.com/discord-jda/JDA/blob/master/.github/CONTRIBUTING.md).
+- [ ] I applied the code formatter to my changes with `./gradlew format`
 
 ### Changes
 
