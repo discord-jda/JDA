@@ -37,6 +37,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AudioEchoExample extends ListenerAdapter
 {
+    /**
+     * <b>NOTE:</b> If you copy this code somewhere else, remember to add the Opus dependency!
+     */
     public static void main(String[] args)
     {
         if (args.length == 0)

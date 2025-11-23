@@ -20,19 +20,16 @@ import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.tasks.*
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
-import org.jreleaser.model.Active
 
 plugins {
     environment
     artifacts
     `java-library`
-    `maven-publish`
+    `jda-publish`
 
     alias(libs.plugins.shadow)
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
-    alias(libs.plugins.jreleaser)
     alias(libs.plugins.download)
 }
 
@@ -48,7 +45,6 @@ projectEnvironment {
 }
 
 artifactFilters {
-    opusExclusions.addAll("natives/**", "com/sun/jna/**", "club/minnced/opus/util/*", "tomp2p/opuswrapper/*")
     additionalAudioExclusions.addAll("com/google/crypto/tink/**", "com/google/gson/**", "com/google/protobuf/**", "google/protobuf/**")
 }
 
@@ -129,16 +125,8 @@ dependencies {
     api(libs.websocket.client)
     api(libs.okhttp)
 
-    //Opus library support
-    api(libs.opus)
-
     //Collections Utility
     api(libs.commons.collections)
-
-    //we use this only together with opus-java
-    // if that dependency is excluded it also doesn't need jna anymore
-    // since jna is a transitive runtime dependency of opus-java we don't include it explicitly as dependency
-    compileOnly(libs.jna)
 
     /* Internal dependencies */
 
@@ -154,6 +142,8 @@ dependencies {
         addAll(configurations["api"].allDependencies)
         addAll(configurations["implementation"].allDependencies)
         addAll(configurations["compileOnly"].allDependencies)
+
+        add(project(":opus-jna"))
     }
 
     testImplementation(libs.bundles.junit)
@@ -253,16 +243,6 @@ val generateJavaSources by tasks.registering(SourceTask::class) {
     dependsOn(sourcesForRelease)
 }
 
-val noOpusJar by tasks.registering(ShadowJar::class) {
-    dependsOn(shadowJar)
-    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
-
-    configurations = shadowJar.configurations
-    from(sourceSets["main"].output)
-    applyOpusExclusions(artifactFilters)
-    manifest.from(jar.manifest)
-}
-
 val minimalJar by tasks.registering(ShadowJar::class) {
     dependsOn(shadowJar)
     minimize()
@@ -284,30 +264,11 @@ val sourcesJar by tasks.registering(Jar::class) {
     dependsOn(sourcesForRelease)
 }
 
-val javadoc by tasks.getting(Javadoc::class) {
-    isFailOnError = projectEnvironment.isGithubAction
-
-    (options as? StandardJavadocDocletOptions)?.apply {
-        memberLevel = JavadocMemberLevel.PUBLIC
-        encoding = "UTF-8"
-
-        author()
-        tags("incubating:a:Incubating:")
-        links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
-
-        addStringOption("-release", "8")
-        addBooleanOption("Xdoclint:all,-missing", true)
-
-        overview = "$projectDir/overview.html"
-    }
-
-    dependsOn(generateJavaSources)
-    source = generateJavaSources.get().source
-
-    exclude {
-        it.file.absolutePath.contains("internal", ignoreCase=false)
-    }
-}
+val javadoc by configureJavadoc(
+        targetVersion = JavaVersion.VERSION_1_8,
+        failOnError = projectEnvironment.isGithubAction,
+        overviewFile = "$projectDir/overview.html",
+)
 
 val javadocJar by tasks.registering(Jar::class) {
     dependsOn(javadoc)
@@ -340,7 +301,6 @@ tasks.build.configure {
     dependsOn(javadocJar)
     dependsOn(sourcesJar)
     dependsOn(shadowJar)
-    dependsOn(noOpusJar)
     dependsOn(minimalJar)
 
     jar.mustRunAfter(tasks.clean)
@@ -426,96 +386,17 @@ compileJava.finalizedBy(verifyBytecodeVersion)
 //                                //
 ////////////////////////////////////
 
-
-// Generate pom file for maven central
-
-fun MavenPom.populate() {
-    packaging = "jar"
-    name.set(project.name)
-    description.set("Java wrapper for the popular chat & VOIP service: Discord https://discord.com")
-    url.set("https://github.com/discord-jda/JDA")
-    scm {
-        url.set("https://github.com/discord-jda/JDA")
-        connection.set("scm:git:git://github.com/discord-jda/JDA")
-        developerConnection.set("scm:git:ssh:git@github.com:discord-jda/JDA")
-    }
-    licenses {
-        license {
-            name.set("The Apache Software License, Version 2.0")
-            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            distribution.set("repo")
-        }
-    }
-    developers {
-        developer {
-            id.set("Minn")
-            name.set("Florian Spieß")
-            email.set("business@minn.dev")
-        }
-        developer {
-            id.set("DV8FromTheWorld")
-            name.set("Austin Keener")
-            email.set("keeneraustin@yahoo.com")
-        }
-    }
-}
-
 shadow {
     addShadowVariantIntoJavaComponent = false
 }
 
-val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
+registerPublication(
+        name = project.name,
+        description = "Java wrapper for the popular chat & VOIP service: Discord https://discord.com",
+        url = "https://github.com/discord-jda/JDA",
+) {
+    from(components["java"])
 
-publishing {
-    publications {
-        register<MavenPublication>("Release") {
-            from(components["java"])
-
-            artifactId = project.name
-            groupId = project.group as String
-            version = project.version as String
-
-            artifact(sourcesJar)
-            artifact(javadocJar)
-
-            pom.populate()
-        }
-    }
-
-    repositories.maven {
-        url = stagingDirectory.asFile.toURI()
-    }
-}
-
-jreleaser {
-    project {
-        versionPattern = "CUSTOM"
-    }
-
-    release {
-        github {
-            enabled = false
-        }
-    }
-
-    signing {
-        active = Active.RELEASE
-        armored = true
-    }
-
-    deploy {
-        maven {
-            mavenCentral {
-                register("sonatype") {
-                    active = Active.RELEASE
-                    url = "https://central.sonatype.com/api/v1/publisher"
-                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
-                }
-            }
-        }
-    }
-}
-
-tasks.withType<AbstractJReleaserTask>().configureEach {
-    mustRunAfter(tasks.named("publish"))
+    artifact(sourcesJar)
+    artifact(javadocJar)
 }

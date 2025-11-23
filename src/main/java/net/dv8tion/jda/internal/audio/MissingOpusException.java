@@ -14,28 +14,8 @@
  * limitations under the License.
  */
 
-plugins {
-    `kotlin-dsl`
-    id("java-gradle-plugin")
-}
+package net.dv8tion.jda.internal.audio;
 
-repositories {
-    mavenCentral()
-    gradlePluginPortal()
-}
-
-dependencies {
-    implementation(gradleApi())
-    implementation(libs.jreleaser)
-}
-
-kotlin {
-    jvmToolchain(25)
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
-        vendor.set(JvmVendorSpec.ADOPTIUM)
-    }
+public class MissingOpusException extends RuntimeException
+{
 }
