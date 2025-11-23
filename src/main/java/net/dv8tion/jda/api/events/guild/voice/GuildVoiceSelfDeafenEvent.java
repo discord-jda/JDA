@@ -36,9 +36,10 @@ import javax.annotation.Nonnull;
 public class GuildVoiceSelfDeafenEvent extends GenericGuildVoiceEvent {
     protected final boolean selfDeafened;
 
-    public GuildVoiceSelfDeafenEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
+    public GuildVoiceSelfDeafenEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean isSelfDeafened) {
         super(api, responseNumber, member);
-        this.selfDeafened = member.getVoiceState().isSelfDeafened();
+        this.selfDeafened = isSelfDeafened;
     }
 
     /**

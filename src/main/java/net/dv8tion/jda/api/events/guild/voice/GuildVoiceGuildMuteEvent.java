@@ -36,9 +36,9 @@ import javax.annotation.Nonnull;
 public class GuildVoiceGuildMuteEvent extends GenericGuildVoiceEvent {
     protected final boolean guildMuted;
 
-    public GuildVoiceGuildMuteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
+    public GuildVoiceGuildMuteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean guildMuted) {
         super(api, responseNumber, member);
-        this.guildMuted = member.getVoiceState().isGuildMuted();
+        this.guildMuted = guildMuted;
     }
 
     /**
