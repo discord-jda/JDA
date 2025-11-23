@@ -146,7 +146,7 @@ import javax.annotation.Nullable;
  * which can be avoided by using callbacks over blocking operations:
  * <br>{@link #queue(Consumer)} {@literal >} {@link #complete()}
  *
- * <p>There is a dedicated <a href="https://github.com/discord-jda/JDA/wiki/7)-Using-RestAction" target="_blank">wiki page</a>
+ * <p>There is a dedicated <a href="https://jda.wiki/using-jda/using-restaction/" target="_blank">wiki page</a>
  * for RestActions that can be useful for learning.
  *
  * @param <T>
