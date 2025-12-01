@@ -56,6 +56,7 @@ public class InviteImpl implements Invite {
     private final int maxAge;
     private final int maxUses;
     private final boolean temporary;
+    private final boolean guest;
     private final OffsetDateTime timeCreated;
     private final int uses;
     private final Invite.InviteType type;
@@ -68,6 +69,7 @@ public class InviteImpl implements Invite {
             int maxAge,
             int maxUses,
             boolean temporary,
+            boolean guest,
             OffsetDateTime timeCreated,
             int uses,
             Channel channel,
@@ -82,6 +84,7 @@ public class InviteImpl implements Invite {
         this.maxAge = maxAge;
         this.maxUses = maxUses;
         this.temporary = temporary;
+        this.guest = guest;
         this.timeCreated = timeCreated;
         this.uses = uses;
         this.channel = channel;
@@ -257,6 +260,11 @@ public class InviteImpl implements Invite {
             throw new IllegalStateException("Only valid for expanded invites");
         }
         return this.temporary;
+    }
+
+    @Override
+    public boolean isGuest() {
+        return this.guest;
     }
 
     @Override
