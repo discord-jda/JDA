@@ -58,6 +58,7 @@ public class InviteCreateHandler extends SocketHandler {
 
         String code = content.getString("code");
         boolean temporary = content.getBoolean("temporary");
+        boolean guest = content.getInt("flags", 0) == 1;
         int maxAge = content.getInt("max_age", -1);
         int maxUses = content.getInt("max_uses", -1);
         OffsetDateTime creationTime = content.opt("created_at")
@@ -109,6 +110,7 @@ public class InviteCreateHandler extends SocketHandler {
                 maxAge,
                 maxUses,
                 temporary,
+                guest,
                 creationTime,
                 0,
                 channel,

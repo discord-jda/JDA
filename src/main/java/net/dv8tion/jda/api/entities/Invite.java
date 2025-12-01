@@ -325,6 +325,17 @@ public interface Invite {
     boolean isTemporary();
 
     /**
+     * Whether this Invite is a guest invite for a voice channel or not.
+     *
+     * <p>Applicable only to invites to a specific channel {@link #getChannel()}.</p>
+     *
+     * @return Whether this invite is a guest invite for a voice channel or not.
+     *
+     * @see #getChannel()
+     */
+    boolean isGuest();
+
+    /**
      * POJO for the channel information provided by an invite.
      *
      * @see #getChannel()

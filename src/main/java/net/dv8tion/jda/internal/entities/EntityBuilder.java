@@ -2391,6 +2391,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         int maxAge;
         int maxUses;
         boolean temporary;
+        boolean guest;
         OffsetDateTime timeCreated;
         int uses;
         boolean expanded;
@@ -2401,6 +2402,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
             maxUses = object.getInt("max_uses");
             uses = object.getInt("uses");
             temporary = object.getBoolean("temporary");
+            guest = object.getInt("flags", 0) == 1;
             timeCreated = OffsetDateTime.parse(object.getString("created_at"));
         } else {
             expanded = false;
@@ -2408,6 +2410,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
             maxUses = -1;
             uses = -1;
             temporary = false;
+            guest = false;
             timeCreated = null;
         }
 
@@ -2419,6 +2422,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 maxAge,
                 maxUses,
                 temporary,
+                guest,
                 timeCreated,
                 uses,
                 channel,
