@@ -2402,7 +2402,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
             maxUses = object.getInt("max_uses");
             uses = object.getInt("uses");
             temporary = object.getBoolean("temporary");
-            guest = object.getInt("flags", 0) == 1;
+            guest = (object.getInt("flags", 0) & 1) == 1;
             timeCreated = OffsetDateTime.parse(object.getString("created_at"));
         } else {
             expanded = false;
