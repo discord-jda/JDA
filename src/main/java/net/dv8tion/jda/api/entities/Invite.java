@@ -327,7 +327,7 @@ public interface Invite {
     /**
      * Whether this Invite is a guest invite for a voice channel or not.
      *
-     * <p>Applicable only to invites to a specific channel {@link #getChannel()}.</p>
+     * <p>Applicable only to invites to a specific channel {@link #getChannel()}.
      *
      * @return Whether this invite is a guest invite for a voice channel or not.
      *
