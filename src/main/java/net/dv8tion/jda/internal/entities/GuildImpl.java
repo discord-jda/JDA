@@ -79,10 +79,7 @@ import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.*;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
@@ -615,7 +612,11 @@ public class GuildImpl implements Guild {
             @Nonnull String location,
             @Nonnull OffsetDateTime startTime,
             @Nonnull OffsetDateTime endTime) {
-        checkPermission(Permission.MANAGE_EVENTS);
+        PermissionUtil.checkWithDeadline(
+                getSelfMember(),
+                PermissionUtil.FEB_23_2026_DEADLINE,
+                /* old */ Permission.MANAGE_EVENTS,
+                /* new */ Permission.CREATE_SCHEDULED_EVENTS);
         return new ScheduledEventActionImpl(name, location, startTime, endTime, this);
     }
 
@@ -623,7 +624,11 @@ public class GuildImpl implements Guild {
     @Override
     public ScheduledEventAction createScheduledEvent(
             @Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime) {
-        checkPermission(Permission.MANAGE_EVENTS);
+        PermissionUtil.checkWithDeadline(
+                getSelfMember(),
+                PermissionUtil.FEB_23_2026_DEADLINE,
+                /* old */ Permission.MANAGE_EVENTS,
+                /* new */ Permission.CREATE_SCHEDULED_EVENTS);
         return new ScheduledEventActionImpl(name, channel, startTime, this);
     }
 

@@ -5469,7 +5469,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * Events are required to have a name, location and start time.
      * Additionally, an end time <em>must</em> also be specified for events of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
-     * {@link Permission#MANAGE_EVENTS} is required on the guild level in order to create this type of event.
+     * {@link Permission#CREATE_SCHEDULED_EVENTS} is required on the guild level in order to create this type of event.
      *
      * <p><b>Example</b><br>
      * {@snippet lang="java":
@@ -5522,7 +5522,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         <br>These events are set to take place inside of a {@link StageChannel}. The
      *         following permissions are required in the specified stage channel in order to create an event there:
      *          <ul>
-     *              <li>{@link Permission#MANAGE_EVENTS}</li>
+     *              <li>{@link Permission#CREATE_SCHEDULED_EVENTS}</li>
      *              <li>{@link Permission#MANAGE_CHANNEL}</li>
      *              <li>{@link Permission#VOICE_MUTE_OTHERS}</li>
      *              <li>{@link Permission#VOICE_MOVE_OTHERS}}</li>
@@ -5533,7 +5533,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         <br>These events are set to take place inside of a {@link VoiceChannel}. The
      *         following permissions are required in the specified voice channel in order to create an event there:
      *         <ul>
-     *             <li>{@link Permission#MANAGE_EVENTS}</li>
+     *             <li>{@link Permission#CREATE_SCHEDULED_EVENTS}</li>
      *             <li>{@link Permission#VIEW_CHANNEL}</li>
      *             <li>{@link Permission#VOICE_CONNECT}</li>
      *         </ul>
