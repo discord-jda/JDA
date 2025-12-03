@@ -41,9 +41,7 @@ public interface IThreadContainerManager<T extends IThreadContainer, M extends I
      * <p>A channel default thread slowmode <b>must not</b> be negative nor greater than {@link ISlowmodeChannel#MAX_SLOWMODE}!
      *
      * <p>Note: Bots are unaffected by this.
-     * <br>Having {@link Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
+     * <br>Having the {@link Permission#BYPASS_SLOWMODE BYPASS_SLOWMODE} permission also grants immunity to slowmode.
      *
      * @param  slowmode
      *         The new default thread slowmode (in seconds)

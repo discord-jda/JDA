@@ -25,8 +25,10 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,6 +38,31 @@ public class PermissionUtil {
     private static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
     private static final long ALL_CHANNEL_PERMISSIONS = Permission.getRaw(
             Arrays.stream(Permission.values()).filter(Permission::isChannel).collect(Collectors.toList()));
+
+    public static final Instant FEB_23_2026_DEADLINE = Instant.parse("2026-02-23T00:00:00Z");
+
+    public static void checkWithDeadline(
+            GuildChannel channel, Instant deadline, Permission oldPermission, Permission newPermission) {
+        // If after the deadline or we don't have the "old" permission,
+        // check that we have the "new" permission
+        SelfMember selfMember = channel.getGuild().getSelfMember();
+        if (ClockProvider.getClock().instant().isAfter(deadline) || !selfMember.hasPermission(channel, oldPermission)) {
+            if (!selfMember.hasPermission(channel, newPermission)) {
+                throw new InsufficientPermissionException(channel, newPermission);
+            }
+        }
+    }
+
+    public static void checkWithDeadline(
+            SelfMember selfMember, Instant deadline, Permission oldPermission, Permission newPermission) {
+        // If after the deadline or we don't have the "old" permission,
+        // check that we have the "new" permission
+        if (ClockProvider.getClock().instant().isAfter(deadline) || !selfMember.hasPermission(oldPermission)) {
+            if (!selfMember.hasPermission(newPermission)) {
+                throw new InsufficientPermissionException(selfMember.getGuild(), newPermission);
+            }
+        }
+    }
 
     /**
      * Checks if one given Member can interact with a 2nd given Member - in a permission sense (kick/ban/modify perms).
