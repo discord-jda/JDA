@@ -27,8 +27,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 
 import java.time.Instant;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatException;
@@ -41,7 +40,7 @@ public class MessagePinDeadlineTest {
     @MethodSource("validPermissions")
     @ParameterizedTest
     void testPermissionsAreValidatedInOrder(
-            Instant timeOfCheck, Set<Permission> grantedPermissions, Set<Permission> expectedCheckedPermissions) {
+            Instant timeOfCheck, List<Permission> grantedPermissions, List<Permission> expectedCheckedPermissions) {
         GuildMessageChannelMixin<?> channel = mock(GuildMessageChannelMixin.class);
         doCallRealMethod().when(channel).checkCanControlMessagePins();
         doAnswer(invocation -> {
@@ -67,24 +66,23 @@ public class MessagePinDeadlineTest {
                 Arguments.argumentSet(
                         "Before deadline, check MESSAGE_MANAGE first then PIN_MESSAGES",
                         /* timeOfCheck */ BEFORE_DEADLINE,
-                        /* grantedPermissions */ EnumSet.of(Permission.PIN_MESSAGES),
-                        /* expectedCheckedPermissions */ EnumSet.of(
-                                Permission.MESSAGE_MANAGE, Permission.PIN_MESSAGES)),
+                        /* grantedPermissions */ List.of(Permission.PIN_MESSAGES),
+                        /* expectedCheckedPermissions */ List.of(Permission.MESSAGE_MANAGE, Permission.PIN_MESSAGES)),
                 Arguments.argumentSet(
                         "Before deadline, check MESSAGE_MANAGE first then short-circuit",
                         /* timeOfCheck */ BEFORE_DEADLINE,
-                        /* grantedPermissions */ EnumSet.of(Permission.MESSAGE_MANAGE),
-                        /* expectedCheckedPermissions */ EnumSet.of(Permission.MESSAGE_MANAGE)),
+                        /* grantedPermissions */ List.of(Permission.MESSAGE_MANAGE),
+                        /* expectedCheckedPermissions */ List.of(Permission.MESSAGE_MANAGE)),
                 Arguments.argumentSet(
                         "After deadline, check PIN_MESSAGES",
                         /* timeOfCheck */ AFTER_DEADLINE,
-                        /* grantedPermissions */ EnumSet.of(Permission.PIN_MESSAGES),
-                        /* expectedCheckedPermissions */ EnumSet.of(Permission.PIN_MESSAGES)));
+                        /* grantedPermissions */ List.of(Permission.PIN_MESSAGES),
+                        /* expectedCheckedPermissions */ List.of(Permission.PIN_MESSAGES)));
     }
 
     @MethodSource("invalidPermissions")
     @ParameterizedTest
-    void testPermissionsAreInvalid(Instant timeOfCheck, Set<Permission> expectedCheckedPermissions) {
+    void testPermissionsAreInvalid(Instant timeOfCheck, List<Permission> expectedCheckedPermissions) {
         GuildMessageChannelMixin<?> channel = mock(GuildMessageChannelMixin.class);
         doCallRealMethod().when(channel).checkCanControlMessagePins();
         doReturn(false).when(channel).hasPermission(any());
@@ -109,11 +107,10 @@ public class MessagePinDeadlineTest {
                 Arguments.argumentSet(
                         "Before deadline, fail if no MESSAGE_MANAGE or PIN_MESSAGES",
                         /* timeOfCheck */ BEFORE_DEADLINE,
-                        /* expectedCheckedPermissions */ EnumSet.of(
-                                Permission.MESSAGE_MANAGE, Permission.PIN_MESSAGES)),
+                        /* expectedCheckedPermissions */ List.of(Permission.MESSAGE_MANAGE, Permission.PIN_MESSAGES)),
                 Arguments.argumentSet(
                         "After deadline, fail if no PIN_MESSAGES",
                         /* timeOfCheck */ AFTER_DEADLINE,
-                        /* expectedCheckedPermissions */ EnumSet.of(Permission.PIN_MESSAGES)));
+                        /* expectedCheckedPermissions */ List.of(Permission.PIN_MESSAGES)));
     }
 }
