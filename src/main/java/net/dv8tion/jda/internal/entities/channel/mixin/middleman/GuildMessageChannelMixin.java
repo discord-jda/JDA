@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 
 public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         extends GuildMessageChannel, GuildMessageChannelUnion, GuildChannelMixin<T>, MessageChannelMixin<T> {
-    Instant PIN_PERMISSION_DEADLINE = Instant.parse("2026-01-12T00:00:00Z");
+    Instant PIN_PERMISSION_DEADLINE = Instant.parse("2026-02-23T00:00:00Z");
 
     // ---- Default implementations of interface ----
     @Nonnull
