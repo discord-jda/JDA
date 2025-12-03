@@ -67,6 +67,7 @@ public enum Permission {
     MESSAGE_SEND_POLLS(49, true, true, "Create Polls"),
     USE_EXTERNAL_APPLICATIONS(50, true, true, "Use External Apps"),
     PIN_MESSAGES(51, true, true, "Pin Messages"),
+    BYPASS_SLOWMODE(52, true, true, "Bypass Slowmode"),
 
     // Thread Permissions
     MANAGE_THREADS(34, true, true, "Manage Threads"),
