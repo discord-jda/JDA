@@ -153,6 +153,13 @@ public enum AuditLogKey {
      * <p>Expected type: <b>String</b>
      */
     GUILD_SPLASH("splash_hash"),
+    
+    /**
+     * Change of the {@link net.dv8tion.jda.api.entities.Guild#getBannerId() Banner ID} of a Guild.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    GUILD_BANNER("banner_hash"),
 
     /**
      * Change of the {@link net.dv8tion.jda.api.entities.Guild#getVerificationLevel() Guild.getVerificationLevel()} value.
