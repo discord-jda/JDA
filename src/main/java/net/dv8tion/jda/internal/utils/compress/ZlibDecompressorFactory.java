@@ -22,7 +22,7 @@ public class ZlibDecompressorFactory implements DecompressorFactory {
     private final int maxBufferSize;
 
     public ZlibDecompressorFactory(int bufferSizeHint) {
-        if (bufferSizeHint == -1) {
+        if (bufferSizeHint == DecompressorFactory.DEFAULT_BUFFER_SIZE) {
             this.maxBufferSize = 2048;
         } else {
             Checks.notNegative(bufferSizeHint, "Buffer size hint");

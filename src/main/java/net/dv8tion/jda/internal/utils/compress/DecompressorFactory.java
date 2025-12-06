@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.utils.compress;
 import net.dv8tion.jda.api.utils.Compression;
 
 public interface DecompressorFactory {
+    int DEFAULT_BUFFER_SIZE = -1;
+
     Decompressor create();
 
     static DecompressorFactory of(Compression compression, int bufferSizeHint) {

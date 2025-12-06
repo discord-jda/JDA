@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.compress.DecompressorFactory;
 import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
@@ -73,7 +74,7 @@ public class DefaultShardManagerBuilder {
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
-    protected IntUnaryOperator bufferSizeHintProvider = i -> -1;
+    protected IntUnaryOperator bufferSizeHintProvider = i -> DecompressorFactory.DEFAULT_BUFFER_SIZE;
     protected int intents = -1;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;

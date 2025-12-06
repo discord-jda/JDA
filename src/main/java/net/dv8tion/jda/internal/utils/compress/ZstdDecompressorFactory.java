@@ -24,7 +24,7 @@ public class ZstdDecompressorFactory implements DecompressorFactory {
     private final DiscordZstdDecompressorFactory underlyingFactory;
 
     public ZstdDecompressorFactory(int bufferSizeHint) {
-        if (bufferSizeHint == -1) {
+        if (bufferSizeHint == DecompressorFactory.DEFAULT_BUFFER_SIZE) {
             bufferSizeHint = DiscordZstdDecompressor.DEFAULT_BUFFER_SIZE;
         }
         this.underlyingFactory = DiscordZstdProvider.get().createDecompressorFactory(bufferSizeHint);

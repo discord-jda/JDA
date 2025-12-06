@@ -92,7 +92,7 @@ public class JDABuilder {
     protected boolean idle = false;
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
-    protected int bufferSizeHint = -1;
+    protected int bufferSizeHint = DecompressorFactory.DEFAULT_BUFFER_SIZE;
     protected int intents = -1; // don't use intents by default
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
