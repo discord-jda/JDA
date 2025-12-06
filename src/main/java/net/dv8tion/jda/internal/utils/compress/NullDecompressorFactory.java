@@ -20,47 +20,34 @@ import net.dv8tion.jda.api.utils.Compression;
 
 import javax.annotation.Nonnull;
 
-public class NullDecompressorFactory implements DecompressorFactory
-{
+public class NullDecompressorFactory implements DecompressorFactory {
     public static final DecompressorFactory INSTANCE = new NullDecompressorFactory();
 
-    private NullDecompressorFactory()
-    {
-    }
+    private NullDecompressorFactory() {}
 
     @Override
-    public Decompressor create()
-    {
+    public Decompressor create() {
         return NullDecompressor.INSTANCE;
     }
 
-    private static class NullDecompressor implements Decompressor
-    {
+    private static class NullDecompressor implements Decompressor {
 
         private static final Decompressor INSTANCE = new NullDecompressor();
 
         @Override
-        public Compression getType()
-        {
+        public Compression getType() {
             return Compression.NONE;
         }
 
         @Override
-        public void reset()
-        {
-
-        }
+        public void reset() {}
 
         @Override
-        public void shutdown()
-        {
-
-        }
+        public void shutdown() {}
 
         @Nonnull
         @Override
-        public byte[] decompress(byte[] data)
-        {
+        public byte[] decompress(byte[] data) {
             return data;
         }
     }

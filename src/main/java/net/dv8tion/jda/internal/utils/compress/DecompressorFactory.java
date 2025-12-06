@@ -18,22 +18,19 @@ package net.dv8tion.jda.internal.utils.compress;
 
 import net.dv8tion.jda.api.utils.Compression;
 
-public interface DecompressorFactory
-{
+public interface DecompressorFactory {
     Decompressor create();
 
-    static DecompressorFactory of(Compression compression, int bufferSizeHint)
-    {
-        switch (compression)
-        {
-        case NONE:
-            return NullDecompressorFactory.INSTANCE;
-        case ZLIB:
-            return new ZlibDecompressorFactory(bufferSizeHint);
-        case ZSTD:
-            return new ZstdDecompressorFactory(bufferSizeHint);
-        default:
-            throw new IllegalStateException("Unknown compression");
+    static DecompressorFactory of(Compression compression, int bufferSizeHint) {
+        switch (compression) {
+            case NONE:
+                return NullDecompressorFactory.INSTANCE;
+            case ZLIB:
+                return new ZlibDecompressorFactory(bufferSizeHint);
+            case ZSTD:
+                return new ZstdDecompressorFactory(bufferSizeHint);
+            default:
+                throw new IllegalStateException("Unknown compression");
         }
     }
 }

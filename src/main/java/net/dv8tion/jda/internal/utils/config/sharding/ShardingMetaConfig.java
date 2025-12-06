@@ -33,8 +33,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ShardingMetaConfig extends MetaConfig {
-    private static final ShardingMetaConfig defaultConfig =
-            new ShardingMetaConfig(i -> 2048, null, null, ConfigFlag.getDefault(), i -> Compression.ZLIB, GatewayEncoding.JSON);
+    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(
+            i -> 2048, null, null, ConfigFlag.getDefault(), i -> Compression.ZLIB, GatewayEncoding.JSON);
     private final GatewayEncoding encoding;
     private final IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
     private final IntUnaryOperator bufferSizeHintProvider;
@@ -61,9 +61,9 @@ public class ShardingMetaConfig extends MetaConfig {
 
     @Nonnull
     public DecompressorFactory getDecompressorFactory(int shardId) {
-        final Compression compression = compressionProvider.apply(shardId);
+        Compression compression = compressionProvider.apply(shardId);
         Checks.notNull(compression, "Compression");
-        final int bufferSizeHint = bufferSizeHintProvider.applyAsInt(shardId);
+        int bufferSizeHint = bufferSizeHintProvider.applyAsInt(shardId);
 
         return DecompressorFactory.of(compression, bufferSizeHint);
     }

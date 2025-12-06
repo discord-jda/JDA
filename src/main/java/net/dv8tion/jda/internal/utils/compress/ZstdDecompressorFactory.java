@@ -20,20 +20,18 @@ import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
 import dev.freya02.discord.zstd.api.DiscordZstdDecompressorFactory;
 import dev.freya02.discord.zstd.api.DiscordZstdProvider;
 
-public class ZstdDecompressorFactory implements DecompressorFactory
-{
+public class ZstdDecompressorFactory implements DecompressorFactory {
     private final DiscordZstdDecompressorFactory underlyingFactory;
 
-    public ZstdDecompressorFactory(int bufferSizeHint)
-    {
-        if (bufferSizeHint == -1)
+    public ZstdDecompressorFactory(int bufferSizeHint) {
+        if (bufferSizeHint == -1) {
             bufferSizeHint = DiscordZstdDecompressor.DEFAULT_BUFFER_SIZE;
+        }
         this.underlyingFactory = DiscordZstdProvider.get().createDecompressorFactory(bufferSizeHint);
     }
 
     @Override
-    public Decompressor create()
-    {
+    public Decompressor create() {
         return new ZstdDecompressorAdapter(underlyingFactory.create());
     }
 }

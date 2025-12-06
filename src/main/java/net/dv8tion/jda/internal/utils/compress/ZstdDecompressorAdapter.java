@@ -21,37 +21,31 @@ import net.dv8tion.jda.api.utils.Compression;
 
 import javax.annotation.Nonnull;
 
-public class ZstdDecompressorAdapter implements Decompressor
-{
+public class ZstdDecompressorAdapter implements Decompressor {
     private final DiscordZstdDecompressor decompressor;
 
-    public ZstdDecompressorAdapter(DiscordZstdDecompressor decompressor)
-    {
+    public ZstdDecompressorAdapter(DiscordZstdDecompressor decompressor) {
         this.decompressor = decompressor;
     }
 
     @Override
-    public Compression getType()
-    {
+    public Compression getType() {
         return Compression.ZSTD;
     }
 
     @Override
-    public void reset()
-    {
+    public void reset() {
         decompressor.reset();
     }
 
     @Override
-    public void shutdown()
-    {
+    public void shutdown() {
         decompressor.close();
     }
 
     @Nonnull
     @Override
-    public byte[] decompress(byte[] data)
-    {
+    public byte[] decompress(byte[] data) {
         return decompressor.decompress(data);
     }
 }

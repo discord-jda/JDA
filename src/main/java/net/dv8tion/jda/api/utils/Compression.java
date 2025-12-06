@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.JDABuilder#setCompression(Compression) JDABuilder.setCompression(Compression)
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setCompression(Compression) DefaultShardManagerBuilder.setCompression(Compression)
- *
  * @see #ZLIB
  * @see #ZSTD
  */
@@ -42,7 +41,6 @@ public enum Compression {
      *     <li>Setting this to {@link Integer#MAX_VALUE} would imply the buffer will never be resized unless memory starvation is imminent.</li>
      *     <li>Setting this to {@code 0} would imply the buffer would need to be allocated again for every payload (not recommended).</li>
      * </ul>
-     *
      */
     ZLIB("zlib-stream"),
     /**

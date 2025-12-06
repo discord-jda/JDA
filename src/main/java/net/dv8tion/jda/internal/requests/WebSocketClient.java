@@ -132,10 +132,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile ConnectNode connectNode;
 
     public WebSocketClient(
-            JDAImpl api,
-            DecompressorFactory decompressorFactory,
-            int gatewayIntents,
-            GatewayEncoding encoding) {
+            JDAImpl api, DecompressorFactory decompressorFactory, int gatewayIntents, GatewayEncoding encoding) {
         this.api = api;
         this.executor = api.getGatewayPool();
         this.shardInfo = api.getShardInfo();
@@ -354,13 +351,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try {
             String gatewayUrl = resumeUrl != null ? resumeUrl : api.getGatewayUrl();
-            gatewayUrl = IOUtil.addQuery(gatewayUrl,
-                "encoding", encoding.name().toLowerCase(),
-                "v", JDAInfo.DISCORD_GATEWAY_VERSION
-            );
-            if (decompressor.getType() != Compression.NONE)
-            {
-                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", decompressor.getType().getKey());
+            gatewayUrl = IOUtil.addQuery(
+                    gatewayUrl, "encoding", encoding.name().toLowerCase(), "v", JDAInfo.DISCORD_GATEWAY_VERSION);
+            if (decompressor.getType() != Compression.NONE) {
+                gatewayUrl = IOUtil.addQuery(
+                        gatewayUrl, "compress", decompressor.getType().getKey());
             }
 
             WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
@@ -512,12 +507,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             decompressor.shutdown();
 
             onShutdown(rawCloseCode);
-        }
-        else
-        {
-            //reset our decompression tools
-            synchronized (readLock)
-            {
+        } else {
+            // reset our decompression tools
+            synchronized (readLock) {
                 decompressor.reset();
             }
             if (isInvalidate) {
@@ -979,8 +971,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (encoding == GatewayEncoding.ETF) {
                 return DataObject.fromETF(binary);
             }
-            throw new IllegalStateException(
-                    "Cannot read binary message due to unknown payload encoding: " + encoding);
+            throw new IllegalStateException("Cannot read binary message due to unknown payload encoding: " + encoding);
         }
         // Scoping allows us to print the json that possibly failed parsing
         byte[] data;

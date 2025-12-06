@@ -202,7 +202,7 @@ public class JDAImpl implements JDA {
         return sessionConfig.getLargeThreshold();
     }
 
-    public boolean chunkGuild(long id){
+    public boolean chunkGuild(long id) {
         try {
             return isIntent(GatewayIntent.GUILD_MEMBERS) && chunkingFilter.filter(id);
         } catch (Exception e) {

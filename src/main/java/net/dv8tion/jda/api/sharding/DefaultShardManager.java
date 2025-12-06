@@ -506,9 +506,7 @@ public class DefaultShardManager implements ShardManager {
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         MetaConfig metaConfig = new MetaConfig(
-                this.metaConfig.getContextMap(shardId),
-                this.metaConfig.getCacheFlags(),
-                this.sessionConfig.getFlags());
+                this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
         RestConfig restConfig = this.restConfigProvider.apply(shardId);
         if (restConfig == null) {
             restConfig = new RestConfig();

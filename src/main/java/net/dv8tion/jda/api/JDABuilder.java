@@ -1705,8 +1705,7 @@ public class JDABuilder {
      * @see Compression
      */
     @Nonnull
-    public JDABuilder setDecompressorBufferSizeHint(int bufferSizeHint)
-    {
+    public JDABuilder setDecompressorBufferSizeHint(int bufferSizeHint) {
         this.bufferSizeHint = bufferSizeHint;
         return this;
     }

@@ -843,8 +843,7 @@ public class DefaultShardManagerBuilder {
      * @see    <a href="https://discord.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
     @Nonnull
-    public DefaultShardManagerBuilder setCompressionProvider(@Nonnull IntFunction<Compression> provider)
-    {
+    public DefaultShardManagerBuilder setCompressionProvider(@Nonnull IntFunction<Compression> provider) {
         Checks.notNull(provider, "Provider");
         this.compressionProvider = provider;
         return this;
@@ -2188,8 +2187,7 @@ public class DefaultShardManagerBuilder {
      * @see    Compression
      */
     @Nonnull
-    public DefaultShardManagerBuilder setDecompressorBufferSizeHint(int bufferSizeHint)
-    {
+    public DefaultShardManagerBuilder setDecompressorBufferSizeHint(int bufferSizeHint) {
         return setDecompressorBufferSizeHintProvider(i -> bufferSizeHint);
     }
 
@@ -2207,8 +2205,7 @@ public class DefaultShardManagerBuilder {
      * @see    Compression
      */
     @Nonnull
-    public DefaultShardManagerBuilder setDecompressorBufferSizeHintProvider(@Nonnull IntUnaryOperator provider)
-    {
+    public DefaultShardManagerBuilder setDecompressorBufferSizeHintProvider(@Nonnull IntUnaryOperator provider) {
         Checks.notNull(provider, "Provider");
         this.bufferSizeHintProvider = provider;
         return this;
@@ -2291,8 +2288,8 @@ public class DefaultShardManagerBuilder {
                 shardingFlags,
                 maxReconnectDelay,
                 largeThreshold);
-        ShardingMetaConfig metaConfig =
-                new ShardingMetaConfig(bufferSizeHintProvider, contextProvider, cacheFlags, flags, compressionProvider, encoding);
+        ShardingMetaConfig metaConfig = new ShardingMetaConfig(
+                bufferSizeHintProvider, contextProvider, cacheFlags, flags, compressionProvider, encoding);
         DefaultShardManager manager = new DefaultShardManager(
                 this.token,
                 this.shards,
