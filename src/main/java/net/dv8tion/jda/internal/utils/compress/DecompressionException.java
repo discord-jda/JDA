@@ -16,23 +16,8 @@
 
 package net.dv8tion.jda.internal.utils.compress;
 
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import org.slf4j.Logger;
-
-import javax.annotation.Nullable;
-
-public interface Decompressor {
-    Logger LOG = JDALogger.getLog(Decompressor.class);
-
-    Compression getType();
-
-    void reset();
-
-    void shutdown();
-
-    // returns null when the decompression isn't done,
-    // for example when no Z_SYNC_FLUSH was present
-    @Nullable
-    byte[] decompress(byte[] data) throws DecompressionException;
+public class DecompressionException extends Exception {
+    public DecompressionException(Throwable cause) {
+        super(cause);
+    }
 }

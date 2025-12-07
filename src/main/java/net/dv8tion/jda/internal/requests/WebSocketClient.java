@@ -51,6 +51,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.ShutdownReason;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
+import net.dv8tion.jda.internal.utils.compress.DecompressionException;
 import net.dv8tion.jda.internal.utils.compress.Decompressor;
 import net.dv8tion.jda.internal.utils.compress.DecompressorFactory;
 import org.slf4j.Logger;
@@ -72,7 +73,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.zip.DataFormatException;
 
 import javax.annotation.Nonnull;
 
@@ -955,7 +955,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws DataFormatException {
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws DecompressionException {
         DataObject message;
         // Only acquire lock for decompression and unlock for event handling
         synchronized (readLock) {
@@ -966,7 +966,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected DataObject handleBinary(byte[] binary) throws DataFormatException {
+    protected DataObject handleBinary(byte[] binary) throws DecompressionException {
         if (decompressor.getType() == Compression.NONE) {
             if (encoding == GatewayEncoding.ETF) {
                 return DataObject.fromETF(binary);
@@ -980,7 +980,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (data == null) {
                 return null;
             }
-        } catch (DataFormatException e) {
+        } catch (DecompressionException e) {
             close(4900, "MALFORMED_PACKAGE");
             throw e;
         }

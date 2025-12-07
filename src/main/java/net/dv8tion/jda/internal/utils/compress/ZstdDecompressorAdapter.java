@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.utils.compress;
 
 import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
+import dev.freya02.discord.zstd.api.DiscordZstdException;
 import net.dv8tion.jda.api.utils.Compression;
 
 import javax.annotation.Nonnull;
@@ -45,7 +46,11 @@ public class ZstdDecompressorAdapter implements Decompressor {
 
     @Nonnull
     @Override
-    public byte[] decompress(byte[] data) {
-        return decompressor.decompress(data);
+    public byte[] decompress(byte[] data) throws DecompressionException {
+        try {
+            return decompressor.decompress(data);
+        } catch (DiscordZstdException e) {
+            throw new DecompressionException(e);
+        }
     }
 }

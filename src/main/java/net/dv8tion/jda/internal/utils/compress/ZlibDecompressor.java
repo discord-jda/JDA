@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterOutputStream;
 
@@ -102,7 +101,7 @@ public class ZlibDecompressor implements Decompressor {
     }
 
     @Override
-    public byte[] decompress(byte[] data) throws DataFormatException {
+    public byte[] decompress(byte[] data) throws DecompressionException {
         // Handle split messages
         if (!isFlush(data)) {
             // There is no flush suffix so this is not the end of the message
@@ -131,7 +130,7 @@ public class ZlibDecompressor implements Decompressor {
             return buffer.toByteArray();
         } catch (IOException e) {
             // Some issue appeared during decompression that caused a failure
-            throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
+            throw new DecompressionException(e);
         } finally {
             // When done with decompression we want to reset the buffer so it can be used again
             // later
