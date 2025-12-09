@@ -26,7 +26,6 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -108,12 +107,7 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
     @Nonnull
     @Override
     public DataObject toData() {
-        String outputUrl;
-        if (media != null) { // Retain or reupload the entire file, both cases uses attachment://
-            outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
-        } else { // External URL or user-managed attachment
-            outputUrl = url;
-        }
+        String outputUrl = ComponentsUtil.getMediaUrl(media, url);
         return DataObject.empty()
                 .put("media", DataObject.empty().put("url", outputUrl))
                 .put("description", description)

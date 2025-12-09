@@ -28,7 +28,6 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -114,12 +113,7 @@ public class FileDisplayImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public DataObject toData() {
-        String outputUrl;
-        if (media != null) { // Retain or reupload the entire file, both cases uses attachment://
-            outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
-        } else { // User-managed attachment
-            outputUrl = url;
-        }
+        String outputUrl = ComponentsUtil.getMediaUrl(media, url);
         DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 // File components only support attachment://
