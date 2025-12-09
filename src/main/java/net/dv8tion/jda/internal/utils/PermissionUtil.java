@@ -43,11 +43,15 @@ public class PermissionUtil {
 
     public static void checkWithDeadline(
             GuildChannel channel, Instant deadline, Permission oldPermission, Permission newPermission) {
-        // If after the deadline or we don't have the "old" permission,
-        // check that we have the "new" permission
+        // After the deadline, require the "new" permission,
+        // otherwise check that we have either permission
         SelfMember selfMember = channel.getGuild().getSelfMember();
-        if (ClockProvider.getClock().instant().isAfter(deadline) || !selfMember.hasPermission(channel, oldPermission)) {
+        if (ClockProvider.getClock().instant().isAfter(deadline)) {
             if (!selfMember.hasPermission(channel, newPermission)) {
+                throw new InsufficientPermissionException(channel, newPermission);
+            }
+        } else {
+            if (!selfMember.hasPermission(channel, oldPermission) && !selfMember.hasPermission(channel, newPermission)) {
                 throw new InsufficientPermissionException(channel, newPermission);
             }
         }
@@ -55,10 +59,14 @@ public class PermissionUtil {
 
     public static void checkWithDeadline(
             SelfMember selfMember, Instant deadline, Permission oldPermission, Permission newPermission) {
-        // If after the deadline or we don't have the "old" permission,
-        // check that we have the "new" permission
-        if (ClockProvider.getClock().instant().isAfter(deadline) || !selfMember.hasPermission(oldPermission)) {
+        // After the deadline, require the "new" permission,
+        // otherwise check that we have either permission
+        if (ClockProvider.getClock().instant().isAfter(deadline)) {
             if (!selfMember.hasPermission(newPermission)) {
+                throw new InsufficientPermissionException(selfMember.getGuild(), newPermission);
+            }
+        } else {
+            if (!selfMember.hasPermission(oldPermission) && !selfMember.hasPermission(newPermission)) {
                 throw new InsufficientPermissionException(selfMember.getGuild(), newPermission);
             }
         }
