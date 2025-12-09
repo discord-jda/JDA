@@ -165,8 +165,6 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
                 PermissionUtil.FEB_23_2026_DEADLINE,
                 /* old */ Permission.MESSAGE_MANAGE,
                 /* new */ Permission.PIN_MESSAGES);
-
-        checkPermission(Permission.PIN_MESSAGES, "You need PIN_MESSAGES to pin or unpin messages.");
     }
 
     default boolean canDeleteOtherUsersMessages() {
