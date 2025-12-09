@@ -51,7 +51,8 @@ public class PermissionUtil {
                 throw new InsufficientPermissionException(channel, newPermission);
             }
         } else {
-            if (!selfMember.hasPermission(channel, oldPermission) && !selfMember.hasPermission(channel, newPermission)) {
+            if (!selfMember.hasPermission(channel, oldPermission)
+                    && !selfMember.hasPermission(channel, newPermission)) {
                 throw new InsufficientPermissionException(channel, newPermission);
             }
         }
