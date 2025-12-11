@@ -41,6 +41,19 @@ public interface RoleMemberCounts {
     int get(long roleId);
 
     /**
+     * Gets the number of members with the given role ID. Returns {@code 0} if the role is unknown.
+     *
+     * @param  roleId
+     *         The role ID to get the member count for
+     *
+     * @return The number of members with the corresponding role, or {@code 0}
+     */
+    default int get(@Nonnull String roleId) {
+        Checks.notNull(roleId, "Role ID");
+        return get(Long.parseLong(roleId));
+    }
+
+    /**
      * Gets the number of members with the given {@link Role}. Returns {@code 0} if the role is unknown.
      *
      * @param  role
@@ -62,6 +75,19 @@ public interface RoleMemberCounts {
      * @return {@code true} if the role has a member count, {@code false} otherwise
      */
     boolean contains(long roleId);
+
+    /**
+     * Whether the given role ID has a member count.
+     *
+     * @param  roleId
+     *         The role ID to check a member count for
+     *
+     * @return {@code true} if the role has a member count, {@code false} otherwise
+     */
+    default boolean contains(@Nonnull String roleId) {
+        Checks.notNull(roleId, "Role ID");
+        return contains(Long.parseLong(roleId));
+    }
 
     /**
      * Whether the given {@link Role} has a member count.
