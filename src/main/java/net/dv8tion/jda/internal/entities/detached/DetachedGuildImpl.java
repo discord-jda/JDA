@@ -55,6 +55,7 @@ import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.cache.SortedChannelCacheViewImpl;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -820,6 +821,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
     @Nonnull
     @Override
     public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles) {
+        throw detachedException();
+    }
+
+    @NotNull
+    @Override
+    public RestAction<RoleMemberCounts> retrieveRoleMemberCounts() {
         throw detachedException();
     }
 
