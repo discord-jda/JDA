@@ -55,7 +55,6 @@ import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.cache.SortedChannelCacheViewImpl;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -824,7 +823,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
         throw detachedException();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public RestAction<RoleMemberCounts> retrieveRoleMemberCounts() {
         throw detachedException();

@@ -89,7 +89,6 @@ import net.dv8tion.jda.internal.utils.cache.*;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -1742,7 +1741,7 @@ public class GuildImpl implements Guild {
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public RestAction<RoleMemberCounts> retrieveRoleMemberCounts() {
         return new RestActionImpl<>(api, Route.Guilds.GET_ROLE_MEMBER_COUNTS.compile(getId()), (response, request) -> {
