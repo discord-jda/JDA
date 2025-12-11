@@ -4762,6 +4762,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Returns a {@link RoleMemberCounts} object with the member count of each role,
      * except for the {@linkplain #getPublicRole() @everyone} role.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return A {@link RoleMemberCounts} object
      */
     @Nonnull
