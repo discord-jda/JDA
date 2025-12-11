@@ -1749,7 +1749,7 @@ public class GuildImpl implements Guild {
             response.getObject()
                     .toMap()
                     .forEach((roleId, count) -> map.put(Long.parseUnsignedLong(roleId), (int) count));
-            return new RoleMemberCountsImpl(map);
+            return new RoleMemberCountsImpl(this, map);
         });
     }
 

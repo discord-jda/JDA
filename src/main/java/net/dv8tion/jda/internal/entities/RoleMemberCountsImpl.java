@@ -17,19 +17,21 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongIntMap;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.RoleMemberCount;
 import net.dv8tion.jda.api.entities.RoleMemberCounts;
-import net.dv8tion.jda.api.utils.LongIntConsumer;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 
 public class RoleMemberCountsImpl implements RoleMemberCounts {
+    private final Guild guild;
     private final TLongIntMap roleMemberCounts;
 
-    public RoleMemberCountsImpl(TLongIntMap roleMemberCounts) {
+    public RoleMemberCountsImpl(Guild guild, TLongIntMap roleMemberCounts) {
+        this.guild = guild;
         this.roleMemberCounts = roleMemberCounts;
     }
 
@@ -44,23 +46,15 @@ public class RoleMemberCountsImpl implements RoleMemberCounts {
         return roleMemberCounts.containsKey(roleId);
     }
 
-    @Override
-    public void forEach(@Nonnull LongIntConsumer action) {
-        roleMemberCounts.forEachEntry((roleId, count) -> {
-            action.accept(roleId, count);
-            return true;
-        });
-    }
-
     @Nonnull
     @Override
     @Unmodifiable
-    public Map<Long, Integer> asMap() {
-        Map<Long, Integer> map = new HashMap<>(roleMemberCounts.size());
+    public List<RoleMemberCount> asList() {
+        List<RoleMemberCount> map = new ArrayList<>(roleMemberCounts.size());
         roleMemberCounts.forEachEntry((roleId, count) -> {
-            map.put(roleId, count);
+            map.add(new RoleMemberCountImpl(guild, roleId, count));
             return true;
         });
-        return map;
+        return Collections.unmodifiableList(map);
     }
 }

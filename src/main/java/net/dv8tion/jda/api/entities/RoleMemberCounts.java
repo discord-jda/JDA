@@ -16,11 +16,10 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.utils.LongIntConsumer;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Map;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -103,19 +102,11 @@ public interface RoleMemberCounts {
     }
 
     /**
-     * Iterates over all role IDs and member counts and runs the {@code action} in no particular order.
+     * Returns an unmodifiable list of {@link RoleMemberCount}.
      *
-     * @param action The action to run on each entry
-     */
-    void forEach(@Nonnull LongIntConsumer action);
-
-    /**
-     * Returns an unmodifiable map where the key is a role ID,
-     * and the value is the number of members with the role.
-     *
-     * @return An unmodifiable map of role member counts
+     * @return An unmodifiable list of role member counts
      */
     @Nonnull
     @Unmodifiable
-    Map<Long, Integer> asMap();
+    List<RoleMemberCount> asList();
 }
