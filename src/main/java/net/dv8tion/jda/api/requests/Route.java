@@ -185,6 +185,8 @@ public class Route {
         public static final Route GET_WELCOME_SCREEN = new Route(GET, "guilds/{guild_id}/welcome-screen");
         public static final Route MODIFY_WELCOME_SCREEN = new Route(PATCH, "guilds/{guild_id}/welcome-screen");
         public static final Route MODIFY_GUILD_INCIDENTS = new Route(PUT, "guilds/{guild_id}/incident-actions");
+
+        public static final Route SEARCH_MESSAGES = new Route(GET, "guilds/{guild_id}/messages/search");
     }
 
     public static class Emojis {

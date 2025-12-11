@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
 import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
+import net.dv8tion.jda.api.entities.messages.MessageSearchAction;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -5737,6 +5738,36 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     ScheduledEventAction createScheduledEvent(
             @Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime);
+
+    /**
+     * Searches for messages in this guild.
+     * The {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent must be enabled on the dev portal,
+     * but the bot does not necessarily need to start with it.
+     *
+     * <p>Any invalid entity referenced by the search query, will be ignored.
+     *
+     * <p>The returned messages will be missing reactions.
+     *
+     * <p><b>Note:</b> The search may return fewer results when messages have not been accessed for a long time,
+     * as such, you should not rely on the length of the messages list to paginate results.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>You are missing the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent, or the access to one of the searched channels have been revoked</li>
+     * </ul>
+     *
+     * @throws InsufficientPermissionException
+     *         If the {@linkplain #getSelfMember() current member} does not have the {@link Permission#MESSAGE_HISTORY MESSAGE_HISTORY} permission
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link MessageSearchAction}, which, when completed, returns a {@link net.dv8tion.jda.api.entities.messages.MessageSearchResponse MessageSearchResponse}
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageSearchAction searchMessages();
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}
