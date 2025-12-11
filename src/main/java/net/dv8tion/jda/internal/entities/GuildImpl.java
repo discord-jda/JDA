@@ -1746,7 +1746,9 @@ public class GuildImpl implements Guild {
     public RestAction<RoleMemberCounts> retrieveRoleMemberCounts() {
         return new RestActionImpl<>(api, Route.Guilds.GET_ROLE_MEMBER_COUNTS.compile(getId()), (response, request) -> {
             TLongIntMap map = new TLongIntHashMap();
-            response.getObject().toMap().forEach((roleId, count) -> map.put(Long.parseLong(roleId), (int) count));
+            response.getObject()
+                    .toMap()
+                    .forEach((roleId, count) -> map.put(Long.parseUnsignedLong(roleId), (int) count));
             return new RoleMemberCountsImpl(map);
         });
     }
