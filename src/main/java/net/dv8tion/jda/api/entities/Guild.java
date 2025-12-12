@@ -5311,7 +5311,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     /**
      * Creates a new {@link RichCustomEmoji} in this Guild.
      * <br>If one or more Roles are specified the new emoji will only be available to Members with any of the specified Roles (see {@link Member#canInteract(RichCustomEmoji)})
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} Permission.
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link RichCustomEmoji}!</u></b>
      *
@@ -5336,7 +5336,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         <br>If no roles are provided the emoji will be available to all Members of this Guild
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} Permission
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} Permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
@@ -5367,7 +5367,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The tags to use for auto-suggestions (Up to 200 characters in total)
      *
      * @throws InsufficientPermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} permission
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} permission
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
@@ -5411,7 +5411,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         Additional tags to use for suggestions
      *
      * @throws InsufficientPermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} permission
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} permission
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
@@ -5469,7 +5469,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * Events are required to have a name, location and start time.
      * Additionally, an end time <em>must</em> also be specified for events of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
-     * {@link Permission#MANAGE_EVENTS} is required on the guild level in order to create this type of event.
+     * {@link Permission#CREATE_SCHEDULED_EVENTS} is required on the guild level in order to create this type of event.
      *
      * <p><b>Example</b><br>
      * {@snippet lang="java":
@@ -5522,7 +5522,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         <br>These events are set to take place inside of a {@link StageChannel}. The
      *         following permissions are required in the specified stage channel in order to create an event there:
      *          <ul>
-     *              <li>{@link Permission#MANAGE_EVENTS}</li>
+     *              <li>{@link Permission#CREATE_SCHEDULED_EVENTS}</li>
      *              <li>{@link Permission#MANAGE_CHANNEL}</li>
      *              <li>{@link Permission#VOICE_MUTE_OTHERS}</li>
      *              <li>{@link Permission#VOICE_MOVE_OTHERS}}</li>
@@ -5533,7 +5533,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         <br>These events are set to take place inside of a {@link VoiceChannel}. The
      *         following permissions are required in the specified voice channel in order to create an event there:
      *         <ul>
-     *             <li>{@link Permission#MANAGE_EVENTS}</li>
+     *             <li>{@link Permission#CREATE_SCHEDULED_EVENTS}</li>
      *             <li>{@link Permission#VIEW_CHANNEL}</li>
      *             <li>{@link Permission#VOICE_CONNECT}</li>
      *         </ul>

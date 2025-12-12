@@ -180,9 +180,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      * between sending messages in the new channel. This is measured in seconds.
      *
      * <p>Note: Bots are unaffected by this.
-     * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
+     * <br>Having the {@link Permission#BYPASS_SLOWMODE BYPASS_SLOWMODE} permission also grants immunity to slowmode.
      *
      * @param  slowmode
      *         The number of seconds required to wait between sending messages in the channel.
@@ -204,9 +202,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      * <br>This is applied to newly created threads by default.
      *
      * <p>Note: Bots are unaffected by this.
-     * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
+     * <br>Having the {@link Permission#BYPASS_SLOWMODE BYPASS_SLOWMODE} permission also grants immunity to slowmode.
      *
      * @param  slowmode
      *         The number of seconds required to wait between sending messages in the channel.

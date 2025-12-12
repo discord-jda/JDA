@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.attribute;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
@@ -39,9 +40,7 @@ public interface ISlowmodeChannel extends GuildChannel {
      * <br>Otherwise, if no slowmode is set, this returns {@code 0}.
      *
      * <p>Note bots are unaffected by this.
-     * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
+     * <br>Having the {@link Permission#BYPASS_SLOWMODE BYPASS_SLOWMODE} permission also grants immunity to slowmode.
      *
      * <p><b>Special case</b><br>
      * {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels} use this to limit how many posts a user can create.
