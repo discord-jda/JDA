@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleColors;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -32,7 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Role Role}.
+ * Manager providing functionality to update one or more fields for a {@link Role}.
  *
  * <p><b>Example</b>
  * {@snippet lang="java":
@@ -111,7 +112,7 @@ public interface RoleManager extends Manager<RoleManager> {
     RoleManager reset(@Nonnull long... fields);
 
     /**
-     * The target {@link net.dv8tion.jda.api.entities.Role Role} for this
+     * The target {@link Role} for this
      * manager
      *
      * @return The target Role
@@ -121,7 +122,7 @@ public interface RoleManager extends Manager<RoleManager> {
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
-     * {@link net.dv8tion.jda.api.entities.Role Role} is in.
+     * {@link Role} is in.
      * <br>This is logically the same as calling {@code getRole().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -132,12 +133,12 @@ public interface RoleManager extends Manager<RoleManager> {
     }
 
     /**
-     * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the <b><u>name</u></b> of the selected {@link Role}.
      *
      * <p>A role name <b>must not</b> be {@code null} nor less than 1 character or more than 100 characters long!
      *
      * @param  name
-     *         The new name for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new name for the selected {@link Role}
      *
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 1-100 characters long
@@ -149,13 +150,13 @@ public interface RoleManager extends Manager<RoleManager> {
     RoleManager setName(@Nonnull String name);
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} of the selected {@link Role}.
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
      *
      * @param  perms
-     *         The new raw permission value for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new raw permission value for the selected {@link Role}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have permission to apply one of the specified permissions
@@ -170,13 +171,13 @@ public interface RoleManager extends Manager<RoleManager> {
     RoleManager setPermissions(long perms);
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} of the selected {@link Role}.
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
      *
      * @param  permissions
-     *         The new permission for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new permission for the selected {@link Role}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have permission to apply one of the specified permissions
@@ -197,13 +198,13 @@ public interface RoleManager extends Manager<RoleManager> {
     }
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} of the selected {@link Role}.
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
      *
      * @param  permissions
-     *         The new permission for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new permission for the selected {@link Role}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have permission to apply one of the specified permissions
@@ -225,10 +226,10 @@ public interface RoleManager extends Manager<RoleManager> {
     }
 
     /**
-     * Sets the {@link java.awt.Color Color} of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the {@link java.awt.Color Color} of the selected {@link Role}.
      *
      * @param  color
-     *         The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new color for the selected {@link Role}
      *
      * @return RoleManager for chaining convenience
      */
@@ -239,24 +240,89 @@ public interface RoleManager extends Manager<RoleManager> {
     }
 
     /**
-     * Sets the rgb color of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the rgb color of the selected {@link Role}.
      *
      * @param  rgb
-     *         The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new color for the selected {@link Role}
      *
      * @return RoleManager for chaining convenience
      *
-     * @see    Role#DEFAULT_COLOR_RAW Role.DEFAULT_COLOR_RAW
+     * @see    Role#DEFAULT_COLOR_RAW
      */
     @Nonnull
     @CheckReturnValue
     RoleManager setColor(int rgb);
 
     /**
-     * Sets the <b><u>hoist state</u></b> of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the three color components of this role.
+     *
+     * <p>It is recommended to use {@link #setColor(int)}, {@link #setGradientColors(int, int)}, or {@link #useHolographicStyle()} for setting colors instead,
+     * this method is primarily intended for copying colors from an existing role object with {@link Role#getColors()}.
+     *
+     * @param  colors
+     *         The role colors or {@code null} to use the default white/black
+     *
+     * @return RoleManager for chaining convenience
+     *
+     * @see    Role#getColors()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleManager setColors(@Nullable RoleColors colors);
+
+    /**
+     * Sets the primary and secondary color for the new role color gradient.
+     *
+     * <p>Use {@link #setColor(Color)} or {@link #useHolographicStyle()} to use a single color or holographic style instead.
+     *
+     * @param  primary
+     *         The primary color for gradient
+     * @param  secondary
+     *         The secondary color for gradient
+     *
+     * @return RoleManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RoleManager setGradientColors(@Nonnull Color primary, @Nonnull Color secondary) {
+        Checks.notNull(primary, "Primary");
+        Checks.notNull(secondary, "Secondary");
+        return setGradientColors(primary.getRGB(), secondary.getRGB());
+    }
+
+    /**
+     * Sets the primary and secondary color for the new role color gradient.
+     *
+     * <p>This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
+     * The provided value will be ranged using {@code rbg & 0xFFFFFF}.
+     *
+     * <p>Use {@link #setColor(int)} or {@link #useHolographicStyle()} to use a single color or holographic style instead.
+     *
+     * @param  primaryRgb
+     *         The primary color for gradient
+     * @param  secondaryRgb
+     *         The secondary color for gradient
+     *
+     * @return RoleManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleManager setGradientColors(int primaryRgb, int secondaryRgb);
+
+    /**
+     * Sets the colors of this role to {@link RoleColors#DEFAULT_HOLOGRAPHIC}.
+     *
+     * @return RoleManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleManager useHolographicStyle();
+
+    /**
+     * Sets the <b><u>hoist state</u></b> of the selected {@link Role}.
      *
      * @param  hoisted
-     *         Whether the selected {@link net.dv8tion.jda.api.entities.Role Role} should be hoisted
+     *         Whether the selected {@link Role} should be hoisted
      *
      * @return RoleManager for chaining convenience
      */
@@ -265,10 +331,10 @@ public interface RoleManager extends Manager<RoleManager> {
     RoleManager setHoisted(boolean hoisted);
 
     /**
-     * Sets the <b><u>mentionable state</u></b> of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the <b><u>mentionable state</u></b> of the selected {@link Role}.
      *
      * @param  mentionable
-     *         Whether the selected {@link net.dv8tion.jda.api.entities.Role Role} should be mentionable
+     *         Whether the selected {@link Role} should be mentionable
      *
      * @return RoleManager for chaining convenience
      */
@@ -277,10 +343,10 @@ public interface RoleManager extends Manager<RoleManager> {
     RoleManager setMentionable(boolean mentionable);
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Sets the {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link Role}.
      *
      * @param  icon
-     *         The new icon for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new icon for this {@link Role}
      *         or {@code null} to reset
      *
      * @return RoleManager for chaining convenience
@@ -290,10 +356,10 @@ public interface RoleManager extends Manager<RoleManager> {
     RoleManager setIcon(@Nullable Icon icon);
 
     /**
-     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} instead of a custom image.
+     * Sets the Unicode Emoji of this {@link Role} instead of a custom image.
      *
      * @param  emoji
-     *         The new Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new Unicode Emoji for this {@link Role}
      *         or {@code null} to reset
      *
      * @return RoleManager for chaining convenience
@@ -303,10 +369,10 @@ public interface RoleManager extends Manager<RoleManager> {
     RoleManager setIcon(@Nullable String emoji);
 
     /**
-     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} instead of a custom image.
+     * Sets the Unicode Emoji of this {@link Role} instead of a custom image.
      *
      * @param  emoji
-     *         The new Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The new Unicode Emoji for this {@link Role}
      *         or {@code null} to reset
      *
      * @return RoleManager for chaining convenience
@@ -321,13 +387,13 @@ public interface RoleManager extends Manager<RoleManager> {
     }
 
     /**
-     * Adds the specified {@link net.dv8tion.jda.api.Permission Permissions} to the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Adds the specified {@link net.dv8tion.jda.api.Permission Permissions} to the selected {@link Role}.
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
      *
      * @param  perms
-     *         The permission to give to the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The permission to give to the selected {@link Role}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have permission to apply one of the specified permissions
@@ -346,13 +412,13 @@ public interface RoleManager extends Manager<RoleManager> {
     }
 
     /**
-     * Adds the specified {@link net.dv8tion.jda.api.Permission Permissions} to the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Adds the specified {@link net.dv8tion.jda.api.Permission Permissions} to the selected {@link Role}.
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to give permissions you don't have!
      *
      * @param  perms
-     *         The permission to give to the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The permission to give to the selected {@link Role}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have permission to apply one of the specified permissions
@@ -369,13 +435,13 @@ public interface RoleManager extends Manager<RoleManager> {
     RoleManager givePermissions(@Nonnull Collection<Permission> perms);
 
     /**
-     * Revokes the specified {@link net.dv8tion.jda.api.Permission Permissions} from the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Revokes the specified {@link net.dv8tion.jda.api.Permission Permissions} from the selected {@link Role}.
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to revoke permissions you don't have!
      *
      * @param  perms
-     *         The permission to give to the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The permission to give to the selected {@link Role}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have permission to revoke one of the specified permissions
@@ -394,13 +460,13 @@ public interface RoleManager extends Manager<RoleManager> {
     }
 
     /**
-     * Revokes the specified {@link net.dv8tion.jda.api.Permission Permissions} from the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * Revokes the specified {@link net.dv8tion.jda.api.Permission Permissions} from the selected {@link Role}.
      *
      * <p>Permissions may only include already present Permissions for the currently logged in account.
      * <br>You are unable to revoke permissions you don't have!
      *
      * @param  perms
-     *         The permission to give to the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *         The permission to give to the selected {@link Role}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have permission to revoke one of the specified permissions

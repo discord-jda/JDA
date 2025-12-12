@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleColors;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -121,8 +122,9 @@ public interface RoleAction extends AuditableRestAction<Role> {
     }
 
     /**
-     * Sets the Color for the new role.
-     * This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
+     * Sets the color for the new role.
+     *
+     * <p>This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
      * The provided value will be ranged using {@code rbg & 0xFFFFFF}
      *
      * @param  rgb
@@ -133,6 +135,71 @@ public interface RoleAction extends AuditableRestAction<Role> {
     @Nonnull
     @CheckReturnValue
     RoleAction setColor(@Nullable Integer rgb);
+
+    /**
+     * Sets the three color components of this role.
+     *
+     * <p>It is recommended to use {@link #setColor(Integer)}, {@link #setGradientColors(int, int)}, or {@link #useHolographicStyle()} for setting colors instead,
+     * this method is primarily intended for copying colors from an existing role object with {@link Role#getColors()}.
+     *
+     * @param colors
+     *        The role colors or {@code null} to use the default white/black
+     *
+     * @return The current RoleAction, for chaining convenience
+     *
+     * @see Role#getColors()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleAction setColors(@Nullable RoleColors colors);
+
+    /**
+     * Sets the primary and secondary color for the new role color gradient.
+     *
+     * <p>Use {@link #setColor(Color)} or {@link #useHolographicStyle()} to use a single color or holographic style instead.
+     *
+     * @param  primary
+     *         The primary color for gradient
+     * @param  secondary
+     *         The secondary color for gradient
+     *
+     * @return The current RoleAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RoleAction setGradientColors(@Nonnull Color primary, @Nonnull Color secondary) {
+        Checks.notNull(primary, "Primary");
+        Checks.notNull(secondary, "Secondary");
+        return this.setGradientColors(primary.getRGB(), secondary.getRGB());
+    }
+
+    /**
+     * Sets the primary and secondary color for the new role color gradient.
+     *
+     * <p>This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
+     * The provided value will be ranged using {@code rbg & 0xFFFFFF}.
+     *
+     * <p>Use {@link #setColor(Integer)} or {@link #useHolographicStyle()} to use a single color or holographic style instead.
+     *
+     * @param  primaryRgb
+     *         The primary color for gradient
+     * @param  secondaryRgb
+     *         The secondary color for gradient
+     *
+     * @return The current RoleAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleAction setGradientColors(int primaryRgb, int secondaryRgb);
+
+    /**
+     * Sets the colors of this role to {@link RoleColors#DEFAULT_HOLOGRAPHIC}.
+     *
+     * @return The current RoleAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleAction useHolographicStyle();
 
     /**
      * Sets the Permissions the new Role should have.

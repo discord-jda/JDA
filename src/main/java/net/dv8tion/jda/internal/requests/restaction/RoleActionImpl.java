@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleColors;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -30,17 +31,19 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
+import java.awt.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class RoleActionImpl extends AuditableRestActionImpl<Role> implements RoleAction {
     protected final Guild guild;
     protected Long permissions;
     protected String name = null;
-    protected Integer color = null;
+    protected RoleColors colors = null;
     protected Boolean hoisted = null;
     protected Boolean mentionable = null;
     protected Icon icon = null;
@@ -111,9 +114,32 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
 
     @Nonnull
     @Override
+    public RoleAction setGradientColors(int primaryRgb, int secondaryRgb) {
+        this.colors = new RoleColors(primaryRgb, secondaryRgb, Role.DEFAULT_COLOR_RAW);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public RoleAction useHolographicStyle() {
+        this.colors = RoleColors.DEFAULT_HOLOGRAPHIC;
+        return this;
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public RoleActionImpl setColor(Integer rgb) {
-        this.color = rgb;
+        this.colors = new RoleColors(
+                rgb == null ? Role.DEFAULT_COLOR_RAW : rgb, Role.DEFAULT_COLOR_RAW, Role.DEFAULT_COLOR_RAW);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleAction setColors(@Nullable RoleColors colors) {
+        this.colors = colors;
         return this;
     }
 
@@ -154,8 +180,8 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
         if (name != null) {
             object.put("name", name);
         }
-        if (color != null) {
-            object.put("color", color & 0xFFFFFF);
+        if (colors != null && !colors.isDefault()) {
+            object.put("colors", colors);
         }
         if (permissions != null) {
             object.put("permissions", permissions);

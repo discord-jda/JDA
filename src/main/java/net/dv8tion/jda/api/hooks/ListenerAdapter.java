@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.hooks;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.automod.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
@@ -483,7 +484,11 @@ public abstract class ListenerAdapter implements EventListener {
     public void onRoleDelete(@Nonnull RoleDeleteEvent event) {}
 
     // Role Update Events
+    @Deprecated
+    @ReplaceWith("onRoleUpdateColors(event)")
     public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {}
+
+    public void onRoleUpdateColors(@Nonnull RoleUpdateColorsEvent event) {}
 
     public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {}
 

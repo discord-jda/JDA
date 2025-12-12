@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -111,22 +112,48 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
     long getPermissionsRaw();
 
     /**
+     * The colors this Role is displayed in.
+     *
+     * <p>See {@link RoleColors} for detailed information on how these work.
+     *
+     * @return {@link RoleColors}
+     *
+     * @see RoleColors#isDefault()
+     * @see RoleColors#isGradient()
+     * @see RoleColors#isHolographic()
+     */
+    @Nonnull
+    RoleColors getColors();
+
+    /**
      * The color this {@link net.dv8tion.jda.api.entities.Role Role} is displayed in.
      *
      * @return Color value of Role-color
      *
+     * @deprecated Replaced by {@link #getColors()}
+     *
      * @see    #getColorRaw()
      */
     @Nullable
-    Color getColor();
+    @Deprecated
+    @ReplaceWith("getColors().getPrimary()")
+    default Color getColor() {
+        return getColors().getPrimary();
+    }
 
     /**
      * The raw color RGB value used for this role
      * <br>Defaults to {@link #DEFAULT_COLOR_RAW} if this role has no set color
      *
      * @return The raw RGB color value or default
+     *
+     * @deprecated Replaced by {@link #getColors()}
      */
-    int getColorRaw();
+    @Deprecated
+    @ReplaceWith("getColors().getPrimaryRaw()")
+    default int getColorRaw() {
+        return getColors().getPrimaryRaw();
+    }
 
     /**
      * Whether this role is the @everyone role for its {@link net.dv8tion.jda.api.entities.Guild Guild},

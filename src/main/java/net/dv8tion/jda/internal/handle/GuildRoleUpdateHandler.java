@@ -16,11 +16,12 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleColors;
 import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.AbstractEntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.RoleImpl;
 
@@ -55,10 +56,8 @@ public class GuildRoleUpdateHandler extends SocketHandler {
         }
 
         String name = rolejson.getString("name");
-        int color = rolejson.getInt("color");
-        if (color == 0) {
-            color = Role.DEFAULT_COLOR_RAW;
-        }
+        RoleColors colors = AbstractEntityBuilder.createRoleColors(rolejson.getObject("colors"));
+
         int position = rolejson.getInt("position");
         long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");
@@ -73,10 +72,19 @@ public class GuildRoleUpdateHandler extends SocketHandler {
             role.setName(name);
             getJDA().handleEvent(new RoleUpdateNameEvent(getJDA(), responseNumber, role, oldName));
         }
-        if (color != role.getColorRaw()) {
-            int oldColor = role.getColorRaw();
-            role.setColor(color);
-            getJDA().handleEvent(new RoleUpdateColorEvent(getJDA(), responseNumber, role, oldColor));
+        if (!colors.equals(role.getColors())) {
+            RoleColors oldColors = role.getColors();
+            role.setPrimaryColor(colors.getPrimaryRaw());
+            role.setSecondaryColor(colors.getSecondaryRaw());
+            role.setTertiaryColor(colors.getTertiaryRaw());
+            getJDA().handleEvent(new RoleUpdateColorsEvent(getJDA(), responseNumber, role, oldColors));
+
+            if (oldColors.getPrimaryRaw() != colors.getPrimaryRaw()) {
+                @SuppressWarnings("deprecation")
+                RoleUpdateColorEvent event =
+                        new RoleUpdateColorEvent(getJDA(), responseNumber, role, oldColors.getPrimaryRaw());
+                getJDA().handleEvent(event);
+            }
         }
         if (!Objects.equals(position, role.getPositionRaw())) {
             int oldPosition = role.getPosition();

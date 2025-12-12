@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleColors;
 import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
@@ -217,13 +218,16 @@ public abstract class AbstractEntityBuilder {
     }
 
     protected void configureRole(DataObject roleJson, RoleMixin<?> role, long id) {
-        int color = roleJson.getInt("color");
+        RoleColors colors = createRoleColors(roleJson.getObject("colors"));
+
         role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
                 .setRawPermissions(roleJson.getLong("permissions"))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
-                .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
+                .setPrimaryColor(colors.getPrimaryRaw())
+                .setSecondaryColor(colors.getSecondaryRaw())
+                .setTertiaryColor(colors.getTertiaryRaw())
                 .setMentionable(roleJson.getBoolean("mentionable"))
                 .setTags(roleJson.optObject("tags").orElseGet(DataObject::empty));
 
@@ -234,5 +238,16 @@ public abstract class AbstractEntityBuilder {
         } else {
             role.setIcon(new RoleIcon(iconId, emoji, id));
         }
+    }
+
+    public static RoleColors createRoleColors(DataObject colorsJson) {
+        int primaryColor = colorsJson.getInt("primary_color");
+        int secondaryColor = colorsJson.getInt("secondary_color", Role.DEFAULT_COLOR_RAW);
+        int tertiaryColor = colorsJson.getInt("tertiary_color", Role.DEFAULT_COLOR_RAW);
+
+        boolean isDefault = primaryColor == 0
+                && secondaryColor == Role.DEFAULT_COLOR_RAW
+                && tertiaryColor == Role.DEFAULT_COLOR_RAW;
+        return new RoleColors(isDefault ? Role.DEFAULT_COLOR_RAW : primaryColor, secondaryColor, tertiaryColor);
     }
 }

@@ -14,39 +14,39 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities.mixin;
+package net.dv8tion.jda.api.events.role.update;
 
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.RoleColors;
-import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public interface MemberMixin<T extends MemberMixin<T>> extends Member, IDetachableEntityMixin {
-    T setNickname(String nickname);
+/**
+ * Indicates that a {@link Role} updated its colors.
+ *
+ * <p>Can be used to retrieve the old colors.
+ *
+ * <p>Identifier: {@code colors}
+ */
+public class RoleUpdateColorsEvent extends GenericRoleUpdateEvent<RoleColors> {
+    public static final String IDENTIFIER = "colors";
 
-    T setAvatarId(String avatarId);
-
-    T setJoinDate(long joinDate);
-
-    T setBoostDate(long boostDate);
-
-    T setTimeOutEnd(long time);
-
-    T setPending(boolean pending);
-
-    T setFlags(int flags);
+    public RoleUpdateColorsEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nullable RoleColors previous) {
+        super(api, responseNumber, role, previous, role.getColors(), IDENTIFIER);
+    }
 
     @Nonnull
     @Override
-    default RoleColors getColors() {
-        for (Role role : this.getRoles()) {
-            RoleColors roleColors = role.getColors();
-            if (!roleColors.isDefault()) {
-                return roleColors;
-            }
-        }
-        return RoleColors.DEFAULT;
+    public RoleColors getOldValue() {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public RoleColors getNewValue() {
+        return super.getNewValue();
     }
 }
