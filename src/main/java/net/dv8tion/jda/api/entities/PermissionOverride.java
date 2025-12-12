@@ -16,12 +16,15 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.api.utils.PermissionSet;
 
 import java.util.EnumSet;
 
@@ -40,12 +43,24 @@ import javax.annotation.Nullable;
  * @see net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getRolePermissionOverrides()
  */
 public interface PermissionOverride extends ISnowflake {
+    @Nonnull
+    PermissionSet getAllowedSet();
+
+    @Nonnull
+    PermissionSet getInheritedSet();
+
+    @Nonnull
+    PermissionSet getDeniedSet();
+
     /**
      * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.
      * <br>The long relates to the offsets used by each {@link net.dv8tion.jda.api.Permission Permission}.
      *
      * @return Never-negative long containing the binary representation of the allowed permissions of this override.
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getAllowedSet()")
     long getAllowedRaw();
 
     /**
@@ -54,6 +69,9 @@ public interface PermissionOverride extends ISnowflake {
      *
      * @return Never-negative long containing the binary representation of the unaffected permissions of this override.
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getInheritedSet()")
     long getInheritRaw();
 
     /**
@@ -62,6 +80,9 @@ public interface PermissionOverride extends ISnowflake {
      *
      * @return Never-negative long containing the binary representation of the denied permissions of this override.
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getDeniedSet()")
     long getDeniedRaw();
 
     /**

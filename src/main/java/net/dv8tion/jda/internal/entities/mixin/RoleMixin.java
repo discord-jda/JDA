@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -82,7 +83,7 @@ public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEnti
 
     T setMentionable(boolean mentionable);
 
-    T setRawPermissions(long rawPermissions);
+    T setPermissions(PermissionSet permissions);
 
     T setRawPosition(int rawPosition);
 

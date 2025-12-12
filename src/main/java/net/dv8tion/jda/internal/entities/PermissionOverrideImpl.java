@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
@@ -42,8 +43,8 @@ public class PermissionOverrideImpl implements PermissionOverride {
     private final JDAImpl api;
     private IPermissionContainer channel;
 
-    private long allow;
-    private long deny;
+    private PermissionSet allow;
+    private PermissionSet deny;
 
     public PermissionOverrideImpl(IPermissionContainer channel, long id, boolean isRole) {
         this.isRole = isRole;
@@ -52,37 +53,55 @@ public class PermissionOverrideImpl implements PermissionOverride {
         this.id = id;
     }
 
+    @Nonnull
+    @Override
+    public PermissionSet getAllowedSet() {
+        return allow;
+    }
+
+    @Nonnull
+    @Override
+    public PermissionSet getInheritedSet() {
+        return allow.or(deny).not();
+    }
+
+    @Nonnull
+    @Override
+    public PermissionSet getDeniedSet() {
+        return deny;
+    }
+
     @Override
     public long getAllowedRaw() {
-        return allow;
+        return allow.toBigInteger().longValue();
     }
 
     @Override
     public long getInheritRaw() {
-        return ~(allow | deny);
+        return getInheritedSet().toBigInteger().longValue();
     }
 
     @Override
     public long getDeniedRaw() {
-        return deny;
+        return deny.toBigInteger().longValue();
     }
 
     @Nonnull
     @Override
     public EnumSet<Permission> getAllowed() {
-        return Permission.getPermissions(allow);
+        return allow.toEnumSet();
     }
 
     @Nonnull
     @Override
     public EnumSet<Permission> getInherit() {
-        return Permission.getPermissions(getInheritRaw());
+        return getInheritedSet().toEnumSet();
     }
 
     @Nonnull
     @Override
     public EnumSet<Permission> getDenied() {
-        return Permission.getPermissions(deny);
+        return deny.toEnumSet();
     }
 
     @Nonnull
@@ -154,12 +173,12 @@ public class PermissionOverrideImpl implements PermissionOverride {
         return id;
     }
 
-    public PermissionOverrideImpl setAllow(long allow) {
+    public PermissionOverrideImpl setAllow(PermissionSet allow) {
         this.allow = allow;
         return this;
     }
 
-    public PermissionOverrideImpl setDeny(long deny) {
+    public PermissionOverrideImpl setDeny(PermissionSet deny) {
         this.deny = deny;
         return this;
     }
