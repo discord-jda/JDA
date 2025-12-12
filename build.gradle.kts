@@ -221,9 +221,12 @@ versionCatalogUpdate {
 
 rewrite {
     failOnDryRunResults = true
+    throwOnParseFailures = true
+
     activeRecipe("org.openrewrite.staticanalysis.NeedBraces")
     activeRecipe("org.openrewrite.staticanalysis.NoFinalizedLocalVariables")
     activeRecipe("net.dv8tion.jda.recipe.JavadocFormatter")
+    activeRecipe("MigrateToJavaxAnnotations")
 
     exclusion("*.kts", "**/*.kts", "**/*.kt")
 }

@@ -27,7 +27,6 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -369,7 +368,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         return this;
     }
 
-    private void setVoiceMessageIfApplicable(@NotNull Collection<? extends FileUpload> files) {
+    private void setVoiceMessageIfApplicable(@Nonnull Collection<? extends FileUpload> files) {
         if (files.stream().anyMatch(FileUpload::isVoiceMessage)) {
             this.setVoiceMessage(true);
         }
