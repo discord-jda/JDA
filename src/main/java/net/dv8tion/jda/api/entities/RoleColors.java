@@ -221,8 +221,8 @@ public class RoleColors implements SerializableData {
     @Override
     public DataObject toData() {
         return DataObject.empty()
-                .put("primary", primary != Role.DEFAULT_COLOR_RAW ? primary & 0xFFFFFF : 0)
-                .put("secondary", secondary != Role.DEFAULT_COLOR_RAW ? secondary & 0xFFFFFF : null)
-                .put("tertiary", tertiary != Role.DEFAULT_COLOR_RAW ? tertiary & 0xFFFFFF : null);
+                .put("primary_color", primary != Role.DEFAULT_COLOR_RAW ? primary & 0xFFFFFF : 0)
+                .put("secondary_color", secondary != Role.DEFAULT_COLOR_RAW ? secondary & 0xFFFFFF : null)
+                .put("tertiary_color", tertiary != Role.DEFAULT_COLOR_RAW ? tertiary & 0xFFFFFF : null);
     }
 }

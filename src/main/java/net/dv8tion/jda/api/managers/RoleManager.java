@@ -242,6 +242,9 @@ public interface RoleManager extends Manager<RoleManager> {
     /**
      * Sets the rgb color of the selected {@link Role}.
      *
+     * <p>This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
+     * The provided value will be ranged using {@code rgb & 0xFFFFFF}.
+     *
      * @param  rgb
      *         The new color for the selected {@link Role}
      *
@@ -294,7 +297,7 @@ public interface RoleManager extends Manager<RoleManager> {
      * Sets the primary and secondary color for the new role color gradient.
      *
      * <p>This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
-     * The provided value will be ranged using {@code rbg & 0xFFFFFF}.
+     * The provided value will be ranged using {@code rgb & 0xFFFFFF}.
      *
      * <p>Use {@link #setColor(int)} or {@link #useHolographicStyle()} to use a single color or holographic style instead.
      *

@@ -403,7 +403,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nullable
     @Deprecated
-    @ReplaceWith("getColors().getPrimaryRaw()")
+    @ReplaceWith("getColors().getPrimary()")
     default Color getColor() {
         return this.getColors().getPrimary();
     }

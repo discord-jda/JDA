@@ -125,7 +125,7 @@ public interface RoleAction extends AuditableRestAction<Role> {
      * Sets the color for the new role.
      *
      * <p>This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
-     * The provided value will be ranged using {@code rbg & 0xFFFFFF}
+     * The provided value will be ranged using {@code rgb & 0xFFFFFF}
      *
      * @param  rgb
      *         The color for the new role in integer form, {@code null} to use default white/black
@@ -177,7 +177,7 @@ public interface RoleAction extends AuditableRestAction<Role> {
      * Sets the primary and secondary color for the new role color gradient.
      *
      * <p>This accepts colors from the range {@code 0x000} to {@code 0xFFFFFF}.
-     * The provided value will be ranged using {@code rbg & 0xFFFFFF}.
+     * The provided value will be ranged using {@code rgb & 0xFFFFFF}.
      *
      * <p>Use {@link #setColor(Integer)} or {@link #useHolographicStyle()} to use a single color or holographic style instead.
      *

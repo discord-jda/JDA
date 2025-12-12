@@ -351,13 +351,13 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     @Override
     public RoleImpl setSecondaryColor(int color) {
         this.secondaryColor = color;
-        return null;
+        return this;
     }
 
     @Override
     public RoleImpl setTertiaryColor(int color) {
         this.tertiaryColor = color;
-        return null;
+        return this;
     }
 
     @Override
