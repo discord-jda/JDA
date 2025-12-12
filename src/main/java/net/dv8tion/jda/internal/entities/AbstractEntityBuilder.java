@@ -245,9 +245,6 @@ public abstract class AbstractEntityBuilder {
         int secondaryColor = colorsJson.getInt("secondary_color", Role.DEFAULT_COLOR_RAW);
         int tertiaryColor = colorsJson.getInt("tertiary_color", Role.DEFAULT_COLOR_RAW);
 
-        boolean isDefault = primaryColor == 0
-                && secondaryColor == Role.DEFAULT_COLOR_RAW
-                && tertiaryColor == Role.DEFAULT_COLOR_RAW;
-        return new RoleColors(isDefault ? Role.DEFAULT_COLOR_RAW : primaryColor, secondaryColor, tertiaryColor);
+        return new RoleColors(primaryColor == 0 ? Role.DEFAULT_COLOR_RAW : primaryColor, secondaryColor, tertiaryColor);
     }
 }

@@ -67,10 +67,10 @@ public class RoleColors implements SerializableData {
     /**
      * Whether this role uses the default colors, which is determined by the client theme.
      *
-     * @return True, if all color values are the default.
+     * @return True, if the primary color is {@link Role#DEFAULT_COLOR_RAW}
      */
     public boolean isDefault() {
-        return this.equals(DEFAULT);
+        return this.primary == Role.DEFAULT_COLOR_RAW;
     }
 
     /**
@@ -90,7 +90,9 @@ public class RoleColors implements SerializableData {
      * @return True if a secondary color is configured but no tertiary color.
      */
     public boolean isGradient() {
-        return this.tertiary == Role.DEFAULT_COLOR_RAW && this.secondary != Role.DEFAULT_COLOR_RAW;
+        return this.tertiary == Role.DEFAULT_COLOR_RAW
+                && this.secondary != Role.DEFAULT_COLOR_RAW
+                && this.primary != Role.DEFAULT_COLOR_RAW;
     }
 
     /**
