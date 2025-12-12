@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -48,8 +49,7 @@ public interface RoleMemberCounts {
      * @return The number of members with the corresponding role, or {@code 0}
      */
     default int get(@Nonnull String roleId) {
-        Checks.notNull(roleId, "Role ID");
-        return get(Long.parseLong(roleId));
+        return get(MiscUtil.parseSnowflake(roleId));
     }
 
     /**
@@ -84,8 +84,7 @@ public interface RoleMemberCounts {
      * @return {@code true} if the role has a member count, {@code false} otherwise
      */
     default boolean contains(@Nonnull String roleId) {
-        Checks.notNull(roleId, "Role ID");
-        return contains(Long.parseLong(roleId));
+        return contains(MiscUtil.parseSnowflake(roleId));
     }
 
     /**
