@@ -825,6 +825,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
+    public RestAction<RoleMemberCounts> retrieveRoleMemberCounts() {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent) {
         throw detachedException();
     }

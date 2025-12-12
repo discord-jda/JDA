@@ -4759,6 +4759,19 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles);
 
     /**
+     * Returns a {@link RoleMemberCounts} object with the member count of each role,
+     * except for the {@linkplain #getPublicRole() @everyone} role.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return A {@link RoleMemberCounts} object
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<RoleMemberCounts> retrieveRoleMemberCounts();
+
+    /**
      * Creates a new {@link TextChannel TextChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *

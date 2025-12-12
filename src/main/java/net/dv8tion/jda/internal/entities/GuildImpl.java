@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongIntMap;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.Permission;
@@ -1742,6 +1744,18 @@ public class GuildImpl implements Guild {
                 Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
         return new AuditableRestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<RoleMemberCounts> retrieveRoleMemberCounts() {
+        return new RestActionImpl<>(api, Route.Guilds.GET_ROLE_MEMBER_COUNTS.compile(getId()), (response, request) -> {
+            TLongIntMap map = new TLongIntHashMap();
+            response.getObject()
+                    .toMap()
+                    .forEach((roleId, count) -> map.put(Long.parseUnsignedLong(roleId), (int) count));
+            return new RoleMemberCountsImpl(this, map);
+        });
     }
 
     @Nonnull
