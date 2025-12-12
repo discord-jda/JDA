@@ -46,6 +46,11 @@ public interface RoleMemberCounts {
      * @param  roleId
      *         The role ID to get the member count for
      *
+     * @throws IllegalArgumentException
+     *         If the provided string is empty or {@code null}
+     * @throws NumberFormatException
+     *         If the provided string is not a number
+     *
      * @return The number of members with the corresponding role, or {@code 0}
      */
     default int get(@Nonnull String roleId) {
@@ -57,6 +62,9 @@ public interface RoleMemberCounts {
      *
      * @param  role
      *         The role to get the member count for
+     *
+     * @throws IllegalArgumentException
+     *         If the provided role is {@code null}
      *
      * @return The number of members with the corresponding role, or {@code 0}
      */
@@ -81,6 +89,11 @@ public interface RoleMemberCounts {
      * @param  roleId
      *         The role ID to check a member count for
      *
+     * @throws IllegalArgumentException
+     *         If the provided string is empty or {@code null}
+     * @throws NumberFormatException
+     *         If the provided string is not a number
+     *
      * @return {@code true} if the role has a member count, {@code false} otherwise
      */
     default boolean contains(@Nonnull String roleId) {
@@ -92,6 +105,9 @@ public interface RoleMemberCounts {
      *
      * @param  role
      *         The role to check a member count for
+     *
+     * @throws IllegalArgumentException
+     *         If the provided role is {@code null}
      *
      * @return {@code true} if the role has a member count, {@code false} otherwise
      */
