@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -55,7 +56,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
-    private long rawPermissions;
+    private PermissionSet permissions;
 
     private int primaryColor;
     private int secondaryColor = Role.DEFAULT_COLOR_RAW;
@@ -127,13 +128,19 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
 
     @Override
     public long getPermissionsRaw() {
-        return rawPermissions;
+        return permissions.toBigInteger().longValue();
+    }
+
+    @Nonnull
+    @Override
+    public PermissionSet getPermissionSet() {
+        return permissions;
     }
 
     @Nonnull
     @Override
     public EnumSet<Permission> getPermissions() {
-        return Permission.getPermissions(rawPermissions);
+        return permissions.toEnumSet();
     }
 
     @Nonnull
@@ -167,10 +174,10 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
 
     @Override
     public boolean hasPermission(@Nonnull Permission... permissions) {
-        long effectivePerms = rawPermissions | getGuild().getPublicRole().getPermissionsRaw();
+        PermissionSet effectivePerms =
+                this.permissions.or(getGuild().getPublicRole().getPermissionSet());
         for (Permission perm : permissions) {
-            long rawValue = perm.getRawValue();
-            if ((effectivePerms & rawValue) != rawValue) {
+            if (!effectivePerms.has(perm)) {
                 return false;
             }
         }
@@ -379,8 +386,8 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     }
 
     @Override
-    public RoleImpl setRawPermissions(long rawPermissions) {
-        this.rawPermissions = rawPermissions;
+    public RoleImpl setPermissions(PermissionSet permissions) {
+        this.permissions = permissions;
         return this;
     }
 

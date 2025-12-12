@@ -60,6 +60,7 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -2193,10 +2194,10 @@ public class EntityBuilder extends AbstractEntityBuilder {
             return null;
         }
 
-        long allow = override.getLong("allow");
-        long deny = override.getLong("deny");
+        PermissionSet allow = override.getParsedString("allow", PermissionSet::parse);
+        PermissionSet deny = override.getParsedString("deny", PermissionSet::parse);
         // Don't cache empty @everyone overrides, they ruin our sync check
-        if (id == chan.getGuild().getIdLong() && (allow | deny) == 0L) {
+        if (id == chan.getGuild().getIdLong() && allow.or(deny).equals(PermissionSet.ZERO)) {
             return null;
         }
 
