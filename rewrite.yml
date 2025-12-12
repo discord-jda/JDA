@@ -1,0 +1,9 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: MigrateToJavaxAnnotations
+recipeList:
+    -   org.openrewrite.java.ChangeType:
+            oldFullyQualifiedTypeName: org.jetbrains.annotations.Nullable
+            newFullyQualifiedTypeName: javax.annotation.Nullable
+    -   org.openrewrite.java.ChangeType:
+            oldFullyQualifiedTypeName: org.jetbrains.annotations.NotNull
+            newFullyQualifiedTypeName: javax.annotation.Nonnull

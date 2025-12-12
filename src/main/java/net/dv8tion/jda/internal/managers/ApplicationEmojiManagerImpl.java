@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -42,7 +41,7 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
         this.emoji = emoji;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public ApplicationEmoji getEmoji() {
         return emoji;
@@ -67,9 +66,9 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public ApplicationEmojiManager setName(@NotNull String name) {
+    public ApplicationEmojiManager setName(@Nonnull String name) {
         Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Emoji name");
         this.name = name;

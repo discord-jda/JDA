@@ -26,11 +26,12 @@ import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAc
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 public class PollVotersPaginationActionImpl extends PaginationActionImpl<User, PollVotersPaginationAction>
         implements PollVotersPaginationAction {
@@ -44,7 +45,7 @@ public class PollVotersPaginationActionImpl extends PaginationActionImpl<User, P
         this.order = PaginationOrder.FORWARD;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EnumSet<PaginationOrder> getSupportedOrders() {
         return EnumSet.of(PaginationOrder.FORWARD);

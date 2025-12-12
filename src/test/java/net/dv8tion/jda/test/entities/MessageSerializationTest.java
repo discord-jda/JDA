@@ -21,8 +21,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.test.PrettyRepresentation;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
+
+import javax.annotation.Nonnull;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,7 +88,7 @@ public class MessageSerializationTest {
                                                 .put("value", FIELD_3_TEXT))));
     }
 
-    @NotNull
+    @Nonnull
     private static MessageEmbed getTestEmbed() {
         return new EmbedBuilder()
                 .setDescription(DESCRIPTION_TEXT)
