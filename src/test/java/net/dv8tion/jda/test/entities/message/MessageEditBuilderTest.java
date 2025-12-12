@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
 import net.dv8tion.jda.test.Resources;
 import net.dv8tion.jda.test.components.ComponentTestData;
@@ -76,6 +77,17 @@ public class MessageEditBuilderTest extends AbstractSnapshotTest {
 
         try (MessageEditData data = builder.build()) {
             assertWithSnapshot(data);
+        }
+    }
+
+    @Test
+    void testDefaultCV2FlagIsSet() {
+        var oldFlag = MessageRequest.isDefaultUseComponentsV2();
+        MessageRequest.setDefaultUseComponentsV2(true);
+        try (MessageEditData data = new MessageEditBuilder().build()) {
+            assertThat(data.toData().getInt("flags", 0)).isEqualTo(Message.MessageFlag.IS_COMPONENTS_V2.getValue());
+        } finally {
+            MessageRequest.setDefaultUseComponentsV2(oldFlag);
         }
     }
 

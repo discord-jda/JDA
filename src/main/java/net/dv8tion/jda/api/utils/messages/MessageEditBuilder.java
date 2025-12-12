@@ -55,7 +55,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     protected static final int FLAGS = 1 << 5;
 
     private boolean replace = false;
-    private int configuredFields = 0;
+    private int configuredFields;
 
     private final List<AttachedFile> attachments = new ArrayList<>(10);
 
