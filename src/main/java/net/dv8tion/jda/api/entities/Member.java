@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.Incubating;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
@@ -379,6 +380,16 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     Set<Role> getUnsortedRoles();
 
     /**
+     * The {@link RoleColors} of this Member's name in a Guild.
+     *
+     * <p>This is determined by the colors of the highest role assigned to them that does not have the default colors.
+     *
+     * @return The display colors for this Member.
+     */
+    @Nonnull
+    RoleColors getColors();
+
+    /**
      * The {@link java.awt.Color Color} of this Member's name in a Guild.
      *
      * <p>This is determined by the color of the highest role assigned to them that does not have the default color.
@@ -386,10 +397,16 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return The display Color for this Member.
      *
+     * @deprecated Replaced by {@code getColors().getPrimary()}
+     *
      * @see    #getColorRaw()
      */
     @Nullable
-    Color getColor();
+    @Deprecated
+    @ReplaceWith("getColors().getPrimary()")
+    default Color getColor() {
+        return this.getColors().getPrimary();
+    }
 
     /**
      * The raw RGB value for the color of this member.
@@ -397,8 +414,14 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * if this member uses the default color (special property, it changes depending on theme used in the client)
      *
      * @return The raw RGB value or the role default
+     *
+     * @deprecated Replaced by {@code getColors().getPrimaryRaw()}
      */
-    int getColorRaw();
+    @Deprecated
+    @ReplaceWith("getColors().getPrimaryRaw()")
+    default int getColorRaw() {
+        return this.getColors().getPrimaryRaw();
+    }
 
     /**
      * The raw {@link MemberFlag flags} bitset for this member.

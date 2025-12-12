@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleColors;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -40,7 +40,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     protected Role role;
 
     protected String name;
-    protected int color;
+    protected RoleColors colors;
     protected long permissions;
     protected boolean hoist;
     protected boolean mentionable;
@@ -55,7 +55,6 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
      */
     public RoleManagerImpl(Role role) {
         super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
-        JDA api = role.getJDA();
         this.role = role;
         if (isPermissionChecksEnabled()) {
             checkPermissions();
@@ -81,7 +80,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
             this.name = null;
         }
         if ((fields & COLOR) == COLOR) {
-            this.color = Role.DEFAULT_COLOR_RAW;
+            this.colors = null;
         }
         return this;
     }
@@ -100,7 +99,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     public RoleManagerImpl reset() {
         super.reset();
         this.name = null;
-        this.color = Role.DEFAULT_COLOR_RAW;
+        this.colors = null;
         return this;
     }
 
@@ -143,7 +142,31 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     @CheckReturnValue
     public RoleManagerImpl setColor(int rgb) {
-        this.color = rgb;
+        this.colors = new RoleColors(rgb, Role.DEFAULT_COLOR_RAW, Role.DEFAULT_COLOR_RAW);
+        set |= COLOR;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public RoleManager setColors(RoleColors colors) {
+        this.colors = colors;
+        set |= COLOR;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public RoleManager setGradientColors(int primaryRgb, int secondaryRgb) {
+        this.colors = new RoleColors(primaryRgb, secondaryRgb, Role.DEFAULT_COLOR_RAW);
+        set |= COLOR;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public RoleManager useHolographicStyle() {
+        this.colors = RoleColors.DEFAULT_HOLOGRAPHIC;
         set |= COLOR;
         return this;
     }
@@ -220,7 +243,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
             object.put("mentionable", mentionable);
         }
         if (shouldUpdate(COLOR)) {
-            object.put("color", color == Role.DEFAULT_COLOR_RAW ? 0 : color & 0xFFFFFF);
+            object.put("colors", colors);
         }
         if (shouldUpdate(ICON)) {
             object.put("icon", icon == null ? null : icon.getEncoding());

@@ -19,10 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.RoleIcon;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
@@ -42,7 +39,6 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -60,7 +56,11 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     private boolean hoisted;
     private boolean mentionable;
     private long rawPermissions;
-    private int color;
+
+    private int primaryColor;
+    private int secondaryColor = Role.DEFAULT_COLOR_RAW;
+    private int tertiaryColor = Role.DEFAULT_COLOR_RAW;
+
     private int rawPosition;
     private int frozenPosition = Integer.MIN_VALUE; // this is used exclusively for delete events
     private RoleIcon icon;
@@ -154,14 +154,10 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
         return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
     }
 
+    @Nonnull
     @Override
-    public Color getColor() {
-        return color != Role.DEFAULT_COLOR_RAW ? new Color(color) : null;
-    }
-
-    @Override
-    public int getColorRaw() {
-        return color;
+    public RoleColors getColors() {
+        return new RoleColors(this.primaryColor, this.secondaryColor, this.tertiaryColor);
     }
 
     @Override
@@ -347,8 +343,20 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     }
 
     @Override
-    public RoleImpl setColor(int color) {
-        this.color = color;
+    public RoleImpl setPrimaryColor(int color) {
+        this.primaryColor = color;
+        return this;
+    }
+
+    @Override
+    public RoleImpl setSecondaryColor(int color) {
+        this.secondaryColor = color;
+        return this;
+    }
+
+    @Override
+    public RoleImpl setTertiaryColor(int color) {
+        this.tertiaryColor = color;
         return this;
     }
 

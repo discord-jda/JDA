@@ -34,7 +34,7 @@ public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEnti
     default RoleAction createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
         return guild.createRole()
-                .setColor(getColorRaw())
+                .setColors(getColors())
                 .setHoisted(isHoisted())
                 .setMentionable(isMentionable())
                 .setName(getName())
@@ -70,7 +70,11 @@ public interface RoleMixin<T extends RoleMixin<T>> extends Role, IDetachableEnti
 
     T setName(String name);
 
-    T setColor(int color);
+    T setPrimaryColor(int color);
+
+    T setSecondaryColor(int color);
+
+    T setTertiaryColor(int color);
 
     T setManaged(boolean managed);
 
