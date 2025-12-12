@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -23,11 +24,21 @@ import javax.annotation.Nullable;
  */
 public interface RoleMemberCount {
     /**
+     * The role ID as a {@code long}.
+     *
+     * @return The role ID
+     */
+    long getRoleIdLong();
+
+    /**
      * The role ID.
      *
      * @return The role ID
      */
-    long getRoleId();
+    @Nonnull
+    default String getRoleId() {
+        return Long.toUnsignedString(getRoleIdLong());
+    }
 
     /**
      * The corresponding {@link Role} object.

@@ -34,7 +34,7 @@ public class RoleMemberCountImpl implements RoleMemberCount {
     }
 
     @Override
-    public long getRoleId() {
+    public long getRoleIdLong() {
         return roleId;
     }
 
