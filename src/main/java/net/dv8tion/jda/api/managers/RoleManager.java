@@ -283,6 +283,9 @@ public interface RoleManager extends Manager<RoleManager> {
      * @param  secondary
      *         The secondary color for gradient
      *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
      * @return RoleManager for chaining convenience
      */
     @Nonnull

@@ -163,6 +163,9 @@ public interface RoleAction extends AuditableRestAction<Role> {
      * @param  secondary
      *         The secondary color for gradient
      *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
      * @return The current RoleAction, for chaining convenience
      */
     @Nonnull
