@@ -329,9 +329,9 @@ public interface Invite {
      * from the invite without being granted guild membership nor having visibility to other guild channels.
      * Once the user leaves the voice call, their ability to rejoin the voice call and see the guild is revoked.
      *
-     * <p>Applicable only to invites to a specific channel {@link #getChannel()}.
+     * <p>Applicable only to invites to a specific {@linkplain #getChannel() channel}.
      *
-     * @return Whether this invite is a guest invite for a voice channel or not.
+     * @return Whether this invite is a guest invite for a voice channel or not
      *
      * @see #getChannel()
      */
