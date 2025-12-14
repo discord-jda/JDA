@@ -89,7 +89,6 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -1130,6 +1129,7 @@ public class JDAImpl implements JDA {
     }
 
     @Nonnull
+    @Override
     public RestAction<List<SKU>> retrieveSKUList()
     {
         Route.CompiledRoute route = Route.Applications.GET_SKUS.compile(getSelfUser().getApplicationId());
