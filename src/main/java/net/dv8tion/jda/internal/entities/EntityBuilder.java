@@ -2279,6 +2279,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         DataObject channelObject = object.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
         Invite.TargetType targetType = Invite.TargetType.fromId(object.getInt("target_type", 0));
+        boolean guest = (object.getInt("flags", 0) & 1) == 1;
 
         Invite.InviteType type;
         Invite.Guild guild;
@@ -2391,7 +2392,6 @@ public class EntityBuilder extends AbstractEntityBuilder {
         int maxAge;
         int maxUses;
         boolean temporary;
-        boolean guest;
         OffsetDateTime timeCreated;
         int uses;
         boolean expanded;
@@ -2402,7 +2402,6 @@ public class EntityBuilder extends AbstractEntityBuilder {
             maxUses = object.getInt("max_uses");
             uses = object.getInt("uses");
             temporary = object.getBoolean("temporary");
-            guest = (object.getInt("flags", 0) & 1) == 1;
             timeCreated = OffsetDateTime.parse(object.getString("created_at"));
         } else {
             expanded = false;
@@ -2410,7 +2409,6 @@ public class EntityBuilder extends AbstractEntityBuilder {
             maxUses = -1;
             uses = -1;
             temporary = false;
-            guest = false;
             timeCreated = null;
         }
 
