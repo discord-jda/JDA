@@ -325,6 +325,19 @@ public interface Invite {
     boolean isTemporary();
 
     /**
+     * Whether this Invite is a guest invite for a voice channel or not. A guest is able to join a voice call
+     * from the invite without being granted guild membership nor having visibility to other guild channels.
+     * Once the user leaves the voice call, their ability to rejoin the voice call and see the guild is revoked.
+     *
+     * <p>Applicable only to invites to a specific {@linkplain #getChannel() channel}.
+     *
+     * @return Whether this invite is a guest invite for a voice channel or not
+     *
+     * @see #getChannel()
+     */
+    boolean isGuest();
+
+    /**
      * POJO for the channel information provided by an invite.
      *
      * @see #getChannel()

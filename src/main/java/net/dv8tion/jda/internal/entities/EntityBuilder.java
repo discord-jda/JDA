@@ -2279,6 +2279,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         DataObject channelObject = object.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
         Invite.TargetType targetType = Invite.TargetType.fromId(object.getInt("target_type", 0));
+        boolean guest = (object.getInt("flags", 0) & 1) == 1;
 
         Invite.InviteType type;
         Invite.Guild guild;
@@ -2419,6 +2420,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 maxAge,
                 maxUses,
                 temporary,
+                guest,
                 timeCreated,
                 uses,
                 channel,
