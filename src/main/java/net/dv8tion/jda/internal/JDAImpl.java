@@ -1133,8 +1133,10 @@ public class JDAImpl implements JDA {
     public RestAction<List<SKU>> retrieveSKUList() {
         Route.CompiledRoute route =
                 Route.Applications.GET_SKUS.compile(getSelfUser().getApplicationId());
-        return new RestActionImpl<>(this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
-                .map(EntityBuilder::createSKU)
+        return new RestActionImpl<>(this, route, (response, request) -> Helpers.mapGracefully(
+                        response.getArray().stream(DataArray::getObject),
+                        EntityBuilder::createSKU,
+                        "Failed to parse SKU")
                 .collect(Helpers.toUnmodifiableList()));
     }
 
