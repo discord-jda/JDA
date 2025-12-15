@@ -16,16 +16,17 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 /**
  * SKUs (stock-keeping units) in Discord represent premium offerings that can be made available to application users or guilds.
  */
-public interface SKU extends SkuSnowflake
-{
+public interface SKU extends SkuSnowflake {
     /**
      * Type of the SKU
+     *
      * @return SKU type
      */
     @Nonnull
@@ -33,6 +34,7 @@ public interface SKU extends SkuSnowflake
 
     /**
      * Customer-facing name of your premium offering
+     *
      * @return SKU name
      */
     @Nonnull
@@ -40,6 +42,7 @@ public interface SKU extends SkuSnowflake
 
     /**
      * System-generated URL slug based on the SKU's name
+     *
      * @return SKU slug
      */
     @Nonnull
@@ -47,6 +50,7 @@ public interface SKU extends SkuSnowflake
 
     /**
      * Flags can be used to differentiate user and server subscriptions
+     *
      * @return set of flags.
      */
     @Nonnull
@@ -54,28 +58,28 @@ public interface SKU extends SkuSnowflake
 
     /**
      * Checks whether the SKU is available to be purchased for a guild.
+     *
      * @return true if it's for guilds
      */
-    default boolean isGuildSKU()
-    {
+    default boolean isGuildSKU() {
         return getFlags().contains(SKUFlag.GUILD_SUBSCRIPTION);
     }
 
     /**
      * Checks whether the SKU is available to be purchased for a user.
+     *
      * @return true if it's for users
      */
-    default boolean isUserSKU()
-    {
+    default boolean isUserSKU() {
         return getFlags().contains(SKUFlag.USER_SUBSCRIPTION);
     }
 
     /**
      * Checks whether this SKU is available.
+     *
      * @return true if available
      */
-    default boolean isAvailable()
-    {
+    default boolean isAvailable() {
         return getFlags().contains(SKUFlag.AVAILABLE);
     }
 }

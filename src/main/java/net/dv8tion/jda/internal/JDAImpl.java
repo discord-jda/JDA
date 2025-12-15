@@ -1130,15 +1130,12 @@ public class JDAImpl implements JDA {
 
     @Nonnull
     @Override
-    public RestAction<List<SKU>> retrieveSKUList()
-    {
-        Route.CompiledRoute route = Route.Applications.GET_SKUS.compile(getSelfUser().getApplicationId());
-        return new RestActionImpl<>(this, route,
-                (response, request) ->
-                        response.getArray()
-                                .stream(DataArray::getObject)
-                                .map(EntityBuilder::createSKU)
-                                .collect(Helpers.toUnmodifiableList()));
+    public RestAction<List<SKU>> retrieveSKUList() {
+        Route.CompiledRoute route =
+                Route.Applications.GET_SKUS.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
+                .map(EntityBuilder::createSKU)
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull

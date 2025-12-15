@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
  * For any current implementations, you will want to use the SKU type {@link #SUBSCRIPTION}.
  * A {@link #SUBSCRIPTION_GROUP} is automatically created for each SUBSCRIPTION SKU and are not used at this time.
  */
-public enum SKUType
-{
+public enum SKUType {
     /**
      * Durable one-time purchase
      */
@@ -50,8 +49,7 @@ public enum SKUType
 
     private final int id;
 
-    SKUType(int id)
-    {
+    SKUType(int id) {
         this.id = id;
     }
 
@@ -64,11 +62,11 @@ public enum SKUType
      * @return SKU type or {@link #UNKNOWN} if the SKU is not known.
      */
     @Nonnull
-    public static SKUType fromId(int type)
-    {
-        for (SKUType value : values())
-        {
-            if (value.id == type) return value;
+    public static SKUType fromId(int type) {
+        for (SKUType value : values()) {
+            if (value.id == type) {
+                return value;
+            }
         }
         return UNKNOWN;
     }
@@ -78,8 +76,7 @@ public enum SKUType
      *
      * @return The discord id
      */
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 }

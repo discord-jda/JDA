@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
-public enum SKUFlag
-{
+import javax.annotation.Nonnull;
+
+public enum SKUFlag {
     /**
      * SKU is available for purchase
      */
@@ -37,26 +37,26 @@ public enum SKUFlag
     private final int offset;
     private final int raw;
 
-    SKUFlag(int offset)
-    {
+    SKUFlag(int offset) {
         this.offset = offset;
         this.raw = 1 << offset;
     }
 
-    public int getOffset()
-    {
+    public int getOffset() {
         return offset;
     }
 
     @Nonnull
-    public static EnumSet<SKUFlag> getFlags(int flags)
-    {
-        if (flags == 0) return EnumSet.noneOf(SKUFlag.class);
+    public static EnumSet<SKUFlag> getFlags(int flags) {
+        if (flags == 0) {
+            return EnumSet.noneOf(SKUFlag.class);
+        }
 
         EnumSet<SKUFlag> flagSet = EnumSet.noneOf(SKUFlag.class);
-        for (SKUFlag flag : SKUFlag.values())
-        {
-            if ((flags & flag.raw) == flag.raw) flagSet.add(flag);
+        for (SKUFlag flag : SKUFlag.values()) {
+            if ((flags & flag.raw) == flag.raw) {
+                flagSet.add(flag);
+            }
         }
         return flagSet;
     }

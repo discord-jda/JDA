@@ -173,9 +173,9 @@ public class EntityBuilder extends AbstractEntityBuilder {
         }
     }
 
-    public static SKU createSKU(DataObject object)
-    {
-        return new SKUImpl(object.getLong("id"),
+    public static SKU createSKU(DataObject object) {
+        return new SKUImpl(
+                object.getLong("id"),
                 SKUType.fromId(object.getInt("type")),
                 object.getString("name"),
                 object.getString("slug"),

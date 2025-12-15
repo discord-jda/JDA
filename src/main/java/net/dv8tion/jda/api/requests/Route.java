@@ -63,8 +63,7 @@ public class Route {
                 new Route(PATCH, "applications/{application_id}/emojis/{emoji_id}");
         public static final Route DELETE_APPLICATION_EMOJI =
                 new Route(DELETE, "applications/{application_id}/emojis/{emoji_id}");
-        public static final Route GET_SKUS =
-                new Route(GET, "applications/{application_id}/skus");
+        public static final Route GET_SKUS = new Route(GET, "applications/{application_id}/skus");
     }
 
     public static class Interactions {

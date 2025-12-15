@@ -20,18 +20,17 @@ import net.dv8tion.jda.api.entities.SKU;
 import net.dv8tion.jda.api.entities.SKUFlag;
 import net.dv8tion.jda.api.entities.SKUType;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 
-public class SKUImpl extends SkuSnowflakeImpl implements SKU
-{
+import javax.annotation.Nonnull;
+
+public class SKUImpl extends SkuSnowflakeImpl implements SKU {
     private final SKUType type;
     private final String name;
     private final String slug;
     private final Set<SKUFlag> flags;
 
-    public SKUImpl(long id, SKUType type, String name, String slug, Set<SKUFlag> flags)
-    {
+    public SKUImpl(long id, SKUType type, String name, String slug, Set<SKUFlag> flags) {
         super(id);
         this.type = type;
         this.name = name;
@@ -41,29 +40,25 @@ public class SKUImpl extends SkuSnowflakeImpl implements SKU
 
     @Override
     @Nonnull
-    public SKUType getType()
-    {
+    public SKUType getType() {
         return type;
     }
 
     @Override
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
     @Nonnull
-    public String getSlug()
-    {
+    public String getSlug() {
         return slug;
     }
 
     @Override
     @Nonnull
-    public Set<SKUFlag> getFlags()
-    {
+    public Set<SKUFlag> getFlags() {
         return flags;
     }
 }
