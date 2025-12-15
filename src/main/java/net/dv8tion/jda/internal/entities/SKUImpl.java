@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.SKU;
 import net.dv8tion.jda.api.entities.SKUFlag;
 import net.dv8tion.jda.api.entities.SKUType;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.Set;
 
@@ -59,6 +60,6 @@ public class SKUImpl extends SkuSnowflakeImpl implements SKU {
     @Override
     @Nonnull
     public Set<SKUFlag> getFlags() {
-        return flags;
+        return Helpers.copyEnumSet(SKUFlag.class, flags);
     }
 }

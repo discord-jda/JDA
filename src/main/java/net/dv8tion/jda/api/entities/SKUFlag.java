@@ -19,7 +19,10 @@ package net.dv8tion.jda.api.entities;
 import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
-
+/**
+ * SKU Flag exposing metadata for a {@linkplain SKU}.
+ * They define the scope and availability of a SKU.
+ */
 public enum SKUFlag {
     /**
      * SKU is available for purchase
@@ -42,10 +45,32 @@ public enum SKUFlag {
         this.raw = 1 << offset;
     }
 
+    /**
+     * The raw value used by Discord for this flag.
+     *
+     * @return The raw value
+     */
+    public int getRaw() {
+        return raw;
+    }
+
+    /**
+     * The bit offset used to identify this flag.
+     *
+     * @return The bit offset
+     */
     public int getOffset() {
         return offset;
     }
 
+    /**
+     * Converts a bitmask representation of SKU flags into its {@link EnumSet}.
+     *
+     * @param  flags
+     *         The raw bitmask representing the SKU flags
+     *
+     * @return An {@link EnumSet} of SKU flags represented by the input bitmask.
+     */
     @Nonnull
     public static EnumSet<SKUFlag> getFlags(int flags) {
         if (flags == 0) {
