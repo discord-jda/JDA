@@ -18,7 +18,7 @@ package net.dv8tion.jda.gradle.tasks
 
 import net.dv8tion.jda.gradle.spec.generator.ModelSourceCodeGenerator
 import net.dv8tion.jda.gradle.spec.parser.ApiSpecParser
-import net.dv8tion.jda.gradle.spec.parser.ComponentSchemaType
+import net.dv8tion.jda.gradle.spec.parser.ComponentSchema
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
@@ -57,7 +57,18 @@ abstract class GenerateApiModelsTask : DefaultTask() {
             "$it$generatorSuffix"
         })
 
-        for (entry in context.schemas.entries.filter { it.value.type == ComponentSchemaType.OBJECT }) {
+        val entries = context.schemas.entries.filter {
+            val value = it.value
+
+            when (value) {
+                is ComponentSchema.ObjectComponentSchema -> true
+                is ComponentSchema.StringComponentSchema -> value.isEnum
+                is ComponentSchema.IntegerComponentSchema -> value.isEnum
+                else -> false
+            }
+        }
+
+        for (entry in entries) {
             val javaFile = generator.generate(entry.key)
             javaFile.writeToPath(output)
         }

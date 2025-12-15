@@ -86,10 +86,14 @@ sealed interface ComponentSchema {
 
     data class StringComponentSchema(val format: StringPropertyFormat?, val oneOf: List<StringVariant>?) : ComponentSchema {
         override val type: ComponentSchemaType = ComponentSchemaType.STRING
+
+        val isEnum: Boolean get() = oneOf != null
     }
 
     data class IntegerComponentSchema(val format: IntegerPropertyFormat?, val oneOf: List<LongVariant>?) : ComponentSchema {
         override val type: ComponentSchemaType = ComponentSchemaType.INTEGER
+
+        val isEnum: Boolean get() = oneOf != null
     }
 
     data class ObjectComponentSchema(

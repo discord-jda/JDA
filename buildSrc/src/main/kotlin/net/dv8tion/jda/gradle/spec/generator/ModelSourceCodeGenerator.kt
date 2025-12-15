@@ -19,6 +19,7 @@ package net.dv8tion.jda.gradle.spec.generator
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonValue
 import com.palantir.javapoet.AnnotationSpec
 import com.palantir.javapoet.ClassName
 import com.palantir.javapoet.FieldSpec
@@ -54,12 +55,107 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         val schema = context.schemas.getValue(name)
 
         return when (schema) {
-            is ComponentSchema.StringComponentSchema -> TODO()
-            is ComponentSchema.ComponentSchemaReference -> TODO()
-            is ComponentSchema.IntegerComponentSchema -> TODO()
+            is ComponentSchema.StringComponentSchema -> {
+                if (schema.isEnum) {
+                    generateStringEnum(name, schema)
+                } else {
+                    TODO()
+                }
+            }
+            is ComponentSchema.IntegerComponentSchema -> {
+                if (schema.isEnum) {
+                    generateIntegerEnum(name, schema)
+                } else {
+                    TODO()
+                }
+            }
             is ComponentSchema.ObjectComponentSchema -> generateObject(name, schema)
+            is ComponentSchema.ComponentSchemaReference -> TODO()
             ComponentSchema.UnionComponentSchema -> TODO()
         }.also { modelCache[name] = it }
+    }
+
+    private fun generateStringEnum(name: String, schema: ComponentSchema.StringComponentSchema): JavaFile {
+        val classBuilder = TypeSpec
+                .enumBuilder(typeNameModifier(name))
+                .addModifiers(Modifier.PUBLIC)
+
+        requireNotNull(schema.oneOf)
+
+        classBuilder.addField(
+            FieldSpec
+                .builder(String::class.java, "id")
+                .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                .build()
+        )
+
+        classBuilder.addMethod(
+            MethodSpec.methodBuilder("getId")
+                .addAnnotation(JsonValue::class.java)
+                .addAnnotation(Nonnull::class.java)
+                .returns(String::class.java)
+                .addModifiers(Modifier.PUBLIC)
+                .addCode("return this.id;")
+                .build()
+        )
+
+        classBuilder.addMethod(
+            MethodSpec
+                .constructorBuilder()
+                .addParameter(String::class.java, "id")
+                .addCode("this.id = id;")
+                .build()
+        )
+
+        for (variant in schema.oneOf) {
+            classBuilder.addEnumConstant(
+                    variant.title.enumConstantIdentifier(),
+                    TypeSpec.anonymousClassBuilder($$"$S", variant.const).build())
+        }
+
+        return JavaFile.builder(packageName, classBuilder.build())
+                .skipJavaLangImports(true).build()
+    }
+
+    private fun generateIntegerEnum(name: String, schema: ComponentSchema.IntegerComponentSchema): JavaFile {
+        val classBuilder = TypeSpec
+            .enumBuilder(typeNameModifier(name))
+            .addModifiers(Modifier.PUBLIC)
+
+        requireNotNull(schema.oneOf)
+
+        classBuilder.addField(
+            FieldSpec
+                .builder(Int::class.java, "id")
+                .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+                .build()
+        )
+
+        classBuilder.addMethod(
+            MethodSpec.methodBuilder("getId")
+                .addAnnotation(JsonValue::class.java)
+                .returns(Int::class.java)
+                .addModifiers(Modifier.PUBLIC)
+                .addCode("return this.id;")
+                .build()
+        )
+
+        classBuilder.addMethod(
+            MethodSpec
+                .constructorBuilder()
+                .addParameter(Int::class.java, "id")
+                .addCode("this.id = id;")
+                .build()
+        )
+
+        for (variant in schema.oneOf) {
+            classBuilder.addEnumConstant(
+                    variant.title.enumConstantIdentifier(),
+                    TypeSpec.anonymousClassBuilder($$"$L", variant.const).build())
+        }
+
+        return JavaFile.builder(packageName, classBuilder.build())
+                .skipJavaLangImports(true).build()
     }
 
     private fun generateObject(name: String, schema: ComponentSchema.ObjectComponentSchema): JavaFile {
@@ -85,7 +181,8 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
             }
         }
 
-        return JavaFile.builder(packageName, classBuilder.build()).skipJavaLangImports(true).build()
+        return JavaFile.builder(packageName, classBuilder.build())
+                .skipJavaLangImports(true).build()
     }
 
     private fun TypeSpec.Builder.generateReferenceProperty(schema: ComponentSchema.ObjectComponentSchema, name: String, property: PropertySchema.ReferenceProperty) {
@@ -246,17 +343,33 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
                 return ClassName.get(packageName, resolvedReferenceType)
             }
 
-            is ComponentSchema.IntegerComponentSchema -> when (resolved.format) {
-                IntegerPropertyFormat.INT -> getTypeName(Int::class.java, true)
-                else -> getTypeName(Long::class.java, true)
+            is ComponentSchema.IntegerComponentSchema -> {
+                if (resolved.isEnum) {
+                    val resolvedReferenceType = typeNameModifier(getSimpleNameFromRef(ref))
+                    ClassName.get(packageName, resolvedReferenceType)
+                } else {
+                    when (resolved.format) {
+                        IntegerPropertyFormat.INT -> getTypeName(Int::class.java, true)
+                        else -> getTypeName(Long::class.java, true)
+                    }
+                }
             }
 
-            is ComponentSchema.StringComponentSchema -> getTypeName(String::class.java, true)
+            is ComponentSchema.StringComponentSchema -> {
+                if (resolved.isEnum) {
+                    val resolvedReferenceType = typeNameModifier(getSimpleNameFromRef(ref))
+                    ClassName.get(packageName, resolvedReferenceType)
+                } else {
+                    getTypeName(String::class.java, true)
+                }
+            }
             is ComponentSchema.ComponentSchemaReference -> TODO()
             ComponentSchema.UnionComponentSchema -> TODO()
         }
     }
 }
+
+fun String.enumConstantIdentifier() = replace("-", "_").uppercase(Locale.ROOT)
 
 fun String.camelCase() = replace(Regex("\\b\\w|_\\w")) {
     it.value.removePrefix("_").uppercase(Locale.ROOT)
