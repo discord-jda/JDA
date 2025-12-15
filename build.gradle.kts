@@ -18,7 +18,11 @@ import com.diffplug.spotless.LineEnding
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
-import net.dv8tion.jda.tasks.*
+import net.dv8tion.jda.gradle.Version
+import net.dv8tion.jda.gradle.nullableReplacement
+import net.dv8tion.jda.gradle.plugins.applyAudioExclusions
+import net.dv8tion.jda.gradle.plugins.applyOpusExclusions
+import net.dv8tion.jda.gradle.tasks.VerifyBytecodeVersion
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask

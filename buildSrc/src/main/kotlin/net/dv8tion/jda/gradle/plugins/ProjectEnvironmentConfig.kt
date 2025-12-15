@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.tasks
+package net.dv8tion.jda.gradle.plugins
 
+import net.dv8tion.jda.gradle.Version
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 

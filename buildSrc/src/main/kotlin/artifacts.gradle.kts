@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.tasks.ArtifactFilters
+import net.dv8tion.jda.gradle.plugins.ArtifactFilters
 
 plugins {
     `java-library`

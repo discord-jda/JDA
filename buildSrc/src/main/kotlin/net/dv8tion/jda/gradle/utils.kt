@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.tasks
+package net.dv8tion.jda.gradle
 
-import org.gradle.api.provider.SetProperty
-import org.gradle.api.tasks.AbstractCopyTask
-
-interface ArtifactFilters {
-    val opusExclusions: SetProperty<String>
-    val additionalAudioExclusions: SetProperty<String>
-}
-
-fun AbstractCopyTask.applyOpusExclusions(filters: ArtifactFilters) {
-    for (exclusion in filters.opusExclusions.get()) {
-        exclude(exclusion)
-    }
-}
-
-fun AbstractCopyTask.applyAudioExclusions(filters: ArtifactFilters) {
-    applyOpusExclusions(filters)
-
-    for (exclusion in filters.opusExclusions.get()) {
-        exclude(exclusion)
-    }
+/**
+ * Replaces a string with either the value wrapped in quotes or literal null
+ *
+ * This is used for replacing the constants in JDAInfo
+ */
+fun nullableReplacement(string: String?): String {
+    return if (string == null) "null"
+    else "\"$string\""
 }

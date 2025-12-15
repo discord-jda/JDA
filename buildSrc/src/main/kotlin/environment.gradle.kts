@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.tasks.ProjectEnvironmentConfig
+import net.dv8tion.jda.gradle.plugins.ProjectEnvironmentConfig
 
 val projectEnvironment = project.extensions.create(
     "projectEnvironment", ProjectEnvironmentConfig::class.java,
