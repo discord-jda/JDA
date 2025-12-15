@@ -32,6 +32,7 @@ import org.openrewrite.gradle.AbstractRewriteTask
 plugins {
     environment
     artifacts
+    `model-generator`
     `java-library`
     `maven-publish`
 
@@ -39,7 +40,6 @@ plugins {
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.jreleaser)
-    alias(libs.plugins.download)
     alias(libs.plugins.spotless)
     alias(libs.plugins.openrewrite)
 }
@@ -58,6 +58,14 @@ projectEnvironment {
 artifactFilters {
     opusExclusions.addAll("natives/**", "com/sun/jna/**", "club/minnced/opus/util/*", "tomp2p/opuswrapper/*")
     additionalAudioExclusions.addAll("com/google/crypto/tink/**", "com/google/gson/**", "com/google/protobuf/**", "google/protobuf/**")
+}
+
+apiModelGenerator {
+    outputDirectory = layout.buildDirectory.dir("generated/rest-api-models")
+    apiSpecFile = file("discord-rest-openapi.json")
+    apiSpecDownloadUrl = "https://raw.githubusercontent.com/discord/discord-api-spec/refs/heads/main/specs/openapi.json"
+
+    generatorSuffix = "Dto"
 }
 
 // Use normal version string for new releases and commitHash for other builds
