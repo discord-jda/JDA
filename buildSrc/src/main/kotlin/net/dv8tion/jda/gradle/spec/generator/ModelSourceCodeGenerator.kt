@@ -173,10 +173,10 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
                     is PropertySchema.NumberProperty -> classBuilder.generateNumberProperty(schema, name)
                     is PropertySchema.BooleanProperty -> classBuilder.generateBooleanProperty(schema, name)
                     // TODO
-                    is PropertySchema.ObjectProperty -> classBuilder.generateObjectProperty(schema, name)
+                    is PropertySchema.ObjectProperty -> classBuilder.generateObjectProperty(schema, name, value)
                     is PropertySchema.ArrayProperty -> classBuilder.generateArrayProperty(schema, name, value.items)
-                    is PropertySchema.UnionProperty -> classBuilder.generateObjectProperty(schema, name)
-                    PropertySchema.NullProperty -> classBuilder.generateObjectProperty(schema, name)
+                    is PropertySchema.UnionProperty -> classBuilder.generateFallbackProperty(schema, name)
+                    PropertySchema.NullProperty -> classBuilder.generateFallbackProperty(schema, name)
                 }
             }
         }
@@ -235,11 +235,34 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         addMethods(generateEncapsulation(name, Boolean::class.java, nullable))
     }
 
-    private fun TypeSpec.Builder.generateObjectProperty(schema: ComponentSchema.ObjectComponentSchema, name: String) {
+    private fun TypeSpec.Builder.generateObjectProperty(schema: ComponentSchema.ObjectComponentSchema, name: String, property: PropertySchema.ObjectProperty) {
         val nullable = schema.isNullable(name)
-        // TODO: Properly resolve Maps and such
-        addField(generateField(name, Object::class.java, nullable))
-        addMethods(generateEncapsulation(name, Object::class.java, nullable))
+        var typeName = TypeName.get(Object::class.java)
+
+        val additionalProperties = property.additionalProperties
+        if (additionalProperties != null) {
+            val valueType = when (additionalProperties) {
+                is PropertySchema.ReferenceProperty -> resolveReferencedTypeName(additionalProperties.`$ref`)
+                is PropertySchema.StringProperty -> TypeName.get(String::class.java)
+                is PropertySchema.IntegerProperty -> TypeName.get(Int::class.java)
+                is PropertySchema.NumberProperty -> TypeName.get(Double::class.java)
+                is PropertySchema.BooleanProperty -> TypeName.get(Boolean::class.java)
+                // TODO: Fallbacks until we need them for something
+                is PropertySchema.ObjectProperty -> TypeName.get(Object::class.java)
+                is PropertySchema.ArrayProperty -> TypeName.get(Object::class.java)
+                is PropertySchema.UnionProperty -> TypeName.get(Object::class.java)
+                PropertySchema.NullProperty -> TypeName.get(Object::class.java)
+            }
+
+            typeName = ParameterizedTypeName.get(
+                    ClassName.get(Map::class.java),
+                    TypeName.get(String::class.java),
+                    valueType)
+        }
+
+        // TODO: Check for cases that are not using additionalProperties such as anonymous types
+        addField(generateField(name, typeName, nullable))
+        addMethods(generateEncapsulation(name, typeName))
     }
 
     private fun TypeSpec.Builder.generateArrayProperty(schema: ComponentSchema.ObjectComponentSchema, name: String, items: PropertySchema) {
@@ -267,6 +290,13 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
 
         addField(generateField(name, typeName, nullable))
         addMethods(generateEncapsulation(name, typeName))
+    }
+
+    private fun TypeSpec.Builder.generateFallbackProperty(schema: ComponentSchema.ObjectComponentSchema, name: String) {
+        val nullable = schema.isNullable(name)
+
+        addField(generateField(name, Object::class.java, nullable))
+        addMethods(generateEncapsulation(name, Object::class.java, nullable))
     }
 
     private fun getNormalizedIdentifier(name: String): String {
