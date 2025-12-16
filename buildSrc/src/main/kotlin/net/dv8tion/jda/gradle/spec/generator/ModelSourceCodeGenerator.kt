@@ -159,24 +159,27 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
     }
 
     private fun generateObject(name: String, schema: ComponentSchema.ObjectComponentSchema): JavaFile {
+        val modifiedClassName = typeNameModifier(name)
+        val className = ClassName.get(packageName, modifiedClassName)
+
         val classBuilder = TypeSpec
-                .classBuilder(typeNameModifier(name))
+                .classBuilder(modifiedClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(includeNonNull)
 
         if (schema.properties != null) {
             for ((name, value) in schema.properties.entries) {
                 when (value) {
-                    is PropertySchema.ReferenceProperty -> classBuilder.generateReferenceProperty(schema, name, value)
-                    is PropertySchema.StringProperty -> classBuilder.generateStringProperty(schema, name)
-                    is PropertySchema.IntegerProperty -> classBuilder.generateIntegerProperty(schema, name, value.format)
-                    is PropertySchema.NumberProperty -> classBuilder.generateNumberProperty(schema, name)
-                    is PropertySchema.BooleanProperty -> classBuilder.generateBooleanProperty(schema, name)
+                    is PropertySchema.ReferenceProperty -> classBuilder.generateReferenceProperty(className, schema, name, value)
+                    is PropertySchema.StringProperty -> classBuilder.generateStringProperty(className, schema, name)
+                    is PropertySchema.IntegerProperty -> classBuilder.generateIntegerProperty(className, schema, name, value.format)
+                    is PropertySchema.NumberProperty -> classBuilder.generateNumberProperty(className, schema, name)
+                    is PropertySchema.BooleanProperty -> classBuilder.generateBooleanProperty(className, schema, name)
                     // TODO
-                    is PropertySchema.ObjectProperty -> classBuilder.generateObjectProperty(schema, name, value)
-                    is PropertySchema.ArrayProperty -> classBuilder.generateArrayProperty(schema, name, value.items)
-                    is PropertySchema.UnionProperty -> classBuilder.generateFallbackProperty(schema, name)
-                    PropertySchema.NullProperty -> classBuilder.generateFallbackProperty(schema, name)
+                    is PropertySchema.ObjectProperty -> classBuilder.generateObjectProperty(className, schema, name, value)
+                    is PropertySchema.ArrayProperty -> classBuilder.generateArrayProperty(className, schema, name, value.items)
+                    is PropertySchema.UnionProperty -> classBuilder.generateFallbackProperty(className, schema, name)
+                    PropertySchema.NullProperty -> classBuilder.generateFallbackProperty(className, schema, name)
                 }
             }
         }
@@ -185,15 +188,15 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
                 .skipJavaLangImports(true).build()
     }
 
-    private fun TypeSpec.Builder.generateReferenceProperty(schema: ComponentSchema.ObjectComponentSchema, name: String, property: PropertySchema.ReferenceProperty) {
+    private fun TypeSpec.Builder.generateReferenceProperty(className: TypeName, schema: ComponentSchema.ObjectComponentSchema, name: String, property: PropertySchema.ReferenceProperty) {
         val nullable = schema.isNullable(name)
 
         val ref = property.`$ref`
         val referencedSchema = context.resolveRef(ref)
 
         when (referencedSchema) {
-            is ComponentSchema.StringComponentSchema -> return generateStringProperty(schema, name)
-            is ComponentSchema.IntegerComponentSchema -> return generateIntegerProperty(schema, name, referencedSchema.format)
+            is ComponentSchema.StringComponentSchema -> return generateStringProperty(className, schema, name)
+            is ComponentSchema.IntegerComponentSchema -> return generateIntegerProperty(className, schema, name, referencedSchema.format)
             is ComponentSchema.ObjectComponentSchema -> {}
             else -> throw IllegalStateException("Referenced schema $referencedSchema is not supported as reference property.\n$schema")
         }
@@ -201,16 +204,16 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         val typeName = resolveReferencedTypeName(ref)
 
         addField(generateField(name, typeName, nullable))
-        addMethods(generateEncapsulation(name, typeName))
+        addMethods(generateEncapsulation(className, name, typeName))
     }
 
-    private fun TypeSpec.Builder.generateStringProperty(schema: ComponentSchema.ObjectComponentSchema, name: String) {
+    private fun TypeSpec.Builder.generateStringProperty(className: TypeName, schema: ComponentSchema.ObjectComponentSchema, name: String) {
         val nullable = schema.isNullable(name)
         addField(generateField(name, String::class.java, nullable))
-        addMethods(generateEncapsulation(name, String::class.java, nullable))
+        addMethods(generateEncapsulation(className, name, String::class.java, nullable))
     }
 
-    private fun TypeSpec.Builder.generateIntegerProperty(schema: ComponentSchema.ObjectComponentSchema, name: String, format: IntegerPropertyFormat?) {
+    private fun TypeSpec.Builder.generateIntegerProperty(className: TypeName, schema: ComponentSchema.ObjectComponentSchema, name: String, format: IntegerPropertyFormat?) {
         val nullable = schema.isNullable(name)
 
         val type = if (format == IntegerPropertyFormat.INT) {
@@ -220,22 +223,22 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         }
 
         addField(generateField(name, type, nullable))
-        addMethods(generateEncapsulation(name, type, nullable))
+        addMethods(generateEncapsulation(className, name, type, nullable))
     }
 
-    private fun TypeSpec.Builder.generateNumberProperty(schema: ComponentSchema.ObjectComponentSchema, name: String) {
+    private fun TypeSpec.Builder.generateNumberProperty(className: TypeName, schema: ComponentSchema.ObjectComponentSchema, name: String) {
         val nullable = schema.isNullable(name)
         addField(generateField(name, Double::class.java, nullable))
-        addMethods(generateEncapsulation(name, Double::class.java, nullable))
+        addMethods(generateEncapsulation(className, name, Double::class.java, nullable))
     }
 
-    private fun TypeSpec.Builder.generateBooleanProperty(schema: ComponentSchema.ObjectComponentSchema, name: String) {
+    private fun TypeSpec.Builder.generateBooleanProperty(className: TypeName, schema: ComponentSchema.ObjectComponentSchema, name: String) {
         val nullable = schema.isNullable(name)
         addField(generateField(name, Boolean::class.java, nullable))
-        addMethods(generateEncapsulation(name, Boolean::class.java, nullable))
+        addMethods(generateEncapsulation(className, name, Boolean::class.java, nullable))
     }
 
-    private fun TypeSpec.Builder.generateObjectProperty(schema: ComponentSchema.ObjectComponentSchema, name: String, property: PropertySchema.ObjectProperty) {
+    private fun TypeSpec.Builder.generateObjectProperty(className: TypeName, schema: ComponentSchema.ObjectComponentSchema, name: String, property: PropertySchema.ObjectProperty) {
         val nullable = schema.isNullable(name)
         var typeName = TypeName.get(Object::class.java)
 
@@ -262,10 +265,10 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
 
         // TODO: Check for cases that are not using additionalProperties such as anonymous types
         addField(generateField(name, typeName, nullable))
-        addMethods(generateEncapsulation(name, typeName))
+        addMethods(generateEncapsulation(className, name, typeName))
     }
 
-    private fun TypeSpec.Builder.generateArrayProperty(schema: ComponentSchema.ObjectComponentSchema, name: String, items: PropertySchema) {
+    private fun TypeSpec.Builder.generateArrayProperty(className: TypeName, schema: ComponentSchema.ObjectComponentSchema, name: String, items: PropertySchema) {
         val nullable = schema.isNullable(name)
 
         val itemType = when (items) {
@@ -289,14 +292,14 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         val typeName = ParameterizedTypeName.get(ClassName.get(List::class.java), itemType)
 
         addField(generateField(name, typeName, nullable))
-        addMethods(generateEncapsulation(name, typeName))
+        addMethods(generateEncapsulation(className, name, typeName))
     }
 
-    private fun TypeSpec.Builder.generateFallbackProperty(schema: ComponentSchema.ObjectComponentSchema, name: String) {
+    private fun TypeSpec.Builder.generateFallbackProperty(className: TypeName, schema: ComponentSchema.ObjectComponentSchema, name: String) {
         val nullable = schema.isNullable(name)
 
         addField(generateField(name, Object::class.java, nullable))
-        addMethods(generateEncapsulation(name, Object::class.java, nullable))
+        addMethods(generateEncapsulation(className, name, Object::class.java, nullable))
     }
 
     private fun getNormalizedIdentifier(name: String): String {
@@ -331,11 +334,11 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         return this
     }
 
-    private fun generateEncapsulation(name: String, type: Class<*>, nullable: Boolean): List<MethodSpec> {
-        return generateEncapsulation(name, getTypeName(type, nullable))
+    private fun generateEncapsulation(className: TypeName, name: String, type: Class<*>, nullable: Boolean): List<MethodSpec> {
+        return generateEncapsulation(className, name, getTypeName(type, nullable))
     }
 
-    private fun generateEncapsulation(name: String, typeName: TypeName): List<MethodSpec> {
+    private fun generateEncapsulation(className: TypeName, name: String, typeName: TypeName): List<MethodSpec> {
         val camelCaseName = name.camelCase()
         val fieldName = getNormalizedIdentifier(name)
 
@@ -355,8 +358,9 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
             MethodSpec.methodBuilder("set$camelCaseName")
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(typeName, fieldName)
-                .returns(Void.TYPE)
-                .addCode("this.$fieldName = $fieldName;")
+                .returns(className)
+                .addCode("this.$fieldName = $fieldName;\n")
+                .addCode("return this;")
                 .build(),
         )
     }
