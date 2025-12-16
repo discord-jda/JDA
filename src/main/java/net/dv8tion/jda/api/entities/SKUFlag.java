@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
+
 /**
  * SKU Flag exposing metadata for a {@linkplain SKU}.
  * They define the scope and availability of a SKU.
