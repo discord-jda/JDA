@@ -84,7 +84,7 @@ sealed class PropertySchema(
         open val nullable: Boolean
 ) {
     data class ReferenceProperty(val `$ref`: String, override val nullable: Boolean)
-        : PropertySchema(PropertyType.REFERENCE, false)
+        : PropertySchema(PropertyType.REFERENCE, nullable)
 
     data class StringProperty(
         override val nullable: Boolean,

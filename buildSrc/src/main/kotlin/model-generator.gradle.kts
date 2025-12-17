@@ -15,7 +15,6 @@
  */
 
 import de.undercouch.gradle.tasks.download.Download
-import gradle.kotlin.dsl.accessors._0cb39c16b209519d61ee18b0fceac003.sourceSets
 import net.dv8tion.jda.gradle.plugins.ApiModelGenerator
 import net.dv8tion.jda.gradle.tasks.GenerateApiModelsTask
 
@@ -45,8 +44,8 @@ project.tasks.named("compileJava") {
     dependsOn(generateApiModels)
 }
 
-sourceSets {
-    named("main") {
-        java.srcDir(apiModelGenerator.outputDirectory)
-    }
+val sourceSets = the<SourceSetContainer>()
+
+sourceSets.named("main").configure {
+    java.srcDir(apiModelGenerator.outputDirectory)
 }
