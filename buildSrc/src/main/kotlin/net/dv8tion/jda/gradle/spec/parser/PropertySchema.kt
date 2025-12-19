@@ -47,6 +47,17 @@ class PropertySchemaDeserializer : ValueDeserializer<PropertySchema>() {
             type?.asString()
         }
 
+        if (node.hasNonNull("allOf") && node["allOf"].isArray) {
+            val values = node["allOf"].values()
+            val refNode = values.firstNotNullOfOrNull { it[$$"$ref"] }
+
+            if (values.size == 1 && refNode != null) {
+                return PropertySchema.ReferenceProperty(refNode.asString(), nullable)
+            } else {
+                throw IllegalStateException("Unexpected allOf declaration found\n${node.toPrettyString()}")
+            }
+        }
+
         return when (typeId) {
             "string" -> PropertySchema.StringProperty(nullable, format = StringPropertyFormat.parse(node["format"]))
             "integer" -> PropertySchema.IntegerProperty(nullable, format = IntegerPropertyFormat.parse(node["format"]))
