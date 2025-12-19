@@ -17,11 +17,6 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import net.dv8tion.jda.api.exceptions.DataArrayParsingException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
@@ -57,18 +52,6 @@ import javax.annotation.Nullable;
  */
 public class DataArray implements Iterable<Object>, SerializableArray {
     private static final Logger log = LoggerFactory.getLogger(DataObject.class);
-    private static final ObjectMapper mapper;
-    private static final SimpleModule module;
-    private static final CollectionType listType;
-
-    static {
-        mapper = new ObjectMapper();
-        module = new SimpleModule();
-        module.addAbstractTypeMapping(Map.class, HashMap.class);
-        module.addAbstractTypeMapping(List.class, ArrayList.class);
-        mapper.registerModule(module);
-        listType = mapper.getTypeFactory().constructRawCollectionType(ArrayList.class);
-    }
 
     protected final List<Object> data;
 
@@ -115,11 +98,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     @Nonnull
     public static DataArray fromJson(@Nonnull String json) {
-        try {
-            return new DataArray(mapper.readValue(json, listType));
-        } catch (IOException e) {
-            throw new ParsingException(e);
-        }
+        return new DataArray(SerializationUtil.fromJson(SerializationUtil.getListType(), json));
     }
 
     /**
@@ -135,11 +114,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     @Nonnull
     public static DataArray fromJson(@Nonnull InputStream json) {
-        try {
-            return new DataArray(mapper.readValue(json, listType));
-        } catch (IOException e) {
-            throw new ParsingException(e);
-        }
+        return new DataArray(SerializationUtil.fromJson(SerializationUtil.getListType(), json));
     }
 
     /**
@@ -155,11 +130,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     @Nonnull
     public static DataArray fromJson(@Nonnull Reader json) {
-        try {
-            return new DataArray(mapper.readValue(json, listType));
-        } catch (IOException e) {
-            throw new ParsingException(e);
-        }
+        return new DataArray(SerializationUtil.fromJson(SerializationUtil.getListType(), json));
     }
 
     /**
@@ -694,13 +665,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      */
     @Nonnull
     public byte[] toJson() {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            mapper.writeValue(outputStream, data);
-            return outputStream.toByteArray();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return SerializationUtil.toJson(data);
     }
 
     /**
@@ -716,23 +681,12 @@ public class DataArray implements Iterable<Object>, SerializableArray {
 
     @Override
     public String toString() {
-        try {
-            return mapper.writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            throw new ParsingException(e);
-        }
+        return SerializationUtil.toJsonString(data, false);
     }
 
     @Nonnull
     public String toPrettyString() {
-        try {
-            return mapper.writer(new DefaultPrettyPrinter())
-                    .with(SerializationFeature.INDENT_OUTPUT)
-                    .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
-                    .writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            throw new ParsingException(e);
-        }
+        return SerializationUtil.toJsonString(data, true);
     }
 
     @Nonnull

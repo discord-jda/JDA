@@ -68,6 +68,7 @@ apiModelGenerator {
     generatorSuffix = "Dto"
     includes = listOf(
         "AvailableLocalesEnum",
+        "CreateRoleRequest",
     )
 }
 
