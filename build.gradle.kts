@@ -21,13 +21,16 @@ import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.tasks.*
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.jetbrains.gradle.ext.copyright
+import org.jetbrains.gradle.ext.settings
 import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
 import org.jreleaser.model.Active
 import org.openrewrite.gradle.AbstractRewriteTask
 
 plugins {
-    environment
     artifacts
+    environment
+    idea
     `java-library`
     `maven-publish`
 
@@ -38,6 +41,7 @@ plugins {
     alias(libs.plugins.download)
     alias(libs.plugins.spotless)
     alias(libs.plugins.openrewrite)
+    alias(libs.plugins.ideax)
 }
 
 
@@ -54,6 +58,22 @@ projectEnvironment {
 artifactFilters {
     opusExclusions.addAll("natives/**", "com/sun/jna/**", "club/minnced/opus/util/*", "tomp2p/opuswrapper/*")
     additionalAudioExclusions.addAll("com/google/crypto/tink/**", "com/google/gson/**", "com/google/protobuf/**", "google/protobuf/**")
+}
+
+idea {
+    project {
+        settings {
+            copyright {
+                val jdaCopyrightProfileName = "JDA"
+
+                useDefault = jdaCopyrightProfileName
+
+                profiles.create(jdaCopyrightProfileName) {
+                    notice = file("gradle/copyright-header.txt").readText(Charsets.UTF_8)
+                }
+            }
+        }
+    }
 }
 
 // Use normal version string for new releases and commitHash for other builds
@@ -246,7 +266,16 @@ spotless {
         palantirJavaFormat("2.80.0")
             .formatJavadoc(false)
 
-        licenseHeaderFile("spotless/licence-header.txt")
+        val copyrightHeader = file("gradle/copyright-header.txt")
+                .readText(Charsets.UTF_8)
+                .trim()
+                .prependIndent(" * ")
+
+        licenseHeader(
+            "/*\n" +
+            copyrightHeader +
+            "\n */\n\n"
+        )
 
         target("src/**/*.java")
 
