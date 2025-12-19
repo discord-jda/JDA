@@ -33,6 +33,7 @@ dependencies {
     implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.6.0")
     implementation("com.palantir.javapoet:javapoet:0.9.0")
     implementation("tools.jackson.core:jackson-databind:3.0.3")
+    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.27.1")
 }
 
 kotlin {

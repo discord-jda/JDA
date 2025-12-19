@@ -16,6 +16,7 @@
 
 import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.gradle.plugins.ApiModelGenerator
+import net.dv8tion.jda.gradle.tasks.FilterGeneratedTypesTask
 import net.dv8tion.jda.gradle.tasks.GenerateApiModelsTask
 
 plugins {
@@ -28,16 +29,27 @@ val taskGroup = "model generator"
 
 val downloadApiSpec by tasks.registering(Download::class) {
     group = taskGroup
+
     src(apiModelGenerator.apiSpecDownloadUrl)
     dest(apiModelGenerator.apiSpecFile)
+}
+
+val filterGeneratedFiles by tasks.registering(FilterGeneratedTypesTask::class) {
+    group = taskGroup
+
+    suffix = apiModelGenerator.generatorSuffix
+    includes = apiModelGenerator.includes
+    directory = apiModelGenerator.outputDirectory
 }
 
 val generateApiModels by tasks.registering(GenerateApiModelsTask::class) {
     group = taskGroup
 
-    suffix.set(apiModelGenerator.generatorSuffix)
-    apiSpecFile.set(apiModelGenerator.apiSpecFile)
-    outputDirectory.set(apiModelGenerator.outputDirectory)
+    suffix = apiModelGenerator.generatorSuffix
+    apiSpecFile = apiModelGenerator.apiSpecFile
+    outputDirectory = apiModelGenerator.outputDirectory
+
+    finalizedBy(filterGeneratedFiles)
 }
 
 project.tasks.named("compileJava") {

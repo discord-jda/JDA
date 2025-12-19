@@ -18,6 +18,7 @@ package net.dv8tion.jda.gradle.plugins
 
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 
 /**
@@ -32,4 +33,5 @@ interface ApiModelGenerator {
     val apiSpecFile: RegularFileProperty
     val apiSpecDownloadUrl: Property<String>
     val generatorSuffix: Property<String>
+    val includes: ListProperty<String>
 }

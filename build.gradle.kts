@@ -66,6 +66,9 @@ apiModelGenerator {
     apiSpecDownloadUrl = "https://raw.githubusercontent.com/discord/discord-api-spec/refs/heads/main/specs/openapi.json"
 
     generatorSuffix = "Dto"
+    includes = listOf(
+        "AvailableLocalesEnum",
+    )
 }
 
 // Use normal version string for new releases and commitHash for other builds
