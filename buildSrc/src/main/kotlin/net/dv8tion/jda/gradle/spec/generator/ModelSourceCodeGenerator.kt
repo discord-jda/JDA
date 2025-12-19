@@ -171,7 +171,7 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
 
         if (schema.properties != null) {
             for ((name, value) in schema.properties.entries) {
-                val config = FieldConfig(schema, value, name)
+                val config = FieldConfig(schema, value, className, name)
                 config.generate(classBuilder, className)
             }
         }
@@ -180,7 +180,7 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
                 .skipJavaLangImports(true).build()
     }
 
-    private fun resolvePropertyTypeName(property: PropertySchema): TypeName = when (property) {
+    private fun resolvePropertyTypeName(className: ClassName, property: PropertySchema, name: String): TypeName = when (property) {
         is PropertySchema.StringProperty -> TypeName.get(String::class.java)
         is PropertySchema.BooleanProperty -> TypeName.get(Boolean::class.java)
         is PropertySchema.NumberProperty -> TypeName.get(Double::class.java)
@@ -188,11 +188,28 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
             IntegerPropertyFormat.INT -> Int::class.java
             else -> Long::class.java
         })
-        is PropertySchema.ObjectProperty -> TypeName.get(Object::class.java)
+        is PropertySchema.ObjectProperty -> resolveObjectTypeName(className, property, name)
+        is PropertySchema.NestedObjectProperty -> className.nestedClass("${name.pascalCase()}Property")
         is PropertySchema.ReferenceProperty -> resolveReferencedTypeName(property.`$ref`)
-        is PropertySchema.ArrayProperty -> resolveArrayTypeName(property)
+        is PropertySchema.ArrayProperty -> resolveArrayTypeName(className, property, name)
         is PropertySchema.UnionProperty -> TypeName.get(Object::class.java)
         PropertySchema.NullProperty -> TypeName.get(Object::class.java)
+    }
+
+    private fun resolveObjectTypeName(
+        className: ClassName,
+        property: PropertySchema.ObjectProperty,
+        name: String,
+    ): TypeName {
+        return if (property.additionalProperties != null) {
+            ParameterizedTypeName.get(
+                    ClassName.get(Map::class.java),
+                    TypeName.get(String::class.java),
+                    resolvePropertyTypeName(className, property.additionalProperties, "${name}_item")
+            )
+        } else {
+            TypeName.get(Object::class.java)
+        }
     }
 
     private fun resolveReferencedTypeName(ref: String): TypeName {
@@ -228,7 +245,7 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         }
     }
 
-    private fun resolveArrayTypeName(property: PropertySchema.ArrayProperty): TypeName {
+    private fun resolveArrayTypeName(className: ClassName, property: PropertySchema.ArrayProperty, name: String): TypeName {
         val itemType = when (property.items) {
             is PropertySchema.StringProperty -> TypeName.get(String::class.java)
             is PropertySchema.IntegerProperty -> when (property.items.format) {
@@ -239,9 +256,10 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
             is PropertySchema.NumberProperty -> TypeName.get(Double::class.java)
             is PropertySchema.BooleanProperty -> TypeName.get(Boolean::class.java)
             is PropertySchema.ReferenceProperty -> resolveReferencedTypeName(property.items.`$ref`)
+            is PropertySchema.ArrayProperty -> resolveArrayTypeName(className, property.items, "${name}_item")
+            is PropertySchema.ObjectProperty -> resolveObjectTypeName(className, property.items, "${name}_item")
+            is PropertySchema.NestedObjectProperty -> resolvePropertyTypeName(className, property, "${name}_item")
             is PropertySchema.UnionProperty -> TypeName.get(Object::class.java)
-            is PropertySchema.ArrayProperty -> resolveArrayTypeName(property.items)
-            is PropertySchema.ObjectProperty -> TypeName.get(Object::class.java)
             PropertySchema.NullProperty -> TypeName.get(Object::class.java)
         }
 
@@ -250,19 +268,20 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
 
     inner class FieldConfig(
         private val name: String,
-        val nullable: Boolean,
         val optional: Boolean,
         private val type: TypeName,
+        private val schema: PropertySchema,
     ) {
-        constructor(schema: ComponentSchema.ObjectComponentSchema, property: PropertySchema, name: String) : this(
+        constructor(schema: ComponentSchema.ObjectComponentSchema, property: PropertySchema, className: ClassName, name: String) : this(
                 name = name,
-            nullable = property.nullable,
             optional = schema.required?.contains(name) != true,
-                type = resolvePropertyTypeName(property)
+                type = resolvePropertyTypeName(className, property, name),
+              schema = property
         )
 
+        val nullable: Boolean get() = schema.nullable
         val normalizedIdentifier: String = "_$name"
-        val camelCaseName: String = name.camelCase()
+        val camelCaseName: String = name.pascalCase()
         val getterPrefix: String get() = when {
             type.box() == TypeName.BOOLEAN.box() -> "is"
             else -> "get"
@@ -320,6 +339,21 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         }
 
         fun generate(classBuilder: TypeSpec.Builder, className: ClassName) {
+            if (schema is PropertySchema.NestedObjectProperty) {
+                val nestedObjectSchema = schema.asObjectSchema()
+                val nestedClassName = type as ClassName
+
+                val nestedClassBuilder = TypeSpec.classBuilder(nestedClassName)
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+
+                for (property in schema.properties) {
+                    val field = FieldConfig(nestedObjectSchema, property.value, nestedClassName, property.key)
+                    field.generate(nestedClassBuilder, nestedClassName)
+                }
+
+                classBuilder.addTypes(listOf(nestedClassBuilder.build()))
+            }
+
             classBuilder.addField(generateField())
             classBuilder.addMethod(generateGetter())
             classBuilder.addMethod(generateSetter(className))
@@ -339,6 +373,6 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
 
 fun String.enumConstantIdentifier() = replace("-", "_").uppercase(Locale.ROOT)
 
-fun String.camelCase() = replace(Regex("\\b\\w|_\\w")) {
+fun String.pascalCase() = replace(Regex("\\b\\w|_\\w")) {
     it.value.removePrefix("_").uppercase(Locale.ROOT)
 }

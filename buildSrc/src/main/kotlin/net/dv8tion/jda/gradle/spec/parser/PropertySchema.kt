@@ -33,7 +33,6 @@ class PropertySchemaDeserializer : ValueDeserializer<PropertySchema>() {
         var nullable = false
         val type: JsonNode? = node["type"]
 
-
         val typeId: String? = if (type?.isArray == true) {
             val arrayItems = type.values()
             nullable = arrayItems.any { it.isString && it.asString() == "null" }
@@ -53,15 +52,24 @@ class PropertySchemaDeserializer : ValueDeserializer<PropertySchema>() {
             "integer" -> PropertySchema.IntegerProperty(nullable, format = IntegerPropertyFormat.parse(node["format"]))
             "number" -> PropertySchema.NumberProperty(nullable, format = NumberPropertyFormat.parse(node["format"]))
             "boolean" -> PropertySchema.BooleanProperty(nullable)
-            "object" -> PropertySchema.ObjectProperty(nullable, additionalProperties = ctxt.readTreeAsValue(node["additionalProperties"], PropertySchema::class.java))
-            "array" -> PropertySchema.ArrayProperty(nullable, items = ctxt.readTreeAsValue(node["items"], PropertySchema::class.java))
+            "object" -> {
+                val properties = parseNestedProperties(ctxt, node)
+                val additionalProperties = node["additionalProperties"]?.toPropertySchema(ctxt)
+
+                if (properties == null) {
+                    PropertySchema.ObjectProperty(nullable, additionalProperties)
+                } else {
+                    PropertySchema.NestedObjectProperty(nullable, properties, additionalProperties, node["required"]?.values()?.map { it.asString() })
+                }
+            }
+            "array" -> PropertySchema.ArrayProperty(nullable, items = node["items"].toPropertySchema(ctxt)!!)
             "null" -> PropertySchema.NullProperty
             else -> {
                 if (typeId == null && node.hasNonNull("oneOf")) {
                     val oneOf = node["oneOf"].values()
+                    val nullable = oneOf.any { it["type"]?.asString() == "null" }
 
-                    if (oneOf.size == 2) {
-                        val nullable = oneOf.any { it["type"]?.asString() == "null" }
+                    if (oneOf.size == 2 && nullable) {
                         val ref = oneOf.find { it.hasNonNull($$"$ref") }?.required($$"$ref")?.asString()
                         if (ref != null) {
                             return PropertySchema.ReferenceProperty(ref, nullable)
@@ -75,6 +83,24 @@ class PropertySchemaDeserializer : ValueDeserializer<PropertySchema>() {
                 throw IllegalStateException("Unexpected property type $typeId\n${node.toPrettyString()}")
             }
         }
+    }
+
+    fun parseNestedProperties(ctxt: DeserializationContext, node: JsonNode): Map<String, PropertySchema>? {
+        val properties = node["properties"]
+        if (properties == null || !properties.isObject || properties.isEmpty) {
+            return null
+        }
+
+        val parsed = mutableMapOf<String, PropertySchema>()
+        properties.forEachEntry { key, value ->
+            parsed[key] = value.toPropertySchema(ctxt)!!
+        }
+
+        return parsed
+    }
+
+    fun JsonNode?.toPropertySchema(ctxt: DeserializationContext): PropertySchema? {
+        return ctxt.readTreeAsValue(this, PropertySchema::class.java)
     }
 }
 
@@ -108,6 +134,15 @@ sealed class PropertySchema(
         override val nullable: Boolean,
         val additionalProperties: PropertySchema?,
     ) : PropertySchema(PropertyType.OBJECT, nullable)
+
+    data class NestedObjectProperty(
+        override val nullable: Boolean,
+        val properties: Map<String, PropertySchema>,
+        val additionalProperties: PropertySchema?,
+        val required: List<String>?,
+    ) : PropertySchema(PropertyType.OBJECT, nullable) {
+        fun asObjectSchema() = ComponentSchema.ObjectComponentSchema(properties, required, additionalProperties, null)
+    }
 
     data class ArrayProperty(
         override val nullable: Boolean,
