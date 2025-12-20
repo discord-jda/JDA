@@ -16,23 +16,11 @@
 
 package net.dv8tion.jda.internal.utils.compress;
 
-import net.dv8tion.jda.api.utils.Compression;
+import javax.annotation.Nullable;
 
-public interface DecompressorFactory {
-    int DEFAULT_BUFFER_SIZE = -1;
-
-    Decompressor create();
-
-    static DecompressorFactory of(Compression compression, int bufferSizeHint) {
-        switch (compression) {
-            case NONE:
-                return NullDecompressorFactory.INSTANCE;
-            case ZLIB:
-                return new ZlibDecompressorFactory(bufferSizeHint);
-            case ZSTD:
-                return new ZstdDecompressorFactory(bufferSizeHint);
-            default:
-                throw new IllegalStateException("Unknown compression");
-        }
-    }
+public interface BulkDecompressor extends Decompressor {
+    // returns null when the decompression isn't done,
+    // for example when no Z_SYNC_FLUSH was present
+    @Nullable
+    byte[] decompress(byte[] data) throws DecompressionException;
 }

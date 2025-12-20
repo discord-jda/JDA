@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils.compress;
+package net.dv8tion.jda.internal.requests.gateway.decoder;
 
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import org.slf4j.Logger;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
-import java.util.Arrays;
+import java.io.InputStream;
 
-public interface Decompressor {
-    Logger LOG = JDALogger.getLog(Decompressor.class);
+import javax.annotation.Nonnull;
 
-    Compression getType();
+public interface Decoder {
+    @Nonnull
+    DataObject decode(@Nonnull byte[] data);
 
-    void reset();
-
-    void shutdown();
-
-    default Object lazy(byte[] data) {
-        return JDALogger.getLazyString(() -> Arrays.toString(data));
-    }
+    @Nonnull
+    DataObject decode(@Nonnull InputStream stream);
 }

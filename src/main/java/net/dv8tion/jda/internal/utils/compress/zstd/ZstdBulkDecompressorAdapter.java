@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils.compress;
+package net.dv8tion.jda.internal.utils.compress.zstd;
 
 import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
 import dev.freya02.discord.zstd.api.DiscordZstdException;
 import net.dv8tion.jda.api.utils.Compression;
+import net.dv8tion.jda.internal.utils.compress.BulkDecompressor;
+import net.dv8tion.jda.internal.utils.compress.DecompressionException;
 
 import javax.annotation.Nonnull;
 
-public class ZstdDecompressorAdapter implements Decompressor {
+public class ZstdBulkDecompressorAdapter implements BulkDecompressor {
     private final DiscordZstdDecompressor decompressor;
 
-    public ZstdDecompressorAdapter(DiscordZstdDecompressor decompressor) {
+    public ZstdBulkDecompressorAdapter(DiscordZstdDecompressor decompressor) {
         this.decompressor = decompressor;
     }
 
@@ -47,6 +49,7 @@ public class ZstdDecompressorAdapter implements Decompressor {
     @Nonnull
     @Override
     public byte[] decompress(byte[] data) throws DecompressionException {
+        LOG.trace("Decompressing data {}", lazy(data));
         try {
             return decompressor.decompress(data);
         } catch (DiscordZstdException e) {

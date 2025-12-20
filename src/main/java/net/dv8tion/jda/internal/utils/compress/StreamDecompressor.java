@@ -16,22 +16,13 @@
 
 package net.dv8tion.jda.internal.utils.compress;
 
-import net.dv8tion.jda.internal.utils.Checks;
+import java.io.InputStream;
 
-public class ZlibDecompressorFactory implements DecompressorFactory {
-    private final int maxBufferSize;
+import javax.annotation.Nullable;
 
-    public ZlibDecompressorFactory(int bufferSizeHint) {
-        if (bufferSizeHint == DecompressorFactory.DEFAULT_BUFFER_SIZE) {
-            this.maxBufferSize = 2048;
-        } else {
-            Checks.notNegative(bufferSizeHint, "Buffer size hint");
-            this.maxBufferSize = bufferSizeHint;
-        }
-    }
-
-    @Override
-    public Decompressor create() {
-        return new ZlibDecompressor(maxBufferSize);
-    }
+public interface StreamDecompressor extends Decompressor {
+    // returns null when the decompression isn't done,
+    // for example when no Z_SYNC_FLUSH was present
+    @Nullable
+    InputStream createInputStream(byte[] data);
 }

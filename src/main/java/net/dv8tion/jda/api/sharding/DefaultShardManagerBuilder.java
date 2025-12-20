@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.requests.GatewayConfig;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.RestConfig;
@@ -34,8 +35,8 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.GatewayConfigImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.compress.DecompressorFactory;
 import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
@@ -45,7 +46,6 @@ import okhttp3.OkHttpClient;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.IntFunction;
-import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
@@ -69,12 +69,12 @@ public class DefaultShardManagerBuilder {
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected EnumSet<ShardingConfigFlag> shardingFlags = ShardingConfigFlag.getDefault();
-    protected IntFunction<Compression> compressionProvider = i -> Compression.ZLIB;
+    protected Compression compression = Compression.ZLIB;
     protected GatewayEncoding encoding = GatewayEncoding.JSON;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
-    protected IntUnaryOperator bufferSizeHintProvider = i -> DecompressorFactory.DEFAULT_BUFFER_SIZE;
+    protected int maxBufferSize = 2048;
     protected int intents = -1;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
@@ -103,6 +103,7 @@ public class DefaultShardManagerBuilder {
     protected ThreadPoolProvider<? extends ExecutorService> eventPoolProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider = null;
     protected IntFunction<? extends RestConfig> restConfigProvider = null;
+    protected IntFunction<GatewayConfig> gatewayConfigProvider = null;
     protected Collection<Integer> shards = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
@@ -501,8 +502,12 @@ public class DefaultShardManagerBuilder {
      *         If null is provided
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         Use {@link #setGatewayConfig(GatewayConfig)} and configure the encoding
      */
     @Nonnull
+    @Deprecated
     public DefaultShardManagerBuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding) {
         Checks.notNull(encoding, "GatewayEncoding");
         this.encoding = encoding;
@@ -814,39 +819,58 @@ public class DefaultShardManagerBuilder {
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @deprecated
+     *         Use {@link #setGatewayConfig(GatewayConfig)} and configure the corresponding compression method
+     *
      * @see    <a href="https://discord.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
     @Nonnull
+    @Deprecated
     public DefaultShardManagerBuilder setCompression(@Nonnull Compression compression) {
         Checks.notNull(compression, "Compression");
-        return setCompressionProvider(i -> compression);
+        this.compression = compression;
+        return this;
     }
 
     /**
-     * Sets per-shard provider of compression algorithm used with gateway connections,
-     * this will decrease the amount of used bandwidth for the running bot instance
-     * for the cost of a few extra cycles for decompression.
-     * Compression can be entirely disabled by setting this to {@link net.dv8tion.jda.api.utils.Compression#NONE}.
-     * <br><b>Default: {@link net.dv8tion.jda.api.utils.Compression#ZLIB}</b>
+     * Configures several gateway parameters with the provided configuration.
+     * <br>This can be used to configure compression and encoding.
      *
-     * <p><b>We recommend to keep this on the default unless you have issues with the decompression</b>
-     * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
+     * <p>When set, this overrides all values set by {@link #setCompression(Compression)},
+     * {@link #setMaxBufferSize(int)} and {@link #setGatewayEncoding(GatewayEncoding)}.
      *
-     * @param  provider
-     *         The per-shard provider of compression algorithm to use for a gateway connection,
-     *         must not return {@code null}
+     * @param  gatewayConfig
+     *         The configuration to apply
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If provided with null
+     * @return The JDABuilder instance. Useful for chaining
      *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @see    <a href="https://discord.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
+     * @see    GatewayConfig#builder()
      */
     @Nonnull
-    public DefaultShardManagerBuilder setCompressionProvider(@Nonnull IntFunction<Compression> provider) {
+    public DefaultShardManagerBuilder setGatewayConfig(@Nonnull GatewayConfig gatewayConfig) {
+        Checks.notNull(gatewayConfig, "Gateway config");
+        this.gatewayConfigProvider = (i) -> gatewayConfig;
+        return this;
+    }
+
+    /**
+     * Configures several gateway parameters with the provided per-shard configurations.
+     * <br>This can be used to configure compression and encoding.
+     *
+     * <p>When set, this overrides all values set by {@link #setCompression(Compression)},
+     * {@link #setMaxBufferSize(int)} and {@link #setGatewayEncoding(GatewayEncoding)}.
+     *
+     * @param  provider
+     *         A per-shard provider for configurations to apply
+     *
+     * @return The JDABuilder instance. Useful for chaining
+     *
+     * @see    GatewayConfig#builder()
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setGatewayConfigProvider(@Nonnull IntFunction<GatewayConfig> provider) {
         Checks.notNull(provider, "Provider");
-        this.compressionProvider = provider;
+        this.gatewayConfigProvider = provider;
         return this;
     }
 
@@ -2164,51 +2188,13 @@ public class DefaultShardManagerBuilder {
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @deprecated
-     *         This was replaced by {@link #setDecompressorBufferSizeHint(int)}
+     *         Use {@link #setGatewayConfig(GatewayConfig)} and pass the buffer size alongside the configured compression method
      */
     @Nonnull
     @Deprecated
     public DefaultShardManagerBuilder setMaxBufferSize(int bufferSize) {
         Checks.notNegative(bufferSize, "The buffer size");
-        this.bufferSizeHintProvider = i -> bufferSize;
-        return this;
-    }
-
-    /**
-     * Sets a hint for the buffer size of the {@linkplain #setCompression(Compression) selected decompression method},
-     * on which the allowed values depend.
-     *
-     * <p>See the documentation of the corresponding {@link Compression} being used.
-     *
-     * @param  bufferSizeHint
-     *         The size hint for the decompression buffer
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @see    Compression
-     */
-    @Nonnull
-    public DefaultShardManagerBuilder setDecompressorBufferSizeHint(int bufferSizeHint) {
-        return setDecompressorBufferSizeHintProvider(i -> bufferSizeHint);
-    }
-
-    /**
-     * Sets a provider of hints for the buffer size of the {@linkplain #setCompressionProvider(IntFunction) selected per-shard decompression method},
-     * on which the allowed values depend.
-     *
-     * <p>See the documentation of the corresponding {@link Compression} being used.
-     *
-     * @param  provider
-     *         The provider of size hints for each shard's decompression buffer
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @see    Compression
-     */
-    @Nonnull
-    public DefaultShardManagerBuilder setDecompressorBufferSizeHintProvider(@Nonnull IntUnaryOperator provider) {
-        Checks.notNull(provider, "Provider");
-        this.bufferSizeHintProvider = provider;
+        this.maxBufferSize = bufferSize;
         return this;
     }
 
@@ -2289,8 +2275,7 @@ public class DefaultShardManagerBuilder {
                 shardingFlags,
                 maxReconnectDelay,
                 largeThreshold);
-        ShardingMetaConfig metaConfig = new ShardingMetaConfig(
-                bufferSizeHintProvider, contextProvider, cacheFlags, flags, compressionProvider, encoding);
+        ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, flags);
         DefaultShardManager manager = new DefaultShardManager(
                 this.token,
                 this.shards,
@@ -2301,6 +2286,7 @@ public class DefaultShardManagerBuilder {
                 sessionConfig,
                 metaConfig,
                 restConfigProvider,
+                getEffectiveGatewayConfigProvider(),
                 chunkingFilter);
 
         if (login) {
@@ -2308,6 +2294,13 @@ public class DefaultShardManagerBuilder {
         }
 
         return manager;
+    }
+
+    @Nonnull
+    private IntFunction<GatewayConfig> getEffectiveGatewayConfigProvider() {
+        return gatewayConfigProvider != null
+                ? gatewayConfigProvider
+                : (i) -> GatewayConfigImpl.fromLegacy(compression, maxBufferSize);
     }
 
     private DefaultShardManagerBuilder setFlag(ConfigFlag flag, boolean enable) {
