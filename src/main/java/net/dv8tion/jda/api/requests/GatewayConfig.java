@@ -162,6 +162,7 @@ public interface GatewayConfig {
          */
         @Nonnull
         public Builder useStreamingDecompression(@Nonnull Compression compression) {
+            Checks.notNull(compression, "Compression");
             Checks.check(
                     encoding != GatewayEncoding.ETF, "Cannot use streaming decompression with ETF payload encoding");
             switch (compression) {
@@ -196,6 +197,7 @@ public interface GatewayConfig {
          */
         @Nonnull
         public Builder useEncoding(@Nonnull GatewayEncoding encoding) {
+            Checks.notNull(encoding, "Gateway encoding");
             if (encoding == GatewayEncoding.ETF) {
                 Checks.check(isBulkDecompression, "Cannot use ETF payload encoding with streaming decompression");
             }
