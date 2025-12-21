@@ -71,7 +71,8 @@ public class GatewayStreamMessageReaderTest {
         var messageReader = new GatewayStreamMessageReader(new JsonDecoder(), decompressor);
 
         assertThatExceptionOfType(DecompressionException.class)
-                .describedAs("DecompressionException should have been thrown in response to an exception of the underlying decompression library")
+                .describedAs(
+                        "DecompressionException should have been thrown in response to an exception of the underlying decompression library")
                 .isThrownBy(() -> messageReader.read(new byte[0]));
     }
 }
