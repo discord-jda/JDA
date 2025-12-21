@@ -121,6 +121,7 @@ public interface GatewayConfig {
          *
          * <ul>
          *     <li>The minimum is {@value dev.freya02.discord.zstd.api.DiscordZstdDecompressor#MIN_BUFFER_SIZE}</li>
+         *     <li>We recommend setting a buffer size of {@value dev.freya02.discord.zstd.api.DiscordZstdDecompressor#DEFAULT_BUFFER_SIZE} as this will be enough for most payloads</li>
          *     <li>
          *         A value "recommended" by Zstd is set with {@link dev.freya02.discord.zstd.api.DiscordZstdDecompressor#ZSTD_RECOMMENDED_BUFFER_SIZE DiscordZstdDecompressor.ZSTD_RECOMMENDED_BUFFER_SIZE};
          *         However it is not recommended for normal use cases, see the docs for more details.
