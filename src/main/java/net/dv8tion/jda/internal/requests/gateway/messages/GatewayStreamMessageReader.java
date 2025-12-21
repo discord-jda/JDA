@@ -16,12 +16,17 @@
 
 package net.dv8tion.jda.internal.requests.gateway.messages;
 
+import dev.freya02.discord.zstd.api.DiscordZstdException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.gateway.decoder.Decoder;
+import net.dv8tion.jda.internal.utils.compress.DecompressionException;
 import net.dv8tion.jda.internal.utils.compress.StreamDecompressor;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.ZipException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,12 +48,29 @@ public class GatewayStreamMessageReader implements GatewayMessageReader {
 
     @Nullable
     @Override
-    public DataObject read(@Nonnull byte[] data) {
+    public DataObject read(@Nonnull byte[] data) throws DecompressionException {
         InputStream stream = decompressor.createInputStream(data);
         if (stream == null) {
             return null;
         }
-        return decoder.decode(stream);
+
+        try {
+            return decoder.decode(stream);
+        } catch (ParsingException e) {
+            // Attempt to see if the real issue is a decompression issue,
+            // in which case we throw DecompressionException so the WS can be invalidated
+            Throwable cause = e.getCause();
+            if (!(cause instanceof IOException)) {
+                throw e;
+            }
+
+            Throwable superCause = cause.getCause();
+            if (!(superCause instanceof DiscordZstdException) && !(superCause instanceof ZipException)) {
+                throw e;
+            }
+
+            throw new DecompressionException(superCause);
+        }
     }
 
     @Override
