@@ -51,7 +51,6 @@ public class ZlibBulkDecompressor extends ZlibAbstractDecompressor implements Bu
 
     @Override
     public byte[] decompress(byte[] data) throws DecompressionException {
-
         data = bufferOrGetCompleteData(data);
         // signal we can't decompress yet
         if (data == null) {
