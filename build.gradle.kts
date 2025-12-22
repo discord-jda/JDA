@@ -21,7 +21,10 @@ import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.tasks.*
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.jetbrains.gradle.ext.Gradle as GradleRunConfiguration
+import org.jetbrains.gradle.ext.JUnit as JUnitRunConfiguration
 import org.jetbrains.gradle.ext.copyright
+import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
 import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
 import org.jreleaser.model.Active
@@ -70,6 +73,23 @@ idea {
 
                 profiles.create(jdaCopyrightProfileName) {
                     notice = file("gradle/copyright-header.txt").readText(Charsets.UTF_8)
+                }
+            }
+
+            runConfigurations {
+                defaults(JUnitRunConfiguration::class.java) {
+                    vmParameters = listOf(
+                            "-ea",
+                            "-Duser.timezone=GMT",
+                            "-Duser.language=en",
+                            "-Duser.country=US",
+                            "-Dfile.encoding=utf-8",
+                            "-DupdateSnapshots",
+                    ).joinToString(" ")
+                }
+
+                register<GradleRunConfiguration>("format") {
+                    taskNames = listOf("format")
                 }
             }
         }
@@ -264,23 +284,19 @@ spotless {
 
     java {
         palantirJavaFormat("2.80.0")
-            .formatJavadoc(false)
+                .formatJavadoc(false)
 
         val copyrightHeader = file("gradle/copyright-header.txt")
                 .readText(Charsets.UTF_8)
                 .trim()
                 .prependIndent(" * ")
 
-        licenseHeader(
-            "/*\n" +
-            copyrightHeader +
-            "\n */\n\n"
-        )
+        licenseHeader("/*\n$copyrightHeader\n */\n\n")
 
         target("src/**/*.java")
 
         removeUnusedImports()
-        importOrder("",  "java", "javax", "\\#")
+        importOrder("", "java", "javax", "\\#")
         trimTrailingWhitespace()
     }
 }
@@ -536,6 +552,15 @@ val verifyBytecodeVersion by tasks.registering(VerifyBytecodeVersion::class) {
 }
 
 compileJava.finalizedBy(verifyBytecodeVersion)
+
+tasks.withType<Test>().configureEach {
+    systemProperties.putAll(mapOf(
+            "user.timezone" to "GMT",
+            "user.language" to "en",
+            "user.country" to "US",
+            "file.encoding" to "utf-8",
+    ))
+}
 
 
 ////////////////////////////////////
