@@ -162,6 +162,14 @@ public enum AuditLogKey {
     GUILD_BANNER("banner_hash"),
 
     /**
+     * Change of the primary brand color of a Guild.
+     * <br>The color is encoded as a hexadecimal string. For instance: {@code "#4fe2ca"}
+     *
+     * <p>Expected type: <b>String</b></p>
+     */
+    GUILD_BRAND_COLOR_PRIMARY("brand_color_primary"),
+
+    /**
      * Change of the {@link net.dv8tion.jda.api.entities.Guild#getVerificationLevel() Guild.getVerificationLevel()} value.
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel#fromKey(int) Guild.VerificationLevel.fromKey(int)}
      *

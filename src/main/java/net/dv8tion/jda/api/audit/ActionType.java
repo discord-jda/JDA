@@ -584,6 +584,21 @@ public enum ActionType {
     APPLICATION_COMMAND_PRIVILEGES_UPDATE(121, TargetType.INTEGRATION),
 
     /**
+     * A user created a soundboard sound.
+     */
+    SOUNDBOARD_SOUND_CREATE(130, TargetType.SOUNDBOARD_SOUND),
+
+    /**
+     * A user updated a soundboard sound.
+     */
+    SOUNDBOARD_SOUND_UPDATE(131, TargetType.SOUNDBOARD_SOUND),
+
+    /**
+     * A user deleted a soundboard sound.
+     */
+    SOUNDBOARD_SOUND_DELETE(132, TargetType.SOUNDBOARD_SOUND),
+
+    /**
      * A moderator created a new {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}
      */
     AUTO_MODERATION_RULE_CREATE(140, TargetType.AUTO_MODERATION_RULE),
@@ -633,6 +648,46 @@ public enum ActionType {
     AUTO_MODERATION_MEMBER_TIMEOUT(145, TargetType.MEMBER),
 
     /**
+     * An automod rule quarantined a user.
+     */
+    AUTO_MODERATION_QUARANTINE_USER(146, TargetType.MEMBER),
+
+    /**
+     * A moderator created a monetization request.
+     */
+    CREATOR_MONETIZATION_REQUEST_CREATED(150, TargetType.UNKNOWN),
+
+    /**
+     * A moderator accepted the monetization terms.
+     */
+    CREATOR_MONETIZATION_TERMS_ACCEPTED(151, TargetType.UNKNOWN),
+
+    /**
+     * A moderator created a guild onboarding question.
+     */
+    ONBOARDING_PROMPT_CREATE(163, TargetType.ONBOARDING_PROMPT_STRUCTURE),
+
+    /**
+     *A moderator updated a guild onboarding question.
+     */
+    ONBOARDING_PROMPT_UPDATE(164, TargetType.ONBOARDING_PROMPT_STRUCTURE),
+
+    /**
+     * A moderator deleted a guild onboarding question.
+     */
+    ONBOARDING_PROMPT_DELETE(165, TargetType.ONBOARDING_PROMPT_STRUCTURE),
+
+    /**
+     * A moderator setup guild onboarding.
+     */
+    ONBOARDING_CREATE(166, TargetType.ONBOARDING),
+
+    /**
+     * A moderator updated guild onboarding.
+     */
+    ONBOARDING_UPDATE(167, TargetType.ONBOARDING),
+
+    /**
      * A user updated the {@link IVoiceStatusChannel#getStatus() status} of a voice channel.
      *
      * <p><b>Possible Keys</b><br>
@@ -652,6 +707,21 @@ public enum ActionType {
      * </ul>
      */
     VOICE_CHANNEL_STATUS_DELETE(193, TargetType.CHANNEL),
+
+    /**
+     * A moderator created the guild server guide.
+     */
+    HOME_SETTINGS_CREATE(190, TargetType.UNKNOWN),
+
+    /**
+     * A moderator updated the guild server guide.
+     */
+    HOME_SETTINGS_UPDATE(191, TargetType.UNKNOWN),
+
+    /**
+     * A moderator updated the guild profile.
+     */
+    GUILD_PROFILE_UPDATE(211, TargetType.GUILD),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 

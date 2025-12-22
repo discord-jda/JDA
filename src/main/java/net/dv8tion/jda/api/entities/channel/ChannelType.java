@@ -60,6 +60,11 @@ public enum ChannelType {
     GUILD_PRIVATE_THREAD(ThreadChannel.class, 12, -1, true),
 
     /**
+     * A channel in a student hub, containing the listed guilds.
+     */
+    GUILD_DIRECTORY(Channel.class, 14, -1, false),
+
+    /**
      * A {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannel}, Guild-Only.
      */
     FORUM(ForumChannel.class, 15, 0, true),

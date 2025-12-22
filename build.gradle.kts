@@ -69,6 +69,11 @@ apiModelGenerator {
     includes = listOf(
         "AvailableLocalesEnum",
         "CreateRoleRequest",
+        "MessageType",
+        "ChannelTypes",
+        "AuditLogActionTypes",
+        "InviteTypes",
+        "WebhookTypes",
     )
 }
 

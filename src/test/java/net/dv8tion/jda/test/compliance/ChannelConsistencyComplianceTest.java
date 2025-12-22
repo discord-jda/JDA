@@ -52,6 +52,7 @@ public class ChannelConsistencyComplianceTest {
                 ChannelType.GUILD_PUBLIC_THREAD,
                 ChannelType.GUILD_PRIVATE_THREAD,
                 ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.GUILD_DIRECTORY,
                 ChannelType.UNKNOWN));
 
         for (ChannelType type : creatable) {
@@ -81,6 +82,7 @@ public class ChannelConsistencyComplianceTest {
                 ChannelType.GUILD_PUBLIC_THREAD,
                 ChannelType.GUILD_PRIVATE_THREAD,
                 ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.GUILD_DIRECTORY,
                 ChannelType.UNKNOWN));
 
         for (ChannelType type : cacheable) {
@@ -110,6 +112,7 @@ public class ChannelConsistencyComplianceTest {
                 ChannelType.GUILD_PUBLIC_THREAD,
                 ChannelType.GUILD_PRIVATE_THREAD,
                 ChannelType.GUILD_NEWS_THREAD,
+                ChannelType.GUILD_DIRECTORY,
                 ChannelType.UNKNOWN));
 
         for (ChannelType type : editable) {
