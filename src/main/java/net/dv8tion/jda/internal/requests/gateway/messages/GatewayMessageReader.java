@@ -23,12 +23,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * Bulk + JSON = OK
- * Bulk + ETF = OK
- * Streaming + JSON = OK
- * Streaming + ETF = NO (adapt ExTermDecoder to use input streams)
- */
 public interface GatewayMessageReader {
     @Nonnull
     Compression getCompression();
