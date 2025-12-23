@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.internal.requests.gateway.messages;
 
+import net.dv8tion.jda.api.exceptions.DecompressionException;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.utils.compress.DecompressionException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

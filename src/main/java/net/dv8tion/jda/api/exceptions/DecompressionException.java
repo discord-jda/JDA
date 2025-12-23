@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils.compress;
+package net.dv8tion.jda.api.exceptions;
 
+/**
+ * Exception caused by a decompression issue. Such exceptions will close the shard on which it happened.
+ */
 public class DecompressionException extends Exception {
     public DecompressionException(Throwable cause) {
         super(cause);

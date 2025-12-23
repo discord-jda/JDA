@@ -17,11 +17,11 @@
 package net.dv8tion.jda.internal.requests.gateway.messages;
 
 import dev.freya02.discord.zstd.api.DiscordZstdException;
+import net.dv8tion.jda.api.exceptions.DecompressionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.gateway.decoder.Decoder;
-import net.dv8tion.jda.internal.utils.compress.DecompressionException;
 import net.dv8tion.jda.internal.utils.compress.StreamDecompressor;
 
 import java.io.IOException;

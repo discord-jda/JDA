@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.utils.compress.zlib;
 
+import net.dv8tion.jda.api.exceptions.DecompressionException;
 import net.dv8tion.jda.internal.utils.compress.BulkDecompressor;
-import net.dv8tion.jda.internal.utils.compress.DecompressionException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

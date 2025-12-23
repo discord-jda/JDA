@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.utils.compress;
 
+import net.dv8tion.jda.api.exceptions.DecompressionException;
+
 import javax.annotation.Nullable;
 
 public interface BulkDecompressor extends Decompressor {

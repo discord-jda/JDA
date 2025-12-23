@@ -17,10 +17,10 @@
 package net.dv8tion.jda.test.requests.gateway.messages;
 
 import dev.freya02.discord.zstd.api.DiscordZstdException;
+import net.dv8tion.jda.api.exceptions.DecompressionException;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.internal.requests.gateway.decoder.JsonDecoder;
 import net.dv8tion.jda.internal.requests.gateway.messages.GatewayStreamMessageReader;
-import net.dv8tion.jda.internal.utils.compress.DecompressionException;
 import net.dv8tion.jda.internal.utils.compress.StreamDecompressor;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
