@@ -20,14 +20,14 @@ import dev.freya02.discord.zstd.api.DiscordZstdDecompressor;
 import dev.freya02.discord.zstd.api.DiscordZstdException;
 import net.dv8tion.jda.api.exceptions.DecompressionException;
 import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.internal.utils.compress.BulkDecompressor;
+import net.dv8tion.jda.internal.utils.compress.BufferDecompressor;
 
 import javax.annotation.Nonnull;
 
-public class ZstdBulkDecompressorAdapter implements BulkDecompressor {
+public class ZstdBufferDecompressorAdapter implements BufferDecompressor {
     private final DiscordZstdDecompressor decompressor;
 
-    public ZstdBulkDecompressorAdapter(DiscordZstdDecompressor decompressor) {
+    public ZstdBufferDecompressorAdapter(DiscordZstdDecompressor decompressor) {
         this.decompressor = decompressor;
     }
 

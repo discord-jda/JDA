@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.exceptions.DecompressionException;
 
 import javax.annotation.Nullable;
 
-public interface BulkDecompressor extends Decompressor {
+public interface BufferDecompressor extends Decompressor {
     // returns null when the decompression isn't done,
     // for example when no Z_SYNC_FLUSH was present
     @Nullable

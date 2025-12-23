@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.utils.compress.disabled;
 
 import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.internal.utils.compress.BulkDecompressor;
+import net.dv8tion.jda.internal.utils.compress.BufferDecompressor;
 import net.dv8tion.jda.internal.utils.compress.StreamDecompressor;
 
 import java.io.ByteArrayInputStream;
@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 import javax.annotation.Nullable;
 
-public class DisabledDecompressor implements BulkDecompressor, StreamDecompressor {
+public class DisabledDecompressor implements BufferDecompressor, StreamDecompressor {
     public static final DisabledDecompressor INSTANCE = new DisabledDecompressor();
 
     private DisabledDecompressor() {}

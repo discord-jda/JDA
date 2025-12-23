@@ -23,14 +23,14 @@ import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.internal.requests.GatewayConfigImpl;
 import net.dv8tion.jda.internal.requests.gateway.decoder.Decoder;
-import net.dv8tion.jda.internal.requests.gateway.messages.GatewayBulkMessageReader;
+import net.dv8tion.jda.internal.requests.gateway.messages.GatewayBufferMessageReader;
 import net.dv8tion.jda.internal.requests.gateway.messages.GatewayMessageReader;
 import net.dv8tion.jda.internal.requests.gateway.messages.GatewayStreamMessageReader;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.compress.disabled.DisabledDecompressor;
-import net.dv8tion.jda.internal.utils.compress.zlib.ZlibBulkDecompressor;
+import net.dv8tion.jda.internal.utils.compress.zlib.ZlibBufferDecompressor;
 import net.dv8tion.jda.internal.utils.compress.zlib.ZlibStreamDecompressor;
-import net.dv8tion.jda.internal.utils.compress.zstd.ZstdBulkDecompressorAdapter;
+import net.dv8tion.jda.internal.utils.compress.zstd.ZstdBufferDecompressorAdapter;
 import net.dv8tion.jda.internal.utils.compress.zstd.ZstdStreamDecompressorAdapter;
 
 import java.util.function.Function;
@@ -59,7 +59,7 @@ public interface GatewayConfig {
      */
     class Builder {
         private Function<Decoder, GatewayMessageReader> messageReaderFunction =
-                (decoder) -> new GatewayBulkMessageReader(decoder, new ZlibBulkDecompressor(2048));
+                (decoder) -> new GatewayBufferMessageReader(decoder, new ZlibBufferDecompressor(2048));
         private boolean isStreamDecompression = false;
         private GatewayEncoding encoding = GatewayEncoding.JSON;
 
@@ -71,7 +71,8 @@ public interface GatewayConfig {
          */
         @Nonnull
         public Builder disableCompression() {
-            this.messageReaderFunction = (decoder) -> new GatewayBulkMessageReader(decoder, DisabledDecompressor.INSTANCE);
+            this.messageReaderFunction =
+                    (decoder) -> new GatewayBufferMessageReader(decoder, DisabledDecompressor.INSTANCE);
             this.isStreamDecompression = false;
 
             return this;
@@ -94,17 +95,16 @@ public interface GatewayConfig {
          * @param  maxBufferSize
          *         The size of the intermediary buffer that has to be reached before it has to be shrunk down
          *
-         *
          * @throws IllegalArgumentException
          *         If the provided buffer size is negative
          *
          * @return This builder for chaining convenience
          */
         @Nonnull
-        public Builder useBulkZlibDecompression(int maxBufferSize) {
+        public Builder useBufferZlibDecompression(int maxBufferSize) {
             Checks.notNegative(maxBufferSize, "Max buffer size");
             this.messageReaderFunction =
-                    (decoder) -> new GatewayBulkMessageReader(decoder, new ZlibBulkDecompressor(maxBufferSize));
+                    (decoder) -> new GatewayBufferMessageReader(decoder, new ZlibBufferDecompressor(maxBufferSize));
             this.isStreamDecompression = false;
 
             return this;
@@ -138,11 +138,11 @@ public interface GatewayConfig {
          * @return This builder for chaining convenience
          */
         @Nonnull
-        public Builder useBulkZstdDecompression(int bufferSizeHint) {
+        public Builder useBufferZstdDecompression(int bufferSizeHint) {
             DiscordZstdDecompressorFactory underlyingFactory =
                     DiscordZstdProvider.get().createDecompressorFactory(bufferSizeHint);
-            this.messageReaderFunction = (decoder) ->
-                    new GatewayBulkMessageReader(decoder, new ZstdBulkDecompressorAdapter(underlyingFactory.create()));
+            this.messageReaderFunction = (decoder) -> new GatewayBufferMessageReader(
+                    decoder, new ZstdBufferDecompressorAdapter(underlyingFactory.create()));
             this.isStreamDecompression = false;
             return this;
         }
@@ -165,7 +165,7 @@ public interface GatewayConfig {
          * @return This builder for chaining convenience
          */
         @Nonnull
-        public Builder useStreamingDecompression(@Nonnull Compression compression) {
+        public Builder useStreamDecompression(@Nonnull Compression compression) {
             Checks.notNull(compression, "Compression");
             switch (compression) {
                 case NONE:
@@ -213,7 +213,8 @@ public interface GatewayConfig {
         @Nonnull
         public GatewayConfig build() {
             if (isStreamDecompression) {
-                Checks.check(encoding != GatewayEncoding.ETF, "Cannot use stream decompression with ETF payload encoding");
+                Checks.check(
+                        encoding != GatewayEncoding.ETF, "Cannot use stream decompression with ETF payload encoding");
             }
             return new GatewayConfigImpl(messageReaderFunction, encoding);
         }

@@ -17,18 +17,18 @@
 package net.dv8tion.jda.internal.utils.compress.zlib;
 
 import net.dv8tion.jda.api.exceptions.DecompressionException;
-import net.dv8tion.jda.internal.utils.compress.BulkDecompressor;
+import net.dv8tion.jda.internal.utils.compress.BufferDecompressor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.zip.InflaterOutputStream;
 
-public class ZlibBulkDecompressor extends ZlibAbstractDecompressor implements BulkDecompressor {
+public class ZlibBufferDecompressor extends ZlibAbstractDecompressor implements BufferDecompressor {
     protected final int maxBufferSize;
     protected SoftReference<ByteArrayOutputStream> decompressBuffer = null;
 
-    public ZlibBulkDecompressor(int maxBufferSize) {
+    public ZlibBufferDecompressor(int maxBufferSize) {
         this.maxBufferSize = maxBufferSize;
     }
 

@@ -20,16 +20,16 @@ import net.dv8tion.jda.api.exceptions.DecompressionException;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.gateway.decoder.Decoder;
-import net.dv8tion.jda.internal.utils.compress.BulkDecompressor;
+import net.dv8tion.jda.internal.utils.compress.BufferDecompressor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class GatewayBulkMessageReader implements GatewayMessageReader {
+public class GatewayBufferMessageReader implements GatewayMessageReader {
     private final Decoder decoder;
-    private final BulkDecompressor decompressor;
+    private final BufferDecompressor decompressor;
 
-    public GatewayBulkMessageReader(Decoder decoder, BulkDecompressor decompressor) {
+    public GatewayBufferMessageReader(Decoder decoder, BufferDecompressor decompressor) {
         this.decoder = decoder;
         this.decompressor = decompressor;
     }

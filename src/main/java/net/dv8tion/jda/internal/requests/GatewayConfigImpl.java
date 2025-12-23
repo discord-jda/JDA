@@ -40,10 +40,10 @@ public class GatewayConfigImpl implements GatewayConfig {
                 builder.disableCompression();
                 break;
             case ZLIB:
-                builder.useBulkZlibDecompression(maxBufferSize);
+                builder.useBufferZlibDecompression(maxBufferSize);
                 break;
             case ZSTD:
-                builder.useBulkZstdDecompression(maxBufferSize);
+                builder.useBufferZstdDecompression(maxBufferSize);
                 break;
         }
         return (GatewayConfigImpl) builder.build();
