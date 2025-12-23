@@ -60,7 +60,7 @@ public interface GatewayConfig {
     class Builder {
         private Function<Decoder, GatewayMessageReader> messageReaderFunction =
                 (decoder) -> new GatewayBulkMessageReader(decoder, new ZlibBulkDecompressor(2048));
-        private boolean isBulkDecompression = false;
+        private boolean isStreamDecompression = false;
         private GatewayEncoding encoding = GatewayEncoding.JSON;
 
         /**
@@ -72,7 +72,7 @@ public interface GatewayConfig {
         @Nonnull
         public Builder disableCompression() {
             this.messageReaderFunction = (decoder) -> new GatewayBulkMessageReader(decoder, DisabledDecompressor.INSTANCE);
-            this.isBulkDecompression = true;
+            this.isStreamDecompression = false;
 
             return this;
         }
@@ -101,7 +101,7 @@ public interface GatewayConfig {
             Checks.notNegative(maxBufferSize, "Max buffer size");
             this.messageReaderFunction =
                     (decoder) -> new GatewayBulkMessageReader(decoder, new ZlibBulkDecompressor(maxBufferSize));
-            this.isBulkDecompression = true;
+            this.isStreamDecompression = false;
 
             return this;
         }
@@ -139,7 +139,7 @@ public interface GatewayConfig {
                     DiscordZstdProvider.get().createDecompressorFactory(bufferSizeHint);
             this.messageReaderFunction = (decoder) ->
                     new GatewayBulkMessageReader(decoder, new ZstdBulkDecompressorAdapter(underlyingFactory.create()));
-            this.isBulkDecompression = true;
+            this.isStreamDecompression = false;
             return this;
         }
 
@@ -156,15 +156,13 @@ public interface GatewayConfig {
          * <p><b>Note:</b> Using this with the {@link GatewayEncoding#ETF ETF} encoding is not supported.
          *
          * @throws IllegalArgumentException
-         *         If the {@linkplain #useEncoding(GatewayEncoding) encoding} is set to {@link GatewayEncoding#ETF ETF}
+         *         If the provided compression is {@code null}
          *
          * @return This builder for chaining convenience
          */
         @Nonnull
         public Builder useStreamingDecompression(@Nonnull Compression compression) {
             Checks.notNull(compression, "Compression");
-            Checks.check(
-                    encoding != GatewayEncoding.ETF, "Cannot use streaming decompression with ETF payload encoding");
             switch (compression) {
                 case NONE:
                     messageReaderFunction =
@@ -180,7 +178,7 @@ public interface GatewayConfig {
                             new GatewayStreamMessageReader(decoder, new ZstdStreamDecompressorAdapter(context));
                     break;
             }
-            this.isBulkDecompression = false;
+            this.isStreamDecompression = true;
 
             return this;
         }
@@ -188,19 +186,13 @@ public interface GatewayConfig {
         /**
          * Encodes gateway messages, both received and sent, with the provided encoding. (default: {@link GatewayEncoding#JSON JSON})
          *
-         * <p><b>Note:</b> Using this with bulk decompression is not supported.
-         *
-         * @throws IllegalArgumentException
-         *         If bulk decompression is used, such as {@link #useBulkZlibDecompression(int)} or {@link #useBulkZstdDecompression(int)}
+         * <p><b>Note:</b> Using this with {@linkplain #useStreamDecompression(Compression) stream decompression} is not supported.
          *
          * @return This builder for chaining convenience
          */
         @Nonnull
         public Builder useEncoding(@Nonnull GatewayEncoding encoding) {
             Checks.notNull(encoding, "Gateway encoding");
-            if (encoding == GatewayEncoding.ETF) {
-                Checks.check(isBulkDecompression, "Cannot use ETF payload encoding with streaming decompression");
-            }
             this.encoding = encoding;
 
             return this;
@@ -209,10 +201,16 @@ public interface GatewayConfig {
         /**
          * Builds a {@link GatewayConfig} out of this builder.
          *
+         * @throws IllegalArgumentException
+         *         If stream decompression is used
+         *
          * @return The new {@link GatewayConfig}
          */
         @Nonnull
         public GatewayConfig build() {
+            if (isStreamDecompression) {
+                Checks.check(encoding != GatewayEncoding.ETF, "Cannot use stream decompression with ETF payload encoding");
+            }
             return new GatewayConfigImpl(messageReaderFunction, encoding);
         }
     }
