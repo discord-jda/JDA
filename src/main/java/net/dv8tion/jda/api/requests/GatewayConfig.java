@@ -27,7 +27,7 @@ import net.dv8tion.jda.internal.requests.gateway.messages.GatewayBulkMessageRead
 import net.dv8tion.jda.internal.requests.gateway.messages.GatewayMessageReader;
 import net.dv8tion.jda.internal.requests.gateway.messages.GatewayStreamMessageReader;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.compress.noop.NullDecompressor;
+import net.dv8tion.jda.internal.utils.compress.disabled.DisabledDecompressor;
 import net.dv8tion.jda.internal.utils.compress.zlib.ZlibBulkDecompressor;
 import net.dv8tion.jda.internal.utils.compress.zlib.ZlibStreamDecompressor;
 import net.dv8tion.jda.internal.utils.compress.zstd.ZstdBulkDecompressorAdapter;
@@ -71,7 +71,7 @@ public interface GatewayConfig {
          */
         @Nonnull
         public Builder disableCompression() {
-            this.messageReaderFunction = (decoder) -> new GatewayBulkMessageReader(decoder, NullDecompressor.INSTANCE);
+            this.messageReaderFunction = (decoder) -> new GatewayBulkMessageReader(decoder, DisabledDecompressor.INSTANCE);
             this.isBulkDecompression = true;
 
             return this;
@@ -168,7 +168,7 @@ public interface GatewayConfig {
             switch (compression) {
                 case NONE:
                     messageReaderFunction =
-                            (decoder) -> new GatewayStreamMessageReader(decoder, NullDecompressor.INSTANCE);
+                            (decoder) -> new GatewayStreamMessageReader(decoder, DisabledDecompressor.INSTANCE);
                     break;
                 case ZLIB:
                     messageReaderFunction =

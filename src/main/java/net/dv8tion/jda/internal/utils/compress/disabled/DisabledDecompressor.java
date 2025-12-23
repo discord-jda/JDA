@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils.compress.noop;
+package net.dv8tion.jda.internal.utils.compress.disabled;
 
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.internal.utils.compress.BulkDecompressor;
@@ -25,10 +25,10 @@ import java.io.InputStream;
 
 import javax.annotation.Nullable;
 
-public class NullDecompressor implements BulkDecompressor, StreamDecompressor {
-    public static final NullDecompressor INSTANCE = new NullDecompressor();
+public class DisabledDecompressor implements BulkDecompressor, StreamDecompressor {
+    public static final DisabledDecompressor INSTANCE = new DisabledDecompressor();
 
-    private NullDecompressor() {}
+    private DisabledDecompressor() {}
 
     @Override
     public Compression getType() {
