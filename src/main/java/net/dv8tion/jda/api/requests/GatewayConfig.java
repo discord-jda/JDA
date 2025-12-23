@@ -94,6 +94,10 @@ public interface GatewayConfig {
          * @param  maxBufferSize
          *         The size of the intermediary buffer that has to be reached before it has to be shrunk down
          *
+         *
+         * @throws IllegalArgumentException
+         *         If the provided buffer size is negative
+         *
          * @return This builder for chaining convenience
          */
         @Nonnull
