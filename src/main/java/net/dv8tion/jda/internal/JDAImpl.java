@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.set.TLongSet;
-import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
@@ -201,10 +200,6 @@ public class JDAImpl implements JDA {
         return sessionConfig.getLargeThreshold();
     }
 
-    public int getMaxBufferSize() {
-        return metaConfig.getMaxBufferSize();
-    }
-
     public boolean chunkGuild(long id) {
         try {
             return isIntent(GatewayIntent.GUILD_MEMBERS) && chunkingFilter.filter(id);
@@ -273,26 +268,16 @@ public class JDAImpl implements JDA {
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
     }
 
-    public int login() {
-        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
-    }
-
-    public int login(
-            ShardInfo shardInfo,
-            Compression compression,
-            boolean validateToken,
-            int intents,
-            GatewayEncoding encoding) {
-        return login(null, shardInfo, compression, validateToken, intents, encoding);
+    public int login(ShardInfo shardInfo, GatewayConfigImpl gatewayConfig, boolean validateToken, int intents) {
+        return login(null, shardInfo, gatewayConfig, validateToken, intents);
     }
 
     public int login(
             String gatewayUrl,
             ShardInfo shardInfo,
-            Compression compression,
+            GatewayConfigImpl gatewayConfig,
             boolean validateToken,
-            int intents,
-            GatewayEncoding encoding) {
+            int intents) {
         this.shardInfo = shardInfo;
 
         // Delayed init for thread-pools so they can set the shard info as their name
@@ -323,7 +308,7 @@ public class JDAImpl implements JDA {
             LOG.info("Login Successful!");
         }
 
-        client = new WebSocketClient(this, compression, intents, encoding);
+        client = new WebSocketClient(this, gatewayConfig, intents);
         // remove our MDC metadata when we exit our code
         if (previousContext != null) {
             previousContext.forEach(MDC::put);

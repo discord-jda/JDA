@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.*;
+import net.dv8tion.jda.api.requests.gateway.GatewayConfig;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.internal.requests.GatewayConfigImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -154,12 +156,14 @@ public class DefaultShardManager implements ShardManager {
 
     protected final IntFunction<? extends RestConfig> restConfigProvider;
 
+    protected final IntFunction<GatewayConfig> gatewayConfigProvider;
+
     public DefaultShardManager(@Nonnull String token) {
         this(token, null);
     }
 
     public DefaultShardManager(@Nonnull String token, @Nullable Collection<Integer> shardIds) {
-        this(token, shardIds, null, null, null, null, null, null, null, null);
+        this(token, shardIds, null, null, null, null, null, null, null, null, null);
     }
 
     public DefaultShardManager(
@@ -172,6 +176,7 @@ public class DefaultShardManager implements ShardManager {
             @Nullable ShardingSessionConfig sessionConfig,
             @Nullable ShardingMetaConfig metaConfig,
             @Nullable IntFunction<? extends RestConfig> restConfigProvider,
+            @Nullable IntFunction<GatewayConfig> gatewayConfigProvider,
             @Nullable ChunkingFilter chunkingFilter) {
         this.token = token;
         this.eventConfig = eventConfig == null ? EventConfig.getDefault() : eventConfig;
@@ -182,6 +187,8 @@ public class DefaultShardManager implements ShardManager {
         this.metaConfig = metaConfig == null ? ShardingMetaConfig.getDefault() : metaConfig;
         this.chunkingFilter = chunkingFilter == null ? ChunkingFilter.ALL : chunkingFilter;
         this.restConfigProvider = restConfigProvider == null ? (i) -> new RestConfig() : restConfigProvider;
+        this.gatewayConfigProvider =
+                gatewayConfigProvider == null ? (i) -> GatewayConfig.builder().build() : gatewayConfigProvider;
         this.executor = createExecutor(this.threadingConfig.getThreadFactory());
         this.shutdownHook =
                 this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
@@ -506,10 +513,7 @@ public class DefaultShardManager implements ShardManager {
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         MetaConfig metaConfig = new MetaConfig(
-                this.metaConfig.getMaxBufferSize(),
-                this.metaConfig.getContextMap(shardId),
-                this.metaConfig.getCacheFlags(),
-                this.sessionConfig.getFlags());
+                this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
         RestConfig restConfig = this.restConfigProvider.apply(shardId);
         if (restConfig == null) {
             restConfig = new RestConfig();
@@ -583,13 +587,10 @@ public class DefaultShardManager implements ShardManager {
         // but this is to make sure the listeners catch it.
         jda.setStatus(JDA.Status.INITIALIZED);
 
-        jda.login(
-                this.gatewayURL,
-                shardInfo,
-                this.metaConfig.getCompression(),
-                false,
-                shardingConfig.getIntents(),
-                this.metaConfig.getEncoding());
+        GatewayConfigImpl gatewayConfig = (GatewayConfigImpl) gatewayConfigProvider.apply(shardId);
+        Checks.notNull(gatewayConfig, "Gateway config");
+
+        jda.login(this.gatewayURL, shardInfo, gatewayConfig, false, shardingConfig.getIntents());
 
         return jda;
     }

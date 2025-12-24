@@ -27,10 +27,12 @@ import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.RestConfig;
+import net.dv8tion.jda.api.requests.gateway.GatewayConfig;
 import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.internal.requests.GatewayConfigImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
@@ -85,7 +87,10 @@ public class JDABuilder {
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
+    // Not the same as NONE! This is only kept for backward compatibility, GatewayConfig holds the real configuration
+    @SuppressWarnings("deprecation")
     protected Compression compression = Compression.ZLIB;
+
     protected Activity activity = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected boolean idle = false;
@@ -98,6 +103,7 @@ public class JDABuilder {
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
     protected GatewayEncoding encoding = GatewayEncoding.JSON;
     protected RestConfig restConfig = new RestConfig();
+    protected GatewayConfig gatewayConfig = null;
 
     protected JDABuilder(@Nullable String token, int intents) {
         this.token = token;
@@ -486,8 +492,12 @@ public class JDABuilder {
      *         If null is provided
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         Use {@link #setGatewayConfig(GatewayConfig)} and configure the encoding
      */
     @Nonnull
+    @Deprecated
     public JDABuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding) {
         Checks.notNull(encoding, "GatewayEncoding");
         this.encoding = encoding;
@@ -744,12 +754,38 @@ public class JDABuilder {
      *
      * @return The JDABuilder instance. Useful for chaining
      *
+     * @deprecated
+     *         Use {@link #setGatewayConfig(GatewayConfig)} and configure the corresponding compression method
+     *
      * @see    <a href="https://discord.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
     @Nonnull
+    @Deprecated
     public JDABuilder setCompression(@Nonnull Compression compression) {
         Checks.notNull(compression, "Compression");
         this.compression = compression;
+        return this;
+    }
+
+    /**
+     * Configures several gateway parameters with the provided configuration.
+     * <br>This can be used to configure compression and encoding.
+     *
+     * <p>When set, this overrides all values set by {@link #setCompression(Compression)},
+     * {@link #setMaxBufferSize(int)} and {@link #setGatewayEncoding(GatewayEncoding)}.
+     *
+     * @param  gatewayConfig
+     *         The configuration to apply
+     *
+     * @return The JDABuilder instance. Useful for chaining
+     *
+     * @see    GatewayConfig#builder()
+     */
+    @Nonnull
+    @SuppressWarnings("deprecation")
+    public JDABuilder setGatewayConfig(@Nonnull GatewayConfig gatewayConfig) {
+        Checks.notNull(gatewayConfig, "Gateway config");
+        this.gatewayConfig = gatewayConfig;
         return this;
     }
 
@@ -1678,8 +1714,12 @@ public class JDABuilder {
      *         If the provided buffer size is negative
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated
+     *         Use {@link #setGatewayConfig(GatewayConfig)} and pass the buffer size alongside the configured compression method
      */
     @Nonnull
+    @Deprecated
     public JDABuilder setMaxBufferSize(int bufferSize) {
         Checks.notNegative(bufferSize, "The buffer size");
         this.maxBufferSize = bufferSize;
@@ -1735,7 +1775,7 @@ public class JDABuilder {
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         SessionConfig sessionConfig = new SessionConfig(
                 controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
-        MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
+        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
         jda.setMemberCachePolicy(memberCachePolicy);
@@ -1765,8 +1805,14 @@ public class JDABuilder {
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(shardInfo, compression, true, intents, encoding);
+        jda.login(shardInfo, getEffectiveGatewayConfig(), true, intents);
         return jda;
+    }
+
+    private GatewayConfigImpl getEffectiveGatewayConfig() {
+        return gatewayConfig != null
+                ? (GatewayConfigImpl) gatewayConfig
+                : GatewayConfigImpl.fromLegacy(compression, maxBufferSize);
     }
 
     private JDABuilder setFlag(ConfigFlag flag, boolean enable) {
