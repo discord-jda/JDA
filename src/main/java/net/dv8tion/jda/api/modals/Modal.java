@@ -348,11 +348,7 @@ public interface Modal extends SerializableData {
          * @return false iff the Component is a {@link Label}, and the Child Component of the Label is Disabled.
          */
         private static boolean componentIsEnabled(Component component) {
-            if (component instanceof Label && ((Label) component).getChild() instanceof IDisableable) {
-                IDisableable disableable = (IDisableable) ((Label) component).getChild();
-                return disableable.isEnabled();
-            }
-            return true;
+            return !(component instanceof IDisableable) || ((IDisableable) component).isEnabled();
         }
     }
 }

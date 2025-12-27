@@ -21,22 +21,26 @@ import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectMenu;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.modals.Modal;
+import net.dv8tion.jda.test.AbstractSnapshotTest;
 import net.dv8tion.jda.test.components.ComponentTestData;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class ModalTest {
-    static Map<Component.Type, Class<? extends LabelChildComponent>> LABEL_CHILDREN = Map.of(
+import static org.assertj.core.api.Assertions.*;
+
+public class ModalTest extends AbstractSnapshotTest {
+    static Map<Component.Type, Class<? extends SelectMenu>> LABEL_CHILDREN = Map.of(
             Component.Type.STRING_SELECT, StringSelectMenu.class,
             Component.Type.USER_SELECT, EntitySelectMenu.class,
             Component.Type.ROLE_SELECT, EntitySelectMenu.class,
@@ -45,52 +49,55 @@ public class ModalTest {
 
     @MethodSource("modalComponents")
     @ParameterizedTest
-    public void testDisabledComponents(Component component) {
-        Assertions.assertInstanceOf(IDisableable.class, component);
-        Assertions.assertInstanceOf(LabelChildComponent.class, component);
-        LabelChildComponent mutatedComponent = ((LabelChildComponent) ((IDisableable) component).asDisabled());
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            Modal.create("id", "title")
-                    .addComponents(Label.of("label", mutatedComponent))
-                    .build();
-        });
+    public void testDisabledComponents(Component.Type componentType, SelectMenu component) {
+
+        LabelChildComponent mutatedComponent = component.asDisabled();
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Modal.create("id", "title")
+                        .addComponents(Label.of("label", mutatedComponent))
+                        .build())
+                .satisfies(exception -> assertWithSnapshot(exception.toString(), componentType.toString()));
     }
 
     @MethodSource("modalComponents")
     @ParameterizedTest
-    public void testEnabledComponents(Component component) {
+    public void testEnabledComponents(Component.Type ignored, SelectMenu component) {
         // Enabled is the default state
-        Assertions.assertInstanceOf(LabelChildComponent.class, component);
-        Assertions.assertDoesNotThrow(() -> {
-            Modal.create("id", "title")
-                    .addComponents(Label.of("label", (LabelChildComponent) component))
-                    .build();
-        });
+        assertThatNoException().isThrownBy(() -> Modal.create("id", "title")
+                .addComponents(Label.of("label", component))
+                .build());
     }
 
-    @Test
-    public void testOneInvalidComponentInList() {
-        var components = new ArrayList<>(testComponents().toList());
-        var mutatedComponentIndex = ThreadLocalRandom.current().nextInt(components.size());
-        Assertions.assertInstanceOf(IDisableable.class, components.get(mutatedComponentIndex));
-        components.set(mutatedComponentIndex, ((IDisableable) components.get(mutatedComponentIndex)).asDisabled());
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 3, 4})
+    public void testInvalidComponentInList(int targetIndex) {
+        List<SelectMenu> components = new ArrayList<>(testComponents().toList());
+        assertThat(components).allSatisfy(component -> assertThat(component).isInstanceOf(IDisableable.class));
+        components.set(targetIndex, components.get(targetIndex).asDisabled());
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            Modal.create("id", "title")
-                    .addComponents(components.stream()
-                            .map(LabelChildComponent.class::cast)
-                            .map((child) -> Label.of("Label", child))
-                            .toList())
-                    .build();
-        });
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Modal.create("id", "title")
+                        .addComponents(components.stream()
+                                .map((child) -> Label.of("Label", child))
+                                .toList())
+                        .build())
+                .satisfies(exception -> assertWithSnapshot(exception.toString(), Integer.toString(targetIndex)));
     }
 
     static Stream<Arguments> modalComponents() {
-        return testComponents().map(Arguments::arguments);
+        return LABEL_CHILDREN.entrySet().stream()
+                .map(entry -> Arguments.of(entry.getKey(), minimalComponent().apply(entry)));
     }
 
-    static Stream<Component> testComponents() {
+    static Stream<SelectMenu> testComponents() {
         return LABEL_CHILDREN.entrySet().stream()
-                .map(entry -> ComponentTestData.getMinimalComponent(entry.getValue(), entry.getKey()));
+                .sorted(
+                        // Required so the indexes are deterministic.
+                        Map.Entry.comparingByKey())
+                .map(minimalComponent());
+    }
+
+    static Function<Map.Entry<Component.Type, Class<? extends SelectMenu>>, ? extends SelectMenu> minimalComponent() {
+        return (entry) -> ComponentTestData.getMinimalComponent(entry.getValue(), entry.getKey());
     }
 }

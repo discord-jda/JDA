@@ -1,0 +1,2 @@
+java.lang.IllegalArgumentException: Components cannot be disabled in Modals
+- root.components[1]<LABEL>.component<USER_SELECT>
