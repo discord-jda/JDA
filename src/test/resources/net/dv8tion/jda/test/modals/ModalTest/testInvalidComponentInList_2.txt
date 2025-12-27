@@ -1,2 +1,0 @@
-java.lang.IllegalArgumentException: Components cannot be disabled in Modals
-- root.components[2]<LABEL>.component<ROLE_SELECT>

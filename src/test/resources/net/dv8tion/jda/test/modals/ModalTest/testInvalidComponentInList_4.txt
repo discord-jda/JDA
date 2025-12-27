@@ -1,2 +1,0 @@
-java.lang.IllegalArgumentException: Components cannot be disabled in Modals
-- root.components[4]<LABEL>.component<CHANNEL_SELECT>

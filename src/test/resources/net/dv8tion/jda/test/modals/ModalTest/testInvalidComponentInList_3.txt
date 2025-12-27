@@ -1,2 +1,0 @@
-java.lang.IllegalArgumentException: Components cannot be disabled in Modals
-- root.components[3]<LABEL>.component<MENTIONABLE_SELECT>
