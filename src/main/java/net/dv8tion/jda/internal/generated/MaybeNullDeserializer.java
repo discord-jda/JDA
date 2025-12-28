@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.tasks
+package net.dv8tion.jda.internal.generated;
 
-data class Version(
-        val major: String,
-        val minor: String,
-        val revision: String,
-        val classifier: String? = null
-) {
-    companion object {
-        fun parse(string: String): Version {
-            val (major, minor, revision) = string.substringBefore("-").split(".")
-            val classifier = string.substringAfter("-").takeIf { "-" in string }
-            return Version(major, minor, revision, classifier)
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+
+import java.io.IOException;
+
+class MaybeNullDeserializer extends JsonDeserializer<MaybeNull<?>> {
+    @Override
+    public MaybeNull<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        if (p.currentToken() == JsonToken.VALUE_NULL) {
+            return new MaybeNull<>(null);
         }
-    }
 
-    override fun toString(): String {
-        return "$major.$minor.$revision" + if (classifier != null) "-$classifier" else ""
+        Object value = ctxt.readValue(p, Object.class);
+        return new MaybeNull<>(value);
     }
 }

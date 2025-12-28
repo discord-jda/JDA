@@ -14,8 +14,28 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.gradle.plugins.ProjectEnvironmentConfig
+package net.dv8tion.jda.gradle.spec.parser
 
-val projectEnvironment = project.extensions.create(
-    "projectEnvironment", ProjectEnvironmentConfig::class.java,
-)
+import tools.jackson.databind.json.JsonMapper
+import java.io.File
+
+class ApiSpecParser(val specFile: File) {
+    val jsonMapper = JsonMapper()
+
+    fun parse(): ParserContext {
+        val parsed = jsonMapper.readValue(specFile, ParsedApiSpec::class.java)
+        return ParserContext(parsed.components.schemas)
+    }
+}
+
+class ParserContext(
+    val schemas: Map<String, ComponentSchema>
+) {
+    fun resolveRef(ref: String): ComponentSchema {
+        return schemas.getValue(getSimpleNameFromRef(ref))
+    }
+}
+
+fun getSimpleNameFromRef(ref: String): String {
+    return ref.substringAfterLast("/")
+}

@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.tasks
+package net.dv8tion.jda.gradle.spec.parser
 
-/**
- * Replaces a string with either the value wrapped in quotes or literal null
- *
- * This is used for replacing the constants in JDAInfo
- */
-fun nullableReplacement(string: String?): String {
-    return if (string == null) "null"
-    else "\"$string\""
-}
+data class ParsedApiSpec(val components: Components)
+
+data class Components(val schemas: Map<String, ComponentSchema>)

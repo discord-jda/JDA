@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.gradle.plugins.ProjectEnvironmentConfig
+package net.dv8tion.jda.gradle.spec.parser
 
-val projectEnvironment = project.extensions.create(
-    "projectEnvironment", ProjectEnvironmentConfig::class.java,
-)
+import tools.jackson.databind.JsonNode
+
+data class StringVariant(
+        val title: String,
+        val const: String,
+) {
+    companion object {
+        fun parse(node: JsonNode) = StringVariant(node.required("title").asString(), node.required("const").asString())
+    }
+}
+
+data class LongVariant(
+        val title: String,
+        val const: Long,
+) {
+    companion object {
+        fun parse(node: JsonNode) = LongVariant(node.required("title").asString(), node.required("const").asLong())
+    }
+}

@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.tasks
+package net.dv8tion.jda.internal.generated;
 
-import org.gradle.api.provider.SetProperty
-import org.gradle.api.tasks.AbstractCopyTask
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
-interface ArtifactFilters {
-    val opusExclusions: SetProperty<String>
-    val additionalAudioExclusions: SetProperty<String>
-}
+import java.io.IOException;
 
-fun AbstractCopyTask.applyOpusExclusions(filters: ArtifactFilters) {
-    for (exclusion in filters.opusExclusions.get()) {
-        exclude(exclusion)
-    }
-}
-
-fun AbstractCopyTask.applyAudioExclusions(filters: ArtifactFilters) {
-    applyOpusExclusions(filters)
-
-    for (exclusion in filters.opusExclusions.get()) {
-        exclude(exclusion)
+class MaybeNullSerializer extends JsonSerializer<MaybeNull<?>> {
+    @Override
+    public void serialize(MaybeNull<?> value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+        if (!value.isPresent()) {
+            gen.writeNull();
+        } else {
+            gen.writeObject(value.value());
+        }
     }
 }

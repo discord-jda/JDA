@@ -18,7 +18,11 @@ import com.diffplug.spotless.LineEnding
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
-import net.dv8tion.jda.tasks.*
+import net.dv8tion.jda.gradle.Version
+import net.dv8tion.jda.gradle.nullableReplacement
+import net.dv8tion.jda.gradle.plugins.applyAudioExclusions
+import net.dv8tion.jda.gradle.plugins.applyOpusExclusions
+import net.dv8tion.jda.gradle.tasks.VerifyBytecodeVersion
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.gradle.ext.Gradle as GradleRunConfiguration
@@ -34,6 +38,7 @@ plugins {
     artifacts
     environment
     idea
+    `model-generator`
     `java-library`
     `maven-publish`
 
@@ -41,7 +46,6 @@ plugins {
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.jreleaser)
-    alias(libs.plugins.download)
     alias(libs.plugins.spotless)
     alias(libs.plugins.openrewrite)
     alias(libs.plugins.ideax)
@@ -61,6 +65,23 @@ projectEnvironment {
 artifactFilters {
     opusExclusions.addAll("natives/**", "com/sun/jna/**", "club/minnced/opus/util/*", "tomp2p/opuswrapper/*")
     additionalAudioExclusions.addAll("com/google/crypto/tink/**", "com/google/gson/**", "com/google/protobuf/**", "google/protobuf/**")
+}
+
+apiModelGenerator {
+    outputDirectory = layout.buildDirectory.dir("generated/rest-api-models")
+    apiSpecFile = file("discord-rest-openapi.json")
+    apiSpecDownloadUrl = "https://raw.githubusercontent.com/discord/discord-api-spec/refs/heads/main/specs/openapi.json"
+
+    generatorSuffix = "Dto"
+    includes = listOf(
+        "AvailableLocalesEnum",
+        "CreateRoleRequest",
+        "MessageType",
+        "ChannelTypes",
+        "AuditLogActionTypes",
+        "InviteTypes",
+        "WebhookTypes",
+    )
 }
 
 idea {

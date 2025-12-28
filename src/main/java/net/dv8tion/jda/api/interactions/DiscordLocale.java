@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
  * <p>Based off <a href="https://discord.com/developers/docs/reference#locales" target="_blank">Discord's locale list</a>
  */
 public enum DiscordLocale {
+    ARABIC("ar", "Arabic", "اَلْعَرَبِيَّةُ"),
     BULGARIAN("bg", "Bulgarian", "български"),
     CHINESE_CHINA("zh-CN", "Chinese, China", "中文"),
     CHINESE_TAIWAN("zh-TW", "Chinese, Taiwan", "繁體中文"),
@@ -41,6 +42,7 @@ public enum DiscordLocale {
     FRENCH("fr", "French", "Français"),
     GERMAN("de", "German", "Deutsch"),
     GREEK("el", "Greek", "Ελληνικά"),
+    HEBREW("he", "Hebrew", "עברית"),
     HINDI("hi", "Hindi", "हिन्दी"),
     HUNGARIAN("hu", "Hungarian", "Magyar"),
     INDONESIAN("id", "Indonesian", "Bahasa Indonesia"),

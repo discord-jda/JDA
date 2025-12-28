@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.tasks
+package net.dv8tion.jda.gradle.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException

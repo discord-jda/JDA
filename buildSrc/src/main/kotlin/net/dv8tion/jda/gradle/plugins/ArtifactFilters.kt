@@ -14,8 +14,26 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.gradle.plugins.ProjectEnvironmentConfig
+package net.dv8tion.jda.gradle.plugins
 
-val projectEnvironment = project.extensions.create(
-    "projectEnvironment", ProjectEnvironmentConfig::class.java,
-)
+import org.gradle.api.provider.SetProperty
+import org.gradle.api.tasks.AbstractCopyTask
+
+interface ArtifactFilters {
+    val opusExclusions: SetProperty<String>
+    val additionalAudioExclusions: SetProperty<String>
+}
+
+fun AbstractCopyTask.applyOpusExclusions(filters: ArtifactFilters) {
+    for (exclusion in filters.opusExclusions.get()) {
+        exclude(exclusion)
+    }
+}
+
+fun AbstractCopyTask.applyAudioExclusions(filters: ArtifactFilters) {
+    applyOpusExclusions(filters)
+
+    for (exclusion in filters.opusExclusions.get()) {
+        exclude(exclusion)
+    }
+}

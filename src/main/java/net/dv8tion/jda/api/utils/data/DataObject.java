@@ -17,11 +17,6 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.type.MapType;
 import net.dv8tion.jda.api.exceptions.DataObjectParsingException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -55,18 +50,6 @@ import javax.annotation.Nullable;
  */
 public class DataObject implements SerializableData {
     private static final Logger log = LoggerFactory.getLogger(DataObject.class);
-    private static final ObjectMapper mapper;
-    private static final SimpleModule module;
-    private static final MapType mapType;
-
-    static {
-        mapper = new ObjectMapper();
-        module = new SimpleModule();
-        module.addAbstractTypeMapping(Map.class, HashMap.class);
-        module.addAbstractTypeMapping(List.class, ArrayList.class);
-        mapper.registerModule(module);
-        mapType = mapper.getTypeFactory().constructRawMapType(HashMap.class);
-    }
 
     protected final Map<String, Object> data;
 
@@ -99,12 +82,8 @@ public class DataObject implements SerializableData {
      */
     @Nonnull
     public static DataObject fromJson(@Nonnull byte[] data) {
-        try {
-            Map<String, Object> map = mapper.readValue(data, mapType);
-            return new DataObject(map);
-        } catch (IOException ex) {
-            throw new ParsingException(ex);
-        }
+        Map<String, Object> map = SerializationUtil.fromJson(SerializationUtil.getMapType(), data);
+        return new DataObject(map);
     }
 
     /**
@@ -120,12 +99,8 @@ public class DataObject implements SerializableData {
      */
     @Nonnull
     public static DataObject fromJson(@Nonnull String json) {
-        try {
-            Map<String, Object> map = mapper.readValue(json, mapType);
-            return new DataObject(map);
-        } catch (IOException ex) {
-            throw new ParsingException(ex);
-        }
+        Map<String, Object> map = SerializationUtil.fromJson(SerializationUtil.getMapType(), json);
+        return new DataObject(map);
     }
 
     /**
@@ -141,12 +116,8 @@ public class DataObject implements SerializableData {
      */
     @Nonnull
     public static DataObject fromJson(@Nonnull InputStream stream) {
-        try {
-            Map<String, Object> map = mapper.readValue(stream, mapType);
-            return new DataObject(map);
-        } catch (IOException ex) {
-            throw new ParsingException(ex);
-        }
+        Map<String, Object> map = SerializationUtil.fromJson(SerializationUtil.getMapType(), stream);
+        return new DataObject(map);
     }
 
     /**
@@ -162,12 +133,8 @@ public class DataObject implements SerializableData {
      */
     @Nonnull
     public static DataObject fromJson(@Nonnull Reader stream) {
-        try {
-            Map<String, Object> map = mapper.readValue(stream, mapType);
-            return new DataObject(map);
-        } catch (IOException ex) {
-            throw new ParsingException(ex);
-        }
+        Map<String, Object> map = SerializationUtil.fromJson(SerializationUtil.getMapType(), stream);
+        return new DataObject(map);
     }
 
     /**
@@ -644,7 +611,8 @@ public class DataObject implements SerializableData {
             value = get(OffsetDateTime.class, key, OffsetDateTime::parse, null);
         } catch (DateTimeParseException e) {
             String reason =
-                    "Cannot parse value for %s into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestmap";
+                    "Cannot parse value for %s into an OffsetDateTime object. Try double checking that %s is a valid"
+                            + " ISO8601 timestmap";
             throw new ParsingException(String.format(reason, key, e.getParsedString()));
         }
         return value == null ? defaultValue : value;
@@ -755,13 +723,7 @@ public class DataObject implements SerializableData {
      */
     @Nonnull
     public byte[] toJson() {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            mapper.writeValue(outputStream, data);
-            return outputStream.toByteArray();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return SerializationUtil.toJson(data);
     }
 
     /**
@@ -777,23 +739,12 @@ public class DataObject implements SerializableData {
 
     @Override
     public String toString() {
-        try {
-            return mapper.writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            throw new ParsingException(e);
-        }
+        return SerializationUtil.toJsonString(data, false);
     }
 
     @Nonnull
     public String toPrettyString() {
-        try {
-            return mapper.writer(new DefaultPrettyPrinter())
-                    .with(SerializationFeature.INDENT_OUTPUT)
-                    .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
-                    .writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            throw new ParsingException(e);
-        }
+        return SerializationUtil.toJsonString(data, true);
     }
 
     @Nonnull
