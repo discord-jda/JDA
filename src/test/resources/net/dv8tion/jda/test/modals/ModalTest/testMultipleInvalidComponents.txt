@@ -1,0 +1,6 @@
+java.lang.IllegalArgumentException: Components cannot be disabled in Modals
+- root.components[0]<LABEL>.component<STRING_SELECT>
+ - root.components[1]<LABEL>.component<USER_SELECT>
+ - root.components[2]<LABEL>.component<ROLE_SELECT>
+ - root.components[3]<LABEL>.component<MENTIONABLE_SELECT>
+ - root.components[4]<LABEL>.component<CHANNEL_SELECT>

@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.modals;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.attribute.IDisableable;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.components.tree.ModalComponentTree;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -319,6 +321,7 @@ public interface Modal extends SerializableData {
          *         <ul>
          *             <li>If no components are added</li>
          *             <li>If more than {@value MAX_COMPONENTS} component layouts are added</li>
+         *             <li>If any components are disabled</li>
          *         </ul>
          *
          * @return A Modal
@@ -327,13 +330,25 @@ public interface Modal extends SerializableData {
         public Modal build() {
             Checks.check(!components.isEmpty(), "Cannot make a modal without components!");
             Checks.check(components.size() <= MAX_COMPONENTS, "Cannot make a modal with more than 5 components!");
-
+            Checks.checkComponents("Components cannot be disabled in Modals", components, Builder::componentIsEnabled);
             return new ModalImpl(id, title, components);
         }
 
         private static Collection<ModalTopLevelComponentUnion> membersToUnion(
                 Collection<? extends ModalTopLevelComponent> members) {
             return ComponentsUtil.membersToUnion(members, ModalTopLevelComponentUnion.class);
+        }
+
+        /**
+         * Verifies Disabled Component state for a Modal,
+         * based on the <a href="https://discord.com/developers/docs/components/reference">Component Reference</a>
+         *
+         * @param component Expected to be a {@link ModalTopLevelComponentUnion} Component
+         *
+         * @return false iff the Component is a {@link Label}, and the Child Component of the Label is Disabled.
+         */
+        private static boolean componentIsEnabled(Component component) {
+            return !(component instanceof IDisableable) || ((IDisableable) component).isEnabled();
         }
     }
 }
