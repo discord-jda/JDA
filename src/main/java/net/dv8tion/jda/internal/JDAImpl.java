@@ -1130,6 +1130,18 @@ public class JDAImpl implements JDA {
 
     @Nonnull
     @Override
+    public RestAction<List<SKU>> retrieveSKUList() {
+        Route.CompiledRoute route =
+                Route.Applications.GET_SKUS.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, (response, request) -> Helpers.mapGracefully(
+                        response.getArray().stream(DataArray::getObject),
+                        EntityBuilder::createSKU,
+                        "Failed to parse SKU")
+                .collect(Helpers.toUnmodifiableList()));
+    }
+
+    @Nonnull
+    @Override
     public EntitlementPaginationAction retrieveEntitlements() {
         return new EntitlementPaginationActionImpl(this);
     }

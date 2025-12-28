@@ -173,6 +173,15 @@ public class EntityBuilder extends AbstractEntityBuilder {
         }
     }
 
+    public static SKU createSKU(DataObject object) {
+        return new SKUImpl(
+                object.getLong("id"),
+                SKUType.fromId(object.getInt("type")),
+                object.getString("name"),
+                object.getString("slug"),
+                SKUFlag.getFlags(object.getInt("flags")));
+    }
+
     private void createGuildEmojiPass(GuildImpl guildObj, DataArray array) {
         if (!getJDA().isCacheFlagSet(CacheFlag.EMOJI)) {
             return;
