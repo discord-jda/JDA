@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.utils.config.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -33,7 +32,6 @@ import javax.annotation.Nullable;
 
 public class ShardingSessionConfig extends SessionConfig {
     private final OkHttpClient.Builder builder;
-    private final IAudioSendFactory audioSendFactory;
     private final EnumSet<ShardingConfigFlag> shardingFlags;
 
     public ShardingSessionConfig(
@@ -42,7 +40,6 @@ public class ShardingSessionConfig extends SessionConfig {
             @Nullable OkHttpClient httpClient,
             @Nullable OkHttpClient.Builder httpClientBuilder,
             @Nullable WebSocketFactory webSocketFactory,
-            @Nullable IAudioSendFactory audioSendFactory,
             EnumSet<ConfigFlag> flags,
             EnumSet<ShardingConfigFlag> shardingFlags,
             int maxReconnectDelay,
@@ -53,7 +50,6 @@ public class ShardingSessionConfig extends SessionConfig {
         } else {
             this.builder = null;
         }
-        this.audioSendFactory = audioSendFactory;
         this.shardingFlags = shardingFlags;
     }
 
@@ -77,18 +73,12 @@ public class ShardingSessionConfig extends SessionConfig {
         return builder;
     }
 
-    @Nullable
-    public IAudioSendFactory getAudioSendFactory() {
-        return audioSendFactory;
-    }
-
     @Nonnull
     public static ShardingSessionConfig getDefault() {
         return new ShardingSessionConfig(
                 null,
                 null,
                 new OkHttpClient(),
-                null,
                 null,
                 null,
                 ConfigFlag.getDefault(),

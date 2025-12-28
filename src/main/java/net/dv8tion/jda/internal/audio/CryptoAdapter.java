@@ -34,7 +34,7 @@ public interface CryptoAdapter {
 
     ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio);
 
-    byte[] decrypt(ByteBuffer packet);
+    byte[] decrypt(long userId, ByteBuffer packet);
 
     static AudioEncryption negotiate(EnumSet<AudioEncryption> supportedModes) {
         for (AudioEncryption mode : AudioEncryption.values()) {
@@ -91,7 +91,7 @@ public interface CryptoAdapter {
             int minimumOutputSize = audio.remaining() + this.tagBytes + nonceBytes;
 
             if (output.remaining() < minimumOutputSize) {
-                ByteBuffer newBuffer = ByteBuffer.allocate(output.capacity() + minimumOutputSize);
+                ByteBuffer newBuffer = ByteBuffer.allocateDirect(output.capacity() + minimumOutputSize);
                 output.flip();
                 newBuffer.put(output);
                 output = newBuffer;
@@ -102,6 +102,7 @@ public interface CryptoAdapter {
             try {
                 encryptInternally(output, audio, nonceBuffer);
                 output.putInt(encryptCounter++);
+                output.flip();
                 return output;
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -109,7 +110,7 @@ public interface CryptoAdapter {
         }
 
         @Override
-        public byte[] decrypt(ByteBuffer packet) {
+        public byte[] decrypt(long userId, ByteBuffer packet) {
             try {
                 int headerLength = packet.position();
                 packet.position(0);
@@ -131,7 +132,10 @@ public interface CryptoAdapter {
                 throws Exception;
 
         protected byte[] getAssociatedData(ByteBuffer output) {
-            return Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
+            byte[] ad = new byte[output.position()];
+            output.position(0);
+            output.get(ad);
+            return ad;
         }
 
         protected byte[] getPlaintextCopy(ByteBuffer audio) {

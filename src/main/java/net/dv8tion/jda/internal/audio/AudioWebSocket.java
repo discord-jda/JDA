@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.audio;
 import com.neovisionaries.ws.client.*;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.audio.SpeakingMode;
+import net.dv8tion.jda.api.audio.dave.DaveProtocolCallbacks;
+import net.dv8tion.jda.api.audio.dave.DaveSession;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
@@ -48,7 +50,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-class AudioWebSocket extends WebSocketAdapter {
+import javax.annotation.Nonnull;
+
+class AudioWebSocket extends WebSocketAdapter implements DaveProtocolCallbacks {
     public static final Logger LOG = JDALogger.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
     private static final byte[] UDP_KEEP_ALIVE = {(byte) 0xC9, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -57,6 +61,7 @@ class AudioWebSocket extends WebSocketAdapter {
     protected volatile CryptoAdapter crypto;
     protected WebSocket socket;
 
+    private DaveSession daveSession;
     private final AudioConnection audioConnection;
     private final ConnectionListener listener;
     private final ScheduledExecutorService keepAlivePool;
@@ -92,7 +97,7 @@ class AudioWebSocket extends WebSocketAdapter {
         this.token = token;
         this.shouldReconnect = shouldReconnect;
 
-        keepAlivePool = getJDA().getAudioLifeCyclePool();
+        this.keepAlivePool = getJDA().getAudioLifeCyclePool();
 
         // Add the version query parameter
         String url = IOUtil.addQuery(endpoint, "v", JDAInfo.AUDIO_GATEWAY_VERSION);
@@ -110,6 +115,10 @@ class AudioWebSocket extends WebSocketAdapter {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("Cannot create a audio websocket connection using a null/empty token!");
         }
+    }
+
+    void setDaveSession(DaveSession daveSession) {
+        this.daveSession = daveSession;
     }
 
     /* Used by AudioConnection */
@@ -144,7 +153,8 @@ class AudioWebSocket extends WebSocketAdapter {
             socket.connectAsynchronously();
         } catch (IOException e) {
             LOG.warn(
-                    "Encountered IOException while attempting to connect to {}: {}\nClosing connection and attempting to reconnect.",
+                    "Encountered IOException while attempting to connect to {}: {}\n"
+                            + "Closing connection and attempting to reconnect.",
                     wssEndpoint,
                     e.getMessage());
             this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
@@ -174,6 +184,7 @@ class AudioWebSocket extends WebSocketAdapter {
             }
 
             audioConnection.shutdown();
+            daveSession.destroy();
 
             AudioChannel disconnectedChannel = manager.getConnectedChannel();
             manager.setAudioConnection(null);
@@ -376,11 +387,83 @@ class AudioWebSocket extends WebSocketAdapter {
     @Override
     public void onConnectError(WebSocket webSocket, WebSocketException e) {
         LOG.warn(
-                "Failed to establish websocket connection to {}: {} - {}\nClosing connection and attempting to reconnect.",
+                "Failed to establish websocket connection to {}: {} - {}\n"
+                        + "Closing connection and attempting to reconnect.",
                 wssEndpoint,
                 e.getError(),
                 e.getMessage());
         this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
+    }
+
+    /* Dave Protocol */
+
+    public DaveSession getDaveSession() {
+        return daveSession;
+    }
+
+    private void sendBinary(int opcode, ByteBuffer payload) {
+        ByteBuffer buffer =
+                ByteBuffer.allocate(1 + payload.remaining()).put((byte) opcode).put(payload);
+        buffer.flip();
+        socket.sendBinary(buffer.array());
+    }
+
+    @Override
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) {
+        ByteBuffer message = ByteBuffer.allocateDirect(binary.length);
+        message.put(binary);
+        message.flip();
+
+        short sequence = message.getShort();
+        this.sequence = ((long) sequence) & 0xFFFF;
+        int opcode = ((int) message.get()) & 0xFF;
+
+        switch (opcode) {
+            case VoiceCode.MLS_EXTERNAL_SENDER: {
+                LOG.trace("-> MLS_EXTERNAL_SENDER");
+                daveSession.onDaveProtocolMLSExternalSenderPackage(message);
+                break;
+            }
+            case VoiceCode.MLS_PROPOSALS: {
+                LOG.trace("-> MLS_PROPOSALS");
+                daveSession.onMLSProposals(message);
+                break;
+            }
+            case VoiceCode.MLS_ANNOUNCE_COMMIT_TRANSITION: {
+                LOG.trace("-> MLS_ANNOUNCE_COMMIT_TRANSITION");
+                int transitionId = ((int) message.getShort()) & 0xFFFF;
+                daveSession.onMLSPrepareCommitTransition(transitionId, message);
+                break;
+            }
+            case VoiceCode.MLS_WELCOME: {
+                LOG.trace("-> MLS_WELCOME");
+                int transitionId = ((int) message.getShort()) & 0xFFFF;
+                daveSession.onMLSWelcome(transitionId, message);
+                break;
+            }
+            default:
+                LOG.trace("-> UNKNOWN OP {}", opcode);
+        }
+    }
+
+    @Override
+    public void sendMLSKeyPackage(@Nonnull ByteBuffer mlsKeyPackage) {
+        sendBinary(VoiceCode.MLS_KEY_PACKAGE, mlsKeyPackage);
+    }
+
+    @Override
+    public void sendDaveProtocolReadyForTransition(int transitionId) {
+        send(VoiceCode.DAVE_TRANSITION_READY, DataObject.empty().put("transition_id", transitionId));
+    }
+
+    @Override
+    public void sendMLSCommitWelcome(@Nonnull ByteBuffer commitWelcomeMessage) {
+        sendBinary(VoiceCode.MLS_COMMIT_WELCOME, commitWelcomeMessage);
+    }
+
+    @Override
+    public void sendMLSInvalidCommitWelcome(int transitionId) {
+        send(VoiceCode.MLS_INVALID_COMMIT_WELCOME, DataObject.empty().put("transition_id", transitionId));
     }
 
     /* Internals */
@@ -396,6 +479,7 @@ class AudioWebSocket extends WebSocketAdapter {
                 int interval = payload.getInt("heartbeat_interval");
                 stopKeepAlive();
                 setupKeepAlive(interval);
+                daveSession.initialize();
                 break;
             }
             case VoiceCode.READY: {
@@ -427,6 +511,8 @@ class AudioWebSocket extends WebSocketAdapter {
                         return;
                     }
                 } while (externalIpAndPort == null);
+
+                daveSession.assignSsrcToCodec(DaveSession.Codec.OPUS, ssrc);
 
                 DataObject object = DataObject.empty()
                         .put("protocol", "udp")
@@ -461,7 +547,8 @@ class AudioWebSocket extends WebSocketAdapter {
                     secretKey[i] = (byte) keyArray.getInt(i);
                 }
 
-                crypto = CryptoAdapter.getAdapter(encryption, secretKey);
+                crypto = new DaveCryptoAdapter(CryptoAdapter.getAdapter(encryption, secretKey), daveSession, ssrc);
+                daveSession.onSelectProtocolAck(contentAll.getObject("d").getInt("dave_protocol_version"));
 
                 LOG.debug("Audio connection has finished connecting!");
                 ready = true;
@@ -502,21 +589,49 @@ class AudioWebSocket extends WebSocketAdapter {
 
                 break;
             }
+            case VoiceCode.USER_BULK_CONNECT: {
+                LOG.trace("-> USER_BULK_CONNECT {}", contentAll);
+                DataObject payload = contentAll.getObject("d");
+                DataArray userIds = payload.getArray("user_ids");
+                for (int i = 0; i < userIds.length(); i++) {
+                    long userId = userIds.getUnsignedLong(i);
+                    daveSession.addUser(userId);
+                }
+                break;
+            }
             case VoiceCode.USER_DISCONNECT: {
                 LOG.trace("-> USER_DISCONNECT {}", contentAll);
                 DataObject payload = contentAll.getObject("d");
                 long userId = payload.getLong("user_id");
                 audioConnection.removeUserSSRC(userId);
+                daveSession.removeUser(userId);
                 break;
             }
-            case 12:
-            case 14: {
-                LOG.trace("-> OP {} {}", opCode, contentAll);
-                // ignore op 12 and 14 for now
+            case VoiceCode.DAVE_PREPARE_TRANSITION: {
+                LOG.trace("-> DAVE_PREPARE_TRANSITION {}", contentAll);
+                DataObject payload = contentAll.getObject("d");
+                daveSession.onDaveProtocolPrepareTransition(
+                        payload.getInt("transition_id"), payload.getInt("protocol_version"));
                 break;
             }
-            default:
-                LOG.debug("Unknown Audio OP code.\n{}", contentAll);
+            case VoiceCode.DAVE_EXECUTE_TRANSITION: {
+                LOG.trace("-> DAVE_EXECUTE_TRANSITION {}", contentAll);
+                DataObject payload = contentAll.getObject("d");
+                daveSession.onDaveProtocolExecuteTransition(payload.getInt("transition_id"));
+                break;
+            }
+            case VoiceCode.DAVE_PREPARE_EPOCH: {
+                LOG.trace("-> DAVE_PREPARE_EPOCH {}", contentAll);
+                DataObject payload = contentAll.getObject("d");
+                daveSession.onDaveProtocolPrepareEpoch(payload.getString("epoch"), payload.getInt("protocol_version"));
+                break;
+            }
+
+            default: {
+                LOG.trace("-> UNKNOWN OP {}: {}", opCode, contentAll);
+                // undocumented / unused
+                break;
+            }
         }
     }
 
@@ -526,7 +641,8 @@ class AudioWebSocket extends WebSocketAdapter {
                 .put("server_id", guild.getId())
                 .put("user_id", getJDA().getSelfUser().getId())
                 .put("session_id", sessionId)
-                .put("token", token);
+                .put("token", token)
+                .put("max_dave_protocol_version", daveSession.getMaxProtocolVersion());
         send(VoiceCode.IDENTIFY, connectObj);
     }
 

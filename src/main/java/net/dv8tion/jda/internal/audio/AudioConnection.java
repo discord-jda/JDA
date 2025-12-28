@@ -23,6 +23,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntLongHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.dv8tion.jda.api.audio.*;
+import net.dv8tion.jda.api.audio.dave.DaveSession;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendSystem;
 import net.dv8tion.jda.api.audio.factory.IPacketProvider;
@@ -96,6 +97,7 @@ public class AudioConnection {
         JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: "
                 + channel.getGuild().getId();
+
         this.webSocket = new AudioWebSocket(
                 this,
                 manager.getListenerProxy(),
@@ -104,6 +106,12 @@ public class AudioConnection {
                 sessionId,
                 token,
                 manager.isAutoReconnect());
+
+        DaveSession daveSession = manager.getJDA()
+                .getAudioModuleConfig()
+                .getDaveSessionFactory()
+                .createDaveSession(webSocket, manager.getJDA().getSelfUser().getIdLong(), channel.getIdLong());
+        webSocket.setDaveSession(daveSession);
     }
 
     /* Used by AudioManagerImpl */
@@ -343,14 +351,16 @@ public class AudioConnection {
                                         || receiveHandler.canReceiveEncoded());
                         if (canReceive && webSocket.getSecretKey() != null) {
                             couldReceive = true;
-                            AudioPacket decryptedPacket =
-                                    AudioPacket.decryptAudioPacket(webSocket.crypto, receivedPacket);
+
+                            AudioPacket audioPacket = new AudioPacket(receivedPacket);
+                            int ssrc = audioPacket.getSSRC();
+                            long userId = ssrcMap.get(ssrc);
+
+                            AudioPacket decryptedPacket = audioPacket.asDecryptAudioPacket(webSocket.crypto, userId);
                             if (decryptedPacket == null) {
                                 continue;
                             }
 
-                            int ssrc = decryptedPacket.getSSRC();
-                            long userId = ssrcMap.get(ssrc);
                             Decoder decoder = opusDecoders.get(ssrc);
                             if (userId == ssrcMap.getNoEntryValue()) {
                                 ByteBuffer audio = decryptedPacket.getEncodedAudio();
@@ -568,8 +578,8 @@ public class AudioConnection {
     private class PacketProvider implements IPacketProvider {
         private char seq = 0; // Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0; // Used to sync up our packets within the same timeframe of other people talking.
-        private ByteBuffer buffer = ByteBuffer.allocate(512);
-        private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
+        private ByteBuffer buffer = ByteBuffer.allocateDirect(512);
+        private ByteBuffer outputBuffer = ByteBuffer.allocate(512);
 
         @Nonnull
         @Override
@@ -607,12 +617,7 @@ public class AudioConnection {
             try {
                 if (sendHandler != null && sendHandler.canProvide()) {
                     ByteBuffer rawAudio = sendHandler.provide20MsAudio();
-                    if (rawAudio != null && !rawAudio.hasArray()) {
-                        // we can't use the boxer without an array so encryption would not work
-                        LOG.error("AudioSendHandler provided ByteBuffer without a backing array! This is unsupported.");
-                    }
-
-                    if (rawAudio != null && rawAudio.hasRemaining() && rawAudio.hasArray()) {
+                    if (rawAudio != null && rawAudio.hasRemaining()) {
                         if (!sendHandler.isOpus()) {
                             rawAudio = encodeAudio(rawAudio);
                             if (rawAudio == null) {
@@ -620,7 +625,7 @@ public class AudioConnection {
                             }
                         }
 
-                        nextPacket = getPacketData(rawAudio);
+                        nextPacket = getPacketData(ensureDirect(rawAudio));
 
                         if (seq + 1 > Character.MAX_VALUE) {
                             seq = 0;
@@ -635,9 +640,29 @@ public class AudioConnection {
 
             if (nextPacket != null) {
                 timestamp += OpusPacket.OPUS_FRAME_SIZE;
+
+                if (outputBuffer.capacity() < nextPacket.remaining()) {
+                    outputBuffer = ByteBuffer.allocate((int) (1.25 * nextPacket.remaining()));
+                }
+
+                outputBuffer.clear();
+                outputBuffer.put(nextPacket);
+                outputBuffer.flip();
+                return outputBuffer;
+            } else {
+                return null;
+            }
+        }
+
+        private ByteBuffer ensureDirect(ByteBuffer buffer) {
+            if (buffer.isDirect()) {
+                return buffer;
             }
 
-            return nextPacket;
+            ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer.remaining());
+            directBuffer.put(buffer);
+            directBuffer.flip();
+            return directBuffer;
         }
 
         private ByteBuffer encodeAudio(ByteBuffer rawAudio) {
@@ -668,18 +693,8 @@ public class AudioConnection {
         }
 
         private ByteBuffer getPacketData(ByteBuffer rawAudio) {
-            ensureEncryptionBuffer(rawAudio);
-            AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
+            AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
             return buffer = packet.asEncryptedPacket(webSocket.crypto, buffer);
-        }
-
-        private void ensureEncryptionBuffer(ByteBuffer data) {
-            ((Buffer) encryptionBuffer).clear();
-            int currentCapacity = encryptionBuffer.remaining();
-            int requiredCapacity = AudioPacket.RTP_HEADER_BYTE_LENGTH + data.remaining();
-            if (currentCapacity < requiredCapacity) {
-                encryptionBuffer = ByteBuffer.allocate(requiredCapacity);
-            }
         }
 
         @Override

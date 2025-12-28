@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
+import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.Event;
@@ -83,7 +85,6 @@ public class JDABuilder {
     protected WebSocketFactory wsFactory = null;
     protected String token = null;
     protected IEventManager eventManager = null;
-    protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
     protected Compression compression = Compression.ZLIB;
     protected Activity activity = null;
@@ -98,6 +99,7 @@ public class JDABuilder {
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
     protected GatewayEncoding encoding = GatewayEncoding.JSON;
     protected RestConfig restConfig = new RestConfig();
+    protected AudioModuleConfig audioModuleConfig = null;
 
     protected JDABuilder(@Nullable String token, int intents) {
         this.token = token;
@@ -1202,7 +1204,27 @@ public class JDABuilder {
      */
     @Nonnull
     public JDABuilder setAudioSendFactory(@Nullable IAudioSendFactory factory) {
-        this.audioSendFactory = factory;
+        if (this.audioModuleConfig == null) {
+            this.audioModuleConfig = new AudioModuleConfig();
+        }
+
+        this.audioModuleConfig.withAudioSendFactory(factory == null ? new DefaultSendFactory() : factory);
+        return this;
+    }
+
+    /**
+     * Configures the audio module in JDA.
+     *
+     * <p>See {@link AudioModuleConfig} for details.
+     *
+     * @param  config
+     *         The new audio module config, or {@code null} to use defaults
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setAudioModuleConfig(@Nullable AudioModuleConfig config) {
+        this.audioModuleConfig = config;
         return this;
     }
 
@@ -1737,7 +1759,8 @@ public class JDABuilder {
                 controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
-        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
+        JDAImpl jda =
+                new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig, audioModuleConfig);
         jda.setMemberCachePolicy(memberCachePolicy);
         // We can only do member chunking with the GUILD_MEMBERS intent
         if ((intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0) {
@@ -1748,10 +1771,6 @@ public class JDABuilder {
 
         if (eventManager != null) {
             jda.setEventManager(eventManager);
-        }
-
-        if (audioSendFactory != null) {
-            jda.setAudioSendFactory(audioSendFactory);
         }
 
         jda.addEventListener(listeners.toArray());
