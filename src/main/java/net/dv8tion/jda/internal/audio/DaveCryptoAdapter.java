@@ -40,24 +40,16 @@ public class DaveCryptoAdapter implements CryptoAdapter {
 
     @Override
     public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio) {
-        encryptBuffer.clear();
-        output.flip();
-        encryptBuffer.put(output);
-        output.limit(output.capacity());
+        int maxSize = daveSession.getMaxEncryptedFrameSize(DaveSession.MediaType.AUDIO, audio.remaining());
 
-        encryptBuffer = delegate.encrypt(encryptBuffer, audio);
-        encryptBuffer.position(output.position());
-
-        int maxSize = daveSession.getMaxEncryptedFrameSize(DaveSession.MediaType.AUDIO, encryptBuffer.remaining());
-        if (maxSize > output.remaining()) {
-            ByteBuffer newBuffer = ByteBuffer.allocateDirect(output.position() + (int) (1.25 * maxSize));
-            output.flip();
-            newBuffer.put(output);
-            output = newBuffer;
+        if (maxSize > encryptBuffer.capacity()) {
+            encryptBuffer = ByteBuffer.allocateDirect((int) (1.25 * maxSize));
         }
 
-        daveSession.encryptOpus(ssrc, encryptBuffer, output);
-        return output;
+        encryptBuffer.clear();
+        daveSession.encryptOpus(ssrc, audio, encryptBuffer);
+
+        return delegate.encrypt(output, encryptBuffer);
     }
 
     @Override
