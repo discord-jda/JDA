@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
@@ -1201,14 +1202,19 @@ public class JDABuilder {
      *         when creating new {@link net.dv8tion.jda.api.audio.factory.IAudioSendSystem} objects.
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated Use {@link #setAudioModuleConfig(AudioModuleConfig)} instead
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setAudioModuleConfig(new AudioModuleConfig().withAudioSendFactory(factory))")
     public JDABuilder setAudioSendFactory(@Nullable IAudioSendFactory factory) {
         if (this.audioModuleConfig == null) {
             this.audioModuleConfig = new AudioModuleConfig();
         }
 
-        this.audioModuleConfig.withAudioSendFactory(factory == null ? new DefaultSendFactory() : factory);
+        this.audioModuleConfig =
+                this.audioModuleConfig.withAudioSendFactory(factory == null ? new DefaultSendFactory() : factory);
         return this;
     }
 
@@ -1815,7 +1821,8 @@ public class JDABuilder {
 
             // Tell user how to disable this warning
             JDAImpl.LOG.warn(
-                    "You can manually disable these flags to remove this warning by using disableCache({}) on your JDABuilder",
+                    "You can manually disable these flags to remove this warning by using disableCache({}) on your"
+                            + " JDABuilder",
                     automaticallyDisabled.stream().map(it -> "CacheFlag." + it).collect(Collectors.joining(", ")));
             // Only print this warning once
             automaticallyDisabled.clear();

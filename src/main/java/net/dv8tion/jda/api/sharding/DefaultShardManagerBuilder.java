@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.AudioModuleConfig;
@@ -989,13 +990,18 @@ public class DefaultShardManagerBuilder {
      *         when creating new {@link net.dv8tion.jda.api.audio.factory.IAudioSendSystem} objects.
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @deprecated Use {@link #setAudioModuleConfig(AudioModuleConfig)} instead
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setAudioModuleConfig(new AudioModuleConfig().withAudioSendFactory(factory))")
     public DefaultShardManagerBuilder setAudioSendFactory(@Nullable IAudioSendFactory factory) {
         if (audioModuleConfig == null) {
             audioModuleConfig = new AudioModuleConfig();
         }
-        audioModuleConfig.withAudioSendFactory(factory == null ? new DefaultSendFactory() : factory);
+        audioModuleConfig =
+                audioModuleConfig.withAudioSendFactory(factory == null ? new DefaultSendFactory() : factory);
         return this;
     }
 
@@ -2296,7 +2302,8 @@ public class DefaultShardManagerBuilder {
 
             // Tell user how to disable this warning
             JDAImpl.LOG.warn(
-                    "You can manually disable these flags to remove this warning by using disableCache({}) on your DefaultShardManagerBuilder",
+                    "You can manually disable these flags to remove this warning by using disableCache({}) on your"
+                            + " DefaultShardManagerBuilder",
                     automaticallyDisabled.stream().map(it -> "CacheFlag." + it).collect(Collectors.joining(", ")));
             // Only print this warning once
             automaticallyDisabled.clear();
