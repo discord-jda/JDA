@@ -88,7 +88,7 @@ public class AudioPacket {
         this.encodedAudio = buffer;
     }
 
-    public AudioPacket(/*ByteBuffer buffer, */ char seq, int timestamp, int ssrc, ByteBuffer encodedAudio) {
+    public AudioPacket(char seq, int timestamp, int ssrc, ByteBuffer encodedAudio) {
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;

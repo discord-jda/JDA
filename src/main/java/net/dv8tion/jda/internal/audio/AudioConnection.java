@@ -354,7 +354,7 @@ public class AudioConnection {
 
                             AudioPacket audioPacket = new AudioPacket(receivedPacket);
                             int ssrc = audioPacket.getSSRC();
-                            long userId = ssrcMap.get(ssrc);
+                            long userId = ssrcMap.containsKey(ssrc) ? ssrcMap.get(ssrc) : 0L;
 
                             AudioPacket decryptedPacket = audioPacket.asDecryptAudioPacket(webSocket.crypto, userId);
                             if (decryptedPacket == null) {
