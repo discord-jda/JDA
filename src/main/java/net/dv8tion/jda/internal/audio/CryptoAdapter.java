@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.util.Arrays;
 import java.util.EnumSet;
 
 public interface CryptoAdapter {
@@ -139,8 +138,9 @@ public interface CryptoAdapter {
         }
 
         protected byte[] getPlaintextCopy(ByteBuffer audio) {
-            return Arrays.copyOfRange(
-                    audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
+            byte[] plaintext = new byte[audio.remaining()];
+            audio.get(plaintext);
+            return plaintext;
         }
     }
 

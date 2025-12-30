@@ -25,7 +25,7 @@ public class DaveCryptoAdapter implements CryptoAdapter {
     protected final DaveSession daveSession;
     protected final int ssrc;
 
-    protected ByteBuffer encryptBuffer = ByteBuffer.allocate(1024);
+    protected ByteBuffer encryptBuffer = ByteBuffer.allocateDirect(512);
 
     public DaveCryptoAdapter(CryptoAdapter delegate, DaveSession daveSession, int ssrc) {
         this.delegate = delegate;
