@@ -637,12 +637,19 @@ class AudioWebSocket extends WebSocketAdapter implements DaveProtocolCallbacks {
 
     private void identify() {
         sequence = 0;
+        int maxDaveProtocolVersion = daveSession.getMaxProtocolVersion();
+        if (maxDaveProtocolVersion == 0) {
+            LOG.warn("Maximum Dave Protocol Version is 0. "
+                    + "This means your connection does not properly support encryption. "
+                    + "This will fail to work in the future.");
+        }
+
         DataObject connectObj = DataObject.empty()
                 .put("server_id", guild.getId())
                 .put("user_id", getJDA().getSelfUser().getId())
                 .put("session_id", sessionId)
                 .put("token", token)
-                .put("max_dave_protocol_version", daveSession.getMaxProtocolVersion());
+                .put("max_dave_protocol_version", maxDaveProtocolVersion);
         send(VoiceCode.IDENTIFY, connectObj);
     }
 
