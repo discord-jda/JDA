@@ -36,6 +36,9 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipException;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
 public class IOUtil {
     private static final Logger log = JDALogger.getLog(IOUtil.class);
 
@@ -220,10 +223,31 @@ public class IOUtil {
         arr[offset + 3] = (byte) (it & 0xFF);
     }
 
-    public static ByteBuffer reallocate(ByteBuffer original, int length) {
-        ByteBuffer buffer = ByteBuffer.allocate(length);
+    @Nonnull
+    @CheckReturnValue
+    public static ByteBuffer allocateLike(@Nonnull ByteBuffer original, int length) {
+        return original.isDirect() ? ByteBuffer.allocateDirect(length) : ByteBuffer.allocate(length);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public static ByteBuffer reallocate(@Nonnull ByteBuffer original, int length) {
+        ByteBuffer buffer = allocateLike(original, length);
         buffer.put(original);
         return buffer;
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public static ByteBuffer replace(@Nonnull ByteBuffer destination, @Nonnull ByteBuffer source) {
+        if (destination.capacity() < source.remaining()) {
+            destination = allocateLike(destination, (int) (1.25 * source.remaining()));
+        }
+
+        destination.clear();
+        destination.put(source);
+        destination.flip();
+        return destination;
     }
 
     /**

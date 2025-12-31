@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.audio;
 
 import net.dv8tion.jda.api.audio.dave.DaveSession;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.nio.ByteBuffer;
 
@@ -42,8 +43,8 @@ public class DaveCryptoAdapter implements CryptoAdapter {
     public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio) {
         int maxSize = daveSession.getMaxEncryptedFrameSize(DaveSession.MediaType.AUDIO, audio.remaining());
 
-        if (maxSize > encryptBuffer.capacity()) {
-            encryptBuffer = ByteBuffer.allocateDirect((int) (1.25 * maxSize));
+        if (encryptBuffer.capacity() < maxSize) {
+            encryptBuffer = IOUtil.allocateLike(encryptBuffer, (int) (1.25 * maxSize));
         }
 
         encryptBuffer.clear();

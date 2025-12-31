@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
@@ -537,7 +538,7 @@ public class AudioConnection {
 
     private ByteBuffer encodeToOpus(ByteBuffer rawAudio) {
         ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
-        ByteBuffer encoded = ByteBuffer.allocate(4096);
+        ByteBuffer encoded = ByteBuffer.allocateDirect(4096);
         for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2) {
             int firstByte =
                     (0x000000FF & rawAudio.get(i)); // Promotes to int and handles the fact that it was unsigned.
@@ -578,8 +579,9 @@ public class AudioConnection {
     private class PacketProvider implements IPacketProvider {
         private char seq = 0; // Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0; // Used to sync up our packets within the same timeframe of other people talking.
-        private ByteBuffer buffer = ByteBuffer.allocateDirect(512);
-        private ByteBuffer outputBuffer = ByteBuffer.allocate(512);
+        private ByteBuffer buffer = ByteBuffer.allocateDirect(2048);
+        private ByteBuffer temporaryDirectBuffer = null;
+        private ByteBuffer datagramBuffer = null;
 
         @Nonnull
         @Override
@@ -641,14 +643,7 @@ public class AudioConnection {
             if (nextPacket != null) {
                 timestamp += OpusPacket.OPUS_FRAME_SIZE;
 
-                if (outputBuffer.capacity() < nextPacket.remaining()) {
-                    outputBuffer = ByteBuffer.allocate((int) (1.25 * nextPacket.remaining()));
-                }
-
-                outputBuffer.clear();
-                outputBuffer.put(nextPacket);
-                outputBuffer.flip();
-                return outputBuffer;
+                return nextPacket;
             } else {
                 return null;
             }
@@ -659,10 +654,12 @@ public class AudioConnection {
                 return buffer;
             }
 
-            ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer.remaining());
-            directBuffer.put(buffer);
-            directBuffer.flip();
-            return directBuffer;
+            if (temporaryDirectBuffer == null) {
+                temporaryDirectBuffer = ByteBuffer.allocateDirect(buffer.remaining());
+            }
+
+            temporaryDirectBuffer = IOUtil.replace(temporaryDirectBuffer, buffer);
+            return temporaryDirectBuffer;
         }
 
         private ByteBuffer encodeAudio(ByteBuffer rawAudio) {
@@ -686,9 +683,15 @@ public class AudioConnection {
         }
 
         private DatagramPacket getDatagramPacket(ByteBuffer b) {
-            byte[] data = b.array();
-            int offset = b.arrayOffset() + b.position();
-            int length = b.remaining();
+            if (datagramBuffer == null) {
+                datagramBuffer = ByteBuffer.allocate(b.remaining());
+            }
+
+            datagramBuffer = IOUtil.replace(datagramBuffer, b);
+
+            byte[] data = datagramBuffer.array();
+            int offset = datagramBuffer.arrayOffset() + datagramBuffer.position();
+            int length = datagramBuffer.remaining();
             return new DatagramPacket(data, offset, length, webSocket.getAddress());
         }
 

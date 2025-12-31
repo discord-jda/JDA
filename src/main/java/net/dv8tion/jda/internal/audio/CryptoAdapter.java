@@ -90,7 +90,7 @@ public interface CryptoAdapter {
             int minimumOutputSize = audio.remaining() + this.tagBytes + nonceBytes;
 
             if (output.remaining() < minimumOutputSize) {
-                ByteBuffer newBuffer = ByteBuffer.allocateDirect(output.capacity() + minimumOutputSize);
+                ByteBuffer newBuffer = IOUtil.allocateLike(output, output.capacity() + minimumOutputSize);
                 output.flip();
                 newBuffer.put(output);
                 output = newBuffer;
