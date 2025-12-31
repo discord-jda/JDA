@@ -22,7 +22,8 @@ import net.dv8tion.jda.internal.audio.AudioPacket;
 import net.dv8tion.jda.internal.audio.CryptoAdapter;
 import net.dv8tion.jda.internal.audio.DaveCryptoAdapter;
 import net.dv8tion.jda.test.Constants;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -37,39 +38,23 @@ public class CryptoAdapterTest {
     private static final int TEST_SSRC = 5678;
     private static final int TEST_EXTENSION = 0xBEDE;
 
-    @Test
-    void minimalAES() {
+    @EnumSource
+    @ParameterizedTest
+    void testMinimalRoundtrip(AudioEncryption encryption) {
         AudioPacket original = getMinimalPacket();
         byte[] key = getKey();
 
-        CryptoAdapter adapter = getAdapter(AudioEncryption.AEAD_AES256_GCM_RTPSIZE, key);
+        CryptoAdapter adapter = getAdapter(encryption, key);
         doRoundTripAndAssertPayload(adapter, original);
     }
 
-    @Test
-    void minimalXChaCha20() {
-        AudioPacket original = getMinimalPacket();
-        byte[] key = getKey();
-
-        CryptoAdapter adapter = getAdapter(AudioEncryption.AEAD_XCHACHA20_POLY1305_RTPSIZE, key);
-        doRoundTripAndAssertPayload(adapter, original);
-    }
-
-    @Test
-    void extendedAES() {
+    @EnumSource
+    @ParameterizedTest
+    void testRoundtripWithExtension(AudioEncryption encryption) {
         AudioPacket original = getPacketWithExtension();
         byte[] key = getKey();
 
-        CryptoAdapter adapter = getAdapter(AudioEncryption.AEAD_AES256_GCM_RTPSIZE, key);
-        doRoundTripAndAssertPayload(adapter, original);
-    }
-
-    @Test
-    void extendedXChaCha20() {
-        AudioPacket original = getPacketWithExtension();
-        byte[] key = getKey();
-
-        CryptoAdapter adapter = getAdapter(AudioEncryption.AEAD_XCHACHA20_POLY1305_RTPSIZE, key);
+        CryptoAdapter adapter = getAdapter(encryption, key);
         doRoundTripAndAssertPayload(adapter, original);
     }
 
