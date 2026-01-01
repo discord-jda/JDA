@@ -417,6 +417,24 @@ public class MessageEmbed implements SerializableData {
                 && Helpers.deepEquals(fields, other.fields);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                url,
+                title,
+                description,
+                type,
+                thumbnail,
+                siteProvider,
+                author,
+                videoInfo,
+                footer,
+                image,
+                color & 0xFFFFFF,
+                timestamp,
+                fields);
+    }
+
     /**
      * Creates a new {@link net.dv8tion.jda.api.utils.data.DataObject}
      * used for sending.
@@ -586,6 +604,11 @@ public class MessageEmbed implements SerializableData {
                             && thumbnail.width == width
                             && thumbnail.height == height);
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(url, proxyUrl, width, height);
+        }
     }
 
     /**
@@ -630,6 +653,11 @@ public class MessageEmbed implements SerializableData {
             }
             Provider provider = (Provider) obj;
             return provider == this || (Objects.equals(provider.name, name) && Objects.equals(provider.url, url));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, url);
         }
     }
 
@@ -718,6 +746,11 @@ public class MessageEmbed implements SerializableData {
             VideoInfo video = (VideoInfo) obj;
             return video == this || (Objects.equals(video.url, url) && video.width == width && video.height == height);
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(url, proxyUrl, width, height);
+        }
     }
 
     /**
@@ -799,6 +832,11 @@ public class MessageEmbed implements SerializableData {
                             && Objects.equals(image.proxyUrl, proxyUrl)
                             && image.width == width
                             && image.height == height);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(url, proxyUrl, width, height);
         }
     }
 
@@ -885,6 +923,11 @@ public class MessageEmbed implements SerializableData {
                             && Objects.equals(author.iconUrl, iconUrl)
                             && Objects.equals(author.proxyIconUrl, proxyIconUrl));
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, url, iconUrl, proxyIconUrl);
+        }
     }
 
     /**
@@ -954,6 +997,11 @@ public class MessageEmbed implements SerializableData {
                     || (Objects.equals(footer.text, text)
                             && Objects.equals(footer.iconUrl, iconUrl)
                             && Objects.equals(footer.proxyIconUrl, proxyIconUrl));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(text, iconUrl, proxyIconUrl);
         }
     }
 
@@ -1043,6 +1091,11 @@ public class MessageEmbed implements SerializableData {
                     || (field.inline == inline
                             && Objects.equals(field.name, name)
                             && Objects.equals(field.value, value));
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, value, inline);
         }
     }
 }
