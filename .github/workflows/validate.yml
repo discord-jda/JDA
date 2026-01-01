@@ -19,20 +19,22 @@ jobs:
           java-version: 25
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
+      - name: Validate gradle wrapper jar
+        uses: gradle/actions/wrapper-validation@v5
       - name: Build and test
         run: ./gradlew --build-cache --parallel build test
       - name: Upload JUnit XML Test Report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v6
         with:
-            name: junit-xml-test-report
-            path: build/test-results/test
+          name: junit-xml-test-report
+          path: build/test-results/test
       - name: Upload HTML Test Report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v6
         with:
-            name: junit-html-test-report
-            path: build/reports/tests/test
+          name: junit-html-test-report
+          path: build/reports/tests/test
       - name: Annotate Failed Tests
         uses: mikepenz/action-junit-report@v6
         if: ${{ !cancelled() }}
