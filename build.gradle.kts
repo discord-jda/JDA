@@ -546,7 +546,11 @@ tasks.test {
     useJUnitPlatform()
     failFast = false
 
-    jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
+    jvmArgs = listOf(
+        "-javaagent:${mockitoAgent.asPath}",
+        // https://github.com/raphw/byte-buddy/issues/1803
+        "-Dnet.bytebuddy.safe=true"
+    )
 
     testLogging {
         events("failed")
