@@ -116,7 +116,8 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     public List<T> asList() {
         List<T> list = getCachedList();
         if (list == null) {
-            list = cache((List<T>) applyStream(stream -> stream.collect(Collectors.toList())));
+            List<T> newList = applyStream(stream -> stream.collect(Collectors.toList()));
+            list = cache(newList);
         }
         return list;
     }
@@ -126,7 +127,8 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     public Set<T> asSet() {
         Set<T> set = getCachedSet();
         if (set == null) {
-            set = cache((Set<T>) applyStream(stream -> stream.collect(Collectors.toSet())));
+            Set<T> newSet = applyStream(stream -> stream.collect(Collectors.toSet()));
+            set = cache(newSet);
         }
         return set;
     }

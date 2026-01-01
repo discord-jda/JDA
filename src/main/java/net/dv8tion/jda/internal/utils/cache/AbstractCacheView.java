@@ -219,7 +219,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         if (!(obj instanceof AbstractCacheView)) {
             return false;
         }
-        AbstractCacheView view = (AbstractCacheView) obj;
+        AbstractCacheView<?> view = (AbstractCacheView<?>) obj;
         try (UnlockHook hook = readLock();
                 UnlockHook otherHook = view.readLock()) {
             return this.elements.equals(view.elements);

@@ -525,6 +525,11 @@ public class MessageReaction {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(emoji, isSelf(), messageId);
+    }
+
+    @Override
     public String toString() {
         return new EntityString(this)
                 .addMetadata("channelId", channelId)

@@ -145,16 +145,20 @@ public class SlashBotExample extends ListenerAdapter {
 
         MessageChannel channel = event.getChannel();
         switch (type) {
-            case "prune":
+            case "prune" -> {
                 int amount = Integer.parseInt(id[2]);
                 event.getChannel()
                         .getIterableHistory()
                         .skipTo(event.getMessageIdLong())
                         .takeAsync(amount)
                         .thenAccept(channel::purgeMessages);
-            // fallthrough delete the prompt message with our buttons
-            case "delete":
+
+                // delete the prompt message with our buttons
                 event.getHook().deleteOriginal().queue();
+            }
+            case "delete" -> {
+                event.getHook().deleteOriginal().queue();
+            }
         }
     }
 

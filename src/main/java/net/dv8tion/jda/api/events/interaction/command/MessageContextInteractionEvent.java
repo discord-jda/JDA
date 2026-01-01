@@ -51,6 +51,6 @@ public class MessageContextInteractionEvent extends GenericContextInteractionEve
     @Nullable
     @Override
     public MessageChannelUnion getChannel() {
-        return (MessageChannelUnion) getInteraction().getChannel();
+        return getInteraction().getChannel();
     }
 }

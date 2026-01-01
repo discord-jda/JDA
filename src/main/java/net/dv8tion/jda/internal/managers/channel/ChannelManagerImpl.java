@@ -311,7 +311,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        return (M) removePermissionOverride(permHolder.getIdLong());
+        return removePermissionOverride(permHolder.getIdLong());
     }
 
     @Nonnull
