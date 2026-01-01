@@ -662,7 +662,7 @@ jreleaser {
         }
     }
 
-    signing {
+    signing.pgp {
         active = Active.RELEASE
         armored = true
     }
