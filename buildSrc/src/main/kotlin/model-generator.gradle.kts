@@ -34,26 +34,26 @@ val downloadApiSpec by tasks.registering(Download::class) {
     dest(apiModelGenerator.apiSpecFile)
 }
 
-val filterGeneratedFiles by tasks.registering(FilterGeneratedTypesTask::class) {
-    group = taskGroup
-
-    suffix = apiModelGenerator.generatorSuffix
-    includes = apiModelGenerator.includes
-    directory = apiModelGenerator.outputDirectory
-}
-
 val generateApiModels by tasks.registering(GenerateApiModelsTask::class) {
     group = taskGroup
 
     suffix = apiModelGenerator.generatorSuffix
     apiSpecFile = apiModelGenerator.apiSpecFile
     outputDirectory = apiModelGenerator.outputDirectory
+}
 
-    finalizedBy(filterGeneratedFiles)
+val filterGeneratedFiles by tasks.registering(FilterGeneratedTypesTask::class) {
+    group = taskGroup
+
+    suffix = apiModelGenerator.generatorSuffix
+    includes = apiModelGenerator.includes
+    directory = apiModelGenerator.outputDirectory
+
+    dependsOn(generateApiModels)
 }
 
 project.tasks.named("compileJava") {
-    dependsOn(generateApiModels)
+    dependsOn(filterGeneratedFiles)
 }
 
 val sourceSets = the<SourceSetContainer>()
