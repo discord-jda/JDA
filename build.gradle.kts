@@ -451,6 +451,7 @@ val javadoc by tasks.getting(Javadoc::class) {
         links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
         addStringOption("-release", "8")
+        addBooleanOption("-syntax-highlight", true)
         addBooleanOption("Xdoclint:all,-missing", true)
 
         overview = "$projectDir/overview.html"
