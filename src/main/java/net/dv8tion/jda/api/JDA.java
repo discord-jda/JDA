@@ -204,6 +204,11 @@ public interface JDA extends IGuildChannelContainer<Channel> {
             ShardInfo oInfo = (ShardInfo) o;
             return shardId == oInfo.getShardId() && shardTotal == oInfo.getShardTotal();
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(shardId, shardTotal);
+        }
     }
 
     /**

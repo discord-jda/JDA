@@ -190,9 +190,8 @@ public class MigrateComponentsV2Test implements RewriteTest {
                         "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;\n\n"
                                 + "public class Test3 { void x(SelectMenu.Builder<?, ?> component) {"
                                 + " component.getId(); } }",
-                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\n"
-                                + "import net.dv8tion.jda.api.components.selections.SelectMenu.Builder;\n\n"
-                                + "public class Test3 { void x(Builder<?, ?> component) {"
+                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\n\n"
+                                + "public class Test3 { void x(SelectMenu.Builder<?, ?> component) {"
                                 + " component.getCustomId(); } }"),
                 // language=java
                 java(

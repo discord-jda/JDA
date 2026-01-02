@@ -1144,6 +1144,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 () -> updateAudioConnection0(guildId, connectedChannel));
     }
 
+    @SuppressWarnings("fallthrough")
     public ConnectionRequest updateAudioConnection0(long guildId, AudioChannel connectedChannel) {
         // Called by VoiceStateUpdateHandler when we receive a response from discord
         // about our request to CONNECT or DISCONNECT.

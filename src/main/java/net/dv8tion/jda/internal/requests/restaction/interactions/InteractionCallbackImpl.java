@@ -81,10 +81,8 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         return this;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Here we intercept calls to queue/submit/complete to prevent double ack/reply scenarios with a
-    // better error message than discord provides //
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // better error message than discord provides
 
     // This is an exception factory method that only returns an exception if we would have to throw
     // it or fail in another way.
@@ -126,10 +124,8 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         return super.submit(shouldQueue);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Here we handle the interaction hook, which awaits the signal that the interaction was
-    // acknowledged before sending any requests. //
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // acknowledged before sending any requests.
 
     @Override
     protected void handleSuccess(Response response, Request<T> request) {

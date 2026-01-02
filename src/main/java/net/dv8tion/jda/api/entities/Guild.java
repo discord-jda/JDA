@@ -5812,8 +5812,6 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     GuildWelcomeScreenManager modifyWelcomeScreen();
 
-    //////////////////////////
-
     /**
      * Represents the idle time allowed until a user is moved to the
      * AFK {@link VoiceChannel} if one is set

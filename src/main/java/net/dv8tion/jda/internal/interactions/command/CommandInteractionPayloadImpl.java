@@ -52,6 +52,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     private String group;
     private final Command.Type type;
 
+    @SuppressWarnings("fallthrough")
     public CommandInteractionPayloadImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         DataObject commandData = data.getObject("data");
