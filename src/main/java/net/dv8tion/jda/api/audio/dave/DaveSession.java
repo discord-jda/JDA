@@ -37,7 +37,7 @@ public interface DaveSession {
     /**
      * Calculate the maximum encrypted size for the provided frame.
      *
-     * <p>This is used to ensure the {@link ByteBuffer} provided to {@link #encrypt(int, ByteBuffer, ByteBuffer)}
+     * <p>This is used to ensure the {@link ByteBuffer} provided to {@link #encrypt(MediaType, int, ByteBuffer, ByteBuffer)}
      * has enough space for the encrypted data.
      *
      * @param type
@@ -52,7 +52,7 @@ public interface DaveSession {
     /**
      * Calculate the maximum decrypted size for the provided frame.
      *
-     * <p>This is used to ensure the {@link ByteBuffer} provided to {@link #decrypt(long, ByteBuffer, ByteBuffer)}
+     * <p>This is used to ensure the {@link ByteBuffer} provided to {@link #decrypt(MediaType, long, ByteBuffer, ByteBuffer)}
      * has enough space for the decrypted data.
      *
      * @param type
