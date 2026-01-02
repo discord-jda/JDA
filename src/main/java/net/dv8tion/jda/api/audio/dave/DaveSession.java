@@ -95,6 +95,8 @@ public interface DaveSession {
      * {@linkplain ByteBuffer#limit() limit} at the end of the encrypted data.
      * (Usually achieved by calling {@link ByteBuffer#flip()})
      *
+     * @param mediaType
+     *        The media type of the {@code data}
      * @param ssrc
      *        The SSRC (synchronization source) of the sender
      * @param data
@@ -105,7 +107,7 @@ public interface DaveSession {
      *
      * @return True, if the encryption was successful
      */
-    boolean encrypt(int ssrc, @Nonnull ByteBuffer data, @Nonnull ByteBuffer encrypted);
+    boolean encrypt(@Nonnull MediaType mediaType, int ssrc, @Nonnull ByteBuffer data, @Nonnull ByteBuffer encrypted);
 
     /**
      * Decrypts an Opus-encoded audio frame received from the network.
@@ -123,6 +125,8 @@ public interface DaveSession {
      * {@linkplain ByteBuffer#limit() limit} at the end of the decrypted data.
      * (Usually achieved by calling {@link ByteBuffer#flip()})
      *
+     * @param mediaType
+     *        The media type of the {@code encrypted} data
      * @param userId
      *        The id for the user that sent this frame
      * @param encrypted
@@ -133,7 +137,8 @@ public interface DaveSession {
      *
      * @return True, if the decryption was successful
      */
-    boolean decrypt(long userId, @Nonnull ByteBuffer encrypted, @Nonnull ByteBuffer decrypted);
+    boolean decrypt(
+            @Nonnull MediaType mediaType, long userId, @Nonnull ByteBuffer encrypted, @Nonnull ByteBuffer decrypted);
 
     /**
      * Add a new recognized user for the MLS group.

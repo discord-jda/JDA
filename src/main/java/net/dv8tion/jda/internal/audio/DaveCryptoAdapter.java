@@ -52,7 +52,7 @@ public class DaveCryptoAdapter implements CryptoAdapter {
         output.mark();
         encryptBuffer.clear();
 
-        if (daveSession.encrypt(ssrc, audio, encryptBuffer)) {
+        if (daveSession.encrypt(DaveSession.MediaType.AUDIO, ssrc, audio, encryptBuffer)) {
             return delegate.encrypt(output, encryptBuffer);
         } else {
             output.reset();
@@ -72,7 +72,7 @@ public class DaveCryptoAdapter implements CryptoAdapter {
                 daveSession.getMaxDecryptedFrameSize(DaveSession.MediaType.AUDIO, userId, inputBuffer.remaining());
         ByteBuffer outputBuffer = ByteBuffer.allocateDirect(outputSize);
 
-        if (daveSession.decrypt(userId, inputBuffer, outputBuffer)) {
+        if (daveSession.decrypt(DaveSession.MediaType.AUDIO, userId, inputBuffer, outputBuffer)) {
             byte[] output = new byte[outputBuffer.remaining()];
             outputBuffer.get(output);
             return output;
