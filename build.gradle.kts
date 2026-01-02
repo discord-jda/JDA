@@ -451,6 +451,7 @@ val javadoc by tasks.getting(Javadoc::class) {
         tags("incubating:a:Incubating:")
         links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
+        addStringOption("-link-modularity-mismatch", "info")
         addStringOption("-release", "8")
         addBooleanOption("-syntax-highlight", true)
         addBooleanOption("Xdoclint:all,-missing", true)
