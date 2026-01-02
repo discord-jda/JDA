@@ -445,6 +445,7 @@ val javadoc by tasks.getting(Javadoc::class) {
     (options as? StandardJavadocDocletOptions)?.apply {
         memberLevel = JavadocMemberLevel.PUBLIC
         encoding = "UTF-8"
+        locale = "en_US"
 
         author()
         tags("incubating:a:Incubating:")
