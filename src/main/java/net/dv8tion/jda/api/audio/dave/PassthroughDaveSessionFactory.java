@@ -20,11 +20,13 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import java.nio.ByteBuffer;
+import java.time.LocalDate;
 
 import javax.annotation.Nonnull;
 
 public class PassthroughDaveSessionFactory implements DaveSessionFactory {
     private static final Logger LOG = JDALogger.getLog(DaveSessionFactory.class);
+    private static final LocalDate daveDeadline = LocalDate.of(2026, 3, 1);
     private static boolean isWarningPrinted = false;
 
     private static void printWarning() {
@@ -35,7 +37,8 @@ public class PassthroughDaveSessionFactory implements DaveSessionFactory {
         isWarningPrinted = true;
         LOG.warn(
                 "Using passthrough dave session. Please migrate to an implementation of libdave! "
-                        + "Your audio connections will stop working on 01.03.2026",
+                        + "Your audio connections will stop working on {}",
+                daveDeadline,
                 new IllegalStateException());
     }
 
