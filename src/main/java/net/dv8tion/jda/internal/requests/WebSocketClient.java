@@ -30,10 +30,10 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.events.RawGatewayEvent;
 import net.dv8tion.jda.api.events.session.*;
+import net.dv8tion.jda.api.exceptions.DecompressionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.CloseCode;
-import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -46,13 +46,12 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.handle.*;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.internal.requests.gateway.messages.GatewayMessageReader;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.ShutdownReason;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
-import net.dv8tion.jda.internal.utils.compress.Decompressor;
-import net.dv8tion.jda.internal.utils.compress.ZlibDecompressor;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -62,7 +61,6 @@ import java.lang.ref.SoftReference;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
@@ -72,7 +70,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.zip.DataFormatException;
 
 import javax.annotation.Nonnull;
 
@@ -86,7 +83,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
-    protected final Compression compression;
     protected final int gatewayIntents;
     protected final MemberChunkManager chunkManager;
     protected final GatewayEncoding encoding;
@@ -95,7 +91,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected String traceMetadata = null;
     protected volatile String sessionId = null;
     protected final Object readLock = new Object();
-    protected Decompressor decompressor;
+    protected final GatewayMessageReader messageReader;
     protected String resumeUrl = null;
 
     protected final ReentrantLock queueLock = new ReentrantLock();
@@ -132,14 +128,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents, GatewayEncoding encoding) {
+    public WebSocketClient(JDAImpl api, GatewayConfigImpl gatewayConfig, int gatewayIntents) {
         this.api = api;
         this.executor = api.getGatewayPool();
         this.shardInfo = api.getShardInfo();
-        this.compression = compression;
+        this.messageReader = gatewayConfig.createMessageReader();
         this.gatewayIntents = gatewayIntents;
         this.chunkManager = new MemberChunkManager(this);
-        this.encoding = encoding;
+        this.encoding = gatewayConfig.getEncoding();
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
         setupHandlers();
@@ -356,17 +352,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             String gatewayUrl = resumeUrl != null ? resumeUrl : api.getGatewayUrl();
             gatewayUrl = IOUtil.addQuery(
                     gatewayUrl, "encoding", encoding.name().toLowerCase(), "v", JDAInfo.DISCORD_GATEWAY_VERSION);
-            if (compression != Compression.NONE) {
-                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compression.getKey());
-                switch (compression) {
-                    case ZLIB:
-                        if (decompressor == null || decompressor.getType() != Compression.ZLIB) {
-                            decompressor = new ZlibDecompressor(api.getMaxBufferSize());
-                        }
-                        break;
-                    default:
-                        throw new IllegalStateException("Unknown compression");
-                }
+            String compressionQueryParameter = messageReader.getCompressionQueryParameter();
+            if (compressionQueryParameter != null) {
+                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compressionQueryParameter);
             }
 
             WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
@@ -515,17 +503,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
 
-            if (decompressor != null) {
-                decompressor.shutdown();
-            }
+            messageReader.close();
 
             onShutdown(rawCloseCode);
         } else {
             // reset our decompression tools
             synchronized (readLock) {
-                if (decompressor != null) {
-                    decompressor.reset();
-                }
+                messageReader.reset();
             }
             if (isInvalidate) {
                 invalidate(); // 1000 means our session is dropped so we cannot resume
@@ -970,7 +954,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws DataFormatException {
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws DecompressionException {
         DataObject message;
         // Only acquire lock for decompression and unlock for event handling
         synchronized (readLock) {
@@ -981,40 +965,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected DataObject handleBinary(byte[] binary) throws DataFormatException {
-        if (decompressor == null) {
-            if (encoding == GatewayEncoding.ETF) {
-                return DataObject.fromETF(binary);
-            }
-            throw new IllegalStateException(
-                    "Cannot decompress binary message due to unknown compression algorithm: " + compression);
-        }
-        // Scoping allows us to print the json that possibly failed parsing
-        byte[] data;
+    protected DataObject handleBinary(byte[] binary) throws DecompressionException {
         try {
-            data = decompressor.decompress(binary);
-            if (data == null) {
-                return null;
-            }
-        } catch (DataFormatException e) {
+            return messageReader.read(binary);
+        } catch (DecompressionException e) {
             close(4900, "MALFORMED_PACKAGE");
-            throw e;
-        }
-
-        try {
-            if (encoding == GatewayEncoding.ETF) {
-                return DataObject.fromETF(data);
-            } else {
-                return DataObject.fromJson(data);
-            }
-        } catch (ParsingException e) {
-            String jsonString = "malformed";
-            try {
-                jsonString = new String(data, StandardCharsets.UTF_8);
-            } catch (Exception ignored) {
-            }
-            // Print the string that could not be parsed and re-throw the exception
-            LOG.error("Failed to parse json: {}", jsonString);
             throw e;
         }
     }
