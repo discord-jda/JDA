@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
@@ -49,6 +50,7 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
     private boolean allowSet = false;
     private boolean denySet = false;
 
+    // TODO: Migrate to PermissionSet
     private long allow = 0;
     private long deny = 0;
     private final IPermissionContainerMixin<?> channel;
@@ -272,8 +274,8 @@ public class PermissionOverrideActionImpl extends AuditableRestActionImpl<Permis
     protected void handleSuccess(Response response, Request<PermissionOverride> request) {
         DataObject object = (DataObject) request.getRawBody();
         PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isRole());
-        override.setAllow(object.getLong("allow"));
-        override.setDeny(object.getLong("deny"));
+        override.setAllow(object.getParsedString("allow", PermissionSet::parse));
+        override.setDeny(object.getParsedString("deny", PermissionSet::parse));
         // This is added by the event later
         // ((AbstractChannelImpl<?,?>) channel).getOverrideMap().put(id, override);
         request.onSuccess(override);
