@@ -102,8 +102,10 @@ public interface DaveSession {
      * @param encrypted
      *        The direct buffer to fill with the encrypted data
      *        (with enough space for {@linkplain #getMaxEncryptedFrameSize(MediaType, int) max encrypted frame size}).
+     *
+     * @return True, if the encryption was successful
      */
-    void encrypt(int ssrc, @Nonnull ByteBuffer data, @Nonnull ByteBuffer encrypted);
+    boolean encrypt(int ssrc, @Nonnull ByteBuffer data, @Nonnull ByteBuffer encrypted);
 
     /**
      * Decrypts an Opus-encoded audio frame received from the network.
@@ -128,8 +130,10 @@ public interface DaveSession {
      * @param decrypted
      *        The direct buffer to fill with the decrypted data
      *        (with enough space for {@linkplain #getMaxDecryptedFrameSize(MediaType, long, int) max decrypted frame size})
+     *
+     * @return True, if the decryption was successful
      */
-    void decrypt(long userId, @Nonnull ByteBuffer encrypted, @Nonnull ByteBuffer decrypted);
+    boolean decrypt(long userId, @Nonnull ByteBuffer encrypted, @Nonnull ByteBuffer decrypted);
 
     /**
      * Add a new recognized user for the MLS group.

@@ -67,17 +67,19 @@ public class PassthroughDaveSessionFactory implements DaveSessionFactory {
         public void assignSsrcToCodec(@Nonnull Codec codec, int ssrc) {}
 
         @Override
-        public void encrypt(int ssrc, @Nonnull ByteBuffer audio, @Nonnull ByteBuffer encrypted) {
+        public boolean encrypt(int ssrc, @Nonnull ByteBuffer audio, @Nonnull ByteBuffer encrypted) {
             // passthrough
             encrypted.put(audio);
             encrypted.flip();
+            return true;
         }
 
         @Override
-        public void decrypt(long userId, @Nonnull ByteBuffer encrypted, @Nonnull ByteBuffer decrypted) {
+        public boolean decrypt(long userId, @Nonnull ByteBuffer encrypted, @Nonnull ByteBuffer decrypted) {
             // passthrough
             decrypted.put(encrypted);
             decrypted.flip();
+            return true;
         }
 
         @Override

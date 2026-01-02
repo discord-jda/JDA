@@ -62,7 +62,7 @@ public class AudioConnection {
 
     public static final long MAX_UINT_32 = 4294967295L;
 
-    private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte) 0xF8, (byte) 0xFF, (byte) 0xFE});
+    static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte) 0xF8, (byte) 0xFF, (byte) 0xFE});
     private static boolean printedError = false;
 
     protected volatile DatagramSocket udpSocket;

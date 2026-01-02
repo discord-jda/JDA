@@ -21,6 +21,8 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.nio.ByteBuffer;
 
+import static net.dv8tion.jda.internal.audio.AudioConnection.silenceBytes;
+
 public class DaveCryptoAdapter implements CryptoAdapter {
     protected final CryptoAdapter delegate;
     protected final DaveSession daveSession;
@@ -47,10 +49,15 @@ public class DaveCryptoAdapter implements CryptoAdapter {
             encryptBuffer = IOUtil.allocateLike(encryptBuffer, (int) (1.25 * maxSize));
         }
 
+        output.mark();
         encryptBuffer.clear();
-        daveSession.encrypt(ssrc, audio, encryptBuffer);
 
-        return delegate.encrypt(output, encryptBuffer);
+        if (daveSession.encrypt(ssrc, audio, encryptBuffer)) {
+            return delegate.encrypt(output, encryptBuffer);
+        } else {
+            output.reset();
+            return output;
+        }
     }
 
     @Override
@@ -64,10 +71,13 @@ public class DaveCryptoAdapter implements CryptoAdapter {
         int outputSize =
                 daveSession.getMaxDecryptedFrameSize(DaveSession.MediaType.AUDIO, userId, inputBuffer.remaining());
         ByteBuffer outputBuffer = ByteBuffer.allocateDirect(outputSize);
-        daveSession.decrypt(userId, inputBuffer, outputBuffer);
 
-        byte[] output = new byte[outputBuffer.remaining()];
-        outputBuffer.get(output);
-        return output;
+        if (daveSession.decrypt(userId, inputBuffer, outputBuffer)) {
+            byte[] output = new byte[outputBuffer.remaining()];
+            outputBuffer.get(output);
+            return output;
+        } else {
+            return silenceBytes.array();
+        }
     }
 }
