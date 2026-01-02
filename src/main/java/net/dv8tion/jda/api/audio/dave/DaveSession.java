@@ -37,7 +37,7 @@ public interface DaveSession {
     /**
      * Calculate the maximum encrypted size for the provided frame.
      *
-     * <p>This is used to ensure the {@link ByteBuffer} provided to {@link #encryptOpus(int, ByteBuffer, ByteBuffer)}
+     * <p>This is used to ensure the {@link ByteBuffer} provided to {@link #encrypt(int, ByteBuffer, ByteBuffer)}
      * has enough space for the encrypted data.
      *
      * @param type
@@ -52,7 +52,7 @@ public interface DaveSession {
     /**
      * Calculate the maximum decrypted size for the provided frame.
      *
-     * <p>This is used to ensure the {@link ByteBuffer} provided to {@link #decryptOpus(long, ByteBuffer, ByteBuffer)}
+     * <p>This is used to ensure the {@link ByteBuffer} provided to {@link #decrypt(long, ByteBuffer, ByteBuffer)}
      * has enough space for the decrypted data.
      *
      * @param type
@@ -80,10 +80,10 @@ public interface DaveSession {
     void assignSsrcToCodec(@Nonnull Codec codec, int ssrc);
 
     /**
-     * Encrypts the plaintext audio frame and writes the encrypted data into {@code encrypted}.
+     * Encrypts the plaintext frame and writes the encrypted data into {@code encrypted}.
      *
-     * <p>Implementations should read the {@linkplain ByteBuffer#remaining() remaining}
-     * from {@code audio} starting at its current {@linkplain ByteBuffer#position() position},
+     * <p>Implementations should read the {@linkplain ByteBuffer#remaining() remaining} bytes
+     * from {@code data} starting at its current {@linkplain ByteBuffer#position() position},
      * and write the resulting encrypted payload into {@code encrypted} starting at its current position.
      *
      * <p>The caller is responsible for ensuring that {@code encrypted} has sufficient
@@ -97,18 +97,18 @@ public interface DaveSession {
      *
      * @param ssrc
      *        The SSRC (synchronization source) of the sender
-     * @param audio
-     *        The direct buffer containing the audio data to encrypt ({@link Codec#OPUS})
+     * @param data
+     *        The direct buffer containing the data to encrypt
      * @param encrypted
      *        The direct buffer to fill with the encrypted data
      *        (with enough space for {@linkplain #getMaxEncryptedFrameSize(MediaType, int) max encrypted frame size}).
      */
-    void encryptOpus(int ssrc, @Nonnull ByteBuffer audio, @Nonnull ByteBuffer encrypted);
+    void encrypt(int ssrc, @Nonnull ByteBuffer data, @Nonnull ByteBuffer encrypted);
 
     /**
      * Decrypts an Opus-encoded audio frame received from the network.
      *
-     * <p>Implementations should read the {@linkplain ByteBuffer#remaining() remaining}
+     * <p>Implementations should read the {@linkplain ByteBuffer#remaining() remaining} bytes
      * from {@code encrypted} starting at its current {@linkplain ByteBuffer#position() position},
      * and write the resulting decrypted payload into {@code decrypted} starting at its current position.
      *
@@ -129,7 +129,7 @@ public interface DaveSession {
      *        The direct buffer to fill with the decrypted data
      *        (with enough space for {@linkplain #getMaxDecryptedFrameSize(MediaType, long, int) max decrypted frame size})
      */
-    void decryptOpus(long userId, @Nonnull ByteBuffer encrypted, @Nonnull ByteBuffer decrypted);
+    void decrypt(long userId, @Nonnull ByteBuffer encrypted, @Nonnull ByteBuffer decrypted);
 
     /**
      * Add a new recognized user for the MLS group.
