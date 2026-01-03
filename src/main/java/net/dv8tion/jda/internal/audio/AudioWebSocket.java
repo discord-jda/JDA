@@ -623,7 +623,8 @@ class AudioWebSocket extends WebSocketAdapter implements DaveProtocolCallbacks {
             case VoiceCode.DAVE_PREPARE_EPOCH: {
                 LOG.trace("-> DAVE_PREPARE_EPOCH {}", contentAll);
                 DataObject payload = contentAll.getObject("d");
-                daveSession.onDaveProtocolPrepareEpoch(payload.getString("epoch"), payload.getInt("protocol_version"));
+                daveSession.onDaveProtocolPrepareEpoch(
+                        payload.getUnsignedLong("epoch"), payload.getInt("protocol_version"));
                 break;
             }
 

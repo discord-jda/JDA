@@ -226,7 +226,7 @@ public interface DaveSession {
      *
      * @see <a href="https://daveprotocol.com/#dave_protocol_prepare_epoch-24" target="_blank">dave_protocol_prepare_epoch (24)</a>
      */
-    void onDaveProtocolPrepareEpoch(@Nonnull String epoch, int protocolVersion);
+    void onDaveProtocolPrepareEpoch(long epoch, int protocolVersion);
 
     /**
      * Handle {@code MLS_EXTERNAL_SENDER_PACKAGE} (opcode {@code 25}).

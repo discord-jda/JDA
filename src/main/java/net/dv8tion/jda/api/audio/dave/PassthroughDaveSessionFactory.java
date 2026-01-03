@@ -116,7 +116,7 @@ public class PassthroughDaveSessionFactory implements DaveSessionFactory {
         public void onDaveProtocolExecuteTransition(int transitionId) {}
 
         @Override
-        public void onDaveProtocolPrepareEpoch(@Nonnull String epoch, int protocolVersion) {}
+        public void onDaveProtocolPrepareEpoch(long epoch, int protocolVersion) {}
 
         @Override
         public void onDaveProtocolMLSExternalSenderPackage(@Nonnull ByteBuffer externalSenderPackage) {}
