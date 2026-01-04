@@ -275,7 +275,9 @@ public class AudioConnection {
                 // Probably should nuke the old opusDecoder.
                 // Log for now and see if any user report the error.
                 LOG.error(
-                        "Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform devs.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
+                        "Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform"
+                                + " devs.\n"
+                                + "ChannelId: {} SSRC: {} oldId: {} newId: {}",
                         channel.getId(),
                         ssrc,
                         previousId,
@@ -360,6 +362,9 @@ public class AudioConnection {
                             AudioPacket audioPacket = new AudioPacket(receivedPacket);
                             int ssrc = audioPacket.getSSRC();
                             long userId = ssrcMap.containsKey(ssrc) ? ssrcMap.get(ssrc) : 0L;
+                            if (userId == 0L) {
+                                continue;
+                            }
 
                             AudioPacket decryptedPacket =
                                     audioPacket.asDecryptAudioPacket(webSocket.crypto, userId, decryptBuffer);
@@ -368,19 +373,6 @@ public class AudioConnection {
                             }
 
                             Decoder decoder = opusDecoders.get(ssrc);
-                            if (userId == ssrcMap.getNoEntryValue()) {
-                                ByteBuffer audio = decryptedPacket.getEncodedAudio();
-
-                                // If the bytes are silence, then this was caused by a User joining
-                                // the voice channel,
-                                // and as such, we haven't yet received information to pair the SSRC
-                                // with the UserId.
-                                if (!audio.equals(silenceBytes)) {
-                                    LOG.debug("Received audio data with an unknown SSRC id. Ignoring");
-                                }
-
-                                continue;
-                            }
                             if (decoder == null) {
                                 if (AudioNatives.ensureOpus()) {
                                     opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
@@ -399,8 +391,8 @@ public class AudioConnection {
 
                             User user = getJDA().getUserById(userId);
                             if (user == null) {
-                                LOG.warn(
-                                        "Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
+                                LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC"
+                                        + " is unknown to JDA!");
                                 continue;
                             }
                             short[] decodedAudio = opusPacket.decode();
