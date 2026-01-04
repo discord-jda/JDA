@@ -16,10 +16,14 @@
 
 package net.dv8tion.jda.internal.audio;
 
+import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
+import org.slf4j.Logger;
+
 import java.net.DatagramPacket;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents the contents of a audio packet that was either received from Discord or
@@ -28,8 +32,6 @@ import java.util.Arrays;
  * @see <a href="https://tools.ietf.org/html/rfc3550" target="_blank">RFC 3350 - RTP: A Transport Protocol for Real-Time Applications</a>
  */
 public class AudioPacket {
-    public static final int RTP_HEADER_BYTE_LENGTH = 12;
-
     /**
      * Bit index 0 and 1 represent the RTP Protocol version used. Discord uses the latest RTP protocol version, 2.<br>
      * Bit index 2 represents whether or not we pad. Opus uses an internal padding system, so RTP padding is not used.<br>
@@ -44,26 +46,28 @@ public class AudioPacket {
      */
     public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78; // Binary: 0100 1000
 
+    private static final int RTP_HEADER_SIZE = 12;
+
+    private static final Logger log = JDALogger.getLog(AudioPacket.class);
+
     private final byte type;
     private final char seq;
     private final int timestamp;
     private final int ssrc;
-    private final int extension;
+    private final short extensionLength;
     private final boolean hasExtension;
     private final int[] csrc;
-    private final int headerLength;
-    private final byte[] rawPacket;
     private final ByteBuffer encodedAudio;
 
     public AudioPacket(DatagramPacket packet) {
-        this(Arrays.copyOf(packet.getData(), packet.getLength()));
+        this(ByteBuffer.wrap(packet.getData(), packet.getOffset(), packet.getLength()));
     }
 
     public AudioPacket(byte[] rawPacket) {
-        this.rawPacket = rawPacket;
+        this(ByteBuffer.wrap(rawPacket));
+    }
 
-        ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
-
+    public AudioPacket(ByteBuffer buffer) {
         // Parsing header as described by https://datatracker.ietf.org/doc/html/rfc3550#section-5.1
 
         byte first = buffer.get();
@@ -85,31 +89,23 @@ public class AudioPacket {
         // Extract extension length as described by
         // https://datatracker.ietf.org/doc/html/rfc3550#section-5.3.1
         if (this.hasExtension) {
-            buffer.position(buffer.position() + 2);
-            this.extension = buffer.getShort();
+            this.extensionLength = (short) buffer.getInt();
         } else {
-            this.extension = 0;
+            this.extensionLength = 0;
         }
 
-        this.headerLength = buffer.position();
         this.encodedAudio = buffer;
     }
 
-    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio) {
+    public AudioPacket(char seq, int timestamp, int ssrc, ByteBuffer encodedAudio) {
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;
         this.csrc = new int[0];
-        this.extension = 0;
+        this.extensionLength = 0;
         this.hasExtension = false;
-        this.headerLength = RTP_HEADER_BYTE_LENGTH;
         this.type = RTP_PAYLOAD_TYPE;
-        this.rawPacket = generateRawPacket(buffer, seq, timestamp, ssrc, encodedAudio);
         this.encodedAudio = encodedAudio;
-    }
-
-    public byte[] getHeader() {
-        return Arrays.copyOf(rawPacket, headerLength);
     }
 
     public ByteBuffer getEncodedAudio() {
@@ -128,38 +124,25 @@ public class AudioPacket {
         return timestamp;
     }
 
-    public ByteBuffer asEncryptedPacket(CryptoAdapter crypto, ByteBuffer buffer) {
-        ((Buffer) buffer).clear();
-        writeHeader(seq, timestamp, ssrc, buffer);
-        buffer = crypto.encrypt(buffer, encodedAudio);
-        ((Buffer) buffer).flip();
-        return buffer;
+    public void asEncryptedPacket(CryptoAdapter crypto, ResizingByteBuffer buffer) {
+        buffer.prepareWrite(RTP_HEADER_SIZE);
+        writeHeader(seq, timestamp, ssrc, buffer.buffer());
+        crypto.encrypt(buffer, encodedAudio);
     }
 
-    public static AudioPacket decryptAudioPacket(CryptoAdapter crypto, DatagramPacket packet) {
-        AudioPacket encryptedPacket = new AudioPacket(packet);
-        if (encryptedPacket.type != RTP_PAYLOAD_TYPE) {
+    @Nullable
+    public AudioPacket asDecryptAudioPacket(CryptoAdapter crypto, long userId, ResizingByteBuffer decryptBuffer) {
+        if (type != RTP_PAYLOAD_TYPE) {
             return null;
         }
 
-        byte[] decryptedPayload = crypto.decrypt(encryptedPacket.encodedAudio);
-        int offset = 4 * encryptedPacket.extension;
-
-        return new AudioPacket(
-                null,
-                encryptedPacket.seq,
-                encryptedPacket.timestamp,
-                encryptedPacket.ssrc,
-                ByteBuffer.wrap(decryptedPayload, offset, decryptedPayload.length - offset)
-                        .slice());
-    }
-
-    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data) {
-        if (buffer == null) {
-            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.remaining());
+        boolean success = crypto.decrypt(extensionLength, userId, encodedAudio, decryptBuffer);
+        if (!success) {
+            log.warn("Failed to decrypt audio packet for user {}", userId);
+            return null;
         }
-        populateBuffer(seq, timestamp, ssrc, data, buffer);
-        return buffer.array();
+
+        return new AudioPacket(seq, timestamp, ssrc, decryptBuffer.buffer());
     }
 
     private static void writeHeader(char seq, int timestamp, int ssrc, ByteBuffer buffer) {
@@ -168,11 +151,5 @@ public class AudioPacket {
         buffer.putChar(seq);
         buffer.putInt(timestamp);
         buffer.putInt(ssrc);
-    }
-
-    private static void populateBuffer(char seq, int timestamp, int ssrc, ByteBuffer data, ByteBuffer buffer) {
-        writeHeader(seq, timestamp, ssrc, buffer);
-        buffer.put(data);
-        ((Buffer) data).flip();
     }
 }

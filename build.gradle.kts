@@ -148,7 +148,6 @@ val testJava8 by sourceSets.creating {
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(25))
-        vendor.set(JvmVendorSpec.ADOPTIUM)
     }
 }
 

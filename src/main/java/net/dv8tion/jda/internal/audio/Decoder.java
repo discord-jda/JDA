@@ -68,10 +68,8 @@ public class Decoder {
 
             ByteBuffer encodedAudio = decryptedPacket.getEncodedAudio();
             int length = encodedAudio.remaining();
-            int offset = encodedAudio.arrayOffset() + encodedAudio.position();
             byte[] buf = new byte[length];
-            byte[] data = encodedAudio.array();
-            System.arraycopy(data, offset, buf, 0, length);
+            encodedAudio.slice().get(buf);
             result = Opus.INSTANCE.opus_decode(opusDecoder, buf, buf.length, decoded, OpusPacket.OPUS_FRAME_SIZE, 0);
         }
 

@@ -21,7 +21,7 @@ import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
@@ -129,12 +129,12 @@ public class JDAImpl implements JDA {
     protected final SessionConfig sessionConfig;
     protected final MetaConfig metaConfig;
     protected final RestConfig restConfig;
+    protected final AudioModuleConfig audioModuleConfig;
 
     public ShutdownReason shutdownReason =
             ShutdownReason.USER_SHUTDOWN; // indicates why shutdown happened in awaitStatus / awaitReady
     protected WebSocketClient client;
     protected Requester requester;
-    protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected long responseTotal;
@@ -153,7 +153,7 @@ public class JDAImpl implements JDA {
     protected final AtomicReference<ShutdownEvent> shutdownEvent = new AtomicReference<>(null);
 
     public JDAImpl(AuthorizationConfig authConfig) {
-        this(authConfig, null, null, null, null);
+        this(authConfig, null, null, null, null, null);
     }
 
     public JDAImpl(
@@ -161,12 +161,14 @@ public class JDAImpl implements JDA {
             SessionConfig sessionConfig,
             ThreadingConfig threadConfig,
             MetaConfig metaConfig,
-            RestConfig restConfig) {
+            RestConfig restConfig,
+            AudioModuleConfig audioModuleConfig) {
         this.authConfig = authConfig;
         this.threadConfig = threadConfig == null ? ThreadingConfig.getDefault() : threadConfig;
         this.sessionConfig = sessionConfig == null ? SessionConfig.getDefault() : sessionConfig;
         this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
         this.restConfig = restConfig == null ? new RestConfig() : restConfig;
+        this.audioModuleConfig = audioModuleConfig == null ? new AudioModuleConfig() : audioModuleConfig;
         this.shutdownHook =
                 this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdownNow, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
@@ -403,8 +405,14 @@ public class JDAImpl implements JDA {
         }
     }
 
+    @Nonnull
     public AuthorizationConfig getAuthorizationConfig() {
         return authConfig;
+    }
+
+    @Nonnull
+    public AudioModuleConfig getAudioModuleConfig() {
+        return audioModuleConfig;
     }
 
     @Nonnull
@@ -1236,12 +1244,7 @@ public class JDAImpl implements JDA {
     }
 
     public IAudioSendFactory getAudioSendFactory() {
-        return audioSendFactory;
-    }
-
-    public void setAudioSendFactory(IAudioSendFactory factory) {
-        Checks.notNull(factory, "Provided IAudioSendFactory");
-        this.audioSendFactory = factory;
+        return audioModuleConfig.getAudioSendFactory();
     }
 
     public void setGatewayPing(long ping) {

@@ -28,8 +28,20 @@ public final class VoiceCode {
     public static final int RESUME = 7;
     public static final int HELLO = 8;
     public static final int RESUMED = 9;
-    //    public static final int USER_CONNECT = 12;
+    public static final int USER_BULK_CONNECT = 11;
+    public static final int USER_CONNECT = 12;
     public static final int USER_DISCONNECT = 13;
+    public static final int DAVE_PREPARE_TRANSITION = 21;
+    public static final int DAVE_EXECUTE_TRANSITION = 22;
+    public static final int DAVE_TRANSITION_READY = 23;
+    public static final int DAVE_PREPARE_EPOCH = 24;
+    public static final int MLS_EXTERNAL_SENDER = 25;
+    public static final int MLS_KEY_PACKAGE = 26;
+    public static final int MLS_PROPOSALS = 27;
+    public static final int MLS_COMMIT_WELCOME = 28;
+    public static final int MLS_ANNOUNCE_COMMIT_TRANSITION = 29;
+    public static final int MLS_WELCOME = 30;
+    public static final int MLS_INVALID_COMMIT_WELCOME = 31;
 
     // CLOSE
     public enum Close {
