@@ -26,6 +26,8 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
 
+import javax.annotation.Nullable;
+
 public interface CryptoAdapter {
     String AES_GCM_NO_PADDING = "AES_256/GCM/NOPADDING";
 
@@ -33,7 +35,8 @@ public interface CryptoAdapter {
 
     ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio);
 
-    byte[] decrypt(long userId, ByteBuffer packet);
+    @Nullable
+    ByteBuffer decrypt(short extensionLength, long userId, ByteBuffer packet, ByteBuffer decrypted);
 
     static AudioEncryption negotiate(EnumSet<AudioEncryption> supportedModes) {
         for (AudioEncryption mode : AudioEncryption.values()) {
@@ -109,7 +112,7 @@ public interface CryptoAdapter {
         }
 
         @Override
-        public byte[] decrypt(long userId, ByteBuffer packet) {
+        public ByteBuffer decrypt(short extensionLength, long userId, ByteBuffer packet, ByteBuffer decrypted) {
             try {
                 int headerLength = packet.position();
                 packet.position(0);
@@ -119,7 +122,9 @@ public interface CryptoAdapter {
                 packet.get(cipherText);
                 byte[] nonce = new byte[paddedNonceBytes];
                 packet.get(nonce, 0, nonceBytes);
-                return decryptInternally(cipherText, associatedData, nonce);
+                byte[] output = decryptInternally(cipherText, associatedData, nonce);
+
+                return IOUtil.replace(decrypted, ByteBuffer.wrap(output));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

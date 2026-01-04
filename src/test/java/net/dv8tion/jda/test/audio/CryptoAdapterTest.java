@@ -74,6 +74,7 @@ public class CryptoAdapterTest {
         buffer.get(rawPacket);
 
         AudioPacket decrypted = new AudioPacket(rawPacket).asDecryptAudioPacket(adapter, Constants.MINN_USER_ID);
+        assertThat(decrypted).isNotNull();
 
         byte[] payload = new byte[4];
         decrypted.getEncodedAudio().get(payload);
@@ -109,7 +110,7 @@ public class CryptoAdapterTest {
         rawPacket.putInt(TEST_EXTENSION);
         rawPacket.put(TEST_PAYLOAD.getBytes(StandardCharsets.UTF_8));
 
-        return new AudioPacket(rawPacket.array());
+        return new AudioPacket(rawPacket.flip());
     }
 
     private static byte[] getKey() {

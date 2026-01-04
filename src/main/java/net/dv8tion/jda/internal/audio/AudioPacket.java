@@ -16,10 +16,14 @@
 
 package net.dv8tion.jda.internal.audio;
 
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
+
 import java.net.DatagramPacket;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+
+import javax.annotation.Nullable;
 
 /**
  * Represents the contents of a audio packet that was either received from Discord or
@@ -42,22 +46,26 @@ public class AudioPacket {
      */
     public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78; // Binary: 0100 1000
 
+    private static final Logger log = JDALogger.getLog(AudioPacket.class);
+
     private final byte type;
     private final char seq;
     private final int timestamp;
     private final int ssrc;
-    private final int extension;
+    private final short extensionLength;
     private final boolean hasExtension;
     private final int[] csrc;
     private final ByteBuffer encodedAudio;
 
     public AudioPacket(DatagramPacket packet) {
-        this(Arrays.copyOf(packet.getData(), packet.getLength()));
+        this(ByteBuffer.wrap(packet.getData(), packet.getOffset(), packet.getLength()));
     }
 
     public AudioPacket(byte[] rawPacket) {
-        ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
+        this(ByteBuffer.wrap(rawPacket));
+    }
 
+    public AudioPacket(ByteBuffer buffer) {
         // Parsing header as described by https://datatracker.ietf.org/doc/html/rfc3550#section-5.1
 
         byte first = buffer.get();
@@ -79,10 +87,9 @@ public class AudioPacket {
         // Extract extension length as described by
         // https://datatracker.ietf.org/doc/html/rfc3550#section-5.3.1
         if (this.hasExtension) {
-            buffer.position(buffer.position() + 2);
-            this.extension = buffer.getShort();
+            this.extensionLength = (short) buffer.getInt();
         } else {
-            this.extension = 0;
+            this.extensionLength = 0;
         }
 
         this.encodedAudio = buffer;
@@ -93,7 +100,7 @@ public class AudioPacket {
         this.ssrc = ssrc;
         this.timestamp = timestamp;
         this.csrc = new int[0];
-        this.extension = 0;
+        this.extensionLength = 0;
         this.hasExtension = false;
         this.type = RTP_PAYLOAD_TYPE;
         this.encodedAudio = encodedAudio;
@@ -122,20 +129,20 @@ public class AudioPacket {
         return buffer;
     }
 
+    @Nullable
     public AudioPacket asDecryptAudioPacket(CryptoAdapter crypto, long userId) {
         if (type != RTP_PAYLOAD_TYPE) {
             return null;
         }
 
-        byte[] decryptedPayload = crypto.decrypt(userId, encodedAudio);
-        int offset = 4 * extension;
+        ByteBuffer output = ByteBuffer.allocateDirect(1024);
+        ByteBuffer decryptedPayload = crypto.decrypt(extensionLength, userId, encodedAudio, output);
+        if (decryptedPayload == null) {
+            log.warn("Failed to decrypt audio packet for user {}", userId);
+            return null;
+        }
 
-        return new AudioPacket(
-                seq,
-                timestamp,
-                ssrc,
-                ByteBuffer.wrap(decryptedPayload, offset, decryptedPayload.length - offset)
-                        .slice());
+        return new AudioPacket(seq, timestamp, ssrc, decryptedPayload);
     }
 
     private static void writeHeader(char seq, int timestamp, int ssrc, ByteBuffer buffer) {

@@ -339,8 +339,10 @@ public class AudioConnection {
                 } catch (SocketException e) {
                     LOG.error("Couldn't set SO_TIMEOUT for UDP socket", e);
                 }
+
+                byte[] buffer = new byte[4096];
                 while (!udpSocket.isClosed() && !Thread.currentThread().isInterrupted()) {
-                    DatagramPacket receivedPacket = new DatagramPacket(new byte[1920], 1920);
+                    DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
                     try {
                         udpSocket.receive(receivedPacket);
 
