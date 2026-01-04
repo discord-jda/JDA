@@ -571,12 +571,13 @@ class AudioWebSocket extends WebSocketAdapter implements DaveProtocolCallbacks {
             case VoiceCode.USER_SPEAKING_UPDATE: {
                 LOG.trace("-> USER_SPEAKING_UPDATE {}", contentAll);
                 DataObject content = contentAll.getObject("d");
-                EnumSet<SpeakingMode> speaking = SpeakingMode.getModes(content.getInt("speaking"));
                 int ssrc = content.getInt("ssrc");
-                long userId = content.getLong("user_id");
+                long userId = content.getUnsignedLong("user_id");
+                audioConnection.updateUserSSRC(ssrc, userId);
+                daveSession.addUser(userId);
 
+                EnumSet<SpeakingMode> speaking = SpeakingMode.getModes(content.getInt("speaking"));
                 User user = getUser(userId);
-
                 if (user == null) {
                     // more relevant for audio connection
                     LOG.trace("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: {}", contentAll);
@@ -584,8 +585,6 @@ class AudioWebSocket extends WebSocketAdapter implements DaveProtocolCallbacks {
                 } else {
                     listener.onUserSpeakingModeUpdate((UserSnowflake) user, speaking);
                 }
-
-                audioConnection.updateUserSSRC(ssrc, userId);
 
                 break;
             }
