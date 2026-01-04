@@ -448,21 +448,25 @@ class AudioWebSocket extends WebSocketAdapter implements DaveProtocolCallbacks {
 
     @Override
     public void sendMLSKeyPackage(@Nonnull ByteBuffer mlsKeyPackage) {
+        LOG.trace("<- MLS_KEY_PACKAGE");
         sendBinary(VoiceCode.MLS_KEY_PACKAGE, mlsKeyPackage);
     }
 
     @Override
     public void sendDaveProtocolReadyForTransition(int transitionId) {
+        LOG.trace("<- DAVE_TRANSITION_READY");
         send(VoiceCode.DAVE_TRANSITION_READY, DataObject.empty().put("transition_id", transitionId));
     }
 
     @Override
     public void sendMLSCommitWelcome(@Nonnull ByteBuffer commitWelcomeMessage) {
+        LOG.trace("<- MLS_COMMIT_WELCOME");
         sendBinary(VoiceCode.MLS_COMMIT_WELCOME, commitWelcomeMessage);
     }
 
     @Override
     public void sendMLSInvalidCommitWelcome(int transitionId) {
+        LOG.trace("<- MLS_INVALID_COMMIT_WELCOME");
         send(VoiceCode.MLS_INVALID_COMMIT_WELCOME, DataObject.empty().put("transition_id", transitionId));
     }
 
@@ -601,7 +605,7 @@ class AudioWebSocket extends WebSocketAdapter implements DaveProtocolCallbacks {
             case VoiceCode.USER_DISCONNECT: {
                 LOG.trace("-> USER_DISCONNECT {}", contentAll);
                 DataObject payload = contentAll.getObject("d");
-                long userId = payload.getLong("user_id");
+                long userId = payload.getUnsignedLong("user_id");
                 audioConnection.removeUserSSRC(userId);
                 daveSession.removeUser(userId);
                 break;
