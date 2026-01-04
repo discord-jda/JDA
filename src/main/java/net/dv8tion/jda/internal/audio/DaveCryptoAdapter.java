@@ -17,18 +17,20 @@
 package net.dv8tion.jda.internal.audio;
 
 import net.dv8tion.jda.api.audio.dave.DaveSession;
-import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
 
 import java.nio.ByteBuffer;
 
-import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
+@NotThreadSafe
 public class DaveCryptoAdapter implements CryptoAdapter {
     protected final CryptoAdapter transportCryptoAdapter;
     protected final DaveSession daveSession;
     protected final int ssrc;
 
-    protected ByteBuffer encryptBuffer = ByteBuffer.allocateDirect(512);
+    protected ResizingByteBuffer encryptBuffer = new ResizingByteBuffer(ByteBuffer.allocateDirect(512));
+    protected ResizingByteBuffer decryptBuffer = null;
 
     public DaveCryptoAdapter(CryptoAdapter transportCryptoAdapter, DaveSession daveSession, int ssrc) {
         this.transportCryptoAdapter = transportCryptoAdapter;
@@ -42,54 +44,37 @@ public class DaveCryptoAdapter implements CryptoAdapter {
     }
 
     @Override
-    public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio) {
+    public void encrypt(ResizingByteBuffer output, ByteBuffer audio) {
         int maxSize = daveSession.getMaxEncryptedFrameSize(DaveSession.MediaType.AUDIO, audio.remaining());
 
-        if (encryptBuffer.capacity() < maxSize) {
-            encryptBuffer = IOUtil.allocateLike(encryptBuffer, (int) (1.25 * maxSize));
-        }
+        output.buffer().mark();
+        encryptBuffer.prepareWrite(maxSize);
 
-        output.mark();
-        encryptBuffer.clear();
-
-        if (daveSession.encrypt(DaveSession.MediaType.AUDIO, ssrc, audio, encryptBuffer)) {
-            return transportCryptoAdapter.encrypt(output, encryptBuffer);
+        if (daveSession.encrypt(DaveSession.MediaType.AUDIO, ssrc, audio, encryptBuffer.buffer())) {
+            transportCryptoAdapter.encrypt(output, encryptBuffer.buffer());
         } else {
-            output.reset();
-            return output;
+            throw new IllegalStateException("Failed to encrypt audio");
         }
     }
 
-    @Nullable
     @Override
-    public ByteBuffer decrypt(short extensionLength, long userId, ByteBuffer packet, ByteBuffer decrypted) {
-        decrypted = transportCryptoAdapter.decrypt(extensionLength, userId, packet, decrypted);
-        if (decrypted == null) {
-            return null;
+    public boolean decrypt(short extensionLength, long userId, ByteBuffer packet, ResizingByteBuffer decrypted) {
+        if (decryptBuffer == null) {
+            decryptBuffer = new ResizingByteBuffer(ByteBuffer.allocateDirect(1024));
         }
 
-        handleRTPHeaderExtension(decrypted, extensionLength);
-
-        ByteBuffer inputBuffer = ByteBuffer.allocateDirect(decrypted.remaining());
-        inputBuffer.put(decrypted);
-        inputBuffer.flip();
-
-        int outputSize =
-                daveSession.getMaxDecryptedFrameSize(DaveSession.MediaType.AUDIO, userId, inputBuffer.remaining());
-
-        if (decrypted.capacity() < outputSize) {
-            decrypted = IOUtil.allocateLike(decrypted, outputSize);
-        } else {
-            decrypted.clear();
+        boolean success = transportCryptoAdapter.decrypt(extensionLength, userId, packet, decryptBuffer);
+        if (!success) {
+            return false;
         }
 
-        boolean success = daveSession.decrypt(DaveSession.MediaType.AUDIO, userId, inputBuffer, decrypted);
+        handleRTPHeaderExtension(decryptBuffer.buffer(), extensionLength);
 
-        if (success) {
-            return decrypted;
-        } else {
-            return null;
-        }
+        int outputSize = daveSession.getMaxDecryptedFrameSize(
+                DaveSession.MediaType.AUDIO, userId, decryptBuffer.buffer().remaining());
+
+        decrypted.prepareWrite(outputSize);
+        return daveSession.decrypt(DaveSession.MediaType.AUDIO, userId, decryptBuffer.buffer(), decrypted.buffer());
     }
 
     private void handleRTPHeaderExtension(ByteBuffer decrypted, short extensionLength) {

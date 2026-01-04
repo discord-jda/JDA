@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.audio.AudioEncryption;
 import net.dv8tion.jda.internal.audio.AudioPacket;
 import net.dv8tion.jda.internal.audio.CryptoAdapter;
 import net.dv8tion.jda.internal.audio.DaveCryptoAdapter;
+import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
 import net.dv8tion.jda.test.Constants;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -67,13 +68,16 @@ public class CryptoAdapterTest {
     }
 
     private void doRoundTripAndAssertPayload(CryptoAdapter adapter, AudioPacket original) {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(512);
-        buffer = original.asEncryptedPacket(adapter, buffer);
+        ResizingByteBuffer buffer = new ResizingByteBuffer(ByteBuffer.allocateDirect(512));
+        ResizingByteBuffer decryptBuffer = new ResizingByteBuffer(ByteBuffer.allocateDirect(512));
 
-        byte[] rawPacket = new byte[buffer.remaining()];
-        buffer.get(rawPacket);
+        original.asEncryptedPacket(adapter, buffer);
 
-        AudioPacket decrypted = new AudioPacket(rawPacket).asDecryptAudioPacket(adapter, Constants.MINN_USER_ID);
+        byte[] rawPacket = new byte[buffer.buffer().remaining()];
+        buffer.buffer().get(rawPacket);
+
+        AudioPacket decrypted =
+                new AudioPacket(rawPacket).asDecryptAudioPacket(adapter, Constants.MINN_USER_ID, decryptBuffer);
         assertThat(decrypted).isNotNull();
 
         byte[] payload = new byte[4];

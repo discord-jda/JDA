@@ -38,6 +38,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
@@ -341,6 +342,7 @@ public class AudioConnection {
                 }
 
                 byte[] buffer = new byte[4096];
+                ResizingByteBuffer decryptBuffer = new ResizingByteBuffer(ByteBuffer.allocateDirect(1024));
                 while (!udpSocket.isClosed() && !Thread.currentThread().isInterrupted()) {
                     DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
                     try {
@@ -359,7 +361,8 @@ public class AudioConnection {
                             int ssrc = audioPacket.getSSRC();
                             long userId = ssrcMap.containsKey(ssrc) ? ssrcMap.get(ssrc) : 0L;
 
-                            AudioPacket decryptedPacket = audioPacket.asDecryptAudioPacket(webSocket.crypto, userId);
+                            AudioPacket decryptedPacket =
+                                    audioPacket.asDecryptAudioPacket(webSocket.crypto, userId, decryptBuffer);
                             if (decryptedPacket == null) {
                                 continue;
                             }
@@ -581,7 +584,7 @@ public class AudioConnection {
     private class PacketProvider implements IPacketProvider {
         private char seq = 0; // Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0; // Used to sync up our packets within the same timeframe of other people talking.
-        private ByteBuffer buffer = ByteBuffer.allocateDirect(2048);
+        private ResizingByteBuffer buffer = new ResizingByteBuffer(ByteBuffer.allocateDirect(2048));
         private ByteBuffer temporaryDirectBuffer = null;
         private ByteBuffer datagramBuffer = null;
 
@@ -617,7 +620,6 @@ public class AudioConnection {
 
         @Override
         public ByteBuffer getNextPacketRaw(boolean unused) {
-            ByteBuffer nextPacket = null;
             try {
                 if (sendHandler != null && sendHandler.canProvide()) {
                     ByteBuffer rawAudio = sendHandler.provide20MsAudio();
@@ -629,7 +631,7 @@ public class AudioConnection {
                             }
                         }
 
-                        nextPacket = getPacketData(ensureDirect(rawAudio));
+                        loadEncryptedPacketData(ensureDirect(rawAudio));
 
                         if (seq + 1 > Character.MAX_VALUE) {
                             seq = 0;
@@ -642,13 +644,8 @@ public class AudioConnection {
                 LOG.error("There was an error while getting next audio packet", e);
             }
 
-            if (nextPacket != null) {
-                timestamp += OpusPacket.OPUS_FRAME_SIZE;
-
-                return nextPacket;
-            } else {
-                return null;
-            }
+            timestamp += OpusPacket.OPUS_FRAME_SIZE;
+            return buffer.buffer();
         }
 
         private ByteBuffer ensureDirect(ByteBuffer buffer) {
@@ -697,9 +694,9 @@ public class AudioConnection {
             return new DatagramPacket(data, offset, length, webSocket.getAddress());
         }
 
-        private ByteBuffer getPacketData(ByteBuffer rawAudio) {
+        private void loadEncryptedPacketData(ByteBuffer rawAudio) {
             AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
-            return buffer = packet.asEncryptedPacket(webSocket.crypto, buffer);
+            packet.asEncryptedPacket(webSocket.crypto, buffer);
         }
 
         @Override

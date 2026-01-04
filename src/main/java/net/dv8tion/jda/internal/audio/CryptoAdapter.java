@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.audio;
 import com.google.crypto.tink.aead.internal.InsecureNonceAesGcmJce;
 import com.google.crypto.tink.aead.internal.InsecureNonceXChaCha20Poly1305;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
 
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
@@ -26,17 +27,14 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
 
-import javax.annotation.Nullable;
-
 public interface CryptoAdapter {
     String AES_GCM_NO_PADDING = "AES_256/GCM/NOPADDING";
 
     AudioEncryption getMode();
 
-    ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio);
+    void encrypt(ResizingByteBuffer output, ByteBuffer audio);
 
-    @Nullable
-    ByteBuffer decrypt(short extensionLength, long userId, ByteBuffer packet, ByteBuffer decrypted);
+    boolean decrypt(short extensionLength, long userId, ByteBuffer packet, ResizingByteBuffer decrypted);
 
     static AudioEncryption negotiate(EnumSet<AudioEncryption> supportedModes) {
         for (AudioEncryption mode : AudioEncryption.values()) {
@@ -89,30 +87,23 @@ public interface CryptoAdapter {
         }
 
         @Override
-        public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio) {
+        public void encrypt(ResizingByteBuffer output, ByteBuffer audio) {
             int minimumOutputSize = audio.remaining() + this.tagBytes + nonceBytes;
 
-            if (output.remaining() < minimumOutputSize) {
-                ByteBuffer newBuffer = IOUtil.allocateLike(output, output.capacity() + minimumOutputSize);
-                output.flip();
-                newBuffer.put(output);
-                output = newBuffer;
-            }
-
+            output.ensureRemaining(minimumOutputSize);
             IOUtil.setIntBigEndian(nonceBuffer, 0, encryptCounter);
 
             try {
-                encryptInternally(output, audio, nonceBuffer);
-                output.putInt(encryptCounter++);
-                output.flip();
-                return output;
+                encryptInternally(output.buffer(), audio, nonceBuffer);
+                output.buffer().putInt(encryptCounter++);
+                output.buffer().flip();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        public ByteBuffer decrypt(short extensionLength, long userId, ByteBuffer packet, ByteBuffer decrypted) {
+        public boolean decrypt(short extensionLength, long userId, ByteBuffer packet, ResizingByteBuffer decrypted) {
             try {
                 int headerLength = packet.position();
                 packet.position(0);
@@ -124,7 +115,9 @@ public interface CryptoAdapter {
                 packet.get(nonce, 0, nonceBytes);
                 byte[] output = decryptInternally(cipherText, associatedData, nonce);
 
-                return IOUtil.replace(decrypted, ByteBuffer.wrap(output));
+                decrypted.replace(ByteBuffer.wrap(output));
+
+                return true;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

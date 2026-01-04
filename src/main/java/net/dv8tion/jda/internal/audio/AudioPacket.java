@@ -17,10 +17,10 @@
 package net.dv8tion.jda.internal.audio;
 
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
 import org.slf4j.Logger;
 
 import java.net.DatagramPacket;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 import javax.annotation.Nullable;
@@ -45,6 +45,8 @@ public class AudioPacket {
      * I've yet to find actual documentation on what the bits inside this value represent.
      */
     public static final byte RTP_PAYLOAD_TYPE = (byte) 0x78; // Binary: 0100 1000
+
+    private static final int RTP_HEADER_SIZE = 12;
 
     private static final Logger log = JDALogger.getLog(AudioPacket.class);
 
@@ -122,27 +124,25 @@ public class AudioPacket {
         return timestamp;
     }
 
-    public ByteBuffer asEncryptedPacket(CryptoAdapter crypto, ByteBuffer buffer) {
-        ((Buffer) buffer).clear();
-        writeHeader(seq, timestamp, ssrc, buffer);
-        buffer = crypto.encrypt(buffer, encodedAudio);
-        return buffer;
+    public void asEncryptedPacket(CryptoAdapter crypto, ResizingByteBuffer buffer) {
+        buffer.prepareWrite(RTP_HEADER_SIZE);
+        writeHeader(seq, timestamp, ssrc, buffer.buffer());
+        crypto.encrypt(buffer, encodedAudio);
     }
 
     @Nullable
-    public AudioPacket asDecryptAudioPacket(CryptoAdapter crypto, long userId) {
+    public AudioPacket asDecryptAudioPacket(CryptoAdapter crypto, long userId, ResizingByteBuffer decryptBuffer) {
         if (type != RTP_PAYLOAD_TYPE) {
             return null;
         }
 
-        ByteBuffer output = ByteBuffer.allocateDirect(1024);
-        ByteBuffer decryptedPayload = crypto.decrypt(extensionLength, userId, encodedAudio, output);
-        if (decryptedPayload == null) {
+        boolean success = crypto.decrypt(extensionLength, userId, encodedAudio, decryptBuffer);
+        if (!success) {
             log.warn("Failed to decrypt audio packet for user {}", userId);
             return null;
         }
 
-        return new AudioPacket(seq, timestamp, ssrc, decryptedPayload);
+        return new AudioPacket(seq, timestamp, ssrc, decryptBuffer.buffer());
     }
 
     private static void writeHeader(char seq, int timestamp, int ssrc, ByteBuffer buffer) {
