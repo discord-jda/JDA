@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.audio;
 
 import com.neovisionaries.ws.client.WebSocket;
-import com.sun.jna.ptr.PointerByReference;
 import gnu.trove.map.TIntLongMap;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntLongHashMap;
@@ -28,6 +27,9 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendSystem;
 import net.dv8tion.jda.api.audio.factory.IPacketProvider;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
+import net.dv8tion.jda.api.audio.opus.IOpusCodecFactory;
+import net.dv8tion.jda.api.audio.opus.IOpusDecoder;
+import net.dv8tion.jda.api.audio.opus.IOpusEncoder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -40,13 +42,9 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
 import org.slf4j.Logger;
-import tomp2p.opuswrapper.Opus;
 
 import java.net.*;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
@@ -69,7 +67,7 @@ public class AudioConnection {
     protected volatile DatagramSocket udpSocket;
 
     private final TIntLongMap ssrcMap = new TIntLongHashMap();
-    private final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
+    private final TIntObjectMap<IOpusDecoder> opusDecoders = new TIntObjectHashMap<>();
     private final HashMap<User, Queue<AudioData>> combinedQueue = new HashMap<>();
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
@@ -79,7 +77,8 @@ public class AudioConnection {
     protected final Condition readyCondvar = readyLock.newCondition();
 
     private AudioChannel channel;
-    private PointerByReference opusEncoder;
+    private final IOpusCodecFactory opusCodecFactory;
+    private IOpusEncoder opusEncoder;
     private ScheduledExecutorService combinedAudioExecutor;
     private IAudioSendSystem sendSystem;
     private Thread receiveThread;
@@ -114,6 +113,8 @@ public class AudioConnection {
                 .getDaveSessionFactory()
                 .createDaveSession(webSocket, manager.getJDA().getSelfUser().getIdLong(), channel.getIdLong());
         webSocket.setDaveSession(daveSession);
+
+        this.opusCodecFactory = getJDA().getAudioModuleConfig().getOpusCodecFactory();
     }
 
     /* Used by AudioManagerImpl */
@@ -192,11 +193,11 @@ public class AudioConnection {
             combinedAudioExecutor = null;
         }
         if (opusEncoder != null) {
-            Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
+            opusEncoder.close();
             opusEncoder = null;
         }
 
-        opusDecoders.valueCollection().forEach(Decoder::close);
+        opusDecoders.valueCollection().forEach(IOpusDecoder::close);
         opusDecoders.clear();
 
         MiscUtil.locked(readyLock, readyCondvar::signalAll);
@@ -261,7 +262,7 @@ public class AudioConnection {
         if (!modified) {
             return;
         }
-        Decoder decoder = opusDecoders.remove(ssrcRef.get());
+        IOpusDecoder decoder = opusDecoders.remove(ssrcRef.get());
         if (decoder != null) { // cleanup decoder
             decoder.close();
         }
@@ -287,8 +288,8 @@ public class AudioConnection {
             ssrcMap.put(ssrc, userId);
 
             // Only create a decoder if we are actively handling received audio.
-            if (receiveThread != null && AudioNatives.ensureOpus()) {
-                opusDecoders.put(ssrc, new Decoder(ssrc));
+            if (receiveThread != null && opusCodecFactory != null) {
+                opusDecoders.put(ssrc, opusCodecFactory.createDecoder());
             }
         }
     }
@@ -307,7 +308,7 @@ public class AudioConnection {
             sendSystem = null;
 
             if (opusEncoder != null) {
-                Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
+                opusEncoder.close();
                 opusEncoder = null;
             }
         }
@@ -325,7 +326,7 @@ public class AudioConnection {
                 combinedAudioExecutor = null;
             }
 
-            opusDecoders.valueCollection().forEach(Decoder::close);
+            opusDecoders.valueCollection().forEach(IOpusDecoder::close);
             opusDecoders.clear();
         } else if (receiveHandler != null && !receiveHandler.canReceiveCombined() && combinedAudioExecutor != null) {
             combinedAudioExecutor.shutdownNow();
@@ -372,12 +373,12 @@ public class AudioConnection {
                                 continue;
                             }
 
-                            Decoder decoder = opusDecoders.get(ssrc);
+                            IOpusDecoder decoder = opusDecoders.get(ssrc);
                             if (decoder == null) {
-                                if (AudioNatives.ensureOpus()) {
-                                    opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
+                                if (opusCodecFactory != null) {
+                                    opusDecoders.put(ssrc, decoder = opusCodecFactory.createDecoder());
                                 } else if (!receiveHandler.canReceiveEncoded()) {
-                                    LOG.error("Unable to decode audio due to missing opus binaries!");
+                                    LOG.error("Unable to decode audio due to missing Opus support!");
                                     break;
                                 }
                             }
@@ -533,32 +534,6 @@ public class AudioConnection {
         }
     }
 
-    private ByteBuffer encodeToOpus(ByteBuffer rawAudio) {
-        ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
-        ByteBuffer encoded = ByteBuffer.allocateDirect(4096);
-        for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2) {
-            int firstByte =
-                    (0x000000FF & rawAudio.get(i)); // Promotes to int and handles the fact that it was unsigned.
-            int secondByte = (0x000000FF & rawAudio.get(i + 1));
-
-            // Combines the 2 bytes into a short. Opus deals with unsigned shorts, not bytes.
-            short toShort = (short) ((firstByte << 8) | secondByte);
-
-            nonEncodedBuffer.put(toShort);
-        }
-        ((Buffer) nonEncodedBuffer).flip();
-
-        int result = Opus.INSTANCE.opus_encode(
-                opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
-        if (result <= 0) {
-            LOG.error("Received error code from opus_encode(...): {}", result);
-            return null;
-        }
-
-        ((Buffer) encoded).position(0).limit(result);
-        return encoded;
-    }
-
     private void setSpeaking(int raw) {
         DataObject obj = DataObject.empty()
                 .put("speaking", raw)
@@ -655,22 +630,22 @@ public class AudioConnection {
 
         private ByteBuffer encodeAudio(ByteBuffer rawAudio) {
             if (opusEncoder == null) {
-                if (!AudioNatives.ensureOpus()) {
+                if (opusCodecFactory == null) {
                     if (!printedError) {
-                        LOG.error("Unable to process PCM audio without opus binaries!");
+                        LOG.error("Unable to process PCM audio without Opus support!");
                     }
                     printedError = true;
                     return null;
                 }
-                IntBuffer error = IntBuffer.allocate(1);
-                opusEncoder = Opus.INSTANCE.opus_encoder_create(
-                        OpusPacket.OPUS_SAMPLE_RATE, OpusPacket.OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
-                if (error.get() != Opus.OPUS_OK && opusEncoder == null) {
-                    LOG.error("Received error status from opus_encoder_create(...): {}", error.get());
+
+                try {
+                    opusEncoder = opusCodecFactory.createEncoder();
+                } catch (Exception e) {
+                    LOG.error("Received error from Opus support", e);
                     return null;
                 }
             }
-            return encodeToOpus(rawAudio);
+            return opusEncoder.encode(rawAudio);
         }
 
         private DatagramPacket getDatagramPacket(ByteBuffer b) {

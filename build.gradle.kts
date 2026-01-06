@@ -195,16 +195,8 @@ dependencies {
     api(libs.websocket.client)
     api(libs.okhttp)
 
-    //Opus library support
-    api(libs.opus)
-
     //Collections Utility
     api(libs.commons.collections)
-
-    //we use this only together with opus-java
-    // if that dependency is excluded it also doesn't need jna anymore
-    // since jna is a transitive runtime dependency of opus-java we don't include it explicitly as dependency
-    compileOnly(libs.jna)
 
     /* Internal dependencies */
 
