@@ -9,6 +9,7 @@ commons-lang3 = "org.apache.commons:commons-lang3:3.20.0"
 findbugs = "com.google.code.findbugs:jsr305:3.0.2"
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jdave = "club.minnced:jdave-api:0.1.0-rc.2"
 jetbrains-annotations = "org.jetbrains:annotations:26.0.2-1"
 jna = "net.java.dev.jna:jna:5.18.1"
 junit = "org.junit.jupiter:junit-jupiter:6.0.1"
