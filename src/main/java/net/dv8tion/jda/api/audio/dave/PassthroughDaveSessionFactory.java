@@ -37,7 +37,8 @@ public class PassthroughDaveSessionFactory implements DaveSessionFactory {
         isWarningPrinted = true;
         LOG.warn(
                 "Using passthrough dave session. Please migrate to an implementation of libdave! "
-                        + "Your audio connections will stop working on {}",
+                        + "Your audio connections will stop working on {}.\n"
+                        + "Read more: https://jda.wiki/using-jda/troubleshooting/#using-passthrough-dave-session-please-migrate-to-an-implementation-of-libdave",
                 daveDeadline,
                 new IllegalStateException());
     }
