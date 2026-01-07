@@ -444,12 +444,15 @@ val javadoc by tasks.getting(Javadoc::class) {
     (options as? StandardJavadocDocletOptions)?.apply {
         memberLevel = JavadocMemberLevel.PUBLIC
         encoding = "UTF-8"
+        locale = "en_US"
 
         author()
         tags("incubating:a:Incubating:")
         links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
+        addStringOption("-link-modularity-mismatch", "info")
         addStringOption("-release", "8")
+        addBooleanOption("-syntax-highlight", true)
         addBooleanOption("Xdoclint:all,-missing", true)
 
         overview = "$projectDir/overview.html"
