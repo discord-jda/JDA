@@ -23,6 +23,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntLongHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import net.dv8tion.jda.api.audio.*;
+import net.dv8tion.jda.api.audio.dave.DaveSession;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendSystem;
 import net.dv8tion.jda.api.audio.factory.IPacketProvider;
@@ -35,7 +36,9 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
@@ -60,7 +63,7 @@ public class AudioConnection {
 
     public static final long MAX_UINT_32 = 4294967295L;
 
-    private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte) 0xF8, (byte) 0xFF, (byte) 0xFE});
+    static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte) 0xF8, (byte) 0xFF, (byte) 0xFE});
     private static boolean printedError = false;
 
     protected volatile DatagramSocket udpSocket;
@@ -96,6 +99,7 @@ public class AudioConnection {
         JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: "
                 + channel.getGuild().getId();
+
         this.webSocket = new AudioWebSocket(
                 this,
                 manager.getListenerProxy(),
@@ -104,6 +108,12 @@ public class AudioConnection {
                 sessionId,
                 token,
                 manager.isAutoReconnect());
+
+        DaveSession daveSession = manager.getJDA()
+                .getAudioModuleConfig()
+                .getDaveSessionFactory()
+                .createDaveSession(webSocket, manager.getJDA().getSelfUser().getIdLong(), channel.getIdLong());
+        webSocket.setDaveSession(daveSession);
     }
 
     /* Used by AudioManagerImpl */
@@ -265,7 +275,9 @@ public class AudioConnection {
                 // Probably should nuke the old opusDecoder.
                 // Log for now and see if any user report the error.
                 LOG.error(
-                        "Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform devs.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
+                        "Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform"
+                                + " devs.\n"
+                                + "ChannelId: {} SSRC: {} oldId: {} newId: {}",
                         channel.getId(),
                         ssrc,
                         previousId,
@@ -330,8 +342,11 @@ public class AudioConnection {
                 } catch (SocketException e) {
                     LOG.error("Couldn't set SO_TIMEOUT for UDP socket", e);
                 }
+
+                byte[] buffer = new byte[4096];
+                ResizingByteBuffer decryptBuffer = new ResizingByteBuffer(ByteBuffer.allocateDirect(1024));
                 while (!udpSocket.isClosed() && !Thread.currentThread().isInterrupted()) {
-                    DatagramPacket receivedPacket = new DatagramPacket(new byte[1920], 1920);
+                    DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
                     try {
                         udpSocket.receive(receivedPacket);
 
@@ -343,28 +358,21 @@ public class AudioConnection {
                                         || receiveHandler.canReceiveEncoded());
                         if (canReceive && webSocket.getSecretKey() != null) {
                             couldReceive = true;
+
+                            AudioPacket audioPacket = new AudioPacket(receivedPacket);
+                            int ssrc = audioPacket.getSSRC();
+                            long userId = ssrcMap.containsKey(ssrc) ? ssrcMap.get(ssrc) : 0L;
+                            if (userId == 0L) {
+                                continue;
+                            }
+
                             AudioPacket decryptedPacket =
-                                    AudioPacket.decryptAudioPacket(webSocket.crypto, receivedPacket);
+                                    audioPacket.asDecryptAudioPacket(webSocket.crypto, userId, decryptBuffer);
                             if (decryptedPacket == null) {
                                 continue;
                             }
 
-                            int ssrc = decryptedPacket.getSSRC();
-                            long userId = ssrcMap.get(ssrc);
                             Decoder decoder = opusDecoders.get(ssrc);
-                            if (userId == ssrcMap.getNoEntryValue()) {
-                                ByteBuffer audio = decryptedPacket.getEncodedAudio();
-
-                                // If the bytes are silence, then this was caused by a User joining
-                                // the voice channel,
-                                // and as such, we haven't yet received information to pair the SSRC
-                                // with the UserId.
-                                if (!audio.equals(silenceBytes)) {
-                                    LOG.debug("Received audio data with an unknown SSRC id. Ignoring");
-                                }
-
-                                continue;
-                            }
                             if (decoder == null) {
                                 if (AudioNatives.ensureOpus()) {
                                     opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
@@ -383,8 +391,8 @@ public class AudioConnection {
 
                             User user = getJDA().getUserById(userId);
                             if (user == null) {
-                                LOG.warn(
-                                        "Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
+                                LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC"
+                                        + " is unknown to JDA!");
                                 continue;
                             }
                             short[] decodedAudio = opusPacket.decode();
@@ -527,7 +535,7 @@ public class AudioConnection {
 
     private ByteBuffer encodeToOpus(ByteBuffer rawAudio) {
         ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
-        ByteBuffer encoded = ByteBuffer.allocate(4096);
+        ByteBuffer encoded = ByteBuffer.allocateDirect(4096);
         for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2) {
             int firstByte =
                     (0x000000FF & rawAudio.get(i)); // Promotes to int and handles the fact that it was unsigned.
@@ -568,8 +576,9 @@ public class AudioConnection {
     private class PacketProvider implements IPacketProvider {
         private char seq = 0; // Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0; // Used to sync up our packets within the same timeframe of other people talking.
-        private ByteBuffer buffer = ByteBuffer.allocate(512);
-        private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
+        private ResizingByteBuffer buffer = new ResizingByteBuffer(ByteBuffer.allocateDirect(2048));
+        private ByteBuffer temporaryDirectBuffer = null;
+        private ByteBuffer datagramBuffer = null;
 
         @Nonnull
         @Override
@@ -603,16 +612,10 @@ public class AudioConnection {
 
         @Override
         public ByteBuffer getNextPacketRaw(boolean unused) {
-            ByteBuffer nextPacket = null;
             try {
                 if (sendHandler != null && sendHandler.canProvide()) {
                     ByteBuffer rawAudio = sendHandler.provide20MsAudio();
-                    if (rawAudio != null && !rawAudio.hasArray()) {
-                        // we can't use the boxer without an array so encryption would not work
-                        LOG.error("AudioSendHandler provided ByteBuffer without a backing array! This is unsupported.");
-                    }
-
-                    if (rawAudio != null && rawAudio.hasRemaining() && rawAudio.hasArray()) {
+                    if (rawAudio != null && rawAudio.hasRemaining()) {
                         if (!sendHandler.isOpus()) {
                             rawAudio = encodeAudio(rawAudio);
                             if (rawAudio == null) {
@@ -620,7 +623,7 @@ public class AudioConnection {
                             }
                         }
 
-                        nextPacket = getPacketData(rawAudio);
+                        loadEncryptedPacketData(ensureDirect(rawAudio));
 
                         if (seq + 1 > Character.MAX_VALUE) {
                             seq = 0;
@@ -633,11 +636,21 @@ public class AudioConnection {
                 LOG.error("There was an error while getting next audio packet", e);
             }
 
-            if (nextPacket != null) {
-                timestamp += OpusPacket.OPUS_FRAME_SIZE;
+            timestamp += OpusPacket.OPUS_FRAME_SIZE;
+            return buffer.buffer();
+        }
+
+        private ByteBuffer ensureDirect(ByteBuffer buffer) {
+            if (buffer.isDirect()) {
+                return buffer;
             }
 
-            return nextPacket;
+            if (temporaryDirectBuffer == null) {
+                temporaryDirectBuffer = ByteBuffer.allocateDirect(buffer.remaining());
+            }
+
+            temporaryDirectBuffer = IOUtil.replace(temporaryDirectBuffer, buffer);
+            return temporaryDirectBuffer;
         }
 
         private ByteBuffer encodeAudio(ByteBuffer rawAudio) {
@@ -661,25 +674,21 @@ public class AudioConnection {
         }
 
         private DatagramPacket getDatagramPacket(ByteBuffer b) {
-            byte[] data = b.array();
-            int offset = b.arrayOffset() + b.position();
-            int length = b.remaining();
+            if (datagramBuffer == null) {
+                datagramBuffer = ByteBuffer.allocate(b.remaining());
+            }
+
+            datagramBuffer = IOUtil.replace(datagramBuffer, b);
+
+            byte[] data = datagramBuffer.array();
+            int offset = datagramBuffer.arrayOffset() + datagramBuffer.position();
+            int length = datagramBuffer.remaining();
             return new DatagramPacket(data, offset, length, webSocket.getAddress());
         }
 
-        private ByteBuffer getPacketData(ByteBuffer rawAudio) {
-            ensureEncryptionBuffer(rawAudio);
-            AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
-            return buffer = packet.asEncryptedPacket(webSocket.crypto, buffer);
-        }
-
-        private void ensureEncryptionBuffer(ByteBuffer data) {
-            ((Buffer) encryptionBuffer).clear();
-            int currentCapacity = encryptionBuffer.remaining();
-            int requiredCapacity = AudioPacket.RTP_HEADER_BYTE_LENGTH + data.remaining();
-            if (currentCapacity < requiredCapacity) {
-                encryptionBuffer = ByteBuffer.allocate(requiredCapacity);
-            }
+        private void loadEncryptedPacketData(ByteBuffer rawAudio) {
+            AudioPacket packet = new AudioPacket(seq, timestamp, webSocket.getSSRC(), rawAudio);
+            packet.asEncryptedPacket(webSocket.crypto, buffer);
         }
 
         @Override

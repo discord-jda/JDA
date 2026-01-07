@@ -86,7 +86,7 @@ public interface IPacketProvider {
      * <p><b>Note:</b> When the AudioSendHandler cannot or does not provide a new packet to send, this method will return null.
      *
      * <p><u>The buffer used here may be used again on the next call to this getter, if you plan on storing the data, copy it.
-     * The buffer was created using {@link ByteBuffer#allocate(int)} and is not direct.</u>
+     * The buffer was created using {@link ByteBuffer#allocateDirect(int)} and is <b>always</b> direct.</u>
      *
      * @return Possibly-null {@link ByteBuffer} containing an encoded and encrypted packet
      *         of audio data ready to be sent to discord.
