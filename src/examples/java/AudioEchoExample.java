@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
+import net.dv8tion.jda.api.audio.dave.DaveSessionFactory;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -52,9 +55,25 @@ public class AudioEchoExample extends ListenerAdapter {
                 // Enable access to message.getContentRaw()
                 GatewayIntent.MESSAGE_CONTENT);
 
+        // Create a config for the JDA audio features (required)
+
+        // [REQUIRED] Implementation of the Discord Audio & Video End-to-End Encryption (DAVE) Protocol
+        // This requires an additional dependency that implements the DaveSessionFactory interface
+        // See https://github.com/MinnDevelopment/jdave for details
+        DaveSessionFactory daveSessionFactory = new JDaveSessionFactory();
+
+        // [OPTIONAL] You can also change the AudioSendFactory to avoid stutter caused by the JVM GC pauses
+        // This requires an additional dependency that implements the AudioSendFactory interface
+        // See https://github.com/MinnDevelopment/udpqueue.rs for details.
+        // AudioSendFactory audioSendFactory = new NativeAudioSendFactory();
+
+        AudioModuleConfig audioModuleConfig = new AudioModuleConfig()
+                // .withAudioSendFactory(audioSendFactory)
+                .withDaveSessionFactory(daveSessionFactory);
+
         // Start the JDA session with default mode (voice member cache)
         JDABuilder.createDefault(token, intents)
-                // Start listening with this listener
+                // Start listening for events with this listener
                 .addEventListeners(new AudioEchoExample())
                 // Inform users that we are jammin' it out
                 .setActivity(Activity.listening("to jams"))
@@ -62,7 +81,10 @@ public class AudioEchoExample extends ListenerAdapter {
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 // Enable the VOICE_STATE cache to find a user's connected voice channel
                 .enableCache(CacheFlag.VOICE_STATE)
-                .build(); // Login with these options
+                // Configure the JDA audio module
+                .setAudioModuleConfig(audioModuleConfig)
+                // Login with these options and start listening for events
+                .build();
     }
 
     @Override
