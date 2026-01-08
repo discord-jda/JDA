@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  */
 public interface IOpusCodecFactory {
     /**
-     * Creates an Opus encoder for {@value net.dv8tion.jda.api.audio.OpusPacket#OPUS_SAMPLE_RATE 48} Hz audio
+     * Creates an Opus encoder for {@value net.dv8tion.jda.api.audio.OpusPacket#OPUS_SAMPLE_RATE} Hz audio
      * with {@value net.dv8tion.jda.api.audio.OpusPacket#OPUS_CHANNEL_COUNT} channels.
      *
      * <p>This is only called when an {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler}
@@ -46,7 +46,7 @@ public interface IOpusCodecFactory {
     IOpusEncoder createEncoder();
 
     /**
-     * Creates an Opus decoder for {@value net.dv8tion.jda.api.audio.OpusPacket#OPUS_SAMPLE_RATE 48} Hz audio
+     * Creates an Opus decoder for {@value net.dv8tion.jda.api.audio.OpusPacket#OPUS_SAMPLE_RATE} Hz audio
      * with {@value net.dv8tion.jda.api.audio.OpusPacket#OPUS_CHANNEL_COUNT} channels.
      *
      * <p>A decoder is always created for each user.
