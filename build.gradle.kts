@@ -307,7 +307,7 @@ spotless {
     }
 
     java {
-        palantirJavaFormat("2.80.0")
+        palantirJavaFormat("2.84.0")
                 .formatJavadoc(false)
 
         val copyrightHeader = file("gradle/copyright-header.txt")
