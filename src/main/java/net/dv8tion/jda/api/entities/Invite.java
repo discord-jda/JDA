@@ -75,12 +75,20 @@ public interface Invite {
 
     /**
      * Retrieves a new {@link Invite Invite} instance for the given invite code.
-     * <br><b>You cannot resolve invites if you were banned from the origin Guild!</b>
+     *
+     * <p>An invitation cannot be resolved if:
+     * <ul>
+     *     <li>It does not exist</li>
+     *     <li>Your bot is banned from the guild</li>
+     *     <li>Your bot is not part of the {@linkplain #retrieveTargetUsers(JDA, String) target users}</li>
+     * </ul>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
      *     <br>The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>The Invite is restricted to a set of users and your bot is not one of them.</li>
      * </ul>
      *
      * @param  api
