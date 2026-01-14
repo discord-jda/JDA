@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.InviteUpdateTargetUsersAction;
 import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
@@ -101,6 +102,12 @@ public interface Invite {
 
     @Nonnull
     @CheckReturnValue
+    static InviteUpdateTargetUsersAction updateTargetUsers(@Nonnull JDA api, @Nonnull String code) {
+        return InviteImpl.updateTargetUsers(api, code);
+    }
+
+    @Nonnull
+    @CheckReturnValue
     static RestAction<List<? extends UserSnowflake>> retrieveTargetUsers(@Nonnull JDA api, @Nonnull String code) {
         return InviteImpl.retrieveTargetUsers(api, code);
     }
@@ -142,6 +149,10 @@ public interface Invite {
     @Nonnull
     @CheckReturnValue
     RestAction<Invite> expand();
+
+    @Nonnull
+    @CheckReturnValue
+    InviteUpdateTargetUsersAction updateTargetUsers();
 
     @Nonnull
     @CheckReturnValue
