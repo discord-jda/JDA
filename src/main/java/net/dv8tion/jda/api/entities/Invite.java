@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -216,6 +217,15 @@ public interface Invite {
      */
     @Nullable
     Guild getGuild();
+
+    /**
+     * The roles which will be assigned to the members using this invite.
+     *
+     * @return Unmodifiable list of roles assigned by this invite
+     */
+    @Nonnull
+    @Unmodifiable
+    List<Role> getRoles();
 
     /**
      * The user who created this invite. For not expanded invites this may be null.
@@ -573,6 +583,100 @@ public interface Invite {
          */
         @Nullable
         GuildWelcomeScreen getWelcomeScreen();
+    }
+
+    /**
+     * Represents a role assigned by an invitation.
+     *
+     * @see #getRoles()
+     */
+    interface Role extends IMentionable {
+        /**
+         * The actual position of the Role as stored and given by Discord.
+         * <br>Role positions are actually based on a pairing of the creation time (as stored in the snowflake id)
+         * and the position. If 2 or more roles share the same position then they are sorted based on their creation date.
+         * <br>The more recent a role was created, the lower it is in the hierarchy.
+         *
+         * @return The true, Discord stored, position of the Role.
+         */
+        int getPositionRaw();
+
+        /**
+         * The Name of this Role.
+         *
+         * @return Never-null String containing the name of this Role.
+         */
+        @Nonnull
+        String getName();
+
+        /**
+         * Whether this Role is managed by an integration
+         *
+         * @return True, if this Role is managed.
+         */
+        boolean isManaged();
+
+        /**
+         * Whether this Role is hoisted
+         * <br>Members in a hoisted role are displayed in their own grouping on the user-list
+         *
+         * @return True, if this Role is hoisted.
+         */
+        boolean isHoisted();
+
+        /**
+         * Whether this Role is mentionable
+         *
+         * @return True, if Role is mentionable.
+         */
+        boolean isMentionable();
+
+        /**
+         * The {@code long} representation of the literal permissions that this Role has.
+         * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}.
+         *
+         * @return Never-negative long containing offset permissions of this role.
+         */
+        long getPermissionsRaw();
+
+        /**
+         * The colors this Role is displayed in.
+         *
+         * <p>See {@link RoleColors} for detailed information on how these work.
+         *
+         * @return {@link RoleColors}
+         *
+         * @see RoleColors#isDefault()
+         * @see RoleColors#isGradient()
+         * @see RoleColors#isHolographic()
+         */
+        @Nonnull
+        RoleColors getColors();
+
+        /**
+         * The {@link RoleIcon Icon} of this role or {@code null} if no custom image or emoji is set.
+         * This icon will be displayed next to the role's name in the members tab and in chat.
+         *
+         * @return Possibly-null {@link RoleIcon Icon} of this role
+         */
+        @Nullable
+        RoleIcon getIcon();
+
+        // TODO add getFlags()
+
+        /**
+         * The {@code long} representation of the flags that this Role has.
+         *
+         * @return {@code long} bitset containing the flags of this role
+         */
+        long getFlagsRaw();
+
+        @Nonnull
+        @Override
+        default String getAsMention() {
+            // Can't be @everyone
+            return "<@&" + getId() + ">";
+        }
     }
 
     /**
