@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.InviteUpdateTargetUsersActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -114,6 +115,13 @@ public class InviteImpl implements Invite {
                 api, route, (response, request) -> jda.getEntityBuilder().createInvite(response.getObject()));
     }
 
+    public static InviteUpdateTargetUsersActionImpl updateTargetUsers(@Nonnull JDA api, @Nonnull String code) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+
+        return new InviteUpdateTargetUsersActionImpl(api, code);
+    }
+
     public static RestAction<List<? extends UserSnowflake>> retrieveTargetUsers(JDA api, String code) {
         Checks.notNull(code, "code");
         Checks.notNull(api, "api");
@@ -181,6 +189,16 @@ public class InviteImpl implements Invite {
             }
             throw new IllegalStateException("Missing the invite in the channel/guild invite list");
         });
+    }
+
+    @Nonnull
+    @Override
+    public InviteUpdateTargetUsersActionImpl updateTargetUsers() {
+        // Discord throws an error for guilds the bot isn't in,
+        // but we can't check as sharded bots may throw false positives
+        Checks.check(guild != null, "Cannot get target users of a Group DM invite");
+
+        return updateTargetUsers(api, code);
     }
 
     @Nonnull
