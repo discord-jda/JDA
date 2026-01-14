@@ -99,6 +99,12 @@ public interface Invite {
         return InviteImpl.resolve(api, code, withCounts);
     }
 
+    @Nonnull
+    @CheckReturnValue
+    static RestAction<List<? extends UserSnowflake>> retrieveTargetUsers(@Nonnull JDA api, @Nonnull String code) {
+        return InviteImpl.retrieveTargetUsers(api, code);
+    }
+
     /**
      * Deletes this invite.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
@@ -136,6 +142,10 @@ public interface Invite {
     @Nonnull
     @CheckReturnValue
     RestAction<Invite> expand();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<? extends UserSnowflake>> retrieveTargetUsers();
 
     /**
      * The type of this invite.
