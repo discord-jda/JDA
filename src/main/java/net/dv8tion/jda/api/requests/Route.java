@@ -324,6 +324,8 @@ public class Route {
         public static final Route GET_CHANNEL_INVITES = new Route(GET, "channels/{channel_id}/invites");
         public static final Route CREATE_INVITE = new Route(POST, "channels/{channel_id}/invites");
         public static final Route DELETE_INVITE = new Route(DELETE, "invites/{code}");
+
+        public static final Route GET_TARGET_USERS = new Route(GET, "invites/{code}/target-users");
     }
 
     public static class Templates {
