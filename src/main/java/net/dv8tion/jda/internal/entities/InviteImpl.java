@@ -51,6 +51,7 @@ public class InviteImpl implements Invite {
     private final String code;
     private final boolean expanded;
     private final Guild guild;
+    private final List<Role> roles;
     private final Group group;
     private final InviteTarget target;
     private final User inviter;
@@ -75,6 +76,7 @@ public class InviteImpl implements Invite {
             int uses,
             Channel channel,
             Guild guild,
+            List<Role> roles,
             Group group,
             InviteTarget target,
             Invite.InviteType type) {
@@ -90,6 +92,7 @@ public class InviteImpl implements Invite {
         this.uses = uses;
         this.channel = channel;
         this.guild = guild;
+        this.roles = roles;
         this.group = group;
         this.target = target;
         this.type = type;
@@ -193,6 +196,12 @@ public class InviteImpl implements Invite {
     @Override
     public Guild getGuild() {
         return this.guild;
+    }
+
+    @Nonnull
+    @Override
+    public List<Role> getRoles() {
+        return roles;
     }
 
     @Override
@@ -469,6 +478,85 @@ public class InviteImpl implements Invite {
         @Override
         public String toString() {
             return new EntityString(this).setName(name).toString();
+        }
+    }
+
+    public static class RoleImpl implements Role {
+        private final long id;
+        private final String name;
+        private final RoleIcon icon;
+        private final int positionRaw;
+        private final RoleColors colors;
+        private final long permissions;
+        private final boolean mentionable, managed, hoist;
+        private final long flags;
+
+        public RoleImpl(DataObject o) {
+            this.id = o.getUnsignedLong("id");
+            this.name = o.getString("name");
+            String iconHash = o.getString("icon", null);
+            String unicodeEmoji = o.getString("unicode_emoji", null);
+            this.icon = iconHash == null && unicodeEmoji == null ? null : new RoleIcon(iconHash, unicodeEmoji, id);
+            this.positionRaw = o.getInt("position");
+            this.colors = EntityBuilder.createRoleColors(o.getObject("colors"));
+            this.permissions = o.getLong("permissions");
+            this.mentionable = o.getBoolean("mentionable");
+            this.managed = o.getBoolean("managed");
+            this.hoist = o.getBoolean("hoist");
+            this.flags = o.getLong("flags");
+        }
+
+        @Override
+        public long getIdLong() {
+            return id;
+        }
+
+        @Override
+        public int getPositionRaw() {
+            return positionRaw;
+        }
+
+        @Nonnull
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public boolean isManaged() {
+            return managed;
+        }
+
+        @Override
+        public boolean isHoisted() {
+            return hoist;
+        }
+
+        @Override
+        public boolean isMentionable() {
+            return mentionable;
+        }
+
+        @Override
+        public long getPermissionsRaw() {
+            return permissions;
+        }
+
+        @Nonnull
+        @Override
+        public RoleColors getColors() {
+            return colors;
+        }
+
+        @Nullable
+        @Override
+        public RoleIcon getIcon() {
+            return icon;
+        }
+
+        @Override
+        public long getFlagsRaw() {
+            return flags;
         }
     }
 
