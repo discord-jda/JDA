@@ -107,12 +107,62 @@ public interface Invite {
         return InviteImpl.resolve(api, code, withCounts);
     }
 
+    /**
+     * Updates the list of users that are able to use the provided invite code.
+     *
+     * <p>The target users are processed asynchronously, the action may complete before all targeted users are set,
+     * you can use {@link #retrieveTargetUsersJobStatus(JDA, String)} to check the status.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}
+     *     <br>If at least one user ID is invalid.</li>
+     * </ul>
+     *
+     * @param  api
+     *         The JDA instance
+     * @param  code
+     *         A valid invite code
+     *
+     * @return A {@link InviteUpdateTargetUsersAction} to update the target users
+     */
     @Nonnull
     @CheckReturnValue
     static InviteUpdateTargetUsersAction updateTargetUsers(@Nonnull JDA api, @Nonnull String code) {
         return InviteImpl.updateTargetUsers(api, code);
     }
 
+    // TODO what happens if list is still processing?
+
+    /**
+     * Retrieves a list of {@linkplain UserSnowflake user IDs} to which the given invite code is restricted to.
+     * <br>Only users in the returned list are able to use the invite. This can be changed with {@link #updateTargetUsers(JDA, String)}.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS Unknown Invite Target Users}
+     *     <br>If the invite does not have any target users.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     * </ul>
+     *
+     * @param  api
+     *         The JDA instance
+     * @param  code
+     *         A valid invite code
+     *
+     * @return A {@link RestAction} returning a list of {@link UserSnowflake}
+     */
     @Nonnull
     @CheckReturnValue
     static RestAction<List<? extends UserSnowflake>> retrieveTargetUsers(@Nonnull JDA api, @Nonnull String code) {
@@ -157,10 +207,48 @@ public interface Invite {
     @CheckReturnValue
     RestAction<Invite> expand();
 
+    /**
+     * Updates the list of users that are able to use the provided invite code.
+     *
+     * <p>The target users are processed asynchronously, the action may complete before all targeted users are set,
+     * you can use {@link #retrieveTargetUsersJobStatus(JDA, String)} to check the status.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}
+     *     <br>If at least one user ID is invalid.</li>
+     * </ul>
+     *
+     * @return A {@link InviteUpdateTargetUsersAction} to update the target users
+     */
     @Nonnull
     @CheckReturnValue
     InviteUpdateTargetUsersAction updateTargetUsers();
 
+    /**
+     * Retrieves a list of {@linkplain UserSnowflake user IDs} to which the given invite code is restricted to.
+     * <br>Only users in the returned list are able to use the invite. This can be changed with {@link #updateTargetUsers()}.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS Unknown Invite Target Users}
+     *     <br>If the invite does not have any target users.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     * </ul>
+     *
+     * @return A {@link RestAction} returning a list of {@link UserSnowflake}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<List<? extends UserSnowflake>> retrieveTargetUsers();
