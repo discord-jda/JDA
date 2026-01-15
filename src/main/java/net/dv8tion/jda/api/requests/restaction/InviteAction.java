@@ -16,13 +16,11 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.Invite;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -261,4 +259,40 @@ public interface InviteAction extends AuditableRestAction<Invite>, InviteTargetU
     @Override
     @CheckReturnValue
     InviteAction setUserIds(@Nonnull String... ids);
+
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setRoles(@Nonnull Collection<? extends Role> roles);
+
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setRoles(@Nonnull Role... roles) {
+        Checks.noneNull(roles, "Roles");
+        return setRoles(Arrays.asList(roles));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setRoleIds(@Nonnull Collection<Long> ids) {
+        Checks.noneNull(ids, "IDs");
+        return setRoleIds(ids.stream().mapToLong(Long::longValue).toArray());
+    }
+
+    // TODO docs
+    //  invalid roles (whether non-existant or from another guild) are ignored
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setRoleIds(@Nonnull long... ids);
+
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setRoleIds(@Nonnull String... ids) {
+        Checks.notNull(ids, "IDs");
+
+        long[] arr = new long[ids.length];
+        for (int i = 0; i < ids.length; i++) {
+            arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        }
+        return setRoleIds(arr);
+    }
 }
