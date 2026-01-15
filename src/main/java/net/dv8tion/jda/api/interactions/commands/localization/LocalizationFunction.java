@@ -45,9 +45,9 @@ import javax.annotation.Nonnull;
  * <br>Extremely naive implementation of LocalizationFunction
  * {@snippet lang="java":
  * public class MyFunction implements LocalizationFunction {
- *   &#64;Override
- *   public Map&lt;DiscordLocale, String&gt; apply(String localizationKey) {
- *     Map&lt;DiscordLocale, String&gt; map = new HashMap&lt;&gt;();
+ *   @Override
+ *   public Map<DiscordLocale, String> apply(String localizationKey) {
+ *     Map<DiscordLocale, String> map = new HashMap<>();
  *     switch (localizationKey) {
  *       case "ban.name":
  *         map.put(DiscordLocale.SPANISH, "prohibición");
@@ -67,8 +67,8 @@ import javax.annotation.Nonnull;
  *
  * Also, since this is a functional interface, the following is also possible
  * {@snippet lang="java":
- * LocalizationFunction myfunc = s -&gt; {
- *   Map&lt;DiscordLocale, String&gt; map = new HashMap&lt;&gt;();
+ * LocalizationFunction myfunc = s -> {
+ *   Map<DiscordLocale, String> map = new HashMap<>();
  *    switch (localizationKey) {
  *      case "ban.name":
  *        map.put(DiscordLocale.SPANISH, "prohibición");
