@@ -206,7 +206,9 @@ public class InviteImpl implements Invite {
     public InviteUpdateTargetUsersActionImpl updateTargetUsers() {
         // Discord throws an error for guilds the bot isn't in,
         // but we can't check as sharded bots may throw false positives
-        Checks.check(guild != null, "Cannot get target users of a Group DM invite");
+        if (guild == null) {
+            throw new IllegalStateException("Cannot get target users of a Group DM invite");
+        }
 
         return updateTargetUsers(api, code);
     }
@@ -216,7 +218,9 @@ public class InviteImpl implements Invite {
     public RestAction<List<? extends UserSnowflake>> retrieveTargetUsers() {
         // Discord throws an error for guilds the bot isn't in,
         // but we can't check as sharded bots may throw false positives
-        Checks.check(guild != null, "Cannot get target users of a Group DM invite");
+        if (guild == null) {
+            throw new IllegalStateException("Cannot get target users of a Group DM invite");
+        }
 
         return retrieveTargetUsers(api, code);
     }
@@ -224,6 +228,12 @@ public class InviteImpl implements Invite {
     @Nonnull
     @Override
     public RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus() {
+        // Discord throws an error for guilds the bot isn't in,
+        // but we can't check as sharded bots may throw false positives
+        if (guild == null) {
+            throw new IllegalStateException("Cannot get target users of a Group DM invite");
+        }
+
         return retrieveTargetUsersJobStatus(api, code);
     }
 
