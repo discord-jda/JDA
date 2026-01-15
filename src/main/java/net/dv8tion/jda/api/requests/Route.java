@@ -327,6 +327,8 @@ public class Route {
 
         public static final Route GET_TARGET_USERS = new Route(GET, "invites/{code}/target-users");
         public static final Route UPDATE_TARGET_USERS = new Route(PUT, "invites/{code}/target-users");
+        public static final Route GET_TARGET_USERS_JOB_STATUS =
+                new Route(GET, "invites/{code}/target-users/job-status");
     }
 
     public static class Templates {

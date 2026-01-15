@@ -138,8 +138,6 @@ public interface Invite {
         return InviteImpl.updateTargetUsers(api, code);
     }
 
-    // TODO what happens if list is still processing?
-
     /**
      * Retrieves a list of {@linkplain UserSnowflake user IDs} to which the given invite code is restricted to.
      * <br>Only users in the returned list are able to use the invite. This can be changed with {@link #updateTargetUsers(JDA, String)}.
@@ -169,6 +167,34 @@ public interface Invite {
     @CheckReturnValue
     static RestAction<List<? extends UserSnowflake>> retrieveTargetUsers(@Nonnull JDA api, @Nonnull String code) {
         return InviteImpl.retrieveTargetUsers(api, code);
+    }
+
+    /**
+     * Retrieves a {@link TargetUsersJobStatus} representing the status of a {@link #updateTargetUsers()} request.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS_JOB Unknown Invite Target Users Job}
+     *     <br>If the invite does not have any target users job.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     * </ul>
+     *
+     * @param  api
+     *         The JDA instance
+     * @param  code
+     *         A valid invite code
+     *
+     * @return A {@link RestAction} returning a {@link TargetUsersJobStatus}
+     */
+    @Nonnull
+    @CheckReturnValue
+    static RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus(@Nonnull JDA api, @Nonnull String code) {
+        return InviteImpl.retrieveTargetUsersJobStatus(api, code);
     }
 
     /**
@@ -213,7 +239,7 @@ public interface Invite {
      * Updates the list of users that are able to use the provided invite code.
      *
      * <p>The target users are processed asynchronously, the action may complete before all targeted users are set,
-     * you can use {@link #retrieveTargetUsersJobStatus(JDA, String)} to check the status.
+     * you can use {@link #retrieveTargetUsersJobStatus()} to check the status.
      *
      * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
      *
@@ -256,6 +282,27 @@ public interface Invite {
     @Nonnull
     @CheckReturnValue
     RestAction<List<? extends UserSnowflake>> retrieveTargetUsers();
+
+    /**
+     * Retrieves a {@link TargetUsersJobStatus} representing the status of a {@link #updateTargetUsers()} request.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS_JOB Unknown Invite Target Users Job}
+     *     <br>If the invite does not have any target users job.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     * </ul>
+     *
+     * @return A {@link RestAction} returning a {@link TargetUsersJobStatus}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus();
 
     /**
      * The type of this invite.
@@ -985,6 +1032,109 @@ public interface Invite {
          * @return {@code -1} if this application does not have a max participant count
          */
         int getMaxParticipants();
+    }
+
+    /**
+     * Represents the status of an invitation's target users job.
+     *
+     * @see #retrieveTargetUsersJobStatus()
+     * @see #retrieveTargetUsersJobStatus(JDA, String)
+     */
+    interface TargetUsersJobStatus {
+        /**
+         * The job status
+         *
+         * @return The job status
+         */
+        @Nonnull
+        Status getStatus();
+
+        /**
+         * The number of users allowed to use the invite.
+         *
+         * @return number of users allowed to use the invite
+         */
+        int getTotalUsers();
+
+        /**
+         * The number of users that have been processed so far.
+         *
+         * @return Number of users processed so far
+         */
+        int getProcessedUsers();
+
+        /**
+         * The moment at which this job was started.
+         *
+         * @return The moment at which this job was started
+         */
+        @Nonnull
+        OffsetDateTime getCreatedAt();
+
+        /**
+         * The moment at which this job was finished successfully,
+         * or {@code null} if it has failed or not finished yet.
+         *
+         * @return The moment at which this job was finished successfully, or {@code null}
+         */
+        @Nullable
+        OffsetDateTime getCompletedAt();
+
+        /**
+         * The error message if this job failed, or {@code null}
+         *
+         * @return The error message, or {@code null}
+         */
+        @Nullable
+        String getErrorMessage();
+
+        /**
+         * Status of an invite's target users job
+         */
+        enum Status {
+            UNKNOWN(-1),
+            /** The default value */
+            UNSPECIFIED(0),
+            /** The job is still being processed */
+            PROCESSING(1),
+            /** The job has been completed successfully */
+            COMPLETED(2),
+            /** The job has failed, see {@link #getErrorMessage()} */
+            FAILED(3);
+
+            private final int key;
+
+            Status(int key) {
+                this.key = key;
+            }
+
+            /**
+             * The key corresponding to this status.
+             *
+             * @return Key corresponding to this status
+             */
+            public int getKey() {
+                return key;
+            }
+
+            /**
+             * Resolves the provided raw API key to the enum constant.
+             *
+             * @param  key
+             *         The api key to check
+             *
+             * @return The resolved Status or {@link #UNKNOWN}
+             */
+            @Nonnull
+            public static Status fromKey(int key) {
+                for (Status status : values()) {
+                    if (status.key == key) {
+                        return status;
+                    }
+                }
+                return UNKNOWN;
+            }
+        }
     }
 
     /**

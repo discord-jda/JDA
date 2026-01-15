@@ -134,6 +134,16 @@ public class InviteImpl implements Invite {
                 .collect(Helpers.toUnmodifiableList()));
     }
 
+    public static RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus(JDA api, String code) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+
+        Route.CompiledRoute route = Route.Invites.GET_TARGET_USERS_JOB_STATUS.compile(code);
+
+        return new RestActionImpl<>(
+                api, route, (response, request) -> new TargetUsersJobStatusImpl(response.getObject()));
+    }
+
     @Nonnull
     @Override
     public AuditableRestAction<Void> delete() {
@@ -209,6 +219,12 @@ public class InviteImpl implements Invite {
         Checks.check(guild != null, "Cannot get target users of a Group DM invite");
 
         return retrieveTargetUsers(api, code);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus() {
+        return retrieveTargetUsersJobStatus(api, code);
     }
 
     @Nonnull
@@ -770,6 +786,56 @@ public class InviteImpl implements Invite {
         @Override
         public String toString() {
             return new EntityString(this).setName(name).toString();
+        }
+    }
+
+    public static class TargetUsersJobStatusImpl implements TargetUsersJobStatus {
+        private final Status status;
+        private final int totalUsers, processedUsers;
+        private final OffsetDateTime createdAt, completedAt;
+        private final String errorMessage;
+
+        public TargetUsersJobStatusImpl(DataObject o) {
+            this.status = Status.fromKey(o.getInt("status"));
+            this.totalUsers = o.getInt("total_users");
+            this.processedUsers = o.getInt("processed_users");
+            this.createdAt = o.getOffsetDateTime("created_at");
+            this.completedAt = o.getOffsetDateTime("completed_at", null);
+            this.errorMessage = o.getString("error_message", null);
+        }
+
+        @Nonnull
+        @Override
+        public Status getStatus() {
+            return status;
+        }
+
+        @Override
+        public int getTotalUsers() {
+            return totalUsers;
+        }
+
+        @Override
+        public int getProcessedUsers() {
+            return processedUsers;
+        }
+
+        @Nonnull
+        @Override
+        public OffsetDateTime getCreatedAt() {
+            return createdAt;
+        }
+
+        @Nullable
+        @Override
+        public OffsetDateTime getCompletedAt() {
+            return completedAt;
+        }
+
+        @Nullable
+        @Override
+        public String getErrorMessage() {
+            return errorMessage;
         }
     }
 }
