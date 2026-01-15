@@ -18,47 +18,53 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.utils.Checks;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public interface InviteUpdateTargetUsersAction extends RestAction<Void> {
+public interface InviteUpdateTargetUsersAction extends RestAction<Void>, InviteTargetUsersAction {
     @Nonnull
+    @Override
     @CheckReturnValue
     InviteUpdateTargetUsersAction setUsers(@Nonnull Collection<? extends UserSnowflake> users);
 
     @Nonnull
+    @Override
     @CheckReturnValue
-    default InviteUpdateTargetUsersAction setUsers(@Nonnull UserSnowflake... users) {
-        Checks.noneNull(users, "Users");
-        return setUsers(Arrays.asList(users));
-    }
+    InviteUpdateTargetUsersAction setUsers(@Nonnull UserSnowflake... users);
 
     @Nonnull
+    @Override
     @CheckReturnValue
-    default InviteUpdateTargetUsersAction setUserIds(@Nonnull Collection<Long> ids) {
-        Checks.noneNull(ids, "IDs");
-        return setUserIds(ids.stream().mapToLong(Long::longValue).toArray());
-    }
+    InviteUpdateTargetUsersAction setUserIds(@Nonnull Collection<Long> ids);
 
     @Nonnull
+    @Override
     @CheckReturnValue
     InviteUpdateTargetUsersAction setUserIds(@Nonnull long... ids);
 
     @Nonnull
+    @Override
     @CheckReturnValue
-    default InviteUpdateTargetUsersAction setUserIds(@Nonnull String... ids) {
-        Checks.notNull(ids, "IDs");
+    InviteUpdateTargetUsersAction setUserIds(@Nonnull String... ids);
 
-        long[] arr = new long[ids.length];
-        for (int i = 0; i < ids.length; i++) {
-            arr[i] = MiscUtil.parseSnowflake(ids[i]);
-        }
-        return setUserIds(arr);
-    }
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    InviteUpdateTargetUsersAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    InviteUpdateTargetUsersAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    InviteUpdateTargetUsersAction deadline(long timestamp);
 }

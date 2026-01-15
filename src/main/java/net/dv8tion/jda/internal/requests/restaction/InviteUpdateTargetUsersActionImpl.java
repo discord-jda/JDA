@@ -16,30 +16,26 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.InviteUpdateTargetUsersAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.utils.Checks;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void> implements InviteUpdateTargetUsersAction {
+public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void>
+        implements InviteUpdateTargetUsersAction, InviteTargetUsersActionMixin<InviteUpdateTargetUsersActionImpl> {
     private final TLongHashSet userIds = new TLongHashSet();
 
     public InviteUpdateTargetUsersActionImpl(JDA api, String code) {
@@ -48,8 +44,8 @@ public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void> impl
 
     @Nonnull
     @Override
-    public InviteUpdateTargetUsersActionImpl setCheck(BooleanSupplier checks) {
-        return (InviteUpdateTargetUsersActionImpl) super.setCheck(checks);
+    public TLongHashSet getUserIds() {
+        return userIds;
     }
 
     @Nonnull
@@ -60,69 +56,49 @@ public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void> impl
 
     @Nonnull
     @Override
+    public InviteUpdateTargetUsersActionImpl setCheck(@Nullable BooleanSupplier checks) {
+        return (InviteUpdateTargetUsersActionImpl) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
     public InviteUpdateTargetUsersActionImpl deadline(long timestamp) {
         return (InviteUpdateTargetUsersActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public InviteUpdateTargetUsersAction setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
-        Checks.noneNull(users, "Users");
-
-        userIds.ensureCapacity(users.size());
-        for (UserSnowflake user : users) {
-            userIds.add(user.getIdLong());
-        }
-        return this;
+    public InviteUpdateTargetUsersActionImpl setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
+        return InviteTargetUsersActionMixin.super.setUsers(users);
     }
 
     @Nonnull
     @Override
-    public InviteUpdateTargetUsersAction setUserIds(@Nonnull long... ids) {
-        Checks.notNull(ids, "IDs");
+    public InviteUpdateTargetUsersActionImpl setUsers(@Nonnull UserSnowflake... users) {
+        return InviteTargetUsersActionMixin.super.setUsers(users);
+    }
 
-        userIds.ensureCapacity(ids.length);
-        userIds.addAll(ids);
-        return this;
+    @Nonnull
+    @Override
+    public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull Collection<Long> ids) {
+        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+    }
+
+    @Nonnull
+    @Override
+    public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull long... ids) {
+        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+    }
+
+    @Nonnull
+    @Override
+    public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull String... ids) {
+        return InviteTargetUsersActionMixin.super.setUserIds(ids);
     }
 
     @Override
     protected RequestBody finalizeData() {
         Set<TargetUsersFile> targetUsersFileSet = Collections.singleton(new TargetUsersFile(userIds));
         return AttachedFile.createMultipartBody(targetUsersFileSet).build();
-    }
-
-    private static class TargetUsersFile implements AttachedFile {
-        private static final MediaType CSV_MEDIA_TYPE = MediaType.parse("text/csv");
-
-        private final TLongSet userIds;
-
-        private TargetUsersFile(TLongSet userIds) {
-            this.userIds = userIds;
-        }
-
-        @Override
-        public void addPart(@Nonnull MultipartBody.Builder builder, int index) {
-            StringJoiner csvJoiner = new StringJoiner(",");
-            userIds.forEach(value -> {
-                csvJoiner.add(Long.toString(value));
-                return true;
-            });
-
-            builder.addFormDataPart(
-                    "target_users_file", "target_users.csv", RequestBody.create(csvJoiner.toString(), CSV_MEDIA_TYPE));
-        }
-
-        @Nonnull
-        @Override
-        public DataObject toAttachmentData(int index) {
-            return DataObject.empty();
-        }
-
-        @Override
-        public void forceClose() {}
-
-        @Override
-        public void close() {}
     }
 }
