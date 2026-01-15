@@ -260,10 +260,54 @@ public interface InviteAction extends AuditableRestAction<Invite>, InviteTargetU
     @CheckReturnValue
     InviteAction setUserIds(@Nonnull String... ids);
 
+    /**
+     * Sets roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * @param  roles
+     *         The roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided collection is {@code null} or contains {@code null}</li>
+     *             <li>If one of the roles isn't from the target guild</li>
+     *         </ul>
+     *
+     * @return The current InviteAction for chaining.
+     */
     @Nonnull
     @CheckReturnValue
     InviteAction setRoles(@Nonnull Collection<? extends Role> roles);
 
+    /**
+     * Sets roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * @param  roles
+     *         The roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided array is {@code null} or contains {@code null}</li>
+     *             <li>If one of the roles isn't from the target guild</li>
+     *         </ul>
+     *
+     * @return The current InviteAction for chaining.
+     */
     @Nonnull
     @CheckReturnValue
     default InviteAction setRoles(@Nonnull Role... roles) {
@@ -271,6 +315,27 @@ public interface InviteAction extends AuditableRestAction<Invite>, InviteTargetU
         return setRoles(Arrays.asList(roles));
     }
 
+    /**
+     * Sets IDs of roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * <p>IDs that do not point to an existing role in the targeted guild will be ignored.
+     *
+     * @param  ids
+     *         The IDs of the roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         If the provided collection is {@code null} or contains {@code null}
+     *
+     * @return The current InviteAction for chaining.
+     */
     @Nonnull
     @CheckReturnValue
     default InviteAction setRoleIds(@Nonnull Collection<Long> ids) {
@@ -278,12 +343,54 @@ public interface InviteAction extends AuditableRestAction<Invite>, InviteTargetU
         return setRoleIds(ids.stream().mapToLong(Long::longValue).toArray());
     }
 
-    // TODO docs
-    //  invalid roles (whether non-existant or from another guild) are ignored
+    /**
+     * Sets IDs of roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * <p>IDs that do not point to an existing role in the targeted guild will be ignored.
+     *
+     * @param  ids
+     *         The IDs of the roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         If the provided array is {@code null}
+     *
+     * @return The current InviteAction for chaining.
+     */
     @Nonnull
     @CheckReturnValue
     InviteAction setRoleIds(@Nonnull long... ids);
 
+    /**
+     * Sets IDs of roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * <p>IDs that do not point to an existing role in the targeted guild will be ignored.
+     *
+     * @param  ids
+     *         The IDs of the roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         If the provided array is {@code null}, contains {@code null}, or, has an empty string
+     * @throws NumberFormatException
+     *         If one of the IDs is not a valid snowflake
+     *
+     * @return The current InviteAction for chaining.
+     */
     @Nonnull
     @CheckReturnValue
     default InviteAction setRoleIds(@Nonnull String... ids) {

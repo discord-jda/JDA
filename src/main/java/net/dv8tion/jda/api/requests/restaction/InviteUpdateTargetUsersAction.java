@@ -27,6 +27,12 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Action to update target users of an {@link net.dv8tion.jda.api.entities.Invite Invite}.
+ *
+ * @see net.dv8tion.jda.api.entities.Invite#updateTargetUsers() Invite.updateTargetUsers()
+ * @see net.dv8tion.jda.api.entities.Invite#updateTargetUsers(net.dv8tion.jda.api.JDA, String) Invite.updateTargetUsers(JDA, String)
+ */
 public interface InviteUpdateTargetUsersAction extends RestAction<Void>, InviteTargetUsersAction {
     @Nonnull
     @Override
