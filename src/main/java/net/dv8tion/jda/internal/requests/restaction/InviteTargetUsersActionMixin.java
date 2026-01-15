@@ -46,6 +46,7 @@ public interface InviteTargetUsersActionMixin<T extends InviteTargetUsersAction>
         Checks.noneNull(users, "Users");
 
         TLongHashSet userIds = getUserIds();
+        userIds.clear();
         userIds.ensureCapacity(users.size());
         for (UserSnowflake user : users) {
             userIds.add(user.getIdLong());
@@ -74,6 +75,7 @@ public interface InviteTargetUsersActionMixin<T extends InviteTargetUsersAction>
         Checks.notNull(ids, "IDs");
 
         TLongHashSet userIds = getUserIds();
+        userIds.clear();
         userIds.ensureCapacity(ids.length);
         userIds.addAll(ids);
         return (T) this;
