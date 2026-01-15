@@ -17,9 +17,13 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import gnu.trove.set.hash.TLongHashSet;
-import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
@@ -38,6 +42,8 @@ import javax.annotation.Nonnull;
 
 public class InviteActionImpl extends AuditableRestActionImpl<Invite>
         implements InviteAction, InviteTargetUsersActionMixin<InviteActionImpl> {
+    private final IInviteContainer channel;
+
     private Integer maxAge = null;
     private Integer maxUses = null;
     private Boolean temporary = null;
@@ -46,9 +52,11 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
     private Long targetUser = null;
     private Invite.TargetType targetType = null;
     private final TLongHashSet userIds = new TLongHashSet();
+    private final Set<Long> roleIds = new HashSet<>();
 
-    public InviteActionImpl(JDA api, String channelId) {
-        super(api, Route.Invites.CREATE_INVITE.compile(channelId));
+    public InviteActionImpl(IInviteContainer channel) {
+        super(channel.getJDA(), Route.Invites.CREATE_INVITE.compile(channel.getId()));
+        this.channel = channel;
     }
 
     @Nonnull
@@ -187,6 +195,63 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
         return InviteTargetUsersActionMixin.super.setUserIds(ids);
     }
 
+    @Nonnull
+    @Override
+    public InviteActionImpl setRoles(@Nonnull Collection<? extends Role> roles) {
+        Checks.noneNull(roles, "Roles");
+
+        Guild guild = channel.getGuild();
+        if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_ROLES)) {
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_ROLES);
+        }
+
+        for (Role role : roles) {
+            Checks.check(role.getGuild().equals(guild), "%s is not from the same guild! (%s)", role, guild);
+            Checks.check(
+                    guild.getSelfMember().canInteract(role),
+                    "%s is higher in the hierarchy than the highest role of the bot!",
+                    role);
+        }
+
+        roleIds.clear();
+        for (Role role : roles) {
+            roleIds.add(role.getIdLong());
+        }
+
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setRoleIds(@Nonnull long... ids) {
+        Checks.notNull(ids, "IDs");
+
+        Guild guild = channel.getGuild();
+        if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_ROLES)) {
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_ROLES);
+        }
+
+        for (long id : ids) {
+            Role role = guild.getRoleById(id);
+
+            // Discord ignores unknown roles
+            if (role == null) {
+                continue;
+            }
+            Checks.check(
+                    guild.getSelfMember().canInteract(role),
+                    "%s is higher in than the highest role of the self member!",
+                    role);
+        }
+
+        roleIds.clear();
+        for (long id : ids) {
+            roleIds.add(id);
+        }
+
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
@@ -215,6 +280,9 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
         }
         if (!userIds.isEmpty()) {
             files.add(new TargetUsersFile(userIds));
+        }
+        if (!roleIds.isEmpty()) {
+            object.put("role_ids", roleIds);
         }
 
         return getMultipartBody(files, object);
