@@ -239,7 +239,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
      * Sets the users allowed to use this invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  users
      *         The users allowed to use the invite
@@ -260,7 +260,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
      * Sets the users allowed to use this invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  users
      *         The users allowed to use the invite
@@ -281,7 +281,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
      * Sets IDs of users allowed to use this invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  ids
      *         IDs of users allowed to use the invite
@@ -302,7 +302,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
      * Sets IDs of users allowed to use this invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  ids
      *         IDs of users allowed to use the invite
@@ -323,7 +323,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
      * Sets IDs of users allowed to use this invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  ids
      *         IDs of users allowed to use the invite

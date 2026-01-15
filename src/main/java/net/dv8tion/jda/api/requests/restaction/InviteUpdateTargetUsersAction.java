@@ -38,7 +38,7 @@ public interface InviteUpdateTargetUsersAction extends RestAction<Void> {
      * Sets the users allowed to use the targeted invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  users
      *         The users allowed to use the invite
@@ -59,7 +59,7 @@ public interface InviteUpdateTargetUsersAction extends RestAction<Void> {
      * Sets the users allowed to use the targeted invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  users
      *         The users allowed to use the invite
@@ -80,7 +80,7 @@ public interface InviteUpdateTargetUsersAction extends RestAction<Void> {
      * Sets IDs of users allowed to use the targeted invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  ids
      *         IDs of users allowed to use the invite
@@ -101,7 +101,7 @@ public interface InviteUpdateTargetUsersAction extends RestAction<Void> {
      * Sets IDs of users allowed to use the targeted invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  ids
      *         IDs of users allowed to use the invite
@@ -122,7 +122,7 @@ public interface InviteUpdateTargetUsersAction extends RestAction<Void> {
      * Sets IDs of users allowed to use the targeted invite.
      *
      * <p>If unknown users are found,
-     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
      *
      * @param  ids
      *         IDs of users allowed to use the invite
