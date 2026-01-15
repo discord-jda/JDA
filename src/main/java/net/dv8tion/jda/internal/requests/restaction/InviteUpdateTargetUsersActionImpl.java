@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.Route;
@@ -24,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.InviteUpdateTargetUsersAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.invite.InviteTargetUsers;
 import okhttp3.RequestBody;
 
 import java.util.Collection;
@@ -35,18 +35,11 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void>
-        implements InviteUpdateTargetUsersAction, InviteTargetUsersActionMixin<InviteUpdateTargetUsersActionImpl> {
-    private final TLongHashSet userIds = new TLongHashSet();
+public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void> implements InviteUpdateTargetUsersAction {
+    private final InviteTargetUsers targetUsers = new InviteTargetUsers();
 
     public InviteUpdateTargetUsersActionImpl(JDA api, String code) {
         super(api, Route.Invites.UPDATE_TARGET_USERS.compile(code));
-    }
-
-    @Nonnull
-    @Override
-    public TLongHashSet getUserIds() {
-        return userIds;
     }
 
     @Nonnull
@@ -71,21 +64,24 @@ public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void>
     @Override
     public InviteUpdateTargetUsersActionImpl setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
         Checks.notEmpty(users, "Users");
-        return InviteTargetUsersActionMixin.super.setUsers(users);
+        targetUsers.setUsers(users);
+        return this;
     }
 
     @Nonnull
     @Override
     public InviteUpdateTargetUsersActionImpl setUsers(@Nonnull UserSnowflake... users) {
         Checks.notEmpty(users, "Users");
-        return InviteTargetUsersActionMixin.super.setUsers(users);
+        targetUsers.setUsers(users);
+        return this;
     }
 
     @Nonnull
     @Override
     public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull Collection<Long> ids) {
         Checks.notEmpty(ids, "IDs");
-        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+        targetUsers.setUserIds(ids);
+        return this;
     }
 
     @Nonnull
@@ -93,21 +89,23 @@ public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void>
     public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull long... ids) {
         Checks.notNull(ids, "IDs");
         Checks.check(ids.length > 0, "IDs may not be empty");
-        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+        targetUsers.setUserIds(ids);
+        return this;
     }
 
     @Nonnull
     @Override
     public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull String... ids) {
         Checks.notEmpty(ids, "IDs");
-        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+        targetUsers.setUserIds(ids);
+        return this;
     }
 
     @Override
     protected RequestBody finalizeData() {
-        Checks.check(!userIds.isEmpty(), "Cannot set an invite's target users to an empty list!");
+        Checks.check(!targetUsers.isEmpty(), "Cannot set an invite's target users to an empty list!");
 
-        Set<TargetUsersFile> targetUsersFileSet = Collections.singleton(new TargetUsersFile(userIds));
-        return AttachedFile.createMultipartBody(targetUsersFileSet).build();
+        Set<AttachedFile> attachedFiles = Collections.singleton(targetUsers.toAttachedFile());
+        return AttachedFile.createMultipartBody(attachedFiles).build();
     }
 }

@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
@@ -32,6 +31,7 @@ import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.invite.InviteTargetUsers;
 import okhttp3.RequestBody;
 
 import java.util.*;
@@ -41,8 +41,7 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public class InviteActionImpl extends AuditableRestActionImpl<Invite>
-        implements InviteAction, InviteTargetUsersActionMixin<InviteActionImpl> {
+public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements InviteAction {
     private final IInviteContainer channel;
 
     private Integer maxAge = null;
@@ -52,18 +51,12 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
     private Long targetApplication = null;
     private Long targetUser = null;
     private Invite.TargetType targetType = null;
-    private final TLongHashSet userIds = new TLongHashSet();
+    private final InviteTargetUsers targetUsers = new InviteTargetUsers();
     private final Set<Long> roleIds = new HashSet<>();
 
     public InviteActionImpl(IInviteContainer channel) {
         super(channel.getJDA(), Route.Invites.CREATE_INVITE.compile(channel.getId()));
         this.channel = channel;
-    }
-
-    @Nonnull
-    @Override
-    public TLongHashSet getUserIds() {
-        return userIds;
     }
 
     @Nonnull
@@ -168,37 +161,42 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
 
     @Nonnull
     @Override
-    public InviteActionImpl setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
+    public InviteActionImpl setTargetUsers(@Nonnull Collection<? extends UserSnowflake> users) {
         checkCanManageServer();
-        return InviteTargetUsersActionMixin.super.setUsers(users);
+        targetUsers.setUsers(users);
+        return this;
     }
 
     @Nonnull
     @Override
-    public InviteActionImpl setUsers(@Nonnull UserSnowflake... users) {
+    public InviteActionImpl setTargetUsers(@Nonnull UserSnowflake... users) {
         checkCanManageServer();
-        return InviteTargetUsersActionMixin.super.setUsers(users);
+        targetUsers.setUsers(users);
+        return this;
     }
 
     @Nonnull
     @Override
-    public InviteActionImpl setUserIds(@Nonnull Collection<Long> ids) {
+    public InviteActionImpl setTargetUserIds(@Nonnull Collection<Long> ids) {
         checkCanManageServer();
-        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+        targetUsers.setUserIds(ids);
+        return this;
     }
 
     @Nonnull
     @Override
-    public InviteActionImpl setUserIds(@Nonnull long... ids) {
+    public InviteActionImpl setTargetUserIds(@Nonnull long... ids) {
         checkCanManageServer();
-        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+        targetUsers.setUserIds(ids);
+        return this;
     }
 
     @Nonnull
     @Override
-    public InviteActionImpl setUserIds(@Nonnull String... ids) {
+    public InviteActionImpl setTargetUserIds(@Nonnull String... ids) {
         checkCanManageServer();
-        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+        targetUsers.setUserIds(ids);
+        return this;
     }
 
     private void checkCanManageServer() {
@@ -290,8 +288,8 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
         if (this.targetApplication != null) {
             object.put("target_application_id", targetApplication);
         }
-        if (!userIds.isEmpty()) {
-            files.add(new TargetUsersFile(userIds));
+        if (!targetUsers.isEmpty()) {
+            files.add(targetUsers.toAttachedFile());
         }
         if (!roleIds.isEmpty()) {
             object.put("role_ids", roleIds);
