@@ -337,7 +337,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
      *         If the {@linkplain Guild#getSelfMember() self member}
      *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
      * @throws NumberFormatException
-     *         If one of the IDs are invalid snowflakes
+     *         If one of the IDs is an invalid snowflake
      *
      * @return This instance for chaining
      */

@@ -134,7 +134,7 @@ public interface InviteUpdateTargetUsersAction extends RestAction<Void> {
      *             <li>If one of the strings is empty</li>
      *         </ul>
      * @throws NumberFormatException
-     *         If one of the IDs are invalid snowflakes
+     *         If one of the IDs is an invalid snowflake
      *
      * @return This instance for chaining
      */
