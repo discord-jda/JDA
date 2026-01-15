@@ -168,31 +168,42 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
     @Nonnull
     @Override
     public InviteActionImpl setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
+        checkCanManageServer();
         return InviteTargetUsersActionMixin.super.setUsers(users);
     }
 
     @Nonnull
     @Override
     public InviteActionImpl setUsers(@Nonnull UserSnowflake... users) {
+        checkCanManageServer();
         return InviteTargetUsersActionMixin.super.setUsers(users);
     }
 
     @Nonnull
     @Override
     public InviteActionImpl setUserIds(@Nonnull Collection<Long> ids) {
+        checkCanManageServer();
         return InviteTargetUsersActionMixin.super.setUserIds(ids);
     }
 
     @Nonnull
     @Override
     public InviteActionImpl setUserIds(@Nonnull long... ids) {
+        checkCanManageServer();
         return InviteTargetUsersActionMixin.super.setUserIds(ids);
     }
 
     @Nonnull
     @Override
     public InviteActionImpl setUserIds(@Nonnull String... ids) {
+        checkCanManageServer();
         return InviteTargetUsersActionMixin.super.setUserIds(ids);
+    }
+
+    private void checkCanManageServer() {
+        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_SERVER)) {
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_SERVER);
+        }
     }
 
     @Nonnull
