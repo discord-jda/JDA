@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -218,10 +219,10 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
 
         for (Role role : roles) {
             Checks.check(role.getGuild().equals(guild), "%s is not from the same guild! (%s)", role, guild);
-            Checks.check(
-                    guild.getSelfMember().canInteract(role),
-                    "%s is higher in the hierarchy than the highest role of the bot!",
-                    role);
+            if (!guild.getSelfMember().canInteract(role)) {
+                throw new HierarchyException(
+                        String.format("%s is higher in than the highest role of the self member!", role));
+            }
         }
 
         roleIds.clear();
@@ -249,10 +250,10 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite>
             if (role == null) {
                 continue;
             }
-            Checks.check(
-                    guild.getSelfMember().canInteract(role),
-                    "%s is higher in than the highest role of the self member!",
-                    role);
+            if (!guild.getSelfMember().canInteract(role)) {
+                throw new HierarchyException(
+                        String.format("%s is higher in than the highest role of the self member!", role));
+            }
         }
 
         roleIds.clear();
