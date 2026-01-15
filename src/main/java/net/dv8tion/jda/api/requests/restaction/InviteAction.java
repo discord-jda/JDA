@@ -19,9 +19,11 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -35,7 +37,7 @@ import javax.annotation.Nullable;
  *
  * @see net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer#createInvite()
  */
-public interface InviteAction extends AuditableRestAction<Invite> {
+public interface InviteAction extends AuditableRestAction<Invite>, InviteTargetUsersAction {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -234,4 +236,29 @@ public interface InviteAction extends AuditableRestAction<Invite> {
         Checks.notNull(member, "Member");
         return setTargetStream(member.getIdLong());
     }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    InviteAction setUsers(@Nonnull Collection<? extends UserSnowflake> users);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    InviteAction setUsers(@Nonnull UserSnowflake... users);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    InviteAction setUserIds(@Nonnull Collection<Long> ids);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    InviteAction setUserIds(@Nonnull long... ids);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    InviteAction setUserIds(@Nonnull String... ids);
 }

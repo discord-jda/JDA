@@ -16,23 +16,28 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements InviteAction {
+public class InviteActionImpl extends AuditableRestActionImpl<Invite>
+        implements InviteAction, InviteTargetUsersActionMixin<InviteActionImpl> {
     private Integer maxAge = null;
     private Integer maxUses = null;
     private Boolean temporary = null;
@@ -40,9 +45,16 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     private Long targetApplication = null;
     private Long targetUser = null;
     private Invite.TargetType targetType = null;
+    private final TLongHashSet userIds = new TLongHashSet();
 
     public InviteActionImpl(JDA api, String channelId) {
         super(api, Route.Invites.CREATE_INVITE.compile(channelId));
+    }
+
+    @Nonnull
+    @Override
+    public TLongHashSet getUserIds() {
+        return userIds;
     }
 
     @Nonnull
@@ -145,9 +157,40 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         return this;
     }
 
+    @Nonnull
+    @Override
+    public InviteActionImpl setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
+        return InviteTargetUsersActionMixin.super.setUsers(users);
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setUsers(@Nonnull UserSnowflake... users) {
+        return InviteTargetUsersActionMixin.super.setUsers(users);
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setUserIds(@Nonnull Collection<Long> ids) {
+        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setUserIds(@Nonnull long... ids) {
+        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setUserIds(@Nonnull String... ids) {
+        return InviteTargetUsersActionMixin.super.setUserIds(ids);
+    }
+
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
+        Set<AttachedFile> files = new HashSet<>(1);
 
         if (this.maxAge != null) {
             object.put("max_age", this.maxAge);
@@ -170,8 +213,11 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         if (this.targetApplication != null) {
             object.put("target_application_id", targetApplication);
         }
+        if (!userIds.isEmpty()) {
+            files.add(new TargetUsersFile(userIds));
+        }
 
-        return getRequestBody(object);
+        return getMultipartBody(files, object);
     }
 
     @Override
