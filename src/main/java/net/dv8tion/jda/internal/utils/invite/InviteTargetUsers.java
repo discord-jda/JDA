@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests.restaction;
+package net.dv8tion.jda.internal.utils.invite;
 
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.requests.restaction.InviteTargetUsersAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -32,68 +31,59 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.StringJoiner;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface InviteTargetUsersActionMixin<T extends InviteTargetUsersAction> extends InviteTargetUsersAction {
-    @Nonnull
-    TLongHashSet getUserIds();
+public class InviteTargetUsers {
+    private final TLongHashSet ids = new TLongHashSet();
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("unchecked")
-    default T setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
+    public void setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
 
-        TLongHashSet userIds = getUserIds();
-        userIds.clear();
-        userIds.ensureCapacity(users.size());
+        ids.clear();
+        ids.ensureCapacity(users.size());
         for (UserSnowflake user : users) {
-            userIds.add(user.getIdLong());
+            ids.add(user.getIdLong());
         }
-        return (T) this;
     }
 
-    @Nonnull
-    @Override
-    default T setUsers(@Nonnull UserSnowflake... users) {
+    public void setUsers(@Nonnull UserSnowflake... users) {
         Checks.noneNull(users, "Users");
-        return setUsers(Arrays.asList(users));
+        setUsers(Arrays.asList(users));
     }
 
-    @Nonnull
-    @Override
-    default T setUserIds(@Nonnull Collection<Long> ids) {
+    public void setUserIds(@Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
-        return setUserIds(ids.stream().mapToLong(Long::longValue).toArray());
+        setUserIds(ids.stream().mapToLong(Long::longValue).toArray());
     }
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("unchecked")
-    default T setUserIds(@Nonnull long... ids) {
+    public void setUserIds(@Nonnull long... ids) {
         Checks.notNull(ids, "IDs");
 
-        TLongHashSet userIds = getUserIds();
-        userIds.clear();
-        userIds.ensureCapacity(ids.length);
-        userIds.addAll(ids);
-        return (T) this;
+        this.ids.clear();
+        this.ids.ensureCapacity(ids.length);
+        this.ids.addAll(ids);
     }
 
-    @Nonnull
-    @CheckReturnValue
-    default T setUserIds(@Nonnull String... ids) {
+    public void setUserIds(@Nonnull String... ids) {
         Checks.noneNull(ids, "IDs");
 
         long[] arr = new long[ids.length];
         for (int i = 0; i < ids.length; i++) {
             arr[i] = MiscUtil.parseSnowflake(ids[i]);
         }
-        return setUserIds(arr);
+        setUserIds(arr);
     }
 
-    class TargetUsersFile implements AttachedFile {
+    @Nonnull
+    public AttachedFile toAttachedFile() {
+        return new TargetUsersFile(ids);
+    }
+
+    public boolean isEmpty() {
+        return ids.isEmpty();
+    }
+
+    private static class TargetUsersFile implements AttachedFile {
         private static final MediaType CSV_MEDIA_TYPE = MediaType.parse("text/csv");
 
         private final TLongSet userIds;

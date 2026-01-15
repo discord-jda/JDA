@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
  *
  * @see net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer#createInvite()
  */
-public interface InviteAction extends AuditableRestAction<Invite>, InviteTargetUsersAction {
+public interface InviteAction extends AuditableRestAction<Invite> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -235,30 +235,115 @@ public interface InviteAction extends AuditableRestAction<Invite>, InviteTargetU
         return setTargetStream(member.getIdLong());
     }
 
+    /**
+     * Sets the users allowed to use this invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  users
+     *         The users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         If the provided collection is or contains {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
-    InviteAction setUsers(@Nonnull Collection<? extends UserSnowflake> users);
+    InviteAction setTargetUsers(@Nonnull Collection<? extends UserSnowflake> users);
 
+    /**
+     * Sets the users allowed to use this invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  users
+     *         The users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         If the provided array is or contains {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
-    InviteAction setUsers(@Nonnull UserSnowflake... users);
+    InviteAction setTargetUsers(@Nonnull UserSnowflake... users);
 
+    /**
+     * Sets IDs of users allowed to use this invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         If the provided collection is or contains {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
-    InviteAction setUserIds(@Nonnull Collection<Long> ids);
+    InviteAction setTargetUserIds(@Nonnull Collection<Long> ids);
 
+    /**
+     * Sets IDs of users allowed to use this invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         If the provided array is or contains {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
-    InviteAction setUserIds(@Nonnull long... ids);
+    InviteAction setTargetUserIds(@Nonnull long... ids);
 
+    /**
+     * Sets IDs of users allowed to use this invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided array is or contains {@code null}</li>
+     *             <li>If one of the strings is empty</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     * @throws NumberFormatException
+     *         If one of the IDs are invalid snowflakes
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
-    InviteAction setUserIds(@Nonnull String... ids);
+    InviteAction setTargetUserIds(@Nonnull String... ids);
 
     /**
      * Sets roles to be assigned when accepting the created invite.

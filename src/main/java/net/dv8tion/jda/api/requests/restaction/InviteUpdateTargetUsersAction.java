@@ -33,29 +33,112 @@ import javax.annotation.Nullable;
  * @see net.dv8tion.jda.api.entities.Invite#updateTargetUsers() Invite.updateTargetUsers()
  * @see net.dv8tion.jda.api.entities.Invite#updateTargetUsers(net.dv8tion.jda.api.JDA, String) Invite.updateTargetUsers(JDA, String)
  */
-public interface InviteUpdateTargetUsersAction extends RestAction<Void>, InviteTargetUsersAction {
+public interface InviteUpdateTargetUsersAction extends RestAction<Void> {
+    /**
+     * Sets the users allowed to use the targeted invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  users
+     *         The users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided collection is or contains {@code null}</li>
+     *             <li>If the collection is empty</li>
+     *         </ul>
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
     InviteUpdateTargetUsersAction setUsers(@Nonnull Collection<? extends UserSnowflake> users);
 
+    /**
+     * Sets the users allowed to use the targeted invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  users
+     *         The users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided array is or contains {@code null}</li>
+     *             <li>If the array is empty</li>
+     *         </ul>
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
     InviteUpdateTargetUsersAction setUsers(@Nonnull UserSnowflake... users);
 
+    /**
+     * Sets IDs of users allowed to use the targeted invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided collection is or contains {@code null}</li>
+     *             <li>If the collection is empty</li>
+     *         </ul>
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
     InviteUpdateTargetUsersAction setUserIds(@Nonnull Collection<Long> ids);
 
+    /**
+     * Sets IDs of users allowed to use the targeted invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided array is or contains {@code null}</li>
+     *             <li>If the array is empty</li>
+     *         </ul>
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
     InviteUpdateTargetUsersAction setUserIds(@Nonnull long... ids);
 
+    /**
+     * Sets IDs of users allowed to use the targeted invite.
+     *
+     * <p>If unknown users are found,
+     * Discord will return an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided array is or contains {@code null}</li>
+     *             <li>If the array is empty</li>
+     *             <li>If one of the strings is empty</li>
+     *         </ul>
+     * @throws NumberFormatException
+     *         If one of the IDs are invalid snowflakes
+     *
+     * @return This instance for chaining
+     */
     @Nonnull
-    @Override
     @CheckReturnValue
     InviteUpdateTargetUsersAction setUserIds(@Nonnull String... ids);
 
