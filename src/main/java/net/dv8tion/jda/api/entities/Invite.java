@@ -266,6 +266,9 @@ public interface Invite {
      *     <br>If at least one user ID is invalid.</li>
      * </ul>
      *
+     * @throws IllegalStateException
+     *         If the invite is not from a guild
+     *
      * @return A {@link InviteUpdateTargetUsersAction} to update the target users
      */
     @Nonnull
@@ -290,6 +293,9 @@ public interface Invite {
      *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
      * </ul>
      *
+     * @throws IllegalStateException
+     *         If the invite is not from a guild
+     *
      * @return A {@link RestAction} returning a list of {@link UserSnowflake}
      */
     @Nonnull
@@ -310,6 +316,9 @@ public interface Invite {
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
      *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
      * </ul>
+     *
+     * @throws IllegalStateException
+     *         If the invite is not from a guild
      *
      * @return A {@link RestAction} returning a {@link TargetUsersJobStatus}
      */
