@@ -99,6 +99,9 @@ public interface Invite {
      * @param  withCounts
      *         Whether or not to include online and member counts for guild invites or users for group invites
      *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Invite Invite}
      *         <br>The Invite object
      */
@@ -131,6 +134,9 @@ public interface Invite {
      * @param  code
      *         A valid invite code
      *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     *
      * @return A {@link InviteUpdateTargetUsersAction} to update the target users
      */
     @Nonnull
@@ -162,6 +168,9 @@ public interface Invite {
      * @param  code
      *         A valid invite code
      *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     *
      * @return A {@link RestAction} returning a list of {@link UserSnowflake}
      */
     @Nonnull
@@ -189,6 +198,9 @@ public interface Invite {
      *         The JDA instance
      * @param  code
      *         A valid invite code
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
      *
      * @return A {@link RestAction} returning a {@link TargetUsersJobStatus}
      */
