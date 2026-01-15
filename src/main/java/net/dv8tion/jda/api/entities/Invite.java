@@ -152,6 +152,8 @@ public interface Invite {
      *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS Unknown Invite Target Users}
      *     <br>If the invite does not have any target users.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_TARGET_USERS_FILE_NOT_PROCESSED Invite Target Users File Not Processed}
+     *     <br>If the invite has target users, but they were not processed yet.</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
      *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
      * </ul>
@@ -243,6 +245,8 @@ public interface Invite {
      *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS Unknown Invite Target Users}
      *     <br>If the invite does not have any target users.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_TARGET_USERS_FILE_NOT_PROCESSED Invite Target Users File Not Processed}
+     *     <br>If the invite has target users, but they were not processed yet.</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
      *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
      * </ul>
