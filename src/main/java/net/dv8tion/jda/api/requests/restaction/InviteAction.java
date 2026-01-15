@@ -287,7 +287,7 @@ public interface InviteAction extends AuditableRestAction<Invite>, InviteTargetU
     @Nonnull
     @CheckReturnValue
     default InviteAction setRoleIds(@Nonnull String... ids) {
-        Checks.notNull(ids, "IDs");
+        Checks.noneNull(ids, "IDs");
 
         long[] arr = new long[ids.length];
         for (int i = 0; i < ids.length; i++) {

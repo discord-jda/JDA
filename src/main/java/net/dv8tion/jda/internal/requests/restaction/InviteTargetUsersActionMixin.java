@@ -84,7 +84,7 @@ public interface InviteTargetUsersActionMixin<T extends InviteTargetUsersAction>
     @Nonnull
     @CheckReturnValue
     default T setUserIds(@Nonnull String... ids) {
-        Checks.notNull(ids, "IDs");
+        Checks.noneNull(ids, "IDs");
 
         long[] arr = new long[ids.length];
         for (int i = 0; i < ids.length; i++) {
