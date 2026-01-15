@@ -237,6 +237,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
 
     /**
      * Sets the users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
      *
      * <p>If unknown users are found,
      * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
@@ -258,6 +259,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
 
     /**
      * Sets the users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
      *
      * <p>If unknown users are found,
      * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
@@ -279,6 +281,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
 
     /**
      * Sets IDs of users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
      *
      * <p>If unknown users are found,
      * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
@@ -300,6 +303,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
 
     /**
      * Sets IDs of users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
      *
      * <p>If unknown users are found,
      * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
@@ -321,6 +325,7 @@ public interface InviteAction extends AuditableRestAction<Invite> {
 
     /**
      * Sets IDs of users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
      *
      * <p>If unknown users are found,
      * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
