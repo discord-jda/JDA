@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.InviteUpdateTargetUsersAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import java.util.Collection;
@@ -69,35 +70,43 @@ public class InviteUpdateTargetUsersActionImpl extends RestActionImpl<Void>
     @Nonnull
     @Override
     public InviteUpdateTargetUsersActionImpl setUsers(@Nonnull Collection<? extends UserSnowflake> users) {
+        Checks.notEmpty(users, "Users");
         return InviteTargetUsersActionMixin.super.setUsers(users);
     }
 
     @Nonnull
     @Override
     public InviteUpdateTargetUsersActionImpl setUsers(@Nonnull UserSnowflake... users) {
+        Checks.notEmpty(users, "Users");
         return InviteTargetUsersActionMixin.super.setUsers(users);
     }
 
     @Nonnull
     @Override
     public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull Collection<Long> ids) {
+        Checks.notEmpty(ids, "IDs");
         return InviteTargetUsersActionMixin.super.setUserIds(ids);
     }
 
     @Nonnull
     @Override
     public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull long... ids) {
+        Checks.notNull(ids, "IDs");
+        Checks.check(ids.length > 0, "IDs may not be empty");
         return InviteTargetUsersActionMixin.super.setUserIds(ids);
     }
 
     @Nonnull
     @Override
     public InviteUpdateTargetUsersActionImpl setUserIds(@Nonnull String... ids) {
+        Checks.notEmpty(ids, "IDs");
         return InviteTargetUsersActionMixin.super.setUserIds(ids);
     }
 
     @Override
     protected RequestBody finalizeData() {
+        Checks.check(!userIds.isEmpty(), "Cannot set an invite's target users to an empty list!");
+
         Set<TargetUsersFile> targetUsersFileSet = Collections.singleton(new TargetUsersFile(userIds));
         return AttachedFile.createMultipartBody(targetUsersFileSet).build();
     }
