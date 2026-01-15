@@ -21,8 +21,10 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.InviteUpdateTargetUsersAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -73,12 +75,20 @@ public interface Invite {
 
     /**
      * Retrieves a new {@link Invite Invite} instance for the given invite code.
-     * <br><b>You cannot resolve invites if you were banned from the origin Guild!</b>
+     *
+     * <p>An invitation cannot be resolved if:
+     * <ul>
+     *     <li>It does not exist</li>
+     *     <li>Your bot is banned from the guild</li>
+     *     <li>Your bot is not part of the {@linkplain #retrieveTargetUsers(JDA, String) target users}</li>
+     * </ul>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
      *     <br>The Invite did not exist (possibly deleted) or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>The Invite is restricted to a set of users and your bot is not one of them.</li>
      * </ul>
      *
      * @param  api
@@ -88,6 +98,9 @@ public interface Invite {
      * @param  withCounts
      *         Whether or not to include online and member counts for guild invites or users for group invites
      *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Invite Invite}
      *         <br>The Invite object
      */
@@ -95,6 +108,105 @@ public interface Invite {
     @CheckReturnValue
     static RestAction<Invite> resolve(@Nonnull JDA api, @Nonnull String code, boolean withCounts) {
         return InviteImpl.resolve(api, code, withCounts);
+    }
+
+    /**
+     * Updates the list of users that are able to use the provided invite code.
+     *
+     * <p>The target users are processed asynchronously, the action may complete before all targeted users are set,
+     * you can use {@link #retrieveTargetUsersJobStatus(JDA, String)} to check the status.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}
+     *     <br>If at least one user ID is invalid.</li>
+     * </ul>
+     *
+     * @param  api
+     *         The JDA instance
+     * @param  code
+     *         A valid invite code
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     *
+     * @return A {@link InviteUpdateTargetUsersAction} to update the target users
+     */
+    @Nonnull
+    @CheckReturnValue
+    static InviteUpdateTargetUsersAction updateTargetUsers(@Nonnull JDA api, @Nonnull String code) {
+        return InviteImpl.updateTargetUsers(api, code);
+    }
+
+    /**
+     * Retrieves a list of {@linkplain UserSnowflake user IDs} to which the given invite code is restricted to.
+     * <br>Only users in the returned list are able to use the invite. This can be changed with {@link #updateTargetUsers(JDA, String)}.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS Unknown Invite Target Users}
+     *     <br>If the invite does not have any target users.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_TARGET_USERS_FILE_NOT_PROCESSED Invite Target Users File Not Processed}
+     *     <br>If the invite has target users, but they were not processed yet.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     * </ul>
+     *
+     * @param  api
+     *         The JDA instance
+     * @param  code
+     *         A valid invite code
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     *
+     * @return A {@link RestAction} returning a list of {@link UserSnowflake}
+     */
+    @Nonnull
+    @CheckReturnValue
+    static RestAction<List<? extends UserSnowflake>> retrieveTargetUsers(@Nonnull JDA api, @Nonnull String code) {
+        return InviteImpl.retrieveTargetUsers(api, code);
+    }
+
+    /**
+     * Retrieves a {@link TargetUsersJobStatus} representing the status of a {@link #updateTargetUsers()} request.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS_JOB Unknown Invite Target Users Job}
+     *     <br>If the invite does not have any target users job.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     * </ul>
+     *
+     * @param  api
+     *         The JDA instance
+     * @param  code
+     *         A valid invite code
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided arguments is {@code null}
+     *
+     * @return A {@link RestAction} returning a {@link TargetUsersJobStatus}
+     */
+    @Nonnull
+    @CheckReturnValue
+    static RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus(@Nonnull JDA api, @Nonnull String code) {
+        return InviteImpl.retrieveTargetUsersJobStatus(api, code);
     }
 
     /**
@@ -134,6 +246,84 @@ public interface Invite {
     @Nonnull
     @CheckReturnValue
     RestAction<Invite> expand();
+
+    /**
+     * Updates the list of users that are able to use the provided invite code.
+     *
+     * <p>The target users are processed asynchronously, the action may complete before all targeted users are set,
+     * you can use {@link #retrieveTargetUsersJobStatus()} to check the status.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}
+     *     <br>If at least one user ID is invalid.</li>
+     * </ul>
+     *
+     * @throws IllegalStateException
+     *         If the invite is not from a guild
+     *
+     * @return A {@link InviteUpdateTargetUsersAction} to update the target users
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteUpdateTargetUsersAction updateTargetUsers();
+
+    /**
+     * Retrieves a list of {@linkplain UserSnowflake user IDs} to which the given invite code is restricted to.
+     * <br>Only users in the returned list are able to use the invite. This can be changed with {@link #updateTargetUsers()}.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS Unknown Invite Target Users}
+     *     <br>If the invite does not have any target users.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_TARGET_USERS_FILE_NOT_PROCESSED Invite Target Users File Not Processed}
+     *     <br>If the invite has target users, but they were not processed yet.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     * </ul>
+     *
+     * @throws IllegalStateException
+     *         If the invite is not from a guild
+     *
+     * @return A {@link RestAction} returning a list of {@link UserSnowflake}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<? extends UserSnowflake>> retrieveTargetUsers();
+
+    /**
+     * Retrieves a {@link TargetUsersJobStatus} representing the status of a {@link #updateTargetUsers()} request.
+     *
+     * <p>This endpoint requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE Unknown Invite}
+     *     <br>The Invite did not exist (possibly deleted), or is a group DM invite, or the account is banned in the guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INVITE_TARGET_USERS_JOB Unknown Invite Target Users Job}
+     *     <br>If the invite does not have any target users job.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission in the target guild.</li>
+     * </ul>
+     *
+     * @throws IllegalStateException
+     *         If the invite is not from a guild
+     *
+     * @return A {@link RestAction} returning a {@link TargetUsersJobStatus}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus();
 
     /**
      * The type of this invite.
@@ -216,6 +406,15 @@ public interface Invite {
      */
     @Nullable
     Guild getGuild();
+
+    /**
+     * The roles which will be assigned to the members using this invite.
+     *
+     * @return Unmodifiable list of roles assigned by this invite
+     */
+    @Nonnull
+    @Unmodifiable
+    List<Role> getRoles();
 
     /**
      * The user who created this invite. For not expanded invites this may be null.
@@ -576,6 +775,100 @@ public interface Invite {
     }
 
     /**
+     * Represents a role assigned by an invitation.
+     *
+     * @see #getRoles()
+     */
+    interface Role extends IMentionable {
+        /**
+         * The actual position of the Role as stored and given by Discord.
+         * <br>Role positions are actually based on a pairing of the creation time (as stored in the snowflake id)
+         * and the position. If 2 or more roles share the same position then they are sorted based on their creation date.
+         * <br>The more recent a role was created, the lower it is in the hierarchy.
+         *
+         * @return The true, Discord stored, position of the Role.
+         */
+        int getPositionRaw();
+
+        /**
+         * The Name of this Role.
+         *
+         * @return Never-null String containing the name of this Role.
+         */
+        @Nonnull
+        String getName();
+
+        /**
+         * Whether this Role is managed by an integration
+         *
+         * @return True, if this Role is managed.
+         */
+        boolean isManaged();
+
+        /**
+         * Whether this Role is hoisted
+         * <br>Members in a hoisted role are displayed in their own grouping on the user-list
+         *
+         * @return True, if this Role is hoisted.
+         */
+        boolean isHoisted();
+
+        /**
+         * Whether this Role is mentionable
+         *
+         * @return True, if Role is mentionable.
+         */
+        boolean isMentionable();
+
+        /**
+         * The {@code long} representation of the literal permissions that this Role has.
+         * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}.
+         *
+         * @return Never-negative long containing offset permissions of this role.
+         */
+        long getPermissionsRaw();
+
+        /**
+         * The colors this Role is displayed in.
+         *
+         * <p>See {@link RoleColors} for detailed information on how these work.
+         *
+         * @return {@link RoleColors}
+         *
+         * @see RoleColors#isDefault()
+         * @see RoleColors#isGradient()
+         * @see RoleColors#isHolographic()
+         */
+        @Nonnull
+        RoleColors getColors();
+
+        /**
+         * The {@link RoleIcon Icon} of this role or {@code null} if no custom image or emoji is set.
+         * This icon will be displayed next to the role's name in the members tab and in chat.
+         *
+         * @return Possibly-null {@link RoleIcon Icon} of this role
+         */
+        @Nullable
+        RoleIcon getIcon();
+
+        // TODO add getFlags()
+
+        /**
+         * The {@code long} representation of the flags that this Role has.
+         *
+         * @return {@code long} bitset containing the flags of this role
+         */
+        long getFlagsRaw();
+
+        @Nonnull
+        @Override
+        default String getAsMention() {
+            // Can't be @everyone
+            return "<@&" + getId() + ">";
+        }
+    }
+
+    /**
      * POJO for the group information provided by an invite.
      *
      * @see #getChannel()
@@ -760,6 +1053,109 @@ public interface Invite {
          * @return {@code -1} if this application does not have a max participant count
          */
         int getMaxParticipants();
+    }
+
+    /**
+     * Represents the status of an invitation's target users job.
+     *
+     * @see #retrieveTargetUsersJobStatus()
+     * @see #retrieveTargetUsersJobStatus(JDA, String)
+     */
+    interface TargetUsersJobStatus {
+        /**
+         * The job status
+         *
+         * @return The job status
+         */
+        @Nonnull
+        Status getStatus();
+
+        /**
+         * The number of users allowed to use the invite.
+         *
+         * @return number of users allowed to use the invite
+         */
+        int getTotalUsers();
+
+        /**
+         * The number of users that have been processed so far.
+         *
+         * @return Number of users processed so far
+         */
+        int getProcessedUsers();
+
+        /**
+         * The moment at which this job was started.
+         *
+         * @return The moment at which this job was started
+         */
+        @Nonnull
+        OffsetDateTime getCreatedAt();
+
+        /**
+         * The moment at which this job was finished successfully,
+         * or {@code null} if it has failed or not finished yet.
+         *
+         * @return The moment at which this job was finished successfully, or {@code null}
+         */
+        @Nullable
+        OffsetDateTime getCompletedAt();
+
+        /**
+         * The error message if this job failed, or {@code null}
+         *
+         * @return The error message, or {@code null}
+         */
+        @Nullable
+        String getErrorMessage();
+
+        /**
+         * Status of an invite's target users job
+         */
+        enum Status {
+            UNKNOWN(-1),
+            /** The default value */
+            UNSPECIFIED(0),
+            /** The job is still being processed */
+            PROCESSING(1),
+            /** The job has been completed successfully */
+            COMPLETED(2),
+            /** The job has failed, see {@link #getErrorMessage()} */
+            FAILED(3);
+
+            private final int key;
+
+            Status(int key) {
+                this.key = key;
+            }
+
+            /**
+             * The key corresponding to this status.
+             *
+             * @return Key corresponding to this status
+             */
+            public int getKey() {
+                return key;
+            }
+
+            /**
+             * Resolves the provided raw API key to the enum constant.
+             *
+             * @param  key
+             *         The api key to check
+             *
+             * @return The resolved Status or {@link #UNKNOWN}
+             */
+            @Nonnull
+            public static Status fromKey(int key) {
+                for (Status status : values()) {
+                    if (status.key == key) {
+                        return status;
+                    }
+                }
+                return UNKNOWN;
+            }
+        }
     }
 
     /**
