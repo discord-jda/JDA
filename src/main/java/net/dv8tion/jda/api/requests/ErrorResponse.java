@@ -79,6 +79,8 @@ public enum ErrorResponse {
     UNKNOWN_SCHEDULED_EVENT(10070, "Unknown Scheduled Event"),
     UNKNOWN_SCHEDULED_EVENT_USER(10071, "Unknown Scheduled Event User"),
     UNKNOWN_TAG(10087, "Unknown Tag"),
+    UNKNOWN_INVITE_TARGET_USERS_JOB(10124, "Unknown Invite Target Users Job (invite exists but has no target users)"),
+    UNKNOWN_INVITE_TARGET_USERS(10129, "Unknown Invite Target Users (invite exists but has no target users)"),
     BOTS_NOT_ALLOWED(20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(20002, "Only bots can use this endpoint"),
     EXPLICIT_CONTENT_CANNOT_SEND_TO_RECIPIENT(20009, "Explicit content cannot be sent to the desired recipient(s)"),
