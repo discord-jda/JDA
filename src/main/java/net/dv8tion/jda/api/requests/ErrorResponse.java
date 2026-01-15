@@ -148,6 +148,7 @@ public enum ErrorResponse {
     FORUM_POST_TAG_REQUIRED(40067, "A tag is required to create a forum post in this channel"),
     DUPLICATE_RESOURCE_ENTITLEMENT(40074, "An entitlement has already been granted for this resource"),
     MAX_FOLLOW_UP_MESSAGES_HIT(40094, "This interaction has hit the maximum number of follow up messages"),
+    INVITE_TARGET_USERS_FILE_NOT_PROCESSED(40115, "Target users file has not been processed"),
     CLOUDFLARE_BLOCKED_REQUEST(
             40333, "Cloudflare is blocking your request. This can often be resolved by setting a proper User Agent"),
     MISSING_ACCESS(50001, "Missing Access"),
