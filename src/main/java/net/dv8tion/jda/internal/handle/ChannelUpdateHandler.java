@@ -47,6 +47,7 @@ import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -283,8 +284,8 @@ public class ChannelUpdateHandler extends SocketHandler {
             DataObject override,
             long overrideId,
             IPermissionContainerMixin<?> channel) {
-        long allow = override.getLong("allow");
-        long deny = override.getLong("deny");
+        PermissionSet allow = override.getParsedString("allow", PermissionSet::parse);
+        PermissionSet deny = override.getParsedString("deny", PermissionSet::parse);
         int type = override.getInt("type");
         boolean isRole = type == 0;
         if (!isRole) {
@@ -297,16 +298,16 @@ public class ChannelUpdateHandler extends SocketHandler {
             }
         }
 
-        if (currentOverride != null) // Permissions were updated?
-        {
-            long oldAllow = currentOverride.getAllowedRaw();
-            long oldDeny = currentOverride.getDeniedRaw();
+        if (currentOverride != null) {
+            // Permissions were updated?
+            PermissionSet oldAllow = currentOverride.getAllowedSet();
+            PermissionSet oldDeny = currentOverride.getDeniedSet();
             PermissionOverrideImpl impl = (PermissionOverrideImpl) currentOverride;
-            if (oldAllow == allow && oldDeny == deny) {
+            if (oldAllow.equals(allow) && oldDeny.equals(deny)) {
                 return false;
             }
 
-            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L) {
+            if (overrideId == channel.getGuild().getIdLong() && allow.or(deny).equals(PermissionSet.ZERO)) {
                 // We delete empty overrides for the @everyone role because that's what the client
                 // also does, otherwise our sync checks don't work!
                 channel.getPermissionOverrideMap().remove(overrideId);
@@ -320,10 +321,10 @@ public class ChannelUpdateHandler extends SocketHandler {
             impl.setDeny(deny);
             api.handleEvent(new PermissionOverrideUpdateEvent(
                     api, responseNumber, channel, currentOverride, oldAllow, oldDeny));
-        } else // New override?
-        {
+        } else {
+            // New override?
             // Empty @everyone overrides should be treated as not existing at all
-            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L) {
+            if (overrideId == channel.getGuild().getIdLong() && allow.or(deny).equals(PermissionSet.ZERO)) {
                 return false;
             }
             PermissionOverrideImpl impl;
