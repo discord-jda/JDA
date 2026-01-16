@@ -12,21 +12,21 @@ jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", ver
 jdave = "club.minnced:jdave-api:0.1.2"
 jetbrains-annotations = "org.jetbrains:annotations:26.0.2-1"
 jna = "net.java.dev.jna:jna:5.18.1"
-junit = "org.junit.jupiter:junit-jupiter:6.0.1"
+junit = "org.junit.jupiter:junit-jupiter:6.0.2"
 # @pin Newer versions require java 17 or higher
-junit-java8 = "org.junit.jupiter:junit-jupiter:5.14.0"
-junit-launcher = "org.junit.platform:junit-platform-launcher:6.0.1"
+junit-java8 = "org.junit.jupiter:junit-jupiter:6.0.2"
+junit-launcher = "org.junit.platform:junit-platform-launcher:6.0.2"
 # @pin Newer versions require java 17 or higher
-junit-launcher-java8 = "org.junit.platform:junit-platform-launcher:1.14.0"
+junit-launcher-java8 = "org.junit.platform:junit-platform-launcher:6.0.2"
 logback-classic = "ch.qos.logback:logback-classic:1.5.24"
 mockito = "org.mockito:mockito-core:5.21.0"
 okhttp = "com.squareup.okhttp3:okhttp-jvm:5.3.2"
-openrewrite-bom = "org.openrewrite.recipe:rewrite-recipe-bom:3.21.0"
+openrewrite-bom = "org.openrewrite.recipe:rewrite-recipe-bom:3.22.0"
 opus = "club.minnced:opus-java:1.1.1"
 reflections = "org.reflections:reflections:0.10.2"
 slf4j = "org.slf4j:slf4j-api:2.0.17"
 # @pin Newer versions require java 11 or higher
-tink = "com.google.crypto.tink:tink:1.18.0"
+tink = "com.google.crypto.tink:tink:1.20.0"
 trove4j = "net.sf.trove4j:core:3.1.0"
 websocket-client = "com.neovisionaries:nv-websocket-client:2.14"
 
@@ -47,7 +47,7 @@ junit-java8 = [
 [plugins]
 ideax = "org.jetbrains.gradle.plugin.idea-ext:1.3"
 jreleaser = "org.jreleaser:1.22.0"
-openrewrite = "org.openrewrite.rewrite:7.23.0"
+openrewrite = "org.openrewrite.rewrite:7.24.0"
 shadow = "com.gradleup.shadow:9.3.1"
 # @pin Version 8.0.0 is incompatible with jreleaser (see https://github.com/jreleaser/jreleaser/issues/1989)
 spotless = "com.diffplug.spotless:7.2.1"

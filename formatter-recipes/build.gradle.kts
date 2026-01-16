@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  */
 
 plugins {
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
 }
 
 repositories {
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.21.0"))
+    implementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.22.0"))
     implementation("org.openrewrite:rewrite-java")
 }
 
