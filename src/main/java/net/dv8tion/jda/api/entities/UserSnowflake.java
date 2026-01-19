@@ -76,6 +76,8 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
     /**
      * The URL for the user's default avatar image.
      *
+     * <p>Size parameters are ignored by this endpoint.
+     *
      * @return Never-null String containing the user's default avatar url.
      */
     @Nonnull
@@ -85,6 +87,8 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
 
     /**
      * Returns an {@link ImageProxy} for this user's default avatar.
+     *
+     * <p>Size parameters are ignored by this endpoint.
      *
      * @return Never-null {@link ImageProxy} of this user's default avatar
      *
