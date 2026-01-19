@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;

@@ -22,12 +22,12 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Widget;
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import java.util.ArrayList;

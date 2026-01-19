@@ -60,12 +60,12 @@ import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationActi
 import net.dv8tion.jda.api.requests.restaction.pagination.BanPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.*;
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;

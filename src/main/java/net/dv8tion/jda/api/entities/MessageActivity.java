@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

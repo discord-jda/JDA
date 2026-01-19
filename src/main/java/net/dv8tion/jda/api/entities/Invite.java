@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 
 import java.time.OffsetDateTime;
 import java.util.List;

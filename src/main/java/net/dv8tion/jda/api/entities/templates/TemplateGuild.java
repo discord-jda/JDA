@@ -23,9 +23,9 @@ import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;

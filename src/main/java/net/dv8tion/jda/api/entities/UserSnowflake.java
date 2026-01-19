@@ -17,10 +17,11 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 
 import javax.annotation.Nonnull;
 
@@ -96,6 +97,6 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      */
     @Nonnull
     default ImageProxy getDefaultAvatar() {
-        return DiscordAssets.userDefaultAvatar(getDefaultAvatarId());
+        return DiscordAssets.userDefaultAvatar(ImageFormat.PNG, getDefaultAvatarId());
     }
 }

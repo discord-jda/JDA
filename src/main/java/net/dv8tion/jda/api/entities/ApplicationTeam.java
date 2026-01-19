@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;

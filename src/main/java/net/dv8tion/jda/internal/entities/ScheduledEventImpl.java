@@ -26,13 +26,13 @@ import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.managers.ScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ScheduledEventMembersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.time.OffsetDateTime;
