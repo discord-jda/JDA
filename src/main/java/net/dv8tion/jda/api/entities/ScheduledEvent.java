@@ -82,6 +82,14 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
     String getDescription();
 
     /**
+     * The ID of the cover image of the event.
+     *
+     * @return The cover image ID, or {@code null} if none is specified.
+     */
+    @Nullable
+    String getImageId();
+
+    /**
      * The cover image url of the event.
      * <p>Links to a potentially heavily compressed image. You can append a {@code size} query parameter to the URL if needed.
      *
