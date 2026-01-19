@@ -19,10 +19,12 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
@@ -198,6 +200,24 @@ public interface User extends UserSnowflake {
     }
 
     /**
+     * The URL for the user's avatar image.
+     * If the user has not set an image, this will return null.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
+     */
+    @Nullable
+    default String getAvatarUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = DiscordAssets.userAvatar(format, getId(), getAvatarId());
+        return proxy == null ? null : proxy.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this user's avatar.
      *
      * @return Possibly-null {@link ImageProxy} of this user's avatar
@@ -208,6 +228,24 @@ public interface User extends UserSnowflake {
     default ImageProxy getAvatar() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this user's avatar.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this user's avatar
+     *
+     * @see    #getAvatarUrl()
+     */
+    @Nullable
+    default ImageProxy getAvatar(@Nonnull ImageFormat format) {
+        return DiscordAssets.userAvatar(format, getId(), getAvatarId());
     }
 
     /**
@@ -405,6 +443,26 @@ public interface User extends UserSnowflake {
         }
 
         /**
+         * The URL for the user's banner image.
+         * If the user has not set a banner, this will return null.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null String containing the {@link User User} banner url.
+         *
+         * @see User#BANNER_URL
+         */
+        @Nullable
+        public String getBannerUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = DiscordAssets.userBanner(format, Long.toUnsignedString(userId), getBannerId());
+            return proxy == null ? null : proxy.getUrl();
+        }
+
+        /**
          * Returns an {@link ImageProxy} for this user's banner.
          *
          * @return Possibly-null {@link ImageProxy} of this user's banner
@@ -415,6 +473,24 @@ public interface User extends UserSnowflake {
         public ImageProxy getBanner() {
             String bannerUrl = getBannerUrl();
             return bannerUrl == null ? null : new ImageProxy(bannerUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this user's banner.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this user's banner
+         *
+         * @see    #getBannerUrl()
+         */
+        @Nullable
+        public ImageProxy getBanner(@Nonnull ImageFormat format) {
+            return DiscordAssets.userBanner(format, Long.toUnsignedString(userId), getBannerId());
         }
 
         /**
@@ -683,6 +759,25 @@ public interface User extends UserSnowflake {
         }
 
         /**
+         * The URL for the user's server tag badge image.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null String containing the {@link User User}'s server tag badge url.
+         *
+         * @see User#TAG_BADGE_URL
+         */
+        @Nullable
+        public String getBadgeUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getBadge(format);
+            return proxy == null ? null : proxy.getUrl();
+        }
+
+        /**
          * Returns an {@link ImageProxy} for user's server tag badge.
          *
          * @return Possibly-null {@link ImageProxy} of {@link User User}'s server tag badge.
@@ -693,6 +788,24 @@ public interface User extends UserSnowflake {
         public ImageProxy getBadge() {
             String badgeUrl = getBadgeUrl();
             return badgeUrl == null ? null : new ImageProxy(badgeUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for user's server tag badge.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of {@link User User}'s server tag badge.
+         *
+         * @see #getBadgeUrl()
+         */
+        @Nullable
+        public ImageProxy getBadge(@Nonnull ImageFormat format) {
+            return DiscordAssets.userTagBadge(format, Long.toUnsignedString(guildId), getBadgeHash());
         }
 
         @Override

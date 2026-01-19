@@ -21,8 +21,10 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -415,6 +417,24 @@ public interface Invite {
         }
 
         /**
+         * The guild banner url.
+         * <br>This is shown in guilds below the guild name.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return The guild banner url or null
+         */
+        @Nullable
+        default String getBannerUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getBanner(format);
+            return proxy == null ? null : proxy.getUrl();
+        }
+
+        /**
          * Returns an {@link ImageProxy} for this guild's banner image.
          *
          * @return Possibly-null {@link ImageProxy} of this guild's banner image
@@ -425,6 +445,24 @@ public interface Invite {
         default ImageProxy getBanner() {
             String bannerUrl = getBannerUrl();
             return bannerUrl == null ? null : new ImageProxy(bannerUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this guild's banner image.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this guild's banner image
+         *
+         * @see    #getBannerUrl()
+         */
+        @Nullable
+        default ImageProxy getBanner(@Nonnull ImageFormat format) {
+            return DiscordAssets.guildBanner(format, getId(), getBannerId());
         }
 
         /**
@@ -458,6 +496,25 @@ public interface Invite {
         String getIconUrl();
 
         /**
+         * The icon url of this guild.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return The guild's icon url
+         *
+         * @see    #getIconId()
+         */
+        @Nullable
+        default String getIconUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getIcon(format);
+            return proxy == null ? null : proxy.getUrl();
+        }
+
+        /**
          * Returns an {@link ImageProxy} for this guild's icon
          *
          * @return Possibly-null {@link ImageProxy} of this guild's icon
@@ -468,6 +525,24 @@ public interface Invite {
         default ImageProxy getIcon() {
             String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this guild's icon
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this guild's icon
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        default ImageProxy getIcon(@Nonnull ImageFormat format) {
+            return DiscordAssets.guildIcon(format, getId(), getIconId());
         }
 
         /**
@@ -499,6 +574,25 @@ public interface Invite {
         String getSplashUrl();
 
         /**
+         * Returns the splash image url of this guild.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return The guild's splash image url or {@code null} if the guild has no splash image
+         *
+         * @see    #getSplashId()
+         */
+        @Nullable
+        default String getSplashUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getSplash(format);
+            return proxy == null ? null : proxy.getUrl();
+        }
+
+        /**
          * Returns an {@link ImageProxy} for this invite guild's splash image.
          *
          * @return Possibly-null {@link ImageProxy} of this invite guild's splash image
@@ -509,6 +603,24 @@ public interface Invite {
         default ImageProxy getSplash() {
             String splashUrl = getSplashUrl();
             return splashUrl == null ? null : new ImageProxy(splashUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this invite guild's splash image.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this invite guild's splash image
+         *
+         * @see    #getSplashUrl()
+         */
+        @Nullable
+        default ImageProxy getSplash(@Nonnull ImageFormat format) {
+            return DiscordAssets.guildSplash(format, getId(), getSplashId());
         }
 
         /**
@@ -602,6 +714,25 @@ public interface Invite {
         String getIconUrl();
 
         /**
+         * The icon url of this group or {@code null} if the group has no icon.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return The group's icon url
+         *
+         * @see    #getIconId()
+         */
+        @Nullable
+        default String getIconUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getIcon(format);
+            return proxy == null ? null : proxy.getUrl();
+        }
+
+        /**
          * Returns an {@link ImageProxy} for this group invite's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this group invite's icon
@@ -612,6 +743,24 @@ public interface Invite {
         default ImageProxy getIcon() {
             String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this group invite's icon.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this group invite's icon
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        default ImageProxy getIcon(@Nonnull ImageFormat format) {
+            return DiscordAssets.channelIcon(format, getId(), getIconUrl());
         }
 
         /**
@@ -742,6 +891,25 @@ public interface Invite {
         String getIconUrl();
 
         /**
+         * The icon url of this application or {@code null} if the application has no icon.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return The application's icon url
+         *
+         * @see    #getIconId()
+         */
+        @Nullable
+        default String getIconUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getIcon(format);
+            return proxy == null ? null : proxy.getUrl();
+        }
+
+        /**
          * Returns an {@link ImageProxy} for this application invite's icon.
          *
          * @return Possibly-null {@link ImageProxy} of this application invite's icon
@@ -752,6 +920,24 @@ public interface Invite {
         default ImageProxy getIcon() {
             String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this application invite's icon.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this application invite's icon
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        default ImageProxy getIcon(@Nonnull ImageFormat format) {
+            return DiscordAssets.applicationIcon(format, getId(), getIconId());
         }
 
         /**

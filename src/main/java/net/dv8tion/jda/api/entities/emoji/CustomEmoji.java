@@ -17,8 +17,10 @@
 package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 
 import java.util.Formatter;
 
@@ -68,6 +70,23 @@ public interface CustomEmoji extends Emoji, IMentionable {
     }
 
     /**
+     * A String representation of the URL which leads to image displayed within the official Discord&trade; client
+     * when this emoji is used
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Discord CDN link to the emoji's image
+     */
+    @Nonnull
+    default String getImageUrl(@Nonnull ImageFormat format) {
+        return getImage(format).getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this emoji's image.
      *
      * @return Never-null {@link ImageProxy} of this emoji's image
@@ -77,6 +96,24 @@ public interface CustomEmoji extends Emoji, IMentionable {
     @Nonnull
     default ImageProxy getImage() {
         return new ImageProxy(getImageUrl());
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this emoji's image.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Never-null {@link ImageProxy} of this emoji's image
+     *
+     * @see    #getImageUrl()
+     */
+    @Nonnull
+    default ImageProxy getImage(@Nonnull ImageFormat format) {
+        return DiscordAssets.customEmojiIcon(format, getId());
     }
 
     /**

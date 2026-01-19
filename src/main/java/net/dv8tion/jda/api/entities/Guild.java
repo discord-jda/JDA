@@ -59,14 +59,13 @@ import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.BanPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
@@ -748,6 +747,28 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
+     * The URL of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
+     * If no icon has been set, this returns {@code null}.
+     * <p>
+     * The Guild icon can be modified using {@link GuildManager#setIcon(Icon)}.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return Possibly-null String containing the Guild's icon URL.
+     */
+    @Nullable
+    default String getIconUrl(@Nonnull ImageFormat format) {
+        ImageProxy icon = getIcon(format);
+        return icon == null ? null : icon.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this guild's icon.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
@@ -759,8 +780,30 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nullable
     default ImageProxy getIcon() {
+
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's icon.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return The {@link ImageProxy} of this guild's icon
+     *
+     * @see    #getIconUrl()
+     */
+    @Nullable
+    default ImageProxy getIcon(@Nonnull ImageFormat format) {
+        String iconId = getIconId();
+        return iconId == null ? null : DiscordAssets.guildIcon(format, getId(), iconId);
     }
 
     /**
@@ -822,6 +865,30 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
+     * The URL of the splash image for this Guild. A Splash image is an image displayed when viewing a
+     * Discord Guild Invite on the web or in client just before accepting or declining the invite.
+     * If no splash has been set, this returns {@code null}.
+     * <br>Splash images are VIP/Partner Guild only.
+     * <p>
+     * The Guild splash can be modified using {@link GuildManager#setSplash(Icon)}.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return Possibly-null String containing the Guild's splash URL.
+     */
+    @Nullable
+    default String getSplashUrl(@Nonnull ImageFormat format) {
+        ImageProxy splash = getSplash(format);
+        return splash == null ? null : splash.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this guild's splash icon.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
@@ -835,6 +902,26 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default ImageProxy getSplash() {
         String splashUrl = getSplashUrl();
         return splashUrl == null ? null : new ImageProxy(splashUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's splash icon.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's splash icon
+     *
+     * @see    #getSplashUrl()
+     */
+    @Nullable
+    default ImageProxy getSplash(@Nonnull ImageFormat format) {
+        return DiscordAssets.guildSplash(format, getId(), getSplashId());
     }
 
     /**
@@ -955,6 +1042,28 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
+     * The guild banner url.
+     * <br>This is shown in guilds below the guild name.
+     *
+     * <p>The banner can be modified using {@link GuildManager#setBanner(Icon)}.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return The guild banner url or null
+     */
+    @Nullable
+    default String getBannerUrl(@Nonnull ImageFormat format) {
+        ImageProxy banner = getBanner(format);
+        return banner == null ? null : banner.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this guild's banner image.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
@@ -968,6 +1077,26 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default ImageProxy getBanner() {
         String bannerUrl = getBannerUrl();
         return bannerUrl == null ? null : new ImageProxy(bannerUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's banner image.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's banner image
+     *
+     * @see    #getBannerUrl()
+     */
+    @Nullable
+    default ImageProxy getBanner(@Nonnull ImageFormat format) {
+        return DiscordAssets.guildBanner(format, getId(), getBannerId());
     }
 
     /**

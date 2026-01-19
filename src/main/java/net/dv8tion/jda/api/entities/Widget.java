@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.WidgetUtil;
 
@@ -200,6 +201,22 @@ public interface Widget extends ISnowflake {
         String getAvatarUrl();
 
         /**
+         * Gets the avatar url of the member, or null if they do not have
+         * an avatar set.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return possibly-null String containing the avatar url of the
+         *         member
+         */
+        @Nullable
+        String getAvatarUrl(@Nonnull ImageFormat format);
+
+        /**
          * Returns an {@link ImageProxy} for this user's avatar image.
          *
          * @return Possibly-null {@link ImageProxy} of this user's avatar image
@@ -208,6 +225,22 @@ public interface Widget extends ISnowflake {
          */
         @Nullable
         ImageProxy getAvatar();
+
+        /**
+         * Returns an {@link ImageProxy} for this user's avatar image.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this user's avatar image
+         *
+         * @see    #getAvatarUrl()
+         */
+        @Nullable
+        ImageProxy getAvatar(@Nonnull ImageFormat format);
 
         /**
          * Gets the asset id of the member's default avatar

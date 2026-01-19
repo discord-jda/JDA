@@ -26,10 +26,13 @@ import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.utils.ImageFormat;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.managers.ScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ScheduledEventMembersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.time.OffsetDateTime;
@@ -72,6 +75,12 @@ public class ScheduledEventImpl implements ScheduledEvent {
     @Override
     public String getImageUrl() {
         return image == null ? null : String.format(IMAGE_URL, getId(), image, image.startsWith("a_") ? "gif" : "png");
+    }
+
+    @Nullable
+    @Override
+    public ImageProxy getImage(@Nonnull ImageFormat format) {
+        return DiscordAssets.scheduledEventImage(format, getId(), image);
     }
 
     @Nullable

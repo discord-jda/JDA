@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -86,6 +88,23 @@ public interface ApplicationTeam extends ISnowflake {
     }
 
     /**
+     * The url for the icon of this team.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The icon url, or null if no icon is applied
+     */
+    @Nullable
+    default String getIconUrl(@Nonnull ImageFormat format) {
+        ImageProxy icon = getIcon(format);
+        return icon == null ? null : icon.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this application team's icon.
      *
      * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
@@ -96,6 +115,24 @@ public interface ApplicationTeam extends ISnowflake {
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this application team's icon.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
+     *
+     * @see    #getIconUrl()
+     */
+    @Nullable
+    default ImageProxy getIcon(@Nonnull ImageFormat format) {
+        return DiscordAssets.applicationTeamIcon(format, getId(), getIconId());
     }
 
     /**

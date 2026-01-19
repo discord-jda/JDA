@@ -22,10 +22,12 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Widget;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import java.util.ArrayList;
@@ -276,11 +278,24 @@ public class WidgetImpl implements Widget {
                     : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
         }
 
+        @Nullable
+        @Override
+        public String getAvatarUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getAvatar(format);
+            return proxy == null ? null : proxy.getUrl();
+        }
+
         @Override
         @Nullable
         public ImageProxy getAvatar() {
             String avatarUrl = getAvatarUrl();
             return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+        }
+
+        @Nullable
+        @Override
+        public ImageProxy getAvatar(@Nonnull ImageFormat format) {
+            return DiscordAssets.userAvatar(format, getId(), avatar);
         }
 
         @Override

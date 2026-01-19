@@ -18,7 +18,9 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,9 +57,27 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      */
     @Nullable
     public String getNewBannerUrl() {
+
         return next == null
                 ? null
                 : String.format(Guild.BANNER_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
+    }
+
+    /**
+     * The new banner url
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The new banner url, or null if the banner was removed
+     */
+    @Nullable
+    public String getNewBannerUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getNewBanner(format);
+        return proxy == null ? null : proxy.getUrl();
     }
 
     /**
@@ -69,8 +89,27 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      */
     @Nullable
     public ImageProxy getNewBanner() {
+
         String newBannerUrl = getNewBannerUrl();
         return newBannerUrl == null ? null : new ImageProxy(newBannerUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's new banner.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's new banner
+     *
+     * @see    #getNewBannerUrl()
+     */
+    @Nullable
+    public ImageProxy getNewBanner(@Nonnull ImageFormat format) {
+        return DiscordAssets.guildBanner(format, guild.getId(), next);
     }
 
     /**
@@ -96,6 +135,23 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
     }
 
     /**
+     * The old banner url
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The old banner url, or null if the banner didn't exist
+     */
+    @Nullable
+    public String getOldBannerUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getOldBanner(format);
+        return proxy == null ? null : proxy.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this guild's old banner.
      * <p>
      * <b>Note:</b> the old banner may not always be downloadable as it might have been removed from Discord.
@@ -108,5 +164,25 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
     public ImageProxy getOldBanner() {
         String oldBannerUrl = getOldBannerUrl();
         return oldBannerUrl == null ? null : new ImageProxy(oldBannerUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's old banner.
+     * <p>
+     * <b>Note:</b> the old banner may not always be downloadable as it might have been removed from Discord.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's old banner
+     *
+     * @see    #getOldBannerUrl()
+     */
+    @Nullable
+    public ImageProxy getOldBanner(@Nonnull ImageFormat format) {
+        return DiscordAssets.guildBanner(format, guild.getId(), previous);
     }
 }

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 
 import javax.annotation.Nonnull;
 
@@ -79,7 +80,7 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      */
     @Nonnull
     default String getDefaultAvatarUrl() {
-        return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
+        return getDefaultAvatar().getUrl();
     }
 
     /**
@@ -91,6 +92,6 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      */
     @Nonnull
     default ImageProxy getDefaultAvatar() {
-        return new ImageProxy(getDefaultAvatarUrl());
+        return DiscordAssets.userDefaultAvatar(getDefaultAvatarId());
     }
 }

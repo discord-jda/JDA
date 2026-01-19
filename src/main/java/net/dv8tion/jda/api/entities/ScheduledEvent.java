@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import java.time.OffsetDateTime;
@@ -82,12 +83,30 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
 
     /**
      * The cover image url of the event.
-     * <p>Links to a potentially heavily compressed image. You can append a size parameter to the URL if needed. Example: {@code ?size=4096}
+     * <p>Links to a potentially heavily compressed image. You can append a {@code size} query parameter to the URL if needed.
      *
      * @return The image url, or {@code null} if none is specified
      */
     @Nullable
     String getImageUrl();
+
+    /**
+     * The cover image url of the event.
+     * <p>Links to a potentially heavily compressed image. You can append a {@code size} query parameter to the URL if needed.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The image url, or {@code null} if none is specified
+     */
+    @Nullable
+    default String getImageUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getImage(format);
+        return proxy == null ? null : proxy.getUrl();
+    }
 
     /**
      * Returns an {@link ImageProxy} for this events cover image.
@@ -101,6 +120,22 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
         String imageUrl = getImageUrl();
         return imageUrl == null ? null : new ImageProxy(imageUrl);
     }
+
+    /**
+     * Returns an {@link ImageProxy} for this events cover image.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The {@link ImageProxy} for this events cover image or null if no image is defined
+     *
+     * @see    #getImageUrl()
+     */
+    @Nullable
+    ImageProxy getImage(@Nonnull ImageFormat format);
 
     /**
      * The user who originally created the event.

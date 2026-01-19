@@ -27,10 +27,12 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -292,6 +294,24 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     }
 
     /**
+     * The URL for the member's per guild avatar image.
+     * If the member has not set a per guild avatar, this will return null.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar url.
+     */
+    @Nullable
+    default String getAvatarUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getAvatar(format);
+        return proxy == null ? null : proxy.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this member's avatar.
      *
      * @return Possibly-null {@link ImageProxy} of this member's avatar
@@ -302,6 +322,24 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     default ImageProxy getAvatar() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this member's avatar.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's avatar
+     *
+     * @see    #getAvatarUrl()
+     */
+    @Nullable
+    default ImageProxy getAvatar(@Nonnull ImageFormat format) {
+        return DiscordAssets.memberAvatar(format, getGuild().getId(), getId(), getAvatarId());
     }
 
     /**

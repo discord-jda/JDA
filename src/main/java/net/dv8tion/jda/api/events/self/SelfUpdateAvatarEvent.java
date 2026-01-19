@@ -17,7 +17,9 @@
 package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.internal.utils.DiscordAssets;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,6 +63,23 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
     }
 
     /**
+     * The old avatar url
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return  The old avatar url
+     */
+    @Nullable
+    public String getOldAvatarUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getOldAvatar(format);
+        return proxy == null ? null : proxy.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this bot's new avatar image.
      * <p>
      * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord.
@@ -73,6 +92,26 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
     public ImageProxy getOldAvatar() {
         String oldAvatarUrl = getOldAvatarUrl();
         return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this bot's new avatar image.
+     * <p>
+     * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
+     *
+     * @see    #getOldAvatarUrl()
+     */
+    @Nullable
+    public ImageProxy getOldAvatar(@Nonnull ImageFormat format) {
+        return DiscordAssets.userAvatar(format, getSelfUser().getId(), previous);
     }
 
     /**
@@ -98,6 +137,23 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
     }
 
     /**
+     * The new avatar url
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return  The new avatar url
+     */
+    @Nullable
+    public String getNewAvatarUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getNewAvatar(format);
+        return proxy == null ? null : proxy.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this bot's new avatar image.
      *
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
@@ -108,5 +164,23 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
     public ImageProxy getNewAvatar() {
         String newAvatarUrl = getNewAvatarUrl();
         return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this bot's new avatar image.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
+     *
+     * @see    #getNewAvatarUrl()
+     */
+    @Nullable
+    public ImageProxy getNewAvatar(@Nonnull ImageFormat format) {
+        return DiscordAssets.userAvatar(format, getSelfUser().getId(), next);
     }
 }
