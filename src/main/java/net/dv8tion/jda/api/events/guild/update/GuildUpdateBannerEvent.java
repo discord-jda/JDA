@@ -179,7 +179,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old banner
      *
-     * @see    #getOldBannerUrl()
+     * @see    #getOldBannerUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getOldBanner(@Nonnull ImageFormat format) {

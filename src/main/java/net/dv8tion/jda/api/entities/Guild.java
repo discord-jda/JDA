@@ -917,7 +917,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return Possibly-null {@link ImageProxy} of this guild's splash icon
      *
-     * @see    #getSplashUrl()
+     * @see    #getSplashUrl(ImageFormat)
      */
     @Nullable
     default ImageProxy getSplash(@Nonnull ImageFormat format) {
@@ -1017,7 +1017,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return The guild banner id or null
      *
-     * @see    #getBannerUrl()
+     * @see    #getBannerUrl(ImageFormat)
      */
     @Nullable
     String getBannerId();
@@ -1092,7 +1092,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return Possibly-null {@link ImageProxy} of this guild's banner image
      *
-     * @see    #getBannerUrl()
+     * @see    #getBannerUrl(ImageFormat)
      */
     @Nullable
     default ImageProxy getBanner(@Nonnull ImageFormat format) {

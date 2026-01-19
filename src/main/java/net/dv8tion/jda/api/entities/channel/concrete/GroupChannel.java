@@ -101,7 +101,7 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
      *
      * @return Possibly-null {@link ImageProxy} of this group channel's icon
      *
-     * @see    #getIconUrl()
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     default ImageProxy getIcon(@Nonnull ImageFormat format) {

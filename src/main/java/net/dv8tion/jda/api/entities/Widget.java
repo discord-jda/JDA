@@ -237,7 +237,7 @@ public interface Widget extends ISnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of this user's avatar image
          *
-         * @see    #getAvatarUrl()
+         * @see    #getAvatarUrl(ImageFormat)
          */
         @Nullable
         ImageProxy getAvatar(@Nonnull ImageFormat format);

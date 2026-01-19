@@ -241,7 +241,7 @@ public interface User extends UserSnowflake {
      *
      * @return Possibly-null {@link ImageProxy} of this user's avatar
      *
-     * @see    #getAvatarUrl()
+     * @see    #getAvatarUrl(ImageFormat)
      */
     @Nullable
     default ImageProxy getAvatar(@Nonnull ImageFormat format) {
@@ -310,7 +310,7 @@ public interface User extends UserSnowflake {
      *
      * @return Never-null {@link ImageProxy} of this user's effective avatar image
      *
-     * @see    #getEffectiveAvatarUrl()
+     * @see    #getEffectiveAvatarUrl(ImageFormat)
      */
     @Nonnull
     default ImageProxy getEffectiveAvatar(@Nonnull ImageFormat preferredFormat) {
@@ -530,7 +530,7 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of this user's banner
          *
-         * @see    #getBannerUrl()
+         * @see    #getBannerUrl(ImageFormat)
          */
         @Nullable
         public ImageProxy getBanner(@Nonnull ImageFormat format) {
@@ -845,7 +845,7 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of {@link User User}'s server tag badge.
          *
-         * @see #getBadgeUrl()
+         * @see #getBadgeUrl(ImageFormat)
          */
         @Nullable
         public ImageProxy getBadge(@Nonnull ImageFormat format) {

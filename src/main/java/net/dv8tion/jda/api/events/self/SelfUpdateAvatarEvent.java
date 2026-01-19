@@ -107,7 +107,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
-     * @see    #getOldAvatarUrl()
+     * @see    #getOldAvatarUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getOldAvatar(@Nonnull ImageFormat format) {
@@ -177,7 +177,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
-     * @see    #getNewAvatarUrl()
+     * @see    #getNewAvatarUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getNewAvatar(@Nonnull ImageFormat format) {

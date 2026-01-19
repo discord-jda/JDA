@@ -132,7 +132,7 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      *
      * @return The {@link ImageProxy} for this events cover image or null if no image is defined
      *
-     * @see    #getImageUrl()
+     * @see    #getImageUrl(ImageFormat)
      */
     @Nullable
     ImageProxy getImage(@Nonnull ImageFormat format);

@@ -123,7 +123,7 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      *
      * @return Possibly-null {@link ImageProxy} of this member's old avatar
      *
-     * @see    #getOldAvatarUrl()
+     * @see    #getOldAvatarUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getOldAvatar(@Nonnull ImageFormat format) {
@@ -198,7 +198,7 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      *
      * @return Possibly-null {@link ImageProxy} of this member's new avatar
      *
-     * @see    #getNewAvatarUrl()
+     * @see    #getNewAvatarUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getNewAvatar(@Nonnull ImageFormat format) {

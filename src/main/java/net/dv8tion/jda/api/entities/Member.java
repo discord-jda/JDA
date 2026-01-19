@@ -335,7 +335,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return Possibly-null {@link ImageProxy} of this member's avatar
      *
-     * @see    #getAvatarUrl()
+     * @see    #getAvatarUrl(ImageFormat)
      */
     @Nullable
     default ImageProxy getAvatar(@Nonnull ImageFormat format) {
@@ -404,7 +404,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return Never-null {@link ImageProxy} of this member's effective avatar image
      *
-     * @see    #getEffectiveAvatarUrl()
+     * @see    #getEffectiveAvatarUrl(ImageFormat)
      */
     @Nonnull
     default ImageProxy getEffectiveAvatar(@Nonnull ImageFormat preferredFormat) {

@@ -168,7 +168,7 @@ public class MessageActivity {
          *
          * @return Possibly-null {@link ImageProxy} of this application's icon
          *
-         * @see    #getIconUrl()
+         * @see    #getIconUrl(ImageFormat)
          */
         @Nullable
         public ImageProxy getIcon(@Nonnull ImageFormat format) {
@@ -238,7 +238,7 @@ public class MessageActivity {
          *
          * @return Possibly-null {@link ImageProxy} of this cover's icon
          *
-         * @see    #getCoverUrl()
+         * @see    #getCoverUrl(ImageFormat)
          */
         @Nullable
         public ImageProxy getCover(@Nonnull ImageFormat format) {

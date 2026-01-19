@@ -397,7 +397,7 @@ public interface Invite {
          *
          * @return The guild banner id or null
          *
-         * @see    #getBannerUrl()
+         * @see    #getBannerUrl(ImageFormat)
          */
         @Nullable
         String getBannerId();
@@ -480,7 +480,7 @@ public interface Invite {
          *
          * @return The guild's icon id
          *
-         * @see    #getIconUrl()
+         * @see    #getIconUrl(ImageFormat)
          */
         @Nullable
         String getIconId();
@@ -538,7 +538,7 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this guild's icon
          *
-         * @see    #getIconUrl()
+         * @see    #getIconUrl(ImageFormat)
          */
         @Nullable
         default ImageProxy getIcon(@Nonnull ImageFormat format) {
@@ -558,7 +558,7 @@ public interface Invite {
          *
          * @return The guild's splash image id or {@code null} if the guild has no splash image
          *
-         * @see    #getSplashUrl()
+         * @see    #getSplashUrl(ImageFormat)
          */
         @Nullable
         String getSplashId();
@@ -616,7 +616,7 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this invite guild's splash image
          *
-         * @see    #getSplashUrl()
+         * @see    #getSplashUrl(ImageFormat)
          */
         @Nullable
         default ImageProxy getSplash(@Nonnull ImageFormat format) {
@@ -666,7 +666,7 @@ public interface Invite {
          * <ul>
          *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
          *     <li>VANITY_URL - Guild a vanity URL (custom invite link)</li>
-         *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
+         *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl(ImageFormat)}</li>
          *     <li>VERIFIED - Guild is "verified"</li>
          *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
          * </ul>
@@ -698,7 +698,7 @@ public interface Invite {
          *
          * @return The group's icon id
          *
-         * @see    #getIconUrl()
+         * @see    #getIconUrl(ImageFormat)
          */
         @Nullable
         String getIconId();
@@ -756,7 +756,7 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this group invite's icon
          *
-         * @see    #getIconUrl()
+         * @see    #getIconUrl(ImageFormat)
          */
         @Nullable
         default ImageProxy getIcon(@Nonnull ImageFormat format) {
@@ -875,7 +875,7 @@ public interface Invite {
          *
          * @return The application's icon id
          *
-         * @see    #getIconUrl()
+         * @see    #getIconUrl(ImageFormat)
          */
         @Nullable
         String getIconId();
@@ -933,7 +933,7 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this application invite's icon
          *
-         * @see    #getIconUrl()
+         * @see    #getIconUrl(ImageFormat)
          */
         @Nullable
         default ImageProxy getIcon(@Nonnull ImageFormat format) {

@@ -119,7 +119,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this user's old avatar image
      *
-     * @see    #getOldAvatarUrl()
+     * @see    #getOldAvatarUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getOldAvatar(@Nonnull ImageFormat format) {
@@ -189,7 +189,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this user's new avatar image
      *
-     * @see    #getNewAvatarUrl()
+     * @see    #getNewAvatarUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getNewAvatar(@Nonnull ImageFormat format) {

@@ -18,12 +18,13 @@ package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates the {@link ScheduledEvent#getImageUrl() image} of a {@link ScheduledEvent} has changed.
+ * Indicates the {@link ScheduledEvent#getImageUrl(ImageFormat) image} of a {@link ScheduledEvent} has changed.
  *
  * <p>Can be used to detect when the {@link ScheduledEvent} image had changed.
  *

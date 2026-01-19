@@ -71,7 +71,7 @@ public interface ApplicationTeam extends ISnowflake {
      *
      * @return The icon id, or null if no icon is applied
      *
-     * @see    #getIconUrl()
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     String getIconId();
@@ -128,7 +128,7 @@ public interface ApplicationTeam extends ISnowflake {
      *
      * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
      *
-     * @see    #getIconUrl()
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     default ImageProxy getIcon(@Nonnull ImageFormat format) {

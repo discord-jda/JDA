@@ -109,7 +109,7 @@ public interface CustomEmoji extends Emoji, IMentionable {
      *
      * @return Never-null {@link ImageProxy} of this emoji's image
      *
-     * @see    #getImageUrl()
+     * @see    #getImageUrl(ImageFormat)
      */
     @Nonnull
     default ImageProxy getImage(@Nonnull ImageFormat format) {

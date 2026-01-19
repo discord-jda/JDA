@@ -113,7 +113,7 @@ public class RoleIcon {
      *
      * @return Possibly-null {@link ImageProxy} of this role's icon
      *
-     * @see    #getIconUrl()
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getIcon(@Nonnull ImageFormat format) {
