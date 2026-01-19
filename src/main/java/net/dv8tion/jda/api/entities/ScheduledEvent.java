@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
@@ -143,7 +144,9 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * @see    #getCoverImageUrl(ImageFormat)
      */
     @Nullable
-    ImageProxy getCoverImage(@Nonnull ImageFormat format);
+    default ImageProxy getCoverImage(@Nonnull ImageFormat format) {
+        return DiscordAssets.scheduledEventImage(format, getId(), getCoverImageId());
+    }
 
     /**
      * The user who originally created the event.

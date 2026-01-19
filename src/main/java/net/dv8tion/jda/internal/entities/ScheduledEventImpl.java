@@ -85,12 +85,6 @@ public class ScheduledEventImpl implements ScheduledEvent {
 
     @Nullable
     @Override
-    public ImageProxy getCoverImage(@Nonnull ImageFormat format) {
-        return DiscordAssets.scheduledEventImage(format, getId(), coverImage);
-    }
-
-    @Nullable
-    @Override
     public User getCreator() {
         return creator;
     }
