@@ -307,13 +307,13 @@ public class WidgetImpl implements Widget {
         @Override
         @Nonnull
         public String getDefaultAvatarUrl() {
-            return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
+            return getDefaultAvatar().getUrl();
         }
 
         @Override
         @Nonnull
         public ImageProxy getDefaultAvatar() {
-            return new ImageProxy(getDefaultAvatarUrl());
+            return DiscordAssets.userDefaultAvatar(ImageFormat.PNG, getDefaultAvatarId());
         }
 
         @Override
