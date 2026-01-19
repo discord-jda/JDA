@@ -36,6 +36,7 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected Long handleInternally(DataObject content) {
         if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS)) {
             return null;
@@ -118,8 +119,13 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
             getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (!Objects.equals(imageId, event.getCoverImageId())) {
+            String oldCoverImageId = event.getCoverImageId();
             String oldImageUrl = event.getImageUrl();
+
             event.setCoverImage(imageId);
+            getJDA().handleEvent(new ScheduledEventUpdateCoverImageEvent(getJDA(), responseNumber, event, oldCoverImageId));
+
+            // Legacy
             getJDA().handleEvent(new ScheduledEventUpdateImageEvent(getJDA(), responseNumber, event, oldImageUrl));
         }
         return null;
