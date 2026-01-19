@@ -356,6 +356,28 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     }
 
     /**
+     * The URL for the member's effective avatar image.
+     * If they do not have a per guild avatar set, this will return the URL of
+     * their effective {@link User} avatar.
+     *
+     * <p>The return image's format may be forced to {@link ImageFormat#PNG PNG}
+     * if the user does not have an avatar.
+     *
+     * @param  preferredFormat
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.Member} avatar url.
+     */
+    @Nonnull
+    default String getEffectiveAvatarUrl(@Nonnull ImageFormat preferredFormat) {
+        String avatarUrl = getAvatarUrl(preferredFormat);
+        return avatarUrl == null ? getUser().getEffectiveAvatarUrl(preferredFormat) : avatarUrl;
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this member's effective avatar image.
      *
      * @return Never-null {@link ImageProxy} of this member's effective avatar image
@@ -366,6 +388,28 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     default ImageProxy getEffectiveAvatar() {
         ImageProxy avatar = getAvatar();
         return avatar == null ? getUser().getEffectiveAvatar() : avatar;
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this member's effective avatar image.
+     *
+     * <p>The return image's format may be forced to {@link ImageFormat#PNG PNG}
+     * if the user does not have an avatar.
+     *
+     * @param  preferredFormat
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Never-null {@link ImageProxy} of this member's effective avatar image
+     *
+     * @see    #getEffectiveAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getEffectiveAvatar(@Nonnull ImageFormat preferredFormat) {
+        ImageProxy avatar = getAvatar(preferredFormat);
+        return avatar == null ? getUser().getEffectiveAvatar(preferredFormat) : avatar;
     }
 
     /**

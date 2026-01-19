@@ -323,10 +323,24 @@ public class WidgetImpl implements Widget {
             return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
         }
 
+        @Nonnull
+        @Override
+        public String getEffectiveAvatarUrl(@Nonnull ImageFormat preferredFormat) {
+            String avatarUrl = getAvatarUrl(preferredFormat);
+            return avatarUrl == null ? getDefaultAvatarUrl() : avatar;
+        }
+
         @Override
         @Nonnull
         public ImageProxy getEffectiveAvatar() {
             return new ImageProxy(getEffectiveAvatarUrl());
+        }
+
+        @Nonnull
+        @Override
+        public ImageProxy getEffectiveAvatar(@Nonnull ImageFormat preferredFormat) {
+            ImageProxy avatar = getAvatar(preferredFormat);
+            return avatar == null ? getDefaultAvatar() : avatar;
         }
 
         @Override

@@ -262,6 +262,28 @@ public interface User extends UserSnowflake {
     }
 
     /**
+     * The URL for the user's avatar image.
+     * If they do not have an avatar set, this will return the URL of their
+     * default avatar
+     *
+     * <p>The return image's format may be forced to {@link ImageFormat#PNG PNG}
+     * if the member does not have an avatar.
+     *
+     * @param  preferredFormat
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
+     */
+    @Nonnull
+    default String getEffectiveAvatarUrl(@Nonnull ImageFormat preferredFormat) {
+        String avatarUrl = getAvatarUrl(preferredFormat);
+        return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this user's effective avatar image.
      *
      * @return Never-null {@link ImageProxy} of this user's effective avatar image
@@ -271,6 +293,28 @@ public interface User extends UserSnowflake {
     @Nonnull
     default ImageProxy getEffectiveAvatar() {
         ImageProxy avatar = getAvatar();
+        return avatar == null ? getDefaultAvatar() : avatar;
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this user's effective avatar image.
+     *
+     * <p>The return image's format may be forced to {@link ImageFormat#PNG PNG}
+     * if the member does not have an avatar.
+     *
+     * @param  preferredFormat
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Never-null {@link ImageProxy} of this user's effective avatar image
+     *
+     * @see    #getEffectiveAvatarUrl()
+     */
+    @Nonnull
+    default ImageProxy getEffectiveAvatar(@Nonnull ImageFormat preferredFormat) {
+        ImageProxy avatar = getAvatar(preferredFormat);
         return avatar == null ? getDefaultAvatar() : avatar;
     }
 
