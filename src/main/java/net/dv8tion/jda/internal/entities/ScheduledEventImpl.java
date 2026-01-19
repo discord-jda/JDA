@@ -46,7 +46,7 @@ public class ScheduledEventImpl implements ScheduledEvent {
 
     private String name, description;
     private OffsetDateTime startTime, endTime;
-    private String image;
+    private String coverImage;
     private Status status;
     private Type type;
     private User creator;
@@ -73,20 +73,20 @@ public class ScheduledEventImpl implements ScheduledEvent {
 
     @Nullable
     @Override
-    public String getImageId() {
-        return image;
+    public String getCoverImageId() {
+        return coverImage;
     }
 
     @Nullable
     @Override
     public String getImageUrl() {
-        return image == null ? null : String.format(IMAGE_URL, getId(), image, image.startsWith("a_") ? "gif" : "png");
+        return coverImage == null ? null : String.format(IMAGE_URL, getId(), coverImage, coverImage.startsWith("a_") ? "gif" : "png");
     }
 
     @Nullable
     @Override
-    public ImageProxy getImage(@Nonnull ImageFormat format) {
-        return DiscordAssets.scheduledEventImage(format, getId(), image);
+    public ImageProxy getCoverImage(@Nonnull ImageFormat format) {
+        return DiscordAssets.scheduledEventImage(format, getId(), coverImage);
     }
 
     @Nullable
@@ -205,8 +205,8 @@ public class ScheduledEventImpl implements ScheduledEvent {
         return this;
     }
 
-    public ScheduledEventImpl setImage(String image) {
-        this.image = image;
+    public ScheduledEventImpl setCoverImage(String image) {
+        this.coverImage = image;
         return this;
     }
 

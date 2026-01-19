@@ -87,7 +87,7 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * @return The cover image ID, or {@code null} if none is specified.
      */
     @Nullable
-    String getImageId();
+    String getCoverImageId();
 
     /**
      * The cover image url of the event.
@@ -111,8 +111,8 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * @return The image url, or {@code null} if none is specified
      */
     @Nullable
-    default String getImageUrl(@Nonnull ImageFormat format) {
-        ImageProxy proxy = getImage(format);
+    default String getCoverImageUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getCoverImage(format);
         return proxy == null ? null : proxy.getUrl();
     }
 
@@ -140,10 +140,10 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      *
      * @return The {@link ImageProxy} for this events cover image or null if no image is defined
      *
-     * @see    #getImageUrl(ImageFormat)
+     * @see    #getCoverImageUrl(ImageFormat)
      */
     @Nullable
-    ImageProxy getImage(@Nonnull ImageFormat format);
+    ImageProxy getCoverImage(@Nonnull ImageFormat format);
 
     /**
      * The user who originally created the event.

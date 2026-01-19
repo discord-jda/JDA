@@ -119,7 +119,7 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
         }
         if (!Objects.equals(imageUrl, event.getImageUrl())) {
             String oldImageUrl = event.getImageUrl();
-            event.setImage(imageUrl);
+            event.setCoverImage(imageUrl);
             getJDA().handleEvent(new ScheduledEventUpdateImageEvent(getJDA(), responseNumber, event, oldImageUrl));
         }
         return null;
