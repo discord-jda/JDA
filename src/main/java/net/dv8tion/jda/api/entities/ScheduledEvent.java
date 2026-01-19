@@ -63,7 +63,10 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
 
     /**
      * Template for {@link #getImageUrl()}
+     *
+     * @deprecated Replaced by {@link net.dv8tion.jda.api.utils.DiscordAssets#scheduledEventImage(ImageFormat, String, String)}
      */
+    @Deprecated
     String IMAGE_URL = "https://cdn.discordapp.com/guild-events/%s/%s.%s";
 
     /**
@@ -95,8 +98,11 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * <p>Links to a potentially heavily compressed image. You can append a {@code size} query parameter to the URL if needed.
      *
      * @return The image url, or {@code null} if none is specified
+     *
+     * @deprecated Replaced by {@link #getCoverImageUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     String getImageUrl();
 
     /**
@@ -123,8 +129,11 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * @return The {@link ImageProxy} for this events cover image or null if no image is defined
      *
      * @see    #getImageUrl()
+     *
+     * @deprecated Replaced by {@link #getCoverImage(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default ImageProxy getImage() {
         String imageUrl = getImageUrl();
         return imageUrl == null ? null : new ImageProxy(imageUrl);

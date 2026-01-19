@@ -79,6 +79,7 @@ public class ScheduledEventImpl implements ScheduledEvent {
 
     @Nullable
     @Override
+    @Deprecated
     public String getImageUrl() {
         return coverImage == null ? null : String.format(IMAGE_URL, getId(), coverImage, coverImage.startsWith("a_") ? "gif" : "png");
     }
