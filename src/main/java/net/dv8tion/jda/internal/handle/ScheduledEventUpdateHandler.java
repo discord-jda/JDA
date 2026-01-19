@@ -63,7 +63,7 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
         OffsetDateTime startTime = content.getOffsetDateTime("scheduled_start_time");
         OffsetDateTime endTime = content.getOffsetDateTime("scheduled_end_time", null);
         ScheduledEvent.Status status = ScheduledEvent.Status.fromKey(content.getInt("status", -1));
-        String imageUrl = content.getString("image", null);
+        String imageId = content.getString("image", null);
         String location = content.getString("channel_id", null);
         GuildChannel channel = null;
         String oldLocation = event.getLocation();
@@ -117,9 +117,9 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
             event.setType(ScheduledEvent.Type.VOICE);
             getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
-        if (!Objects.equals(imageUrl, event.getImageUrl())) {
+        if (!Objects.equals(imageId, event.getCoverImageId())) {
             String oldImageUrl = event.getImageUrl();
-            event.setCoverImage(imageUrl);
+            event.setCoverImage(imageId);
             getJDA().handleEvent(new ScheduledEventUpdateImageEvent(getJDA(), responseNumber, event, oldImageUrl));
         }
         return null;
