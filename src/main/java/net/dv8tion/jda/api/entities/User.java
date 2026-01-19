@@ -497,8 +497,6 @@ public interface User extends UserSnowflake {
          *         If the format is {@code null}
          *
          * @return Possibly-null String containing the {@link User User} banner url.
-         *
-         * @see User#BANNER_URL
          */
         @Nullable
         public String getBannerUrl(@Nonnull ImageFormat format) {
@@ -812,8 +810,6 @@ public interface User extends UserSnowflake {
          *         If the format is {@code null}
          *
          * @return Possibly-null String containing the {@link User User}'s server tag badge url.
-         *
-         * @see User#TAG_BADGE_URL
          */
         @Nullable
         public String getBadgeUrl(@Nonnull ImageFormat format) {
