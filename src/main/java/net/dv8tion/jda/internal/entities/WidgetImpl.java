@@ -271,6 +271,7 @@ public class WidgetImpl implements Widget {
 
         @Override
         @Nullable
+        @Deprecated
         public String getAvatarUrl() {
             String avatarId = getAvatarId();
             return avatarId == null
@@ -287,6 +288,7 @@ public class WidgetImpl implements Widget {
 
         @Override
         @Nullable
+        @Deprecated
         public ImageProxy getAvatar() {
             String avatarUrl = getAvatarUrl();
             return avatarUrl == null ? null : new ImageProxy(avatarUrl);
@@ -318,6 +320,7 @@ public class WidgetImpl implements Widget {
 
         @Override
         @Nonnull
+        @Deprecated
         public String getEffectiveAvatarUrl() {
             String avatarUrl = getAvatarUrl();
             return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
@@ -332,6 +335,7 @@ public class WidgetImpl implements Widget {
 
         @Override
         @Nonnull
+        @Deprecated
         public ImageProxy getEffectiveAvatar() {
             return new ImageProxy(getEffectiveAvatarUrl());
         }

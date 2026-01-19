@@ -125,8 +125,11 @@ public class TemplateGuild implements ISnowflake {
      * @return The guild's icon url
      *
      * @see    #getIconId()
+     *
+     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public String getIconUrl() {
         return this.iconId == null
                 ? null
@@ -158,8 +161,11 @@ public class TemplateGuild implements ISnowflake {
      * @return Possibly-null {@link ImageProxy} of this template guild's icon
      *
      * @see    #getIconUrl()
+     *
+     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

@@ -67,7 +67,11 @@ import javax.annotation.Nullable;
  * @see   Guild#getMembers()
  */
 public interface Member extends IMentionable, IPermissionHolder, IDetachableEntity, UserSnowflake {
-    /** Template for {@link #getAvatarUrl()}. */
+    /**
+     * Template for {@link #getAvatarUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#memberAvatar(ImageFormat, String, String, String)}
+     */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
     /** Maximum number of days a Member can be timed out for */
     int MAX_TIME_OUT_LENGTH = 28;
@@ -283,8 +287,11 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * If the member has not set a per guild avatar, this will return null.
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar url.
+     *
+     * @deprecated Replaced by {@link #getAvatarUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default String getAvatarUrl() {
         String avatarId = getAvatarId();
         return avatarId == null
@@ -317,8 +324,11 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @return Possibly-null {@link ImageProxy} of this member's avatar
      *
      * @see    #getAvatarUrl()
+     *
+     * @deprecated Replaced by {@link #getAvatar(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default ImageProxy getAvatar() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? null : new ImageProxy(avatarUrl);
@@ -348,8 +358,11 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * their effective {@link User} avatar.
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.Member} avatar url.
+     *
+     * @deprecated Replaced by {@link #getEffectiveAvatarUrl(ImageFormat)}
      */
     @Nonnull
+    @Deprecated
     default String getEffectiveAvatarUrl() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
@@ -383,8 +396,11 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @return Never-null {@link ImageProxy} of this member's effective avatar image
      *
      * @see    #getEffectiveAvatarUrl()
+     *
+     * @deprecated Replaced by {@link #getEffectiveAvatar(ImageFormat)}
      */
     @Nonnull
+    @Deprecated
     default ImageProxy getEffectiveAvatar() {
         ImageProxy avatar = getAvatar();
         return avatar == null ? getUser().getEffectiveAvatar() : avatar;

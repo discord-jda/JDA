@@ -54,8 +54,11 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      * The url of the old splash
      *
      * @return The url of the old splash, or null
+     *
+     * @deprecated Replaced by {@link #getOldSplashUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public String getOldSplashUrl() {
         return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
     }
@@ -85,8 +88,11 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this guild's old splash image
      *
      * @see    #getOldSplashUrl()
+     *
+     * @deprecated Replaced by {@link #getOldSplash(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public ImageProxy getOldSplash() {
         String oldSplashUrl = getOldSplashUrl();
         return oldSplashUrl == null ? null : new ImageProxy(oldSplashUrl);
@@ -105,7 +111,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old splash image
      *
-     * @see    #getOldSplashUrl()
+     * @see    #getOldSplashUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getOldSplash(@Nonnull ImageFormat format) {
@@ -126,8 +132,11 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      * The url of the new splash
      *
      * @return The url of the new splash, or null
+     *
+     * @deprecated Replaced by {@link #getNewSplashUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public String getNewSplashUrl() {
         return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
     }
@@ -154,9 +163,12 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's new splash image
      *
-     * @see    #getNewSplashUrl()
+     * @see    #getNewSplashUrl(ImageFormat)
+     *
+     * @deprecated Replaced by {@link #getNewSplashUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public ImageProxy getNewSplash() {
         String newSplashUrl = getNewSplashUrl();
         return newSplashUrl == null ? null : new ImageProxy(newSplashUrl);

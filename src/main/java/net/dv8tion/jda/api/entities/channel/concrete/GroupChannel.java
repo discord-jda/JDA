@@ -35,7 +35,12 @@ import javax.annotation.Nullable;
  * <p>This is only used for user-installed apps.
  */
 public interface GroupChannel extends MessageChannel, IDetachableEntity {
-    /** Template for {@link #getIconUrl()}. */
+    /**
+     * Template for {@link #getIconUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#channelIcon(ImageFormat, String, String)}
+     */
+    @Deprecated
     String ICON_URL = "https://cdn.discordapp.com/channel-icons/%s/%s.png";
 
     /**
@@ -52,8 +57,11 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
      * If no icon has been set, this returns {@code null}.
      *
      * @return Possibly-null String containing the group channel's icon URL.
+     *
+     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default String getIconUrl() {
         String iconId = getIconId();
         return iconId == null ? null : Helpers.format(ICON_URL, getId(), iconId);
@@ -83,8 +91,11 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
      * @return Possibly-null {@link ImageProxy} of this group channel's icon
      *
      * @see    #getIconUrl()
+     *
+     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

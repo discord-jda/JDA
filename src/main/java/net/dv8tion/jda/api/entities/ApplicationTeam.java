@@ -34,7 +34,12 @@ import javax.annotation.Nullable;
  * @see ApplicationInfo#getTeam()
  */
 public interface ApplicationTeam extends ISnowflake {
-    /** Template for {@link #getIconUrl()} */
+    /**
+     * Template for {@link #getIconUrl()}
+     *
+     * @deprecated Replaced by {@link DiscordAssets#applicationTeamIcon(ImageFormat, String, String)}
+     */
+    @Deprecated
     String ICON_URL = "https://cdn.discordapp.com/team-icons/%s/%s.png";
 
     /**
@@ -80,8 +85,11 @@ public interface ApplicationTeam extends ISnowflake {
      * The url for the icon of this team.
      *
      * @return The icon url, or null if no icon is applied
+     *
+     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default String getIconUrl() {
         String iconId = getIconId();
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
@@ -110,8 +118,11 @@ public interface ApplicationTeam extends ISnowflake {
      * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
      *
      * @see    #getIconUrl()
+     *
+     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

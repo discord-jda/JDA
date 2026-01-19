@@ -32,7 +32,11 @@ import javax.annotation.Nullable;
  * @see Role#getIcon
  */
 public class RoleIcon {
-    /** Template for {@link #getIconUrl()}. */
+    /**
+     * Template for {@link #getIconUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#roleIcon(ImageFormat, String, String)}
+     */
     public static final String ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s.png";
 
     private final String iconId;
@@ -63,8 +67,11 @@ public class RoleIcon {
      * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Role's icon URL.
+     *
+     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public String getIconUrl() {
         String iconId = getIconId();
         return iconId == null ? null : String.format(ICON_URL, roleId, iconId);
@@ -95,8 +102,11 @@ public class RoleIcon {
      * @return Possibly-null {@link ImageProxy} of this role's icon
      *
      * @see    #getIconUrl()
+     *
+     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

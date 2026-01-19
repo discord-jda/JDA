@@ -96,8 +96,11 @@ public interface ApplicationInfo extends ISnowflake {
      * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
      *
      * @return The icon-url of the bot's application or null if no icon is defined
+     *
+     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     String getIconUrl();
 
     /**
@@ -124,8 +127,11 @@ public interface ApplicationInfo extends ISnowflake {
      * @return The {@link ImageProxy} of this application info's icon or null if no icon is defined
      *
      * @see    #getIconUrl()
+     *
+     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

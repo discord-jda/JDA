@@ -53,8 +53,11 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * The old avatar url
      *
      * @return  The old avatar url
+     *
+     * @deprecated Replaced by {@link #getOldAvatarUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public String getOldAvatarUrl() {
         return previous == null
                 ? null
@@ -87,8 +90,11 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
      * @see    #getOldAvatarUrl()
+     *
+     * @deprecated Replaced by {@link #getOldAvatar(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public ImageProxy getOldAvatar() {
         String oldAvatarUrl = getOldAvatarUrl();
         return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
@@ -128,8 +134,11 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * The new avatar url
      *
      * @return  The new avatar url
+     *
+     * @deprecated Replaced by {@link #getNewAvatarUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public String getNewAvatarUrl() {
         return next == null
                 ? null
@@ -159,8 +168,11 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
      * @see    #getNewAvatarUrl()
+     *
+     * @deprecated Replaced by {@link #getNewAvatar(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     public ImageProxy getNewAvatar() {
         String newAvatarUrl = getNewAvatarUrl();
         return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);

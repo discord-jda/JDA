@@ -95,11 +95,26 @@ import javax.annotation.Nullable;
  * @see JDA#getGuilds()
  */
 public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake, IDetachableEntity {
-    /** Template for {@link #getIconUrl()}. */
+    /**
+     * Template for {@link #getIconUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#guildIcon(ImageFormat, String, String)}
+     */
+    @Deprecated
     String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
-    /** Template for {@link #getSplashUrl()}. */
+    /**
+     * Template for {@link #getSplashUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#guildSplash(ImageFormat, String, String)}
+     */
+    @Deprecated
     String SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s.png";
-    /** Template for {@link #getBannerUrl()}. */
+    /**
+     * Template for {@link #getBannerUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#guildBanner(ImageFormat, String, String)}
+     */
+    @Deprecated
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
 
     /**
@@ -737,8 +752,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return Possibly-null String containing the Guild's icon URL.
+     *
+     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default String getIconUrl() {
         String iconId = getIconId();
         return iconId == null
@@ -777,8 +795,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return The {@link ImageProxy} of this guild's icon
      *
      * @see    #getIconUrl()
+     *
+     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default ImageProxy getIcon() {
 
         String iconUrl = getIconUrl();
@@ -798,7 +819,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return The {@link ImageProxy} of this guild's icon
      *
-     * @see    #getIconUrl()
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     default ImageProxy getIcon(@Nonnull ImageFormat format) {
@@ -857,8 +878,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return Possibly-null String containing the Guild's splash URL.
+     *
+     * @deprecated Replaced by {@link #getSplashUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default String getSplashUrl() {
         String splashId = getSplashId();
         return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
@@ -897,8 +921,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return Possibly-null {@link ImageProxy} of this guild's splash icon
      *
      * @see    #getSplashUrl()
+     *
+     * @deprecated Replaced by {@link #getSplash(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default ImageProxy getSplash() {
         String splashUrl = getSplashUrl();
         return splashUrl == null ? null : new ImageProxy(splashUrl);
@@ -1032,8 +1059,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return The guild banner url or null
+     *
+     * @deprecated Replaced by {@link #getBannerUrl(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default String getBannerUrl() {
         String bannerId = getBannerId();
         return bannerId == null
@@ -1072,8 +1102,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return Possibly-null {@link ImageProxy} of this guild's banner image
      *
      * @see    #getBannerUrl()
+     *
+     * @deprecated Replaced by {@link #getBanner(ImageFormat)}
      */
     @Nullable
+    @Deprecated
     default ImageProxy getBanner() {
         String bannerUrl = getBannerUrl();
         return bannerUrl == null ? null : new ImageProxy(bannerUrl);

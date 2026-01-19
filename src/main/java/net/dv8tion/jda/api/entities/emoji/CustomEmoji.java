@@ -42,7 +42,12 @@ import javax.annotation.Nonnull;
 public interface CustomEmoji extends Emoji, IMentionable {
     int EMOJI_NAME_MAX_LENGTH = 32;
 
-    /** Template for {@link #getImageUrl()} */
+    /**
+     * Template for {@link #getImageUrl()}
+     *
+     * @deprecated Replaced by {@link DiscordAssets#customEmojiIcon(ImageFormat, String)}
+     */
+    @Deprecated
     String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
 
     @Nonnull
@@ -63,8 +68,11 @@ public interface CustomEmoji extends Emoji, IMentionable {
      * when this emoji is used
      *
      * @return Discord CDN link to the emoji's image
+     *
+     * @deprecated Replaced by {@link #getImageUrl(ImageFormat)}
      */
     @Nonnull
+    @Deprecated
     default String getImageUrl() {
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
@@ -92,8 +100,11 @@ public interface CustomEmoji extends Emoji, IMentionable {
      * @return Never-null {@link ImageProxy} of this emoji's image
      *
      * @see    #getImageUrl()
+     *
+     * @deprecated Replaced by {@link #getImage(ImageFormat)}
      */
     @Nonnull
+    @Deprecated
     default ImageProxy getImage() {
         return new ImageProxy(getImageUrl());
     }

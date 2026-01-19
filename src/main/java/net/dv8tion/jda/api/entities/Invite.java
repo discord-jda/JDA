@@ -34,7 +34,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.dv8tion.jda.api.entities.Guild.BANNER_URL;
 import static net.dv8tion.jda.api.entities.Guild.NSFWLevel;
 
 /**
@@ -407,13 +406,16 @@ public interface Invite {
          * <br>This is shown in guilds below the guild name.
          *
          * @return The guild banner url or null
+         *
+         * @deprecated Replaced by {@link #getBannerUrl(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         default String getBannerUrl() {
             String bannerId = getBannerId();
             return bannerId == null
                     ? null
-                    : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+                    : String.format(net.dv8tion.jda.api.entities.Guild.BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
         }
 
         /**
@@ -440,8 +442,11 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this guild's banner image
          *
          * @see    #getBannerUrl()
+         *
+         * @deprecated Replaced by {@link #getBanner(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         default ImageProxy getBanner() {
             String bannerUrl = getBannerUrl();
             return bannerUrl == null ? null : new ImageProxy(bannerUrl);
@@ -458,7 +463,7 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this guild's banner image
          *
-         * @see    #getBannerUrl()
+         * @see    #getBannerUrl(ImageFormat)
          */
         @Nullable
         default ImageProxy getBanner(@Nonnull ImageFormat format) {
@@ -491,8 +496,11 @@ public interface Invite {
          * @return The guild's icon url
          *
          * @see    #getIconId()
+         *
+         * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         String getIconUrl();
 
         /**
@@ -520,8 +528,11 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this guild's icon
          *
          * @see    #getIconUrl()
+         *
+         * @deprecated Replaced by {@link #getIcon(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         default ImageProxy getIcon() {
             String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
@@ -569,8 +580,11 @@ public interface Invite {
          * @return The guild's splash image url or {@code null} if the guild has no splash image
          *
          * @see    #getSplashId()
+         *
+         * @deprecated Replaced by {@link #getSplashUrl(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         String getSplashUrl();
 
         /**
@@ -598,8 +612,11 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this invite guild's splash image
          *
          * @see    #getSplashUrl()
+         *
+         * @deprecated Replaced by {@link #getSplash(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         default ImageProxy getSplash() {
             String splashUrl = getSplashUrl();
             return splashUrl == null ? null : new ImageProxy(splashUrl);
@@ -709,8 +726,11 @@ public interface Invite {
          * @return The group's icon url
          *
          * @see    #getIconId()
+         *
+         * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         String getIconUrl();
 
         /**
@@ -738,8 +758,11 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this group invite's icon
          *
          * @see    #getIconUrl()
+         *
+         * @deprecated Replaced by {@link #getIcon(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         default ImageProxy getIcon() {
             String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
@@ -886,8 +909,11 @@ public interface Invite {
          * @return The application's icon url
          *
          * @see    #getIconId()
+         *
+         * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         String getIconUrl();
 
         /**
@@ -915,8 +941,11 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this application invite's icon
          *
          * @see    #getIconUrl()
+         *
+         * @deprecated Replaced by {@link #getIcon(ImageFormat)}
          */
         @Nullable
+        @Deprecated
         default ImageProxy getIcon() {
             String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
