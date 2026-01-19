@@ -37,6 +37,7 @@ public class RoleIcon {
      *
      * @deprecated Replaced by {@link DiscordAssets#roleIcon(ImageFormat, String, String)}
      */
+    @Deprecated
     public static final String ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s.png";
 
     private final String iconId;
@@ -101,9 +102,9 @@ public class RoleIcon {
      *
      * @return Possibly-null {@link ImageProxy} of this role's icon
      *
-     * @see    #getIconUrl()
-     *
      * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+     *
+     * @see    #getIconUrl()
      */
     @Nullable
     @Deprecated

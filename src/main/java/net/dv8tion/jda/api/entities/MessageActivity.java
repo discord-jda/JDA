@@ -152,9 +152,9 @@ public class MessageActivity {
          *
          * @return Possibly-null {@link ImageProxy} of this application's icon
          *
-         * @see    #getIconUrl()
-         *
          * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+         *
+         * @see    #getIconUrl()
          */
         @Nullable
         @Deprecated
@@ -228,9 +228,9 @@ public class MessageActivity {
          *
          * @return Possibly-null {@link ImageProxy} of this cover's icon
          *
-         * @see    #getCoverUrl()
-         *
          * @deprecated Replaced by {@link #getCover(ImageFormat)}
+         *
+         * @see    #getCoverUrl()
          */
         @Nullable
         @Deprecated

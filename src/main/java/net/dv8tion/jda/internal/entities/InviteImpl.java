@@ -406,6 +406,7 @@ public class InviteImpl implements Invite {
         }
 
         @Override
+        @Deprecated
         public String getIconUrl() {
             return this.iconId == null
                     ? null
@@ -429,6 +430,7 @@ public class InviteImpl implements Invite {
         }
 
         @Override
+        @Deprecated
         public String getSplashUrl() {
             return this.splashId == null
                     ? null
@@ -493,6 +495,7 @@ public class InviteImpl implements Invite {
         }
 
         @Override
+        @Deprecated
         public String getIconUrl() {
             return this.iconId == null
                     ? null
@@ -626,6 +629,7 @@ public class InviteImpl implements Invite {
 
         @Nullable
         @Override
+        @Deprecated
         public String getIconUrl() {
             return this.iconId == null
                     ? null

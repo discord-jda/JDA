@@ -224,9 +224,9 @@ public interface Widget extends ISnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of this user's avatar image
          *
-         * @see    #getAvatarUrl()
-         *
          * @deprecated Replaced by {@link #getAvatar(ImageFormat)}
+         *
+         * @see    #getAvatarUrl()
          */
         @Nullable
         @Deprecated
@@ -313,9 +313,9 @@ public interface Widget extends ISnowflake {
          *
          * @return Never-null {@link ImageProxy} of this user's effective avatar image
          *
-         * @see    #getEffectiveAvatarUrl()
-         *
          * @deprecated Replaced by {@link #getEffectiveAvatar(ImageFormat)}
+         *
+         * @see    #getEffectiveAvatarUrl()
          */
         @Nonnull
         @Deprecated

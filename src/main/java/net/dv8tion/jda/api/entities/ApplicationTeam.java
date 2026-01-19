@@ -117,9 +117,9 @@ public interface ApplicationTeam extends ISnowflake {
      *
      * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
      *
-     * @see    #getIconUrl()
-     *
      * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+     *
+     * @see    #getIconUrl()
      */
     @Nullable
     @Deprecated

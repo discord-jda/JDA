@@ -229,9 +229,9 @@ public interface User extends UserSnowflake {
      *
      * @return Possibly-null {@link ImageProxy} of this user's avatar
      *
-     * @see    #getAvatarUrl()
-     *
      * @deprecated Replaced by {@link #getAvatar(ImageFormat)}
+     *
+     * @see    #getAvatarUrl()
      */
     @Nullable
     @Deprecated
@@ -301,9 +301,9 @@ public interface User extends UserSnowflake {
      *
      * @return Never-null {@link ImageProxy} of this user's effective avatar image
      *
-     * @see    #getEffectiveAvatarUrl()
-     *
      * @deprecated Replaced by {@link #getEffectiveAvatar(ImageFormat)}
+     *
+     * @see    #getEffectiveAvatarUrl()
      */
     @Nonnull
     @Deprecated
@@ -489,9 +489,9 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null String containing the {@link User User} banner url.
          *
-         * @see User#BANNER_URL
-         *
          * @deprecated Replaced by {@link #getBannerUrl(ImageFormat)}
+         *
+         * @see User#BANNER_URL
          */
         @Nullable
         @Deprecated
@@ -528,9 +528,9 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of this user's banner
          *
-         * @see    #getBannerUrl()
-         *
          * @deprecated Replaced by {@link #getBanner(ImageFormat)}
+         *
+         * @see    #getBannerUrl()
          */
         @Nullable
         @Deprecated
@@ -815,9 +815,9 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null String containing the {@link User User}'s server tag badge url.
          *
-         * @see User#TAG_BADGE_URL
-         *
          * @deprecated Replaced by {@link #getBadgeUrl(ImageFormat)}
+         *
+         * @see User#TAG_BADGE_URL
          */
         @Nullable
         @Deprecated
@@ -847,9 +847,9 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of {@link User User}'s server tag badge.
          *
-         * @see #getBadgeUrl()
-         *
          * @deprecated Replaced by {@link #getBadge(ImageFormat)}
+         *
+         * @see #getBadgeUrl()
          */
         @Nullable
         @Deprecated

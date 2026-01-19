@@ -123,7 +123,8 @@ public class ScheduledEventUpdateHandler extends SocketHandler {
             String oldImageUrl = event.getImageUrl();
 
             event.setCoverImage(imageId);
-            getJDA().handleEvent(new ScheduledEventUpdateCoverImageEvent(getJDA(), responseNumber, event, oldCoverImageId));
+            getJDA().handleEvent(
+                            new ScheduledEventUpdateCoverImageEvent(getJDA(), responseNumber, event, oldCoverImageId));
 
             // Legacy
             getJDA().handleEvent(new ScheduledEventUpdateImageEvent(getJDA(), responseNumber, event, oldImageUrl));

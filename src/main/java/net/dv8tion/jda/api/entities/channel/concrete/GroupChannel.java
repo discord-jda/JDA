@@ -90,9 +90,9 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
      *
      * @return Possibly-null {@link ImageProxy} of this group channel's icon
      *
-     * @see    #getIconUrl()
-     *
      * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+     *
+     * @see    #getIconUrl()
      */
     @Nullable
     @Deprecated

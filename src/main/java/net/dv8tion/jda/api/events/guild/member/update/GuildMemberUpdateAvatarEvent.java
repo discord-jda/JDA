@@ -105,9 +105,9 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      *
      * @return Possibly-null {@link ImageProxy} of this member's old avatar
      *
-     * @see    #getOldAvatarUrl()
-     *
      * @deprecated Replaced by {@link #getOldAvatar(ImageFormat)}
+     *
+     * @see    #getOldAvatarUrl()
      */
     @Nullable
     @Deprecated
@@ -188,9 +188,9 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      *
      * @return Possibly-null {@link ImageProxy} of this member's new avatar
      *
-     * @see    #getNewAvatarUrl()
-     *
      * @deprecated Replaced by {@link #getNewAvatar(ImageFormat)}
+     *
+     * @see    #getNewAvatarUrl()
      */
     @Nullable
     @Deprecated

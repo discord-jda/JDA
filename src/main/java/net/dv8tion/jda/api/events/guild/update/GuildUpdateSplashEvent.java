@@ -87,9 +87,9 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old splash image
      *
-     * @see    #getOldSplashUrl()
-     *
      * @deprecated Replaced by {@link #getOldSplash(ImageFormat)}
+     *
+     * @see    #getOldSplashUrl()
      */
     @Nullable
     @Deprecated
@@ -163,9 +163,9 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's new splash image
      *
-     * @see    #getNewSplashUrl(ImageFormat)
-     *
      * @deprecated Replaced by {@link #getNewSplashUrl(ImageFormat)}
+     *
+     * @see    #getNewSplashUrl(ImageFormat)
      */
     @Nullable
     @Deprecated

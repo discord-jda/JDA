@@ -794,9 +794,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return The {@link ImageProxy} of this guild's icon
      *
-     * @see    #getIconUrl()
-     *
      * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+     *
+     * @see    #getIconUrl()
      */
     @Nullable
     @Deprecated
@@ -920,9 +920,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return Possibly-null {@link ImageProxy} of this guild's splash icon
      *
-     * @see    #getSplashUrl()
-     *
      * @deprecated Replaced by {@link #getSplash(ImageFormat)}
+     *
+     * @see    #getSplashUrl()
      */
     @Nullable
     @Deprecated
@@ -1101,9 +1101,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return Possibly-null {@link ImageProxy} of this guild's banner image
      *
-     * @see    #getBannerUrl()
-     *
      * @deprecated Replaced by {@link #getBanner(ImageFormat)}
+     *
+     * @see    #getBannerUrl()
      */
     @Nullable
     @Deprecated

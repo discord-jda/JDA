@@ -99,9 +99,9 @@ public interface CustomEmoji extends Emoji, IMentionable {
      *
      * @return Never-null {@link ImageProxy} of this emoji's image
      *
-     * @see    #getImageUrl()
-     *
      * @deprecated Replaced by {@link #getImage(ImageFormat)}
+     *
+     * @see    #getImageUrl()
      */
     @Nonnull
     @Deprecated

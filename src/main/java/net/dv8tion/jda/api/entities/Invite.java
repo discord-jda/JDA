@@ -415,7 +415,11 @@ public interface Invite {
             String bannerId = getBannerId();
             return bannerId == null
                     ? null
-                    : String.format(net.dv8tion.jda.api.entities.Guild.BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+                    : String.format(
+                            net.dv8tion.jda.api.entities.Guild.BANNER_URL,
+                            getId(),
+                            bannerId,
+                            bannerId.startsWith("a_") ? "gif" : "png");
         }
 
         /**
@@ -441,9 +445,9 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this guild's banner image
          *
-         * @see    #getBannerUrl()
-         *
          * @deprecated Replaced by {@link #getBanner(ImageFormat)}
+         *
+         * @see    #getBannerUrl()
          */
         @Nullable
         @Deprecated
@@ -495,9 +499,9 @@ public interface Invite {
          *
          * @return The guild's icon url
          *
-         * @see    #getIconId()
-         *
          * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
+         *
+         * @see    #getIconId()
          */
         @Nullable
         @Deprecated
@@ -527,9 +531,9 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this guild's icon
          *
-         * @see    #getIconUrl()
-         *
          * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+         *
+         * @see    #getIconUrl()
          */
         @Nullable
         @Deprecated
@@ -579,9 +583,9 @@ public interface Invite {
          *
          * @return The guild's splash image url or {@code null} if the guild has no splash image
          *
-         * @see    #getSplashId()
-         *
          * @deprecated Replaced by {@link #getSplashUrl(ImageFormat)}
+         *
+         * @see    #getSplashId()
          */
         @Nullable
         @Deprecated
@@ -611,9 +615,9 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this invite guild's splash image
          *
-         * @see    #getSplashUrl()
-         *
          * @deprecated Replaced by {@link #getSplash(ImageFormat)}
+         *
+         * @see    #getSplashUrl()
          */
         @Nullable
         @Deprecated
@@ -725,9 +729,9 @@ public interface Invite {
          *
          * @return The group's icon url
          *
-         * @see    #getIconId()
-         *
          * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
+         *
+         * @see    #getIconId()
          */
         @Nullable
         @Deprecated
@@ -757,9 +761,9 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this group invite's icon
          *
-         * @see    #getIconUrl()
-         *
          * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+         *
+         * @see    #getIconUrl()
          */
         @Nullable
         @Deprecated
@@ -908,9 +912,9 @@ public interface Invite {
          *
          * @return The application's icon url
          *
-         * @see    #getIconId()
-         *
          * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
+         *
+         * @see    #getIconId()
          */
         @Nullable
         @Deprecated
@@ -940,9 +944,9 @@ public interface Invite {
          *
          * @return Possibly-null {@link ImageProxy} of this application invite's icon
          *
-         * @see    #getIconUrl()
-         *
          * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+         *
+         * @see    #getIconUrl()
          */
         @Nullable
         @Deprecated

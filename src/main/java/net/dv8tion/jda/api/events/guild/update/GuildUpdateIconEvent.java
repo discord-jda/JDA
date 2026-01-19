@@ -89,9 +89,9 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old icon
      *
-     * @see    #getOldIconUrl()
-     *
      * @deprecated Replaced by {@link #getOldIcon(ImageFormat)}
+     *
+     * @see    #getOldIconUrl()
      */
     @Nullable
     @Deprecated
@@ -167,9 +167,9 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's new icon
      *
-     * @see    #getNewIconUrl()
-     *
      * @deprecated Replaced by {@link #getNewIcon(ImageFormat)}
+     *
+     * @see    #getNewIconUrl()
      */
     @Nullable
     @Deprecated

@@ -132,6 +132,7 @@ public class ApplicationInfoImpl implements ApplicationInfo {
     }
 
     @Override
+    @Deprecated
     public String getIconUrl() {
         return this.iconId == null
                 ? null

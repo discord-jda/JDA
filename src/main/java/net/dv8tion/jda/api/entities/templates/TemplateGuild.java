@@ -124,9 +124,9 @@ public class TemplateGuild implements ISnowflake {
      *
      * @return The guild's icon url
      *
-     * @see    #getIconId()
-     *
      * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
+     *
+     * @see    #getIconId()
      */
     @Nullable
     @Deprecated
@@ -160,9 +160,9 @@ public class TemplateGuild implements ISnowflake {
      *
      * @return Possibly-null {@link ImageProxy} of this template guild's icon
      *
-     * @see    #getIconUrl()
-     *
      * @deprecated Replaced by {@link #getIcon(ImageFormat)}
+     *
+     * @see    #getIconUrl()
      */
     @Nullable
     @Deprecated

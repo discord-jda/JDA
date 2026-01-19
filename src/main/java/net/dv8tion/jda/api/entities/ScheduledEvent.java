@@ -128,9 +128,9 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      *
      * @return The {@link ImageProxy} for this events cover image or null if no image is defined
      *
-     * @see    #getImageUrl()
-     *
      * @deprecated Replaced by {@link #getCoverImage(ImageFormat)}
+     *
+     * @see    #getImageUrl()
      */
     @Nullable
     @Deprecated

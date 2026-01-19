@@ -72,6 +72,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @deprecated Replaced by {@link DiscordAssets#memberAvatar(ImageFormat, String, String, String)}
      */
+    @Deprecated
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
     /** Maximum number of days a Member can be timed out for */
     int MAX_TIME_OUT_LENGTH = 28;
@@ -323,9 +324,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return Possibly-null {@link ImageProxy} of this member's avatar
      *
-     * @see    #getAvatarUrl()
-     *
      * @deprecated Replaced by {@link #getAvatar(ImageFormat)}
+     *
+     * @see    #getAvatarUrl()
      */
     @Nullable
     @Deprecated
@@ -395,9 +396,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return Never-null {@link ImageProxy} of this member's effective avatar image
      *
-     * @see    #getEffectiveAvatarUrl()
-     *
      * @deprecated Replaced by {@link #getEffectiveAvatar(ImageFormat)}
+     *
+     * @see    #getEffectiveAvatarUrl()
      */
     @Nonnull
     @Deprecated
