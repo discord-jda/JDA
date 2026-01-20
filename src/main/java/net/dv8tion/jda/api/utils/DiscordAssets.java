@@ -32,7 +32,7 @@ public final class DiscordAssets {
 
     private static final String CHANNEL_ICON_URL = "https://cdn.discordapp.com/channel-icons/%s/%s";
 
-    private static final String CUSTOM_EMOJI_ICON_URL = "https://cdn.discordapp.com/emojis/%s";
+    private static final String CUSTOM_EMOJI_URL = "https://cdn.discordapp.com/emojis/%s";
 
     private static final String GUILD_ICON_URL = "https://cdn.discordapp.com/icons/%s/%s";
     private static final String GUILD_SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s";
@@ -212,10 +212,10 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the custom emoji's icon, or {@code null}
      */
     @Nonnull
-    public static ImageProxy customEmojiIcon(@Nonnull ImageFormat format, @Nonnull String id) {
+    public static ImageProxy customEmoji(@Nonnull ImageFormat format, @Nonnull String id) {
         Checks.notNull(format, "Format");
         Checks.notNull(id, "ID");
-        return createProxy(format, CUSTOM_EMOJI_ICON_URL, id);
+        return createProxy(format, CUSTOM_EMOJI_URL, id);
     }
 
     /**

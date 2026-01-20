@@ -45,7 +45,7 @@ public interface CustomEmoji extends Emoji, IMentionable {
     /**
      * Template for {@link #getImageUrl()}
      *
-     * @deprecated Replaced by {@link DiscordAssets#customEmojiIcon(ImageFormat, String)}
+     * @deprecated Replaced by {@link DiscordAssets#customEmoji(ImageFormat, String)}
      */
     @Deprecated
     String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
@@ -124,7 +124,7 @@ public interface CustomEmoji extends Emoji, IMentionable {
      */
     @Nonnull
     default ImageProxy getImage(@Nonnull ImageFormat format) {
-        return DiscordAssets.customEmojiIcon(format, getId());
+        return DiscordAssets.customEmoji(format, getId());
     }
 
     /**
