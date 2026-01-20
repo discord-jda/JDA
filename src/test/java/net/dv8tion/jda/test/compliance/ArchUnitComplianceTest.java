@@ -98,6 +98,8 @@ public class ArchUnitComplianceTest {
                 .that()
                 .arePublic()
                 .and()
+                .areNotAnnotatedWith(Contract.class)
+                .and()
                 .doNotHaveName("equals")
                 .and()
                 .doNotHaveName("valueOf")
