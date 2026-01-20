@@ -143,7 +143,7 @@ public interface StickerPack extends ISnowflake {
      */
     @Nullable
     default String getBannerUrl(@Nonnull ImageFormat format) {
-        ImageProxy proxy = DiscordAssets.stickerPackBanner(format, getBannerId());
+        ImageProxy proxy = getBanner(format);
         return proxy == null ? null : proxy.getUrl();
     }
 

@@ -220,7 +220,7 @@ public interface User extends UserSnowflake {
      */
     @Nullable
     default String getAvatarUrl(@Nonnull ImageFormat format) {
-        ImageProxy proxy = DiscordAssets.userAvatar(format, getId(), getAvatarId());
+        ImageProxy proxy = getAvatar(format);
         return proxy == null ? null : proxy.getUrl();
     }
 
@@ -519,7 +519,7 @@ public interface User extends UserSnowflake {
          */
         @Nullable
         public String getBannerUrl(@Nonnull ImageFormat format) {
-            ImageProxy proxy = DiscordAssets.userBanner(format, Long.toUnsignedString(userId), getBannerId());
+            ImageProxy proxy = getBanner(format);
             return proxy == null ? null : proxy.getUrl();
         }
 
