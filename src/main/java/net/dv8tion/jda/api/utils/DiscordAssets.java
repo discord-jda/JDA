@@ -42,7 +42,7 @@ public final class DiscordAssets {
 
     private static final String ROLE_ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s";
 
-    private static final String SCHEDULED_EVENT_IMAGE_URL = "https://cdn.discordapp.com/guild-events/%s/%s";
+    private static final String SCHEDULED_EVENT_COVER_IMAGE_URL = "https://cdn.discordapp.com/guild-events/%s/%s";
 
     private static final String STICKER_PACK_BANNER_URL =
             "https://cdn.discordapp.com/app-assets/710982414301790216/store/%s";
@@ -417,13 +417,14 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the scheduled event's cover image, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy scheduledEventImage(@Nonnull ImageFormat format, @Nonnull String eventId, String imageId) {
+    public static ImageProxy scheduledEventCoverImage(
+            @Nonnull ImageFormat format, @Nonnull String eventId, String imageId) {
         Checks.notNull(format, "Format");
         Checks.notNull(eventId, "Event ID");
         if (imageId == null) {
             return null;
         }
-        return createProxy(format, SCHEDULED_EVENT_IMAGE_URL, eventId, imageId);
+        return createProxy(format, SCHEDULED_EVENT_COVER_IMAGE_URL, eventId, imageId);
     }
 
     /**
