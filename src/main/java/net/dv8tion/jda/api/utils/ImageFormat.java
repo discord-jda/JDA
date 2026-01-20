@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -93,6 +94,9 @@ public final class ImageFormat {
      * @param  extension
      *         The extension of the image
      *
+     * @throws IllegalArgumentException
+     *         If the extension is {@code null}
+     *
      * @return The new {@link ImageFormat}
      */
     @Nonnull
@@ -108,6 +112,13 @@ public final class ImageFormat {
      *         The extension of the image
      * @param  queryParameters
      *         Query parameters to add to URLs, must be a multiple of 2
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any argument is {@code null}</li>
+     *             <li>If the extension is blank</li>
+     *             <li>If the query parameter list's length is not a multiple of 2</li>
+     *         </ul>
      *
      * @return The new {@link ImageFormat}
      */
@@ -136,6 +147,7 @@ public final class ImageFormat {
      * @return An immutable list of query parameters
      */
     @Nonnull
+    @Unmodifiable
     public List<String> getQueryParameters() {
         return queryParameters;
     }
