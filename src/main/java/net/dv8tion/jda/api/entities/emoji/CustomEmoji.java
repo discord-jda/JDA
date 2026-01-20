@@ -88,6 +88,8 @@ public interface CustomEmoji extends Emoji, IMentionable {
      *         If the format is {@code null}
      *
      * @return Discord CDN link to the emoji's image
+     *
+     * @see    DiscordAssets#customEmoji(ImageFormat, String)
      */
     @Nonnull
     default String getImageUrl(@Nonnull ImageFormat format) {
@@ -121,6 +123,7 @@ public interface CustomEmoji extends Emoji, IMentionable {
      * @return Never-null {@link ImageProxy} of this emoji's image
      *
      * @see    #getImageUrl(ImageFormat)
+     * @see    DiscordAssets#customEmoji(ImageFormat, String)
      */
     @Nonnull
     default ImageProxy getImage(@Nonnull ImageFormat format) {

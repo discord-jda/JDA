@@ -91,6 +91,8 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      *         If the format is {@code null}
      *
      * @return The previous avatar url
+     *
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
      */
     @Nullable
     public String getOldAvatarUrl(@Nonnull ImageFormat format) {
@@ -130,6 +132,7 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      * @return Possibly-null {@link ImageProxy} of this member's old avatar
      *
      * @see    #getOldAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
      */
     @Nullable
     public ImageProxy getOldAvatar(@Nonnull ImageFormat format) {
@@ -176,6 +179,8 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      *         If the format is {@code null}
      *
      * @return The url of the new avatar
+     *
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
      */
     @Nullable
     public String getNewAvatarUrl(@Nonnull ImageFormat format) {
@@ -211,6 +216,7 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      * @return Possibly-null {@link ImageProxy} of this member's new avatar
      *
      * @see    #getNewAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
      */
     @Nullable
     public ImageProxy getNewAvatar(@Nonnull ImageFormat format) {

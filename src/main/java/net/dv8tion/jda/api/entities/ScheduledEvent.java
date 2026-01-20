@@ -116,6 +116,8 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      *         If the format is {@code null}
      *
      * @return The image url, or {@code null} if none is specified
+     *
+     * @see    DiscordAssets#scheduledEventCoverImage(ImageFormat, String, String)
      */
     @Nullable
     default String getCoverImageUrl(@Nonnull ImageFormat format) {
@@ -151,6 +153,7 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * @return The {@link ImageProxy} for this events cover image or null if no image is defined
      *
      * @see    #getCoverImageUrl(ImageFormat)
+     * @see    DiscordAssets#scheduledEventCoverImage(ImageFormat, String, String)
      */
     @Nullable
     default ImageProxy getCoverImage(@Nonnull ImageFormat format) {

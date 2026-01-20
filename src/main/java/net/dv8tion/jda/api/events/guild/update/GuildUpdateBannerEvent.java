@@ -76,6 +76,8 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      *         If the format is {@code null}
      *
      * @return The new banner url, or null if the banner was removed
+     *
+     * @see    DiscordAssets#guildBanner(ImageFormat, String, String)
      */
     @Nullable
     public String getNewBannerUrl(@Nonnull ImageFormat format) {
@@ -112,6 +114,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this guild's new banner
      *
      * @see    #getNewBannerUrl(ImageFormat)
+     * @see    DiscordAssets#guildBanner(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getNewBanner(@Nonnull ImageFormat format) {
@@ -153,6 +156,8 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      *         If the format is {@code null}
      *
      * @return The old banner url, or null if the banner didn't exist
+     *
+     * @see    DiscordAssets#guildBanner(ImageFormat, String, String)
      */
     @Nullable
     public String getOldBannerUrl(@Nonnull ImageFormat format) {
@@ -192,6 +197,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this guild's old banner
      *
      * @see    #getOldBannerUrl(ImageFormat)
+     * @see    DiscordAssets#guildBanner(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getOldBanner(@Nonnull ImageFormat format) {

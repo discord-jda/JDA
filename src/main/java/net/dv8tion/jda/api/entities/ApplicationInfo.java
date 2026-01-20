@@ -114,6 +114,8 @@ public interface ApplicationInfo extends ISnowflake {
      *         If the format is {@code null}
      *
      * @return The icon-url of the bot's application or null if no icon is defined
+     *
+     * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
      */
     @Nullable
     default String getIconUrl(@Nonnull ImageFormat format) {
@@ -149,6 +151,7 @@ public interface ApplicationInfo extends ISnowflake {
      * @return The {@link ImageProxy} of this application info's icon or null if no icon is defined
      *
      * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
      */
     @Nullable
     default ImageProxy getIcon(@Nonnull ImageFormat format) {

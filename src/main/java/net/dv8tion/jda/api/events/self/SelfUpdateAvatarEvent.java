@@ -74,7 +74,9 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * @throws IllegalArgumentException
      *         If the format is {@code null}
      *
-     * @return  The old avatar url
+     * @return The old avatar url
+     *
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     public String getOldAvatarUrl(@Nonnull ImageFormat format) {
@@ -114,6 +116,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
      * @see    #getOldAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getOldAvatar(@Nonnull ImageFormat format) {
@@ -154,7 +157,9 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * @throws IllegalArgumentException
      *         If the format is {@code null}
      *
-     * @return  The new avatar url
+     * @return The new avatar url
+     *
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     public String getNewAvatarUrl(@Nonnull ImageFormat format) {
@@ -190,6 +195,7 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
      * @see    #getNewAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getNewAvatar(@Nonnull ImageFormat format) {

@@ -312,6 +312,8 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *         If the format is {@code null}
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar url.
+     *
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
      */
     @Nullable
     default String getAvatarUrl(@Nonnull ImageFormat format) {
@@ -347,6 +349,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @return Possibly-null {@link ImageProxy} of this member's avatar
      *
      * @see    #getAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
      */
     @Nullable
     default ImageProxy getAvatar(@Nonnull ImageFormat format) {

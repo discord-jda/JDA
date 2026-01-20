@@ -433,6 +433,8 @@ public interface Invite {
          *         If the format is {@code null}
          *
          * @return The guild banner url or null
+         *
+         * @see    DiscordAssets#guildBanner(ImageFormat, String, String)
          */
         @Nullable
         default String getBannerUrl(@Nonnull ImageFormat format) {
@@ -468,6 +470,7 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this guild's banner image
          *
          * @see    #getBannerUrl(ImageFormat)
+         * @see    DiscordAssets#guildBanner(ImageFormat, String, String)
          */
         @Nullable
         default ImageProxy getBanner(@Nonnull ImageFormat format) {
@@ -519,6 +522,7 @@ public interface Invite {
          * @return The guild's icon url
          *
          * @see    #getIconId()
+         * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
          */
         @Nullable
         default String getIconUrl(@Nonnull ImageFormat format) {
@@ -554,6 +558,7 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this guild's icon
          *
          * @see    #getIconUrl(ImageFormat)
+         * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
          */
         @Nullable
         default ImageProxy getIcon(@Nonnull ImageFormat format) {
@@ -603,6 +608,7 @@ public interface Invite {
          * @return The guild's splash image url or {@code null} if the guild has no splash image
          *
          * @see    #getSplashId()
+         * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
          */
         @Nullable
         default String getSplashUrl(@Nonnull ImageFormat format) {
@@ -638,6 +644,7 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this invite guild's splash image
          *
          * @see    #getSplashUrl(ImageFormat)
+         * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
          */
         @Nullable
         default ImageProxy getSplash(@Nonnull ImageFormat format) {
@@ -749,6 +756,7 @@ public interface Invite {
          * @return The group's icon url
          *
          * @see    #getIconId()
+         * @see    DiscordAssets#channelIcon(ImageFormat, String, String)
          */
         @Nullable
         default String getIconUrl(@Nonnull ImageFormat format) {
@@ -784,6 +792,7 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this group invite's icon
          *
          * @see    #getIconUrl(ImageFormat)
+         * @see    DiscordAssets#channelIcon(ImageFormat, String, String)
          */
         @Nullable
         default ImageProxy getIcon(@Nonnull ImageFormat format) {
@@ -932,6 +941,7 @@ public interface Invite {
          * @return The application's icon url
          *
          * @see    #getIconId()
+         * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
          */
         @Nullable
         default String getIconUrl(@Nonnull ImageFormat format) {
@@ -967,6 +977,7 @@ public interface Invite {
          * @return Possibly-null {@link ImageProxy} of this application invite's icon
          *
          * @see    #getIconUrl(ImageFormat)
+         * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
          */
         @Nullable
         default ImageProxy getIcon(@Nonnull ImageFormat format) {

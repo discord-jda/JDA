@@ -73,6 +73,8 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      *         If the format is {@code null}
      *
      * @return The url of the old splash, or null
+     *
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
      */
     @Nullable
     public String getOldSplashUrl(@Nonnull ImageFormat format) {
@@ -112,6 +114,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this guild's old splash image
      *
      * @see    #getOldSplashUrl(ImageFormat)
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getOldSplash(@Nonnull ImageFormat format) {
@@ -151,6 +154,8 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      *         If the format is {@code null}
      *
      * @return The url of the new splash, or null
+     *
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
      */
     @Nullable
     public String getNewSplashUrl(@Nonnull ImageFormat format) {
@@ -186,6 +191,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this guild's new splash image
      *
      * @see    #getNewSplashUrl(ImageFormat)
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getNewSplash(@Nonnull ImageFormat format) {

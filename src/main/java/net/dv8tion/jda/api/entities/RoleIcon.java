@@ -90,6 +90,8 @@ public class RoleIcon {
      *         If the format is {@code null}
      *
      * @return Possibly-null String containing the Role's icon URL.
+     *
+     * @see    DiscordAssets#roleIcon(ImageFormat, String, String)
      */
     @Nullable
     public String getIconUrl(@Nonnull ImageFormat format) {
@@ -125,6 +127,7 @@ public class RoleIcon {
      * @return Possibly-null {@link ImageProxy} of this role's icon
      *
      * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#roleIcon(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getIcon(@Nonnull ImageFormat format) {

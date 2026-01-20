@@ -140,6 +140,8 @@ public class MessageActivity {
          *         If the format is {@code null}
          *
          * @return the url of the icon
+         *
+         * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
          */
         @Nullable
         public String getIconUrl(@Nonnull ImageFormat format) {
@@ -175,6 +177,7 @@ public class MessageActivity {
          * @return Possibly-null {@link ImageProxy} of this application's icon
          *
          * @see    #getIconUrl(ImageFormat)
+         * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
          */
         @Nullable
         public ImageProxy getIcon(@Nonnull ImageFormat format) {
@@ -216,6 +219,8 @@ public class MessageActivity {
          *         If the format is {@code null}v
          *
          * @return the url of the cover/splash
+         *
+         * @see    DiscordAssets#applicationCover(ImageFormat, String, String)
          */
         @Nullable
         public String getCoverUrl(@Nonnull ImageFormat format) {
@@ -251,6 +256,7 @@ public class MessageActivity {
          * @return Possibly-null {@link ImageProxy} of this cover's icon
          *
          * @see    #getCoverUrl(ImageFormat)
+         * @see    DiscordAssets#applicationCover(ImageFormat, String, String)
          */
         @Nullable
         public ImageProxy getCover(@Nonnull ImageFormat format) {

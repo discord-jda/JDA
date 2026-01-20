@@ -217,6 +217,8 @@ public interface User extends UserSnowflake {
      *         If the format is {@code null}
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
+     *
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     default String getAvatarUrl(@Nonnull ImageFormat format) {
@@ -252,6 +254,7 @@ public interface User extends UserSnowflake {
      * @return Possibly-null {@link ImageProxy} of this user's avatar
      *
      * @see    #getAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     default ImageProxy getAvatar(@Nonnull ImageFormat format) {
@@ -516,6 +519,8 @@ public interface User extends UserSnowflake {
          *         If the format is {@code null}
          *
          * @return Possibly-null String containing the {@link User User} banner url.
+         *
+         * @see    DiscordAssets#userBanner(ImageFormat, String, String)
          */
         @Nullable
         public String getBannerUrl(@Nonnull ImageFormat format) {
@@ -551,6 +556,7 @@ public interface User extends UserSnowflake {
          * @return Possibly-null {@link ImageProxy} of this user's banner
          *
          * @see    #getBannerUrl(ImageFormat)
+         * @see    DiscordAssets#userBanner(ImageFormat, String, String)
          */
         @Nullable
         public ImageProxy getBanner(@Nonnull ImageFormat format) {
@@ -835,6 +841,8 @@ public interface User extends UserSnowflake {
          *         If the format is {@code null}
          *
          * @return Possibly-null String containing the {@link User User}'s server tag badge url.
+         *
+         * @see    DiscordAssets#userTagBadge(ImageFormat, String, String)
          */
         @Nullable
         public String getBadgeUrl(@Nonnull ImageFormat format) {
@@ -869,7 +877,8 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of {@link User User}'s server tag badge.
          *
-         * @see #getBadgeUrl(ImageFormat)
+         * @see    #getBadgeUrl(ImageFormat)
+         * @see    DiscordAssets#userTagBadge(ImageFormat, String, String)
          */
         @Nullable
         public ImageProxy getBadge(@Nonnull ImageFormat format) {

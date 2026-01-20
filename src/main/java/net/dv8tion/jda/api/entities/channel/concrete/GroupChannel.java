@@ -78,6 +78,8 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
      *         If the format is {@code null}
      *
      * @return Possibly-null String containing the group channel's icon URL.
+     *
+     * @see    DiscordAssets#channelIcon(ImageFormat, String, String)
      */
     @Nullable
     default String getIconUrl(@Nonnull ImageFormat format) {
@@ -113,6 +115,7 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
      * @return Possibly-null {@link ImageProxy} of this group channel's icon
      *
      * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#channelIcon(ImageFormat, String, String)
      */
     @Nullable
     default ImageProxy getIcon(@Nonnull ImageFormat format) {

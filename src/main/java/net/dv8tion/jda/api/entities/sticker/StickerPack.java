@@ -140,6 +140,8 @@ public interface StickerPack extends ISnowflake {
      *         If the format is {@code null}
      *
      * @return The banner id, or {@code null} if there is no banner
+     *
+     * @see    DiscordAssets#stickerPackBanner(ImageFormat, String)
      */
     @Nullable
     default String getBannerUrl(@Nonnull ImageFormat format) {
@@ -170,6 +172,9 @@ public interface StickerPack extends ISnowflake {
      *         If the format is {@code null}
      *
      * @return The banner proxy, or {@code null} if there is no banner
+     *
+     * @see    #getBannerUrl(ImageFormat)
+     * @see    DiscordAssets#stickerPackBanner(ImageFormat, String)
      */
     @Nullable
     default ImageProxy getBanner(@Nonnull ImageFormat format) {

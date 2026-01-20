@@ -80,6 +80,8 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      * <p>Size parameters are ignored by this endpoint.
      *
      * @return Never-null String containing the user's default avatar url.
+     *
+     * @see    DiscordAssets#userDefaultAvatar(ImageFormat, String)
      */
     @Nonnull
     default String getDefaultAvatarUrl() {
@@ -94,6 +96,7 @@ public interface UserSnowflake extends IMentionable // Make this a value type wh
      * @return Never-null {@link ImageProxy} of this user's default avatar
      *
      * @see    #getDefaultAvatarUrl()
+     * @see    DiscordAssets#userDefaultAvatar(ImageFormat, String)
      */
     @Nonnull
     default ImageProxy getDefaultAvatar() {

@@ -148,6 +148,7 @@ public class TemplateGuild implements ISnowflake {
      * @return The guild's icon url
      *
      * @see    #getIconId()
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
      */
     @Nullable
     public String getIconUrl(@Nonnull ImageFormat format) {
@@ -183,6 +184,7 @@ public class TemplateGuild implements ISnowflake {
      * @return Possibly-null {@link ImageProxy} of this template guild's icon
      *
      * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getIcon(@Nonnull ImageFormat format) {

@@ -75,6 +75,8 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      *         If the format is {@code null}
      *
      * @return The url of the old icon, or null
+     *
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
      */
     @Nullable
     public String getOldIconUrl(@Nonnull ImageFormat format) {
@@ -114,6 +116,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this guild's old icon
      *
      * @see    #getOldIconUrl(ImageFormat)
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getOldIcon(@Nonnull ImageFormat format) {
@@ -155,6 +158,8 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      *         If the format is {@code null}
      *
      * @return The url of the new icon, or null
+     *
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
      */
     @Nullable
     public String getNewIconUrl(@Nonnull ImageFormat format) {
@@ -190,6 +195,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this guild's new icon
      *
      * @see    #getNewIconUrl(ImageFormat)
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getNewIcon(@Nonnull ImageFormat format) {

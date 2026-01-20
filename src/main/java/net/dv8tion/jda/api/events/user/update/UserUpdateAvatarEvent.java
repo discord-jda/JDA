@@ -87,6 +87,8 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      *         If the format is {@code null}
      *
      * @return The previous avatar url
+     *
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     public String getOldAvatarUrl(@Nonnull ImageFormat format) {
@@ -126,6 +128,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this user's old avatar image
      *
      * @see    #getOldAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getOldAvatar(@Nonnull ImageFormat format) {
@@ -167,6 +170,8 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      *         If the format is {@code null}
      *
      * @return The url of the new avatar
+     *
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     public String getNewAvatarUrl(@Nonnull ImageFormat format) {
@@ -202,6 +207,7 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      * @return Possibly-null {@link ImageProxy} of this user's new avatar image
      *
      * @see    #getNewAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
      */
     @Nullable
     public ImageProxy getNewAvatar(@Nonnull ImageFormat format) {

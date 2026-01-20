@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.WidgetUtil;
@@ -215,6 +216,8 @@ public interface Widget extends ISnowflake {
          *
          * @return possibly-null String containing the avatar url of the
          *         member
+         *
+         * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
          */
         @Nullable
         String getAvatarUrl(@Nonnull ImageFormat format);
@@ -244,6 +247,7 @@ public interface Widget extends ISnowflake {
          * @return Possibly-null {@link ImageProxy} of this user's avatar image
          *
          * @see    #getAvatarUrl(ImageFormat)
+         * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
          */
         @Nullable
         ImageProxy getAvatar(@Nonnull ImageFormat format);
@@ -262,6 +266,8 @@ public interface Widget extends ISnowflake {
          *
          * @return never-null String containing the url of the member's
          *         default avatar
+         *
+         * @see    DiscordAssets#userDefaultAvatar(ImageFormat, String)
          */
         @Nonnull
         String getDefaultAvatarUrl();
@@ -272,6 +278,7 @@ public interface Widget extends ISnowflake {
          * @return Never-null {@link ImageProxy} of this user's default avatar image
          *
          * @see    #getDefaultAvatarUrl()
+         * @see    DiscordAssets#userDefaultAvatar(ImageFormat, String)
          */
         @Nonnull
         ImageProxy getDefaultAvatar();

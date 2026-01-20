@@ -105,6 +105,8 @@ public interface ApplicationTeam extends ISnowflake {
      *         If the format is {@code null}
      *
      * @return The icon url, or null if no icon is applied
+     *
+     * @see    DiscordAssets#applicationTeamIcon(ImageFormat, String, String)
      */
     @Nullable
     default String getIconUrl(@Nonnull ImageFormat format) {
@@ -140,6 +142,7 @@ public interface ApplicationTeam extends ISnowflake {
      * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
      *
      * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#applicationTeamIcon(ImageFormat, String, String)
      */
     @Nullable
     default ImageProxy getIcon(@Nonnull ImageFormat format) {

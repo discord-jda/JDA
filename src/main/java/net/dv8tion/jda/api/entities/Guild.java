@@ -779,6 +779,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return Possibly-null String containing the Guild's icon URL.
+     *
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
      */
     @Nullable
     default String getIconUrl(@Nonnull ImageFormat format) {
@@ -820,6 +822,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return The {@link ImageProxy} of this guild's icon
      *
      * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
      */
     @Nullable
     default ImageProxy getIcon(@Nonnull ImageFormat format) {
@@ -905,6 +908,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return Possibly-null String containing the Guild's splash URL.
+     *
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
      */
     @Nullable
     default String getSplashUrl(@Nonnull ImageFormat format) {
@@ -945,6 +950,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return Possibly-null {@link ImageProxy} of this guild's splash icon
      *
      * @see    #getSplashUrl(ImageFormat)
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
      */
     @Nullable
     default ImageProxy getSplash(@Nonnull ImageFormat format) {
@@ -1086,6 +1092,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return The guild banner url or null
+     *
+     * @see    DiscordAssets#guildBanner(ImageFormat, String, String)
      */
     @Nullable
     default String getBannerUrl(@Nonnull ImageFormat format) {
@@ -1126,6 +1134,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return Possibly-null {@link ImageProxy} of this guild's banner image
      *
      * @see    #getBannerUrl(ImageFormat)
+     * @see    DiscordAssets#guildBanner(ImageFormat, String, String)
      */
     @Nullable
     default ImageProxy getBanner(@Nonnull ImageFormat format) {
