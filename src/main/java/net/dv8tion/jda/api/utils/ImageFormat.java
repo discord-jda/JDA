@@ -95,6 +95,7 @@ public final class ImageFormat {
      *
      * @return The new {@link ImageFormat}
      */
+    @Nonnull
     public static ImageFormat of(@Nonnull String extension) {
         Checks.notBlank(extension, "Extension");
         return new ImageFormat(extension, Collections.emptyList());
@@ -110,6 +111,7 @@ public final class ImageFormat {
      *
      * @return The new {@link ImageFormat}
      */
+    @Nonnull
     public static ImageFormat of(@Nonnull String extension, @Nonnull List<String> queryParameters) {
         Checks.notBlank(extension, "Extension");
         Checks.notNull(queryParameters, "Query parameters");
