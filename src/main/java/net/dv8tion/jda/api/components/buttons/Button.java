@@ -135,18 +135,21 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @Nullable
     EmojiUnion getEmoji();
 
+    @Override
     @Nonnull
     @CheckReturnValue
     default Button asDisabled() {
         return (Button) ActionComponent.super.asDisabled();
     }
 
+    @Override
     @Nonnull
     @CheckReturnValue
     default Button asEnabled() {
         return (Button) ActionComponent.super.asEnabled();
     }
 
+    @Override
     @Nonnull
     @CheckReturnValue
     default Button withDisabled(boolean disabled) {

@@ -171,6 +171,7 @@ public interface InteractionHook extends WebhookClient<Message> {
      *
      * @return The JDA instance
      */
+    @Override
     @Nonnull
     JDA getJDA();
 

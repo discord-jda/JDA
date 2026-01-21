@@ -482,6 +482,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             return false;
         }
 
+        @Override
         public void run() {
             log.trace("Bucket {} is running {} requests", bucketId, requests.size());
             while (!requests.isEmpty()) {

@@ -220,6 +220,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      *
      * @return The content or an empty string if none was set
      */
+    @Override
     @Nonnull
     public String getContent() {
         return content;
@@ -230,6 +231,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      *
      * @return The embeds or an empty list if none were set
      */
+    @Override
     @Nonnull
     public List<MessageEmbed> getEmbeds() {
         return embeds;
@@ -240,6 +242,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      *
      * @return The components or an empty list if none were set
      */
+    @Override
     @Nonnull
     public List<MessageTopLevelComponentUnion> getComponents() {
         return components;
@@ -255,6 +258,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      *
      * @return The list of attachments, or an empty list if none were set
      */
+    @Override
     @Nonnull
     public List<AttachedFile> getAttachments() {
         return files;
@@ -270,6 +274,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      *
      * @return The user IDs which are mention whitelisted
      */
+    @Override
     @Nonnull
     public Set<String> getMentionedUsers() {
         return mentions.getMentionedUsers();
@@ -280,6 +285,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      *
      * @return The role IDs which are mention whitelisted
      */
+    @Override
     @Nonnull
     public Set<String> getMentionedRoles() {
         return mentions.getMentionedRoles();
@@ -290,6 +296,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      *
      * @return The mention types which can be mentioned by this message
      */
+    @Override
     @Nonnull
     public EnumSet<Message.MentionType> getAllowedMentions() {
         return mentions.getAllowedMentions();
@@ -300,6 +307,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      *
      * @return True, if this would mention with the reply
      */
+    @Override
     public boolean isMentionRepliedUser() {
         return mentions.isMentionRepliedUser();
     }
