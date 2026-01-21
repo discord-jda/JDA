@@ -30,6 +30,7 @@ public class CollectionChecksAssertions<T>
         super(name, callable);
     }
 
+    @Override
     public CollectionChecksAssertions<T> checksNotNull() {
         throwsFor(null, isNullError(name));
         return this;

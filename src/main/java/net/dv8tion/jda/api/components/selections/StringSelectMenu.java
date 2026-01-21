@@ -379,6 +379,7 @@ public interface StringSelectMenu extends SelectMenu {
          *
          * @return The new {@link StringSelectMenu} instance
          */
+        @Override
         @Nonnull
         public StringSelectMenu build() {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");

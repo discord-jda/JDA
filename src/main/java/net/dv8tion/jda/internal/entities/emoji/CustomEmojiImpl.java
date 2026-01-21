@@ -34,11 +34,13 @@ public class CustomEmojiImpl implements CustomEmoji, EmojiUnion {
         this.animated = animated;
     }
 
+    @Override
     @Nonnull
     public String getAsReactionCode() {
         return name + ":" + id;
     }
 
+    @Override
     @Nonnull
     public String getName() {
         return name;

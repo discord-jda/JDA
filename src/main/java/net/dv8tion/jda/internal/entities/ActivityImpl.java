@@ -99,6 +99,7 @@ public class ActivityImpl implements Activity {
         return type;
     }
 
+    @Override
     @Nullable
     public Activity.Timestamps getTimestamps() {
         return timestamps;

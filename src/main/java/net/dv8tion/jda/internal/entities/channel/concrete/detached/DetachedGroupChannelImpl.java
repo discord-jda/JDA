@@ -51,6 +51,7 @@ public class DetachedGroupChannelImpl extends AbstractChannelImpl<DetachedGroupC
         return ownerId;
     }
 
+    @Override
     @Nullable
     public String getIconId() {
         return icon;

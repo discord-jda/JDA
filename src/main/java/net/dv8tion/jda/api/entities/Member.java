@@ -85,6 +85,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
+    @Override
     @Nonnull
     Guild getGuild();
 

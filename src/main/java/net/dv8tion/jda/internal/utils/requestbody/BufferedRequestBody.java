@@ -36,6 +36,7 @@ public class BufferedRequestBody extends TypedBody<BufferedRequestBody> {
         this.source = source;
     }
 
+    @Override
     @Nonnull
     public BufferedRequestBody withType(@Nonnull MediaType type) {
         if (type.equals(this.type)) {

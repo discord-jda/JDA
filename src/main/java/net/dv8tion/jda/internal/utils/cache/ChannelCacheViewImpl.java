@@ -197,6 +197,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         }
     }
 
+    @Override
     public T getElementById(@Nonnull ChannelType type, long id) {
         Checks.notNull(type, "ChannelType");
         try (UnlockHook hook = readLock()) {

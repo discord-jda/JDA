@@ -214,6 +214,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
                 .setFiles(data.getFiles());
     }
 
+    @Override
     @Nonnull
     default R applyMessage(@Nonnull Message message) {
         return MessageRequest.super.applyMessage(message).setReplace(true);
