@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.components.label;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
+import net.dv8tion.jda.api.components.checkbox.Checkbox;
 import net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup;
 import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
@@ -174,6 +175,28 @@ public interface LabelChildComponentUnion extends LabelChildComponent, IComponen
      */
     @Nonnull
     CheckboxGroup asCheckboxGroup();
+
+    /**
+     * Casts this union to a {@link Checkbox}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * {@snippet lang="java":
+     * //These are the same!
+     * Checkbox checkbox = union.asCheckbox();
+     * Checkbox checkbox2 = (Checkbox) union;
+     * }
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#CHECKBOX} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Checkbox</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link Checkbox}.
+     *
+     * @return The component as a {@link Checkbox}
+     */
+    @Nonnull
+    Checkbox asCheckbox();
 
     @Nonnull
     @Override

@@ -133,6 +133,7 @@ public interface Component {
         FILE_UPLOAD(19, false, true),
         RADIO_GROUP(21, false, true),
         CHECKBOX_GROUP(22, false, true),
+        CHECKBOX(23, false, true),
         ;
 
         private final int key;

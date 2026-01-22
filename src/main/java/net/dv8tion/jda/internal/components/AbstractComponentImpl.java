@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.checkbox.Checkbox;
 import net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
@@ -120,6 +121,11 @@ public abstract class AbstractComponentImpl implements SerializableData {
     @Nonnull
     public CheckboxGroup asCheckboxGroup() {
         return toComponentType(CheckboxGroup.class);
+    }
+
+    @Nonnull
+    public Checkbox asCheckbox() {
+        return toComponentType(Checkbox.class);
     }
 
     protected <T extends Component> T toComponentType(Class<T> type) {

@@ -2,6 +2,7 @@
   "ACTION_ROW" : 0,
   "BUTTON" : 5,
   "CHANNEL_SELECT" : 1,
+  "CHECKBOX" : 0,
   "CHECKBOX_GROUP" : 0,
   "CONTAINER" : 0,
   "FILE_DISPLAY" : 0,
