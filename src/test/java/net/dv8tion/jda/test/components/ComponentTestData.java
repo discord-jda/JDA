@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.label.Label;
@@ -87,6 +88,10 @@ public class ComponentTestData {
                 RadioGroup.create("radio-group")
                         .addOption("label1", "value1")
                         .addOption("label2", "value2")
+                        .build();
+            case CHECKBOX_GROUP ->
+                CheckboxGroup.create("checkbox-group")
+                        .addOption("label", "value")
                         .build();
         };
     }

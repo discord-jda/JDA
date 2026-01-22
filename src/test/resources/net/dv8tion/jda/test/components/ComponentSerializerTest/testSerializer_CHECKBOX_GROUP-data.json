@@ -1,0 +1,8 @@
+[ {
+  "custom_id" : "checkbox-group",
+  "options" : [ {
+    "label" : "label",
+    "value" : "value"
+  } ],
+  "type" : 22
+} ]

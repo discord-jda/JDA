@@ -1,0 +1,1 @@
+CheckboxGroup(custom_id=checkbox-group, required=true)

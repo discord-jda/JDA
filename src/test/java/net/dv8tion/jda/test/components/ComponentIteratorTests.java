@@ -54,6 +54,7 @@ public class ComponentIteratorTests {
                 case LABEL:
                 case FILE_UPLOAD:
                 case RADIO_GROUP:
+                case CHECKBOX_GROUP:
                     break;
                 case ACTION_ROW:
                     ActionRow row = mock(ActionRow.class);

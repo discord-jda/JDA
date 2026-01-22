@@ -35,6 +35,7 @@ import net.dv8tion.jda.internal.components.UnknownComponentImpl;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.components.attachmentupload.AttachmentUploadImpl;
 import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
+import net.dv8tion.jda.internal.components.checkboxgroup.CheckboxGroupImpl;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayFileUpload;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
@@ -280,6 +281,8 @@ public class ComponentDeserializer {
                 return new AttachmentUploadImpl(data);
             case RADIO_GROUP:
                 return new RadioGroupImpl(data);
+            case CHECKBOX_GROUP:
+                return new CheckboxGroupImpl(data);
             default:
                 return new UnknownComponentImpl(data);
         }
