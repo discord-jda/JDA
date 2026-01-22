@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
+import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
@@ -108,6 +109,11 @@ public abstract class AbstractComponentImpl implements SerializableData {
     @Nonnull
     public AttachmentUpload asAttachmentUpload() {
         return toComponentType(AttachmentUpload.class);
+    }
+
+    @Nonnull
+    public RadioGroup asRadioGroup() {
+        return toComponentType(RadioGroup.class);
     }
 
     protected <T extends Component> T toComponentType(Class<T> type) {

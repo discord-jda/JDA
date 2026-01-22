@@ -42,6 +42,7 @@ import net.dv8tion.jda.internal.components.label.LabelImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemFileUpload;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemImpl;
+import net.dv8tion.jda.internal.components.radiogroup.RadioGroupImpl;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.internal.components.selections.EntitySelectMenuImpl;
 import net.dv8tion.jda.internal.components.selections.StringSelectMenuImpl;
@@ -277,6 +278,8 @@ public class ComponentDeserializer {
                 return new LabelImpl(this, data);
             case FILE_UPLOAD:
                 return new AttachmentUploadImpl(data);
+            case RADIO_GROUP:
+                return new RadioGroupImpl(data);
             default:
                 return new UnknownComponentImpl(data);
         }

@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.components.label;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
+import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
@@ -128,6 +129,28 @@ public interface LabelChildComponentUnion extends LabelChildComponent, IComponen
      */
     @Nonnull
     AttachmentUpload asAttachmentUpload();
+
+    /**
+     * Casts this union to a {@link RadioGroup}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * {@snippet lang="java":
+     * //These are the same!
+     * RadioGroup radioGroup = union.asRadioGroup();
+     * RadioGroup radioGroup2 = (Checkbox) union;
+     * }
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#RADIO_GROUP} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof RadioGroup</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link RadioGroup}.
+     *
+     * @return The component as a {@link RadioGroup}
+     */
+    @Nonnull
+    RadioGroup asRadioGroup();
 
     @Nonnull
     @Override

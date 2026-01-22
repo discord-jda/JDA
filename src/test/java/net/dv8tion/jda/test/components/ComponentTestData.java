@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
@@ -82,6 +83,11 @@ public class ComponentTestData {
                         FileDisplay.fromFile(getImageFileUpload()));
             case LABEL -> Label.of("Custom label", TextInput.of("input", TextInputStyle.SHORT));
             case FILE_UPLOAD -> AttachmentUpload.of("file-upload");
+            case RADIO_GROUP ->
+                RadioGroup.create("radio-group")
+                        .addOption("label1", "value1")
+                        .addOption("label2", "value2")
+                        .build();
         };
     }
 
