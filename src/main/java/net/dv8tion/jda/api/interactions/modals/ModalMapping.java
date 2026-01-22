@@ -89,7 +89,17 @@ public class ModalMapping {
     /**
      * The String representation of this component.
      *
-     * <p>For {@link net.dv8tion.jda.api.components.textinput.TextInput TextInputs}, this returns what the User typed in it.
+     * <p>Return values include:
+     * <ul>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.textinput.TextInput TextInputs},
+     *         this returns what the User typed in it
+     *     </li>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroups},
+     *         this returns the value of the option chosen by the User
+     *     </li>
+     * </ul>
      *
      * <p>Use {@link #getType()} to check if this method can be used safely!
      *
@@ -100,11 +110,31 @@ public class ModalMapping {
      */
     @Nonnull
     public String getAsString() {
-        if (type != Component.Type.TEXT_INPUT) {
+        if (type != Component.Type.TEXT_INPUT && type != Component.Type.RADIO_GROUP) {
             typeError("String");
         }
 
         return value.getString("value");
+    }
+
+    /**
+     * The boolean representation of this component.
+     *
+     * <p>For {@link net.dv8tion.jda.api.components.checkbox.Checkbox Checkboxes}, this returns {@code true} if it was checked.
+     *
+     * <p>Use {@link #getType()} to check if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as a boolean.
+     *
+     * @return The boolean representation of this component.
+     */
+    public boolean getAsBoolean() {
+        if (type != Component.Type.CHECKBOX) {
+            typeError("boolean");
+        }
+
+        return value.getBoolean("value");
     }
 
     /**
@@ -120,6 +150,10 @@ public class ModalMapping {
      *         For {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenus},
      *         this returns the entity IDs chosen by the User.
      *     </li>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup CheckboxGroups},
+     *         this returns the values chosen by the User.
+     *     </li>
      * </ul>
      *
      * <p>Use {@link #getType()} to check if this method can be used safely!
@@ -131,7 +165,9 @@ public class ModalMapping {
      */
     @Nonnull
     public List<String> getAsStringList() {
-        if (type != Component.Type.STRING_SELECT && !type.isEntitySelectMenu()) {
+        if (type != Component.Type.STRING_SELECT
+                && !type.isEntitySelectMenu()
+                && type != Component.Type.CHECKBOX_GROUP) {
             typeError("List<String>");
         }
 
