@@ -150,7 +150,9 @@ public interface EntitySelectMenu extends SelectMenu {
         builder.setPlaceholder(getPlaceholder());
         builder.setDisabled(isDisabled());
         builder.setDefaultValues(getDefaultValues());
-        builder.setUniqueId(getUniqueId());
+        if (getUniqueId() > 0) {
+            builder.setUniqueId(getUniqueId());
+        }
         return builder;
     }
 
