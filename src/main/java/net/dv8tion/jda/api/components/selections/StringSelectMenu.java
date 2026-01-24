@@ -113,6 +113,7 @@ public interface StringSelectMenu extends SelectMenu {
         builder.addOptions(getOptions());
         builder.setDisabled(isDisabled());
         builder.setRequired(isRequired());
+        builder.setUniqueId(getUniqueId());
         return builder;
     }
 
