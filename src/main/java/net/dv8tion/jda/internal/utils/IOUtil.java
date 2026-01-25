@@ -30,6 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
@@ -277,7 +278,7 @@ public class IOUtil {
             log.error(
                     "Failed to read gzip content for response. Headers: {}\nContent: '{}'",
                     response.headers(),
-                    JDALogger.getLazyString(() -> new String(readFully(data))),
+                    JDALogger.getLazyString(() -> new String(readFully(data), StandardCharsets.UTF_8)),
                     ex);
             return null;
         }

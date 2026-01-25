@@ -101,6 +101,8 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
                     String valueString = choice.getAsString();
                     Checks.inRange(valueString, 1, OptionData.MAX_CHOICE_VALUE_LENGTH, "Choice value");
                     break;
+                default:
+                    break;
             }
         }
         this.choices.addAll(choices);

@@ -801,7 +801,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
     private void updateMemberRoles(MemberImpl member, List<Role> newRoles, long responseNumber) {
         Set<Role> currentRoles = member.getRoleSet();
         // Find the roles removed.
-        List<Role> removedRoles = new LinkedList<>();
+        List<Role> removedRoles = new ArrayList<>();
         each:
         for (Role role : currentRoles) {
             for (Iterator<Role> it = newRoles.iterator(); it.hasNext(); ) {
@@ -1057,6 +1057,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
         ScheduledEvent.Type type = ScheduledEvent.Type.fromKey(json.getInt("entity_type"));
         scheduledEvent.setType(type);
         switch (type) {
+            case UNKNOWN:
+                break;
             case STAGE_INSTANCE:
             case VOICE:
                 scheduledEvent.setLocation(json.getString("channel_id"));

@@ -451,6 +451,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             return requests;
         }
 
+        @SuppressWarnings("ReferenceEquality")
         protected boolean moveRequest(@Nonnull Work request) {
             return MiscUtil.locked(lock, () -> {
                 // Attempt moving request to correct bucket if it has been created

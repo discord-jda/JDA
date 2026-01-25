@@ -89,7 +89,9 @@ public class AudioConnection {
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
 
+    @SuppressWarnings("unused") // it is used by a nested class!
     private volatile boolean couldReceive = false;
+
     private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
 
     public AudioConnection(
@@ -463,8 +465,8 @@ public class AudioConnection {
                     () -> {
                         getJDA().setContext();
                         try {
-                            List<User> users = new LinkedList<>();
-                            List<short[]> audioParts = new LinkedList<>();
+                            List<User> users = new ArrayList<>();
+                            List<short[]> audioParts = new ArrayList<>();
                             if (receiveHandler != null && receiveHandler.canReceiveCombined()) {
                                 long currentTime = System.currentTimeMillis();
                                 for (Map.Entry<User, Queue<AudioData>> entry : combinedQueue.entrySet()) {
@@ -711,7 +713,7 @@ public class AudioConnection {
         private final long time;
         private final short[] data;
 
-        public AudioData(short[] data) {
+        private AudioData(short[] data) {
             this.time = System.currentTimeMillis();
             this.data = data;
         }

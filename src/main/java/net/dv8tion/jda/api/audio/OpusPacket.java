@@ -216,7 +216,7 @@ public final class OpusPacket implements Comparable<OpusPacket> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getSequence(), getTimestamp(), getOpusAudio());
+        return Objects.hash(getSequence(), getTimestamp(), Arrays.hashCode(getOpusAudio()));
     }
 
     @Override

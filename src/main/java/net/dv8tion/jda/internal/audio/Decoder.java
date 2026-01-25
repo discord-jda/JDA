@@ -35,7 +35,7 @@ public class Decoder {
 
     protected Decoder(int ssrc) {
         this.ssrc = ssrc;
-        this.lastSeq = (char) -1;
+        this.lastSeq = Character.MAX_VALUE;
         this.lastTimestamp = -1;
 
         IntBuffer error = IntBuffer.allocate(1);
@@ -47,7 +47,7 @@ public class Decoder {
     }
 
     public boolean isInOrder(char newSeq) {
-        return lastSeq == (char) -1 || newSeq > lastSeq || lastSeq - newSeq > 10;
+        return lastSeq == Character.MAX_VALUE || newSeq > lastSeq || lastSeq - newSeq > 10;
     }
 
     public boolean wasPacketLost(char newSeq) {
@@ -60,7 +60,7 @@ public class Decoder {
         if (decryptedPacket == null) // Flag for packet-loss
         {
             result = Opus.INSTANCE.opus_decode(opusDecoder, null, 0, decoded, OpusPacket.OPUS_FRAME_SIZE, 0);
-            lastSeq = (char) -1;
+            lastSeq = Character.MAX_VALUE;
             lastTimestamp = -1;
         } else {
             this.lastSeq = decryptedPacket.getSequence();

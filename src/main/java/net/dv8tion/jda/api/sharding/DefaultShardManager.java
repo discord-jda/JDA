@@ -73,9 +73,7 @@ import javax.annotation.Nullable;
 public class DefaultShardManager implements ShardManager {
     public static final Logger LOG = JDALogger.getLog(ShardManager.class);
     public static final ThreadFactory DEFAULT_THREAD_FACTORY = r -> {
-        Thread t = new Thread(r, "DefaultShardManager");
-        t.setPriority(Thread.NORM_PRIORITY + 1);
-        return t;
+        return new Thread(r, "DefaultShardManager");
     };
 
     /**

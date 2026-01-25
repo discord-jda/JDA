@@ -749,7 +749,7 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public int hashCode() {
-            return Objects.hash(url, proxyUrl, width, height);
+            return Objects.hash(url, width, height);
         }
     }
 

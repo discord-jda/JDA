@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -485,8 +487,10 @@ public interface InteractionHook extends WebhookClient<Message> {
      * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalFormat(@Nonnull String format, @Nonnull Object... args) {
+    default WebhookMessageEditAction<Message> editOriginalFormat(
+            @Nonnull @FormatString String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return editOriginal(String.format(format, args));
     }

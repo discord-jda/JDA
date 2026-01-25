@@ -95,7 +95,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
         }
 
         // remove duplicates and sort messages
-        List<CompletableFuture<Void>> list = new LinkedList<>();
+        List<CompletableFuture<Void>> list = new ArrayList<>();
         TreeSet<Long> bulk = new TreeSet<>(Comparator.reverseOrder());
         TreeSet<Long> norm = new TreeSet<>(Comparator.reverseOrder());
         long twoWeeksAgo =

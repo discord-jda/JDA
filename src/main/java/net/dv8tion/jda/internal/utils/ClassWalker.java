@@ -46,7 +46,7 @@ public class ClassWalker implements Iterable<Class<?>> {
     public Iterator<Class<?>> iterator() {
         return new Iterator<Class<?>>() {
             private final Set<Class<?>> done = new HashSet<>();
-            private final Deque<Class<?>> work = new LinkedList<>();
+            private final Deque<Class<?>> work = new ArrayDeque<>();
 
             {
                 work.addLast(clazz);

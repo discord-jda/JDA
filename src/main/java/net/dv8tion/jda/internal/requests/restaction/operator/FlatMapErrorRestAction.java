@@ -30,15 +30,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
-    private final Predicate<? super Throwable> check;
+    private final Predicate<? super Throwable> filter;
     private final Function<? super Throwable, ? extends RestAction<? extends T>> map;
 
     public FlatMapErrorRestAction(
             RestAction<T> action,
-            Predicate<? super Throwable> check,
+            Predicate<? super Throwable> filter,
             Function<? super Throwable, ? extends RestAction<? extends T>> map) {
         super(action);
-        this.check = check;
+        this.filter = filter;
         this.map = map;
     }
 
@@ -47,7 +47,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
         Consumer<? super Throwable> contextFailure = contextWrap(failure);
         action.queue(success, contextWrap((error) -> {
             try {
-                if (check.test(error)) {
+                if (filter.test(error)) {
                     // If check passed we can apply the fallback function and flatten it
                     RestAction<? extends T> then = map.apply(error);
                     if (then == null) {
@@ -74,7 +74,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
             return action.complete(shouldQueue);
         } catch (Throwable error) {
             try {
-                if (check.test(error)) {
+                if (filter.test(error)) {
                     RestAction<? extends T> then = map.apply(error);
                     if (then == null) {
                         throw new IllegalStateException("FlatMapError operand is null", error);
@@ -100,7 +100,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
     public CompletableFuture<T> submit(boolean shouldQueue) {
         return action.submit(shouldQueue)
                 .handle((result, error) -> {
-                    if (check.test(error)) {
+                    if (filter.test(error)) {
                         return map.apply(error).submit(shouldQueue).thenApply(x -> (T) x);
                     } else {
                         return CompletableFuture.completedFuture(result);

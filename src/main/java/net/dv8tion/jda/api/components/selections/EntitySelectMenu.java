@@ -605,6 +605,8 @@ public interface EntitySelectMenu extends SelectMenu {
                                 "SelectTarget.ROLE and SelectTarget.USER",
                                 type);
                         break;
+                    default:
+                        throw new IllegalStateException("Unexpected component type: " + componentType);
                 }
             }
 

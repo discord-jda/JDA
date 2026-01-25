@@ -312,7 +312,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>> 
     @Override
     public void forEachRemaining(@Nonnull Procedure<? super T> action) {
         Checks.notNull(action, "Procedure");
-        Queue<T> queue = new LinkedList<>();
+        Queue<T> queue = new ArrayDeque<>();
         while (queue.addAll(getNextChunk())) {
             while (!queue.isEmpty()) {
                 T it = queue.poll();

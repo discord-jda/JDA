@@ -24,7 +24,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GuildMemberUpdateHandler extends SocketHandler {
@@ -67,7 +67,7 @@ public class GuildMemberUpdateHandler extends SocketHandler {
     }
 
     private List<Role> toRolesList(GuildImpl guild, DataArray array) {
-        LinkedList<Role> roles = new LinkedList<>();
+        List<Role> roles = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             long id = array.getLong(i);
             Role r = guild.getRolesView().get(id);
