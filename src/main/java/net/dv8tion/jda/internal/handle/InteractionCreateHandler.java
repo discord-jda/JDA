@@ -95,7 +95,8 @@ public class InteractionCreateHandler extends SocketHandler {
     }
 
     private void handleCommand(DataObject content) {
-        switch (Command.Type.fromId(content.getObject("data").getInt("type"))) {
+        int type = content.getObject("data").getInt("type");
+        switch (Command.Type.fromId(type)) {
             case SLASH:
                 api.handleEvent(new SlashCommandInteractionEvent(
                         api, responseNumber, new SlashCommandInteractionImpl(api, content)));
@@ -108,11 +109,15 @@ public class InteractionCreateHandler extends SocketHandler {
                 api.handleEvent(new UserContextInteractionEvent(
                         api, responseNumber, new UserContextInteractionImpl(api, content)));
                 break;
+            case UNKNOWN:
+                WebSocketClient.LOG.debug("Received interaction with unknown command type {}", type);
+                break;
         }
     }
 
     private void handleAction(DataObject content) {
-        switch (Component.Type.fromKey(content.getObject("data").getInt("component_type"))) {
+        int type = content.getObject("data").getInt("component_type");
+        switch (Component.Type.fromKey(type)) {
             case BUTTON:
                 api.handleEvent(
                         new ButtonInteractionEvent(api, responseNumber, new ButtonInteractionImpl(api, content)));
@@ -128,6 +133,8 @@ public class InteractionCreateHandler extends SocketHandler {
                 api.handleEvent(new EntitySelectInteractionEvent(
                         api, responseNumber, new EntitySelectInteractionImpl(api, content)));
                 break;
+            default:
+                WebSocketClient.LOG.debug("Received interaction with unknown component type {}", type);
         }
     }
 }

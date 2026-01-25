@@ -1156,6 +1156,8 @@ public class OptionData implements SerializableData {
                     data.setMaxLength(maxLength);
                 }
                 break;
+            default:
+                break;
         }
         return data;
     }

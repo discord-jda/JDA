@@ -76,13 +76,13 @@ apiModelGenerator {
 
     generatorSuffix = "Dto"
     includes = listOf(
-        "AvailableLocalesEnum",
-        "CreateRoleRequest",
-        "MessageType",
-        "ChannelTypes",
-        "AuditLogActionTypes",
-        "InviteTypes",
-        "WebhookTypes",
+            "AvailableLocalesEnum",
+            "CreateRoleRequest",
+            "MessageType",
+            "ChannelTypes",
+            "AuditLogActionTypes",
+            "InviteTypes",
+            "WebhookTypes",
     )
 }
 
@@ -500,22 +500,41 @@ tasks.withType<JavaCompile>().configureEach {
     options.isIncremental = true
 
     options.compilerArgs.addAll(listOf(
-        "-Xlint:all",
-        // warnings for --release 8
-        "-Xlint:-options",
-        // warnings for missing serialVersionUID in exceptions (we don't intend for exceptions to be serialized)
-        "-Xlint:-serial",
-        // warnings for calling member methods in constructor, which we do for argument checks
-        "-Xlint:-this-escape",
-        // warnings for unused resource in try-with-resources (we use them for locks)
-        "-Xlint:-try",
-        // warnings for potentially unsafe varargs, this is already handled by @SafeVarargs
-        "-Xlint:-varargs",
+            "-Xlint:all",
+            // warnings for --release 8
+            "-Xlint:-options",
+            // warnings for missing serialVersionUID in exceptions (we don't intend for exceptions to be serialized)
+            "-Xlint:-serial",
+            // warnings for calling member methods in constructor, which we do for argument checks
+            "-Xlint:-this-escape",
+            // warnings for unused resource in try-with-resources (we use them for locks)
+            "-Xlint:-try",
+            // warnings for potentially unsafe varargs, this is already handled by @SafeVarargs
+            "-Xlint:-varargs",
     ))
 
     options.errorprone {
-        disableAllChecks.set(true)
-        error("MissingOverride")
+        disable(
+                "AssignmentExpression",
+                "ByteBufferBackingArray",
+                "CheckReturnValue",
+                "DoubleCheckedLocking",
+                "EffectivelyPrivate",
+                "EmptyCatch",
+                "EnumOrdinal",
+                "Finalize",
+                "FutureReturnValueIgnored",
+                "InvalidBlockTag",
+                "JavaDurationGetSecondsToToSeconds",
+                "JavaTimeDefaultTimeZone",
+                "MathAbsoluteNegative",
+                "MixedMutabilityReturnType",
+                "OperatorPrecedence",
+                "StringSplitter",
+                "TypeParameterUnusedInFormals",
+                "UnnecessaryLambda",
+                "UnusedMethod",
+        )
     }
 
     mustRunAfter(enableErrorpronePatching)
@@ -579,9 +598,9 @@ tasks.test {
     failFast = false
 
     jvmArgs = listOf(
-        "-javaagent:${mockitoAgent.asPath}",
-        // https://github.com/raphw/byte-buddy/issues/1803
-        "-Dnet.bytebuddy.safe=true"
+            "-javaagent:${mockitoAgent.asPath}",
+            // https://github.com/raphw/byte-buddy/issues/1803
+            "-Dnet.bytebuddy.safe=true"
     )
 
     testLogging {

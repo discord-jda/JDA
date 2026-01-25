@@ -62,7 +62,7 @@ import javax.annotation.Nullable;
  * This means that you can have listeners easily registered to multiple {@link net.dv8tion.jda.api.JDA} instances.
  */
 public class JDABuilder {
-    protected final List<Object> listeners = new LinkedList<>();
+    protected final List<Object> listeners = new ArrayList<>();
     protected final EnumSet<CacheFlag> automaticallyDisabled = EnumSet.noneOf(CacheFlag.class);
 
     protected ScheduledExecutorService rateLimitScheduler = null;

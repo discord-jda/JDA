@@ -72,7 +72,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     }
 
     @Nullable
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "TypeParameterUnusedInFormals"})
     public <C extends T> C remove(ChannelType type, long id) {
         try (UnlockHook hook = writeLock()) {
             T removed = getMap(type).remove(id);

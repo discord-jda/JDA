@@ -24,8 +24,6 @@ public class UnionUtil {
 
         String cleanedClassName = instance.getClass().getSimpleName().replace("Impl", "");
         throw new IllegalStateException(Helpers.format(
-                "Cannot convert " + classCategory + " of type %s to %s!",
-                cleanedClassName,
-                toObjectClass.getSimpleName()));
+                "Cannot convert %s of type %s to %s!", classCategory, cleanedClassName, toObjectClass.getSimpleName()));
     }
 }

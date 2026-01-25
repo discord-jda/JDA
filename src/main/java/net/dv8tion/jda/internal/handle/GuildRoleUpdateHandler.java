@@ -86,14 +86,14 @@ public class GuildRoleUpdateHandler extends SocketHandler {
                 getJDA().handleEvent(event);
             }
         }
-        if (!Objects.equals(position, role.getPositionRaw())) {
+        if (position != role.getPositionRaw()) {
             int oldPosition = role.getPosition();
             int oldPositionRaw = role.getPositionRaw();
             role.setRawPosition(position);
             getJDA().handleEvent(
                             new RoleUpdatePositionEvent(getJDA(), responseNumber, role, oldPosition, oldPositionRaw));
         }
-        if (!Objects.equals(permissions, role.getPermissionsRaw())) {
+        if (permissions != role.getPermissionsRaw()) {
             long oldPermissionsRaw = role.getPermissionsRaw();
             role.setRawPermissions(permissions);
             getJDA().handleEvent(new RoleUpdatePermissionsEvent(getJDA(), responseNumber, role, oldPermissionsRaw));

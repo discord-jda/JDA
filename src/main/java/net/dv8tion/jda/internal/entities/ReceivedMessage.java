@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -782,7 +784,8 @@ public class ReceivedMessage implements Message {
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
+    @FormatMethod
+    public MessageEditAction editMessageFormat(@Nonnull @FormatString String format, @Nonnull Object... args) {
         MessageEditActionImpl action = editRequest();
         action.setContent(String.format(format, args));
 
