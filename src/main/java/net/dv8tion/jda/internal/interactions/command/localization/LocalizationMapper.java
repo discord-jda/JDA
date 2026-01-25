@@ -108,9 +108,9 @@ public class LocalizationMapper {
                 DataObject item = source.getObject(i);
                 Runnable runnable = () -> {
                     String key = keyExtractor.apply(item);
-                    keyComponents.push(key);
+                    keyComponents.addLast(key);
                     consumer.accept(item);
-                    keyComponents.pop();
+                    keyComponents.removeLast();
                 };
 
                 // We need to differentiate subcommands/groups from options
@@ -133,9 +133,9 @@ public class LocalizationMapper {
         }
 
         private void withKey(String key, Runnable runnable) {
-            keyComponents.push(key);
+            keyComponents.addLast(key);
             runnable.run();
-            keyComponents.pop();
+            keyComponents.removeLast();
         }
 
         private String getKey(String finalComponent) {
