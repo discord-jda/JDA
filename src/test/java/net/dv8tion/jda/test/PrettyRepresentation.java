@@ -23,10 +23,10 @@ import org.assertj.core.presentation.StandardRepresentation;
 public class PrettyRepresentation extends StandardRepresentation {
     @Override
     protected String fallbackToStringOf(Object object) {
-        if (object instanceof DataObject) {
-            return ((DataObject) object).toPrettyString();
-        } else if (object instanceof DataArray) {
-            return ((DataArray) object).toPrettyString();
+        if (object instanceof DataObject dataObject) {
+            return dataObject.toPrettyString();
+        } else if (object instanceof DataArray dataArray) {
+            return dataArray.toPrettyString();
         }
         return object.toString();
     }

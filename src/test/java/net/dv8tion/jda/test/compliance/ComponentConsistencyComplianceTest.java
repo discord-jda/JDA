@@ -81,7 +81,6 @@ public class ComponentConsistencyComplianceTest {
                                 declaredMethod,
                                 declaredMethod.getFullName() + " must override return type with "
                                         + declaredMethod.getOwner().getFullName()));
-                        continue;
                     }
                 }
             }

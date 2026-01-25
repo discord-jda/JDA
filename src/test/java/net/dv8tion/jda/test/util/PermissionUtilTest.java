@@ -51,7 +51,6 @@ public class PermissionUtilTest extends IntegrationTest {
             .collect(Collectors.toCollection(() -> EnumSet.noneOf(Permission.class)));
 
     private static final long ALL_PERMISSIONS_RAW = Permission.getRaw(ALL_PERMISSIONS);
-    private static final long ALL_CHANNEL_PERMISSIONS_RAW = Permission.getRaw(ALL_CHANNEL_PERMISSIONS);
 
     @Mock
     private Guild guild;
