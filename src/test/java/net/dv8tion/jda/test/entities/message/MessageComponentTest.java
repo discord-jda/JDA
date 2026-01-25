@@ -222,8 +222,8 @@ public class MessageComponentTest {
     private static Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> messageCreate(
             Function<MessageCreateBuilder, MessageCreateBuilder> function) {
         return abstractMessageBuilder -> {
-            if (abstractMessageBuilder instanceof MessageCreateBuilder) {
-                return function.apply((MessageCreateBuilder) abstractMessageBuilder);
+            if (abstractMessageBuilder instanceof MessageCreateBuilder messageCreateBuilder) {
+                return function.apply(messageCreateBuilder);
             }
             return null;
         };
@@ -232,8 +232,8 @@ public class MessageComponentTest {
     private static Function<AbstractMessageBuilder<?, ?>, AbstractMessageBuilder<?, ?>> messageEdit(
             Function<MessageEditBuilder, MessageEditBuilder> function) {
         return abstractMessageBuilder -> {
-            if (abstractMessageBuilder instanceof MessageEditBuilder) {
-                return function.apply((MessageEditBuilder) abstractMessageBuilder);
+            if (abstractMessageBuilder instanceof MessageEditBuilder messageEditBuilder) {
+                return function.apply(messageEditBuilder);
             }
             return null;
         };

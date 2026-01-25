@@ -46,6 +46,7 @@ import static org.mockito.Mockito.*;
 class ChannelCacheViewTest {
     private static long counter = 0;
 
+    @SuppressWarnings("StringConcatToTextBlock")
     private static final String VALID_SORT_ORDER = String.join(
             "\n",
             "TEXT without parent",
@@ -87,10 +88,10 @@ class ChannelCacheViewTest {
         when(mock.getType()).thenReturn(type);
         when(mock.toString()).thenReturn(name);
         when(mock.getName()).thenReturn(name);
-        when(mock.getIdLong()).thenReturn(type.ordinal() + (counter++));
+        when(mock.getIdLong()).thenReturn(type.ordinal() + counter++);
         if (IPositionableChannel.class.isAssignableFrom(clazz)) {
             IPositionableChannel positionable = (IPositionableChannel) mock;
-            when(positionable.getPositionRaw()).thenReturn(type.ordinal() + (int) (counter++));
+            when(positionable.getPositionRaw()).thenReturn(type.ordinal() + (int) counter++);
         }
         if (GuildChannel.class.isAssignableFrom(clazz)) {
             GuildChannel comparable = (GuildChannel) mock;
