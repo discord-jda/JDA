@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class MessageDeleteHandler extends SocketHandler {
 
@@ -59,7 +59,7 @@ public class MessageDeleteHandler extends SocketHandler {
             if (guild != null) {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null) {
-                    WebSocketClient.LOG.debug(
+                    GatewayWebSocketClient.LOG.debug(
                             "Dropping MESSAGE_DELETE for unexpected channel of type {}", actual.getType());
                     return null;
                 }

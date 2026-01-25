@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.utils.concurrent.task;
 
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.utils.concurrent.Task;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -105,7 +105,7 @@ public class GatewayTask<T> implements Task<T> {
     @Nonnull
     @Override
     public T get() {
-        if (WebSocketClient.WS_THREAD.get()) {
+        if (GatewayWebSocketClient.WS_THREAD.get()) {
             throw new UnsupportedOperationException("Blocking operations are not permitted on the gateway thread");
         }
         return future.join();

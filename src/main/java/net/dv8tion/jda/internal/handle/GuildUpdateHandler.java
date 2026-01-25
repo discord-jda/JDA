@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -122,7 +122,7 @@ public class GuildUpdateHandler extends SocketHandler {
             Member oldOwner = guild.getOwner();
             Member newOwner = guild.getMembersView().get(ownerId);
             if (newOwner == null) {
-                WebSocketClient.LOG.debug(
+                GatewayWebSocketClient.LOG.debug(
                         "Received {} with owner not in cache. UserId: {} GuildId: {}",
                         allContent.get("t"),
                         ownerId,

@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class GuildDeleteHandler extends SocketHandler {
     public GuildDeleteHandler(JDAImpl api) {
@@ -42,7 +42,7 @@ public class GuildDeleteHandler extends SocketHandler {
         if (guild == null) {
             // getJDA().getEventCache().cache(EventCache.Type.GUILD, id, () ->
             // handle(responseNumber, allContent));
-            WebSocketClient.LOG.debug(
+            GatewayWebSocketClient.LOG.debug(
                     "Received GUILD_DELETE for a Guild that is not currently cached. ID: {} unavailable: {}",
                     id,
                     unavailable);

@@ -24,7 +24,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 public class GuildMembersChunkHandler extends SocketHandler {
@@ -41,7 +41,7 @@ public class GuildMembersChunkHandler extends SocketHandler {
             if (api.getClient().getChunkManager().handleChunk(guildId, content)) {
                 return null;
             }
-            WebSocketClient.LOG.debug(
+            GatewayWebSocketClient.LOG.debug(
                     "Received member chunk for guild that is already in cache. GuildId: {} Count: {} Index: {}/{}",
                     guildId,
                     members.length(),

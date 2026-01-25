@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.audio.AudioConnection;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class VoiceServerUpdateHandler extends SocketHandler {
     public VoiceServerUpdateHandler(JDAImpl api) {
@@ -71,7 +71,7 @@ public class VoiceServerUpdateHandler extends SocketHandler {
         AudioManagerImpl audioManager =
                 (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
         if (audioManager == null) {
-            WebSocketClient.LOG.debug(
+            GatewayWebSocketClient.LOG.debug(
                     "Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect "
                             + "to a VoiceChannel. Assuming that this is caused by another client running on this account. "
                             + "Ignoring the event.");
@@ -82,7 +82,7 @@ public class VoiceServerUpdateHandler extends SocketHandler {
             // Synchronized to prevent attempts to close while setting up initial objects.
             AudioChannel target = guild.getSelfMember().getVoiceState().getChannel();
             if (target == null) {
-                WebSocketClient.LOG.warn("Ignoring VOICE_SERVER_UPDATE for unknown channel");
+                GatewayWebSocketClient.LOG.warn("Ignoring VOICE_SERVER_UPDATE for unknown channel");
                 return;
             }
 

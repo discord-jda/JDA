@@ -60,7 +60,7 @@ import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelI
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
@@ -80,7 +80,7 @@ public class ChannelUpdateHandler extends SocketHandler {
     protected Long handleInternally(DataObject content) {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
         if (type == ChannelType.GROUP) {
-            WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
+            GatewayWebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
             return null;
         }
         if (!content.isNull("guild_id")) {
@@ -175,7 +175,8 @@ public class ChannelUpdateHandler extends SocketHandler {
             case CATEGORY:
                 break;
             default:
-                WebSocketClient.LOG.debug("CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
+                GatewayWebSocketClient.LOG.debug(
+                        "CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
         }
 
         DataArray permOverwrites = content.getArray("permission_overwrites");
@@ -209,7 +210,7 @@ public class ChannelUpdateHandler extends SocketHandler {
                 ChannelType.UNKNOWN));
 
         if (!expectedTypes.contains(oldType) || !expectedTypes.contains(newChannelType)) {
-            WebSocketClient.LOG.warn(
+            GatewayWebSocketClient.LOG.warn(
                     "Unexpected channel type change {}->{}, discarding from cache.",
                     channel.getType().getId(),
                     content.getInt("type"));
@@ -226,7 +227,7 @@ public class ChannelUpdateHandler extends SocketHandler {
                 guild.getThreadChannelCache().forEachUnordered(ThreadChannel::getParentChannel);
             } else {
                 // Change introduced dangling thread channels (with no parent)
-                WebSocketClient.LOG.error(
+                GatewayWebSocketClient.LOG.error(
                         "ThreadContainer channel transitioned into type that is not ThreadContainer? {} -> {}",
                         channel.getType(),
                         newChannel.getType());

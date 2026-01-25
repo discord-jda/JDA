@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class ChannelDeleteHandler extends SocketHandler {
     public ChannelDeleteHandler(JDAImpl api) {
@@ -48,7 +48,7 @@ public class ChannelDeleteHandler extends SocketHandler {
         if (guild == null) {
             PrivateChannel channel = getJDA().getChannelsView().remove(ChannelType.PRIVATE, channelId);
             if (channel == null) {
-                WebSocketClient.LOG.debug(
+                GatewayWebSocketClient.LOG.debug(
                         "CHANNEL_DELETE attempted to delete a private channel that is not yet cached. JSON: {}",
                         content);
             }
@@ -57,7 +57,7 @@ public class ChannelDeleteHandler extends SocketHandler {
 
         GuildChannel channel = guild.getChannelById(GuildChannel.class, channelId);
         if (channel == null) {
-            WebSocketClient.LOG.debug(
+            GatewayWebSocketClient.LOG.debug(
                     "CHANNEL_DELETE attempted to delete a guild channel that is not yet cached. JSON: {}", content);
             return null;
         }

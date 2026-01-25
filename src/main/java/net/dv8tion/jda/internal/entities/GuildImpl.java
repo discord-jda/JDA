@@ -1159,7 +1159,7 @@ public class GuildImpl implements Guild {
         MemberChunkManager.ChunkRequest handler =
                 chunkManager.chunkGuild(this, includePresences, (last, list) -> list.forEach(callback));
         handler.exceptionally(ex -> {
-            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            GatewayWebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
             return null;
         });
         return new GatewayTask<>(handler, () -> handler.cancel(false)).onSetTimeout(handler::setTimeout);
@@ -1206,7 +1206,7 @@ public class GuildImpl implements Guild {
         });
 
         handle.exceptionally(ex -> {
-            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            GatewayWebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
             result.completeExceptionally(ex);
             return null;
         });
@@ -1233,7 +1233,7 @@ public class GuildImpl implements Guild {
         });
 
         handle.exceptionally(ex -> {
-            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            GatewayWebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
             result.completeExceptionally(ex);
             return null;
         });
