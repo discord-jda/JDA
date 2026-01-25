@@ -551,6 +551,12 @@ tasks.named<JavaCompile>("compileTestJava8Java") {
     options.release = 8
 }
 
+tasks.named<JavaCompile>("compileExamplesJava") {
+    options.errorprone {
+        disableAllChecks.set(true)
+    }
+}
+
 tasks.build.configure {
     dependsOn(jar)
     dependsOn(javadocJar)
