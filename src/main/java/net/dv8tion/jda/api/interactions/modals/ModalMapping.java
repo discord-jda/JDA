@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * ID/Value pair for a {@link net.dv8tion.jda.api.events.interaction.ModalInteractionEvent ModalInteractionEvent}.
@@ -96,8 +97,55 @@ public class ModalMapping {
      *         this returns what the User typed in it
      *     </li>
      *     <li>
-     *         For {@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroups},
+     *         For <b>required</b> {@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroups},
      *         this returns the value of the option chosen by the User
+     *     </li>
+     * </ul>
+     *
+     * <p>Use {@link #getType()} to check if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         <ul>
+     *             <li>If this ModalMapping cannot be represented as a String</li>
+     *             <li>
+     *                 If this ModalMapping is for a {@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroup}
+     *                 and it contains no value, use {@link #getAsOptionalString()} instead
+     *             </li>
+     *         </ul>
+     *
+     * @return The String representation of this component.
+     */
+    @Nonnull
+    public String getAsString() {
+        switch (type) {
+            case TEXT_INPUT: {
+                return value.getString("value");
+            }
+            case RADIO_GROUP: {
+                if (value.isNull("value")) {
+                    throw new IllegalStateException(
+                            "Cannot get a non-null string from an optional radio group, use 'getAsOptionalString()' instead");
+                } else {
+                    return value.getString("value");
+                }
+            }
+            default:
+                throw newTypeError("String");
+        }
+    }
+
+    /**
+     * The String representation of this component.
+     *
+     * <p>Return values include:
+     * <ul>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.textinput.TextInput TextInputs},
+     *         this returns what the User typed in it, or {@code null} if left empty
+     *     </li>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroups},
+     *         this returns the value of the option chosen by the User, or {@code null} if no option was chosen
      *     </li>
      * </ul>
      *
@@ -106,15 +154,29 @@ public class ModalMapping {
      * @throws IllegalStateException
      *         If this ModalMapping cannot be represented as a String.
      *
-     * @return The String representation of this component.
+     * @return The String representation of this component, or {@code null} if absent.
      */
-    @Nonnull
-    public String getAsString() {
-        if (type != Component.Type.TEXT_INPUT && type != Component.Type.RADIO_GROUP) {
-            typeError("String");
+    @Nullable
+    public String getAsOptionalString() {
+        switch (type) {
+            case TEXT_INPUT: {
+                String value = this.value.getString("value");
+                if (value.isEmpty()) {
+                    return null;
+                } else {
+                    return value;
+                }
+            }
+            case RADIO_GROUP: {
+                if (value.isNull("value")) {
+                    return null;
+                } else {
+                    return value.getString("value");
+                }
+            }
+            default:
+                throw newTypeError("String");
         }
-
-        return value.getString("value");
     }
 
     /**
@@ -278,6 +340,11 @@ public class ModalMapping {
 
     private void typeError(String targetType) {
         throw new IllegalStateException(
+                "ModalMapping of type " + getType() + " can not be represented as " + targetType + "!");
+    }
+
+    private RuntimeException newTypeError(String targetType) {
+        return new IllegalStateException(
                 "ModalMapping of type " + getType() + " can not be represented as " + targetType + "!");
     }
 }
