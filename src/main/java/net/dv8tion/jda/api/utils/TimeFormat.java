@@ -52,6 +52,10 @@ public enum TimeFormat {
     DATE_TIME_SHORT("f"),
     /** Formats date and time as {@code Wednesday, 16 June 2021 18:49} or {@code Wednesday, June 16, 2021 6:49 PM} */
     DATE_TIME_LONG("F"),
+    /** Formats date and time as {@code 16/06/2021, 18:49} or {@code 16/06/2021, 6:49 PM} */
+    DATE_SHORT_TIME_SHORT("s"),
+    /** Formats date and time as {@code 16/06/2021, 18:49:26} or {@code 16/06/2021, 6:49:26 PM} */
+    DATE_SHORT_TIME_LONG("S"),
     /** Formats date and time as relative {@code 18 minutes ago} or {@code 2 days ago} */
     RELATIVE("R"),
     ;
@@ -91,7 +95,7 @@ public enum TimeFormat {
      *
      * @see #parse(String)
      */
-    public static final Pattern MARKDOWN = Pattern.compile("<t:(?<time>-?\\d{1,17})(?::(?<style>[tTdDfFR]))?>");
+    public static final Pattern MARKDOWN = Pattern.compile("<t:(?<time>-?\\d{1,17})(?::(?<style>[tTdDfFsSR]))?>");
 
     private final String style;
 
