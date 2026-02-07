@@ -810,36 +810,6 @@ public interface Invite {
         String getName();
 
         /**
-         * Whether this Role is managed by an integration
-         *
-         * @return True, if this Role is managed.
-         */
-        boolean isManaged();
-
-        /**
-         * Whether this Role is hoisted
-         * <br>Members in a hoisted role are displayed in their own grouping on the user-list
-         *
-         * @return True, if this Role is hoisted.
-         */
-        boolean isHoisted();
-
-        /**
-         * Whether this Role is mentionable
-         *
-         * @return True, if Role is mentionable.
-         */
-        boolean isMentionable();
-
-        /**
-         * The {@code long} representation of the literal permissions that this Role has.
-         * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}.
-         *
-         * @return Never-negative long containing offset permissions of this role.
-         */
-        long getPermissionsRaw();
-
-        /**
          * The colors this Role is displayed in.
          *
          * <p>See {@link RoleColors} for detailed information on how these work.
@@ -861,15 +831,6 @@ public interface Invite {
          */
         @Nullable
         RoleIcon getIcon();
-
-        // TODO add getFlags()
-
-        /**
-         * The {@code long} representation of the flags that this Role has.
-         *
-         * @return {@code long} bitset containing the flags of this role
-         */
-        long getFlagsRaw();
 
         @Nonnull
         @Override

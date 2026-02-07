@@ -558,9 +558,6 @@ public class InviteImpl implements Invite {
         private final RoleIcon icon;
         private final int positionRaw;
         private final RoleColors colors;
-        private final long permissions;
-        private final boolean mentionable, managed, hoist;
-        private final long flags;
 
         public RoleImpl(DataObject o) {
             this.id = o.getUnsignedLong("id");
@@ -570,11 +567,6 @@ public class InviteImpl implements Invite {
             this.icon = iconHash == null && unicodeEmoji == null ? null : new RoleIcon(iconHash, unicodeEmoji, id);
             this.positionRaw = o.getInt("position");
             this.colors = EntityBuilder.createRoleColors(o.getObject("colors"));
-            this.permissions = o.getLong("permissions");
-            this.mentionable = o.getBoolean("mentionable");
-            this.managed = o.getBoolean("managed");
-            this.hoist = o.getBoolean("hoist");
-            this.flags = o.getLong("flags");
         }
 
         @Override
@@ -593,26 +585,6 @@ public class InviteImpl implements Invite {
             return name;
         }
 
-        @Override
-        public boolean isManaged() {
-            return managed;
-        }
-
-        @Override
-        public boolean isHoisted() {
-            return hoist;
-        }
-
-        @Override
-        public boolean isMentionable() {
-            return mentionable;
-        }
-
-        @Override
-        public long getPermissionsRaw() {
-            return permissions;
-        }
-
         @Nonnull
         @Override
         public RoleColors getColors() {
@@ -623,11 +595,6 @@ public class InviteImpl implements Invite {
         @Override
         public RoleIcon getIcon() {
             return icon;
-        }
-
-        @Override
-        public long getFlagsRaw() {
-            return flags;
         }
     }
 
