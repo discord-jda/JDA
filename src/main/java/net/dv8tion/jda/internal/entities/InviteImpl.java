@@ -38,9 +38,7 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -128,10 +126,16 @@ public class InviteImpl implements Invite {
 
         Route.CompiledRoute route = Route.Invites.GET_TARGET_USERS.compile(code);
 
-        return new RestActionImpl<>(api, route, (response, request) -> Arrays.stream(
-                        response.getString().split(","))
-                .map(UserSnowflake::fromId)
-                .collect(Helpers.toUnmodifiableList()));
+        return new RestActionImpl<>(api, route, (response, request) -> {
+            String content = response.getString();
+            String[] lines = content.split("\n");
+            // At least the header and one user ID
+            if (lines.length < 2) {
+                throw new IllegalArgumentException("Malformed target user list: '" + content + "'");
+            }
+
+            return Arrays.stream(lines).skip(1).map(UserSnowflake::fromId).collect(Helpers.toUnmodifiableList());
+        });
     }
 
     public static RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus(JDA api, String code) {
