@@ -95,6 +95,10 @@ public class Requester {
         this.api = (JDAImpl) api;
         this.rateLimiter = rateLimiter;
         this.baseUrl = HttpUrl.parse(config.getBaseUrl());
+        if (this.baseUrl == null) {
+            throw new IllegalArgumentException("Provided base url was invalid! Provided: " + config.getBaseUrl());
+        }
+
         this.userAgent = config.getUserAgent();
         this.customBuilder = config.getCustomBuilder();
         this.httpClient = this.api.getHttpClient();
