@@ -60,9 +60,14 @@ class JavadocFormatVisitor : JavaIsoVisitor<ExecutionContext>() {
         val javadocs = getJavadocs(prefix)
 
         if (javadocs !== null) {
+            val newJavadocs = formatJavadoc(javadocs)
+            if (newJavadocs.printComment(cursor) == javadocs.printComment(cursor)) {
+                return prefix
+            }
+
             val mutableComments = ArrayList(prefix.comments)
             val index = mutableComments.indexOf(javadocs)
-            mutableComments[index] = formatJavadoc(javadocs)
+            mutableComments[index] = newJavadocs
             return prefix.withComments(mutableComments)
         }
 
