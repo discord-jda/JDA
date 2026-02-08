@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.HttpUrl;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -715,7 +716,7 @@ public class Route {
         private final Route baseRoute;
         private final String major;
         private final String compiledRoute;
-        private final List<String> query;
+        private final List<QueryParameter> query;
 
         private CompiledRoute(Route baseRoute, String compiledRoute, String major) {
             this.baseRoute = baseRoute;
@@ -724,7 +725,7 @@ public class Route {
             this.query = null;
         }
 
-        private CompiledRoute(CompiledRoute original, List<String> query) {
+        private CompiledRoute(CompiledRoute original, List<QueryParameter> query) {
             this.baseRoute = original.baseRoute;
             this.compiledRoute = original.compiledRoute;
             this.major = original.major;
@@ -771,7 +772,7 @@ public class Route {
             Checks.check(params.length >= 2, "Params length must be at least 2");
             Checks.check((params.length & 1) == 0, "Params length must be a multiple of 2");
 
-            List<String> newQuery;
+            List<QueryParameter> newQuery;
             if (query == null) {
                 newQuery = new ArrayList<>(params.length / 2);
             } else {
@@ -783,7 +784,7 @@ public class Route {
             for (int i = 0; i < params.length; i += 2) {
                 Checks.notEmpty(params[i], "Query key [" + i / 2 + "]");
                 Checks.notNull(params[i + 1], "Query value [" + i / 2 + "]");
-                newQuery.add(params[i] + '=' + EncodingUtil.encodeUTF8(params[i + 1]));
+                newQuery.add(new QueryParameter(params[i], params[i + 1]));
             }
 
             return new CompiledRoute(this, newQuery);
@@ -811,8 +812,11 @@ public class Route {
             if (query == null) {
                 return compiledRoute;
             }
-            // Append query to url
-            return compiledRoute + '?' + String.join("&", query);
+
+            String queryString = query.stream()
+                    .map(param -> param.name + "=" + EncodingUtil.encodeUTF8(param.value))
+                    .collect(Collectors.joining("&", "?", ""));
+            return compiledRoute + queryString;
         }
 
         /**
@@ -843,16 +847,15 @@ public class Route {
         @Nonnull
         public HttpUrl toHttpUrl(@Nonnull HttpUrl baseUrl) {
             Checks.notNull(baseUrl, "Base URL");
-            HttpUrl.Builder path = baseUrl.newBuilder().addEncodedPathSegments(compiledRoute);
+            HttpUrl.Builder url = baseUrl.newBuilder().addEncodedPathSegments(compiledRoute);
 
             if (query != null) {
-                for (String s : query) {
-                    String[] queryParam = s.split("=", 2);
-                    path.addEncodedQueryParameter(queryParam[0], queryParam[1]);
+                for (QueryParameter queryParam : query) {
+                    url.addQueryParameter(queryParam.name, queryParam.value);
                 }
             }
 
-            return path.build();
+            return url.build();
         }
 
         /**
@@ -897,6 +900,16 @@ public class Route {
                     .setType(method)
                     .addMetadata("compiledRoute", compiledRoute)
                     .toString();
+        }
+    }
+
+    private static final class QueryParameter {
+        private final String name;
+        private final String value;
+
+        private QueryParameter(String name, String value) {
+            this.name = name;
+            this.value = value;
         }
     }
 }
