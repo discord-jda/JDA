@@ -735,11 +735,7 @@ public class DefaultShardManager implements ShardManager {
         public okhttp3.Response execute() {
             try {
                 RestConfig config = restConfigProvider.apply(0);
-                HttpUrl baseUrl = HttpUrl.parse(config.getBaseUrl());
-                if (baseUrl == null) {
-                    throw new IllegalArgumentException("Invalid base url: " + config.getBaseUrl());
-                }
-
+                HttpUrl baseUrl = HttpUrl.get(config.getBaseUrl());
                 HttpUrl url = getRoute().toHttpUrl(baseUrl);
                 LOG.debug("Requesting shard total with url {}", url);
 
