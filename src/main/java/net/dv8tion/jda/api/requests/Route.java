@@ -707,6 +707,17 @@ public class Route {
         return method + "/" + getRoute();
     }
 
+    private static String compileRoute(List<PathSegment> path, List<QueryParameter> query) {
+        String compiledRoute = path.stream().map(PathSegment::toString).collect(Collectors.joining("/"));
+
+        if (query == null) {
+            return compiledRoute;
+        }
+
+        String queryString = query.stream().map(QueryParameter::toString).collect(Collectors.joining("&", "?", ""));
+        return compiledRoute + queryString;
+    }
+
     /**
      * A route compiled with arguments.
      *
@@ -717,12 +728,14 @@ public class Route {
         private final String major;
         private final List<PathSegment> path;
         private final List<QueryParameter> query;
+        private final String compiledRoute;
 
         private CompiledRoute(Route baseRoute, List<PathSegment> path, String major) {
             this.baseRoute = baseRoute;
             this.path = path;
             this.major = major;
             this.query = null;
+            this.compiledRoute = compileRoute(this.path, this.query);
         }
 
         private CompiledRoute(CompiledRoute original, List<QueryParameter> query) {
@@ -730,6 +743,7 @@ public class Route {
             this.path = original.path;
             this.major = original.major;
             this.query = query;
+            this.compiledRoute = compileRoute(this.path, this.query);
         }
 
         /**
@@ -809,27 +823,11 @@ public class Route {
          */
         @Nonnull
         public String getCompiledRoute() {
-            String compiledRoute = path.stream().map(PathSegment::toString).collect(Collectors.joining("/"));
-
-            if (query == null) {
-                return compiledRoute;
-            }
-
-            String queryString = query.stream().map(QueryParameter::toString).collect(Collectors.joining("&", "?", ""));
-            return compiledRoute + queryString;
+            return compiledRoute;
         }
 
         /**
          * Builds an {@link HttpUrl} for this route using the provided {@code baseUrl}.
-         *
-         * <p>This method preserves the encoding performed by {@link #compile(String...)} and
-         * {@link #withQueryParams(String...)}:
-         * <ul>
-         *   <li>Path segments are appended using {@link HttpUrl.Builder#addEncodedPathSegments(String)}.
-         *       This means already-encoded sequences (such as {@code %2F}) are <em>not</em> decoded or normalized.</li>
-         *   <li>Query parameters are appended using {@link HttpUrl.Builder#addEncodedQueryParameter(String, String)}.
-         *       Values are expected to already be percent-encoded (as produced by {@link #withQueryParams(String...)}).</li>
-         * </ul>
          *
          * <p><b>Note:</b> The {@code baseUrl} should typically point to the API root (for example,
          * {@code https://discord.com/api/v10/}), and this method will append the compiled route path and query.
@@ -851,9 +849,9 @@ public class Route {
 
             for (PathSegment segment : path) {
                 if (segment.encoded) {
-                    url.addEncodedPathSegments(segment.value);
+                    url.addEncodedPathSegment(segment.value);
                 } else {
-                    url.addPathSegments(segment.value);
+                    url.addPathSegment(segment.value);
                 }
             }
 
@@ -888,7 +886,7 @@ public class Route {
 
         @Override
         public int hashCode() {
-            return (getCompiledRoute() + method.toString()).hashCode();
+            return Objects.hash(baseRoute, path);
         }
 
         @Override
@@ -912,6 +910,7 @@ public class Route {
     }
 
     private static final class QueryParameter {
+
         private final String name;
         private final String value;
 
@@ -923,6 +922,23 @@ public class Route {
         @Override
         public String toString() {
             return name + "=" + EncodingUtil.encodeUTF8(value);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof QueryParameter)) {
+                return false;
+            }
+            QueryParameter other = (QueryParameter) o;
+            return Objects.equals(name, other.name) && Objects.equals(value, other.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, value);
         }
     }
 
@@ -938,6 +954,23 @@ public class Route {
         @Override
         public String toString() {
             return encoded ? value : EncodingUtil.encodeUTF8(value);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof PathSegment)) {
+                return false;
+            }
+            PathSegment other = (PathSegment) o;
+            return encoded == other.encoded && Objects.equals(value, other.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value, encoded);
         }
     }
 }
