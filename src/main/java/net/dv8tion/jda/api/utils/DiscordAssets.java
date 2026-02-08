@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import okhttp3.HttpUrl;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
@@ -26,33 +27,6 @@ import javax.annotation.Nullable;
  * Utility class to retrieve an {@link ImageProxy} of most Discord assets.
  */
 public final class DiscordAssets {
-    private static final String APPLICATION_ICON_URL = "https://cdn.discordapp.com/app-icons/%s/%s";
-    private static final String APPLICATION_COVER_URL = "https://cdn.discordapp.com/application/%s/%s";
-
-    private static final String APPLICATION_TEAM_ICON_URL = "https://cdn.discordapp.com/team-icons/%s/%s";
-
-    private static final String CHANNEL_ICON_URL = "https://cdn.discordapp.com/channel-icons/%s/%s";
-
-    private static final String CUSTOM_EMOJI_URL = "https://cdn.discordapp.com/emojis/%s";
-
-    private static final String GUILD_ICON_URL = "https://cdn.discordapp.com/icons/%s/%s";
-    private static final String GUILD_SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s";
-    private static final String GUILD_BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s";
-
-    private static final String MEMBER_AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s";
-
-    private static final String ROLE_ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s";
-
-    private static final String SCHEDULED_EVENT_COVER_IMAGE_URL = "https://cdn.discordapp.com/guild-events/%s/%s";
-
-    private static final String STICKER_PACK_BANNER_URL =
-            "https://cdn.discordapp.com/app-assets/710982414301790216/store/%s";
-
-    private static final String USER_AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s";
-    private static final String USER_BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s";
-    private static final String USER_DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s";
-    private static final String USER_TAG_BADGE_URL = "https://cdn.discordapp.com/guild-tag-badges/%s/%s";
-
     private DiscordAssets() {}
 
     /**
@@ -86,7 +60,9 @@ public final class DiscordAssets {
         if (iconId == null) {
             return null;
         }
-        return createProxy(format, APPLICATION_ICON_URL, applicationId, iconId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("app-icons").addPathSegment(applicationId);
+        return format.finishProxy(builder, iconId);
     }
 
     /**
@@ -120,7 +96,9 @@ public final class DiscordAssets {
         if (coverId == null) {
             return null;
         }
-        return createProxy(format, APPLICATION_COVER_URL, applicationId, coverId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("application").addPathSegment(applicationId);
+        return format.finishProxy(builder, coverId);
     }
 
     /**
@@ -147,13 +125,16 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the application team's icon, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy applicationTeamIcon(@Nonnull ImageFormat format, @Nonnull String teamId, @Nullable String iconId) {
+    public static ImageProxy applicationTeamIcon(
+            @Nonnull ImageFormat format, @Nonnull String teamId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
         Checks.isSnowflake(teamId, "Team ID");
         if (iconId == null) {
             return null;
         }
-        return createProxy(format, APPLICATION_TEAM_ICON_URL, teamId, iconId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("team-icons").addPathSegment(teamId);
+        return format.finishProxy(builder, iconId);
     }
 
     /**
@@ -180,13 +161,17 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the channel's icon, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy channelIcon(@Nonnull ImageFormat format, @Nonnull String channelId, @Nullable String iconId) {
+    public static ImageProxy channelIcon(
+            @Nonnull ImageFormat format, @Nonnull String channelId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
         Checks.isSnowflake(channelId, "Channel ID");
         if (iconId == null) {
             return null;
         }
-        return createProxy(format, CHANNEL_ICON_URL, channelId, iconId);
+
+        HttpUrl.Builder builder =
+                newUrl().addEncodedPathSegment("channel-icons").addPathSegment(channelId);
+        return format.finishProxy(builder, iconId);
     }
 
     /**
@@ -216,7 +201,9 @@ public final class DiscordAssets {
     public static ImageProxy customEmoji(@Nonnull ImageFormat format, @Nonnull String id) {
         Checks.notNull(format, "Format");
         Checks.isSnowflake(id, "ID");
-        return createProxy(format, CUSTOM_EMOJI_URL, id);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("emojis");
+        return format.finishProxy(builder, id);
     }
 
     /**
@@ -251,7 +238,9 @@ public final class DiscordAssets {
         if (iconId == null) {
             return null;
         }
-        return createProxy(format, GUILD_ICON_URL, guildId, iconId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("icons").addPathSegment(guildId);
+        return format.finishProxy(builder, iconId);
     }
 
     /**
@@ -278,13 +267,16 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the guild's splash image, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy guildSplash(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String splashId) {
+    public static ImageProxy guildSplash(
+            @Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String splashId) {
         Checks.notNull(format, "Format");
         Checks.isSnowflake(guildId, "Guild ID");
         if (splashId == null) {
             return null;
         }
-        return createProxy(format, GUILD_SPLASH_URL, guildId, splashId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("splashes").addPathSegment(guildId);
+        return format.finishProxy(builder, splashId);
     }
 
     /**
@@ -313,13 +305,16 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the guild's banner, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy guildBanner(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String bannerId) {
+    public static ImageProxy guildBanner(
+            @Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String bannerId) {
         Checks.notNull(format, "Format");
         Checks.isSnowflake(guildId, "Guild ID");
         if (bannerId == null) {
             return null;
         }
-        return createProxy(format, GUILD_BANNER_URL, guildId, bannerId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("banners").addPathSegment(guildId);
+        return format.finishProxy(builder, bannerId);
     }
 
     /**
@@ -358,7 +353,13 @@ public final class DiscordAssets {
         if (avatarId == null) {
             return null;
         }
-        return createProxy(format, MEMBER_AVATAR_URL, guildId, userId, avatarId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("guilds")
+                .addPathSegment(guildId)
+                .addEncodedPathSegment("users")
+                .addPathSegment(userId)
+                .addEncodedPathSegment("avatars");
+        return format.finishProxy(builder, avatarId);
     }
 
     /**
@@ -391,7 +392,9 @@ public final class DiscordAssets {
         if (iconId == null) {
             return null;
         }
-        return createProxy(format, ROLE_ICON_URL, roleId, iconId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("role-icons").addPathSegment(roleId);
+        return format.finishProxy(builder, iconId);
     }
 
     /**
@@ -425,7 +428,9 @@ public final class DiscordAssets {
         if (imageId == null) {
             return null;
         }
-        return createProxy(format, SCHEDULED_EVENT_COVER_IMAGE_URL, eventId, imageId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("guild-events").addPathSegment(eventId);
+        return format.finishProxy(builder, imageId);
     }
 
     /**
@@ -455,7 +460,11 @@ public final class DiscordAssets {
         if (bannerId == null) {
             return null;
         }
-        return createProxy(format, STICKER_PACK_BANNER_URL, bannerId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("app-assets")
+                .addEncodedPathSegment("710982414301790216")
+                .addEncodedPathSegment("store");
+        return format.finishProxy(builder, bannerId);
     }
 
     /**
@@ -484,13 +493,16 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the user's avatar, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy userAvatar(@Nonnull ImageFormat format, @Nonnull String userId, @Nullable String avatarId) {
+    public static ImageProxy userAvatar(
+            @Nonnull ImageFormat format, @Nonnull String userId, @Nullable String avatarId) {
         Checks.notNull(format, "Format");
         Checks.isSnowflake(userId, "User ID");
         if (avatarId == null) {
             return null;
         }
-        return createProxy(format, USER_AVATAR_URL, userId, avatarId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("avatars").addPathSegment(userId);
+        return format.finishProxy(builder, avatarId);
     }
 
     /**
@@ -519,13 +531,16 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the user's banner, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy userBanner(@Nonnull ImageFormat format, @Nonnull String userId, @Nullable String bannerId) {
+    public static ImageProxy userBanner(
+            @Nonnull ImageFormat format, @Nonnull String userId, @Nullable String bannerId) {
         Checks.notNull(format, "Format");
         Checks.isSnowflake(userId, "User ID");
         if (bannerId == null) {
             return null;
         }
-        return createProxy(format, USER_BANNER_URL, userId, bannerId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("banners").addPathSegment(userId);
+        return format.finishProxy(builder, bannerId);
     }
 
     /**
@@ -547,7 +562,9 @@ public final class DiscordAssets {
     public static ImageProxy userDefaultAvatar(@Nonnull ImageFormat format, @Nonnull String avatarId) {
         Checks.notNull(format, "Format");
         Checks.notNull(avatarId, "Avatar ID");
-        return createProxy(format, USER_DEFAULT_AVATAR_URL, avatarId);
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("embed").addEncodedPathSegment("avatars");
+        return format.finishProxy(builder, avatarId);
     }
 
     /**
@@ -574,19 +591,20 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the user's tag badge, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy userTagBadge(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String badgeId) {
+    public static ImageProxy userTagBadge(
+            @Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String badgeId) {
         Checks.notNull(format, "Format");
         Checks.isSnowflake(guildId, "Guild ID");
         if (badgeId == null) {
             return null;
         }
-        return createProxy(format, USER_TAG_BADGE_URL, guildId, badgeId);
+
+        HttpUrl.Builder builder =
+                newUrl().addEncodedPathSegment("guild-tag-badges").addPathSegment(guildId);
+        return format.finishProxy(builder, badgeId);
     }
 
-    private static ImageProxy createProxy(ImageFormat imageFormat, String format, String... args) {
-        Checks.notNull(imageFormat, "Format");
-        String base = String.format(format, (Object[]) args);
-        String url = base + "." + imageFormat.getExtension() + "?" + String.join("&", imageFormat.getQueryParameters());
-        return new ImageProxy(url);
+    private static HttpUrl.Builder newUrl() {
+        return new HttpUrl.Builder().scheme("https").host("cdn.discordapp.com");
     }
 }

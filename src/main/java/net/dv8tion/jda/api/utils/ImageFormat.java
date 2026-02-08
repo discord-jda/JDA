@@ -18,10 +18,12 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import okhttp3.HttpUrl;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -150,5 +152,16 @@ public final class ImageFormat {
     @Unmodifiable
     public List<String> getQueryParameters() {
         return queryParameters;
+    }
+
+    @Nonnull
+    ImageProxy finishProxy(@Nonnull HttpUrl.Builder builder, @Nonnull String lastSegment) {
+        builder.addPathSegment(lastSegment + "." + extension);
+
+        for (Iterator<String> it = queryParameters.iterator(); it.hasNext(); ) {
+            builder.addQueryParameter(it.next(), it.next());
+        }
+
+        return new ImageProxy(builder.toString());
     }
 }
