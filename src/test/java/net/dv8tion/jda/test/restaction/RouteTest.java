@@ -27,14 +27,29 @@ class RouteTest {
     private static final HttpUrl BASE_URL = HttpUrl.get("https://discord.com/api/v10/");
 
     @Test
-    void testPathNavigationPrevention() {
-        assertThat(Route.Users.GET_USER.compile("../test").getCompiledRoute()).isEqualTo("users/..%2Ftest");
-        assertThat(Route.Users.GET_USER.compile("..\\test").getCompiledRoute()).isEqualTo("users/..%5Ctest");
+    void testSimpleUrl() {
+        assertThat(Route.Users.GET_USER.compile("42").toHttpUrl(BASE_URL)).hasToString(BASE_URL + "users/42");
+        assertThat(Route.Users.GET_USER.compile("@me").toHttpUrl(BASE_URL)).hasToString(BASE_URL + "users/@me");
+        assertThat(Route.Messages.GET_MESSAGE.compile("12345", "67890").toHttpUrl(BASE_URL))
+                .hasToString(BASE_URL + "channels/12345/messages/67890");
     }
 
     @Test
-    void testPathNavigationPreventionAlreadyEncodedSlashIsEncodedAgain() {
-        assertThat(Route.Users.GET_USER.compile("..%2Ftest").getCompiledRoute()).isEqualTo("users/..%252Ftest");
+    void testPathSegmentEncoding() {
+        assertThat(Route.Users.GET_USER.compile("../test").toHttpUrl(BASE_URL))
+                .hasToString(BASE_URL + "users/..%2Ftest");
+        assertThat(Route.Users.GET_USER.compile("..\\test").toHttpUrl(BASE_URL))
+                .hasToString(BASE_URL + "users/..%5Ctest");
+        assertThat(Route.Users.GET_USER.compile("..%2Ftest").toHttpUrl(BASE_URL))
+                .hasToString(BASE_URL + "users/..%252Ftest");
+    }
+
+    @Test
+    void testToHttpUrlBuildsUrlWithEncodedQueryParams() {
+        Route.CompiledRoute compiled =
+                Route.Messages.GET_MESSAGE_HISTORY.compile("123").withQueryParams("after", "1&limit=100");
+
+        assertThat(compiled.toHttpUrl(BASE_URL)).hasToString(BASE_URL + "channels/123/messages?after=1%26limit%3D100");
     }
 
     @Test
@@ -50,14 +65,6 @@ class RouteTest {
     @Test
     void testCompileRejectsNullParametersArray() {
         assertThatIllegalArgumentException().isThrownBy(() -> Route.Users.GET_USER.compile((String[]) null));
-    }
-
-    @Test
-    void testQueryParamsEncodeValueToPreventInjection() {
-        Route.CompiledRoute compiled =
-                Route.Messages.GET_MESSAGE_HISTORY.compile("123").withQueryParams("after", "1&limit=100");
-
-        assertThat(compiled.getCompiledRoute()).isEqualTo("channels/123/messages?after=1%26limit%3D100");
     }
 
     @Test
@@ -97,29 +104,5 @@ class RouteTest {
 
         assertThat(major).contains("interaction_token=");
         assertThat(major).doesNotContain(longToken);
-    }
-
-    @Test
-    void testToHttpUrlBuildsUrlWithoutQueryParams() {
-        HttpUrl url = Route.Users.GET_USER.compile("42").toHttpUrl(BASE_URL);
-
-        assertThat(url.toString()).isEqualTo("https://discord.com/api/v10/users/42");
-    }
-
-    @Test
-    void testToHttpUrlBuildsUrlWithEncodedQueryParams() {
-        Route.CompiledRoute compiled =
-                Route.Messages.GET_MESSAGE_HISTORY.compile("123").withQueryParams("after", "1&limit=100");
-
-        HttpUrl url = compiled.toHttpUrl(BASE_URL);
-
-        assertThat(url.toString()).isEqualTo("https://discord.com/api/v10/channels/123/messages?after=1%26limit%3D100");
-    }
-
-    @Test
-    void testToHttpUrlDoesNotDecodeOrNormalizeEncodedPathSegments() {
-        HttpUrl url = Route.Users.GET_USER.compile("..%2Ftest").toHttpUrl(BASE_URL);
-
-        assertThat(url.toString()).isEqualTo("https://discord.com/api/v10/users/..%252Ftest");
     }
 }
