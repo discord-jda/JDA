@@ -11,7 +11,6 @@ jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jdave = "club.minnced:jdave-api:0.1.2"
 jetbrains-annotations = "org.jetbrains:annotations:26.0.2-1"
-jna = "net.java.dev.jna:jna:5.18.1"
 junit = "org.junit.jupiter:junit-jupiter:6.0.1"
 # @pin Newer versions require java 17 or higher
 junit-java8 = "org.junit.jupiter:junit-jupiter:5.14.0"
@@ -22,7 +21,6 @@ logback-classic = "ch.qos.logback:logback-classic:1.5.24"
 mockito = "org.mockito:mockito-core:5.21.0"
 okhttp = "com.squareup.okhttp3:okhttp-jvm:5.3.2"
 openrewrite-bom = "org.openrewrite.recipe:rewrite-recipe-bom:3.21.0"
-opus = "club.minnced:opus-java:1.1.1"
 reflections = "org.reflections:reflections:0.10.2"
 slf4j = "org.slf4j:slf4j-api:2.0.17"
 # @pin Newer versions require java 11 or higher
