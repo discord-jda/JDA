@@ -20,6 +20,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Utility class to retrieve an {@link ImageProxy} of most Discord assets.
@@ -79,7 +80,7 @@ public final class DiscordAssets {
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy applicationIcon(
-            @Nonnull ImageFormat format, @Nonnull String applicationId, String iconId) {
+            @Nonnull ImageFormat format, @Nonnull String applicationId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
         Checks.notNull(applicationId, "Application ID");
         if (iconId == null) {
@@ -113,7 +114,7 @@ public final class DiscordAssets {
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy applicationCover(
-            @Nonnull ImageFormat format, @Nonnull String applicationId, String coverId) {
+            @Nonnull ImageFormat format, @Nonnull String applicationId, @Nullable String coverId) {
         Checks.notNull(format, "Format");
         Checks.notNull(applicationId, "Application ID");
         if (coverId == null) {
@@ -146,7 +147,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the application team's icon, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy applicationTeamIcon(@Nonnull ImageFormat format, @Nonnull String teamId, String iconId) {
+    public static ImageProxy applicationTeamIcon(@Nonnull ImageFormat format, @Nonnull String teamId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
         Checks.notNull(teamId, "Team ID");
         if (iconId == null) {
@@ -179,7 +180,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the channel's icon, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy channelIcon(@Nonnull ImageFormat format, @Nonnull String channelId, String iconId) {
+    public static ImageProxy channelIcon(@Nonnull ImageFormat format, @Nonnull String channelId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
         Checks.notNull(channelId, "Channel ID");
         if (iconId == null) {
@@ -244,7 +245,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the guild's icon, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy guildIcon(@Nonnull ImageFormat format, @Nonnull String guildId, String iconId) {
+    public static ImageProxy guildIcon(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
         Checks.notNull(guildId, "Guild ID");
         if (iconId == null) {
@@ -277,7 +278,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the guild's splash image, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy guildSplash(@Nonnull ImageFormat format, @Nonnull String guildId, String splashId) {
+    public static ImageProxy guildSplash(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String splashId) {
         Checks.notNull(format, "Format");
         Checks.notNull(guildId, "Guild ID");
         if (splashId == null) {
@@ -312,7 +313,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the guild's banner, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy guildBanner(@Nonnull ImageFormat format, @Nonnull String guildId, String bannerId) {
+    public static ImageProxy guildBanner(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String bannerId) {
         Checks.notNull(format, "Format");
         Checks.notNull(guildId, "Guild ID");
         if (bannerId == null) {
@@ -350,7 +351,7 @@ public final class DiscordAssets {
      */
     @Contract("_, _, _, null -> null; _, _, _, !null -> !null")
     public static ImageProxy memberAvatar(
-            @Nonnull ImageFormat format, @Nonnull String guildId, @Nonnull String userId, String avatarId) {
+            @Nonnull ImageFormat format, @Nonnull String guildId, @Nonnull String userId, @Nullable String avatarId) {
         Checks.notNull(format, "Format");
         Checks.notNull(guildId, "Guild ID");
         Checks.notNull(userId, "User ID");
@@ -384,7 +385,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the roles's icon, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy roleIcon(@Nonnull ImageFormat format, @Nonnull String roleId, String iconId) {
+    public static ImageProxy roleIcon(@Nonnull ImageFormat format, @Nonnull String roleId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
         Checks.notNull(roleId, "Role ID");
         if (iconId == null) {
@@ -418,7 +419,7 @@ public final class DiscordAssets {
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy scheduledEventCoverImage(
-            @Nonnull ImageFormat format, @Nonnull String eventId, String imageId) {
+            @Nonnull ImageFormat format, @Nonnull String eventId, @Nullable String imageId) {
         Checks.notNull(format, "Format");
         Checks.notNull(eventId, "Event ID");
         if (imageId == null) {
@@ -449,7 +450,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the sticker pack's banner, or {@code null}
      */
     @Contract("_, null -> null; _, !null -> !null")
-    public static ImageProxy stickerPackBanner(@Nonnull ImageFormat format, String bannerId) {
+    public static ImageProxy stickerPackBanner(@Nonnull ImageFormat format, @Nullable String bannerId) {
         Checks.notNull(format, "Format");
         if (bannerId == null) {
             return null;
@@ -483,7 +484,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the user's avatar, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy userAvatar(@Nonnull ImageFormat format, @Nonnull String userId, String avatarId) {
+    public static ImageProxy userAvatar(@Nonnull ImageFormat format, @Nonnull String userId, @Nullable String avatarId) {
         Checks.notNull(format, "Format");
         Checks.notNull(userId, "User ID");
         if (avatarId == null) {
@@ -518,7 +519,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the user's banner, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy userBanner(@Nonnull ImageFormat format, @Nonnull String userId, String bannerId) {
+    public static ImageProxy userBanner(@Nonnull ImageFormat format, @Nonnull String userId, @Nullable String bannerId) {
         Checks.notNull(format, "Format");
         Checks.notNull(userId, "User ID");
         if (bannerId == null) {
@@ -573,7 +574,7 @@ public final class DiscordAssets {
      * @return An {@link ImageProxy} of the user's tag badge, or {@code null}
      */
     @Contract("_, _, null -> null; _, _, !null -> !null")
-    public static ImageProxy userTagBadge(@Nonnull ImageFormat format, @Nonnull String guildId, String badgeId) {
+    public static ImageProxy userTagBadge(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String badgeId) {
         Checks.notNull(format, "Format");
         Checks.notNull(guildId, "Guild ID");
         if (badgeId == null) {
