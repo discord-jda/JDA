@@ -22,8 +22,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
 import org.junit.jupiter.api.Test;
 
-import java.util.TreeSet;
-
 import static net.dv8tion.jda.api.utils.DiscordAssets.*;
 import static net.dv8tion.jda.test.util.MockitoVerifyUtils.getPublicMethods;
 import static org.assertj.core.api.Assertions.assertThat;
