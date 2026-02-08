@@ -45,6 +45,7 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
 import okhttp3.Call;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
@@ -734,7 +735,7 @@ public class DefaultShardManager implements ShardManager {
         public okhttp3.Response execute() {
             try {
                 RestConfig config = restConfigProvider.apply(0);
-                String url = config.getBaseUrl() + getRoute().getCompiledRoute();
+                HttpUrl url = getRoute().toHttpUrl(HttpUrl.get(config.getBaseUrl()));
                 LOG.debug("Requesting shard total with url {}", url);
 
                 okhttp3.Request.Builder builder = new okhttp3.Request.Builder()
