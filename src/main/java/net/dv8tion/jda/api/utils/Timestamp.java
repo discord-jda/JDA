@@ -20,6 +20,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
@@ -142,5 +143,22 @@ public class Timestamp {
     @Override
     public String toString() {
         return "<t:" + timestamp / 1000 + ":" + format.getStyle() + ">";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Timestamp)) {
+            return false;
+        }
+        Timestamp other = (Timestamp) o;
+        return timestamp == other.timestamp && format == other.format;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(format, timestamp);
     }
 }

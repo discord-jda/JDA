@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ClockProvider;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -245,7 +246,7 @@ public enum TimeFormat {
      */
     @Nonnull
     public Timestamp now() {
-        return new Timestamp(this, System.currentTimeMillis());
+        return new Timestamp(this, ClockProvider.getClock().millis());
     }
 
     /**
