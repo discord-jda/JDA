@@ -89,15 +89,9 @@ public class DiscordAssetsTest extends AbstractSnapshotTest {
                 "userTagBadge",
                 userTagBadge(EXAMPLE_FORMAT, EXAMPLE_SNOWFLAKE, EXAMPLE_HASH).getUrl());
 
-        var publicMethodNames = getPublicMethods(DiscordAssets.class);
-        // DiscordAssets methods are sorted by name
-        var missingEntries = new TreeSet<>(publicMethodNames);
-        missingEntries.removeAll(data.keys());
-
-        assertThat(missingEntries)
-                .withFailMessage(
-                        () -> "Some DiscordAssets methods were not tested:\n" + String.join("\n", missingEntries))
-                .isEmpty();
+        assertThat(data.keys())
+                .as("All DiscordAssets methods should be tested")
+                .containsAll(getPublicMethods(DiscordAssets.class));
 
         assertWithSnapshot(data);
     }
