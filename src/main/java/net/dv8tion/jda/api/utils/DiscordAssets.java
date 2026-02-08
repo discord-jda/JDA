@@ -82,7 +82,7 @@ public final class DiscordAssets {
     public static ImageProxy applicationIcon(
             @Nonnull ImageFormat format, @Nonnull String applicationId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(applicationId, "Application ID");
+        Checks.isSnowflake(applicationId, "Application ID");
         if (iconId == null) {
             return null;
         }
@@ -116,7 +116,7 @@ public final class DiscordAssets {
     public static ImageProxy applicationCover(
             @Nonnull ImageFormat format, @Nonnull String applicationId, @Nullable String coverId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(applicationId, "Application ID");
+        Checks.isSnowflake(applicationId, "Application ID");
         if (coverId == null) {
             return null;
         }
@@ -149,7 +149,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy applicationTeamIcon(@Nonnull ImageFormat format, @Nonnull String teamId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(teamId, "Team ID");
+        Checks.isSnowflake(teamId, "Team ID");
         if (iconId == null) {
             return null;
         }
@@ -182,7 +182,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy channelIcon(@Nonnull ImageFormat format, @Nonnull String channelId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(channelId, "Channel ID");
+        Checks.isSnowflake(channelId, "Channel ID");
         if (iconId == null) {
             return null;
         }
@@ -215,7 +215,7 @@ public final class DiscordAssets {
     @Nonnull
     public static ImageProxy customEmoji(@Nonnull ImageFormat format, @Nonnull String id) {
         Checks.notNull(format, "Format");
-        Checks.notNull(id, "ID");
+        Checks.isSnowflake(id, "ID");
         return createProxy(format, CUSTOM_EMOJI_URL, id);
     }
 
@@ -247,7 +247,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy guildIcon(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(guildId, "Guild ID");
+        Checks.isSnowflake(guildId, "Guild ID");
         if (iconId == null) {
             return null;
         }
@@ -280,7 +280,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy guildSplash(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String splashId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(guildId, "Guild ID");
+        Checks.isSnowflake(guildId, "Guild ID");
         if (splashId == null) {
             return null;
         }
@@ -315,7 +315,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy guildBanner(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String bannerId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(guildId, "Guild ID");
+        Checks.isSnowflake(guildId, "Guild ID");
         if (bannerId == null) {
             return null;
         }
@@ -353,8 +353,8 @@ public final class DiscordAssets {
     public static ImageProxy memberAvatar(
             @Nonnull ImageFormat format, @Nonnull String guildId, @Nonnull String userId, @Nullable String avatarId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(guildId, "Guild ID");
-        Checks.notNull(userId, "User ID");
+        Checks.isSnowflake(guildId, "Guild ID");
+        Checks.isSnowflake(userId, "User ID");
         if (avatarId == null) {
             return null;
         }
@@ -387,7 +387,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy roleIcon(@Nonnull ImageFormat format, @Nonnull String roleId, @Nullable String iconId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(roleId, "Role ID");
+        Checks.isSnowflake(roleId, "Role ID");
         if (iconId == null) {
             return null;
         }
@@ -421,7 +421,7 @@ public final class DiscordAssets {
     public static ImageProxy scheduledEventCoverImage(
             @Nonnull ImageFormat format, @Nonnull String eventId, @Nullable String imageId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(eventId, "Event ID");
+        Checks.isSnowflake(eventId, "Event ID");
         if (imageId == null) {
             return null;
         }
@@ -486,7 +486,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy userAvatar(@Nonnull ImageFormat format, @Nonnull String userId, @Nullable String avatarId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(userId, "User ID");
+        Checks.isSnowflake(userId, "User ID");
         if (avatarId == null) {
             return null;
         }
@@ -521,7 +521,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy userBanner(@Nonnull ImageFormat format, @Nonnull String userId, @Nullable String bannerId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(userId, "User ID");
+        Checks.isSnowflake(userId, "User ID");
         if (bannerId == null) {
             return null;
         }
@@ -576,7 +576,7 @@ public final class DiscordAssets {
     @Contract("_, _, null -> null; _, _, !null -> !null")
     public static ImageProxy userTagBadge(@Nonnull ImageFormat format, @Nonnull String guildId, @Nullable String badgeId) {
         Checks.notNull(format, "Format");
-        Checks.notNull(guildId, "Guild ID");
+        Checks.isSnowflake(guildId, "Guild ID");
         if (badgeId == null) {
             return null;
         }
