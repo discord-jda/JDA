@@ -25,9 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.IOUtil;
-import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
-import org.slf4j.Logger;
 
 import java.util.*;
 
@@ -43,8 +41,6 @@ import javax.annotation.Nullable;
  * @see net.dv8tion.jda.api.entities.WebhookClient#sendMessage(MessageCreateData) WebhookClient.sendMessage(MessageCreateData)
  */
 public class MessageCreateData implements MessageData, AutoCloseable, SerializableData {
-    private static final Logger LOG = JDALogger.getLog(MessageCreateData.class);
-
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<FileUpload> files;

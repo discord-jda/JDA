@@ -91,6 +91,8 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
                 case USER:
                     newUser++;
                     break;
+                case UNKNOWN:
+                    throw new IllegalArgumentException("Provided command of unknown type");
             }
         }
 

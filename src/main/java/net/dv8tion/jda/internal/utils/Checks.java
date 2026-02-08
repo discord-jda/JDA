@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.utils.ComponentPathIterator;
@@ -65,15 +67,17 @@ public class Checks {
         }
     }
 
+    @FormatMethod
     @Contract("false, _, _ -> fail")
-    public static void check(boolean expression, @PrintFormat String message, Object... args) {
+    public static void check(boolean expression, @PrintFormat @FormatString String message, Object... args) {
         if (!expression) {
             throw new IllegalArgumentException(String.format(message, args));
         }
     }
 
+    @FormatMethod
     @Contract("false, _, _ -> fail")
-    public static void check(boolean expression, @PrintFormat String message, Object arg) {
+    public static void check(boolean expression, @PrintFormat @FormatString String message, Object arg) {
         if (!expression) {
             throw new IllegalArgumentException(String.format(message, arg));
         }
@@ -231,6 +235,7 @@ public class Checks {
 
     // Unique streams checks
 
+    @SuppressWarnings("FormatStringAnnotation")
     public static <T> void checkUnique(Stream<T> stream, String format, BiFunction<Long, T, Object[]> getArgs) {
         Map<T, Long> counts = stream.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         for (Map.Entry<T, Long> entry : counts.entrySet()) {

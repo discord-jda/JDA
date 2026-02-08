@@ -162,6 +162,8 @@ public interface CommandInteractionPayload extends Interaction {
                     case MENTIONABLE:
                         builder.append(o.getAsLong());
                         continue;
+                    default:
+                        break;
                 }
             }
 

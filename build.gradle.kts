@@ -23,6 +23,7 @@ import net.dv8tion.jda.gradle.nullableReplacement
 import net.dv8tion.jda.gradle.plugins.applyAudioExclusions
 import net.dv8tion.jda.gradle.plugins.applyOpusExclusions
 import net.dv8tion.jda.gradle.tasks.VerifyBytecodeVersion
+import net.ltgt.gradle.errorprone.errorprone
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.gradle.ext.Gradle as GradleRunConfiguration
@@ -47,6 +48,7 @@ plugins {
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.jreleaser)
     alias(libs.plugins.spotless)
+    alias(libs.plugins.errorprone)
     alias(libs.plugins.openrewrite)
     alias(libs.plugins.ideax)
 }
@@ -74,13 +76,13 @@ apiModelGenerator {
 
     generatorSuffix = "Dto"
     includes = listOf(
-        "AvailableLocalesEnum",
-        "CreateRoleRequest",
-        "MessageType",
-        "ChannelTypes",
-        "AuditLogActionTypes",
-        "InviteTypes",
-        "WebhookTypes",
+            "AvailableLocalesEnum",
+            "CreateRoleRequest",
+            "MessageType",
+            "ChannelTypes",
+            "AuditLogActionTypes",
+            "InviteTypes",
+            "WebhookTypes",
     )
 }
 
@@ -255,6 +257,9 @@ dependencies {
     // Needed for rewrite gradle tasks
     rewrite("org.openrewrite.recipe:rewrite-static-analysis")
     rewrite("net.dv8tion.jda:formatter-recipes")
+
+    // Linting & Formatting
+    errorprone(libs.errorprone.core)
 }
 
 fun isNonStable(version: String): Boolean {
@@ -333,8 +338,22 @@ tasks.named("spotlessJavaApply").configure {
     dependsOn(tasks.named("rewriteRun"))
 }
 
+val enableErrorpronePatching by tasks.registering {
+    group = "verification"
+
+    doFirst {
+        tasks.withType<JavaCompile>().configureEach {
+            options.errorprone {
+                errorproneArgs.add("-XepPatchChecks:MissingOverride")
+                errorproneArgs.add("-XepPatchLocation:IN_PLACE")
+            }
+        }
+    }
+}
+
 tasks.register("format") {
     group = "verification"
+    dependsOn(enableErrorpronePatching)
     dependsOn(tasks.named("spotlessApply"))
     dependsOn(tasks.named("versionCatalogFormat"))
 }
@@ -476,23 +495,49 @@ val javadocJar by tasks.registering(Jar::class) {
     from(javadoc.destinationDir)
 }
 
-tasks.withType<JavaCompile> {
+tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.isIncremental = true
 
     options.compilerArgs.addAll(listOf(
-        "-Xlint:all",
-        // warnings for --release 8
-        "-Xlint:-options",
-        // warnings for missing serialVersionUID in exceptions (we don't intend for exceptions to be serialized)
-        "-Xlint:-serial",
-        // warnings for calling member methods in constructor, which we do for argument checks
-        "-Xlint:-this-escape",
-        // warnings for unused resource in try-with-resources (we use them for locks)
-        "-Xlint:-try",
-        // warnings for potentially unsafe varargs, this is already handled by @SafeVarargs
-        "-Xlint:-varargs",
+            "-Xlint:all",
+            // warnings for --release 8
+            "-Xlint:-options",
+            // warnings for missing serialVersionUID in exceptions (we don't intend for exceptions to be serialized)
+            "-Xlint:-serial",
+            // warnings for calling member methods in constructor, which we do for argument checks
+            "-Xlint:-this-escape",
+            // warnings for unused resource in try-with-resources (we use them for locks)
+            "-Xlint:-try",
+            // warnings for potentially unsafe varargs, this is already handled by @SafeVarargs
+            "-Xlint:-varargs",
     ))
+
+    options.errorprone {
+        disable(
+                "AssignmentExpression",
+                "ByteBufferBackingArray",
+                "CheckReturnValue",
+                "DoubleCheckedLocking",
+                "EffectivelyPrivate",
+                "EmptyCatch",
+                "EnumOrdinal",
+                "Finalize",
+                "FutureReturnValueIgnored",
+                "InvalidBlockTag",
+                "JavaDurationGetSecondsToToSeconds",
+                "JavaTimeDefaultTimeZone",
+                "MathAbsoluteNegative",
+                "MixedMutabilityReturnType",
+                "OperatorPrecedence",
+                "StringSplitter",
+                "TypeParameterUnusedInFormals",
+                "UnnecessaryLambda",
+                "UnusedMethod",
+        )
+    }
+
+    mustRunAfter(enableErrorpronePatching)
 }
 
 val compileJava by tasks.getting(JavaCompile::class) {
@@ -504,6 +549,12 @@ val compileJava by tasks.getting(JavaCompile::class) {
 
 tasks.named<JavaCompile>("compileTestJava8Java") {
     options.release = 8
+}
+
+tasks.named<JavaCompile>("compileExamplesJava") {
+    options.errorprone {
+        disableAllChecks.set(true)
+    }
 }
 
 tasks.build.configure {
@@ -553,9 +604,9 @@ tasks.test {
     failFast = false
 
     jvmArgs = listOf(
-        "-javaagent:${mockitoAgent.asPath}",
-        // https://github.com/raphw/byte-buddy/issues/1803
-        "-Dnet.bytebuddy.safe=true"
+            "-javaagent:${mockitoAgent.asPath}",
+            // https://github.com/raphw/byte-buddy/issues/1803
+            "-Dnet.bytebuddy.safe=true"
     )
 
     testLogging {

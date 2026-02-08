@@ -66,7 +66,6 @@ public class MarkdownSanitizer {
     private static final int ESCAPED_UNDERLINE = Integer.MIN_VALUE | UNDERLINE;
     private static final int ESCAPED_STRIKE = Integer.MIN_VALUE | STRIKE;
     private static final int ESCAPED_QUOTE = Integer.MIN_VALUE | QUOTE;
-    private static final int ESCAPED_QUOTE_BLOCK = Integer.MIN_VALUE | QUOTE_BLOCK;
 
     private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
     private static final Pattern quote = Pattern.compile("> +.*", Pattern.DOTALL | Pattern.MULTILINE);

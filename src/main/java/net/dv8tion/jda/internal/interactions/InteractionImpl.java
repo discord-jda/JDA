@@ -185,6 +185,7 @@ public class InteractionImpl implements Interaction {
         return channelId;
     }
 
+    @Override
     @Nonnull
     public DiscordLocale getUserLocale() {
         return userLocale;

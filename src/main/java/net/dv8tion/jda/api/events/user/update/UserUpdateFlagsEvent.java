@@ -71,7 +71,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
     /**
      * Gets the new {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of the User as {@link EnumSet}.
      *
-     * @return The new {@code EnumSet<{@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}>} representation of the User's flags.
+     * @return The new {@code EnumSet<UserFlag>} representation of the User's flags.
      */
     @Nonnull
     public EnumSet<User.UserFlag> getNewFlags() {

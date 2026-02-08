@@ -166,7 +166,7 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence {
                 && Objects.equals(party, p.party)
                 && Objects.equals(sessionId, p.sessionId)
                 && Objects.equals(syncId, p.syncId)
-                && Objects.equals(flags, p.flags)
+                && flags == p.flags
                 && Objects.equals(timestamps, p.timestamps)
                 && Objects.equals(largeImage, p.largeImage)
                 && Objects.equals(smallImage, p.smallImage);

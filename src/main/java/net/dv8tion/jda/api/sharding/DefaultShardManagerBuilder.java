@@ -2328,7 +2328,7 @@ public class DefaultShardManagerBuilder {
         private final boolean autoShutdown;
         private final T pool;
 
-        public ThreadPoolProviderImpl(T pool, boolean autoShutdown) {
+        private ThreadPoolProviderImpl(T pool, boolean autoShutdown) {
             this.autoShutdown = autoShutdown;
             this.pool = pool;
         }

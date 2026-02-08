@@ -42,14 +42,12 @@ import javax.annotation.Nonnull;
  */
 public class GenericMessagePollVoteEvent extends GenericMessageEvent {
     protected final long userId;
-    protected final long messageId;
     protected final long answerId;
 
     public GenericMessagePollVoteEvent(
             @Nonnull MessageChannel channel, long responseNumber, long messageId, long userId, long answerId) {
         super(channel.getJDA(), responseNumber, messageId, channel);
         this.userId = userId;
-        this.messageId = messageId;
         this.answerId = answerId;
     }
 

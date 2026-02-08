@@ -65,7 +65,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Nonnull
     @Override
     public List<T> asList() {
-        List<T> list = new LinkedList<>();
+        List<T> list = new ArrayList<>();
         forEach(list::add);
         return Collections.unmodifiableList(list);
     }

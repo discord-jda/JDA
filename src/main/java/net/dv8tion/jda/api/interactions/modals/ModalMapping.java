@@ -231,7 +231,7 @@ public class ModalMapping {
         ModalMapping that = (ModalMapping) o;
         return type == that.type
                 && Objects.equals(customId, that.customId)
-                && Objects.equals(uniqueId, that.uniqueId)
+                && uniqueId == that.uniqueId
                 && Objects.equals(value, that.value);
     }
 

@@ -38,131 +38,172 @@ public class MigrateComponentsV2Test implements RewriteTest {
         rewriteRun(
                 spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2Packages"),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.*;\n\n"
-                                + "public class Test1 { ActionComponent x() {} }",
-                        "import net.dv8tion.jda.api.components.ActionComponent;\n"
-                                + "import net.dv8tion.jda.api.interactions.components.*;\n\n"
-                                + "public class Test1 { ActionComponent x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.*;
+
+                                public class Test1 { ActionComponent x() {} }""", """
+                                import net.dv8tion.jda.api.components.ActionComponent;
+                                import net.dv8tion.jda.api.interactions.components.*;
+
+                                public class Test1 { ActionComponent x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.ActionComponent;\n\n"
-                                + "public class Test2 { ActionComponent x() {} }",
-                        "import net.dv8tion.jda.api.components.ActionComponent;\n\n"
-                                + "public class Test2 { ActionComponent x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.ActionComponent;
+
+                                public class Test2 { ActionComponent x() {} }""", """
+                                import net.dv8tion.jda.api.components.ActionComponent;
+
+                                public class Test2 { ActionComponent x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.ActionRow;\n\n"
-                                + "public class Test3 { ActionRow x() {} }",
-                        "import net.dv8tion.jda.api.components.actionrow.ActionRow;\n\n"
-                                + "public class Test3 { ActionRow x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.ActionRow;
+
+                                public class Test3 { ActionRow x() {} }""", """
+                                import net.dv8tion.jda.api.components.actionrow.ActionRow;
+
+                                public class Test3 { ActionRow x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.Component;\n\n"
-                                + "public class Test4 { Component x() {} }",
-                        "import net.dv8tion.jda.api.components.Component;\n\n"
-                                + "public class Test4 { Component x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.Component;
+
+                                public class Test4 { Component x() {} }""", """
+                                import net.dv8tion.jda.api.components.Component;
+
+                                public class Test4 { Component x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.Component.Type;\n\n"
-                                + "public class Test5 { Type x() {} }",
-                        "import net.dv8tion.jda.api.components.Component.Type;\n\n"
-                                + "public class Test5 { Type x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.Component.Type;
+
+                                public class Test5 { Type x() {} }""", """
+                                import net.dv8tion.jda.api.components.Component.Type;
+
+                                public class Test5 { Type x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.buttons.Button;\n\n"
-                                + "public class Test6 { Button x() {} }",
-                        "import net.dv8tion.jda.api.components.buttons.Button;\n\n"
-                                + "public class Test6 { Button x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
+                                public class Test6 { Button x() {} }""", """
+                                import net.dv8tion.jda.api.components.buttons.Button;
+
+                                public class Test6 { Button x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;\n\n"
-                                + "public class Test7 { ButtonStyle x() {} }",
-                        "import net.dv8tion.jda.api.components.buttons.ButtonStyle;\n\n"
-                                + "public class Test7 { ButtonStyle x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+
+                                public class Test7 { ButtonStyle x() {} }""", """
+                                import net.dv8tion.jda.api.components.buttons.ButtonStyle;
+
+                                public class Test7 { ButtonStyle x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;\n\n"
-                                + "public class Test8 { EntitySelectMenu x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.EntitySelectMenu;\n\n"
-                                + "public class Test8 { EntitySelectMenu x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+
+                                public class Test8 { EntitySelectMenu x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+
+                                public class Test8 { EntitySelectMenu x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.Builder;\n\n"
-                                + "public class Test9 { Builder x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.EntitySelectMenu;\n"
-                                + "import net.dv8tion.jda.api.components.selections.EntitySelectMenu.Builder;\n\n"
-                                + "public class Test9 { EntitySelectMenu.Builder x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.Builder;
+
+                                public class Test9 { Builder x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+                                import net.dv8tion.jda.api.components.selections.EntitySelectMenu.Builder;
+
+                                public class Test9 { EntitySelectMenu.Builder x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.DefaultValue;\n\n"
-                                + "public class Test10 { DefaultValue x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.EntitySelectMenu;\n"
-                                + "import net.dv8tion.jda.api.components.selections.EntitySelectMenu.DefaultValue;\n\n"
-                                + "public class Test10 { EntitySelectMenu.DefaultValue x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.DefaultValue;
+
+                                public class Test10 { DefaultValue x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+                                import net.dv8tion.jda.api.components.selections.EntitySelectMenu.DefaultValue;
+
+                                public class Test10 { EntitySelectMenu.DefaultValue x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;\n\n"
-                                + "public class Test11 { SelectTarget x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.EntitySelectMenu;\n"
-                                + "import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;\n\n"
-                                + "public class Test11 { EntitySelectMenu.SelectTarget x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
+
+                                public class Test11 { SelectTarget x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+                                import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
+
+                                public class Test11 { EntitySelectMenu.SelectTarget x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;\n\n"
-                                + "public class Test12 { SelectMenu x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\n\n"
-                                + "public class Test12 { SelectMenu x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+
+                                public class Test12 { SelectMenu x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.SelectMenu;
+
+                                public class Test12 { SelectMenu x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;\n\n"
-                                + "public class Test13 { Builder x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\n"
-                                + "import net.dv8tion.jda.api.components.selections.SelectMenu.Builder;\n\n"
-                                + "public class Test13 { SelectMenu.Builder x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;
+
+                                public class Test13 { Builder x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.SelectMenu;
+                                import net.dv8tion.jda.api.components.selections.SelectMenu.Builder;
+
+                                public class Test13 { SelectMenu.Builder x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.SelectOption;\n\n"
-                                + "public class Test14 { SelectOption x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.SelectOption;\n\n"
-                                + "public class Test14 { SelectOption x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+
+                                public class Test14 { SelectOption x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.SelectOption;
+
+                                public class Test14 { SelectOption x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;\n\n"
-                                + "public class Test15 { StringSelectMenu x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.StringSelectMenu;\n\n"
-                                + "public class Test15 { StringSelectMenu x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+
+                                public class Test15 { StringSelectMenu x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+
+                                public class Test15 { StringSelectMenu x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.Builder;\n\n"
-                                + "public class Test16 { Builder x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.StringSelectMenu;\n"
-                                + "import net.dv8tion.jda.api.components.selections.StringSelectMenu.Builder;\n\n"
-                                + "public class Test16 { StringSelectMenu.Builder x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.Builder;
+
+                                public class Test16 { Builder x() {} }""", """
+                                import net.dv8tion.jda.api.components.selections.StringSelectMenu;
+                                import net.dv8tion.jda.api.components.selections.StringSelectMenu.Builder;
+
+                                public class Test16 { StringSelectMenu.Builder x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.text.TextInput;\n\n"
-                                + "public class Test17 { TextInput x() {} }",
-                        "import net.dv8tion.jda.api.components.textinput.TextInput;\n\n"
-                                + "public class Test17 { TextInput x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.text.TextInput;
+
+                                public class Test17 { TextInput x() {} }""", """
+                                import net.dv8tion.jda.api.components.textinput.TextInput;
+
+                                public class Test17 { TextInput x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.text.TextInput.Builder;\n\n"
-                                + "public class Test18 { Builder x() {} }",
-                        "import net.dv8tion.jda.api.components.textinput.TextInput;\n"
-                                + "import net.dv8tion.jda.api.components.textinput.TextInput.Builder;\n\n"
-                                + "public class Test18 { TextInput.Builder x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.text.TextInput.Builder;
+
+                                public class Test18 { Builder x() {} }""", """
+                                import net.dv8tion.jda.api.components.textinput.TextInput;
+                                import net.dv8tion.jda.api.components.textinput.TextInput.Builder;
+
+                                public class Test18 { TextInput.Builder x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;\n\n"
-                                + "public class Test19 { TextInputStyle x() {} }",
-                        "import net.dv8tion.jda.api.components.textinput.TextInputStyle;\n\n"
-                                + "public class Test19 { TextInputStyle x() {} }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+
+                                public class Test19 { TextInputStyle x() {} }""", """
+                                import net.dv8tion.jda.api.components.textinput.TextInputStyle;
+
+                                public class Test19 { TextInputStyle x() {} }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.modals.Modal;\n\n"
-                                + "public class Test20 { Modal x() {} }",
-                        "import net.dv8tion.jda.api.modals.Modal;\n\n" + "public class Test20 { Modal x() {} }"));
+                java("""
+                                import net.dv8tion.jda.api.interactions.modals.Modal;
+
+                                public class Test20 { Modal x() {} }""", """
+                                import net.dv8tion.jda.api.modals.Modal;
+
+                                public class Test20 { Modal x() {} }"""));
     }
 
     @Test
@@ -170,36 +211,44 @@ public class MigrateComponentsV2Test implements RewriteTest {
         rewriteRun(
                 spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2"),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.buttons.Button;\n\n"
-                                + "public class Test1 { void x(Button component) { component.getId(); }"
-                                + " }",
-                        "import net.dv8tion.jda.api.components.buttons.Button;\n\n"
-                                + "public class Test1 { void x(Button component) {"
-                                + " component.getCustomId(); } }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
+                                public class Test1 { void x(Button component) { component.getId(); }\
+                                 }""", """
+                                import net.dv8tion.jda.api.components.buttons.Button;
+
+                                public class Test1 { void x(Button component) {\
+                                 component.getCustomId(); } }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.modals.ModalMapping;\n\n"
-                                + "public class Test2 { void x(ModalMapping component) {"
-                                + " component.getId(); } }",
-                        "import net.dv8tion.jda.api.interactions.modals.ModalMapping;\n\n"
-                                + "public class Test2 { void x(ModalMapping component) {"
-                                + " component.getCustomId(); } }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+
+                                public class Test2 { void x(ModalMapping component) {\
+                                 component.getId(); } }""", """
+                                import net.dv8tion.jda.api.interactions.modals.ModalMapping;
+
+                                public class Test2 { void x(ModalMapping component) {\
+                                 component.getCustomId(); } }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;\n\n"
-                                + "public class Test3 { void x(SelectMenu.Builder<?, ?> component) {"
-                                + " component.getId(); } }",
-                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\n\n"
-                                + "public class Test3 { void x(SelectMenu.Builder<?, ?> component) {"
-                                + " component.getCustomId(); } }"),
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+
+                                public class Test3 { void x(SelectMenu.Builder<?, ?> component) {\
+                                 component.getId(); } }""", """
+                                import net.dv8tion.jda.api.components.selections.SelectMenu;
+
+                                public class Test3 { void x(SelectMenu.Builder<?, ?> component) {\
+                                 component.getCustomId(); } }"""),
                 // language=java
-                java(
-                        "import net.dv8tion.jda.api.interactions.components.text.TextInput;\n\n"
-                                + "public class Test4 { void x(TextInput.Builder component) {"
-                                + " component.getId(); } }",
-                        "import net.dv8tion.jda.api.components.textinput.TextInput;\n\n"
-                                + "public class Test4 { void x(TextInput.Builder component) {"
-                                + " component.getCustomId(); } }"));
+                java("""
+                                import net.dv8tion.jda.api.interactions.components.text.TextInput;
+
+                                public class Test4 { void x(TextInput.Builder component) {\
+                                 component.getId(); } }""", """
+                                import net.dv8tion.jda.api.components.textinput.TextInput;
+
+                                public class Test4 { void x(TextInput.Builder component) {\
+                                 component.getCustomId(); } }"""));
     }
 }

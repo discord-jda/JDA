@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import okhttp3.RequestBody;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
 
 public class TriggerRestAction<T> extends RestActionImpl<T> {
     private final ReentrantLock mutex = new ReentrantLock();
-    private final List<Runnable> callbacks = new LinkedList<>();
+    private final List<Runnable> callbacks = new ArrayList<>();
     private volatile boolean isReady;
     private volatile Throwable exception;
 

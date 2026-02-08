@@ -751,7 +751,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
         protected final Supplier<List<E>> supply;
 
         public PaginationIterator(Collection<E> queue, Supplier<List<E>> supply) {
-            this.items = new LinkedList<>(queue);
+            this.items = new ArrayDeque<>(queue);
             this.supply = supply;
         }
 

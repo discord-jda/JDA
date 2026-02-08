@@ -121,6 +121,7 @@ public interface Command extends ISnowflake, ICommandReference {
      *
      * @return The name
      */
+    @Override
     @Nonnull
     String getName();
 
@@ -868,6 +869,7 @@ public interface Command extends ISnowflake, ICommandReference {
          *
          * @return The name
          */
+        @Override
         @Nonnull
         public String getName() {
             return name;
@@ -981,6 +983,7 @@ public interface Command extends ISnowflake, ICommandReference {
          *
          * @return The name
          */
+        @Override
         @Nonnull
         public String getName() {
             return name;

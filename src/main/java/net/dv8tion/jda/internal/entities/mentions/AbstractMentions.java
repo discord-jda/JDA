@@ -254,6 +254,8 @@ public abstract class AbstractMentions implements Mentions {
                 case SLASH_COMMAND:
                     mentions.addAll(getSlashCommands());
                     break;
+                default:
+                    break;
                 //            case EVERYONE:
                 //            case HERE:
                 //            default: continue;

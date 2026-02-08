@@ -31,13 +31,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
-    private final Predicate<? super Throwable> check;
+    private final Predicate<? super Throwable> filter;
     private final Function<? super Throwable, ? extends T> map;
 
     public MapErrorRestAction(
-            RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends T> map) {
+            RestAction<T> action, Predicate<? super Throwable> filter, Function<? super Throwable, ? extends T> map) {
         super(action);
-        this.check = check;
+        this.filter = filter;
         this.map = map;
     }
 
@@ -48,7 +48,7 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
                 // Use contextWrap so error has a context cause
                 contextWrap((error) -> {
                     try {
-                        if (check.test(error)) {
+                        if (filter.test(error)) {
                             doSuccess(success, map.apply(error));
                         } else {
                             doFailure(failure, error);
@@ -65,7 +65,7 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
             return action.complete(shouldQueue);
         } catch (Throwable error) {
             try {
-                if (check.test(error)) {
+                if (filter.test(error)) {
                     return map.apply(error);
                 }
             } catch (Throwable e) {
@@ -87,7 +87,7 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
             T result = value;
             if (error != null) {
                 error = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
-                if (check.test(error)) {
+                if (filter.test(error)) {
                     result = map.apply(error);
                 } else {
                     fail(error);

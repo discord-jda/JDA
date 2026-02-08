@@ -23,19 +23,18 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
+import net.dv8tion.jda.api.interactions.commands.localization.ResourceBundleLocalizationFunction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import java.util.Map;
-import java.util.Stack;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
-/*
+/**
  * Utility class which maps user-provided translations (from a resource bundle for example) to the command data as well as everything contained in it.
  * This class essentially wraps a {@link LocalizationFunction} to ask the localization function for translations based on command definitions defined in code.
  * The real brain of this system lies in the localization function.
@@ -54,7 +53,7 @@ public class LocalizationMapper {
         this.localizationFunction = localizationFunction;
     }
 
-    /*
+    /**
      * Creates a new {@link LocalizationMapper} from the given {@link LocalizationFunction}
      *
      * @param  localizationFunction
@@ -101,7 +100,7 @@ public class LocalizationMapper {
     }
 
     private class TranslationContext {
-        private final Stack<String> keyComponents = new Stack<>();
+        private final Deque<String> keyComponents = new ArrayDeque<>();
 
         private void forObjects(
                 DataArray source, Function<DataObject, String> keyExtractor, Consumer<DataObject> consumer) {
@@ -109,9 +108,9 @@ public class LocalizationMapper {
                 DataObject item = source.getObject(i);
                 Runnable runnable = () -> {
                     String key = keyExtractor.apply(item);
-                    keyComponents.push(key);
+                    keyComponents.addLast(key);
                     consumer.accept(item);
-                    keyComponents.pop();
+                    keyComponents.removeLast();
                 };
 
                 // We need to differentiate subcommands/groups from options
@@ -134,9 +133,9 @@ public class LocalizationMapper {
         }
 
         private void withKey(String key, Runnable runnable) {
-            keyComponents.push(key);
+            keyComponents.addLast(key);
             runnable.run();
-            keyComponents.pop();
+            keyComponents.removeLast();
         }
 
         private String getKey(String finalComponent) {
@@ -145,7 +144,7 @@ public class LocalizationMapper {
                 joiner.add(keyComponent.replace(" ", "_")); // Context commands can have spaces, we need to replace them
             }
             joiner.add(finalComponent.replace(" ", "_"));
-            return joiner.toString().toLowerCase();
+            return joiner.toString().toLowerCase(Locale.ROOT);
         }
 
         private void trySetTranslation(LocalizationMap localizationMap, String finalComponent) {

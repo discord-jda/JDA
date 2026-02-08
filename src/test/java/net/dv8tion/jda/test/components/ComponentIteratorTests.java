@@ -38,41 +38,40 @@ public class ComponentIteratorTests {
     void testIteratorIsUpdated() {
         for (Component.Type type : Component.Type.values()) {
             switch (type) {
-                case UNKNOWN:
-                case BUTTON:
-                case STRING_SELECT:
-                case TEXT_INPUT:
-                case USER_SELECT:
-                case ROLE_SELECT:
-                case MENTIONABLE_SELECT:
-                case CHANNEL_SELECT:
-                case TEXT_DISPLAY:
-                case THUMBNAIL:
-                case MEDIA_GALLERY:
-                case FILE_DISPLAY:
-                case SEPARATOR:
-                case LABEL:
-                case FILE_UPLOAD:
-                    break;
-                case ACTION_ROW:
+                case UNKNOWN,
+                        BUTTON,
+                        STRING_SELECT,
+                        TEXT_INPUT,
+                        USER_SELECT,
+                        ROLE_SELECT,
+                        MENTIONABLE_SELECT,
+                        CHANNEL_SELECT,
+                        TEXT_DISPLAY,
+                        THUMBNAIL,
+                        MEDIA_GALLERY,
+                        FILE_DISPLAY,
+                        SEPARATOR,
+                        LABEL,
+                        FILE_UPLOAD -> {}
+                case ACTION_ROW -> {
                     ActionRow row = mock(ActionRow.class);
                     ComponentIterator.createStream(Collections.singleton(row)).toList();
                     verify(row, times(1)).getComponents();
-                    break;
-                case SECTION:
+                }
+                case SECTION -> {
                     Section section = mock(Section.class);
                     ComponentIterator.createStream(Collections.singleton(section))
                             .toList();
                     verify(section, times(1)).getContentComponents();
                     verify(section, times(1)).getAccessory();
-                    break;
-                case CONTAINER:
+                }
+                case CONTAINER -> {
                     Container container = mock(Container.class);
                     ComponentIterator.createStream(Collections.singleton(container))
                             .toList();
                     verify(container, times(1)).getComponents();
-                    break;
-                default:
+                }
+                default ->
                     fail(
                             "Please update this test with the new component type, then update ComponentIterator if necessary "
                                     + type.name());

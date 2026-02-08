@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.utils.Result;
@@ -96,7 +98,8 @@ public final class Helpers {
 
     // locale-safe String#format
 
-    public static String format(String format, Object... args) {
+    @FormatMethod
+    public static String format(@FormatString String format, Object... args) {
         return String.format(Locale.ROOT, format, args);
     }
 
@@ -185,8 +188,8 @@ public final class Helpers {
         if (isEmpty(input)) {
             return false;
         }
-        for (char c : input.toCharArray()) {
-            if (!Character.isDigit(c)) {
+        for (int i = 0; i < input.length(); i++) {
+            if (!Character.isDigit(input.charAt(i))) {
                 return false;
             }
         }
@@ -214,6 +217,7 @@ public final class Helpers {
         return out.toArray(new String[0]);
     }
 
+    @SuppressWarnings("ReferenceEquality")
     public static boolean equals(String a, String b, boolean ignoreCase) {
         return ignoreCase ? a == b || (a != null && b != null && a.equalsIgnoreCase(b)) : Objects.equals(a, b);
     }

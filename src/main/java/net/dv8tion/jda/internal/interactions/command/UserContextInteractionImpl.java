@@ -24,7 +24,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
 public class UserContextInteractionImpl extends ContextInteractionImpl<User> implements UserContextInteraction {
-    private Member member;
+    private Member targetMember;
 
     public UserContextInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
@@ -37,9 +37,9 @@ public class UserContextInteractionImpl extends ContextInteractionImpl<User> imp
 
         resolved.optObject("members").filter(m -> !m.keys().isEmpty()).ifPresent(members -> {
             DataObject member = members.getObject(members.keys().iterator().next());
-            this.member = interactionEntityBuilder.createMember(guild, member);
-            if (this.member instanceof MemberImpl) {
-                api.getEntityBuilder().updateMemberCache((MemberImpl) this.member);
+            this.targetMember = interactionEntityBuilder.createMember(guild, member);
+            if (this.targetMember instanceof MemberImpl) {
+                api.getEntityBuilder().updateMemberCache((MemberImpl) this.targetMember);
             }
         });
 
@@ -48,6 +48,6 @@ public class UserContextInteractionImpl extends ContextInteractionImpl<User> imp
 
     @Override
     public Member getTargetMember() {
-        return member;
+        return targetMember;
     }
 }

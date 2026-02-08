@@ -58,6 +58,8 @@ public enum AutoModTriggerType {
 
     private final int key;
     private final int maxPerGuild;
+
+    @SuppressWarnings("ImmutableEnumChecker") // We only return copies
     private final EnumSet<AutoModEventType> eventTypes;
 
     AutoModTriggerType(int key, int maxPerGuild, AutoModEventType... supportedEvents) {

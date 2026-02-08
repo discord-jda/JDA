@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities.channel.middleman;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -437,8 +439,9 @@ public interface MessageChannel extends Channel, Formattable {
      * @return {@link MessageCreateAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
-    default MessageCreateAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args) {
+    default MessageCreateAction sendMessageFormat(@Nonnull @FormatString String format, @Nonnull Object... args) {
         Checks.notEmpty(format, "Format");
         return sendMessage(String.format(format, args));
     }
@@ -1586,7 +1589,7 @@ public interface MessageChannel extends Channel, Formattable {
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *     <br>The provided {@code message} is unknown in this MessageChannel, either due to the id being invalid, or
      *         the message it referred to has already been deleted, thus could not be used as a marker.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
@@ -1764,7 +1767,7 @@ public interface MessageChannel extends Channel, Formattable {
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *     <br>The provided {@code message} is unknown in this MessageChannel, either due to the id being invalid, or
      *         the message it referred to has already been deleted, thus could not be used as a marker.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
@@ -2815,9 +2818,10 @@ public interface MessageChannel extends Channel, Formattable {
      * @return {@link MessageEditAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
     default MessageEditAction editMessageFormatById(
-            @Nonnull String messageId, @Nonnull String format, @Nonnull Object... args) {
+            @Nonnull String messageId, @Nonnull @FormatString String format, @Nonnull Object... args) {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
     }
@@ -2874,8 +2878,10 @@ public interface MessageChannel extends Channel, Formattable {
      * @return {@link MessageEditAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
-    default MessageEditAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args) {
+    default MessageEditAction editMessageFormatById(
+            long messageId, @Nonnull @FormatString String format, @Nonnull Object... args) {
         Checks.notBlank(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
     }
