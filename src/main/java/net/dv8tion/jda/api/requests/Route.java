@@ -20,6 +20,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
+import okhttp3.HttpUrl;
 
 import java.util.*;
 
@@ -812,6 +813,46 @@ public class Route {
             }
             // Append query to url
             return compiledRoute + '?' + String.join("&", query);
+        }
+
+        /**
+         * Builds an {@link HttpUrl} for this route using the provided {@code baseUrl}.
+         *
+         * <p>This method preserves the encoding performed by {@link #compile(String...)} and
+         * {@link #withQueryParams(String...)}:
+         * <ul>
+         *   <li>Path segments are appended using {@link HttpUrl.Builder#addEncodedPathSegments(String)}.
+         *       This means already-encoded sequences (such as {@code %2F}) are <em>not</em> decoded or normalized.</li>
+         *   <li>Query parameters are appended using {@link HttpUrl.Builder#addEncodedQueryParameter(String, String)}.
+         *       Values are expected to already be percent-encoded (as produced by {@link #withQueryParams(String...)}).</li>
+         * </ul>
+         *
+         * <p><b>Note:</b> The {@code baseUrl} should typically point to the API root (for example,
+         * {@code https://discord.com/api/v10/}), and this method will append the compiled route path and query.
+         *
+         * @param  baseUrl
+         *         The base URL to append this route to
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         *
+         * @return The final {@link HttpUrl} for this route
+         *
+         * @see    #getCompiledRoute()
+         */
+        @Nonnull
+        public HttpUrl toHttpUrl(@Nonnull HttpUrl baseUrl) {
+            Checks.notNull(baseUrl, "Base URL");
+            HttpUrl.Builder path = baseUrl.newBuilder().addEncodedPathSegments(compiledRoute);
+
+            if (query != null) {
+                for (String s : query) {
+                    String[] queryParam = s.split("=", 2);
+                    path.addEncodedQueryParameter(queryParam[0], queryParam[1]);
+                }
+            }
+
+            return path.build();
         }
 
         /**

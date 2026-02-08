@@ -18,15 +18,15 @@ package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.*;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -73,7 +73,7 @@ public class Requester {
     protected final JDAImpl api;
     protected final AuthorizationConfig authConfig;
     private final RestRateLimiter rateLimiter;
-    private final String baseUrl;
+    private final HttpUrl baseUrl;
     private final String userAgent;
     private final Consumer<? super okhttp3.Request.Builder> customBuilder;
 
@@ -94,7 +94,7 @@ public class Requester {
         this.authConfig = authConfig;
         this.api = (JDAImpl) api;
         this.rateLimiter = rateLimiter;
-        this.baseUrl = config.getBaseUrl();
+        this.baseUrl = HttpUrl.parse(config.getBaseUrl());
         this.userAgent = config.getUserAgent();
         this.customBuilder = config.getCustomBuilder();
         this.httpClient = this.api.getHttpClient();
@@ -161,7 +161,7 @@ public class Requester {
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
 
-        String url = baseUrl + route.getCompiledRoute();
+        HttpUrl url = route.toHttpUrl(baseUrl);
         builder.url(url);
 
         Request<?> apiRequest = task.request;
