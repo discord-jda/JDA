@@ -663,7 +663,7 @@ public class Route {
                 params.length);
 
         StringJoiner major = new StringJoiner(":").setEmptyValue("n/a");
-        StringJoiner compiledRoute = new StringJoiner("/");
+        List<PathSegment> path = new ArrayList<>();
 
         int paramIndex = 0;
         for (String element : template) {
@@ -678,13 +678,13 @@ public class Route {
                         major.add(name + "=" + value);
                     }
                 }
-                compiledRoute.add(EncodingUtil.encodeUTF8(value));
+                path.add(new PathSegment(value, false));
             } else {
-                compiledRoute.add(element);
+                path.add(new PathSegment(element, true));
             }
         }
 
-        return new CompiledRoute(this, compiledRoute.toString(), major.toString());
+        return new CompiledRoute(this, path, major.toString());
     }
 
     @Override
@@ -715,19 +715,19 @@ public class Route {
     public class CompiledRoute {
         private final Route baseRoute;
         private final String major;
-        private final String compiledRoute;
+        private final List<PathSegment> path;
         private final List<QueryParameter> query;
 
-        private CompiledRoute(Route baseRoute, String compiledRoute, String major) {
+        private CompiledRoute(Route baseRoute, List<PathSegment> path, String major) {
             this.baseRoute = baseRoute;
-            this.compiledRoute = compiledRoute;
+            this.path = path;
             this.major = major;
             this.query = null;
         }
 
         private CompiledRoute(CompiledRoute original, List<QueryParameter> query) {
             this.baseRoute = original.baseRoute;
-            this.compiledRoute = original.compiledRoute;
+            this.path = original.path;
             this.major = original.major;
             this.query = query;
         }
@@ -809,13 +809,13 @@ public class Route {
          */
         @Nonnull
         public String getCompiledRoute() {
+            String compiledRoute = path.stream().map(PathSegment::toString).collect(Collectors.joining("/"));
+
             if (query == null) {
                 return compiledRoute;
             }
 
-            String queryString = query.stream()
-                    .map(param -> param.name + "=" + EncodingUtil.encodeUTF8(param.value))
-                    .collect(Collectors.joining("&", "?", ""));
+            String queryString = query.stream().map(QueryParameter::toString).collect(Collectors.joining("&", "?", ""));
             return compiledRoute + queryString;
         }
 
@@ -847,7 +847,15 @@ public class Route {
         @Nonnull
         public HttpUrl toHttpUrl(@Nonnull HttpUrl baseUrl) {
             Checks.notNull(baseUrl, "Base URL");
-            HttpUrl.Builder url = baseUrl.newBuilder().addEncodedPathSegments(compiledRoute);
+            HttpUrl.Builder url = baseUrl.newBuilder();
+
+            for (PathSegment segment : path) {
+                if (segment.encoded) {
+                    url.addEncodedPathSegments(segment.value);
+                } else {
+                    url.addPathSegments(segment.value);
+                }
+            }
 
             if (query != null) {
                 for (QueryParameter queryParam : query) {
@@ -880,7 +888,7 @@ public class Route {
 
         @Override
         public int hashCode() {
-            return (compiledRoute + method.toString()).hashCode();
+            return (getCompiledRoute() + method.toString()).hashCode();
         }
 
         @Override
@@ -891,14 +899,14 @@ public class Route {
 
             CompiledRoute oCompiled = (CompiledRoute) o;
 
-            return baseRoute.equals(oCompiled.getBaseRoute()) && compiledRoute.equals(oCompiled.compiledRoute);
+            return baseRoute.equals(oCompiled.getBaseRoute()) && path.equals(oCompiled.path);
         }
 
         @Override
         public String toString() {
             return new EntityString(this)
                     .setType(method)
-                    .addMetadata("compiledRoute", compiledRoute)
+                    .addMetadata("compiledRoute", getCompiledRoute())
                     .toString();
         }
     }
@@ -910,6 +918,26 @@ public class Route {
         private QueryParameter(String name, String value) {
             this.name = name;
             this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return name + "=" + EncodingUtil.encodeUTF8(value);
+        }
+    }
+
+    private static final class PathSegment {
+        private final String value;
+        private final boolean encoded;
+
+        private PathSegment(String value, boolean encoded) {
+            this.value = value;
+            this.encoded = encoded;
+        }
+
+        @Override
+        public String toString() {
+            return encoded ? value : EncodingUtil.encodeUTF8(value);
         }
     }
 }
