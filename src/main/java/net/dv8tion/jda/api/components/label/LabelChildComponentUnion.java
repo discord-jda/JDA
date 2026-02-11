@@ -35,6 +35,9 @@ import javax.annotation.Nonnull;
  *     <li>{@link StringSelectMenu}</li>
  *     <li>{@link EntitySelectMenu}</li>
  *     <li>{@link AttachmentUpload}</li>
+ *     <li>{@link RadioGroup}</li>
+ *     <li>{@link CheckboxGroup}</li>
+ *     <li>{@link Checkbox}</li>
  * </ul>
  */
 public interface LabelChildComponentUnion extends LabelChildComponent, IComponentUnion {
