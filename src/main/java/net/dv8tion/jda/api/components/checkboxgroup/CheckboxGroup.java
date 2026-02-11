@@ -335,6 +335,8 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
         /**
          * Sets the minimum number of values the user has to select.
          *
+         * <p>If you set this to zero, you must set this checkbox group as {@linkplain #setRequired(boolean) optional}.
+         *
          * @param  minValues
          *         Minimum number of values to select
          *
@@ -372,6 +374,8 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
 
         /**
          * Sets the minimum and maximum number of values the user has to select.
+         *
+         * <p>If you set the minimum to zero, you must set this checkbox group as {@linkplain #setRequired(boolean) optional}.
          *
          * @param  minValues
          *         Minimum number of values to select
@@ -500,6 +504,7 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
          *             <li>If no options have been set</li>
          *             <li>If there is more than {@value #OPTIONS_MAX_AMOUNT} options</li>
          *             <li>If the minimum value range is greater than the maximum value range</li>
+         *             <li>If the minimum value range is 0 and is also required</li>
          *         </ul>
          *
          * @return The new {@link CheckboxGroup}
@@ -516,6 +521,9 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
             if (minValues > maxValues) {
                 throw new IllegalStateException(
                         String.format("Min values (%d) cannot be greater than max values (%d)", minValues, maxValues));
+            }
+            if (minValues == 0 && required) {
+                throw new IllegalStateException("A checkbox group cannot have min values set to 0 and be required at the same time");
             }
 
             int min = Math.min(minValues, options.size());
