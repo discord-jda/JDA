@@ -518,7 +518,7 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
                 throw new IllegalStateException(
                         "Cannot build a checkbox group with more than " + OPTIONS_MAX_AMOUNT + " options");
             }
-            if (minValues > maxValues) {
+            if ((minValues != -1 && maxValues != -1) && minValues > maxValues) {
                 throw new IllegalStateException(
                         String.format("Min values (%d) cannot be greater than max values (%d)", minValues, maxValues));
             }
