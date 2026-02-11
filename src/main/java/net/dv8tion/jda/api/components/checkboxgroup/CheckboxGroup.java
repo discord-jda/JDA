@@ -523,7 +523,8 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
                         String.format("Min values (%d) cannot be greater than max values (%d)", minValues, maxValues));
             }
             if (minValues == 0 && required) {
-                throw new IllegalStateException("A checkbox group cannot have min values set to 0 and be required at the same time");
+                throw new IllegalStateException(
+                        "A checkbox group cannot have min values set to 0 and be required at the same time");
             }
 
             int min = Math.min(minValues, options.size());
