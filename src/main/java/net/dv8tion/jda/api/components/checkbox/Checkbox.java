@@ -32,8 +32,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Must be used inside {@link net.dv8tion.jda.api.components.label.Label Labels} only!
  *
- * @see #create(String)
- * @see #create(String, boolean)
+ * @see #of(String)
+ * @see #of(String, boolean)
  */
 public interface Checkbox extends ICustomId, LabelChildComponent {
     /**
@@ -98,7 +98,7 @@ public interface Checkbox extends ICustomId, LabelChildComponent {
      *
      * @return The new instance
      */
-    static Checkbox create(@Nonnull String customId) {
+    static Checkbox of(@Nonnull String customId) {
         Checks.notBlank(customId, "Custom ID");
         Checks.notLonger(customId, CUSTOM_ID_MAX_LENGTH, "Custom ID");
         return new CheckboxImpl(-1, customId, false);
@@ -117,7 +117,7 @@ public interface Checkbox extends ICustomId, LabelChildComponent {
      *
      * @return The new instance
      */
-    static Checkbox create(@Nonnull String customId, boolean isDefault) {
+    static Checkbox of(@Nonnull String customId, boolean isDefault) {
         Checks.notBlank(customId, "Custom ID");
         Checks.notLonger(customId, CUSTOM_ID_MAX_LENGTH, "Custom ID");
         return new CheckboxImpl(-1, customId, isDefault);

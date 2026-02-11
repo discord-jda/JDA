@@ -94,7 +94,7 @@ public class ComponentTestData {
                 CheckboxGroup.create("checkbox-group")
                         .addOption("label", "value")
                         .build();
-            case CHECKBOX -> Checkbox.create("checkbox");
+            case CHECKBOX -> Checkbox.of("checkbox");
         };
     }
 
