@@ -27,6 +27,9 @@ import javax.annotation.Nonnull;
 /**
  * A component displaying a box which can be checked. Useful for simple yes/no questions.
  *
+ * <p>While you cannot set a checkbox as required,
+ * you can use a required {@link net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup CheckboxGroup} with a single option instead!
+ *
  * <p>Must be used inside {@link net.dv8tion.jda.api.components.label.Label Labels} only!
  *
  * @see #create(String)
