@@ -214,6 +214,9 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          *
          * <p>The minimum must not exceed the amount of available options.
          *
+         * <p><b>Note:</b> In modals, if you set this to zero,
+         * you must set this select menu as {@linkplain #setRequired(Boolean) optional}.
+         *
          * @param  minValues
          *         The min values
          *
@@ -265,6 +268,9 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * <br>Default: {@code 1} for both
          *
          * <p>The minimum or maximum must not exceed the amount of available options.
+         *
+         * <p><b>Note:</b> In modals, if you set the minimum to zero,
+         * you must set this select menu as {@linkplain #setRequired(Boolean) optional}.
          *
          * @param  min
          *         The min values
@@ -393,7 +399,10 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * Creates a new {@link SelectMenu} instance if all requirements are satisfied.
          *
          * @throws IllegalArgumentException
-         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()}
+         *         <ul>
+         *             <li>If {@link #getMinValues()} is greater than {@link #getMaxValues()}</li>
+         *             <li>If the minimum value range is 0 and a selection is also explicitly required</li>
+         *         </ul>
          *
          * @return The new {@link SelectMenu} instance
          */

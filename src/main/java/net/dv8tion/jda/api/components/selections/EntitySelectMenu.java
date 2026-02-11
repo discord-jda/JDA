@@ -620,7 +620,10 @@ public interface EntitySelectMenu extends SelectMenu {
          * Creates a new {@link EntitySelectMenu} instance if all requirements are satisfied.
          *
          * @throws IllegalArgumentException
-         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()}
+         *         <ul>
+         *             <li>If {@link #getMinValues()} is greater than {@link #getMaxValues()}</li>
+         *             <li>If the minimum value range is 0 and a selection is also explicitly required</li>
+         *         </ul>
          *
          * @return The new {@link EntitySelectMenu} instance
          */
@@ -628,6 +631,11 @@ public interface EntitySelectMenu extends SelectMenu {
         @Override
         public EntitySelectMenu build() {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
+            if (required != null && required) {
+                Checks.check(
+                        minValues > 0,
+                        "A select menu cannot have min values set to 0 and be required at the same time");
+            }
             EnumSet<ChannelType> channelTypes =
                     componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
             List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);
