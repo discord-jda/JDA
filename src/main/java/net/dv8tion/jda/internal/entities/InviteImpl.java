@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -406,11 +407,8 @@ public class InviteImpl implements Invite {
         }
 
         @Override
-        @Deprecated
         public String getIconUrl() {
-            return this.iconId == null
-                    ? null
-                    : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
+            return getIconUrl(ImageFormat.PNG);
         }
 
         @Override
@@ -430,11 +428,8 @@ public class InviteImpl implements Invite {
         }
 
         @Override
-        @Deprecated
         public String getSplashUrl() {
-            return this.splashId == null
-                    ? null
-                    : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
+            return getSplashUrl(ImageFormat.PNG);
         }
 
         @Nonnull
@@ -495,11 +490,8 @@ public class InviteImpl implements Invite {
         }
 
         @Override
-        @Deprecated
         public String getIconUrl() {
-            return this.iconId == null
-                    ? null
-                    : "https://cdn.discordapp.com/channel-icons/" + this.id + "/" + this.iconId + ".png";
+            return getIconUrl(ImageFormat.PNG);
         }
 
         @Override
@@ -629,11 +621,8 @@ public class InviteImpl implements Invite {
 
         @Nullable
         @Override
-        @Deprecated
         public String getIconUrl() {
-            return this.iconId == null
-                    ? null
-                    : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+            return getIconUrl(ImageFormat.PNG);
         }
 
         @Override

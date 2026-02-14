@@ -752,16 +752,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return Possibly-null String containing the Guild's icon URL.
-     *
-     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     default String getIconUrl() {
         String iconId = getIconId();
-        return iconId == null
-                ? null
-                : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
+        return iconId == null ? null : getIconUrl(iconId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -796,14 +791,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return The {@link ImageProxy} of this guild's icon
      *
-     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
-     *
      * @see    #getIconUrl()
      */
     @Nullable
-    @Deprecated
     default ImageProxy getIcon() {
-
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
@@ -881,14 +872,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return Possibly-null String containing the Guild's splash URL.
-     *
-     * @deprecated Replaced by {@link #getSplashUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     default String getSplashUrl() {
         String splashId = getSplashId();
-        return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
+        return splashId == null ? null : getSplashUrl(ImageFormat.PNG);
     }
 
     /**
@@ -925,12 +913,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return Possibly-null {@link ImageProxy} of this guild's splash icon
      *
-     * @deprecated Replaced by {@link #getSplash(ImageFormat)}
-     *
      * @see    #getSplashUrl()
      */
     @Nullable
-    @Deprecated
     default ImageProxy getSplash() {
         String splashUrl = getSplashUrl();
         return splashUrl == null ? null : new ImageProxy(splashUrl);
@@ -1065,16 +1050,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return The guild banner url or null
-     *
-     * @deprecated Replaced by {@link #getBannerUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     default String getBannerUrl() {
         String bannerId = getBannerId();
-        return bannerId == null
-                ? null
-                : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+        return bannerId == null ? null : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -1109,12 +1089,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return Possibly-null {@link ImageProxy} of this guild's banner image
      *
-     * @deprecated Replaced by {@link #getBanner(ImageFormat)}
-     *
      * @see    #getBannerUrl()
      */
     @Nullable
-    @Deprecated
     default ImageProxy getBanner() {
         String bannerUrl = getBannerUrl();
         return bannerUrl == null ? null : new ImageProxy(bannerUrl);

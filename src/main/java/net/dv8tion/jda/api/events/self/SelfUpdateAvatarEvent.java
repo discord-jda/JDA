@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
  */
 public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
     public static final String IDENTIFIER = "avatar";
-    private static final String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s%s";
 
     public SelfUpdateAvatarEvent(@Nonnull JDA api, long responseNumber, @Nullable String oldAvatarId) {
         super(api, responseNumber, oldAvatarId, api.getSelfUser().getAvatarId(), IDENTIFIER);
@@ -53,16 +52,10 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * The old avatar url
      *
      * @return  The old avatar url
-     *
-     * @deprecated Replaced by {@link #getOldAvatarUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getOldAvatarUrl() {
-        return previous == null
-                ? null
-                : String.format(
-                        AVATAR_URL, getSelfUser().getId(), previous, previous.startsWith("a_") ? ".gif" : ".png");
+        return previous == null ? null : getOldAvatarUrl(previous.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -91,12 +84,9 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
-     * @deprecated Replaced by {@link #getOldAvatar(ImageFormat)}
-     *
      * @see    #getOldAvatarUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getOldAvatar() {
         String oldAvatarUrl = getOldAvatarUrl();
         return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
@@ -137,15 +127,10 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      * The new avatar url
      *
      * @return  The new avatar url
-     *
-     * @deprecated Replaced by {@link #getNewAvatarUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getNewAvatarUrl() {
-        return next == null
-                ? null
-                : String.format(AVATAR_URL, getSelfUser().getId(), next, next.startsWith("a_") ? ".gif" : ".png");
+        return next == null ? null : getNewAvatarUrl(next.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -172,12 +157,9 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this bot's new avatar image
      *
-     * @deprecated Replaced by {@link #getNewAvatar(ImageFormat)}
-     *
      * @see    #getNewAvatarUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getNewAvatar() {
         String newAvatarUrl = getNewAvatarUrl();
         return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);

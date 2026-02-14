@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.internal.managers.ScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ScheduledEventMembersPaginationActionImpl;
@@ -76,11 +77,10 @@ public class ScheduledEventImpl implements ScheduledEvent {
 
     @Nullable
     @Override
-    @Deprecated
     public String getImageUrl() {
         return coverImage == null
                 ? null
-                : String.format(IMAGE_URL, getId(), coverImage, coverImage.startsWith("a_") ? "gif" : "png");
+                : getCoverImageUrl(coverImage.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     @Nullable

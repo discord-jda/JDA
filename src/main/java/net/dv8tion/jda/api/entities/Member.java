@@ -288,17 +288,11 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * If the member has not set a per guild avatar, this will return null.
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild avatar url.
-     *
-     * @deprecated Replaced by {@link #getAvatarUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     default String getAvatarUrl() {
         String avatarId = getAvatarId();
-        return avatarId == null
-                ? null
-                : String.format(
-                        AVATAR_URL, getGuild().getId(), getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+        return avatarId == null ? null : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -326,12 +320,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return Possibly-null {@link ImageProxy} of this member's avatar
      *
-     * @deprecated Replaced by {@link #getAvatar(ImageFormat)}
-     *
      * @see    #getAvatarUrl()
      */
     @Nullable
-    @Deprecated
     default ImageProxy getAvatar() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? null : new ImageProxy(avatarUrl);
@@ -362,11 +353,8 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * their effective {@link User} avatar.
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.Member} avatar url.
-     *
-     * @deprecated Replaced by {@link #getEffectiveAvatarUrl(ImageFormat)}
      */
     @Nonnull
-    @Deprecated
     default String getEffectiveAvatarUrl() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getUser().getEffectiveAvatarUrl() : avatarUrl;
@@ -399,12 +387,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return Never-null {@link ImageProxy} of this member's effective avatar image
      *
-     * @deprecated Replaced by {@link #getEffectiveAvatar(ImageFormat)}
-     *
      * @see    #getEffectiveAvatarUrl()
      */
     @Nonnull
-    @Deprecated
     default ImageProxy getEffectiveAvatar() {
         ImageProxy avatar = getAvatar();
         return avatar == null ? getUser().getEffectiveAvatar() : avatar;

@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.awt.*;
@@ -194,16 +193,11 @@ public interface User extends UserSnowflake {
      * If the user has not set an image, this will return null.
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
-     *
-     * @deprecated Replaced by {@link #getAvatarUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     default String getAvatarUrl() {
         String avatarId = getAvatarId();
-        return avatarId == null
-                ? null
-                : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+        return avatarId == null ? null : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -231,12 +225,9 @@ public interface User extends UserSnowflake {
      *
      * @return Possibly-null {@link ImageProxy} of this user's avatar
      *
-     * @deprecated Replaced by {@link #getAvatar(ImageFormat)}
-     *
      * @see    #getAvatarUrl()
      */
     @Nullable
-    @Deprecated
     default ImageProxy getAvatar() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? null : new ImageProxy(avatarUrl);
@@ -267,11 +258,8 @@ public interface User extends UserSnowflake {
      * default avatar
      *
      * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
-     *
-     * @deprecated Replaced by {@link #getEffectiveAvatarUrl(ImageFormat)}
      */
     @Nonnull
-    @Deprecated
     default String getEffectiveAvatarUrl() {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
@@ -304,12 +292,9 @@ public interface User extends UserSnowflake {
      *
      * @return Never-null {@link ImageProxy} of this user's effective avatar image
      *
-     * @deprecated Replaced by {@link #getEffectiveAvatar(ImageFormat)}
-     *
      * @see    #getEffectiveAvatarUrl()
      */
     @Nonnull
-    @Deprecated
     default ImageProxy getEffectiveAvatar() {
         ImageProxy avatar = getAvatar();
         return avatar == null ? getDefaultAvatar() : avatar;
@@ -492,20 +477,13 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null String containing the {@link User User} banner url.
          *
-         * @deprecated Replaced by {@link #getBannerUrl(ImageFormat)}
-         *
          * @see User#BANNER_URL
          */
         @Nullable
-        @Deprecated
         public String getBannerUrl() {
             return bannerId == null
                     ? null
-                    : String.format(
-                            BANNER_URL,
-                            Long.toUnsignedString(userId),
-                            bannerId,
-                            bannerId.startsWith("a_") ? "gif" : "png");
+                    : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
         }
 
         /**
@@ -533,12 +511,9 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of this user's banner
          *
-         * @deprecated Replaced by {@link #getBanner(ImageFormat)}
-         *
          * @see    #getBannerUrl()
          */
         @Nullable
-        @Deprecated
         public ImageProxy getBanner() {
             String bannerUrl = getBannerUrl();
             return bannerUrl == null ? null : new ImageProxy(bannerUrl);
@@ -821,14 +796,11 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null String containing the {@link User User}'s server tag badge url.
          *
-         * @deprecated Replaced by {@link #getBadgeUrl(ImageFormat)}
-         *
          * @see User#TAG_BADGE_URL
          */
         @Nullable
-        @Deprecated
         public String getBadgeUrl() {
-            return badge == null ? null : Helpers.format(TAG_BADGE_URL, guildId, badge);
+            return getBadgeUrl(ImageFormat.PNG);
         }
 
         /**
@@ -855,12 +827,9 @@ public interface User extends UserSnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of {@link User User}'s server tag badge.
          *
-         * @deprecated Replaced by {@link #getBadge(ImageFormat)}
-         *
          * @see #getBadgeUrl()
          */
         @Nullable
-        @Deprecated
         public ImageProxy getBadge() {
             String badgeUrl = getBadgeUrl();
             return badgeUrl == null ? null : new ImageProxy(badgeUrl);

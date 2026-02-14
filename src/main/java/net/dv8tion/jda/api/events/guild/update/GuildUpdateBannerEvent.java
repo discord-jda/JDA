@@ -54,16 +54,10 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      * The new banner url
      *
      * @return The new banner url, or null if the banner was removed
-     *
-     * @deprecated Replaced by {@link #getNewBannerUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getNewBannerUrl() {
-
-        return next == null
-                ? null
-                : String.format(Guild.BANNER_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
+        return next == null ? null : getNewBannerUrl(next.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -90,14 +84,10 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's new banner
      *
-     * @deprecated Replaced by {@link #getNewBanner(ImageFormat)}
-     *
      * @see    #getNewBannerUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getNewBanner() {
-
         String newBannerUrl = getNewBannerUrl();
         return newBannerUrl == null ? null : new ImageProxy(newBannerUrl);
     }
@@ -135,15 +125,10 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      * The old banner url
      *
      * @return The old banner url, or null if the banner didn't exist
-     *
-     * @deprecated Replaced by {@link #getOldBannerUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getOldBannerUrl() {
-        return previous == null
-                ? null
-                : String.format(Guild.BANNER_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
+        return previous == null ? null : getOldBannerUrl(previous.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -172,12 +157,9 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old banner
      *
-     * @deprecated Replaced by {@link #getOldBanner(ImageFormat)}
-     *
      * @see    #getOldBannerUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getOldBanner() {
         String oldBannerUrl = getOldBannerUrl();
         return oldBannerUrl == null ? null : new ImageProxy(oldBannerUrl);

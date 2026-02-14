@@ -20,7 +20,6 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Widget;
 import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
@@ -271,12 +270,11 @@ public class WidgetImpl implements Widget {
 
         @Override
         @Nullable
-        @Deprecated
         public String getAvatarUrl() {
             String avatarId = getAvatarId();
             return avatarId == null
                     ? null
-                    : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
+                    : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
         }
 
         @Nullable
@@ -288,7 +286,6 @@ public class WidgetImpl implements Widget {
 
         @Override
         @Nullable
-        @Deprecated
         public ImageProxy getAvatar() {
             String avatarUrl = getAvatarUrl();
             return avatarUrl == null ? null : new ImageProxy(avatarUrl);
@@ -320,7 +317,6 @@ public class WidgetImpl implements Widget {
 
         @Override
         @Nonnull
-        @Deprecated
         public String getEffectiveAvatarUrl() {
             String avatarUrl = getAvatarUrl();
             return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
@@ -335,7 +331,6 @@ public class WidgetImpl implements Widget {
 
         @Override
         @Nonnull
-        @Deprecated
         public ImageProxy getEffectiveAvatar() {
             return new ImageProxy(getEffectiveAvatarUrl());
         }

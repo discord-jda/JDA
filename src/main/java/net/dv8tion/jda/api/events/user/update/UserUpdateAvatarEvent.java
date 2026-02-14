@@ -65,16 +65,10 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      * The previous avatar url
      *
      * @return The previous avatar url
-     *
-     * @deprecated Replaced by {@link #getOldAvatarUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getOldAvatarUrl() {
-        return previous == null
-                ? null
-                : String.format(
-                        User.AVATAR_URL, getUser().getId(), previous, previous.startsWith("a_") ? "gif" : "png");
+        return previous == null ? null : getOldAvatarUrl(previous.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -103,12 +97,9 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this user's old avatar image
      *
-     * @deprecated Replaced by {@link #getOldAvatar(ImageFormat)}
-     *
      * @see    #getOldAvatarUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getOldAvatar() {
         String oldAvatarUrl = getOldAvatarUrl();
         return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
@@ -149,15 +140,10 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      * The url of the new avatar
      *
      * @return The url of the new avatar
-     *
-     * @deprecated Replaced by {@link #getNewAvatarUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getNewAvatarUrl() {
-        return next == null
-                ? null
-                : String.format(User.AVATAR_URL, getUser().getId(), next, next.startsWith("a_") ? "gif" : "png");
+        return next == null ? null : getNewAvatarUrl(next.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -184,12 +170,9 @@ public class UserUpdateAvatarEvent extends GenericUserUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this user's new avatar image
      *
-     * @deprecated Replaced by {@link #getNewAvatar(ImageFormat)}
-     *
      * @see    #getNewAvatarUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getNewAvatar() {
         String newAvatarUrl = getNewAvatarUrl();
         return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);

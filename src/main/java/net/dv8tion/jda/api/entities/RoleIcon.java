@@ -68,14 +68,11 @@ public class RoleIcon {
      * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Role's icon URL.
-     *
-     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getIconUrl() {
         String iconId = getIconId();
-        return iconId == null ? null : String.format(ICON_URL, roleId, iconId);
+        return iconId == null ? null : getIconUrl(ImageFormat.PNG);
     }
 
     /**
@@ -104,12 +101,9 @@ public class RoleIcon {
      *
      * @return Possibly-null {@link ImageProxy} of this role's icon
      *
-     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
-     *
      * @see    #getIconUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

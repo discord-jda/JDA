@@ -197,11 +197,8 @@ public interface Widget extends ISnowflake {
          *
          * @return possibly-null String containing the avatar url of the
          *         member
-         *
-         * @deprecated Replaced by {@link #getAvatarUrl(ImageFormat)}
          */
         @Nullable
-        @Deprecated
         String getAvatarUrl();
 
         /**
@@ -227,12 +224,9 @@ public interface Widget extends ISnowflake {
          *
          * @return Possibly-null {@link ImageProxy} of this user's avatar image
          *
-         * @deprecated Replaced by {@link #getAvatar(ImageFormat)}
-         *
          * @see    #getAvatarUrl()
          */
         @Nullable
-        @Deprecated
         ImageProxy getAvatar();
 
         /**
@@ -289,11 +283,8 @@ public interface Widget extends ISnowflake {
          * default avatar
          *
          * @return Never-null String containing the member's effective avatar url.
-         *
-         * @deprecated Replaced by {@link #getEffectiveAvatarUrl(ImageFormat)}
          */
         @Nonnull
-        @Deprecated
         String getEffectiveAvatarUrl();
 
         /**
@@ -320,12 +311,9 @@ public interface Widget extends ISnowflake {
          *
          * @return Never-null {@link ImageProxy} of this user's effective avatar image
          *
-         * @deprecated Replaced by {@link #getEffectiveAvatar(ImageFormat)}
-         *
          * @see    #getEffectiveAvatarUrl()
          */
         @Nonnull
-        @Deprecated
         ImageProxy getEffectiveAvatar();
 
         /**

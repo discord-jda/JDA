@@ -98,11 +98,8 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * <p>Links to a potentially heavily compressed image. You can append a {@code size} query parameter to the URL if needed.
      *
      * @return The image url, or {@code null} if none is specified
-     *
-     * @deprecated Replaced by {@link #getCoverImageUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     String getImageUrl();
 
     /**
@@ -130,12 +127,9 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      *
      * @return The {@link ImageProxy} for this events cover image or null if no image is defined
      *
-     * @deprecated Replaced by {@link #getCoverImage(ImageFormat)}
-     *
      * @see    #getImageUrl()
      */
     @Nullable
-    @Deprecated
     default ImageProxy getImage() {
         String imageUrl = getImageUrl();
         return imageUrl == null ? null : new ImageProxy(imageUrl);

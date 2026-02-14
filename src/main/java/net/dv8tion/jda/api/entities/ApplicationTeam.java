@@ -85,14 +85,10 @@ public interface ApplicationTeam extends ISnowflake {
      * The url for the icon of this team.
      *
      * @return The icon url, or null if no icon is applied
-     *
-     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     default String getIconUrl() {
-        String iconId = getIconId();
-        return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
+        return getIconUrl(ImageFormat.PNG);
     }
 
     /**
@@ -119,12 +115,9 @@ public interface ApplicationTeam extends ISnowflake {
      *
      * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
      *
-     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
-     *
      * @see    #getIconUrl()
      */
     @Nullable
-    @Deprecated
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

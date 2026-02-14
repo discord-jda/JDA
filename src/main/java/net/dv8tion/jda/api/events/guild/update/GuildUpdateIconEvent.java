@@ -54,15 +54,10 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      * The url of the old icon
      *
      * @return The url of the old icon, or null
-     *
-     * @deprecated Replaced by {@link #getOldIconUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getOldIconUrl() {
-        return previous == null
-                ? null
-                : String.format(Guild.ICON_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
+        return previous == null ? null : getOldIconUrl(previous.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -91,12 +86,9 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old icon
      *
-     * @deprecated Replaced by {@link #getOldIcon(ImageFormat)}
-     *
      * @see    #getOldIconUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getOldIcon() {
         String oldIconUrl = getOldIconUrl();
         return oldIconUrl == null ? null : new ImageProxy(oldIconUrl);
@@ -137,15 +129,10 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      * The url of the new icon
      *
      * @return The url of the new icon, or null
-     *
-     * @deprecated Replaced by {@link #getNewIconUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     public String getNewIconUrl() {
-        return next == null
-                ? null
-                : String.format(Guild.ICON_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
+        return next == null ? null : getNewIconUrl(next.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -172,12 +159,9 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's new icon
      *
-     * @deprecated Replaced by {@link #getNewIcon(ImageFormat)}
-     *
      * @see    #getNewIconUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getNewIcon() {
         String newIconUrl = getNewIconUrl();
         return newIconUrl == null ? null : new ImageProxy(newIconUrl);

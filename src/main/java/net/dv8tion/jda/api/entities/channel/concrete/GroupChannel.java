@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -57,14 +56,11 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
      * If no icon has been set, this returns {@code null}.
      *
      * @return Possibly-null String containing the group channel's icon URL.
-     *
-     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
      */
     @Nullable
-    @Deprecated
     default String getIconUrl() {
         String iconId = getIconId();
-        return iconId == null ? null : Helpers.format(ICON_URL, getId(), iconId);
+        return iconId == null ? null : getIconUrl(ImageFormat.PNG);
     }
 
     /**
@@ -92,12 +88,9 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
      *
      * @return Possibly-null {@link ImageProxy} of this group channel's icon
      *
-     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
-     *
      * @see    #getIconUrl()
      */
     @Nullable
-    @Deprecated
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

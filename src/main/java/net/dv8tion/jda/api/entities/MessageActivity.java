@@ -121,13 +121,10 @@ public class MessageActivity {
          * The url of the icon image for this application.
          *
          * @return the url of the icon
-         *
-         * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
          */
         @Nullable
-        @Deprecated
         public String getIconUrl() {
-            return iconId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
+            return getIconUrl(ImageFormat.PNG);
         }
 
         /**
@@ -154,12 +151,9 @@ public class MessageActivity {
          *
          * @return Possibly-null {@link ImageProxy} of this application's icon
          *
-         * @deprecated Replaced by {@link #getIcon(ImageFormat)}
-         *
          * @see    #getIconUrl()
          */
         @Nullable
-        @Deprecated
         public ImageProxy getIcon() {
             String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
@@ -198,15 +192,10 @@ public class MessageActivity {
          * The url of the cover image for this application.
          *
          * @return the url of the cover/splash
-         *
-         * @deprecated Replaced by {@link #getCoverUrl(ImageFormat)}
          */
         @Nullable
-        @Deprecated
         public String getCoverUrl() {
-            return coverId == null
-                    ? null
-                    : "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
+            return getCoverUrl(ImageFormat.PNG);
         }
 
         /**
@@ -233,12 +222,9 @@ public class MessageActivity {
          *
          * @return Possibly-null {@link ImageProxy} of this cover's icon
          *
-         * @deprecated Replaced by {@link #getCover(ImageFormat)}
-         *
          * @see    #getCoverUrl()
          */
         @Nullable
-        @Deprecated
         public ImageProxy getCover() {
             String coverUrl = getCoverUrl();
             return coverUrl == null ? null : new ImageProxy(coverUrl);

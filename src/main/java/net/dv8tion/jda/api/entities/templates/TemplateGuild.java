@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.entities.templates;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
 import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
@@ -124,16 +123,11 @@ public class TemplateGuild implements ISnowflake {
      *
      * @return The guild's icon url
      *
-     * @deprecated Replaced by {@link #getIconUrl(ImageFormat)}
-     *
      * @see    #getIconId()
      */
     @Nullable
-    @Deprecated
     public String getIconUrl() {
-        return this.iconId == null
-                ? null
-                : String.format(Guild.ICON_URL, this.id, this.iconId, iconId.startsWith("a_") ? "gif" : "png");
+        return this.iconId == null ? null : getIconUrl(iconId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
     }
 
     /**
@@ -161,12 +155,9 @@ public class TemplateGuild implements ISnowflake {
      *
      * @return Possibly-null {@link ImageProxy} of this template guild's icon
      *
-     * @deprecated Replaced by {@link #getIcon(ImageFormat)}
-     *
      * @see    #getIconUrl()
      */
     @Nullable
-    @Deprecated
     public ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);

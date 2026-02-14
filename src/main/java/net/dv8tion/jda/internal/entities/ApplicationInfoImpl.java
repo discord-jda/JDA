@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
@@ -132,11 +133,8 @@ public class ApplicationInfoImpl implements ApplicationInfo {
     }
 
     @Override
-    @Deprecated
     public String getIconUrl() {
-        return this.iconId == null
-                ? null
-                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+        return getIconUrl(ImageFormat.PNG);
     }
 
     @Nonnull
