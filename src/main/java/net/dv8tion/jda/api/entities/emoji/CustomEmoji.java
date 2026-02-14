@@ -71,7 +71,7 @@ public interface CustomEmoji extends Emoji, IMentionable {
      */
     @Nonnull
     default String getImageUrl() {
-        return getImageUrl(isAnimated() ? ImageFormat.GIF : ImageFormat.PNG);
+        return getImageUrl(isAnimated() ? ImageFormat.ANIMATED_WEBP : ImageFormat.STATIC_WEBP);
     }
 
     /**
