@@ -125,8 +125,7 @@ public interface StickerPack extends ISnowflake {
      */
     @Nullable
     default String getBannerUrl() {
-        String bannerId = getBannerId();
-        return bannerId == null ? null : String.format(BANNER_URL, bannerId, "png");
+        return getBannerUrl(ImageFormat.PNG);
     }
 
     /**
