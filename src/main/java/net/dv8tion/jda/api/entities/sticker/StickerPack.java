@@ -34,7 +34,10 @@ public interface StickerPack extends ISnowflake {
     /**
      * Format string used for {@link #getBannerUrl()}.
      * <br>The parameters of the format string are the {@link #getBannerId()} and the file extension (png).
+     *
+     * @deprecated Replaced by {@link DiscordAssets#stickerPackBanner(ImageFormat, String)}
      */
+    @Deprecated
     String BANNER_URL = "https://cdn.discordapp.com/app-assets/710982414301790216/store/%s.%s";
 
     /**

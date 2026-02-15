@@ -83,16 +83,32 @@ public interface User extends UserSnowflake {
      */
     Pattern USER_TAG = Pattern.compile("(.{2,32})#(\\d{4})");
 
-    /** Template for {@link #getAvatarUrl()}. */
+    /**
+     * Template for {@link #getAvatarUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#userAvatar(ImageFormat, String, String)}
+     */
     @Deprecated
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
-    /** Template for {@link #getDefaultAvatarUrl()} */
+    /**
+     * Template for {@link #getDefaultAvatarUrl()}
+     *
+     * @deprecated Replaced by {@link DiscordAssets#userDefaultAvatar(ImageFormat, String)}
+     */
     @Deprecated
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
-    /** Template for {@link Profile#getBannerUrl()} */
+    /**
+     * Template for {@link Profile#getBannerUrl()}
+     *
+     * @deprecated Replaced by {@link DiscordAssets#userBanner(ImageFormat, String, String)}
+     */
     @Deprecated
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
-    /** Template for {@link PrimaryGuild#getBadgeUrl()} */
+    /**
+     * Template for {@link PrimaryGuild#getBadgeUrl()}
+     *
+     * @deprecated Replaced by {@link DiscordAssets#userTagBadge(ImageFormat, String, String)}
+     */
     @Deprecated
     String TAG_BADGE_URL = "https://cdn.discordapp.com/guild-tag-badges/%s/%s.png";
 
