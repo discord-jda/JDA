@@ -35,6 +35,8 @@ import net.dv8tion.jda.internal.components.UnknownComponentImpl;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.components.attachmentupload.AttachmentUploadImpl;
 import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
+import net.dv8tion.jda.internal.components.checkbox.CheckboxImpl;
+import net.dv8tion.jda.internal.components.checkboxgroup.CheckboxGroupImpl;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayFileUpload;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
@@ -42,6 +44,7 @@ import net.dv8tion.jda.internal.components.label.LabelImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemFileUpload;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemImpl;
+import net.dv8tion.jda.internal.components.radiogroup.RadioGroupImpl;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.internal.components.selections.EntitySelectMenuImpl;
 import net.dv8tion.jda.internal.components.selections.StringSelectMenuImpl;
@@ -277,6 +280,12 @@ public class ComponentDeserializer {
                 return new LabelImpl(this, data);
             case FILE_UPLOAD:
                 return new AttachmentUploadImpl(data);
+            case RADIO_GROUP:
+                return new RadioGroupImpl(data);
+            case CHECKBOX_GROUP:
+                return new CheckboxGroupImpl(data);
+            case CHECKBOX:
+                return new CheckboxImpl(data);
             default:
                 return new UnknownComponentImpl(data);
         }
