@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmojiEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class MessageReactionClearEmojiHandler extends SocketHandler {
     public MessageReactionClearEmojiHandler(JDAImpl api) {
@@ -52,7 +52,7 @@ public class MessageReactionClearEmojiHandler extends SocketHandler {
             // drop the event instead of caching it
             GuildChannel actual = guild.getGuildChannelById(channelId);
             if (actual != null) {
-                WebSocketClient.LOG.debug(
+                GatewayWebSocketClient.LOG.debug(
                         "Dropping MESSAGE_REACTION_REMOVE_EMOJI for unexpected channel of type {}", actual.getType());
                 return null;
             }

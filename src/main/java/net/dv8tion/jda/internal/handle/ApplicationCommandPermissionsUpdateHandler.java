@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +42,7 @@ public class ApplicationCommandPermissionsUpdateHandler extends SocketHandler {
             if (getJDA().getGuildSetupController().isLocked(guildId)) {
                 return guildId;
             } else if (guild == null) {
-                WebSocketClient.LOG.debug(
+                GatewayWebSocketClient.LOG.debug(
                         "Received APPLICATION_COMMAND_PERMISSIONS_UPDATE for a guild that is not cached: GuildID: {}",
                         guildId);
                 return null;

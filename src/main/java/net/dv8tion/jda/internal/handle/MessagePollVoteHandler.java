@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.message.poll.MessagePollVoteAddEvent;
 import net.dv8tion.jda.api.events.message.poll.MessagePollVoteRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class MessagePollVoteHandler extends SocketHandler {
     private final boolean add;
@@ -51,7 +51,7 @@ public class MessagePollVoteHandler extends SocketHandler {
             if (guild != null) {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null) {
-                    WebSocketClient.LOG.debug(
+                    GatewayWebSocketClient.LOG.debug(
                             "Dropping message poll vote event for unexpected channel of type {}", actual.getType());
                     return null;
                 }

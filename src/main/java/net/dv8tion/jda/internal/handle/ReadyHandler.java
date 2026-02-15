@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class ReadyHandler extends SocketHandler {
 
@@ -43,7 +43,7 @@ public class ReadyHandler extends SocketHandler {
             long id = guild.getUnsignedLong("id");
             DataObject previous = distinctGuilds.put(id, guild);
             if (previous != null) {
-                WebSocketClient.LOG.warn("Found duplicate guild for id {} in ready payload", id);
+                GatewayWebSocketClient.LOG.warn("Found duplicate guild for id {} in ready payload", id);
             }
         }
 
@@ -83,7 +83,7 @@ public class ReadyHandler extends SocketHandler {
                     builder.createPrivateChannel(chan);
                     break;
                 default:
-                    WebSocketClient.LOG.warn(
+                    GatewayWebSocketClient.LOG.warn(
                             "Received a Channel in the private_channels array in READY of an unknown type! Type: {}",
                             type);
             }

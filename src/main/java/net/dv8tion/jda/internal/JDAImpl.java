@@ -133,7 +133,7 @@ public class JDAImpl implements JDA {
 
     public ShutdownReason shutdownReason =
             ShutdownReason.USER_SHUTDOWN; // indicates why shutdown happened in awaitStatus / awaitReady
-    protected WebSocketClient client;
+    protected GatewayWebSocketClient client;
     protected Requester requester;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
@@ -325,7 +325,7 @@ public class JDAImpl implements JDA {
             LOG.info("Login Successful!");
         }
 
-        client = new WebSocketClient(this, compression, intents, encoding);
+        client = new GatewayWebSocketClient(this, compression, intents, encoding);
         // remove our MDC metadata when we exit our code
         if (previousContext != null) {
             previousContext.forEach(MDC::put);
@@ -429,7 +429,7 @@ public class JDAImpl implements JDA {
     @Override
     public void setAutoReconnect(boolean autoReconnect) {
         sessionConfig.setAutoReconnect(autoReconnect);
-        WebSocketClient client = getClient();
+        GatewayWebSocketClient client = getClient();
         if (client != null) {
             client.setAutoReconnect(autoReconnect);
         }
@@ -896,7 +896,7 @@ public class JDAImpl implements JDA {
 
         setStatus(Status.SHUTTING_DOWN);
 
-        WebSocketClient client = getClient();
+        GatewayWebSocketClient client = getClient();
         if (client != null) {
             client.getChunkManager().shutdown();
             client.shutdown();
@@ -909,7 +909,7 @@ public class JDAImpl implements JDA {
         if (getStatus() == Status.SHUTDOWN) {
             return;
         }
-        // so we can shutdown from WebSocketClient properly
+        // so we can shutdown from GatewayWebSocketClient properly
         closeAudioConnections();
         guildSetupController.close();
 
@@ -1261,7 +1261,7 @@ public class JDAImpl implements JDA {
         return sessionConfig.getWebSocketFactory();
     }
 
-    public WebSocketClient getClient() {
+    public GatewayWebSocketClient getClient() {
         return client;
     }
 
