@@ -17,10 +17,13 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.managers.RoleManager;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -29,7 +32,12 @@ import javax.annotation.Nullable;
  * @see Role#getIcon
  */
 public class RoleIcon {
-    /** Template for {@link #getIconUrl()}. */
+    /**
+     * Template for {@link #getIconUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#roleIcon(ImageFormat, String, String)}
+     */
+    @Deprecated
     public static final String ICON_URL = "https://cdn.discordapp.com/role-icons/%s/%s.png";
 
     private final String iconId;
@@ -64,7 +72,28 @@ public class RoleIcon {
     @Nullable
     public String getIconUrl() {
         String iconId = getIconId();
-        return iconId == null ? null : String.format(ICON_URL, roleId, iconId);
+        return iconId == null ? null : getIconUrl(ImageFormat.PNG);
+    }
+
+    /**
+     * The URL of the {@link net.dv8tion.jda.api.entities.Role Role} icon image.
+     * If no icon has been set or an emoji is used in its place, this returns {@code null}.
+     * <p>The Role icon can be modified using {@link RoleManager#setIcon(Icon)}.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null String containing the Role's icon URL.
+     *
+     * @see    DiscordAssets#roleIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    public String getIconUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getIcon(format);
+        return proxy == null ? null : proxy.getUrl();
     }
 
     /**
@@ -78,6 +107,25 @@ public class RoleIcon {
     public ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this role's icon.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this role's icon
+     *
+     * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#roleIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    public ImageProxy getIcon(@Nonnull ImageFormat format) {
+        return DiscordAssets.roleIcon(format, Long.toUnsignedString(roleId), iconId);
     }
 
     /**

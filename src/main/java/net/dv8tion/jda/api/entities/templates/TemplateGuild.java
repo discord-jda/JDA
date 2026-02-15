@@ -16,13 +16,14 @@
 
 package net.dv8tion.jda.api.entities.templates;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
 import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -110,7 +111,7 @@ public class TemplateGuild implements ISnowflake {
      *
      * @return The guild's icon id
      *
-     * @see    #getIconUrl()
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     public String getIconId() {
@@ -126,9 +127,27 @@ public class TemplateGuild implements ISnowflake {
      */
     @Nullable
     public String getIconUrl() {
-        return this.iconId == null
-                ? null
-                : String.format(Guild.ICON_URL, this.id, this.iconId, iconId.startsWith("a_") ? "gif" : "png");
+        return this.iconId == null ? null : getIconUrl(iconId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+    }
+
+    /**
+     * The icon url of this guild.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The guild's icon url
+     *
+     * @see    #getIconId()
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    public String getIconUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getIcon(format);
+        return proxy == null ? null : proxy.getUrl();
     }
 
     /**
@@ -142,6 +161,25 @@ public class TemplateGuild implements ISnowflake {
     public ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this template guild's icon.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this template guild's icon
+     *
+     * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#guildIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    public ImageProxy getIcon(@Nonnull ImageFormat format) {
+        return DiscordAssets.guildIcon(format, Long.toUnsignedString(id), iconId);
     }
 
     /**

@@ -20,8 +20,9 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Widget;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -273,7 +274,14 @@ public class WidgetImpl implements Widget {
             String avatarId = getAvatarId();
             return avatarId == null
                     ? null
-                    : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
+                    : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        }
+
+        @Nullable
+        @Override
+        public String getAvatarUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getAvatar(format);
+            return proxy == null ? null : proxy.getUrl();
         }
 
         @Override
@@ -281,6 +289,12 @@ public class WidgetImpl implements Widget {
         public ImageProxy getAvatar() {
             String avatarUrl = getAvatarUrl();
             return avatarUrl == null ? null : new ImageProxy(avatarUrl);
+        }
+
+        @Nullable
+        @Override
+        public ImageProxy getAvatar(@Nonnull ImageFormat format) {
+            return DiscordAssets.userAvatar(format, getId(), avatar);
         }
 
         @Override
@@ -292,13 +306,13 @@ public class WidgetImpl implements Widget {
         @Override
         @Nonnull
         public String getDefaultAvatarUrl() {
-            return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
+            return getDefaultAvatar().getUrl();
         }
 
         @Override
         @Nonnull
         public ImageProxy getDefaultAvatar() {
-            return new ImageProxy(getDefaultAvatarUrl());
+            return DiscordAssets.userDefaultAvatar(ImageFormat.PNG, getDefaultAvatarId());
         }
 
         @Override
@@ -308,10 +322,24 @@ public class WidgetImpl implements Widget {
             return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
         }
 
+        @Nonnull
+        @Override
+        public String getEffectiveAvatarUrl(@Nonnull ImageFormat preferredFormat) {
+            String avatarUrl = getAvatarUrl(preferredFormat);
+            return avatarUrl == null ? getDefaultAvatarUrl() : avatar;
+        }
+
         @Override
         @Nonnull
         public ImageProxy getEffectiveAvatar() {
             return new ImageProxy(getEffectiveAvatarUrl());
+        }
+
+        @Nonnull
+        @Override
+        public ImageProxy getEffectiveAvatar(@Nonnull ImageFormat preferredFormat) {
+            ImageProxy avatar = getAvatar(preferredFormat);
+            return avatar == null ? getDefaultAvatar() : avatar;
         }
 
         @Override

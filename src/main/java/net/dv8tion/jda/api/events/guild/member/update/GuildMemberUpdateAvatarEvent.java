@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.guild.member.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
@@ -66,14 +68,26 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      */
     @Nullable
     public String getOldAvatarUrl() {
-        return previous == null
-                ? null
-                : String.format(
-                        Member.AVATAR_URL,
-                        getMember().getGuild().getId(),
-                        getMember().getId(),
-                        previous,
-                        previous.startsWith("a_") ? "gif" : "png");
+        return previous == null ? null : getOldAvatarUrl(previous.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+    }
+
+    /**
+     * The previous avatar url
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The previous avatar url
+     *
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
+     */
+    @Nullable
+    public String getOldAvatarUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getOldAvatar(format);
+        return proxy == null ? null : proxy.getUrl();
     }
 
     /**
@@ -89,6 +103,27 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
     public ImageProxy getOldAvatar() {
         String oldAvatarUrl = getOldAvatarUrl();
         return oldAvatarUrl == null ? null : new ImageProxy(oldAvatarUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this member's old avatar.
+     * <p>
+     * <b>Note:</b> the old avatar may not always be downloadable as it might have been removed from Discord.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's old avatar
+     *
+     * @see    #getOldAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
+     */
+    @Nullable
+    public ImageProxy getOldAvatar(@Nonnull ImageFormat format) {
+        return DiscordAssets.memberAvatar(format, getGuild().getId(), getUser().getId(), previous);
     }
 
     /**
@@ -108,14 +143,26 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
      */
     @Nullable
     public String getNewAvatarUrl() {
-        return next == null
-                ? null
-                : String.format(
-                        Member.AVATAR_URL,
-                        getMember().getGuild().getId(),
-                        getMember().getId(),
-                        next,
-                        next.startsWith("a_") ? "gif" : "png");
+        return next == null ? null : getNewAvatarUrl(next.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+    }
+
+    /**
+     * The url of the new avatar
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The url of the new avatar
+     *
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
+     */
+    @Nullable
+    public String getNewAvatarUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getNewAvatar(format);
+        return proxy == null ? null : proxy.getUrl();
     }
 
     /**
@@ -129,5 +176,24 @@ public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<
     public ImageProxy getNewAvatar() {
         String newAvatarUrl = getNewAvatarUrl();
         return newAvatarUrl == null ? null : new ImageProxy(newAvatarUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this member's new avatar.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's new avatar
+     *
+     * @see    #getNewAvatarUrl(ImageFormat)
+     * @see    DiscordAssets#memberAvatar(ImageFormat, String, String, String)
+     */
+    @Nullable
+    public ImageProxy getNewAvatar(@Nonnull ImageFormat format) {
+        return DiscordAssets.memberAvatar(format, getGuild().getId(), getUser().getId(), next);
     }
 }

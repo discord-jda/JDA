@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.entities.sticker;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -32,7 +34,10 @@ public interface StickerPack extends ISnowflake {
     /**
      * Format string used for {@link #getBannerUrl()}.
      * <br>The parameters of the format string are the {@link #getBannerId()} and the file extension (png).
+     *
+     * @deprecated Replaced by {@link DiscordAssets#stickerPackBanner(ImageFormat, String)}
      */
+    @Deprecated
     String BANNER_URL = "https://cdn.discordapp.com/app-assets/710982414301790216/store/%s.%s";
 
     /**
@@ -123,8 +128,27 @@ public interface StickerPack extends ISnowflake {
      */
     @Nullable
     default String getBannerUrl() {
-        String bannerId = getBannerId();
-        return bannerId == null ? null : String.format(BANNER_URL, bannerId, "png");
+        return getBannerUrl(ImageFormat.PNG);
+    }
+
+    /**
+     * The url for the pack banner.
+     * <br>This is shown when you at the top of the pack pop-out in the client.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The banner id, or {@code null} if there is no banner
+     *
+     * @see    DiscordAssets#stickerPackBanner(ImageFormat, String)
+     */
+    @Nullable
+    default String getBannerUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getBanner(format);
+        return proxy == null ? null : proxy.getUrl();
     }
 
     /**
@@ -137,6 +161,26 @@ public interface StickerPack extends ISnowflake {
     default ImageProxy getBanner() {
         String url = getBannerUrl();
         return url == null ? null : new ImageProxy(url);
+    }
+
+    /**
+     * The {@link ImageProxy} for the pack banner.
+     * <br>This is shown when you at the top of the pack pop-out in the client.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The banner proxy, or {@code null} if there is no banner
+     *
+     * @see    #getBannerUrl(ImageFormat)
+     * @see    DiscordAssets#stickerPackBanner(ImageFormat, String)
+     */
+    @Nullable
+    default ImageProxy getBanner(@Nonnull ImageFormat format) {
+        return DiscordAssets.stickerPackBanner(format, getBannerId());
     }
 
     /**

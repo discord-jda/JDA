@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -32,7 +34,12 @@ import javax.annotation.Nullable;
  * @see ApplicationInfo#getTeam()
  */
 public interface ApplicationTeam extends ISnowflake {
-    /** Template for {@link #getIconUrl()} */
+    /**
+     * Template for {@link #getIconUrl()}
+     *
+     * @deprecated Replaced by {@link DiscordAssets#applicationTeamIcon(ImageFormat, String, String)}
+     */
+    @Deprecated
     String ICON_URL = "https://cdn.discordapp.com/team-icons/%s/%s.png";
 
     /**
@@ -69,7 +76,7 @@ public interface ApplicationTeam extends ISnowflake {
      *
      * @return The icon id, or null if no icon is applied
      *
-     * @see    #getIconUrl()
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     String getIconId();
@@ -81,8 +88,26 @@ public interface ApplicationTeam extends ISnowflake {
      */
     @Nullable
     default String getIconUrl() {
-        String iconId = getIconId();
-        return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
+        return getIconUrl(ImageFormat.PNG);
+    }
+
+    /**
+     * The url for the icon of this team.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The icon url, or null if no icon is applied
+     *
+     * @see    DiscordAssets#applicationTeamIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    default String getIconUrl(@Nonnull ImageFormat format) {
+        ImageProxy icon = getIcon(format);
+        return icon == null ? null : icon.getUrl();
     }
 
     /**
@@ -96,6 +121,25 @@ public interface ApplicationTeam extends ISnowflake {
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this application team's icon.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The {@link ImageProxy} of this application team's icon, or null if no icon is applied
+     *
+     * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#applicationTeamIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    default ImageProxy getIcon(@Nonnull ImageFormat format) {
+        return DiscordAssets.applicationTeamIcon(format, getId(), getIconId());
     }
 
     /**

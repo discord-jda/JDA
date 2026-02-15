@@ -21,11 +21,12 @@ import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * Indicates the {@link ScheduledEvent#getImageUrl() image} of a {@link ScheduledEvent} has changed.
+ * Indicates the {@linkplain ScheduledEvent#getCoverImageId() cover image ID} of a {@link ScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link ScheduledEvent} image had changed.
+ * <p>Can be used to detect when the {@link ScheduledEvent} cover image had changed.
  *
  * <p>Identifier: {@code image}
  *
@@ -36,52 +37,34 @@ import javax.annotation.Nonnull;
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
  * <p>Discord does not specifically tell us about the updates, but merely tells us the
- * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
- * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
- *
- * @deprecated Replaced by {@link ScheduledEventUpdateCoverImageEvent},
- * note that the values previously were {@linkplain ScheduledEvent#getImageUrl() asset URLs}
- * and now are {@linkplain ScheduledEvent#getCoverImageId() asset hashes}.
- * <br>Additionally, they were previously marked as non-null, when they are actually both nullable.
+ * {@link ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent} object.
+ * In order to fire a specific event like this we need to have the old {@link ScheduledEvent} cached to compare against.
  */
-@Deprecated
-public class ScheduledEventUpdateImageEvent extends GenericScheduledEventUpdateEvent<String> {
+public class ScheduledEventUpdateCoverImageEvent extends GenericScheduledEventUpdateEvent<String> {
     public static final String IDENTIFIER = "image";
 
-    public ScheduledEventUpdateImageEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous) {
-        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getImageUrl(), IDENTIFIER);
+    public ScheduledEventUpdateCoverImageEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nullable String previous) {
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getCoverImageId(), IDENTIFIER);
     }
 
     /**
-     * The old {@link ScheduledEvent#getImageUrl() image}.
+     * The old {@linkplain ScheduledEvent#getCoverImageId() cover image ID}.
      *
-     * @return The old image
+     * @return The old cover image's ID
      */
-    @Nonnull
+    @Nullable
     public String getOldImageUrl() {
         return getOldValue();
     }
 
     /**
-     * The new {@link ScheduledEvent#getImageUrl() image}.
+     * The new {@linkplain ScheduledEvent#getCoverImageId() cover image ID}.
      *
-     * @return The new image
+     * @return The new cover image's ID
      */
-    @Nonnull
+    @Nullable
     public String getNewImageUrl() {
         return getNewValue();
-    }
-
-    @Nonnull
-    @Override
-    public String getOldValue() {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public String getNewValue() {
-        return super.getNewValue();
     }
 }

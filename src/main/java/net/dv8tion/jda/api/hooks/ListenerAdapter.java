@@ -409,7 +409,19 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onScheduledEventUpdateStatus(@Nonnull ScheduledEventUpdateStatusEvent event) {}
 
+    /**
+     * Deprecated.
+     *
+     * @deprecated Replaced by {@link ScheduledEventUpdateCoverImageEvent},
+     *             note that the values previously were {@linkplain net.dv8tion.jda.api.entities.ScheduledEvent#getImageUrl() asset URLs}
+     *             and now are {@linkplain net.dv8tion.jda.api.entities.ScheduledEvent#getCoverImageId() asset hashes}.
+     *             <br>Additionally, they were previously marked as non-null, when they are actually both nullable.
+     */
+    @Deprecated
+    @ReplaceWith("onScheduledEventUpdateCoverImage(ScheduledEventUpdateCoverImageEvent)")
     public void onScheduledEventUpdateImage(@Nonnull ScheduledEventUpdateImageEvent event) {}
+
+    public void onScheduledEventUpdateCoverImage(@Nonnull ScheduledEventUpdateCoverImageEvent event) {}
 
     public void onScheduledEventCreate(@Nonnull ScheduledEventCreateEvent event) {}
 

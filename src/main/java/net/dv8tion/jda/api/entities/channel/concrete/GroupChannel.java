@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -33,7 +34,12 @@ import javax.annotation.Nullable;
  * <p>This is only used for user-installed apps.
  */
 public interface GroupChannel extends MessageChannel, IDetachableEntity {
-    /** Template for {@link #getIconUrl()}. */
+    /**
+     * Template for {@link #getIconUrl()}.
+     *
+     * @deprecated Replaced by {@link DiscordAssets#channelIcon(ImageFormat, String, String)}
+     */
+    @Deprecated
     String ICON_URL = "https://cdn.discordapp.com/channel-icons/%s/%s.png";
 
     /**
@@ -54,7 +60,27 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
     @Nullable
     default String getIconUrl() {
         String iconId = getIconId();
-        return iconId == null ? null : Helpers.format(ICON_URL, getId(), iconId);
+        return iconId == null ? null : getIconUrl(ImageFormat.PNG);
+    }
+
+    /**
+     * The URL of the group channel icon image.
+     * If no icon has been set, this returns {@code null}.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null String containing the group channel's icon URL.
+     *
+     * @see    DiscordAssets#channelIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    default String getIconUrl(@Nonnull ImageFormat format) {
+        ImageProxy icon = getIcon(format);
+        return icon == null ? null : icon.getUrl();
     }
 
     /**
@@ -68,6 +94,25 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this group channel's icon.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this group channel's icon
+     *
+     * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#channelIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    default ImageProxy getIcon(@Nonnull ImageFormat format) {
+        return DiscordAssets.channelIcon(format, getId(), getIconId());
     }
 
     /**

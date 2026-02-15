@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.WidgetUtil;
 
@@ -200,6 +202,24 @@ public interface Widget extends ISnowflake {
         String getAvatarUrl();
 
         /**
+         * Gets the avatar url of the member, or null if they do not have
+         * an avatar set.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return possibly-null String containing the avatar url of the
+         *         member
+         *
+         * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
+         */
+        @Nullable
+        String getAvatarUrl(@Nonnull ImageFormat format);
+
+        /**
          * Returns an {@link ImageProxy} for this user's avatar image.
          *
          * @return Possibly-null {@link ImageProxy} of this user's avatar image
@@ -208,6 +228,23 @@ public interface Widget extends ISnowflake {
          */
         @Nullable
         ImageProxy getAvatar();
+
+        /**
+         * Returns an {@link ImageProxy} for this user's avatar image.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this user's avatar image
+         *
+         * @see    #getAvatarUrl(ImageFormat)
+         * @see    DiscordAssets#userAvatar(ImageFormat, String, String)
+         */
+        @Nullable
+        ImageProxy getAvatar(@Nonnull ImageFormat format);
 
         /**
          * Gets the asset id of the member's default avatar
@@ -223,6 +260,8 @@ public interface Widget extends ISnowflake {
          *
          * @return never-null String containing the url of the member's
          *         default avatar
+         *
+         * @see    DiscordAssets#userDefaultAvatar(ImageFormat, String)
          */
         @Nonnull
         String getDefaultAvatarUrl();
@@ -233,6 +272,7 @@ public interface Widget extends ISnowflake {
          * @return Never-null {@link ImageProxy} of this user's default avatar image
          *
          * @see    #getDefaultAvatarUrl()
+         * @see    DiscordAssets#userDefaultAvatar(ImageFormat, String)
          */
         @Nonnull
         ImageProxy getDefaultAvatar();
@@ -248,6 +288,25 @@ public interface Widget extends ISnowflake {
         String getEffectiveAvatarUrl();
 
         /**
+         * The URL for the user's avatar image
+         * <br>If they do not have an avatar set, this will return the URL of their
+         * default avatar
+         *
+         * <p>The return image's format may be forced to {@link ImageFormat#PNG PNG}
+         * if the user does not have an avatar.
+         *
+         * @param  preferredFormat
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Never-null String containing the member's effective avatar url.
+         */
+        @Nonnull
+        String getEffectiveAvatarUrl(@Nonnull ImageFormat preferredFormat);
+
+        /**
          * Returns an {@link ImageProxy} for this user's effective avatar image.
          *
          * @return Never-null {@link ImageProxy} of this user's effective avatar image
@@ -256,6 +315,25 @@ public interface Widget extends ISnowflake {
          */
         @Nonnull
         ImageProxy getEffectiveAvatar();
+
+        /**
+         * Returns an {@link ImageProxy} for this user's effective avatar image.
+         *
+         * <p>The return image's format may be forced to {@link ImageFormat#PNG PNG}
+         * if the user does not have an avatar.
+         *
+         * @param  preferredFormat
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Never-null {@link ImageProxy} of this user's effective avatar image
+         *
+         * @see    #getEffectiveAvatarUrl(ImageFormat)
+         */
+        @Nonnull
+        ImageProxy getEffectiveAvatar(@Nonnull ImageFormat preferredFormat);
 
         /**
          * Gets the nickname of the member. If they do not have a nickname on

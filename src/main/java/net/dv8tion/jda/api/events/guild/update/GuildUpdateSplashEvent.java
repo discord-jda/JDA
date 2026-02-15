@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
@@ -55,7 +57,26 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      */
     @Nullable
     public String getOldSplashUrl() {
-        return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
+        return previous == null ? null : getOldSplashUrl(ImageFormat.PNG);
+    }
+
+    /**
+     * The url of the old splash
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The url of the old splash, or null
+     *
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
+     */
+    @Nullable
+    public String getOldSplashUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getOldSplash(format);
+        return proxy == null ? null : proxy.getUrl();
     }
 
     /**
@@ -65,12 +86,33 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's old splash image
      *
-     * @see    #getOldSplashUrl() ()
+     * @see    #getOldSplashUrl()
      */
     @Nullable
     public ImageProxy getOldSplash() {
         String oldSplashUrl = getOldSplashUrl();
         return oldSplashUrl == null ? null : new ImageProxy(oldSplashUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's old splash image.
+     * <p>
+     * <b>Note:</b> the old splash may not always be downloadable as it might have been removed from Discord.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's old splash image
+     *
+     * @see    #getOldSplashUrl(ImageFormat)
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
+     */
+    @Nullable
+    public ImageProxy getOldSplash(@Nonnull ImageFormat format) {
+        return DiscordAssets.guildSplash(format, guild.getId(), previous);
     }
 
     /**
@@ -90,7 +132,26 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      */
     @Nullable
     public String getNewSplashUrl() {
-        return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
+        return next == null ? null : getNewSplashUrl(ImageFormat.PNG);
+    }
+
+    /**
+     * The url of the new splash
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The url of the new splash, or null
+     *
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
+     */
+    @Nullable
+    public String getNewSplashUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getNewSplash(format);
+        return proxy == null ? null : proxy.getUrl();
     }
 
     /**
@@ -98,11 +159,30 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
      *
      * @return Possibly-null {@link ImageProxy} of this guild's new splash image
      *
-     * @see    #getNewSplashUrl()
+     * @see    #getNewSplashUrl(ImageFormat)
      */
     @Nullable
     public ImageProxy getNewSplash() {
         String newSplashUrl = getNewSplashUrl();
         return newSplashUrl == null ? null : new ImageProxy(newSplashUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this guild's new splash image.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this guild's new splash image
+     *
+     * @see    #getNewSplashUrl(ImageFormat)
+     * @see    DiscordAssets#guildSplash(ImageFormat, String, String)
+     */
+    @Nullable
+    public ImageProxy getNewSplash(@Nonnull ImageFormat format) {
+        return DiscordAssets.guildSplash(format, guild.getId(), next);
     }
 }

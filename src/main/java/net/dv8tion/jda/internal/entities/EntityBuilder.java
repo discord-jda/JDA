@@ -1043,7 +1043,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 .setInterestedUserCount(json.getInt("user_count", -1))
                 .setStartTime(json.getOffsetDateTime("scheduled_start_time"))
                 .setEndTime(json.getOffsetDateTime("scheduled_end_time", null))
-                .setImage(json.getString("image", null));
+                .setCoverImage(json.getString("image", null));
 
         long creatorId = json.getLong("creator_id", 0);
         scheduledEvent.setCreatorId(creatorId);

@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
@@ -40,7 +42,12 @@ import javax.annotation.Nonnull;
 public interface CustomEmoji extends Emoji, IMentionable {
     int EMOJI_NAME_MAX_LENGTH = 32;
 
-    /** Template for {@link #getImageUrl()} */
+    /**
+     * Template for {@link #getImageUrl()}
+     *
+     * @deprecated Replaced by {@link DiscordAssets#customEmoji(ImageFormat, String)}
+     */
+    @Deprecated
     String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
 
     @Nonnull
@@ -64,7 +71,26 @@ public interface CustomEmoji extends Emoji, IMentionable {
      */
     @Nonnull
     default String getImageUrl() {
-        return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
+        return getImageUrl(isAnimated() ? ImageFormat.ANIMATED_WEBP : ImageFormat.STATIC_WEBP);
+    }
+
+    /**
+     * A String representation of the URL which leads to image displayed within the official Discord&trade; client
+     * when this emoji is used
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Discord CDN link to the emoji's image
+     *
+     * @see    DiscordAssets#customEmoji(ImageFormat, String)
+     */
+    @Nonnull
+    default String getImageUrl(@Nonnull ImageFormat format) {
+        return getImage(format).getUrl();
     }
 
     /**
@@ -77,6 +103,25 @@ public interface CustomEmoji extends Emoji, IMentionable {
     @Nonnull
     default ImageProxy getImage() {
         return new ImageProxy(getImageUrl());
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this emoji's image.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Never-null {@link ImageProxy} of this emoji's image
+     *
+     * @see    #getImageUrl(ImageFormat)
+     * @see    DiscordAssets#customEmoji(ImageFormat, String)
+     */
+    @Nonnull
+    default ImageProxy getImage(@Nonnull ImageFormat format) {
+        return DiscordAssets.customEmoji(format, getId());
     }
 
     /**

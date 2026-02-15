@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.Nonnull;
@@ -122,7 +124,26 @@ public class MessageActivity {
          */
         @Nullable
         public String getIconUrl() {
-            return iconId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
+            return getIconUrl(ImageFormat.PNG);
+        }
+
+        /**
+         * The url of the icon image for this application.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return the url of the icon
+         *
+         * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
+         */
+        @Nullable
+        public String getIconUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getIcon(format);
+            return proxy == null ? null : proxy.getUrl();
         }
 
         /**
@@ -136,6 +157,25 @@ public class MessageActivity {
         public ImageProxy getIcon() {
             String iconUrl = getIconUrl();
             return iconUrl == null ? null : new ImageProxy(iconUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this application's icon.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this application's icon
+         *
+         * @see    #getIconUrl(ImageFormat)
+         * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
+         */
+        @Nullable
+        public ImageProxy getIcon(@Nonnull ImageFormat format) {
+            return DiscordAssets.applicationIcon(format, getId(), getIconId());
         }
 
         /**
@@ -155,9 +195,26 @@ public class MessageActivity {
          */
         @Nullable
         public String getCoverUrl() {
-            return coverId == null
-                    ? null
-                    : "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
+            return getCoverUrl(ImageFormat.PNG);
+        }
+
+        /**
+         * The url of the cover image for this application.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}v
+         *
+         * @return the url of the cover/splash
+         *
+         * @see    DiscordAssets#applicationCover(ImageFormat, String, String)
+         */
+        @Nullable
+        public String getCoverUrl(@Nonnull ImageFormat format) {
+            ImageProxy proxy = getCover(format);
+            return proxy == null ? null : proxy.getUrl();
         }
 
         /**
@@ -171,6 +228,25 @@ public class MessageActivity {
         public ImageProxy getCover() {
             String coverUrl = getCoverUrl();
             return coverUrl == null ? null : new ImageProxy(coverUrl);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this cover's icon.
+         *
+         * @param  format
+         *         The format in which the image should be
+         *
+         * @throws IllegalArgumentException
+         *         If the format is {@code null}
+         *
+         * @return Possibly-null {@link ImageProxy} of this cover's icon
+         *
+         * @see    #getCoverUrl(ImageFormat)
+         * @see    DiscordAssets#applicationCover(ImageFormat, String, String)
+         */
+        @Nullable
+        public ImageProxy getCover(@Nonnull ImageFormat format) {
+            return DiscordAssets.applicationCover(format, getId(), getCoverId());
         }
 
         @Override

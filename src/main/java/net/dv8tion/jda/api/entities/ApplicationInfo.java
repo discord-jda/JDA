@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
@@ -99,6 +101,26 @@ public interface ApplicationInfo extends ISnowflake {
     String getIconUrl();
 
     /**
+     * The icon-url of the bot's application.
+     * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The icon-url of the bot's application or null if no icon is defined
+     *
+     * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    default String getIconUrl(@Nonnull ImageFormat format) {
+        ImageProxy icon = getIcon(format);
+        return icon == null ? null : icon.getUrl();
+    }
+
+    /**
      * Returns an {@link ImageProxy} for this application info's icon.
      *
      * @return The {@link ImageProxy} of this application info's icon or null if no icon is defined
@@ -109,6 +131,25 @@ public interface ApplicationInfo extends ISnowflake {
     default ImageProxy getIcon() {
         String iconUrl = getIconUrl();
         return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this application info's icon.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return The {@link ImageProxy} of this application info's icon or null if no icon is defined
+     *
+     * @see    #getIconUrl(ImageFormat)
+     * @see    DiscordAssets#applicationIcon(ImageFormat, String, String)
+     */
+    @Nullable
+    default ImageProxy getIcon(@Nonnull ImageFormat format) {
+        return DiscordAssets.applicationIcon(format, getId(), getIconId());
     }
 
     /**
