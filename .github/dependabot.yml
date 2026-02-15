@@ -16,15 +16,3 @@ updates:
           github-actions:
               patterns:
                   - "*"
-    - package-ecosystem: "gradle"
-      directory: "/"
-      rebase-strategy: "disabled"
-      cooldown:
-          default-days: 7
-      schedule:
-          interval: "weekly"
-      groups:
-          dependencies:
-              applies-to: version-updates
-              patterns:
-                  - "*"
