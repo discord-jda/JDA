@@ -21,11 +21,15 @@ import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.InviteImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public class InviteCreateHandler extends SocketHandler {
@@ -102,6 +106,12 @@ public class InviteCreateHandler extends SocketHandler {
                 target = new InviteImpl.InviteTargetImpl(targetType, null, null);
         }
 
+        List<Invite.Role> roles = content.hasKey("roles")
+                ? content.getArray("roles").stream(DataArray::getObject)
+                        .map(InviteImpl.RoleImpl::new)
+                        .collect(Helpers.toUnmodifiableList())
+                : Collections.emptyList();
+
         Invite invite = new InviteImpl(
                 getJDA(),
                 code,
@@ -115,6 +125,7 @@ public class InviteCreateHandler extends SocketHandler {
                 0,
                 channel,
                 guild,
+                roles,
                 null,
                 target,
                 Invite.InviteType.GUILD);

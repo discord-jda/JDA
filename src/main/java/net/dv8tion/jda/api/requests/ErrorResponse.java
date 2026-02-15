@@ -79,6 +79,8 @@ public enum ErrorResponse {
     UNKNOWN_SCHEDULED_EVENT(10070, "Unknown Scheduled Event"),
     UNKNOWN_SCHEDULED_EVENT_USER(10071, "Unknown Scheduled Event User"),
     UNKNOWN_TAG(10087, "Unknown Tag"),
+    UNKNOWN_INVITE_TARGET_USERS_JOB(10124, "Unknown Invite Target Users Job (invite exists but has no target users)"),
+    UNKNOWN_INVITE_TARGET_USERS(10129, "Unknown Invite Target Users (invite exists but has no target users)"),
     BOTS_NOT_ALLOWED(20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(20002, "Only bots can use this endpoint"),
     EXPLICIT_CONTENT_CANNOT_SEND_TO_RECIPIENT(20009, "Explicit content cannot be sent to the desired recipient(s)"),
@@ -146,6 +148,7 @@ public enum ErrorResponse {
     FORUM_POST_TAG_REQUIRED(40067, "A tag is required to create a forum post in this channel"),
     DUPLICATE_RESOURCE_ENTITLEMENT(40074, "An entitlement has already been granted for this resource"),
     MAX_FOLLOW_UP_MESSAGES_HIT(40094, "This interaction has hit the maximum number of follow up messages"),
+    INVITE_TARGET_USERS_FILE_NOT_PROCESSED(40115, "Target users file has not been processed"),
     CLOUDFLARE_BLOCKED_REQUEST(
             40333, "Cloudflare is blocking your request. This can often be resolved by setting a proper User Agent"),
     MISSING_ACCESS(50001, "Missing Access"),
