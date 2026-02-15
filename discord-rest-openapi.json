@@ -6518,6 +6518,26 @@
               }
             }
           },
+          "204": {
+            "description": "204 response for bulk_ban_users_from_guild",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              },
+              "X-RateLimit-Reset-After": {
+                "$ref": "#/components/headers/X-RateLimit-Reset-After"
+              },
+              "X-RateLimit-Bucket": {
+                "$ref": "#/components/headers/X-RateLimit-Bucket"
+              }
+            }
+          },
           "429": {
             "$ref": "#/components/responses/ClientRatelimitedResponse"
           },
@@ -7374,6 +7394,27 @@
                       "null"
                     ],
                     "maxLength": 32
+                  },
+                  "avatar": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "contentEncoding": "base64"
+                  },
+                  "bio": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 190
+                  },
+                  "banner": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "contentEncoding": "base64"
                   }
                 }
               }
@@ -10854,6 +10895,9 @@
                     "$ref": "#/components/schemas/PongInteractionCallbackRequest"
                   },
                   {
+                    "$ref": "#/components/schemas/SocialLayerSKUPurchaseEligibilityInteractionCallbackRequest"
+                  },
+                  {
                     "$ref": "#/components/schemas/UpdateMessageInteractionCallbackRequest"
                   }
                 ],
@@ -10879,6 +10923,9 @@
                     "$ref": "#/components/schemas/PongInteractionCallbackRequest"
                   },
                   {
+                    "$ref": "#/components/schemas/SocialLayerSKUPurchaseEligibilityInteractionCallbackRequest"
+                  },
+                  {
                     "$ref": "#/components/schemas/UpdateMessageInteractionCallbackRequest"
                   }
                 ],
@@ -10902,6 +10949,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/PongInteractionCallbackRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/SocialLayerSKUPurchaseEligibilityInteractionCallbackRequest"
                   },
                   {
                     "$ref": "#/components/schemas/UpdateMessageInteractionCallbackRequest"
@@ -11094,6 +11144,178 @@
                       "$ref": "#/components/schemas/GuildInviteResponse"
                     }
                   ]
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ClientRatelimitedResponse"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/ClientErrorResponse"
+          }
+        },
+        "security": [
+          {
+            "BotToken": []
+          }
+        ]
+      }
+    },
+    "/invites/{code}/target-users": {
+      "parameters": [
+        {
+          "name": "code",
+          "in": "path",
+          "schema": {
+            "type": "string",
+            "maxLength": 152133
+          },
+          "required": true
+        }
+      ],
+      "get": {
+        "description": "Get the target users for an invite.",
+        "operationId": "get_invite_target_users",
+        "responses": {
+          "200": {
+            "description": "200 response for get_invite_target_users",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              },
+              "X-RateLimit-Reset-After": {
+                "$ref": "#/components/headers/X-RateLimit-Reset-After"
+              },
+              "X-RateLimit-Bucket": {
+                "$ref": "#/components/headers/X-RateLimit-Bucket"
+              }
+            },
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "description": "CSV file containing target users for the invite.",
+                  "contentEncoding": "binary"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ClientRatelimitedResponse"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/ClientErrorResponse"
+          }
+        },
+        "security": [
+          {
+            "BotToken": []
+          }
+        ]
+      },
+      "put": {
+        "description": "Update the target users for an existing invite.",
+        "operationId": "update_invite_target_users",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target_users_file": {
+                    "type": "string",
+                    "contentEncoding": "binary"
+                  }
+                },
+                "required": [
+                  "target_users_file"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "204 response for update_invite_target_users",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              },
+              "X-RateLimit-Reset-After": {
+                "$ref": "#/components/headers/X-RateLimit-Reset-After"
+              },
+              "X-RateLimit-Bucket": {
+                "$ref": "#/components/headers/X-RateLimit-Bucket"
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ClientRatelimitedResponse"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/ClientErrorResponse"
+          }
+        },
+        "security": [
+          {
+            "BotToken": []
+          }
+        ]
+      }
+    },
+    "/invites/{code}/target-users/job-status": {
+      "parameters": [
+        {
+          "name": "code",
+          "in": "path",
+          "schema": {
+            "type": "string",
+            "maxLength": 152133
+          },
+          "required": true
+        }
+      ],
+      "get": {
+        "description": "Get the target users job status for an invite.",
+        "operationId": "get_invite_target_users_job_status",
+        "responses": {
+          "200": {
+            "description": "200 response for get_invite_target_users_job_status",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "$ref": "#/components/headers/X-RateLimit-Limit"
+              },
+              "X-RateLimit-Remaining": {
+                "$ref": "#/components/headers/X-RateLimit-Remaining"
+              },
+              "X-RateLimit-Reset": {
+                "$ref": "#/components/headers/X-RateLimit-Reset"
+              },
+              "X-RateLimit-Reset-After": {
+                "$ref": "#/components/headers/X-RateLimit-Reset-After"
+              },
+              "X-RateLimit-Bucket": {
+                "$ref": "#/components/headers/X-RateLimit-Bucket"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TargetUsersJobStatusResponse"
                 }
               }
             }
@@ -15088,7 +15310,8 @@
           }
         },
         "required": [
-          "id"
+          "id",
+          "name"
         ]
       },
       "ActionRowComponentForMessageRequest": {
@@ -16864,6 +17087,7 @@
           "id",
           "application_id",
           "version",
+          "default_member_permissions",
           "type",
           "name",
           "description"
@@ -18038,6 +18262,9 @@
           }
         },
         "required": [
+          "application_id",
+          "avatar",
+          "channel_id",
           "id",
           "name",
           "type"
@@ -18080,8 +18307,7 @@
           "oauth2_install_params": {
             "$ref": "#/components/schemas/ApplicationOAuth2InstallParamsResponse"
           }
-        },
-        "required": []
+        }
       },
       "ApplicationOAuth2InstallParams": {
         "type": "object",
@@ -18248,7 +18474,9 @@
         "required": [
           "id",
           "name",
+          "icon",
           "description",
+          "type",
           "verify_key",
           "flags"
         ]
@@ -18384,8 +18612,7 @@
               "type": "string"
             }
           }
-        },
-        "required": []
+        }
       },
       "AttachmentResponse": {
         "type": "object",
@@ -18805,7 +19032,9 @@
         },
         "required": [
           "id",
-          "action_type"
+          "action_type",
+          "user_id",
+          "target_id"
         ]
       },
       "AuditLogObjectChangeResponse": {
@@ -18820,7 +19049,9 @@
           "new_value": {},
           "old_value": {}
         },
-        "required": []
+        "required": [
+          "key"
+        ]
       },
       "AutomodActionType": {
         "type": "integer",
@@ -19219,16 +19450,6 @@
                 "$ref": "#/components/schemas/CustomClientThemeShareRequest"
               }
             ]
-          },
-          "confetti_potion": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ConfettiPotionCreateRequest"
-              }
-            ]
           }
         }
       },
@@ -19273,7 +19494,9 @@
         "required": [
           "id",
           "name",
-          "description"
+          "icon",
+          "description",
+          "type"
         ]
       },
       "BasicGuildMemberResponse": {
@@ -19351,9 +19574,14 @@
           }
         },
         "required": [
+          "avatar",
+          "banner",
+          "communication_disabled_until",
           "flags",
           "joined_at",
+          "nick",
           "pending",
+          "premium_since",
           "roles"
         ]
       },
@@ -19580,6 +19808,7 @@
           "attachments",
           "embeds",
           "timestamp",
+          "edited_timestamp",
           "flags",
           "components",
           "id",
@@ -19628,7 +19857,7 @@
               "string",
               "null"
             ],
-            "maxLength": 150
+            "maxLength": 300
           }
         }
       },
@@ -19638,8 +19867,7 @@
           "custom_message": {
             "type": "string"
           }
-        },
-        "required": []
+        }
       },
       "BlockMessageActionResponse": {
         "type": "object",
@@ -20072,6 +20300,9 @@
           }
         },
         "required": [
+          "application_id",
+          "avatar",
+          "channel_id",
           "id",
           "name",
           "type"
@@ -20384,7 +20615,9 @@
         "required": [
           "type",
           "id",
-          "custom_id"
+          "custom_id",
+          "min_values",
+          "max_values"
         ]
       },
       "ChannelSelectDefaultValue": {
@@ -20499,6 +20732,143 @@
         ],
         "format": "int32"
       },
+      "CheckboxComponentForModalRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "integer",
+            "enum": [
+              23
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageComponentTypes"
+              }
+            ],
+            "format": "int32"
+          },
+          "id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "format": "int32"
+          },
+          "custom_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "default": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "custom_id"
+        ]
+      },
+      "CheckboxGroupComponentForModalRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "integer",
+            "enum": [
+              22
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageComponentTypes"
+              }
+            ],
+            "format": "int32"
+          },
+          "id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "format": "int32"
+          },
+          "custom_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "min_values": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 10
+          },
+          "max_values": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 10
+          },
+          "required": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CheckboxGroupOptionForRequest"
+            },
+            "minItems": 1,
+            "maxItems": 10
+          }
+        },
+        "required": [
+          "type",
+          "custom_id",
+          "options"
+        ]
+      },
+      "CheckboxGroupOptionForRequest": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "default": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ]
+      },
       "CommandPermissionResponse": {
         "type": "object",
         "properties": {
@@ -20583,10 +20953,6 @@
           "name"
         ]
       },
-      "ConfettiPotionCreateRequest": {
-        "type": "object",
-        "properties": {}
-      },
       "ConnectedAccountGuildResponse": {
         "type": "object",
         "properties": {
@@ -20605,7 +20971,8 @@
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "icon"
         ]
       },
       "ConnectedAccountIntegrationResponse": {
@@ -20774,6 +21141,7 @@
         },
         "required": [
           "id",
+          "name",
           "type",
           "friend_sync",
           "show_activity",
@@ -20924,6 +21292,7 @@
         "required": [
           "type",
           "id",
+          "accent_color",
           "components",
           "spoiler"
         ]
@@ -21428,6 +21797,16 @@
             ],
             "minimum": 0,
             "maximum": 16777215
+          },
+          "colors": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RoleColors"
+              }
+            ]
           },
           "hoist": {
             "type": [
@@ -22057,8 +22436,7 @@
               "null"
             ]
           }
-        },
-        "required": []
+        }
       },
       "DiscordIntegrationResponse": {
         "type": "object",
@@ -22115,6 +22493,7 @@
         },
         "required": [
           "type",
+          "name",
           "account",
           "enabled",
           "id",
@@ -22483,6 +22862,7 @@
         },
         "required": [
           "type",
+          "name",
           "account",
           "enabled",
           "id",
@@ -22745,9 +23125,15 @@
           "id",
           "guild_id",
           "name",
+          "description",
+          "channel_id",
+          "creator_id",
+          "image",
           "scheduled_start_time",
+          "scheduled_end_time",
           "status",
           "entity_type",
+          "entity_id",
           "privacy_level",
           "entity_metadata"
         ]
@@ -22833,6 +23219,8 @@
           "type",
           "id",
           "file",
+          "name",
+          "size",
           "spoiler"
         ]
       },
@@ -23015,7 +23403,9 @@
         "required": [
           "id",
           "name",
-          "moderated"
+          "moderated",
+          "emoji_id",
+          "emoji_name"
         ]
       },
       "FriendInviteResponse": {
@@ -23086,7 +23476,9 @@
         },
         "required": [
           "type",
-          "code"
+          "code",
+          "expires_at",
+          "channel"
         ]
       },
       "GatewayBotResponse": {
@@ -23792,6 +24184,7 @@
         "required": [
           "type",
           "code",
+          "expires_at",
           "channel"
         ]
       },
@@ -23921,7 +24314,8 @@
           }
         },
         "required": [
-          "user"
+          "user",
+          "reason"
         ]
       },
       "GuildChannelLocation": {
@@ -24408,6 +24802,9 @@
           }
         },
         "required": [
+          "application_id",
+          "avatar",
+          "channel_id",
           "id",
           "name",
           "type"
@@ -24504,11 +24901,21 @@
           },
           "is_nickname_changeable": {
             "type": "boolean"
+          },
+          "roles": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/InviteGuildRoleResponse"
+            }
           }
         },
         "required": [
           "type",
           "code",
+          "expires_at",
           "guild",
           "guild_id",
           "channel"
@@ -24614,9 +25021,14 @@
           }
         },
         "required": [
+          "avatar",
+          "banner",
+          "communication_disabled_until",
           "flags",
           "joined_at",
+          "nick",
           "pending",
+          "premium_since",
           "roles",
           "user",
           "mute",
@@ -24947,6 +25359,11 @@
         "required": [
           "id",
           "name",
+          "icon",
+          "description",
+          "home_header",
+          "splash",
+          "discovery_splash",
           "features",
           "approximate_member_count",
           "approximate_presence_count",
@@ -24979,7 +25396,10 @@
             ],
             "format": "int32"
           }
-        }
+        },
+        "required": [
+          "pruned"
+        ]
       },
       "GuildResponse": {
         "type": "object",
@@ -25175,6 +25595,13 @@
           "premium_progress_bar_enabled": {
             "type": "boolean"
           },
+          "premium_progress_bar_enabled_user_updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
           "nsfw": {
             "type": "boolean"
           },
@@ -25197,23 +25624,38 @@
         "required": [
           "id",
           "name",
+          "icon",
+          "description",
+          "home_header",
+          "splash",
+          "discovery_splash",
           "features",
+          "banner",
           "owner_id",
+          "application_id",
           "region",
+          "afk_channel_id",
           "afk_timeout",
+          "system_channel_id",
           "system_channel_flags",
           "widget_enabled",
+          "widget_channel_id",
           "verification_level",
           "roles",
           "default_message_notifications",
           "mfa_level",
           "explicit_content_filter",
+          "max_presences",
           "max_members",
           "max_stage_video_channel_users",
           "max_video_channel_users",
+          "vanity_url_code",
           "premium_tier",
           "premium_subscription_count",
           "preferred_locale",
+          "rules_channel_id",
+          "safety_alerts_channel_id",
+          "public_updates_channel_id",
           "premium_progress_bar_enabled",
           "nsfw",
           "nsfw_level",
@@ -25244,7 +25686,9 @@
           }
         },
         "required": [
-          "primary_color"
+          "primary_color",
+          "secondary_color",
+          "tertiary_color"
         ]
       },
       "GuildRoleResponse": {
@@ -25308,6 +25752,7 @@
         "required": [
           "id",
           "name",
+          "description",
           "permissions",
           "position",
           "color",
@@ -25315,6 +25760,8 @@
           "hoist",
           "managed",
           "mentionable",
+          "icon",
+          "unicode_emoji",
           "flags"
         ]
       },
@@ -25339,8 +25786,7 @@
           "guild_connections": {
             "type": "null"
           }
-        },
-        "required": []
+        }
       },
       "GuildScheduledEventEntityTypes": {
         "type": "integer",
@@ -25452,6 +25898,8 @@
           "name",
           "tags",
           "type",
+          "format_type",
+          "description",
           "available",
           "guild_id"
         ]
@@ -25488,6 +25936,7 @@
         },
         "required": [
           "type",
+          "name",
           "account",
           "enabled",
           "id"
@@ -25663,13 +26112,27 @@
           }
         },
         "required": [
+          "id",
           "type",
+          "name",
+          "position",
+          "topic",
           "bitrate",
           "user_limit",
           "nsfw",
           "rate_limit_per_user",
+          "parent_id",
+          "default_auto_archive_duration",
           "permission_overwrites",
-          "template"
+          "available_tags",
+          "template",
+          "default_reaction_emoji",
+          "default_thread_rate_limit_per_user",
+          "default_sort_order",
+          "default_forum_layout",
+          "default_tag_setting",
+          "icon_emoji",
+          "theme_color"
         ]
       },
       "GuildTemplateChannelTags": {
@@ -25709,7 +26172,11 @@
           }
         },
         "required": [
-          "name"
+          "id",
+          "name",
+          "emoji_id",
+          "emoji_name",
+          "moderated"
         ]
       },
       "GuildTemplateResponse": {
@@ -25768,12 +26235,15 @@
         "required": [
           "code",
           "name",
+          "description",
           "usage_count",
           "creator_id",
+          "creator",
           "created_at",
           "updated_at",
           "source_guild_id",
-          "serialized_source_guild"
+          "serialized_source_guild",
+          "is_dirty"
         ]
       },
       "GuildTemplateRoleColorsResponse": {
@@ -25799,7 +26269,9 @@
           }
         },
         "required": [
-          "primary_color"
+          "primary_color",
+          "secondary_color",
+          "tertiary_color"
         ]
       },
       "GuildTemplateRoleResponse": {
@@ -25853,8 +26325,11 @@
           "name",
           "permissions",
           "color",
+          "colors",
           "hoist",
-          "mentionable"
+          "mentionable",
+          "icon",
+          "unicode_emoji"
         ]
       },
       "GuildTemplateSnapshotResponse": {
@@ -25929,11 +26404,15 @@
         },
         "required": [
           "name",
+          "description",
+          "region",
           "verification_level",
           "default_message_notifications",
           "explicit_content_filter",
           "preferred_locale",
+          "afk_channel_id",
           "afk_timeout",
+          "system_channel_id",
           "system_channel_flags",
           "roles",
           "channels"
@@ -26001,7 +26480,9 @@
         },
         "required": [
           "channel_id",
-          "description"
+          "description",
+          "emoji_id",
+          "emoji_name"
         ]
       },
       "GuildWelcomeScreenResponse": {
@@ -26021,6 +26502,7 @@
           }
         },
         "required": [
+          "description",
           "welcome_channels"
         ]
       },
@@ -26218,6 +26700,13 @@
           "premium_progress_bar_enabled": {
             "type": "boolean"
           },
+          "premium_progress_bar_enabled_user_updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
           "nsfw": {
             "type": "boolean"
           },
@@ -26254,23 +26743,38 @@
         "required": [
           "id",
           "name",
+          "icon",
+          "description",
+          "home_header",
+          "splash",
+          "discovery_splash",
           "features",
+          "banner",
           "owner_id",
+          "application_id",
           "region",
+          "afk_channel_id",
           "afk_timeout",
+          "system_channel_id",
           "system_channel_flags",
           "widget_enabled",
+          "widget_channel_id",
           "verification_level",
           "roles",
           "default_message_notifications",
           "mfa_level",
           "explicit_content_filter",
+          "max_presences",
           "max_members",
           "max_stage_video_channel_users",
           "max_video_channel_users",
+          "vanity_url_code",
           "premium_tier",
           "premium_subscription_count",
           "preferred_locale",
+          "rules_channel_id",
+          "safety_alerts_channel_id",
+          "public_updates_channel_id",
           "premium_progress_bar_enabled",
           "nsfw",
           "nsfw_level",
@@ -26725,7 +27229,9 @@
         "required": [
           "id",
           "name",
-          "description"
+          "icon",
+          "description",
+          "type"
         ]
       },
       "IntegrationExpireBehaviorTypes": {
@@ -26920,6 +27426,10 @@
           {
             "title": "LAUNCH_ACTIVITY",
             "const": 12
+          },
+          {
+            "title": "SOCIAL_LAYER_SKU_PURCHASE_ELIGIBILITY",
+            "const": 13
           }
         ],
         "format": "int32"
@@ -27002,6 +27512,11 @@
             "title": "MODAL_SUBMIT",
             "description": "Sent when a user submits a modal previously sent by your application",
             "const": 5
+          },
+          {
+            "title": "SOCIAL_LAYER_SKU_PURCHASE_ELIGIBILITY",
+            "description": "Sent when Discord is checking if a user can purchase a Social Layer SKU",
+            "const": 6
           }
         ],
         "format": "int32"
@@ -27110,7 +27625,9 @@
         "required": [
           "id",
           "name",
+          "icon",
           "description",
+          "type",
           "verify_key",
           "flags"
         ]
@@ -27153,7 +27670,8 @@
         },
         "required": [
           "id",
-          "type"
+          "type",
+          "name"
         ]
       },
       "InviteGuildResponse": {
@@ -27236,8 +27754,62 @@
         "required": [
           "id",
           "name",
+          "splash",
+          "banner",
+          "description",
+          "icon",
           "features",
+          "verification_level",
+          "vanity_url_code",
+          "nsfw_level",
+          "nsfw",
           "premium_subscription_count"
+        ]
+      },
+      "InviteGuildRoleResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SnowflakeType"
+          },
+          "name": {
+            "type": "string"
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "color": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "colors": {
+            "$ref": "#/components/schemas/GuildRoleColorsResponse"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "unicode_emoji": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "permissions": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "position",
+          "color",
+          "colors",
+          "icon",
+          "unicode_emoji"
         ]
       },
       "InviteTargetTypes": {
@@ -27648,10 +28220,19 @@
                 "$ref": "#/components/schemas/ChannelSelectComponentForModalRequest"
               },
               {
+                "$ref": "#/components/schemas/CheckboxComponentForModalRequest"
+              },
+              {
+                "$ref": "#/components/schemas/CheckboxGroupComponentForModalRequest"
+              },
+              {
                 "$ref": "#/components/schemas/FileUploadComponentForModalRequest"
               },
               {
                 "$ref": "#/components/schemas/MentionableSelectComponentForModalRequest"
+              },
+              {
+                "$ref": "#/components/schemas/RadioGroupComponentForModalRequest"
               },
               {
                 "$ref": "#/components/schemas/RoleSelectComponentForModalRequest"
@@ -27810,6 +28391,7 @@
         },
         "required": [
           "id",
+          "metadata",
           "flags"
         ]
       },
@@ -27898,6 +28480,7 @@
         "required": [
           "id",
           "application_id",
+          "metadata",
           "members",
           "flags"
         ]
@@ -28283,6 +28866,7 @@
         },
         "required": [
           "media",
+          "description",
           "spoiler"
         ]
       },
@@ -28813,7 +29397,9 @@
         "required": [
           "type",
           "id",
-          "custom_id"
+          "custom_id",
+          "min_values",
+          "max_values"
         ]
       },
       "MessageActivityResponse": {
@@ -29178,6 +29764,21 @@
             "title": "FILE_UPLOAD",
             "description": "File upload component",
             "const": 19
+          },
+          {
+            "title": "RADIO_GROUP",
+            "description": "Radio group component",
+            "const": 21
+          },
+          {
+            "title": "CHECKBOX_GROUP",
+            "description": "Checkbox group component",
+            "const": 22
+          },
+          {
+            "title": "CHECKBOX",
+            "description": "Checkbox component",
+            "const": 23
           }
         ],
         "format": "int32"
@@ -29287,16 +29888,6 @@
               },
               {
                 "$ref": "#/components/schemas/CustomClientThemeShareRequest"
-              }
-            ]
-          },
-          "confetti_potion": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ConfettiPotionCreateRequest"
               }
             ]
           },
@@ -29521,8 +30112,7 @@
           "flags": {
             "$ref": "#/components/schemas/UInt32Type"
           }
-        },
-        "required": []
+        }
       },
       "MessageEmbedProviderResponse": {
         "type": "object",
@@ -29623,8 +30213,7 @@
           "flags": {
             "$ref": "#/components/schemas/UInt32Type"
           }
-        },
-        "required": []
+        }
       },
       "MessageInteractionResponse": {
         "type": "object",
@@ -29714,7 +30303,10 @@
             "type": "boolean"
           }
         },
-        "required": []
+        "required": [
+          "id",
+          "name"
+        ]
       },
       "MessageReactionResponse": {
         "type": "object",
@@ -30069,6 +30661,7 @@
           "attachments",
           "embeds",
           "timestamp",
+          "edited_timestamp",
           "flags",
           "components",
           "id",
@@ -30506,6 +31099,7 @@
           "attachments",
           "embeds",
           "timestamp",
+          "edited_timestamp",
           "flags",
           "components"
         ]
@@ -30672,6 +31266,8 @@
         "required": [
           "id",
           "name",
+          "icon",
+          "banner",
           "owner",
           "permissions",
           "features"
@@ -31207,6 +31803,7 @@
         "required": [
           "id",
           "type",
+          "name",
           "account",
           "application_id"
         ]
@@ -31242,6 +31839,7 @@
         "required": [
           "id",
           "type",
+          "name",
           "account"
         ]
       },
@@ -31275,6 +31873,7 @@
         "required": [
           "id",
           "type",
+          "name",
           "account"
         ]
       },
@@ -31514,8 +32113,7 @@
           "emoji": {
             "$ref": "#/components/schemas/MessageReactionEmojiResponse"
           }
-        },
-        "required": []
+        }
       },
       "PollResponse": {
         "type": "object",
@@ -31822,14 +32420,20 @@
         "required": [
           "id",
           "name",
+          "icon",
           "description",
+          "type",
           "verify_key",
           "flags",
           "redirect_uris",
+          "interactions_endpoint_url",
+          "role_connections_verification_url",
           "owner",
+          "approximate_guild_count",
           "approximate_user_install_count",
           "approximate_user_authorization_count",
-          "explicit_content_filter"
+          "explicit_content_filter",
+          "team"
         ]
       },
       "PrivateChannelLocation": {
@@ -31984,6 +32588,8 @@
           "type",
           "flags",
           "recipients",
+          "name",
+          "icon",
           "owner_id"
         ]
       },
@@ -32074,9 +32680,14 @@
           }
         },
         "required": [
+          "avatar",
+          "banner",
+          "communication_disabled_until",
           "flags",
           "joined_at",
+          "nick",
           "pending",
+          "premium_since",
           "roles",
           "user",
           "mute",
@@ -32256,6 +32867,87 @@
           "metadata"
         ]
       },
+      "RadioGroupComponentForModalRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "integer",
+            "enum": [
+              21
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MessageComponentTypes"
+              }
+            ],
+            "format": "int32"
+          },
+          "id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "format": "int32"
+          },
+          "custom_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "required": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RadioGroupOptionForRequest"
+            },
+            "minItems": 2,
+            "maxItems": 10
+          }
+        },
+        "required": [
+          "type",
+          "custom_id",
+          "options"
+        ]
+      },
+      "RadioGroupOptionForRequest": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "default": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ]
+      },
       "ReactionTypes": {
         "type": "integer",
         "oneOf": [
@@ -32324,8 +33016,7 @@
               "$ref": "#/components/schemas/GuildRoleResponse"
             }
           }
-        },
-        "required": []
+        }
       },
       "ResourceChannelResponse": {
         "type": "object",
@@ -32721,6 +33412,35 @@
           }
         }
       },
+      "RoleColors": {
+        "type": "object",
+        "properties": {
+          "primary_color": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 16777215
+          },
+          "secondary_color": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 16777215
+          },
+          "tertiary_color": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 16777215
+          }
+        }
+      },
       "RoleSelectComponentForMessageRequest": {
         "type": "object",
         "properties": {
@@ -32931,7 +33651,9 @@
         "required": [
           "type",
           "id",
-          "custom_id"
+          "custom_id",
+          "min_values",
+          "max_values"
         ]
       },
       "RoleSelectDefaultValue": {
@@ -33088,16 +33810,6 @@
               }
             ]
           },
-          "confetti_potion": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ConfettiPotionCreateRequest"
-              }
-            ]
-          },
           "message_reference": {
             "oneOf": [
               {
@@ -33236,9 +33948,15 @@
           "id",
           "guild_id",
           "name",
+          "description",
+          "channel_id",
+          "creator_id",
+          "image",
           "scheduled_start_time",
+          "scheduled_end_time",
           "status",
           "entity_type",
+          "entity_id",
           "privacy_level"
         ]
       },
@@ -33455,6 +34173,8 @@
           }
         },
         "required": [
+          "id",
+          "name",
           "animated"
         ]
       },
@@ -33516,6 +34236,41 @@
         "type": "string",
         "pattern": "^(0|[1-9][0-9]*)$",
         "format": "snowflake"
+      },
+      "SocialLayerSKUPurchaseEligibilityCallbackData": {
+        "type": "object",
+        "properties": {
+          "eligible": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "eligible"
+        ]
+      },
+      "SocialLayerSKUPurchaseEligibilityInteractionCallbackRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "integer",
+            "enum": [
+              13
+            ],
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InteractionCallbackTypes"
+              }
+            ],
+            "format": "int32"
+          },
+          "data": {
+            "$ref": "#/components/schemas/SocialLayerSKUPurchaseEligibilityCallbackData"
+          }
+        },
+        "required": [
+          "type",
+          "data"
+        ]
       },
       "SortingOrder": {
         "type": "string",
@@ -33655,6 +34410,8 @@
           "name",
           "sound_id",
           "volume",
+          "emoji_id",
+          "emoji_name",
           "available"
         ]
       },
@@ -33805,7 +34562,8 @@
           "topic",
           "privacy_level",
           "id",
-          "discoverable_disabled"
+          "discoverable_disabled",
+          "guild_scheduled_event_id"
         ]
       },
       "StageInstancesPrivacyLevels": {
@@ -34100,10 +34858,17 @@
           "id",
           "guild_id",
           "name",
+          "description",
+          "channel_id",
+          "creator_id",
+          "image",
           "scheduled_start_time",
+          "scheduled_end_time",
           "status",
           "entity_type",
-          "privacy_level"
+          "entity_id",
+          "privacy_level",
+          "entity_metadata"
         ]
       },
       "StandardStickerResponse": {
@@ -34159,6 +34924,8 @@
           "name",
           "tags",
           "type",
+          "format_type",
+          "description",
           "pack_id",
           "sort_value"
         ]
@@ -34234,6 +35001,7 @@
           "id",
           "sku_id",
           "name",
+          "description",
           "stickers"
         ]
       },
@@ -34462,6 +35230,8 @@
           "type",
           "id",
           "custom_id",
+          "min_values",
+          "max_values",
           "options"
         ]
       },
@@ -34531,6 +35301,80 @@
           "value"
         ]
       },
+      "TargetUsersJobStatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/TargetUsersJobStatusTypes",
+            "description": "The status of the job processing the target users."
+          },
+          "total_users": {
+            "$ref": "#/components/schemas/UInt32Type",
+            "description": "The total number of users in the provided list."
+          },
+          "processed_users": {
+            "$ref": "#/components/schemas/UInt32Type",
+            "description": "The number of users processed so far."
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The timestamp when the job was created.",
+            "format": "date-time"
+          },
+          "completed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The timestamp when the job was successfully completed.",
+            "format": "date-time"
+          },
+          "error_message": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The error message if the job failed."
+          }
+        },
+        "required": [
+          "status",
+          "total_users",
+          "processed_users",
+          "created_at",
+          "completed_at",
+          "error_message"
+        ]
+      },
+      "TargetUsersJobStatusTypes": {
+        "type": "integer",
+        "oneOf": [
+          {
+            "title": "UNSPECIFIED",
+            "description": "The default value.",
+            "const": 0
+          },
+          {
+            "title": "PROCESSING",
+            "description": "The job is still being processed.",
+            "const": 1
+          },
+          {
+            "title": "COMPLETED",
+            "description": "The job has been completed successfully.",
+            "const": 2
+          },
+          {
+            "title": "FAILED",
+            "description": "The job has failed, see error_message field for more details.",
+            "const": 3
+          }
+        ],
+        "format": "int32"
+      },
       "TeamMemberResponse": {
         "type": "object",
         "properties": {
@@ -34593,6 +35437,7 @@
         },
         "required": [
           "id",
+          "icon",
           "name",
           "owner_user_id",
           "members"
@@ -34836,7 +35681,10 @@
           "type",
           "id",
           "custom_id",
-          "style"
+          "style",
+          "label",
+          "min_length",
+          "max_length"
         ]
       },
       "TextInputStyleTypes": {
@@ -34938,6 +35786,7 @@
         },
         "required": [
           "archived",
+          "archive_timestamp",
           "auto_archive_duration",
           "locked"
         ]
@@ -35268,6 +36117,7 @@
           "type",
           "id",
           "media",
+          "description",
           "spoiler"
         ]
       },
@@ -35827,6 +36677,16 @@
             "minimum": 0,
             "maximum": 16777215
           },
+          "colors": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RoleColors"
+              }
+            ]
+          },
           "hoist": {
             "type": [
               "boolean",
@@ -36065,7 +36925,8 @@
           }
         },
         "required": [
-          "asset"
+          "asset",
+          "sku_id"
         ]
       },
       "UserCollectiblesResponse": {
@@ -36081,7 +36942,10 @@
               }
             ]
           }
-        }
+        },
+        "required": [
+          "nameplate"
+        ]
       },
       "UserCommunicationDisabledAction": {
         "type": "object",
@@ -36210,6 +37074,7 @@
           }
         },
         "required": [
+          "sku_id",
           "asset",
           "label",
           "palette"
@@ -36333,9 +37198,11 @@
         "required": [
           "id",
           "username",
+          "avatar",
           "discriminator",
           "public_flags",
           "flags",
+          "global_name",
           "mfa_enabled",
           "locale"
         ]
@@ -36371,7 +37238,13 @@
               "null"
             ]
           }
-        }
+        },
+        "required": [
+          "identity_guild_id",
+          "identity_enabled",
+          "tag",
+          "badge"
+        ]
       },
       "UserResponse": {
         "type": "object",
@@ -36457,9 +37330,12 @@
         "required": [
           "id",
           "username",
+          "avatar",
           "discriminator",
           "public_flags",
-          "flags"
+          "flags",
+          "global_name",
+          "primary_guild"
         ]
       },
       "UserSelectComponentForMessageRequest": {
@@ -36672,7 +37548,9 @@
         "required": [
           "type",
           "id",
-          "custom_id"
+          "custom_id",
+          "min_values",
+          "max_values"
         ]
       },
       "UserSelectDefaultValue": {
@@ -36762,6 +37640,7 @@
           }
         },
         "required": [
+          "code",
           "uses"
         ]
       },
@@ -37115,10 +37994,17 @@
           "id",
           "guild_id",
           "name",
+          "description",
+          "channel_id",
+          "creator_id",
+          "image",
           "scheduled_start_time",
+          "scheduled_end_time",
           "status",
           "entity_type",
-          "privacy_level"
+          "entity_id",
+          "privacy_level",
+          "entity_metadata"
         ]
       },
       "VoiceStateResponse": {
@@ -37186,9 +38072,13 @@
           }
         },
         "required": [
+          "channel_id",
           "deaf",
+          "guild_id",
           "mute",
+          "request_to_speak_timestamp",
           "suppress",
+          "self_stream",
           "self_deaf",
           "self_mute",
           "self_video",
@@ -37366,6 +38256,7 @@
         },
         "required": [
           "id",
+          "icon",
           "name"
         ]
       },
@@ -37545,6 +38436,7 @@
           "id",
           "username",
           "discriminator",
+          "avatar",
           "status",
           "avatar_url"
         ]
@@ -37584,6 +38476,7 @@
         "required": [
           "id",
           "name",
+          "instant_invite",
           "channels",
           "members",
           "presence_count"
@@ -37607,7 +38500,8 @@
           }
         },
         "required": [
-          "enabled"
+          "enabled",
+          "channel_id"
         ]
       },
       "WidgetUserDiscriminator": {
