@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.RoleColors;
 import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -222,7 +223,7 @@ public abstract class AbstractEntityBuilder {
 
         role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
-                .setRawPermissions(roleJson.getLong("permissions"))
+                .setPermissions(roleJson.getParsedString("permissions", PermissionSet::parse))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
                 .setPrimaryColor(colors.getPrimaryRaw())

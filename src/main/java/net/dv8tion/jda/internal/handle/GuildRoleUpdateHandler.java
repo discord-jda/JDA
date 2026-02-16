@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.RoleColors;
 import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.events.role.update.*;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractEntityBuilder;
@@ -59,7 +60,7 @@ public class GuildRoleUpdateHandler extends SocketHandler {
         RoleColors colors = AbstractEntityBuilder.createRoleColors(rolejson.getObject("colors"));
 
         int position = rolejson.getInt("position");
-        long permissions = rolejson.getLong("permissions");
+        PermissionSet permissions = rolejson.getParsedString("permissions", PermissionSet::parse);
         boolean hoisted = rolejson.getBoolean("hoist");
         boolean mentionable = rolejson.getBoolean("mentionable");
         String iconId = rolejson.getString("icon", null);
@@ -93,10 +94,10 @@ public class GuildRoleUpdateHandler extends SocketHandler {
             getJDA().handleEvent(
                             new RoleUpdatePositionEvent(getJDA(), responseNumber, role, oldPosition, oldPositionRaw));
         }
-        if (!Objects.equals(permissions, role.getPermissionsRaw())) {
-            long oldPermissionsRaw = role.getPermissionsRaw();
-            role.setRawPermissions(permissions);
-            getJDA().handleEvent(new RoleUpdatePermissionsEvent(getJDA(), responseNumber, role, oldPermissionsRaw));
+        if (!Objects.equals(permissions, role.getPermissionSet())) {
+            PermissionSet oldPermissions = role.getPermissionSet();
+            role.setPermissions(permissions);
+            getJDA().handleEvent(new RoleUpdatePermissionsEvent(getJDA(), responseNumber, role, oldPermissions));
         }
 
         if (hoisted != role.isHoisted()) {

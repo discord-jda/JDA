@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+// TODO: Migrate to PermissionSet instead of long
 public class PermissionUtil {
     private static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
     private static final long ALL_CHANNEL_PERMISSIONS = Permission.getRaw(

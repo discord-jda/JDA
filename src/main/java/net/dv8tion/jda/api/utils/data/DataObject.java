@@ -352,6 +352,11 @@ public class DataObject implements SerializableData {
         return value == null ? defaultValue : value;
     }
 
+    @Nonnull
+    public <T> T getParsedString(@Nonnull String key, @Nonnull Function<String, T> parser) {
+        return parser.apply(getString(key));
+    }
+
     /**
      * Resolves a {@link java.lang.Boolean} to a key.
      *

@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.awt.*;
@@ -109,7 +111,13 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
      *
      * @return Never-negative long containing offset permissions of this role.
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getPermissionSet()")
     long getPermissionsRaw();
+
+    @Nonnull
+    PermissionSet getPermissionSet();
 
     /**
      * The colors this Role is displayed in.

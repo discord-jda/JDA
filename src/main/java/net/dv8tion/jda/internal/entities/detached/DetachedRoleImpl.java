@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.PermissionSet;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -50,7 +51,7 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
-    private long rawPermissions;
+    private PermissionSet permissions;
 
     private int primaryColor;
     private int secondaryColor = Role.DEFAULT_COLOR_RAW;
@@ -105,7 +106,13 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
 
     @Override
     public long getPermissionsRaw() {
-        return rawPermissions;
+        return permissions.toBigInteger().longValue();
+    }
+
+    @Nonnull
+    @Override
+    public PermissionSet getPermissionSet() {
+        return permissions;
     }
 
     @Nonnull
@@ -117,7 +124,7 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
     @Nonnull
     @Override
     public EnumSet<Permission> getPermissions() {
-        return Permission.getPermissions(rawPermissions);
+        return permissions.toEnumSet();
     }
 
     @Nonnull
@@ -145,10 +152,9 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
 
     @Override
     public boolean hasPermission(@Nonnull Permission... permissions) {
-        long effectivePerms = rawPermissions;
+        PermissionSet currentPermissions = this.permissions;
         for (Permission perm : permissions) {
-            long rawValue = perm.getRawValue();
-            if ((effectivePerms & rawValue) != rawValue) {
+            if (!currentPermissions.has(perm)) {
                 return false;
             }
         }
@@ -290,8 +296,8 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl> {
     }
 
     @Override
-    public DetachedRoleImpl setRawPermissions(long rawPermissions) {
-        this.rawPermissions = rawPermissions;
+    public DetachedRoleImpl setPermissions(PermissionSet permissions) {
+        this.permissions = permissions;
         return this;
     }
 

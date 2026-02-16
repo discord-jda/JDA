@@ -16,9 +16,12 @@
 
 package net.dv8tion.jda.api.events.role.update;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.PermissionSet;
 
 import java.util.EnumSet;
 
@@ -34,20 +37,19 @@ import javax.annotation.Nonnull;
 public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<EnumSet<Permission>> {
     public static final String IDENTIFIER = "permission";
 
-    private final long oldPermissionsRaw;
-    private final long newPermissionsRaw;
+    private final PermissionSet oldPermissions;
+    private final PermissionSet newPermissions;
 
     public RoleUpdatePermissionsEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Role role, long oldPermissionsRaw) {
-        super(
-                api,
-                responseNumber,
-                role,
-                Permission.getPermissions(oldPermissionsRaw),
-                role.getPermissions(),
-                IDENTIFIER);
-        this.oldPermissionsRaw = oldPermissionsRaw;
-        this.newPermissionsRaw = role.getPermissionsRaw();
+            @Nonnull JDA api, long responseNumber, @Nonnull Role role, @Nonnull PermissionSet oldPermissions) {
+        super(api, responseNumber, role, oldPermissions.toEnumSet(), role.getPermissions(), IDENTIFIER);
+        this.oldPermissions = oldPermissions;
+        this.newPermissions = role.getPermissionSet();
+    }
+
+    @Nonnull
+    public PermissionSet getOldPermissionSet() {
+        return oldPermissions;
     }
 
     /**
@@ -65,8 +67,16 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<EnumSet<P
      *
      * @return The old permissions
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getOldPermissionSet()")
     public long getOldPermissionsRaw() {
-        return oldPermissionsRaw;
+        return oldPermissions.toBigInteger().longValue();
+    }
+
+    @Nonnull
+    public PermissionSet getNewPermissionSet() {
+        return newPermissions;
     }
 
     /**
@@ -84,8 +94,11 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<EnumSet<P
      *
      * @return The new permissions
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getNewPermissionSet()")
     public long getNewPermissionsRaw() {
-        return newPermissionsRaw;
+        return newPermissions.toBigInteger().longValue();
     }
 
     @Nonnull
