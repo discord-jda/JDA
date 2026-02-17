@@ -19,11 +19,11 @@ package net.dv8tion.jda.internal.audio;
 import com.google.crypto.tink.aead.internal.InsecureNonceAesGcmJce;
 import com.google.crypto.tink.aead.internal.InsecureNonceXChaCha20Poly1305;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.RandomUtil;
 import net.dv8tion.jda.internal.utils.ResizingByteBuffer;
 
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
 
@@ -70,7 +70,6 @@ public interface CryptoAdapter {
 
     abstract class AbstractAaedAdapter implements CryptoAdapter {
         protected static final int nonceBytes = 4;
-        protected static final SecureRandom random = new SecureRandom();
 
         protected final byte[] secretKey;
         protected final byte[] nonceBuffer;
@@ -83,7 +82,7 @@ public interface CryptoAdapter {
             this.tagBytes = tagBytes;
             this.paddedNonceBytes = paddedNonceBytes;
             this.nonceBuffer = new byte[paddedNonceBytes];
-            this.encryptCounter = Math.abs(random.nextInt()) % 513 + 1;
+            this.encryptCounter = Math.abs(RandomUtil.getInstance().nextInt()) % 513 + 1;
         }
 
         @Override
