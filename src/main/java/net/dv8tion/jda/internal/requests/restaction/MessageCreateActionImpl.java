@@ -32,10 +32,10 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.RandomUtil;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -47,7 +47,6 @@ import javax.annotation.Nullable;
 
 public class MessageCreateActionImpl extends RestActionImpl<Message>
         implements MessageCreateAction, MessageCreateBuilderMixin<MessageCreateAction> {
-    protected static final SecureRandom nonceGenerator = new SecureRandom();
     protected static boolean defaultFailOnInvalidReply = false;
 
     private final MessageChannel channel;
@@ -105,7 +104,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
         if (nonce != null && !nonce.isEmpty()) {
             json.put("nonce", nonce);
         } else {
-            json.put("nonce", Long.toUnsignedString(nonceGenerator.nextLong()));
+            json.put("nonce", RandomUtil.getInstance().nextNonce());
         }
         if (stickers != null && !stickers.isEmpty()) {
             json.put("sticker_ids", stickers);
