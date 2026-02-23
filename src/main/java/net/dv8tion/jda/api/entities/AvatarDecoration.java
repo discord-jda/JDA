@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.EntityString;
 
+import java.util.Objects;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -31,7 +33,7 @@ public class AvatarDecoration {
     private final String assetId;
     private final String skuId;
 
-    public AvatarDecoration(String assetId, String skuId) {
+    public AvatarDecoration(@Nonnull String assetId, @Nonnull String skuId) {
         this.assetId = assetId;
         this.skuId = skuId;
     }
@@ -79,6 +81,23 @@ public class AvatarDecoration {
     @Nonnull
     public ImageProxy getAssetProxy() {
         return DiscordAssets.avatarDecoration(ImageFormat.PNG, assetId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof AvatarDecoration)) {
+            return false;
+        }
+        AvatarDecoration that = (AvatarDecoration) o;
+        return assetId.equals(that.assetId) && skuId.equals(that.skuId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(assetId, skuId);
     }
 
     @Override
