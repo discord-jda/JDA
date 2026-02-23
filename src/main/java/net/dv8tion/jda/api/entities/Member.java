@@ -421,9 +421,10 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     }
 
     /**
-     * Returns the {@link AvatarDecoration} of this user, or {@code null} if none is used.
+     * Returns the {@link AvatarDecoration} of this member,
+     * or {@code null} if no guild-specific avatar decoration is used.
      *
-     * @return Avatar decoration of this user, or {@code null}
+     * @return Avatar decoration of this member, or {@code null}
      */
     @Nullable
     AvatarDecoration getAvatarDecoration();
