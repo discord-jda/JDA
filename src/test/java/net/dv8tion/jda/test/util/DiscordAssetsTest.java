@@ -48,6 +48,9 @@ public class DiscordAssetsTest extends AbstractSnapshotTest {
                 applicationTeamIcon(EXAMPLE_FORMAT, EXAMPLE_SNOWFLAKE, EXAMPLE_HASH)
                         .getUrl());
         data.put(
+                "avatarDecoration",
+                avatarDecoration(EXAMPLE_FORMAT, EXAMPLE_HASH).getUrl());
+        data.put(
                 "channelIcon",
                 channelIcon(EXAMPLE_FORMAT, EXAMPLE_SNOWFLAKE, EXAMPLE_HASH).getUrl());
         data.put("customEmoji", customEmoji(EXAMPLE_FORMAT, EXAMPLE_SNOWFLAKE).getUrl());

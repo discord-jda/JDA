@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.awt.*;
@@ -112,8 +111,6 @@ public interface User extends UserSnowflake {
      */
     @Deprecated
     String TAG_BADGE_URL = "https://cdn.discordapp.com/guild-tag-badges/%s/%s.png";
-    /** Template for {@link AvatarDecoration#getDecorationAvatarUrl()} */
-    String DECORATION_AVATAR_URL = "https://cdn.discordapp.com/avatar-decoration-presets/%s.png";
 
     // java.awt.Color fills the MSB with FF,
     // we just use 1F to provide better consistency
@@ -954,11 +951,11 @@ public interface User extends UserSnowflake {
          *
          * @return The never-null String containing the {@link User User} decoration avatar url.
          *
-         * @see User#DECORATION_AVATAR_URL
+         * @see    DiscordAssets#avatarDecoration(ImageFormat, String)
          */
         @Nonnull
         public String getDecorationAvatarUrl() {
-            return Helpers.format(DECORATION_AVATAR_URL, decorationAvatarId);
+            return getDecorationAvatar().getUrl();
         }
 
         /**
@@ -967,10 +964,11 @@ public interface User extends UserSnowflake {
          * @return Never-null {@link ImageProxy} of this user's decoration avatar
          *
          * @see    #getDecorationAvatarUrl()
+         * @see    DiscordAssets#avatarDecoration(ImageFormat, String)
          */
         @Nonnull
         public ImageProxy getDecorationAvatar() {
-            return new ImageProxy(getDecorationAvatarUrl());
+            return DiscordAssets.avatarDecoration(ImageFormat.PNG, decorationAvatarId);
         }
 
         @Override
