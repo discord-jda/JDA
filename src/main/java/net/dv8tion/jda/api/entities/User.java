@@ -341,9 +341,9 @@ public interface User extends UserSnowflake {
     }
 
     /**
-     * Returns the possibly-null {@link AvatarDecoration} of this user. If the user has not set a decoration avatar, this will return null.
+     * Returns the {@link AvatarDecoration} of this user, or {@code null} if none is used.
      *
-     * @return The possibly-null avatar decoration of this user
+     * @return Avatar decoration of this user, or {@code null}
      */
     @Nullable
     AvatarDecoration getAvatarDecoration();

@@ -420,6 +420,11 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
         return avatar == null ? getUser().getEffectiveAvatar(preferredFormat) : avatar;
     }
 
+    /**
+     * Returns the {@link AvatarDecoration} of this user, or {@code null} if none is used.
+     *
+     * @return Avatar decoration of this user, or {@code null}
+     */
     @Nullable
     AvatarDecoration getAvatarDecoration();
 
