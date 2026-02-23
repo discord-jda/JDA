@@ -543,7 +543,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 : null;
 
         AvatarDecoration avatarDecoration = user.optObject("avatar_decoration_data")
-                .map(o -> new AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                .map(AvatarDecoration::new)
                 .orElse(null);
 
         if (newUser) {
@@ -581,7 +581,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         String newAvatar = user.getString("avatar", null);
         AvatarDecoration oldAvatarDecoration = userObj.getAvatarDecoration();
         AvatarDecoration newAvatarDecoration = user.optObject("avatar_decoration_data")
-                .map(o -> new AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                .map(AvatarDecoration::new)
                 .orElse(null);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
@@ -804,10 +804,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
             }
         }
         if (content.hasKey("avatar_decoration_data")) {
-            DataObject avatarDecorationData = content.getObject("avatar_decoration_data");
             AvatarDecoration oldAvatarDecoration = member.getAvatarDecoration();
-            AvatarDecoration newAvatarDecoration = new AvatarDecoration(
-                    avatarDecorationData.getString("asset"), avatarDecorationData.getString("sku_id"));
+            AvatarDecoration newAvatarDecoration = new AvatarDecoration(content.getObject("avatar_decoration_data"));
             if (!Objects.equals(oldAvatarDecoration, newAvatarDecoration)) {
                 member.setAvatarDecoration(newAvatarDecoration);
                 getJDA().handleEvent(new GuildMemberUpdateAvatarDecorationEvent(

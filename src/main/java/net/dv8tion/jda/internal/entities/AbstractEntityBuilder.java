@@ -195,7 +195,7 @@ public abstract class AbstractEntityBuilder {
         member.setAvatarId(memberJson.getString("avatar", null));
         AvatarDecoration avatarDecoration = memberJson
                 .optObject("avatar_decoration_data")
-                .map(o -> new AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                .map(AvatarDecoration::new)
                 .orElse(null);
         member.setAvatarDecoration(avatarDecoration);
         if (!memberJson.isNull("flags")) {

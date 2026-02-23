@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import java.util.Objects;
@@ -33,9 +34,9 @@ public class AvatarDecoration {
     private final String assetId;
     private final String skuId;
 
-    public AvatarDecoration(@Nonnull String assetId, @Nonnull String skuId) {
-        this.assetId = assetId;
-        this.skuId = skuId;
+    public AvatarDecoration(@Nonnull DataObject object) {
+        this.assetId = object.getString("asset");
+        this.skuId = object.getString("sku_id");
     }
 
     /**
