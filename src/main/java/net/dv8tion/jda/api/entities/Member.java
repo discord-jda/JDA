@@ -420,6 +420,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
         return avatar == null ? getUser().getEffectiveAvatar(preferredFormat) : avatar;
     }
 
+    @Nullable
+    User.AvatarDecoration getAvatarDecoration();
+
     /**
      * The roles applied to this Member.
      * <br>The roles are ordered based on their position. The highest role being at index 0

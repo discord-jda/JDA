@@ -42,6 +42,7 @@ public class UserImpl extends UserSnowflakeImpl implements User {
     protected String name;
     protected String globalName;
     protected String avatarId;
+    protected AvatarDecoration avatarDecoration;
     protected Profile profile;
     protected long privateChannelId = 0L;
     protected boolean bot;
@@ -76,6 +77,12 @@ public class UserImpl extends UserSnowflakeImpl implements User {
     @Override
     public String getAvatarId() {
         return avatarId;
+    }
+
+    @Nullable
+    @Override
+    public AvatarDecoration getAvatarDecoration() {
+        return avatarDecoration;
     }
 
     @Nonnull
@@ -201,6 +208,11 @@ public class UserImpl extends UserSnowflakeImpl implements User {
 
     public UserImpl setAvatarId(String avatarId) {
         this.avatarId = avatarId;
+        return this;
+    }
+
+    public UserImpl setAvatarDecoration(AvatarDecoration avatarDecoration) {
+        this.avatarDecoration = avatarDecoration;
         return this;
     }
 

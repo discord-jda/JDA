@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.awt.*;
@@ -111,6 +112,8 @@ public interface User extends UserSnowflake {
      */
     @Deprecated
     String TAG_BADGE_URL = "https://cdn.discordapp.com/guild-tag-badges/%s/%s.png";
+    /** Template for {@link AvatarDecoration#getDecorationAvatarUrl()} */
+    String DECORATION_AVATAR_URL = "https://cdn.discordapp.com/avatar-decoration-presets/%s.png";
 
     // java.awt.Color fills the MSB with FF,
     // we just use 1F to provide better consistency
@@ -339,6 +342,14 @@ public interface User extends UserSnowflake {
         ImageProxy avatar = getAvatar(preferredFormat);
         return avatar == null ? getDefaultAvatar() : avatar;
     }
+
+    /**
+     * Returns the possibly-null {@link AvatarDecoration} of this user. If the user has not set a decoration avatar, this will return null.
+     *
+     * @return The possibly-null avatar decoration of this user
+     */
+    @Nullable
+    AvatarDecoration getAvatarDecoration();
 
     /**
      * Loads the user's {@link User.Profile} data.
@@ -901,6 +912,72 @@ public interface User extends UserSnowflake {
                     .addMetadata("identityEnabled", identityEnabled)
                     .addMetadata("tag", tag)
                     .addMetadata("badge", badge)
+                    .toString();
+        }
+    }
+
+    /**
+     * Represents the avatar decoration of a {@link User User}.
+     */
+    class AvatarDecoration {
+
+        private final String decorationAvatarId;
+        private final String skuId;
+
+        public AvatarDecoration(String decorationAvatarId, String skuId) {
+            this.decorationAvatarId = decorationAvatarId;
+            this.skuId = skuId;
+        }
+
+        /**
+         * The never-null SKU id of the {@link User User} decoration avatar.
+         *
+         * @return The never-null SKU id of the {@link User User} decoration avatar.
+         */
+        @Nonnull
+        public String getSkuId() {
+            return skuId;
+        }
+
+        /**
+         * The never-null avatar ID for this user's decoration avatar image.
+         *
+         * @return The never-null avatar ID for this user's decoration avatar image.
+         */
+        @Nonnull
+        public String getDecorationAvatarId() {
+            return decorationAvatarId;
+        }
+
+        /**
+         * The URL for the user's decoration avatar image.
+         *
+         * @return The never-null String containing the {@link User User} decoration avatar url.
+         *
+         * @see User#DECORATION_AVATAR_URL
+         */
+        @Nonnull
+        public String getDecorationAvatarUrl() {
+            return Helpers.format(DECORATION_AVATAR_URL, decorationAvatarId);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this user's decoration avatar.
+         *
+         * @return Never-null {@link ImageProxy} of this user's decoration avatar
+         *
+         * @see    #getDecorationAvatarUrl()
+         */
+        @Nonnull
+        public ImageProxy getDecorationAvatar() {
+            return new ImageProxy(getDecorationAvatarUrl());
+        }
+
+        @Override
+        public String toString() {
+            return new EntityString(this)
+                    .addMetadata("decorationAvatarId", decorationAvatarId)
+                    .addMetadata("skuId", skuId)
                     .toString();
         }
     }
