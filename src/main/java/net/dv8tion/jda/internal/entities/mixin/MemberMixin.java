@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.internal.entities.mixin;
 
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.RoleColors;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 
 import javax.annotation.Nonnull;
@@ -29,7 +26,7 @@ public interface MemberMixin<T extends MemberMixin<T>> extends Member, IDetachab
 
     T setAvatarId(String avatarId);
 
-    T setAvatarDecoration(User.AvatarDecoration avatarDecoration);
+    T setAvatarDecoration(AvatarDecoration avatarDecoration);
 
     T setJoinDate(long joinDate);
 

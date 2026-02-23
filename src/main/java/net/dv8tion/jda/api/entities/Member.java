@@ -421,7 +421,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     }
 
     @Nullable
-    User.AvatarDecoration getAvatarDecoration();
+    AvatarDecoration getAvatarDecoration();
 
     /**
      * The roles applied to this Member.

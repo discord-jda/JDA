@@ -17,14 +17,14 @@
 package net.dv8tion.jda.api.events.guild.member.update;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AvatarDecoration;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} {@link User.AvatarDecoration avatar decoration}.
+ * Indicates that a {@link Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} {@linkplain AvatarDecoration avatar decoration}.
  *
  * <p>Can be used to retrieve members who change their per guild avatar decoration, the triggering guild, the old avatar decoration and the new avatar decoration.
  *
@@ -41,12 +41,12 @@ import javax.annotation.Nullable;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberUpdateAvatarDecorationEvent extends GenericGuildMemberUpdateEvent<User.AvatarDecoration> {
+public class GuildMemberUpdateAvatarDecorationEvent extends GenericGuildMemberUpdateEvent<AvatarDecoration> {
 
     public static final String IDENTIFIER = "avatar_decoration";
 
     public GuildMemberUpdateAvatarDecorationEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable User.AvatarDecoration next) {
+            @Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable AvatarDecoration next) {
         super(api, responseNumber, member, member.getAvatarDecoration(), next, IDENTIFIER);
     }
 
@@ -56,7 +56,7 @@ public class GuildMemberUpdateAvatarDecorationEvent extends GenericGuildMemberUp
      * @return The old avatar decoration
      */
     @Nullable
-    public User.AvatarDecoration getOldAvatarDecoration() {
+    public AvatarDecoration getOldAvatarDecoration() {
         return getOldValue();
     }
 
@@ -66,7 +66,7 @@ public class GuildMemberUpdateAvatarDecorationEvent extends GenericGuildMemberUp
      * @return The new avatar decoration
      */
     @Nullable
-    public User.AvatarDecoration getNewAvatarDecoration() {
+    public AvatarDecoration getNewAvatarDecoration() {
         return getNewValue();
     }
 }

@@ -17,13 +17,14 @@
 package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AvatarDecoration;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that the {@link net.dv8tion.jda.api.entities.User.AvatarDecoration AvatarDecoration} of a {@link net.dv8tion.jda.api.entities.User User} changed.
+ * Indicates that the {@link AvatarDecoration} of a {@link net.dv8tion.jda.api.entities.User User} changed.
  *
  * <p>Can be used to retrieve the User who changed their avatar and their previous Avatar Decoration object.
  *
@@ -40,14 +41,11 @@ import javax.annotation.Nullable;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdateAvatarDecorationEvent extends GenericUserUpdateEvent<User.AvatarDecoration> {
+public class UserUpdateAvatarDecorationEvent extends GenericUserUpdateEvent<AvatarDecoration> {
     public static final String IDENTIFIER = "avatar_decoration";
 
     public UserUpdateAvatarDecorationEvent(
-            @Nonnull JDA api,
-            long responseNumber,
-            @Nonnull User user,
-            @Nullable User.AvatarDecoration oldAvatarDecoration) {
+            @Nonnull JDA api, long responseNumber, @Nonnull User user, @Nullable AvatarDecoration oldAvatarDecoration) {
         super(api, responseNumber, user, oldAvatarDecoration, user.getAvatarDecoration(), IDENTIFIER);
     }
 
@@ -57,7 +55,7 @@ public class UserUpdateAvatarDecorationEvent extends GenericUserUpdateEvent<User
      * @return The old avatar decoration
      */
     @Nullable
-    public User.AvatarDecoration getOldAvatarDecoration() {
+    public AvatarDecoration getOldAvatarDecoration() {
         return getOldValue();
     }
 
@@ -67,7 +65,7 @@ public class UserUpdateAvatarDecorationEvent extends GenericUserUpdateEvent<User
      * @return The new avatar decoration
      */
     @Nullable
-    public User.AvatarDecoration getNewAvatarDecoration() {
+    public AvatarDecoration getNewAvatarDecoration() {
         return getNewValue();
     }
 }

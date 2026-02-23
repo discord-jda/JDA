@@ -542,8 +542,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                         id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
                 : null;
 
-        User.AvatarDecoration avatarDecoration = user.optObject("avatar_decoration_data")
-                .map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+        AvatarDecoration avatarDecoration = user.optObject("avatar_decoration_data")
+                .map(o -> new AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
                 .orElse(null);
 
         if (newUser) {
@@ -579,9 +579,9 @@ public class EntityBuilder extends AbstractEntityBuilder {
         short newDiscriminator = Short.parseShort(user.getString("discriminator", "0"));
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
-        User.AvatarDecoration oldAvatarDecoration = userObj.getAvatarDecoration();
-        User.AvatarDecoration newAvatarDecoration = user.optObject("avatar_decoration_data")
-                .map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+        AvatarDecoration oldAvatarDecoration = userObj.getAvatarDecoration();
+        AvatarDecoration newAvatarDecoration = user.optObject("avatar_decoration_data")
+                .map(o -> new AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
                 .orElse(null);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
@@ -805,8 +805,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
         }
         if (content.hasKey("avatar_decoration_data")) {
             DataObject avatarDecorationData = content.getObject("avatar_decoration_data");
-            User.AvatarDecoration oldAvatarDecoration = member.getAvatarDecoration();
-            User.AvatarDecoration newAvatarDecoration = new User.AvatarDecoration(
+            AvatarDecoration oldAvatarDecoration = member.getAvatarDecoration();
+            AvatarDecoration newAvatarDecoration = new AvatarDecoration(
                     avatarDecorationData.getString("asset"), avatarDecorationData.getString("sku_id"));
             if (!Objects.equals(oldAvatarDecoration, newAvatarDecoration)) {
                 member.setAvatarDecoration(newAvatarDecoration);
