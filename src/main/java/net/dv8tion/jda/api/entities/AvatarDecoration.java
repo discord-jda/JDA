@@ -42,6 +42,8 @@ public class AvatarDecoration {
     /**
      * The SKU ID of the avatar decoration.
      *
+     * <p>This is unique and never changes.
+     *
      * @return The SKU ID of the avatar decoration.
      */
     @Nonnull
@@ -52,6 +54,8 @@ public class AvatarDecoration {
     /**
      * Returns the ID of this avatar decoration.
      *
+     * <p>Unlike the SKU ID, this may change at any time if Discord updates it.
+     *
      * @return The ID of this avatar decoration.
      */
     @Nonnull
@@ -61,6 +65,8 @@ public class AvatarDecoration {
 
     /**
      * The URL for the avatar decoration.
+     *
+     * <p>Unlike the SKU ID, this may change at any time if Discord updates it.
      *
      * @return The avatar decoration's URL.
      *
@@ -73,6 +79,8 @@ public class AvatarDecoration {
 
     /**
      * Returns an {@link ImageProxy} for this decoration avatar.
+     *
+     * <p>Unlike the SKU ID, the content may change at any time if Discord updates it.
      *
      * @return {@link ImageProxy} of this decoration avatar
      *
