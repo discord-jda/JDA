@@ -1,4 +1,5 @@
 {
+  "animatedNameplate" : "https://cdn.discordapp.com/assets/collectibles/nameplates/nameplates_v3/touch_grass/asset.webp?animated=true",
   "applicationCover" : "https://cdn.discordapp.com/application/222046562543468545/86185a18d168f88b91c.webp?animated=true",
   "applicationIcon" : "https://cdn.discordapp.com/app-icons/222046562543468545/86185a18d168f88b91c.webp?animated=true",
   "applicationTeamIcon" : "https://cdn.discordapp.com/team-icons/222046562543468545/86185a18d168f88b91c.webp?animated=true",
@@ -10,6 +11,7 @@
   "memberAvatar" : "https://cdn.discordapp.com/guilds/222046562543468545/users/222046562543468545/avatars/86185a18d168f88b91c.webp?animated=true",
   "roleIcon" : "https://cdn.discordapp.com/role-icons/222046562543468545/86185a18d168f88b91c.webp?animated=true",
   "scheduledEventCoverImage" : "https://cdn.discordapp.com/guild-events/222046562543468545/86185a18d168f88b91c.webp?animated=true",
+  "staticNameplate" : "https://cdn.discordapp.com/assets/collectibles/nameplates/nameplates_v3/touch_grass/static.webp?animated=true",
   "stickerPackBanner" : "https://cdn.discordapp.com/app-assets/710982414301790216/store/86185a18d168f88b91c.webp?animated=true",
   "userAvatar" : "https://cdn.discordapp.com/avatars/222046562543468545/86185a18d168f88b91c.webp?animated=true",
   "userBanner" : "https://cdn.discordapp.com/banners/222046562543468545/86185a18d168f88b91c.webp?animated=true",

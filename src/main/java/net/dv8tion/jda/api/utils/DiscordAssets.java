@@ -20,6 +20,8 @@ import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.Contract;
 
+import java.util.regex.Pattern;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -27,6 +29,8 @@ import javax.annotation.Nullable;
  * Utility class to retrieve an {@link ImageProxy} of most Discord assets.
  */
 public final class DiscordAssets {
+    private static final Pattern ALPHANUMERIC_PATH_SEGMENT_PATTERN = Pattern.compile("[\\w\\-/]+");
+
     private DiscordAssets() {}
 
     /**
@@ -360,6 +364,78 @@ public final class DiscordAssets {
                 .addPathSegment(userId)
                 .addEncodedPathSegment("avatars");
         return format.finishProxy(builder, avatarId);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} of a static nameplate.
+     *
+     * <p>At the time of writing, the only supported format is {@link ImageFormat#PNG PNG}.
+     *
+     * <p>Size parameters are ignored by this endpoint.
+     *
+     * @param  nameplatePath
+     *         The nameplate asset's path
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If an argument is {@code null}, except for the nameplate path</li>
+     *             <li>If the nameplate path starts with a {@code /}</li>
+     *             <li>If the nameplate path contains non-alphanumeric characters other than {@code _}, {@code -} and {@code /}</li>
+     *         </ul>
+     *
+     * @return An {@link ImageProxy} of the static nameplate
+     *
+     * @see    #animatedNameplate(ImageFormat, String)
+     */
+    @Contract("_, null -> null; _, !null -> !null")
+    public static ImageProxy staticNameplate(@Nonnull ImageFormat format, @Nullable String nameplatePath) {
+        Checks.notNull(format, "Format");
+        if (nameplatePath == null) {
+            return null;
+        }
+        Checks.check(!nameplatePath.startsWith("/"), "Nameplate path must not start with /");
+        Checks.matches(nameplatePath, ALPHANUMERIC_PATH_SEGMENT_PATTERN, "Nameplate path");
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("assets")
+                .addEncodedPathSegment("collectibles")
+                .addPathSegments(nameplatePath);
+        return format.finishProxy(builder, "static");
+    }
+
+    /**
+     * Returns an {@link ImageProxy} of an animated nameplate.
+     *
+     * <p>At the time of writing, the only supported format is {@link ImageFormat#WEBM WEBM}.
+     *
+     * <p>Size parameters are ignored by this endpoint.
+     *
+     * @param  nameplatePath
+     *         The nameplate asset's path
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If an argument is {@code null}, except for the nameplate path</li>
+     *             <li>If the nameplate path starts with a {@code /}</li>
+     *             <li>If the nameplate path contains non-alphanumeric characters other than {@code _}, {@code -} and {@code /}</li>
+     *         </ul>
+     *
+     * @return An {@link ImageProxy} of the animated nameplate
+     *
+     * @see    #staticNameplate(ImageFormat, String)
+     */
+    @Contract("_, null -> null; _, !null -> !null")
+    public static ImageProxy animatedNameplate(@Nonnull ImageFormat format, @Nullable String nameplatePath) {
+        Checks.notNull(format, "Format");
+        if (nameplatePath == null) {
+            return null;
+        }
+        Checks.check(!nameplatePath.startsWith("/"), "Nameplate path must not start with /");
+        Checks.matches(nameplatePath, ALPHANUMERIC_PATH_SEGMENT_PATTERN, "Nameplate path");
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("assets")
+                .addEncodedPathSegment("collectibles")
+                .addPathSegments(nameplatePath);
+        return format.finishProxy(builder, "asset");
     }
 
     /**

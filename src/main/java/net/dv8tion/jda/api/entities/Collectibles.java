@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.DiscordAssets;
+import net.dv8tion.jda.api.utils.ImageFormat;
+import net.dv8tion.jda.api.utils.ImageProxy;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -56,6 +60,66 @@ public interface Collectibles {
          */
         @Nonnull
         String getAssetPath();
+
+        /**
+         * Returns a URL of this nameplate, as an static asset.
+         *
+         * <p>Size parameters are ignored by this endpoint.
+         *
+         * @return The URL to this nameplate's static asset
+         *
+         * @see    #getAnimatedAssetUrl()
+         * @see    #getStaticAsset()
+         */
+        @Nonnull
+        default String getStaticAssetUrl() {
+            return getStaticAsset().getUrl();
+        }
+
+        /**
+         * Returns an {@link ImageProxy} of this nameplate, as a static asset.
+         *
+         * <p>Size parameters are ignored by this endpoint.
+         *
+         * @return The proxy to this nameplate's static asset
+         *
+         * @see    #getAnimatedAsset()
+         * @see    #getStaticAssetUrl()
+         */
+        @Nonnull
+        default ImageProxy getStaticAsset() {
+            return DiscordAssets.staticNameplate(ImageFormat.PNG, getAssetPath());
+        }
+
+        /**
+         * Returns a URL of this nameplate, as an animated asset.
+         *
+         * <p>Size parameters are ignored by this endpoint.
+         *
+         * @return The URL to this nameplate's animated asset
+         *
+         * @see    #getStaticAssetUrl()
+         * @see    #getAnimatedAsset()
+         */
+        @Nonnull
+        default String getAnimatedAssetUrl() {
+            return getAnimatedAsset().getUrl();
+        }
+
+        /**
+         * Returns an {@link ImageProxy} of this nameplate, as an animated asset.
+         *
+         * <p>Size parameters are ignored by this endpoint.
+         *
+         * @return The proxy to this nameplate's animated asset
+         *
+         * @see    #getStaticAsset()
+         * @see    #getAnimatedAssetUrl()
+         */
+        @Nonnull
+        default ImageProxy getAnimatedAsset() {
+            return DiscordAssets.animatedNameplate(ImageFormat.WEBM, getAssetPath());
+        }
 
         /**
          * Returns the name of the background color of this nameplate.
