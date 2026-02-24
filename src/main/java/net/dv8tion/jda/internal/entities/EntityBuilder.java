@@ -534,6 +534,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
         short newDiscriminator = Short.parseShort(user.getString("discriminator", "0"));
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
+        Collectibles oldCollectibles = userObj.getCollectibles();
+        Collectibles newCollectibles = CollectiblesImpl.extractFrom(user);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
         User.PrimaryGuild oldPrimaryGuild = userObj.getPrimaryGuild();
@@ -569,6 +571,13 @@ public class EntityBuilder extends AbstractEntityBuilder {
             jda.handleEvent(new UserUpdateAvatarEvent(
                     jda, responseNumber,
                     userObj, oldAvatar));
+        }
+
+        if (!Objects.equals(oldCollectibles, newCollectibles)) {
+            userObj.setCollectibles(newCollectibles);
+            jda.handleEvent(new UserUpdateCollectiblesEvent(
+                    jda, responseNumber,
+                    userObj, oldCollectibles));
         }
 
         if (oldFlags != newFlags) {

@@ -179,6 +179,8 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
 
+    public void onUserUpdateCollectibles(@Nonnull UserUpdateCollectiblesEvent event) {}
+
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
 
     public void onUserUpdateActivityOrder(@Nonnull UserUpdateActivityOrderEvent event) {}
