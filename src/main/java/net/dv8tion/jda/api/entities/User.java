@@ -339,6 +339,14 @@ public interface User extends UserSnowflake {
     }
 
     /**
+     * Returns the collectibles this user has <b>equipped</b>.
+     *
+     * @return The collectibles equipped by this user
+     */
+    @Nonnull
+    Collectibles getCollectibles();
+
+    /**
      * Loads the user's {@link User.Profile} data.
      * Returns a completed RestAction if this User has been retrieved using {@link JDA#retrieveUserById(long)}.
      * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new profile with up-to-date information.

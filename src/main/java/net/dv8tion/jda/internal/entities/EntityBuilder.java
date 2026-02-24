@@ -148,6 +148,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 .setGlobalName(self.getString("global_name", null))
                 .setDiscriminator(Short.parseShort(self.getString("discriminator", "0")))
                 .setAvatarId(self.getString("avatar", null))
+                .setCollectibles(CollectiblesImpl.EMPTY)
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
 
@@ -510,6 +511,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     .setGlobalName(user.getString("global_name", null))
                     .setDiscriminator(Short.parseShort(user.getString("discriminator", "0")))
                     .setAvatarId(user.getString("avatar", null))
+                    .setCollectibles(CollectiblesImpl.extractFrom(user))
                     .setBot(user.getBoolean("bot"))
                     .setSystem(user.getBoolean("system"))
                     .setFlags(user.getInt("public_flags", 0))
