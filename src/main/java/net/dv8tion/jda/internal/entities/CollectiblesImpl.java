@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.Collectibles;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 
@@ -129,6 +130,23 @@ public class CollectiblesImpl implements Collectibles {
                     .addMetadata("asset_path", asset)
                     .addMetadata("palette", palette)
                     .toString();
+        }
+    }
+
+    public static class Effective implements Collectibles {
+        private final Member member;
+
+        public Effective(Member member) {
+            this.member = member;
+        }
+
+        @Nullable
+        @Override
+        public Nameplate getNameplate() {
+            Nameplate memberNameplate = member.getCollectibles().getNameplate();
+            return memberNameplate != null
+                    ? memberNameplate
+                    : member.getUser().getCollectibles().getNameplate();
         }
     }
 }

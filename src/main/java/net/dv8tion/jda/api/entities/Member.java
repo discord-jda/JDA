@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.CollectiblesImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -424,6 +425,23 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      */
     @Nonnull
     Collectibles getCollectibles();
+
+    /**
+     * Returns the collectibles currently displayed for this member, in the guild.
+     *
+     * <p>Each collectible will return the first value found:
+     * <ol>
+     *     <li>On the member</li>
+     *     <li>On the user</li>
+     *     <li>{@code null}</li>
+     * </ol>
+     *
+     * @return The collectibles effectively equipped by this member
+     */
+    @Nonnull
+    default Collectibles getEffectiveCollectibles() {
+        return new CollectiblesImpl.Effective(this);
+    }
 
     /**
      * The roles applied to this Member.
