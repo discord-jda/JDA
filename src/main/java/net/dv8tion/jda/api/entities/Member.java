@@ -418,6 +418,14 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     }
 
     /**
+     * Returns the collectibles this member has <b>equipped</b> on this guild specifically.
+     *
+     * @return The collectibles equipped by this member
+     */
+    @Nonnull
+    Collectibles getCollectibles();
+
+    /**
      * The roles applied to this Member.
      * <br>The roles are ordered based on their position. The highest role being at index 0
      * and the lowest at the last index. Prefer {@link #getUnsortedRoles()} if the order is not relevant.
