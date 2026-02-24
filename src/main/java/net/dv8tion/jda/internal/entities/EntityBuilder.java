@@ -756,6 +756,15 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 getJDA().handleEvent(new GuildMemberUpdateAvatarEvent(getJDA(), responseNumber, member, oldAvatarId));
             }
         }
+        if (content.hasKey("collectibles")) {
+            Collectibles oldCollectibles = member.getCollectibles();
+            Collectibles newCollectibles = CollectiblesImpl.extractFrom(content);
+            if (!Objects.equals(oldCollectibles, newCollectibles)) {
+                member.setCollectibles(newCollectibles);
+                getJDA().handleEvent(new GuildMemberUpdateCollectiblesEvent(
+                        getJDA(), responseNumber, member, oldCollectibles));
+            }
+        }
         if (content.hasKey("premium_since")) {
             long epoch = 0;
             if (!content.isNull("premium_since")) {
