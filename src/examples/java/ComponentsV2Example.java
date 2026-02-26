@@ -222,7 +222,6 @@ public class ComponentsV2Example extends ListenerAdapter {
                                         *Source: [Daylight_Prairie#Butterfly_Fields](https://sky-children-of-the-light.fandom.com/wiki/Daylight_Prairie#Butterfly_Fields)*
                                         -# Page 2/9
                                         """)),
-                TextDisplay.of(""),
                 Separator.createDivider(Separator.Spacing.SMALL),
                 ActionRow.of(
                         Button.secondary("previous", "⬅ Social Space"),
