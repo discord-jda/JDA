@@ -57,7 +57,9 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      */
     @Nullable
     public String getOldIconUrl() {
-        return previous == null ? null : getOldIconUrl(previous.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return previous == null
+                ? null
+                : getOldIconUrl(previous.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**
@@ -132,7 +134,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
      */
     @Nullable
     public String getNewIconUrl() {
-        return next == null ? null : getNewIconUrl(next.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return next == null ? null : getNewIconUrl(next.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**

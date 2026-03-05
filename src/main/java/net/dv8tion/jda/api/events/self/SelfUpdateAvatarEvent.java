@@ -55,7 +55,9 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      */
     @Nullable
     public String getOldAvatarUrl() {
-        return previous == null ? null : getOldAvatarUrl(previous.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return previous == null
+                ? null
+                : getOldAvatarUrl(previous.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**
@@ -130,7 +132,9 @@ public class SelfUpdateAvatarEvent extends GenericSelfUpdateEvent<String> {
      */
     @Nullable
     public String getNewAvatarUrl() {
-        return next == null ? null : getNewAvatarUrl(next.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return next == null
+                ? null
+                : getNewAvatarUrl(next.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**

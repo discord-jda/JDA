@@ -756,7 +756,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nullable
     default String getIconUrl() {
         String iconId = getIconId();
-        return iconId == null ? null : getIconUrl(iconId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return iconId == null
+                ? null
+                : getIconUrl(iconId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**
@@ -1054,7 +1056,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nullable
     default String getBannerUrl() {
         String bannerId = getBannerId();
-        return bannerId == null ? null : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return bannerId == null
+                ? null
+                : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**
