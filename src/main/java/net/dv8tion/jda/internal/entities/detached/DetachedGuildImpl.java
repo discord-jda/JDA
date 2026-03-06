@@ -495,6 +495,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<SoundboardSound> getSoundboardSoundCache() {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
     public List<GuildChannel> getChannels(boolean includeHidden) {
         throw detachedException();
     }

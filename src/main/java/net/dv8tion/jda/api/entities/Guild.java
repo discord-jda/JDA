@@ -2486,6 +2486,100 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     SnowflakeCacheView<GuildSticker> getStickerCache();
 
     /**
+     * Gets a {@link SoundboardSound} from this guild that has the same id as the
+     * one provided.
+     * <br>If there is no {@link SoundboardSound} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @param  id
+     *         the sticker id
+     *
+     * @throws NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return A Soundboard sound matching the specified id
+     */
+    @Nullable
+    default SoundboardSound getSoundboardSoundById(@Nonnull String id) {
+        return getSoundboardSoundCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link SoundboardSound} from this guild that has the same id as the
+     * one provided.
+     * <br>If there is no {@link SoundboardSound} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @param  id
+     *         the sticker id
+     *
+     * @throws NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return A Soundboard sound matching the specified id
+     */
+    @Nullable
+    default SoundboardSound getSoundboardSoundById(long id) {
+        return getSoundboardSoundCache().getElementById(id);
+    }
+
+    /**
+     * Gets all custom {@link SoundboardSound SoundboardSounds} belonging to this guild.
+     * <br>Soundboard sounds are not ordered in any specific way in the returned list.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getSoundboardSoundCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @return An immutable List of {@link SoundboardSound SoundboardSounds}.
+     */
+    @Nonnull
+    @Unmodifiable
+    default List<SoundboardSound> getSoundboardSounds() {
+        return getSoundboardSoundCache().asList();
+    }
+
+    /**
+     * Gets a list of all {@link SoundboardSound SoundboardSounds} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link SoundboardSound SoundboardSounds} with the provided name, then this returns an empty list.
+     *
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @param  name
+     *         The name used to filter the returned {@link SoundboardSound SoundboardSounds}. Without colons.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all SoundboardSounds that match the provided name.
+     */
+    @Nonnull
+    @Unmodifiable
+    default List<SoundboardSound> getSoundboardSoundsByName(@Nonnull String name, boolean ignoreCase) {
+        return getSoundboardSoundCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * {@link SnowflakeCacheView} of all cached {@link SoundboardSound SoundboardSounds} of this Guild.
+     * <br>This does not include {@link JDA#retrieveDefaultSoundboardSounds() default sounds}.
+     *
+     * <p>This will be empty if {@link CacheFlag#SOUNDBOARD_SOUNDS} is disabled!
+     *
+     * @return {@link SnowflakeCacheView} - Type: {@link SoundboardSound}
+     *
+     * @see    JDA#retrieveDefaultSoundboardSounds()
+     */
+    @Nonnull
+    SnowflakeCacheView<SoundboardSound> getSoundboardSoundCache();
+
+    /**
      * Retrieves an immutable list of Custom Emojis together with their respective creators.
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently

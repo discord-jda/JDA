@@ -116,6 +116,8 @@ public class GuildImpl implements Guild {
             new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache =
             new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
+    private final SnowflakeCacheViewImpl<SoundboardSound> soundboardCache =
+            new SnowflakeCacheViewImpl<>(SoundboardSound.class, SoundboardSound::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
     private final SnowflakeCacheViewImpl<GuildVoiceStateImpl> voiceStateCache = new SnowflakeCacheViewImpl<>(
@@ -813,6 +815,12 @@ public class GuildImpl implements Guild {
     @Override
     public SnowflakeCacheView<GuildSticker> getStickerCache() {
         return stickerCache;
+    }
+
+    @Nonnull
+    @Override
+    public SnowflakeCacheViewImpl<SoundboardSound> getSoundboardSoundCache() {
+        return soundboardCache;
     }
 
     @Nonnull
@@ -2251,6 +2259,10 @@ public class GuildImpl implements Guild {
 
     public SnowflakeCacheViewImpl<GuildSticker> getStickersView() {
         return stickerCache;
+    }
+
+    public SnowflakeCacheViewImpl<SoundboardSound> getSoundboardSoundsView() {
+        return soundboardCache;
     }
 
     public MemberCacheViewImpl getMembersView() {
