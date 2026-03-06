@@ -253,6 +253,29 @@ public class EntityBuilder extends AbstractEntityBuilder {
         }
     }
 
+    private void createGuildSoundboardSoundPass(GuildImpl guildObj, DataArray array) {
+        if (!getJDA().isCacheFlagSet(CacheFlag.SOUNDBOARD_SOUNDS)) {
+            return;
+        }
+        SnowflakeCacheViewImpl<SoundboardSound> soundboardView = guildObj.getSoundboardSoundsView();
+        try (UnlockHook hook = soundboardView.writeLock()) {
+            TLongObjectMap<SoundboardSound> soundboardMap = soundboardView.getMap();
+            for (int i = 0; i < array.length(); i++) {
+                DataObject object = array.getObject(i);
+                if (object.isNull("sound_id")) {
+                    LOG.error(
+                            "Received GUILD_CREATE with a sound with a null ID. GuildId: {} JSON: {}",
+                            guildObj.getId(),
+                            object);
+                    continue;
+                }
+
+                SoundboardSound sound = createSoundboardSound(object);
+                soundboardMap.put(sound.getIdLong(), sound);
+            }
+        }
+    }
+
     public SecurityIncidentActions createSecurityIncidentsActions(DataObject data) {
         OffsetDateTime invitesDisabledUntil = data.getOffsetDateTime("invites_disabled_until", null);
         OffsetDateTime dmsDisabledUntil = data.getOffsetDateTime("dms_disabled_until", null);
@@ -302,6 +325,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         DataArray emojisArray = guildJson.getArray("emojis");
         DataArray voiceStateArray = guildJson.getArray("voice_states");
         Optional<DataArray> stickersArray = guildJson.optArray("stickers");
+        Optional<DataArray> soundboardSoundsArray = guildJson.optArray("soundboard_sounds");
         Optional<DataArray> featuresArray = guildJson.optArray("features");
         Optional<DataArray> presencesArray = guildJson.optArray("presences");
         long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
@@ -432,6 +456,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         createScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmojiPass(guildObj, emojisArray);
         stickersArray.ifPresent(stickers -> createGuildStickerPass(guildObj, stickers));
+        soundboardSoundsArray.ifPresent(stickers -> createGuildSoundboardSoundPass(guildObj, stickers));
         guildJson
                 .optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
