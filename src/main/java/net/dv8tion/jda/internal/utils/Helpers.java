@@ -292,8 +292,16 @@ public final class Helpers {
 
     public static <T extends Throwable> T appendCause(T throwable, Throwable cause) {
         Throwable t = throwable;
+        Set<Throwable> seenThrowables = Collections.newSetFromMap(new IdentityHashMap<>());
+        seenThrowables.add(throwable);
+
         while (t.getCause() != null) {
             t = t.getCause();
+
+            // Can't init cause if the exception is recursive, return original
+            if (!seenThrowables.add(t)) {
+                return throwable;
+            }
         }
         t.initCause(cause);
         return throwable;
