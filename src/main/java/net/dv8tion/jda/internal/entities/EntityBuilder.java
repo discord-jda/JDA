@@ -173,6 +173,23 @@ public class EntityBuilder extends AbstractEntityBuilder {
         }
     }
 
+    public SoundboardSound createSoundboardSound(DataObject json) {
+        String name = json.getString("name");
+        long id = json.getLong("sound_id");
+        double volume = json.getDouble("volume");
+        EmojiUnion emoji;
+        if (!json.isNull("emoji_name") || !json.isNull("emoji_id")) {
+            emoji = createEmoji(json, "emoji_name", "emoji_id");
+        } else {
+            emoji = null;
+        }
+        Guild guild = getJDA().getGuildById(json.getLong("guild_id", 0));
+        boolean available = json.getBoolean("available");
+        User user = json.optObject("user").map(this::createUser).orElse(null);
+
+        return new SoundboardSoundImpl(api, id, name, volume, emoji, guild, available, user);
+    }
+
     public static SKU createSKU(DataObject object) {
         return new SKUImpl(
                 object.getLong("id"),
