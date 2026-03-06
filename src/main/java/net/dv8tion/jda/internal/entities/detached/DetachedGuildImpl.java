@@ -908,6 +908,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
+    public SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file) {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
     public ChannelOrderAction modifyCategoryPositions() {
         throw detachedException();
     }

@@ -1937,6 +1937,17 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
+    public SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file) {
+        checkPermission(Permission.CREATE_GUILD_EXPRESSIONS);
+        Checks.notNull(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2 and 32 characters");
+        Checks.notNull(file, "File");
+        Route.CompiledRoute route = Route.SoundboardSounds.CREATE_GUILD_SOUNDBOARD_SOUNDS.compile(getId());
+        return new SoundboardSoundCreateActionImpl(getJDA(), route, name, file);
+    }
+
+    @Nonnull
+    @Override
     public ChannelOrderAction modifyCategoryPositions() {
         return new ChannelOrderActionImpl(this, ChannelType.CATEGORY.getSortBucket());
     }

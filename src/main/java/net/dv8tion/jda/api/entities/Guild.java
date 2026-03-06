@@ -5716,6 +5716,43 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id);
 
     /**
+     * Creates a soundboard sound in the guild.
+     *
+     * <p>The returned {@link RestAction} can encounter the following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses}:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FILE_EXCEEDS_MAXIMUM_LENGTH INVALID_FILE_EXCEEDS_MAXIMUM_LENGTH}
+     *     <br>The provided file exceeds the duration of 5.2 seconds</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_SOUNDBOARD_SOUNDS MAX_SOUNDBOARD_SOUNDS}
+     *     <br>The maximum amount of soundboard sounds have been created, depends on the server boosts</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_EMOJI INVALID_EMOJI}
+     *     <br>The emoji is invalid</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>The file is too large</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FILE INVALID_FILE}
+     *     <br>The file is malformed</li>
+     * </ul>
+     *
+     * @param name
+     *        The name of the soundboard sound, must be between 2-32 characters
+     * @param file
+     *        The file to use as the sound, can be an MP3 or an OGG file
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If {@code name} is not between 2-32 characters</li>
+     *             <li>If the file is not of the correct type</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} in the guild.
+     *
+     * @return {@link SoundboardSoundCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file);
+
+    /**
      * Creates a new {@link ScheduledEvent}.
      * Events created with this method will be of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
      * These events are set to take place at an external location.
