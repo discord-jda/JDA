@@ -296,12 +296,14 @@ public final class Helpers {
         seenThrowables.add(throwable);
 
         while (t.getCause() != null) {
-            t = t.getCause();
-
-            // Can't init cause if the exception is recursive, return original
-            if (!seenThrowables.add(t)) {
+            // Can't init cause if the exception is recursive,
+            // add cause as suppressed on the exception before the recursion
+            if (!seenThrowables.add(t.getCause())) {
+                t.addSuppressed(cause);
                 return throwable;
             }
+
+            t = t.getCause();
         }
         t.initCause(cause);
         return throwable;

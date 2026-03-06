@@ -139,8 +139,10 @@ public class HelpersTest {
         // thus you can't use 'initCause', so, 'appendCause' should bail
         var appended = new Throwable();
 
+        // A caused by B (suppressed [appended]) caused by A ...
         var d = Helpers.appendCause(a, appended);
         assertThat(d.getCause()).isSameAs(b);
         assertThat(d.getCause().getCause()).isSameAs(a);
+        assertThat(d.getCause().getSuppressed()[0]).isSameAs(appended);
     }
 }
