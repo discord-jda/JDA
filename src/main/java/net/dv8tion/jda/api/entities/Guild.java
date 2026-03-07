@@ -50,6 +50,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.managers.*;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -5787,6 +5788,30 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     @CheckReturnValue
     SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file);
+
+    /**
+     * Deletes a soundboard sound from the guild.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
+     *     <br>Occurs when the provided id does not refer to a soundboard sound known by Discord.</li>
+     *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The sound cannot be deleted due to a permission discrepancy</li>
+     * </ul>
+     *
+     * @throws IllegalStateException
+     *         If {@code null} is provided
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> deleteSoundboardSound(@Nonnull SoundboardSoundSnowflake sound);
 
     /**
      * Creates a new {@link ScheduledEvent}.

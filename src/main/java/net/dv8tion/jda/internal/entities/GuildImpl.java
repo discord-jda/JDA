@@ -1969,6 +1969,16 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
+    public AuditableRestAction<Void> deleteSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        Checks.notNull(sound, "Sound");
+        // This is the minimum requirements, there are more, but only if the soundboard sound is a complete instance
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
+        return new AuditableRestActionImpl<>(
+                api, Route.SoundboardSounds.DELETE_GUILD_SOUNDBOARD_SOUND.compile(this.getId(), sound.getId()));
+    }
+
+    @Nonnull
+    @Override
     public ChannelOrderAction modifyCategoryPositions() {
         return new ChannelOrderActionImpl(this, ChannelType.CATEGORY.getSortBucket());
     }

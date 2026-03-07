@@ -926,6 +926,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
+    public AuditableRestAction<Void> deleteSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
     public ChannelOrderAction modifyCategoryPositions() {
         throw detachedException();
     }

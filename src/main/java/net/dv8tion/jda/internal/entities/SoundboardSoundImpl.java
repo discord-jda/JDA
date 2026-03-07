@@ -27,10 +27,8 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.managers.SoundboardSoundManagerImpl;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -127,9 +125,7 @@ public class SoundboardSoundImpl extends SoundboardSoundSnowflakeImpl implements
         Checks.check(getGuild() != null, "Cannot delete default soundboard sounds");
         checkEditPermissions();
 
-        Route.CompiledRoute route =
-                Route.SoundboardSounds.DELETE_GUILD_SOUNDBOARD_SOUNDS.compile(guild.getId(), getId());
-        return new AuditableRestActionImpl<>(api, route);
+        return guild.deleteSoundboardSound(this);
     }
 
     @Nonnull
