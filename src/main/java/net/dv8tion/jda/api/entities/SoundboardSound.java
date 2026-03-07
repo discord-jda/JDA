@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
  * @see Guild#getSoundboardSounds()
  * @see <a href="https://discord.com/developers/docs/resources/soundboard" target="_blank">Discord's Soundboard Docs</a>
  */
-public interface SoundboardSound extends ISnowflake {
+public interface SoundboardSound extends SoundboardSoundSnowflake {
     /**
      * Returns the {@link JDA} instance related to this SoundboardSound.
      *
@@ -44,18 +44,6 @@ public interface SoundboardSound extends ISnowflake {
      */
     @Nonnull
     JDA getJDA();
-
-    /**
-     * Returns the URL to the sound asset.
-     *
-     * <p>The format used may be MP3 or Ogg.
-     *
-     * @return A String representing this sound's asset
-     */
-    @Nonnull
-    default String getUrl() {
-        return String.format("https://cdn.discordapp.com/soundboard-sounds/%s", getId());
-    }
 
     /**
      * The name of this sound.

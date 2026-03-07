@@ -38,9 +38,8 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class SoundboardSoundImpl implements SoundboardSound {
+public class SoundboardSoundImpl extends SoundboardSoundSnowflakeImpl implements SoundboardSound {
     private final JDA api;
-    private final long id;
     private final String name;
     private final double volume;
     private final EmojiUnion emoji;
@@ -50,19 +49,14 @@ public class SoundboardSoundImpl implements SoundboardSound {
 
     public SoundboardSoundImpl(
             JDA api, long id, String name, double volume, EmojiUnion emoji, Guild guild, boolean available, User user) {
+        super(id);
         this.api = api;
-        this.id = id;
         this.name = name;
         this.volume = volume;
         this.emoji = emoji;
         this.guild = guild;
         this.available = available;
         this.user = user;
-    }
-
-    @Override
-    public long getIdLong() {
-        return this.id;
     }
 
     @Nonnull
@@ -184,22 +178,6 @@ public class SoundboardSoundImpl implements SoundboardSound {
         } else if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
             throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return Long.hashCode(id);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof SoundboardSoundImpl)) {
-            return false;
-        }
-        return ((SoundboardSoundImpl) obj).getIdLong() == this.id;
     }
 
     @Override
