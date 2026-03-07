@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.SoundboardSound;
+import net.dv8tion.jda.api.entities.SoundboardSoundSnowflake;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
@@ -31,34 +31,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class SoundboardSoundManagerImpl extends ManagerBase<SoundboardSoundManager> implements SoundboardSoundManager {
-    private SoundboardSound soundboardSound;
+    private final Guild guild;
     private String name;
     private double volume;
     private Emoji emoji;
 
-    public SoundboardSoundManagerImpl(SoundboardSound soundboardSound) {
+    public SoundboardSoundManagerImpl(Guild guild, SoundboardSoundSnowflake soundboardSound) {
         super(
-                soundboardSound.getJDA(),
-                Route.SoundboardSounds.MODIFY_GUILD_SOUNDBOARD_SOUND.compile(
-                        soundboardSound.getGuild().getId(), soundboardSound.getId()));
-        this.soundboardSound = soundboardSound;
+                guild.getJDA(),
+                Route.SoundboardSounds.MODIFY_GUILD_SOUNDBOARD_SOUND.compile(guild.getId(), soundboardSound.getId()));
+        this.guild = guild;
     }
 
     @Nonnull
     @Override
-    @SuppressWarnings("DataFlowIssue")
     public Guild getGuild() {
-        return soundboardSound.getGuild();
-    }
-
-    @Nonnull
-    @Override
-    public SoundboardSound getSoundboardSound() {
-        SoundboardSound soundboardSound = getGuild().getSoundboardSoundById(this.soundboardSound.getId());
-        if (soundboardSound != null) {
-            this.soundboardSound = soundboardSound;
-        }
-        return this.soundboardSound;
+        return guild;
     }
 
     @Nonnull
@@ -126,7 +114,7 @@ public class SoundboardSoundManagerImpl extends ManagerBase<SoundboardSoundManag
 
     @Override
     protected RequestBody finalizeData() {
-        DataObject object = DataObject.empty().put("name", getSoundboardSound().getName());
+        DataObject object = DataObject.empty();
         if (shouldUpdate(NAME)) {
             object.put("name", name);
         }

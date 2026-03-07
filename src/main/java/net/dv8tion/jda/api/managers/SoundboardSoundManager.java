@@ -92,14 +92,6 @@ public interface SoundboardSoundManager extends Manager<SoundboardSoundManager> 
     SoundboardSoundManager reset(@Nonnull long... fields);
 
     /**
-     * The target {@link SoundboardSound} for this manager
-     *
-     * @return The target SoundboardSound
-     */
-    @Nonnull
-    SoundboardSound getSoundboardSound();
-
-    /**
      * The {@link Guild} this Manager's {@link SoundboardSound} is in.
      *
      * @return The parent {@link Guild}
