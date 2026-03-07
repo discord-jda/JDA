@@ -166,6 +166,8 @@ public interface SoundboardSound extends SoundboardSoundSnowflake {
      * <ul>
      *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The sound cannot be edited due to a permission discrepancy</li>
+     *     <li>{@link ErrorResponse#INVALID_EMOJI INVALID_EMOJI}
+     *     <br>The emoji is invalid</li>
      *     <li>{@link ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
      *     <br>The sound was deleted</li>
      * </ul>

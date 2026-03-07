@@ -2799,8 +2799,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
+     *     <li>{@link ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
      *     <br>Occurs when the provided id does not refer to a soundboard sound known by Discord.</li>
+     *     <li>{@link ErrorResponse#INVALID_EMOJI INVALID_EMOJI}
+     *     <br>The emoji is invalid</li>
      *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The sound cannot be deleted due to a permission discrepancy</li>
      * </ul>
