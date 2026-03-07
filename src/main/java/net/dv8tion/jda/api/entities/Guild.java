@@ -2770,6 +2770,29 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     RestAction<List<SoundboardSound>> retrieveSoundboardSounds();
 
     /**
+     * Attempts to retrieve a {@link SoundboardSound} object for this guild based on the provided snowflake reference.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
+     *     <br>Occurs when the provided id does not refer to a soundboard sound known by Discord.</li>
+     * </ul>
+     *
+     * @param  sound
+     *         The reference of the requested {@link SoundboardSound}.
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link SoundboardSound}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound);
+
+    /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or
      * {@link #unban(UserSnowflake)}.
