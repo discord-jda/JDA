@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -155,7 +156,7 @@ public interface SoundboardSound extends SoundboardSoundSnowflake {
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> delete();
+    AuditableRestAction<Void> delete();
 
     /**
      * The {@link SoundboardSoundManager} for this soundboard sound, in which you can modify values.

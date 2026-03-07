@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.managers.SoundboardSoundManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -122,7 +123,7 @@ public class SoundboardSoundImpl extends SoundboardSoundSnowflakeImpl implements
 
     @Nonnull
     @Override
-    public RestAction<Void> delete() {
+    public AuditableRestAction<Void> delete() {
         Checks.check(getGuild() != null, "Cannot delete default soundboard sounds");
         checkEditPermissions();
 
