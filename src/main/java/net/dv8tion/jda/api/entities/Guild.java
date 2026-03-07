@@ -2757,6 +2757,19 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     GuildStickerManager editSticker(@Nonnull StickerSnowflake sticker);
 
     /**
+     * Retrieves all the soundboard sounds from this guild.
+     * <br>This also includes {@link SoundboardSound#isAvailable() unavailable} soundboard sounds.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link RestAction} - Type: List of {@link SoundboardSound}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<SoundboardSound>> retrieveSoundboardSounds();
+
+    /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or
      * {@link #unban(UserSnowflake)}.

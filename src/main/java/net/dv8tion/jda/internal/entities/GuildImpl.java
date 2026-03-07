@@ -958,6 +958,17 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
+    public RestAction<List<SoundboardSound>> retrieveSoundboardSounds() {
+        return new RestActionImpl<>(
+                api,
+                Route.SoundboardSounds.LIST_DEFAULT_SOUNDBOARD_SOUNDS.compile(),
+                (response, request) -> response.getArray().stream(DataArray::getObject)
+                        .map(o -> api.getEntityBuilder().createSoundboardSound(o))
+                        .collect(Helpers.toUnmodifiableList()));
+    }
+
+    @Nonnull
+    @Override
     public BanPaginationActionImpl retrieveBanList() {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
