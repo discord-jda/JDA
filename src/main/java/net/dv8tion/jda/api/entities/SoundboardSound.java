@@ -81,9 +81,9 @@ public interface SoundboardSound extends ISnowflake {
     EmojiUnion getEmoji();
 
     /**
-     * The guild this sound is from.
+     * The guild this sound is from, or {@code null} if this is a default soundboard sound.
      *
-     * @return The guild this sound is from, or {@code null} if this is a default soundboard sound
+     * @return The guild this sound is from, or {@code null}
      */
     @Nullable
     Guild getGuild();
@@ -96,7 +96,7 @@ public interface SoundboardSound extends ISnowflake {
     boolean isAvailable();
 
     /**
-     * The user which created this sound.
+     * The user which created this sound, or {@code null} if this is a default soundboard sound.
      *
      * <p>This is present only if the {@link Guild#getSelfMember() self member} has
      * the {@link Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS}
