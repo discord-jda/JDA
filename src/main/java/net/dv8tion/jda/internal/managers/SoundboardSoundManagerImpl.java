@@ -39,7 +39,7 @@ public class SoundboardSoundManagerImpl extends ManagerBase<SoundboardSoundManag
     public SoundboardSoundManagerImpl(SoundboardSound soundboardSound) {
         super(
                 soundboardSound.getJDA(),
-                Route.SoundboardSounds.MODIFY_GUILD_SOUNDBOARD_SOUNDS.compile(
+                Route.SoundboardSounds.MODIFY_GUILD_SOUNDBOARD_SOUND.compile(
                         soundboardSound.getGuild().getId(), soundboardSound.getId()));
         this.soundboardSound = soundboardSound;
     }

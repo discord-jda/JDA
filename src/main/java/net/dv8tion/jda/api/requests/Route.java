@@ -216,9 +216,9 @@ public class Route {
         public static final Route LIST_GUILD_SOUNDBOARD_SOUNDS = new Route(GET, "guilds/{guild_id}/soundboard-sounds");
         public static final Route GET_GUILD_SOUNDBOARD_SOUND =
                 new Route(GET, "guilds/{guild_id}/soundboard-sounds/{sound_id}");
-        public static final Route CREATE_GUILD_SOUNDBOARD_SOUNDS =
+        public static final Route CREATE_GUILD_SOUNDBOARD_SOUND =
                 new Route(POST, "guilds/{guild_id}/soundboard-sounds");
-        public static final Route MODIFY_GUILD_SOUNDBOARD_SOUNDS =
+        public static final Route MODIFY_GUILD_SOUNDBOARD_SOUND =
                 new Route(PATCH, "guilds/{guild_id}/soundboard-sounds/{sound_id}");
         public static final Route DELETE_GUILD_SOUNDBOARD_SOUND =
                 new Route(DELETE, "guilds/{guild_id}/soundboard-sounds/{sound_id}");
