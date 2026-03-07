@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.ISoundboardSoundChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
@@ -132,7 +132,7 @@ public interface SoundboardSound extends SoundboardSoundSnowflake {
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> sendTo(@Nonnull VoiceChannel channel);
+    RestAction<Void> sendTo(@Nonnull ISoundboardSoundChannel channel);
 
     /**
      * Deletes this soundboard sound.

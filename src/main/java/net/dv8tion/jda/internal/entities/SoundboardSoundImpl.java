@@ -18,16 +18,17 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.SoundboardSound;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.attribute.ISoundboardSoundChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.managers.SoundboardSoundManagerImpl;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -100,7 +101,7 @@ public class SoundboardSoundImpl extends SoundboardSoundSnowflakeImpl implements
 
     @Nonnull
     @Override
-    public RestAction<Void> sendTo(@Nonnull VoiceChannel channel) {
+    public RestAction<Void> sendTo(@Nonnull ISoundboardSoundChannel channel) {
         Checks.notNull(channel, "Channel");
 
         // Check available
@@ -108,46 +109,15 @@ public class SoundboardSoundImpl extends SoundboardSoundSnowflakeImpl implements
             throw new IllegalStateException("Cannot send an unavailable sound");
         }
 
-        // Check speak permissions
+        // Check additional speak permissions
+        // This isn't done in IVoiceStatusChannel as it could throw false positives
         Guild targetGuild = channel.getGuild();
-        if (!targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_SPEAK)) {
-            throw new InsufficientPermissionException(channel, Permission.VOICE_SPEAK);
-        }
-        if (!targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_SOUNDBOARD)) {
-            throw new InsufficientPermissionException(channel, Permission.VOICE_USE_SOUNDBOARD);
-        }
-
         if (!targetGuild.equals(getGuild())
                 && !targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS)) {
             throw new InsufficientPermissionException(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS);
         }
 
-        // Check voice state if possible
-        if (!channel.equals(targetGuild.getAudioManager().getConnectedChannel())) {
-            throw new IllegalStateException(
-                    "You must be connected to the voice channel you want to send the sound effect to");
-        }
-        GuildVoiceState voiceState = targetGuild.getSelfMember().getVoiceState();
-        if (voiceState != null) {
-            if (voiceState.isSuppressed()) {
-                throw new IllegalStateException("You cannot send sound effects while you are being suppressed");
-            }
-            if (voiceState.isDeafened()) {
-                throw new IllegalStateException("You cannot send sound effects while you are deafened");
-            }
-            if (voiceState.isMuted()) {
-                throw new IllegalStateException("You cannot send sound effects while you are muted");
-            }
-        }
-
-        // Send
-        DataObject data = DataObject.empty().put("sound_id", getId());
-
-        if (guild != null) {
-            data.put("source_guild_id", guild.getId());
-        }
-
-        return new RestActionImpl<>(api, Route.SoundboardSounds.SEND_SOUNDBOARD_SOUND.compile(channel.getId()), data);
+        return channel.sendSoundboardSound(this, this.getGuild().getIdLong());
     }
 
     @Nonnull
