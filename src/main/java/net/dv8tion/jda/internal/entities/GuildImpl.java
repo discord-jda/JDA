@@ -979,6 +979,14 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
+    public SoundboardSoundManager editSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        Checks.notNull(sound, "Sound");
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
+        return new SoundboardSoundManagerImpl(this, sound);
+    }
+
+    @Nonnull
+    @Override
     public BanPaginationActionImpl retrieveBanList() {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);

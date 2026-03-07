@@ -555,6 +555,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
+    public SoundboardSoundManager editSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
     public BanPaginationActionImpl retrieveBanList() {
         throw detachedException();
     }

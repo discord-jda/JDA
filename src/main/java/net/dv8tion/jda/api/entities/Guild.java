@@ -2794,6 +2794,31 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     RestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound);
 
     /**
+     * Modify a soundboard sound using {@link SoundboardSoundManager}.
+     * <br>You can update multiple fields at once, by calling the respective setters before executing the request.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
+     *     <br>Occurs when the provided id does not refer to a soundboard sound known by Discord.</li>
+     *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The sound cannot be deleted due to a permission discrepancy</li>
+     * </ul>
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link SoundboardSoundManager}
+     */
+    @Nonnull
+    @CheckReturnValue
+    SoundboardSoundManager editSoundboardSound(@Nonnull SoundboardSoundSnowflake sound);
+
+    /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or
      * {@link #unban(UserSnowflake)}.
