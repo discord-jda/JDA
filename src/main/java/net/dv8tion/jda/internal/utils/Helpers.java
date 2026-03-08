@@ -292,20 +292,18 @@ public final class Helpers {
 
     public static <T extends Throwable> T appendCause(T throwable, Throwable cause) {
         Throwable t = throwable;
-        Set<Throwable> seenThrowables = Collections.newSetFromMap(new IdentityHashMap<>());
-        seenThrowables.add(throwable);
 
-        while (t.getCause() != null) {
-            // Can't init cause if the exception is recursive,
-            // add cause as suppressed on the exception before the recursion
-            if (!seenThrowables.add(t.getCause())) {
-                t.addSuppressed(cause);
+        for (int i = 0; i < 5; i++) {
+            if (t.getCause() == null) {
+                t.initCause(cause);
                 return throwable;
+            } else {
+                t = t.getCause();
             }
-
-            t = t.getCause();
         }
-        t.initCause(cause);
+
+        // Exception is too deep, add it to the latest seen
+        t.addSuppressed(cause);
         return throwable;
     }
 

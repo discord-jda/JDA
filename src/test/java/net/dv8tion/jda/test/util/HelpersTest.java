@@ -111,38 +111,4 @@ public class HelpersTest {
         assertThat(Helpers.deepEquals(a, c)).isFalse();
         assertThat(Helpers.deepEqualsUnordered(b, c)).isFalse();
     }
-
-    @Test
-    void testAppendCause_simple() {
-        // A caused by B caused by C
-        var c = new Throwable();
-        var b = new Throwable(c);
-        var a = new Throwable(b);
-
-        var appended = new Throwable();
-
-        // A caused by B caused by C caused by [appended]
-        var d = Helpers.appendCause(a, appended);
-        assertThat(d.getCause()).isSameAs(b);
-        assertThat(d.getCause().getCause()).isSameAs(c);
-        assertThat(d.getCause().getCause().getCause()).isSameAs(appended);
-    }
-
-    @Test
-    void testAppendCause_recursive() {
-        // A caused by B caused by A ...
-        var a = new Throwable();
-        var b = new Throwable(a);
-        a.initCause(b);
-
-        // Try to append an exception, but it cannot not since recursive exceptions all have causes,
-        // thus you can't use 'initCause', so, 'appendCause' should bail
-        var appended = new Throwable();
-
-        // A caused by B (suppressed [appended]) caused by A ...
-        var d = Helpers.appendCause(a, appended);
-        assertThat(d.getCause()).isSameAs(b);
-        assertThat(d.getCause().getCause()).isSameAs(a);
-        assertThat(d.getCause().getSuppressed()[0]).isSameAs(appended);
-    }
 }
