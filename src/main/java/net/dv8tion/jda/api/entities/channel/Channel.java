@@ -50,6 +50,19 @@ public interface Channel extends IMentionable, IDetachableEntity {
     }
 
     /**
+     * Whether this channel is obfuscated.
+     *
+     * <p>An obfuscated channel is inaccessible and to the logged-in account.
+     * It does not provide anything besides positional information.
+     * Methods like {@link #getName()} will return not return the actual name of the channel.
+     *
+     * @return True, if this channel is obfuscated.
+     */
+    default boolean isObfuscated() {
+        return getFlags().contains(ChannelFlag.OBFUSCATED);
+    }
+
+    /**
      * The human readable name of this channel.
      *
      * <p>May be an empty string for {@link net.dv8tion.jda.api.entities.channel.concrete.GroupChannel GroupChannels}

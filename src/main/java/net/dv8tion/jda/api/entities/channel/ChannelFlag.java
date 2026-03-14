@@ -41,7 +41,12 @@ public enum ChannelFlag {
     /**
      * This is a {@link net.dv8tion.jda.api.entities.channel.concrete.MediaChannel MediaChannel} which hides the copy embed option.
      */
-    HIDE_MEDIA_DOWNLOAD_OPTIONS(1 << 15);
+    HIDE_MEDIA_DOWNLOAD_OPTIONS(1 << 15),
+
+    /**
+     * This channel is inaccessible to the logged in account and obfuscated for privacy.
+     */
+    OBFUSCATED(1 << 17);
 
     private final int value;
 

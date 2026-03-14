@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
@@ -85,7 +86,23 @@ public class InteractionImpl implements Interaction {
 
         DataObject channelJson = data.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
-        if (guild instanceof GuildImpl) {
+        boolean isObfuscatedChannel =
+                ChannelFlag.fromRaw(channelJson.getInt("flags", 0)).contains(ChannelFlag.OBFUSCATED);
+
+        if (guild instanceof DetachedGuildImpl || (guild != null && isObfuscatedChannel)) {
+            member = interactionEntityBuilder.createMember(guild, data.getObject("member"));
+            user = member.getUser();
+
+            if (channelType.isThread()) {
+                channel = interactionEntityBuilder.createThreadChannel(guild, channelJson);
+            } else {
+                channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
+            }
+            if (channel == null) {
+                throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: "
+                        + channelJson.getInt("type"));
+            }
+        } else if (guild instanceof GuildImpl) {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
             jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
             user = member.getUser();
@@ -100,19 +117,6 @@ public class InteractionImpl implements Interaction {
                         + channelJson.getInt("type"));
             }
             this.channel = channel;
-        } else if (guild instanceof DetachedGuildImpl) {
-            member = interactionEntityBuilder.createMember(guild, data.getObject("member"));
-            user = member.getUser();
-
-            if (channelType.isThread()) {
-                channel = interactionEntityBuilder.createThreadChannel(guild, channelJson);
-            } else {
-                channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
-            }
-            if (channel == null) {
-                throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: "
-                        + channelJson.getInt("type"));
-            }
         } else {
             // (G)DMs
             user = jda.getEntityBuilder().createUser(userObj);
