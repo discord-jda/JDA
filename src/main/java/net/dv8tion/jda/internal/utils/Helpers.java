@@ -302,7 +302,7 @@ public final class Helpers {
             }
         }
 
-        // Exception is too deep, add it to the latest seen
+        // Exception is too deep, add it on the initial exception as suppressed
         throwable.addSuppressed(cause);
         return throwable;
     }
