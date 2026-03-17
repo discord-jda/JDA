@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.middleman;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -29,6 +30,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -38,6 +44,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.*;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.NonThrowingAutoCloseable;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
@@ -58,10 +65,16 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.api.entities.Message Messages} and files sent to it.
@@ -1895,12 +1908,278 @@ public interface MessageChannel extends Channel, Formattable {
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
+     *
+     * @see #sendTypingContinuously()
+     * @see #sendTypingContinuously(Consumer)
      */
     @Nonnull
     @CheckReturnValue
     default RestAction<Void> sendTyping() {
         Route.CompiledRoute route = Route.Channels.SEND_TYPING.compile(getId());
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    /**
+     * Sends the typing status to discord continuously, starting immediately.
+     * This is what is used to make the message "X is typing..." appear.
+     * The message is continuously displayed if not quit using the returned {@code AutoCloseable}.
+     * Sending a message will make the message go away shortly, but it will return immediately if not cancelled using
+     * the {@code AutoCloseable}. This can for example be used in a try-with-resources block.
+     *
+     * <p>The typing indicator will immediately be shown. To delay the display of the first typing indicator, use
+     * {@link #sendTypingContinuouslyAfter(long, TimeUnit)}. This can be useful if the task you do can be finished in very
+     * short time which could cause the typing indicator and the response message being sent at the same time and the
+     * typing indicator could be shown for 10 seconds even if the message was sent already.
+     *
+     * <p>No ratelimit retries are done, and any occurring exceptions including ratelimit exceptions are suppressed.
+     * If you want to handle exceptions, use
+     * {@link #sendTypingContinuously(Consumer)} or {@link #sendTypingContinuouslyAfter(long, TimeUnit, Consumer)}.
+     *
+     * <p>Note that this method only works if the {@link net.dv8tion.jda.api.JDABuilder#setEventManager(IEventManager) event manager}
+     * is either the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager}
+     * or {@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager}.
+     * <br>Other implementations can support it as long as they call
+     * {@link net.dv8tion.jda.api.hooks.EventListener#onEvent(GenericEvent) EventListener.onEvent(GenericEvent)}.
+     *
+     * <p><b>Example:</b>
+     * {@snippet lang="java":
+     * try (NonThrowingAutoCloseable typingIndicator = messageChannel.sendTypingContinuously()) {
+     *     // do lengthy stuff
+     * }
+     * sendReply();
+     * }
+     *
+     * <p>Or with newer Java versions:
+     * {@snippet lang="java":
+     * try (var _ = messageChannel.sendTypingContinuously()) {
+     *     // do lengthy stuff
+     * }
+     * sendReply();
+     * }
+     *
+     * @return An auto-closable to stop sending the typing indicator
+     *
+     * @see #sendTyping()
+     * @see #sendTypingContinuously(Consumer)
+     * @see #sendTypingContinuouslyAfter(long, TimeUnit)
+     * @see #sendTypingContinuouslyAfter(long, TimeUnit, Consumer)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default NonThrowingAutoCloseable sendTypingContinuously() {
+        return sendTypingContinuouslyAfter(0, NANOSECONDS, null);
+    }
+
+    /**
+     * Sends the typing status to discord continuously, starting immediately.
+     * This is what is used to make the message "X is typing..." appear.
+     * The message is continuously displayed if not quit using the returned {@code AutoCloseable}.
+     * Sending a message will make the message go away shortly, but it will return immediately if not cancelled using
+     * the {@code AutoCloseable}. This can for example be used in a try-with-resources block.
+     *
+     * <p>The typing indicator will immediately be shown. To delay the display of the first typing indicator, use
+     * {@link #sendTypingContinuouslyAfter(long, TimeUnit)}. This can be useful if the task you do can be finished in very
+     * short time which could cause the typing indicator and the response message being sent at the same time and the
+     * typing indicator could be shown for 10 seconds even if the message was sent already.
+     *
+     * <p>No ratelimit retries are done, and any occurring exceptions including ratelimit exceptions are given to the
+     * provided {@code exceptionHandler} or ignored if it is {@code null}.
+     *
+     * <p>Note that this method only works if the {@link net.dv8tion.jda.api.JDABuilder#setEventManager(IEventManager) event manager}
+     * is either the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager}
+     * or {@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager}.
+     * <br>Other implementations can support it as long as they call
+     * {@link net.dv8tion.jda.api.hooks.EventListener#onEvent(GenericEvent) EventListener.onEvent(GenericEvent)}.
+     *
+     * <p><b>Example:</b>
+     * {@snippet lang="java":
+     * try (NonThrowingAutoCloseable typingIndicator = messageChannel.sendTypingContinuously(new ErrorHandler().ignore(RateLimitedException.class))) {
+     *     // do lengthy stuff
+     * }
+     * sendReply();
+     * }
+     *
+     * <p>Or with newer Java versions:
+     * {@snippet lang="java":
+     * try (var _ = messageChannel.sendTypingContinuously(new ErrorHandler().ignore(RateLimitedException.class))) {
+     *     // do lengthy stuff
+     * }
+     * sendReply();
+     * }
+     *
+     * @param exceptionHandler
+     *        The handler that exceptions are given to
+     *
+     * @return An auto-closable to stop sending the typing indicator
+     *
+     * @see #sendTyping()
+     * @see #sendTypingContinuously()
+     * @see #sendTypingContinuouslyAfter(long, TimeUnit)
+     * @see #sendTypingContinuouslyAfter(long, TimeUnit, Consumer)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default NonThrowingAutoCloseable sendTypingContinuously(@Nullable Consumer<Throwable> exceptionHandler) {
+        return sendTypingContinuouslyAfter(0, NANOSECONDS, exceptionHandler);
+    }
+
+    /**
+     * Sends the typing status to discord continuously, starting delayed.
+     * This is what is used to make the message "X is typing..." appear.
+     * The message is continuously displayed if not quit using the returned {@code AutoCloseable}.
+     * Sending a message will make the message go away shortly, but it will return immediately if not cancelled using
+     * the {@code AutoCloseable}. This can for example be used in a try-with-resources block.
+     *
+     * <p>The typing indicator will be shown delayed. This can be useful if the task you do can be finished in very
+     * short time which could cause the typing indicator and the response message being sent at the same time and the
+     * typing indicator could be shown for 10 seconds even if the message was sent already. With the delay this is
+     * compensated, because if the returned {@code AutoCloseable} is closed before the delay is over, no typing
+     * indicator will be sent at all.
+     *
+     * <p>No ratelimit retries are done, and any occurring exceptions including ratelimit exceptions are suppressed.
+     * If you want to handle exceptions, use
+     * {@link #sendTypingContinuously(Consumer)} or {@link #sendTypingContinuouslyAfter(long, TimeUnit, Consumer)}.
+     *
+     * <p>Note that this method only works if the {@link net.dv8tion.jda.api.JDABuilder#setEventManager(IEventManager) event manager}
+     * is either the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager}
+     * or {@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager}.
+     * <br>Other implementations can support it as long as they call
+     * {@link net.dv8tion.jda.api.hooks.EventListener#onEvent(GenericEvent) EventListener.onEvent(GenericEvent)}.
+     *
+     * <p><b>Example:</b>
+     * {@snippet lang="java":
+     * try (NonThrowingAutoCloseable typingIndicator = messageChannel.sendTypingContinuouslyAfter(500, TimeUnit.MILLISECONDS)) {
+     *     // do lengthy stuff
+     * }
+     * sendReply();
+     * }
+     *
+     * <p>Or with newer Java versions:
+     * {@snippet lang="java":
+     * try (var _ = messageChannel.sendTypingContinuouslyAfter(500, TimeUnit.MILLISECONDS)) {
+     *     // do lengthy stuff
+     * }
+     * sendReply();
+     * }
+     *
+     * @param delay
+     *        The delay to wait until the first typing indicator is sent
+     * @param timeUnit
+     *        The time unit of the delay value
+     *
+     * @return An auto-closable to stop sending the typing indicator
+     *
+     * @see #sendTyping()
+     * @see #sendTypingContinuously()
+     * @see #sendTypingContinuously(Consumer)
+     * @see #sendTypingContinuouslyAfter(long, TimeUnit, Consumer)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default NonThrowingAutoCloseable sendTypingContinuouslyAfter(long delay, @Nonnull TimeUnit timeUnit) {
+        return sendTypingContinuouslyAfter(delay, timeUnit, null);
+    }
+
+    /**
+     * Sends the typing status to discord continuously, starting delayed.
+     * This is what is used to make the message "X is typing..." appear.
+     * The message is continuously displayed if not quit using the returned {@code AutoCloseable}.
+     * Sending a message will make the message go away shortly, but it will return immediately if not cancelled using
+     * the {@code AutoCloseable}. This can for example be used in a try-with-resources block.
+     *
+     * <p>The typing indicator will be shown delayed. This can be useful if the task you do can be finished in very
+     * short time which could cause the typing indicator and the response message being sent at the same time and the
+     * typing indicator could be shown for 10 seconds even if the message was sent already. With the delay this is
+     * compensated, because if the returned {@code AutoCloseable} is closed before the delay is over, no typing
+     * indicator will be sent at all.
+     *
+     * <p>No ratelimit retries are done, and any occurring exceptions including ratelimit exceptions are given to the
+     * provided {@code exceptionHandler} or ignored if it is {@code null}.
+     *
+     * <p>Note that this method only works if the {@link net.dv8tion.jda.api.JDABuilder#setEventManager(IEventManager) event manager}
+     * is either the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager}
+     * or {@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager}.
+     * <br>Other implementations can support it as long as they call
+     * {@link net.dv8tion.jda.api.hooks.EventListener#onEvent(GenericEvent) EventListener.onEvent(GenericEvent)}.
+     *
+     * <p><b>Example:</b>
+     * {@snippet lang="java":
+     * try (NonThrowingAutoCloseable typingIndicator = messageChannel.sendTypingContinuouslyAfter(500, TimeUnit.MILLISECONDS, new ErrorHandler().ignore(RateLimitedException.class))) {
+     *     // do lengthy stuff
+     * }
+     * sendReply();
+     * }
+     *
+     * <p>Or with newer Java versions:
+     * {@snippet lang="java":
+     * try (var _ = messageChannel.sendTypingContinuouslyAfter(500, TimeUnit.MILLISECONDS, new ErrorHandler().ignore(RateLimitedException.class))) {
+     *     // do lengthy stuff
+     * }
+     * sendReply();
+     * }
+     *
+     * @param delay
+     *        The delay to wait until the first typing indicator is sent
+     * @param timeUnit
+     *        The time unit of the delay value
+     * @param exceptionHandler
+     *        The handler that exceptions are given to
+     *
+     * @return An auto-closable to stop sending the typing indicator
+     *
+     * @see #sendTyping()
+     * @see #sendTypingContinuously()
+     * @see #sendTypingContinuously(Consumer)
+     * @see #sendTypingContinuouslyAfter(long, TimeUnit)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default NonThrowingAutoCloseable sendTypingContinuouslyAfter(
+            long delay, @Nonnull TimeUnit timeUnit, @Nullable Consumer<Throwable> exceptionHandler) {
+        // the delegate that does the actual type indicator sending and error handling
+        Runnable sendTypingRunnable = () -> {
+            try {
+                CompletableFuture<Void> sendTypingFuture = sendTyping().submit(false);
+                if (exceptionHandler != null) {
+                    sendTypingFuture.whenComplete((__, throwable) -> exceptionHandler.accept(throwable));
+                }
+            } catch (Throwable t) {
+                if (exceptionHandler != null) {
+                    exceptionHandler.accept(t);
+                }
+            }
+        };
+
+        JDA jda = getJDA();
+
+        // schedule regular type indicator sending
+        Future<?> typingIndicator = jda.getRateLimitPool()
+                .scheduleWithFixedDelay(
+                        sendTypingRunnable, NANOSECONDS.convert(delay, timeUnit), 8_000_000_000L, NANOSECONDS);
+
+        // prevent messages from other commands to interrupt the typing indicator too long
+        EventListener typingInterruptedListener = new EventListener() {
+            @Override
+            public void onEvent(@Nonnull GenericEvent event) {
+                if (event instanceof MessageReceivedEvent) {
+                    onMessageReceived((MessageReceivedEvent) event);
+                }
+            }
+
+            @SubscribeEvent
+            private void onMessageReceived(@Nonnull MessageReceivedEvent messageReceivedEvent) {
+                if (messageReceivedEvent.getMessage().getAuthor().equals(jda.getSelfUser())) {
+                    sendTypingRunnable.run();
+                }
+            }
+        };
+        jda.addEventListener(typingInterruptedListener);
+
+        // auto-closable to cancel the continuously typing indicator
+        return () -> {
+            jda.removeEventListener(typingInterruptedListener);
+            typingIndicator.cancel(true);
+        };
     }
 
     /**

@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.PinnedMessagePaginatio
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.NonThrowingAutoCloseable;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -47,9 +48,12 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
         extends MessageChannel, MessageChannelUnion, ChannelMixin<T> {
@@ -251,6 +255,35 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
     default RestAction<Void> sendTyping() {
         checkCanAccess();
         return MessageChannelUnion.super.sendTyping();
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default NonThrowingAutoCloseable sendTypingContinuously() {
+        checkCanAccess();
+        return MessageChannelUnion.super.sendTypingContinuously();
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default NonThrowingAutoCloseable sendTypingContinuously(@Nullable Consumer<Throwable> exceptionHandler) {
+        checkCanAccess();
+        return MessageChannelUnion.super.sendTypingContinuously(exceptionHandler);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default NonThrowingAutoCloseable sendTypingContinuouslyAfter(long delay, @Nonnull TimeUnit timeUnit) {
+        checkCanAccess();
+        return MessageChannelUnion.super.sendTypingContinuouslyAfter(delay, timeUnit);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default NonThrowingAutoCloseable sendTypingContinuouslyAfter(
+            long delay, @Nonnull TimeUnit timeUnit, @Nullable Consumer<Throwable> exceptionHandler) {
+        checkCanAccess();
+        return MessageChannelUnion.super.sendTypingContinuouslyAfter(delay, timeUnit, exceptionHandler);
     }
 
     @Nonnull
