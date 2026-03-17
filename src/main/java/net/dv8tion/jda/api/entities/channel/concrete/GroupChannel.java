@@ -17,12 +17,14 @@
 package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -141,5 +143,11 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity {
     @CheckReturnValue
     default RestAction<User> retrieveOwner() {
         return getJDA().retrieveUserById(getOwnerIdLong());
+    }
+
+    @Override
+    @Nonnull
+    default String getJumpUrl() {
+        return Helpers.format(GuildChannel.JUMP_URL, "@me", getId());
     }
 }
