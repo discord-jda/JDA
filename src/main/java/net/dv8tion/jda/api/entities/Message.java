@@ -218,19 +218,39 @@ public interface Message extends ISnowflake, Formattable {
     /**
      * Pattern used to find instant invites in strings.
      *
-     * <p>The only named group is at index 1 with the name {@code "code"}.
+     * <p><b>Groups</b><br>
+     * <table>
+     *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
+     *   <tr>
+     *     <th>Index</th>
+     *     <th>Name</th>
+     *     <th>Description</th>
+     *   </tr>
+     *   <tr>
+     *     <td>0</td>
+     *     <td>N/A</td>
+     *     <td>The entire link</td>
+     *   </tr>
+     *   <tr>
+     *     <td>1</td>
+     *     <td>code</td>
+     *     <td>The invite code</td>
+     *   </tr>
+     * </table>
+     *
+     * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+     * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
      *
      * @see #getInvites()
      */
     Pattern INVITE_PATTERN = Pattern.compile(
-            "(?:https?://)?" + // Scheme
-                    "(?:\\w+\\.)?"
-                    + // Subdomain
-                    "discord(?:(?:app)?\\.com"
-                    + // Discord domain
-                    "/invite[/\\\\]|\\.gg/)(?<code>[a-z0-9-]+)"
-                    + // Path
-                    "(?:\\?\\S*)?(?:#\\S*)?", // Useless query or URN appendix
+            "(?x)                                                      # enable comment mode \n"
+                    + "(?:https?+://)?+                                # 'https://' or 'http://' or '' \n"
+                    + "(?:\\w+\\.)?                                    # for example 'canary.' or 'ptb.'\n"
+                    + "discord(?:(?:app)?+\\.com/invite[/\\\\]|\\.gg/) # 'discord(app).com/invite(/\\)' or 'discord.gg/' \n"
+                    + "(?<code>[a-z0-9-]++)                            # the invite code as named group \n"
+                    + "(?:\\?\\S*)?                                    # useless query appendix \n"
+                    + "(?-x:#\\S*)?                                    # useless URN appendix",
             Pattern.CASE_INSENSITIVE);
 
     /**
@@ -238,7 +258,7 @@ public interface Message extends ISnowflake, Formattable {
      *
      * <p><b>Groups</b><br>
      * <table>
-     *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
+     *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
      *   <tr>
      *     <th>Index</th>
      *     <th>Name</th>
@@ -252,7 +272,7 @@ public interface Message extends ISnowflake, Formattable {
      *   <tr>
      *     <td>1</td>
      *     <td>guild</td>
-     *     <td>The ID of the target guild</td>
+     *     <td>The ID of the target guild or {@code @me} if the channel is not a guild channel</td>
      *   </tr>
      *   <tr>
      *     <td>2</td>
@@ -265,20 +285,24 @@ public interface Message extends ISnowflake, Formattable {
      *     <td>The ID of the target message</td>
      *   </tr>
      * </table>
+     *
      * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
      * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
      *
      * @see #getJumpUrl()
      */
     Pattern JUMP_URL_PATTERN = Pattern.compile(
-            "(?:https?://)?" + // Scheme
-                    "(?:\\w+\\.)?"
-                    + // Subdomain
-                    "discord(?:app)?\\.com"
-                    + // Discord domain
-                    "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)"
-                    + // Path
-                    "(?:\\?\\S*)?(?:#\\S*)?", // Useless query or URN appendix
+            "(?x)                                       # enable comment mode \n"
+                    + "(?:https?+://)?+                 # 'https://' or 'http://' or '' \n"
+                    + "(?:\\w+\\.)?                     # for example 'canary.' or 'ptb.'\n"
+                    + "discord(?:app)?+\\.com/channels/ # 'discord(app).com/channels/' \n"
+                    + "(?:(?<guild>\\d++)|@me)          # '@me' or the guild id as named group \n"
+                    + "/                                # '/' \n"
+                    + "(?<channel>\\d++)                # the textchannel id as named group \n"
+                    + "/                                # '/' \n"
+                    + "(?<message>\\d++)                # the message id as named group \n"
+                    + "(?:\\?\\S*)?                     # useless query appendix \n"
+                    + "(?-x:#\\S*)?                     # useless URN appendix",
             Pattern.CASE_INSENSITIVE);
 
     /**
@@ -2520,38 +2544,241 @@ public interface Message extends ISnowflake, Formattable {
     enum MentionType {
         /**
          * Represents a mention for a {@link User User}/{@link net.dv8tion.jda.api.entities.Member Member}
-         * <br>The first and only group matches the id of the mention.
+         *
+         * <p><b>Groups</b><br>
+         * <table>
+         *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
+         *   <tr>
+         *     <th>Index</th>
+         *     <th>Name</th>
+         *     <th>Description</th>
+         *   </tr>
+         *   <tr>
+         *     <td>0</td>
+         *     <td>N/A</td>
+         *     <td>The entire mention</td>
+         *   </tr>
+         *   <tr>
+         *     <td>1</td>
+         *     <td>id</td>
+         *     <td>The id of the user</td>
+         *   </tr>
+         * </table>
+         *
+         * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+         * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
          */
-        USER("<@!?(\\d+)>", "users"),
+        // language=regexp
+        USER(
+                "(?x)                          # enable comment mode \n"
+                        + "(?<!                # negative lookbehind (do not have uneven amount of backslashes before) \n"
+                        + "    (?<!\\\\)       # negative lookbehind (do not have one backslash before) \n"
+                        + "    (?:\\\\{2}+)    # exactly two backslashes \n"
+                        + "    {0,1000000000}+ # 0 to 1_000_000_000 times (basically *, but a lookbehind has to have a maximum length) \n"
+                        + "    \\\\            # the one escaping backslash \n"
+                        + ")                   # \n"
+                        + "<@!?+               # '<@' or '<@!' \n"
+                        + "(?<id>\\d++)        # the user id as named group \n"
+                        + ">                   # '>'",
+                "users"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Role Role}
-         * <br>The first and only group matches the id of the mention.
+         *
+         * <p><b>Groups</b><br>
+         * <table>
+         *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
+         *   <tr>
+         *     <th>Index</th>
+         *     <th>Name</th>
+         *     <th>Description</th>
+         *   </tr>
+         *   <tr>
+         *     <td>0</td>
+         *     <td>N/A</td>
+         *     <td>The entire mention</td>
+         *   </tr>
+         *   <tr>
+         *     <td>1</td>
+         *     <td>id</td>
+         *     <td>The id of the role</td>
+         *   </tr>
+         * </table>
+         *
+         * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+         * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
          */
-        ROLE("<@&(\\d+)>", "roles"),
+        // language=regexp
+        ROLE(
+                "(?x)                          # enable comment mode \n"
+                        + "(?<!                # negative lookbehind (do not have uneven amount of backslashes before) \n"
+                        + "    (?<!\\\\)       # negative lookbehind (do not have one backslash before) \n"
+                        + "    (?:\\\\{2}+)    # exactly two backslashes \n"
+                        + "    {0,1000000000}+ # 0 to 1_000_000_000 times (basically *, but a lookbehind has to have a maximum length) \n"
+                        + "    \\\\            # the one escaping backslash \n"
+                        + ")                   # \n"
+                        + "<@&                 # '<@&' \n"
+                        + "(?<id>\\d++)        # the role id as named group \n"
+                        + ">                   # '>'",
+                "roles"),
         /**
          * Represents a mention for a {@link GuildChannel}
-         * <br>The first and only group matches the id of the mention.
+         *
+         * <p><b>Groups</b><br>
+         * <table>
+         *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
+         *   <tr>
+         *     <th>Index</th>
+         *     <th>Name</th>
+         *     <th>Description</th>
+         *   </tr>
+         *   <tr>
+         *     <td>0</td>
+         *     <td>N/A</td>
+         *     <td>The entire mention</td>
+         *   </tr>
+         *   <tr>
+         *     <td>1</td>
+         *     <td>id</td>
+         *     <td>The id of the channel</td>
+         *   </tr>
+         * </table>
+         *
+         * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+         * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
          */
-        CHANNEL("<#(\\d+)>", null),
+        // language=regexp
+        CHANNEL(
+                "(?x)                          # enable comment mode \n"
+                        + "(?<!                # negative lookbehind (do not have uneven amount of backslashes before) \n"
+                        + "    (?<!\\\\)       # negative lookbehind (do not have one backslash before) \n"
+                        + "    (?:\\\\{2}+)    # exactly two backslashes \n"
+                        + "    {0,1000000000}+ # 0 to 1_000_000_000 times (basically *, but a lookbehind has to have a maximum length) \n"
+                        + "    \\\\            # the one escaping backslash \n"
+                        + ")                   # \n"
+                        + "(?-x:<#)            # '<#' with disabled comment mode due to the # \n"
+                        + "(?<id>\\d++)        # the channel id as named group \n"
+                        + ">                   # '>'",
+                null),
         /**
          * Represents a mention for a {@link CustomEmoji}
-         * <br>The first group matches the name of the emoji and the second the id of the mention.
+         *
+         * <p><b>Groups</b><br>
+         * <table>
+         *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
+         *   <tr>
+         *     <th>Index</th>
+         *     <th>Name</th>
+         *     <th>Description</th>
+         *   </tr>
+         *   <tr>
+         *     <td>0</td>
+         *     <td>N/A</td>
+         *     <td>The entire mention</td>
+         *   </tr>
+         *   <tr>
+         *     <td>1</td>
+         *     <td>name</td>
+         *     <td>The name of the emoji</td>
+         *   </tr>
+         *   <tr>
+         *     <td>2</td>
+         *     <td>id</td>
+         *     <td>The id of the custom emoji</td>
+         *   </tr>
+         * </table>
+         *
+         * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+         * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
          */
-        EMOJI("<a?:([a-zA-Z0-9_]+):([0-9]+)>", null),
+        // language=regexp
+        EMOJI(
+                "(?x)                          # enable comment mode \n"
+                        + "(?<!                # negative lookbehind (do not have uneven amount of backslashes before) \n"
+                        + "    (?<!\\\\)       # negative lookbehind (do not have one backslash before) \n"
+                        + "    (?:\\\\{2}+)    # exactly two backslashes \n"
+                        + "    {0,1000000000}+ # 0 to 1_000_000_000 times (basically *, but a lookbehind has to have a maximum length) \n"
+                        + "    \\\\            # the one escaping backslash \n"
+                        + ")                   # \n"
+                        + "<a?+:               # '<:' or '<a:' \n"
+                        + "(?<name>\\w++)      # the custom emoji name as named group \n"
+                        + ":                   # ':' \n"
+                        + "(?<id>\\d++)        # the custom emoji id as named group \n"
+                        + ">                   # '>'",
+                null),
         /**
          * Represents a mention for all active users, literal {@code @here}
          */
+        // language=regexp
         HERE("@here", "everyone"),
         /**
          * Represents a mention for all users in a server, literal {@code @everyone}.
          */
+        // language=regexp
         EVERYONE("@everyone", "everyone"),
         /**
          * Represents a mention for a slash command.
-         * <br>The first group is the command name, the second group is the subcommand group name (nullable),
-         * the third group is the subcommand name (nullable), and the fourth group is the command ID.
+         *
+         * <p><b>Groups</b><br>
+         * <table>
+         *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
+         *   <tr>
+         *     <th>Index</th>
+         *     <th>Name</th>
+         *     <th>Description</th>
+         *   </tr>
+         *   <tr>
+         *     <td>0</td>
+         *     <td>N/A</td>
+         *     <td>The entire mention</td>
+         *   </tr>
+         *   <tr>
+         *     <td>1</td>
+         *     <td>command</td>
+         *     <td>The command name</td>
+         *   </tr>
+         *   <tr>
+         *     <td>2</td>
+         *     <td>subcommandGroup</td>
+         *     <td>The subcommand group name</td>
+         *   </tr>
+         *   <tr>
+         *     <td>3</td>
+         *     <td>subcommand</td>
+         *     <td>The subcommand name</td>
+         *   </tr>
+         *   <tr>
+         *     <td>4</td>
+         *     <td>id</td>
+         *     <td>The id of the slash command</td>
+         *   </tr>
+         * </table>
+         *
+         * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+         * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
          */
-        SLASH_COMMAND("</([\\w-]+)(?> ([\\w-]+))??(?> ([\\w-]+))?:(\\d+)>", null);
+        // language=regexp
+        SLASH_COMMAND(
+                "(?x)                                           # enable comment mode \n"
+                        + "(?<!                                 # negative lookbehind (do not have uneven amount of backslashes before) \n"
+                        + "    (?<!\\\\)                        # negative lookbehind (do not have one backslash before) \n"
+                        + "    (?:\\\\{2}+)                     # exactly two backslashes \n"
+                        + "    {0,1000000000}+                  # 0 to 1_000_000_000 times (basically * but a lookbehind has to have a maximum length) \n"
+                        + "    \\\\                             # the one escaping backslash \n"
+                        + ")                                    # \n"
+                        + "</                                   # '</' \n"
+                        + "(?<command>[\\w-]++)                 # the command name as named group \n"
+                        + "(?:                                  # the optional subcommand group and subcommand \n"
+                        + "    (?:                              # the optional subcommand group \n"
+                        + "        (?-x: )                      # ' ' with disabled comment mode due to the space \n"
+                        + "        (?<subcommandGroup>[\\w-]++) # the subcommand group as named group \n"
+                        + "    )?                               # optional \n"
+                        + "    (?-x: )                          # ' ' with disabled comment mode due to the space \n"
+                        + "    (?<subcommand>[\\w-]++)          # the subcommand as named group \n"
+                        + ")?                                   # optional \n"
+                        + ":                                    # ':' \n"
+                        + "(?<id>\\d++)                         # the slash command id as named group \n"
+                        + ">                                    # '>'",
+                null);
 
         private final Pattern pattern;
         private final String parseKey;
