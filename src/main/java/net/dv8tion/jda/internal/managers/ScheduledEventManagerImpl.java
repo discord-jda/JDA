@@ -31,6 +31,7 @@ import okhttp3.RequestBody;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.Locale;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -185,7 +186,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
             case CANCELED:
                 // event is completed or canceled -> can't update status
                 throw new IllegalArgumentException("Cannot perform status update! Event is "
-                        + currentStatus.name().toLowerCase() + ".");
+                        + currentStatus.name().toLowerCase(Locale.ROOT) + ".");
         }
 
         this.status = newStatus;

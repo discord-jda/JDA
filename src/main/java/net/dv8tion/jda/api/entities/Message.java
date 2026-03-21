@@ -2925,7 +2925,7 @@ public interface Message extends ISnowflake, Formattable {
                 return false; // if width is -1, so is height
             }
             String extension = getFileExtension();
-            return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase());
+            return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase(Locale.ROOT));
         }
 
         /**
@@ -2939,7 +2939,7 @@ public interface Message extends ISnowflake, Formattable {
                 return false; // if width is -1, so is height
             }
             String extension = getFileExtension();
-            return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase());
+            return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase(Locale.ROOT));
         }
 
         /**

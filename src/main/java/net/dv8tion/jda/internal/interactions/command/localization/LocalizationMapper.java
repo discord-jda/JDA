@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringJoiner;
@@ -145,7 +146,7 @@ public class LocalizationMapper {
                 joiner.add(keyComponent.replace(" ", "_")); // Context commands can have spaces, we need to replace them
             }
             joiner.add(finalComponent.replace(" ", "_"));
-            return joiner.toString().toLowerCase();
+            return joiner.toString().toLowerCase(Locale.ROOT);
         }
 
         private void trySetTranslation(LocalizationMap localizationMap, String finalComponent) {

@@ -34,6 +34,7 @@ import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -253,11 +254,11 @@ public class UserImpl extends UserSnowflakeImpl implements User {
         if (!alt) {
             out = getAsMention();
         } else if (discriminator == 0 && upper) {
-            out = getName().toUpperCase();
+            out = getName().toUpperCase(Locale.ROOT);
         } else if (discriminator == 0) {
             out = getName();
         } else if (upper) {
-            out = getAsTag().toUpperCase();
+            out = getAsTag().toUpperCase(Locale.ROOT);
         } else {
             out = getAsTag();
         }

@@ -355,7 +355,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         try {
             String gatewayUrl = resumeUrl != null ? resumeUrl : api.getGatewayUrl();
             gatewayUrl = IOUtil.addQuery(
-                    gatewayUrl, "encoding", encoding.name().toLowerCase(), "v", JDAInfo.DISCORD_GATEWAY_VERSION);
+                    gatewayUrl, "encoding", encoding.name().toLowerCase(Locale.ROOT), "v", JDAInfo.DISCORD_GATEWAY_VERSION);
             if (compression != Compression.NONE) {
                 gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compression.getKey());
                 switch (compression) {
