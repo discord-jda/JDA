@@ -614,11 +614,7 @@ public class GuildImpl implements Guild {
             @Nonnull String location,
             @Nonnull OffsetDateTime startTime,
             @Nonnull OffsetDateTime endTime) {
-        PermissionUtil.checkWithDeadline(
-                getSelfMember(),
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MANAGE_EVENTS,
-                /* new */ Permission.CREATE_SCHEDULED_EVENTS);
+        checkPermission(Permission.CREATE_SCHEDULED_EVENTS);
         return new ScheduledEventActionImpl(name, location, startTime, endTime, this);
     }
 
@@ -626,11 +622,7 @@ public class GuildImpl implements Guild {
     @Override
     public ScheduledEventAction createScheduledEvent(
             @Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime) {
-        PermissionUtil.checkWithDeadline(
-                getSelfMember(),
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MANAGE_EVENTS,
-                /* new */ Permission.CREATE_SCHEDULED_EVENTS);
+        checkPermission(Permission.CREATE_SCHEDULED_EVENTS);
         return new ScheduledEventActionImpl(name, channel, startTime, this);
     }
 
@@ -1821,11 +1813,7 @@ public class GuildImpl implements Guild {
     @Override
     public AuditableRestAction<RichCustomEmoji> createEmoji(
             @Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles) {
-        PermissionUtil.checkWithDeadline(
-                getSelfMember(),
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MANAGE_GUILD_EXPRESSIONS,
-                /* new */ Permission.CREATE_GUILD_EXPRESSIONS);
+        checkPermission(Permission.CREATE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
@@ -1859,11 +1847,7 @@ public class GuildImpl implements Guild {
             @Nonnull String description,
             @Nonnull FileUpload file,
             @Nonnull Collection<String> tags) {
-        PermissionUtil.checkWithDeadline(
-                getSelfMember(),
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MANAGE_GUILD_EXPRESSIONS,
-                /* new */ Permission.CREATE_GUILD_EXPRESSIONS);
+        checkPermission(Permission.CREATE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");

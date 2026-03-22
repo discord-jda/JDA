@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import java.util.Collection;
 
@@ -160,11 +159,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
     default void checkCanControlMessagePins() {
         checkCanAccess();
-        PermissionUtil.checkWithDeadline(
-                this,
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MESSAGE_MANAGE,
-                /* new */ Permission.PIN_MESSAGES);
+        checkPermission(Permission.PIN_MESSAGES);
     }
 
     default boolean canDeleteOtherUsersMessages() {
