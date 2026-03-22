@@ -131,7 +131,7 @@ public class SoundboardSoundImpl extends SoundboardSoundSnowflakeImpl implements
     @Nonnull
     @Override
     public SoundboardSoundManager getManager() {
-        Checks.check(getGuild() != null, "Cannot delete default soundboard sounds");
+        Checks.check(getGuild() != null, "Cannot edit default soundboard sounds");
         checkEditPermissions();
 
         return new SoundboardSoundManagerImpl(guild, this);
