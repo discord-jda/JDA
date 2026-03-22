@@ -314,19 +314,15 @@ public interface RadioGroup extends ICustomId, LabelChildComponent {
          * Configures one of the currently applied {@linkplain #getOptions() options} to be selected by default.
          *
          * @param  value
-         *         The {@linkplain RadioGroupOption#getValue() option value} to select
-         *
-         * @throws IllegalArgumentException
-         *         If {@code null} is provided
+         *         The {@linkplain RadioGroupOption#getValue() option value} to select, {@code null} to remove the default
          *
          * @return This instance for chaining convenience
          */
         @Nonnull
-        public Builder setSelectedValue(@Nonnull String value) {
-            Checks.notNull(value, "Value");
+        public Builder setSelectedValue(@Nullable String value) {
             for (ListIterator<RadioGroupOption> iterator = options.listIterator(); iterator.hasNext(); ) {
                 RadioGroupOption option = iterator.next();
-                boolean shouldBeDefault = value.equals(option.getValue());
+                boolean shouldBeDefault = option.getValue().equals(value);
                 iterator.set(option.withDefault(shouldBeDefault));
             }
             return this;
@@ -336,17 +332,17 @@ public interface RadioGroup extends ICustomId, LabelChildComponent {
          * Configures one of the currently applied {@linkplain #getOptions() options} to be selected by default.
          *
          * @param  option
-         *         The option to select
-         *
-         * @throws IllegalArgumentException
-         *         If {@code null} is provided
+         *         The option to select, {@code null} to remove the default
          *
          * @return This instance for chaining convenience
          */
         @Nonnull
-        public Builder setSelectedOption(@Nonnull RadioGroupOption option) {
-            Checks.notNull(option, "Option");
-            return setSelectedValue(option.getValue());
+        public Builder setSelectedOption(@Nullable RadioGroupOption option) {
+            if (option == null) {
+                return setSelectedValue(null);
+            } else {
+                return setSelectedValue(option.getValue());
+            }
         }
 
         /**
