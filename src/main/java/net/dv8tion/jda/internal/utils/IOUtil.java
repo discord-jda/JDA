@@ -57,6 +57,7 @@ public class IOUtil {
         }
     }
 
+    @SuppressWarnings("JdkObsolete")
     public static String addQuery(String base, Object... params) {
         try {
             StringBuilder builder = new StringBuilder(base);
