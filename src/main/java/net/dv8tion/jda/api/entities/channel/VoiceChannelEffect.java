@@ -56,10 +56,11 @@ public class VoiceChannelEffect {
 
     /**
      * The user which sent this effect.
+     * <br>This may be {@code null} if the user is not {@linkplain net.dv8tion.jda.api.utils.MemberCachePolicy cached}.
      *
-     * @return The user which sent this effect.
+     * @return The user which sent this effect, or {@code null}.
      */
-    @Nonnull
+    @Nullable
     public User getUser() {
         return user;
     }
