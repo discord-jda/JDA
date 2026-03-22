@@ -2503,6 +2503,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @throws NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return A Soundboard sound matching the specified id
      */
@@ -2524,6 +2526,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @throws NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return A Soundboard sound matching the specified id
      */
@@ -2542,6 +2546,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * versions of handling these values.
      *
      * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return An immutable List of {@link SoundboardSound SoundboardSounds}.
      */
@@ -2563,6 +2570,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all SoundboardSounds that match the provided name.
      */
     @Nonnull
@@ -2576,6 +2586,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This does not include {@link JDA#retrieveDefaultSoundboardSounds() default sounds}.
      *
      * <p>This will be empty if {@link CacheFlag#SOUNDBOARD_SOUNDS} is disabled!
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link SnowflakeCacheView} - Type: {@link SoundboardSound}
      *

@@ -128,6 +128,8 @@ public interface SoundboardSound extends SoundboardSoundSnowflake {
      *             <li>If the bot is not connected to the specified channel</li>
      *             <li>If the bot is deafened, muted or suppressed in the target guild</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If the provided channel is {@linkplain net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link RestAction} - Type: {@link Void}
      */

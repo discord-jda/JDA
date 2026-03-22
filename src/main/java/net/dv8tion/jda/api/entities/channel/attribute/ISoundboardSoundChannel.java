@@ -66,6 +66,8 @@ public interface ISoundboardSoundChannel extends AudioChannel {
      *             <li>If the bot is not connected to this channel</li>
      *             <li>If the bot is deafened, muted or suppressed in this channel's guild</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction} - Type: {@link Void}
      */
@@ -110,6 +112,8 @@ public interface ISoundboardSoundChannel extends AudioChannel {
      *             <li>If the bot is not connected to this channel</li>
      *             <li>If the bot is deafened, muted or suppressed in this channel's guild</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction} - Type: {@link Void}
      */
