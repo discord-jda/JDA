@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities.channel.attribute;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.SoundboardSoundSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -34,8 +35,8 @@ import javax.annotation.Nonnull;
 public interface ISoundboardSoundChannel extends AudioChannel {
     /**
      * Sends this sound to this audio channel.
-     * <br>You must be connected to this audio channel to use this method,
-     * as well as be able to speak and hear.
+     * <br>The bot must be connected to the voice channel to use this method,
+     * as well as be {@linkplain GuildVoiceState#isMuted() unmuted} and {@linkplain GuildVoiceState#isDeafened() undefeaned}.
      *
      * <p>The returned {@link RestAction} can encounter the following {@link ErrorResponse ErrorResponses}:
      * <ul>
@@ -78,8 +79,8 @@ public interface ISoundboardSoundChannel extends AudioChannel {
 
     /**
      * Sends this sound to this audio channel.
-     * <br>You must be connected to this audio channel to use this method,
-     * as well as be able to speak and hear.
+     * <br>The bot must be connected to the voice channel to use this method,
+     * as well as be {@linkplain GuildVoiceState#isMuted() unmuted} and {@linkplain GuildVoiceState#isDeafened() undefeaned}.
      *
      * <p>The returned {@link RestAction} can encounter the following {@link ErrorResponse ErrorResponses}:
      * <ul>

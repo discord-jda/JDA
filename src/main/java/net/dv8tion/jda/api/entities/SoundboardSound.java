@@ -98,8 +98,8 @@ public interface SoundboardSound extends SoundboardSoundSnowflake {
 
     /**
      * Sends this sound to the specified voice channel.
-     * <br>You must be connected to the voice channel to use this method,
-     * as well as be able to speak and hear.
+     * <br>The bot must be connected to the voice channel to use this method,
+     * as well as be {@linkplain GuildVoiceState#isMuted() unmuted} and {@linkplain GuildVoiceState#isDeafened() undefeaned}.
      *
      * <p>The returned {@link RestAction} can encounter the following {@link ErrorResponse ErrorResponses}:
      * <ul>
