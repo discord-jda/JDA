@@ -2807,6 +2807,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     <br>The sound cannot be deleted due to a permission discrepancy</li>
      * </ul>
      *
+     * @param  sound
+     *         The reference of the {@link SoundboardSound}.
+     *
      * @throws IllegalArgumentException
      *         If {@code null} is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -5826,6 +5829,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The sound cannot be deleted due to a permission discrepancy</li>
      * </ul>
+     *
+     * @param  sound
+     *         The reference of the {@link SoundboardSound}.
      *
      * @throws IllegalStateException
      *         If {@code null} is provided
