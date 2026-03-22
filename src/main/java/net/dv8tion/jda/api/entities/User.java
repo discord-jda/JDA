@@ -213,7 +213,9 @@ public interface User extends UserSnowflake {
     @Nullable
     default String getAvatarUrl() {
         String avatarId = getAvatarId();
-        return avatarId == null ? null : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return avatarId == null
+                ? null
+                : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**
@@ -499,7 +501,7 @@ public interface User extends UserSnowflake {
         public String getBannerUrl() {
             return bannerId == null
                     ? null
-                    : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+                    : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
         }
 
         /**

@@ -292,10 +292,18 @@ public final class Helpers {
 
     public static <T extends Throwable> T appendCause(T throwable, Throwable cause) {
         Throwable t = throwable;
-        while (t.getCause() != null) {
-            t = t.getCause();
+
+        for (int i = 0; i < 5; i++) {
+            if (t.getCause() == null) {
+                t.initCause(cause);
+                return throwable;
+            } else {
+                t = t.getCause();
+            }
         }
-        t.initCause(cause);
+
+        // Exception is too deep, add it on the initial exception as suppressed
+        throwable.addSuppressed(cause);
         return throwable;
     }
 

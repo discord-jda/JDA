@@ -25,7 +25,7 @@ jobs:
       - name: Build Artifacts
         run: ./gradlew --build-cache --parallel build
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Artifacts
           path: build/libs/*.jar

@@ -292,7 +292,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     @Nullable
     default String getAvatarUrl() {
         String avatarId = getAvatarId();
-        return avatarId == null ? null : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return avatarId == null
+                ? null
+                : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**

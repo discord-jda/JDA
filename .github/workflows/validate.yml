@@ -25,13 +25,13 @@ jobs:
         run: ./gradlew --build-cache --parallel build test
       - name: Upload JUnit XML Test Report
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: junit-xml-test-report
           path: build/test-results/test
       - name: Upload HTML Test Report
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: junit-html-test-report
           path: build/reports/tests/test
