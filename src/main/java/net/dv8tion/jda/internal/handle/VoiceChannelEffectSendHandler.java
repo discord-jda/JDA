@@ -57,15 +57,16 @@ public class VoiceChannelEffectSendHandler extends SocketHandler {
         EmojiUnion emoji =
                 content.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null);
         VoiceChannelEffect.Animation animation = content.opt("animation_type")
+                .map(rawAnimationType -> ((Number) rawAnimationType).intValue())
                 .map(rawAnimationType -> {
                     long animationId = content.getUnsignedLong("animation_id");
                     VoiceChannelEffect.Animation.Type type =
-                            VoiceChannelEffect.Animation.Type.fromValue(Integer.parseInt(rawAnimationType.toString()));
+                            VoiceChannelEffect.Animation.Type.fromValue(rawAnimationType);
                     return new VoiceChannelEffect.Animation(animationId, type);
                 })
                 .orElse(null);
         SoundboardSound soundboardSound = content.opt("sound_id")
-                .map(soundId -> guild.getSoundboardSoundById(soundId.toString()))
+                .map(id -> guild.getSoundboardSoundById((String) id))
                 .orElse(null);
 
         VoiceChannelEffect effect = new VoiceChannelEffect(channel, user, emoji, animation, soundboardSound);
