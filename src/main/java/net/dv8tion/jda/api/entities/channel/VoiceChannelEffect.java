@@ -30,15 +30,15 @@ import javax.annotation.Nullable;
  */
 public class VoiceChannelEffect {
     private final VoiceChannel channel;
-    private final User user;
+    private final long userId;
     private final EmojiUnion emoji;
     private final Animation animation;
     private final SoundboardSound soundboardSound;
 
     public VoiceChannelEffect(
-            VoiceChannel channel, User user, EmojiUnion emoji, Animation animation, SoundboardSound soundboardSound) {
+            VoiceChannel channel, long userId, EmojiUnion emoji, Animation animation, SoundboardSound soundboardSound) {
         this.channel = channel;
-        this.user = user;
+        this.userId = userId;
         this.emoji = emoji;
         this.animation = animation;
         this.soundboardSound = soundboardSound;
@@ -55,6 +55,25 @@ public class VoiceChannelEffect {
     }
 
     /**
+     * The ID of the user which sent this effect.
+     *
+     * @return ID of the user which sent this effect.
+     */
+    @Nonnull
+    public String getUserId() {
+        return Long.toUnsignedString(userId);
+    }
+
+    /**
+     * The user which sent this effect.
+     *
+     * @return ID of the user which sent this effect.
+     */
+    public long getUserIdLong() {
+        return userId;
+    }
+
+    /**
      * The user which sent this effect.
      * <br>This may be {@code null} if the user is not {@linkplain net.dv8tion.jda.api.utils.MemberCachePolicy cached}.
      *
@@ -62,7 +81,7 @@ public class VoiceChannelEffect {
      */
     @Nullable
     public User getUser() {
-        return user;
+        return channel.getJDA().getUserById(userId);
     }
 
     /**
