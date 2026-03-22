@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests;
 
-import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.GatewayEncoding;
@@ -33,6 +32,7 @@ import net.dv8tion.jda.api.events.session.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.CloseCode;
+import net.dv8tion.jda.api.requests.WebSocketClient;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -59,10 +59,9 @@ import org.slf4j.MDC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
-import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
@@ -76,9 +75,9 @@ import java.util.zip.DataFormatException;
 
 import javax.annotation.Nonnull;
 
-public class WebSocketClient extends WebSocketAdapter implements WebSocketListener {
+public class GatewayWebSocketClient extends NVWebSocketClientListenerAdapter {
     public static final ThreadLocal<Boolean> WS_THREAD = ThreadLocal.withInitial(() -> false);
-    public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
+    public static final Logger LOG = JDALogger.getLog(GatewayWebSocketClient.class);
 
     protected static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
     protected static final long IDENTIFY_BACKOFF = TimeUnit.SECONDS.toMillis(SessionController.IDENTIFY_DELAY);
@@ -91,7 +90,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final MemberChunkManager chunkManager;
     protected final GatewayEncoding encoding;
 
-    public WebSocket socket;
+    public WebSocketClient webSocketClient;
     protected String traceMetadata = null;
     protected volatile String sessionId = null;
     protected final Object readLock = new Object();
@@ -132,7 +131,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents, GatewayEncoding encoding) {
+    public GatewayWebSocketClient(JDAImpl api, Compression compression, int gatewayIntents, GatewayEncoding encoding) {
         this.api = api;
         this.executor = api.getGatewayPool();
         this.shardInfo = api.getShardInfo();
@@ -142,6 +141,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.encoding = encoding;
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
+        this.webSocketClient = new NVWebSocketClient(api.getWebSocketFactory());
+        this.webSocketClient.addListener(this);
         setupHandlers();
         try {
             api.getSessionController().appendSession(connectNode);
@@ -255,9 +256,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.trace("<- {}", redactedMessage);
             }
             if (encoding == GatewayEncoding.ETF) {
-                socket.sendBinary(message.toETF());
+                webSocketClient.sendBinaryMessage(message.toETF());
             } else {
-                socket.sendText(message.toString());
+                webSocketClient.sendTextMessage(message.toString());
             }
             this.messagesSent.getAndIncrement();
             return true;
@@ -280,37 +281,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ratelimitThread.start();
     }
 
-    private void prepareClose() {
-        try {
-            if (socket != null) {
-                Socket rawSocket = this.socket.getSocket();
-                if (rawSocket != null) { // attempt to set a 10 second timeout for the close frame
-                    // this has no affect if the socket is already stuck in a read call
-                    rawSocket.setSoTimeout(10000);
-                }
-            }
-        } catch (SocketException ignored) {
-        }
-    }
-
     public void close() {
-        prepareClose();
-        if (socket != null) {
-            socket.sendClose(1000);
+        if (webSocketClient != null) {
+            webSocketClient.disconnect(1000);
         }
     }
 
     public void close(int code) {
-        prepareClose();
-        if (socket != null) {
-            socket.sendClose(code);
+        if (webSocketClient != null) {
+            webSocketClient.disconnect(code);
         }
     }
 
     public void close(int code, String reason) {
-        prepareClose();
-        if (socket != null) {
-            socket.sendClose(code, reason);
+        if (webSocketClient != null) {
+            webSocketClient.disconnect(code, reason);
         }
     }
 
@@ -369,18 +354,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
 
-            WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
-            IOUtil.setServerName(socketFactory, gatewayUrl);
-            if (socketFactory.getSocketTimeout() > 0) {
-                socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
-            } else {
-                socketFactory.setSocketTimeout(10000);
-            }
-
-            socket = socketFactory.createSocket(gatewayUrl);
-            socket.setDirectTextMessage(true);
-            socket.addHeader("Accept-Encoding", "gzip").addListener(this).connect();
-        } catch (IOException | WebSocketException | IllegalArgumentException e) {
+            webSocketClient.connect(gatewayUrl, Duration.ofSeconds(10));
+        } catch (RuntimeException e) {
             resumeUrl = null;
             api.resetGatewayUrl();
             // Completely fail here. We couldn't make the connection.
@@ -388,63 +363,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
+    /*
+    TODO: Handle this in WebSocketClient?
     @Override
     public void onThreadStarted(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception {
         api.setContext();
     }
+     */
 
-    @Override
-    public void onConnected(WebSocket websocket, Map<String, List<String>> headers) {
-        prepareClose(); // set 10s timeout in-case discord never sends us a HELLO payload
-        api.setStatus(JDA.Status.IDENTIFYING_SESSION);
-        if (sessionId == null) {
-            LOG.info("Connected to WebSocket");
-            // Log which intents are used on debug level since most people won't know how to use the
-            // binary output anyway
-            LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
-        } else {
-            // no need to log for resume here
-            LOG.debug("Connected to WebSocket");
-        }
-        connected = true;
-        // reconnectTimeoutS = 2; We will reset this when the session was started successfully
-        // (ready/resume)
-        messagesSent.set(0);
-        ratelimitResetTime = System.currentTimeMillis() + 60000;
-        if (sessionId == null) {
-            sendIdentify();
-        } else {
-            sendResume();
-        }
-    }
-
-    @Override
-    public void onDisconnected(
-            WebSocket websocket,
-            WebSocketFrame serverCloseFrame,
-            WebSocketFrame clientCloseFrame,
-            boolean closedByServer) {
-        sentAuthInfo = false;
-        connected = false;
-        // Use a new thread to avoid issues with sleep interruption
-        if (Thread.currentThread().isInterrupted()) {
-            Thread thread =
-                    new Thread(() -> handleDisconnect(websocket, serverCloseFrame, clientCloseFrame, closedByServer));
-            thread.setName(api.getIdentifierString() + " MainWS-ReconnectThread");
-            thread.start();
-        } else {
-            handleDisconnect(websocket, serverCloseFrame, clientCloseFrame, closedByServer);
-        }
-    }
-
-    private void handleDisconnect(
-            WebSocket websocket,
-            WebSocketFrame serverCloseFrame,
-            WebSocketFrame clientCloseFrame,
-            boolean closedByServer) {
+    private void handleDisconnect(int rawCloseCode, String rawCloseReason, boolean closedByServer) {
         api.setStatus(JDA.Status.DISCONNECTED);
         CloseCode closeCode = null;
-        int rawCloseCode = 1005;
         // When we get 1000 from remote close we will try to resume
         // as apparently discord doesn't understand what "graceful disconnect" means
         boolean isInvalidate = false;
@@ -453,13 +382,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             keepAliveThread.cancel(false);
             keepAliveThread = null;
         }
-        if (closedByServer && serverCloseFrame != null) {
-            rawCloseCode = serverCloseFrame.getCloseCode();
-            String rawCloseReason = serverCloseFrame.getCloseReason();
+        if (closedByServer) {
             closeCode = CloseCode.from(rawCloseCode);
             if (closeCode == CloseCode.RATE_LIMITED) {
-                LOG.error(
-                        "WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+                LOG.error("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under"
+                        + " 60 seconds!");
             } else if (closeCode == CloseCode.UNKNOWN_ERROR) {
                 LOG.error("WebSocket connection closed due to server error! {}: {}", rawCloseCode, rawCloseReason);
             } else if (closeCode != null) {
@@ -469,9 +396,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             } else {
                 LOG.warn("WebSocket connection closed with unknown meaning for close-code {}", rawCloseCode);
             }
-        } else if (clientCloseFrame != null) {
-            rawCloseCode = clientCloseFrame.getCloseCode();
-            if (rawCloseCode == 1000 && INVALIDATE_REASON.equals(clientCloseFrame.getCloseReason())) {
+        } else {
+            if (rawCloseCode == 1000 && INVALIDATE_REASON.equals(rawCloseReason)) {
                 // When we close with 1000 we properly dropped our session due to invalidation
                 // in that case we can be sure that resume will not work and instead we invalidate
                 // and reconnect here
@@ -530,8 +456,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (isInvalidate) {
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             }
-            api.handleEvent(new SessionDisconnectEvent(
-                    api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
+            api.handleEvent(new SessionDisconnectEvent(api, closedByServer, OffsetDateTime.now(), closeCode));
             try {
                 handleReconnect(rawCloseCode);
             } catch (InterruptedException e) {
@@ -661,14 +586,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     protected void setupKeepAlive(int timeout) {
-        try {
-            Socket rawSocket = this.socket.getSocket();
-            if (rawSocket != null) {
-                rawSocket.setSoTimeout(timeout + 10000); // setup a timeout when we miss heartbeats
-            }
-        } catch (SocketException ex) {
-            LOG.warn("Failed to setup timeout for socket", ex);
-        }
+        webSocketClient.setReadTimeout(Duration.ofMillis(timeout).plusSeconds(10));
 
         keepAliveThread = executor.scheduleAtFixedRate(
                 () -> {
@@ -689,8 +607,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (missedHeartbeats >= 2) {
             missedHeartbeats = 0;
             LOG.warn("Missed 2 heartbeats! Trying to reconnect...");
-            prepareClose();
-            socket.disconnect(4900, "ZOMBIE CONNECTION");
+            webSocketClient.disconnect(4900, "ZOMBIE CONNECTION", true);
         } else {
             missedHeartbeats += 1;
             send(keepAlivePacket, true);
@@ -944,7 +861,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
         } catch (ParsingException ex) {
             LOG.warn(
-                    "Got an unexpected Json-parse error. Please redirect the following message to the devs:\n\tJDA {}\n\t{}\n\t{} -> {}",
+                    "Got an unexpected Json-parse error. Please redirect the following message to the devs:\n"
+                            + "\tJDA {}\n"
+                            + "\t{}\n"
+                            + "\t{} -> {}",
                     JDAInfo.VERSION,
                     ex.getMessage(),
                     type,
@@ -961,23 +881,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (responseTotal % EventCache.TIMEOUT_AMOUNT == 0) {
             jda.getEventCache().timeout(responseTotal);
-        }
-    }
-
-    @Override
-    public void onTextMessage(WebSocket websocket, byte[] data) {
-        handleEvent(DataObject.fromJson(data));
-    }
-
-    @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws DataFormatException {
-        DataObject message;
-        // Only acquire lock for decompression and unlock for event handling
-        synchronized (readLock) {
-            message = handleBinary(binary);
-        }
-        if (message != null) {
-            handleEvent(message);
         }
     }
 
@@ -1019,16 +922,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    @Override
-    public void handleCallbackError(WebSocket websocket, Throwable cause) throws Exception {
-        handleError(cause);
-    }
-
-    @Override
-    public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-        handleError(cause);
-    }
-
     private void handleError(Throwable cause) {
         if (cause.getCause() instanceof SocketTimeoutException) {
             LOG.debug("Socket timed out");
@@ -1040,6 +933,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
+    /*
+    TODO: Handle this in web socket client
     @Override
     public void onThreadCreated(WebSocket websocket, ThreadType threadType, Thread thread) throws Exception {
         String identifier = api.getIdentifierString();
@@ -1060,6 +955,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 thread.setName(identifier + " MainWS-" + threadType);
         }
     }
+    */
 
     protected void locked(String comment, Runnable task) {
         try {
@@ -1323,6 +1219,67 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_INTEGRATIONS_UPDATE", nopHandler);
         handlers.put("PRESENCES_REPLACE", nopHandler);
         handlers.put("WEBHOOKS_UPDATE", nopHandler);
+    }
+
+    @Override
+    protected void onWebSocketConnectedEvent(WebSocketClient.WebSocketConnectedEvent event) {
+        api.setStatus(JDA.Status.IDENTIFYING_SESSION);
+        if (sessionId == null) {
+            LOG.info("Connected to WebSocket");
+            // Log which intents are used on debug level since most people won't know how to use the
+            // binary output anyway
+            LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
+        } else {
+            // no need to log for resume here
+            LOG.debug("Connected to WebSocket");
+        }
+        connected = true;
+        // reconnectTimeoutS = 2; We will reset this when the session was started successfully
+        // (ready/resume)
+        messagesSent.set(0);
+        ratelimitResetTime = System.currentTimeMillis() + 60000;
+        if (sessionId == null) {
+            sendIdentify();
+        } else {
+            sendResume();
+        }
+    }
+
+    @Override
+    protected void onWebSocketDisconnectedEvent(WebSocketClient.WebSocketDisconnectedEvent event) {
+        sentAuthInfo = false;
+        connected = false;
+        // Use a new thread to avoid issues with sleep interruption
+        if (Thread.currentThread().isInterrupted()) {
+            Thread thread = new Thread(
+                    () -> handleDisconnect(event.getCloseCode(), event.getReason(), event.isClosedByServer()));
+            thread.setName(api.getIdentifierString() + " MainWS-ReconnectThread");
+            thread.start();
+        } else {
+            handleDisconnect(event.getCloseCode(), event.getReason(), event.isClosedByServer());
+        }
+    }
+
+    @Override
+    protected void onWebSocketExceptionEvent(WebSocketClient.WebSocketExceptionEvent event) {
+        handleError(event.getCause());
+    }
+
+    @Override
+    protected void onWebSocketBinaryMessageEvent(WebSocketClient.WebSocketBinaryMessageEvent event) throws Exception {
+        DataObject message;
+        // Only acquire lock for decompression and unlock for event handling
+        synchronized (readLock) {
+            message = handleBinary(event.getPayload());
+        }
+        if (message != null) {
+            handleEvent(message);
+        }
+    }
+
+    @Override
+    protected void onWebSocketTextMessageEvent(WebSocketClient.WebSocketTextMessageEvent event) {
+        handleEvent(DataObject.fromJson(event.getPayload()));
     }
 
     protected abstract class ConnectNode implements SessionController.SessionConnectNode {

@@ -33,7 +33,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 import java.util.List;
 import java.util.Objects;
@@ -68,7 +68,7 @@ public class MessageReactionHandler extends SocketHandler {
         String emojiName = emoji.getString("name", null);
 
         if (emojiId == null && emojiName == null) {
-            WebSocketClient.LOG.debug(
+            GatewayWebSocketClient.LOG.debug(
                     "Received a reaction {} with no name nor id. json: {}", add ? "add" : "remove", content);
             return null;
         }
@@ -96,7 +96,7 @@ public class MessageReactionHandler extends SocketHandler {
                 api.getEntityBuilder().updateMemberCache(member);
             }
             if (member == null && add && guild.isLoaded()) {
-                WebSocketClient.LOG.debug("Dropping reaction event for unknown member {}", content);
+                GatewayWebSocketClient.LOG.debug("Dropping reaction event for unknown member {}", content);
                 return null;
             }
         }
@@ -131,7 +131,7 @@ public class MessageReactionHandler extends SocketHandler {
             if (guild != null) {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null) {
-                    WebSocketClient.LOG.debug(
+                    GatewayWebSocketClient.LOG.debug(
                             "Dropping MESSAGE_REACTION event for unexpected channel of type {}", actual.getType());
                     return null;
                 }

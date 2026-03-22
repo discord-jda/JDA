@@ -36,9 +36,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 // Helper class delegated to WebSocketClient
 class WebSocketSendingThread implements Runnable {
-    private static final Logger LOG = WebSocketClient.LOG;
+    private static final Logger LOG = GatewayWebSocketClient.LOG;
 
-    private final WebSocketClient client;
+    private final GatewayWebSocketClient client;
     private final JDAImpl api;
     private final ReentrantLock queueLock;
     private final Queue<DataObject> chunkQueue;
@@ -51,7 +51,7 @@ class WebSocketSendingThread implements Runnable {
     private boolean attemptedToSend = false;
     private boolean shutdown = false;
 
-    WebSocketSendingThread(WebSocketClient client) {
+    WebSocketSendingThread(GatewayWebSocketClient client) {
         this.client = client;
         this.api = client.api;
         this.queueLock = client.queueLock;

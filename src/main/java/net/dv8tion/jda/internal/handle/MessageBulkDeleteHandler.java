@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,7 +71,7 @@ public class MessageBulkDeleteHandler extends SocketHandler {
                 if (guild != null) {
                     GuildChannel guildChannel = guild.getGuildChannelById(channelId);
                     if (guildChannel != null) {
-                        WebSocketClient.LOG.debug(
+                        GatewayWebSocketClient.LOG.debug(
                                 "Discarding MESSAGE_DELETE event for unexpected channel type. Channel: {}",
                                 guildChannel);
                         return null;

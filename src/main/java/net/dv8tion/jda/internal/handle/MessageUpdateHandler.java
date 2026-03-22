@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class MessageUpdateHandler extends SocketHandler {
 
@@ -60,7 +60,7 @@ public class MessageUpdateHandler extends SocketHandler {
                 if (!type.isSystem()) {
                     return handleMessage(content, guild);
                 }
-                WebSocketClient.LOG.debug(
+                GatewayWebSocketClient.LOG.debug(
                         "JDA received a message update for an unexpected message type. Type: {} JSON: {}",
                         type,
                         content);
@@ -87,7 +87,7 @@ public class MessageUpdateHandler extends SocketHandler {
                     if (guild != null) {
                         GuildChannel actual = guild.getGuildChannelById(channelId);
                         if (actual != null) {
-                            WebSocketClient.LOG.debug(
+                            GatewayWebSocketClient.LOG.debug(
                                     "Dropping MESSAGE_UPDATE for unexpected channel of type {}", actual.getType());
                             return null;
                         }

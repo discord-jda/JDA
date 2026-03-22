@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class ChannelCreateHandler extends SocketHandler {
     public ChannelCreateHandler(JDAImpl api) {
@@ -44,7 +44,7 @@ public class ChannelCreateHandler extends SocketHandler {
 
         Channel channel = buildChannel(type, content, guildId);
         if (channel == null) {
-            WebSocketClient.LOG.debug(
+            GatewayWebSocketClient.LOG.debug(
                     "Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: {}", content);
             return null;
         }

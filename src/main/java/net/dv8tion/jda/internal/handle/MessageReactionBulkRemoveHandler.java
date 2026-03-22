@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class MessageReactionBulkRemoveHandler extends SocketHandler {
     public MessageReactionBulkRemoveHandler(JDAImpl api) {
@@ -58,7 +58,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler {
             if (guild != null) {
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null) {
-                    WebSocketClient.LOG.debug(
+                    GatewayWebSocketClient.LOG.debug(
                             "Dropping MESSAGE_REACTION_REMOVE_ALL for unexpected channel of type {}", actual.getType());
                     return null;
                 }

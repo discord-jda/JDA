@@ -24,7 +24,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.RoleImpl;
 import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class GuildRoleDeleteHandler extends SocketHandler {
     public GuildRoleDeleteHandler(JDAImpl api) {
@@ -50,7 +50,8 @@ public class GuildRoleDeleteHandler extends SocketHandler {
         if (removedRole == null) {
             // getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, () ->
             // handle(responseNumber, allContent));
-            WebSocketClient.LOG.debug("GUILD_ROLE_DELETE was received for a Role that is not yet cached: {}", content);
+            GatewayWebSocketClient.LOG.debug(
+                    "GUILD_ROLE_DELETE was received for a Role that is not yet cached: {}", content);
             return null;
         }
 

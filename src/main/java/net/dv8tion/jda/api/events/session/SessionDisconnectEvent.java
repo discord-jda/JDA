@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.session;
 
 import com.neovisionaries.ws.client.WebSocketFrame;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.CloseCode;
 
@@ -34,22 +35,19 @@ import javax.annotation.Nullable;
  * <p>When reconnecting was successful either a {@link SessionRecreateEvent} <b>or</b> {@link SessionResumeEvent} is fired.
  */
 public class SessionDisconnectEvent extends GenericSessionEvent {
-    protected final WebSocketFrame serverCloseFrame;
-    protected final WebSocketFrame clientCloseFrame;
     protected final boolean closedByServer;
     protected final OffsetDateTime disconnectTime;
+    protected final CloseCode closeCode;
 
     public SessionDisconnectEvent(
             @Nonnull JDA api,
-            @Nullable WebSocketFrame serverCloseFrame,
-            @Nullable WebSocketFrame clientCloseFrame,
             boolean closedByServer,
-            @Nonnull OffsetDateTime disconnectTime) {
+            @Nonnull OffsetDateTime disconnectTime,
+            @Nullable CloseCode closeCode) {
         super(api, SessionState.DISCONNECTED);
-        this.serverCloseFrame = serverCloseFrame;
-        this.clientCloseFrame = clientCloseFrame;
         this.closedByServer = closedByServer;
         this.disconnectTime = disconnectTime;
+        this.closeCode = closeCode;
     }
 
     /**
@@ -63,7 +61,7 @@ public class SessionDisconnectEvent extends GenericSessionEvent {
      */
     @Nullable
     public CloseCode getCloseCode() {
-        return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
+        return closeCode;
     }
 
     /**
@@ -72,8 +70,10 @@ public class SessionDisconnectEvent extends GenericSessionEvent {
      * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} discord sent as closing handshake
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     public WebSocketFrame getServiceCloseFrame() {
-        return serverCloseFrame;
+        return null;
     }
 
     /**
@@ -82,8 +82,10 @@ public class SessionDisconnectEvent extends GenericSessionEvent {
      * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} we sent as closing handshake
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     public WebSocketFrame getClientCloseFrame() {
-        return clientCloseFrame;
+        return null;
     }
 
     /**

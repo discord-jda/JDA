@@ -28,7 +28,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class MessageCreateHandler extends SocketHandler {
     public MessageCreateHandler(JDAImpl api) {
@@ -39,7 +39,8 @@ public class MessageCreateHandler extends SocketHandler {
     protected Long handleInternally(DataObject content) {
         MessageType type = MessageType.fromId(content.getInt("type"));
         if (type == MessageType.UNKNOWN) {
-            WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {}  JSON: {}", type, content);
+            GatewayWebSocketClient.LOG.debug(
+                    "JDA received a message of unknown type. Type: {}  JSON: {}", type, content);
             return null;
         }
 
@@ -80,7 +81,7 @@ public class MessageCreateHandler extends SocketHandler {
                     if (guild != null) {
                         GuildChannel actual = guild.getGuildChannelById(channelId);
                         if (actual != null) {
-                            WebSocketClient.LOG.debug(
+                            GatewayWebSocketClient.LOG.debug(
                                     "Dropping MESSAGE_CREATE for unexpected channel of type {}", actual.getType());
                             return null;
                         }
@@ -98,7 +99,7 @@ public class MessageCreateHandler extends SocketHandler {
                     return null;
                 }
                 case EntityBuilder.UNKNOWN_MESSAGE_TYPE: {
-                    WebSocketClient.LOG.debug("Ignoring message with unknown type: {}", content);
+                    GatewayWebSocketClient.LOG.debug("Ignoring message with unknown type: {}", content);
                     return null;
                 }
                 default:

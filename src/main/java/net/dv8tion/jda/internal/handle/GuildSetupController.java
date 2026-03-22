@@ -27,8 +27,8 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 import net.dv8tion.jda.internal.requests.MemberChunkManager;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
@@ -98,7 +98,7 @@ public class GuildSetupController {
 
     // Check if we can send a ready event
     private void checkReady() {
-        WebSocketClient client = getJDA().getClient();
+        GatewayWebSocketClient client = getJDA().getClient();
         // If no guilds are marked as incomplete we can fire a ready
         if (incompleteCount < 1 && !client.isReady()) {
             if (timeoutHandle != null) {

@@ -40,7 +40,7 @@ import net.dv8tion.jda.internal.interactions.components.buttons.ButtonInteractio
 import net.dv8tion.jda.internal.interactions.components.selections.EntitySelectInteractionImpl;
 import net.dv8tion.jda.internal.interactions.components.selections.StringSelectInteractionImpl;
 import net.dv8tion.jda.internal.interactions.modal.ModalInteractionImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.GatewayWebSocketClient;
 
 public class InteractionCreateHandler extends SocketHandler {
     public InteractionCreateHandler(JDAImpl api) {
@@ -52,7 +52,7 @@ public class InteractionCreateHandler extends SocketHandler {
         int type = content.getInt("type");
         int version = content.getInt("version", 1);
         if (version != 1) {
-            WebSocketClient.LOG.debug(
+            GatewayWebSocketClient.LOG.debug(
                     "Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!",
                     version);
             return null;
@@ -67,7 +67,7 @@ public class InteractionCreateHandler extends SocketHandler {
         DataObject channelJson = content.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
         if (!channelType.isMessage()) {
-            WebSocketClient.LOG.debug(
+            GatewayWebSocketClient.LOG.debug(
                     "Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channelJson);
             return null;
         }
