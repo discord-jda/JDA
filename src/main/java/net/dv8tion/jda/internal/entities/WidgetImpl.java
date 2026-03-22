@@ -274,7 +274,7 @@ public class WidgetImpl implements Widget {
             String avatarId = getAvatarId();
             return avatarId == null
                     ? null
-                    : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+                    : getAvatarUrl(avatarId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
         }
 
         @Nullable

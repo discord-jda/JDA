@@ -80,7 +80,7 @@ public class ScheduledEventImpl implements ScheduledEvent {
     public String getImageUrl() {
         return coverImage == null
                 ? null
-                : getCoverImageUrl(coverImage.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+                : getCoverImageUrl(coverImage.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     @Nullable
