@@ -1,0 +1,11 @@
+[ {
+  "custom_id" : "radio-group",
+  "options" : [ {
+    "label" : "label1",
+    "value" : "value1"
+  }, {
+    "label" : "label2",
+    "value" : "value2"
+  } ],
+  "type" : 21
+} ]

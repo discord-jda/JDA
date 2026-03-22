@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * ID/Value pair for a {@link net.dv8tion.jda.api.events.interaction.ModalInteractionEvent ModalInteractionEvent}.
@@ -89,22 +90,113 @@ public class ModalMapping {
     /**
      * The String representation of this component.
      *
-     * <p>For {@link net.dv8tion.jda.api.components.textinput.TextInput TextInputs}, this returns what the User typed in it.
+     * <p>Return values include:
+     * <ul>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.textinput.TextInput TextInputs},
+     *         this returns what the User typed in it
+     *     </li>
+     *     <li>
+     *         For <b>required</b> {@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroups},
+     *         this returns the value of the option chosen by the User
+     *     </li>
+     * </ul>
+     *
+     * <p>Use {@link #getType()} to check if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         <ul>
+     *             <li>If this ModalMapping cannot be represented as a String</li>
+     *             <li>
+     *                 If this ModalMapping is for a {@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroup}
+     *                 and it contains no value, use {@link #getAsOptionalString()} instead
+     *             </li>
+     *         </ul>
+     *
+     * @return The String representation of this component.
+     */
+    @Nonnull
+    public String getAsString() {
+        switch (type) {
+            case TEXT_INPUT: {
+                return value.getString("value");
+            }
+            case RADIO_GROUP: {
+                if (value.isNull("value")) {
+                    throw new IllegalStateException(
+                            "Cannot get a non-null string from an optional radio group, use 'getAsOptionalString()' instead");
+                } else {
+                    return value.getString("value");
+                }
+            }
+            default:
+                throw newTypeError("String");
+        }
+    }
+
+    /**
+     * The String representation of this component.
+     *
+     * <p>Return values include:
+     * <ul>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.textinput.TextInput TextInputs},
+     *         this returns what the User typed in it, or {@code null} if left empty
+     *     </li>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroups},
+     *         this returns the value of the option chosen by the User, or {@code null} if no option was chosen
+     *     </li>
+     * </ul>
      *
      * <p>Use {@link #getType()} to check if this method can be used safely!
      *
      * @throws IllegalStateException
      *         If this ModalMapping cannot be represented as a String.
      *
-     * @return The String representation of this component.
+     * @return The String representation of this component, or {@code null} if absent.
      */
-    @Nonnull
-    public String getAsString() {
-        if (type != Component.Type.TEXT_INPUT) {
-            typeError("String");
+    @Nullable
+    public String getAsOptionalString() {
+        switch (type) {
+            case TEXT_INPUT: {
+                String value = this.value.getString("value");
+                if (value.isEmpty()) {
+                    return null;
+                } else {
+                    return value;
+                }
+            }
+            case RADIO_GROUP: {
+                if (value.isNull("value")) {
+                    return null;
+                } else {
+                    return value.getString("value");
+                }
+            }
+            default:
+                throw newTypeError("String");
+        }
+    }
+
+    /**
+     * The boolean representation of this component.
+     *
+     * <p>For {@link net.dv8tion.jda.api.components.checkbox.Checkbox Checkboxes}, this returns {@code true} if it was checked.
+     *
+     * <p>Use {@link #getType()} to check if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as a boolean.
+     *
+     * @return The boolean representation of this component.
+     */
+    public boolean getAsBoolean() {
+        if (type != Component.Type.CHECKBOX) {
+            typeError("boolean");
         }
 
-        return value.getString("value");
+        return value.getBoolean("value");
     }
 
     /**
@@ -120,6 +212,10 @@ public class ModalMapping {
      *         For {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenus},
      *         this returns the entity IDs chosen by the User.
      *     </li>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup CheckboxGroups},
+     *         this returns the values chosen by the User.
+     *     </li>
      * </ul>
      *
      * <p>Use {@link #getType()} to check if this method can be used safely!
@@ -131,7 +227,9 @@ public class ModalMapping {
      */
     @Nonnull
     public List<String> getAsStringList() {
-        if (type != Component.Type.STRING_SELECT && !type.isEntitySelectMenu()) {
+        if (type != Component.Type.STRING_SELECT
+                && !type.isEntitySelectMenu()
+                && type != Component.Type.CHECKBOX_GROUP) {
             typeError("List<String>");
         }
 
@@ -242,6 +340,11 @@ public class ModalMapping {
 
     private void typeError(String targetType) {
         throw new IllegalStateException(
+                "ModalMapping of type " + getType() + " can not be represented as " + targetType + "!");
+    }
+
+    private RuntimeException newTypeError(String targetType) {
+        return new IllegalStateException(
                 "ModalMapping of type " + getType() + " can not be represented as " + targetType + "!");
     }
 }

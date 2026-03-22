@@ -27,6 +27,9 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.components.selections.StringSelectMenu StringSelectMenu}</li>
  *     <li>{@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}</li>
  *     <li>{@link net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload AttachmentUpload}</li>
+ *     <li>{@link net.dv8tion.jda.api.components.radiogroup.RadioGroup RadioGroup}</li>
+ *     <li>{@link net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup CheckboxGroup}</li>
+ *     <li>{@link net.dv8tion.jda.api.components.checkbox.Checkbox Checkbox}</li>
  * </ul>
  */
 public interface LabelChildComponent extends Component {
