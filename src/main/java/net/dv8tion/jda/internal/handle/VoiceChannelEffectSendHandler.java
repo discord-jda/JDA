@@ -45,7 +45,7 @@ public class VoiceChannelEffectSendHandler extends SocketHandler {
             return null;
         }
 
-        long channelId = content.getLong("channel_id");
+        long channelId = content.getUnsignedLong("channel_id");
         VoiceChannel channel = guild.getVoiceChannelById(channelId);
         if (channel == null) {
             getJDA().getEventCache()
@@ -53,12 +53,12 @@ public class VoiceChannelEffectSendHandler extends SocketHandler {
             return null;
         }
 
-        User user = api.getUserById(content.getString("user_id"));
+        User user = api.getUserById(content.getUnsignedLong("user_id"));
         EmojiUnion emoji =
                 content.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null);
         VoiceChannelEffect.Animation animation = content.opt("animation_type")
                 .map(rawAnimationType -> {
-                    long animationId = content.getLong("animation_id");
+                    long animationId = content.getUnsignedLong("animation_id");
                     VoiceChannelEffect.Animation.Type type =
                             VoiceChannelEffect.Animation.Type.fromValue(Integer.parseInt(rawAnimationType.toString()));
                     return new VoiceChannelEffect.Animation(animationId, type);
