@@ -93,6 +93,10 @@ public interface AudioReceiveHandler {
      * <p>
      * If you are wanting to do audio processing (voice recognition) or you only want to deal with a single user's audio,
      * please consider {@link #handleUserAudio(UserAudio)}.
+     *
+     * <p>This requires an Opus decoder to be available, and for connected members to be cached.
+     * See {@link net.dv8tion.jda.api.utils.MemberCachePolicy#VOICE MemberCachePolicy.VOICE}.
+     *
      * <p>
      * Output audio format: 48KHz 16bit stereo signed BigEndian PCM
      * <br>and is defined by: {@link net.dv8tion.jda.api.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioRecieveHandler.OUTPUT_FORMAT}
@@ -116,6 +120,8 @@ public interface AudioReceiveHandler {
      * <p>
      * If you are wanting to do audio recording, please consider {@link #handleCombinedAudio(CombinedAudio)} as it was created
      * just for that reason.
+     * <p>This requires an Opus decoder to be available, and for connected members to be cached.
+     * See {@link net.dv8tion.jda.api.utils.MemberCachePolicy#VOICE MemberCachePolicy.VOICE}.
      * <p>
      * Output audio format: 48KHz 16bit stereo signed BigEndian PCM
      * <br>and is defined by: {@link net.dv8tion.jda.api.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioRecieveHandler.OUTPUT_FORMAT}
