@@ -91,13 +91,13 @@ public interface VoiceChannelMixin<T extends VoiceChannelMixin<T>>
             throw new InsufficientPermissionException(this, Permission.VOICE_USE_SOUNDBOARD);
         }
 
-        // Check voice state if possible
-        if (!this.equals(targetGuild.getAudioManager().getConnectedChannel())) {
-            throw new IllegalStateException(
-                    "You must be connected to the voice channel you want to send the sound effect to");
-        }
+        // Check voice state, self member's voice state should always be cached, but guard just in case
         GuildVoiceState voiceState = targetGuild.getSelfMember().getVoiceState();
         if (voiceState != null) {
+            if (!this.equals(voiceState.getChannel())) {
+                throw new IllegalStateException(
+                        "You must be connected to the voice channel you want to send the sound effect to");
+            }
             if (voiceState.isSuppressed()) {
                 throw new IllegalStateException("You cannot send sound effects while you are being suppressed");
             }
