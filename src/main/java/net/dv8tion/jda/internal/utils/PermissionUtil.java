@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Arrays;
