@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.attribute.ICustomId;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.internal.components.checkboxgroup.CheckboxGroupImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
@@ -436,9 +437,8 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
             Checks.noneNull(values, "Values");
             for (ListIterator<CheckboxGroupOption> iterator = options.listIterator(); iterator.hasNext(); ) {
                 CheckboxGroupOption option = iterator.next();
-                if (values.contains(option.getValue())) {
-                    iterator.set(option.withDefault(true));
-                }
+                boolean shouldBeDefault = values.contains(option.getValue());
+                iterator.set(option.withDefault(shouldBeDefault));
             }
             return this;
         }
