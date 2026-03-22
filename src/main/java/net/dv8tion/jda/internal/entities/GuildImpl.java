@@ -987,7 +987,7 @@ public class GuildImpl implements Guild {
                 () -> getSoundboardSoundById(sound.getIdLong()),
                 () -> new RestActionImpl<>(
                         api,
-                        Route.SoundboardSounds.GET_GUILD_SOUNDBOARD_SOUND.compile(getId()),
+                        Route.SoundboardSounds.GET_GUILD_SOUNDBOARD_SOUND.compile(getId(), sound.getId()),
                         (response, request) -> api.getEntityBuilder().createSoundboardSound(response.getObject())));
     }
 
