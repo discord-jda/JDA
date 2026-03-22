@@ -473,7 +473,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         createScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmojiPass(guildObj, emojisArray);
         stickersArray.ifPresent(stickers -> createGuildStickerPass(guildObj, stickers));
-        soundboardSoundsArray.ifPresent(stickers -> createGuildSoundboardSoundPass(guildObj, stickers));
+        soundboardSoundsArray.ifPresent(sound -> createGuildSoundboardSoundPass(guildObj, sound));
         guildJson
                 .optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
