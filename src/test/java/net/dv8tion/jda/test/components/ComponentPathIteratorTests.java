@@ -55,7 +55,7 @@ public class ComponentPathIteratorTests {
                         FILE_UPLOAD,
                         RADIO_GROUP,
                         CHECKBOX_GROUP,
-                        CHECKBOX-> {}
+                        CHECKBOX -> {}
                 case ACTION_ROW -> {
                     ActionRow row = mock(ActionRow.class);
                     ComponentIterator.createStream(Collections.singleton(row)).toList();
