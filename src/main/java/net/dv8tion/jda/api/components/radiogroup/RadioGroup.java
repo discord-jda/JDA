@@ -23,7 +23,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -312,10 +311,10 @@ public interface RadioGroup extends ICustomId, LabelChildComponent {
         }
 
         /**
-         * Configures which of the currently applied {@linkplain #getOptions() options} should be selected by default.
+         * Configures one of the currently applied {@linkplain #getOptions() options} to be selected by default.
          *
-         * @param  values
-         *         The {@linkplain RadioGroupOption#getValue() option values} to select
+         * @param  value
+         *         The {@linkplain RadioGroupOption#getValue() option value} to select
          *
          * @throws IllegalArgumentException
          *         If {@code null} is provided
@@ -323,39 +322,21 @@ public interface RadioGroup extends ICustomId, LabelChildComponent {
          * @return This instance for chaining convenience
          */
         @Nonnull
-        public Builder setSelectedValues(@Nonnull Collection<String> values) {
-            Checks.noneNull(values, "Values");
+        public Builder setSelectedValue(@Nonnull String value) {
+            Checks.notNull(value, "Value");
             for (ListIterator<RadioGroupOption> iterator = options.listIterator(); iterator.hasNext(); ) {
                 RadioGroupOption option = iterator.next();
-                if (values.contains(option.getValue())) {
-                    iterator.set(option.withDefault(true));
-                }
+                boolean shouldBeDefault = value.equals(option.getValue());
+                iterator.set(option.withDefault(shouldBeDefault));
             }
             return this;
         }
 
         /**
-         * Configures which of the currently applied {@linkplain #getOptions() options} should be selected by default.
+         * Configures one of the currently applied {@linkplain #getOptions() options} to be selected by default.
          *
-         * @param  values
-         *         The {@linkplain RadioGroupOption#getValue() option values} to select
-         *
-         * @throws IllegalArgumentException
-         *         If {@code null} is provided
-         *
-         * @return This instance for chaining convenience
-         */
-        @Nonnull
-        public Builder setSelectedValues(@Nonnull String... values) {
-            Checks.noneNull(values, "Values");
-            return setSelectedValues(Arrays.asList(values));
-        }
-
-        /**
-         * Configures which of the currently applied options should be selected by default.
-         *
-         * @param  options
-         *         The options to select
+         * @param  option
+         *         The option to select
          *
          * @throws IllegalArgumentException
          *         If {@code null} is provided
@@ -363,28 +344,9 @@ public interface RadioGroup extends ICustomId, LabelChildComponent {
          * @return This instance for chaining convenience
          */
         @Nonnull
-        public Builder setSelectedOptions(@Nonnull RadioGroupOption... options) {
-            Checks.noneNull(options, "Options");
-            return setSelectedValues(
-                    Arrays.stream(options).map(RadioGroupOption::getValue).collect(Collectors.toList()));
-        }
-
-        /**
-         * Configures which of the currently applied options should be selected by default.
-         *
-         * @param  options
-         *         The options to select
-         *
-         * @throws IllegalArgumentException
-         *         If {@code null} is provided
-         *
-         * @return This instance for chaining convenience
-         */
-        @Nonnull
-        public Builder setSelectedOptions(@Nonnull Collection<RadioGroupOption> options) {
-            Checks.noneNull(options, "Options");
-            return setSelectedValues(
-                    options.stream().map(RadioGroupOption::getValue).collect(Collectors.toList()));
+        public Builder setSelectedOption(@Nonnull RadioGroupOption option) {
+            Checks.notNull(option, "Option");
+            return setSelectedValue(option.getValue());
         }
 
         /**
