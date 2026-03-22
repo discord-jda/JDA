@@ -35,6 +35,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface VoiceChannelMixin<T extends VoiceChannelMixin<T>>
         extends VoiceChannel,
@@ -79,8 +80,12 @@ public interface VoiceChannelMixin<T extends VoiceChannelMixin<T>>
 
     @Nonnull
     @Override
-    default RestAction<Void> sendSoundboardSound(@Nonnull SoundboardSoundSnowflake sound, long sourceGuildId) {
+    default RestAction<Void> sendSoundboardSound(
+            @Nonnull SoundboardSoundSnowflake sound, @Nullable String sourceGuildId) {
         Checks.notNull(sound, "Sound");
+        if (sourceGuildId != null) {
+            Checks.isSnowflake(sourceGuildId, "Source guild ID");
+        }
 
         // Check speak permissions
         Guild targetGuild = this.getGuild();
@@ -110,7 +115,10 @@ public interface VoiceChannelMixin<T extends VoiceChannelMixin<T>>
         }
 
         // Send
-        DataObject data = DataObject.empty().put("sound_id", getId()).put("source_guild_id", sourceGuildId);
+        DataObject data = DataObject.empty().put("sound_id", getId());
+        if (sourceGuildId != null) {
+            data.put("source_guild_id", sourceGuildId);
+        }
 
         return new RestActionImpl<>(getJDA(), Route.SoundboardSounds.SEND_SOUNDBOARD_SOUND.compile(this.getId()), data);
     }

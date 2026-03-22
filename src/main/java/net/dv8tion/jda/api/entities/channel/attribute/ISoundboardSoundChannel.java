@@ -23,11 +23,10 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Channel in which you can send soundboard sounds.
@@ -73,11 +72,7 @@ public interface ISoundboardSoundChannel extends AudioChannel {
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> sendSoundboardSound(
-            @Nonnull SoundboardSoundSnowflake sound, @Nonnull String sourceGuildId) {
-        Checks.isSnowflake(sourceGuildId, "Source guild ID");
-        return sendSoundboardSound(sound, MiscUtil.parseSnowflake(sourceGuildId));
-    }
+    RestAction<Void> sendSoundboardSound(@Nonnull SoundboardSoundSnowflake sound, @Nullable String sourceGuildId);
 
     /**
      * Sends this sound to this audio channel.
@@ -97,7 +92,7 @@ public interface ISoundboardSoundChannel extends AudioChannel {
      * @param  sound
      *         The sound to send
      * @param  sourceGuildId
-     *         The guild ID from which this sound is from
+     *         The guild ID from which this sound is from, {@code null} for default sounds
      *
      * @throws InsufficientPermissionException
      *         If the bot does not have the following permissions:
@@ -119,5 +114,7 @@ public interface ISoundboardSoundChannel extends AudioChannel {
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> sendSoundboardSound(@Nonnull SoundboardSoundSnowflake sound, long sourceGuildId);
+    default RestAction<Void> sendSoundboardSound(@Nonnull SoundboardSoundSnowflake sound, long sourceGuildId) {
+        return sendSoundboardSound(sound, Long.toUnsignedString(sourceGuildId));
+    }
 }

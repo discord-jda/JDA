@@ -108,15 +108,20 @@ public class SoundboardSoundImpl extends SoundboardSoundSnowflakeImpl implements
             throw new IllegalStateException("Cannot send an unavailable sound");
         }
 
-        // Check additional speak permissions
-        // This isn't done in IVoiceStatusChannel as it could throw false positives
-        Guild targetGuild = channel.getGuild();
-        if (!targetGuild.equals(getGuild())
-                && !targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS)) {
-            throw new InsufficientPermissionException(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS);
-        }
+        // For non-default sounds
+        if (guild != null) {
+            // Check additional speak permissions
+            // This isn't done in ISoundboardSoundChannel as we wouldn't know the origin guild
+            Guild targetGuild = channel.getGuild();
+            if (!targetGuild.equals(guild)
+                    && !targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS)) {
+                throw new InsufficientPermissionException(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS);
+            }
 
-        return channel.sendSoundboardSound(this, this.getGuild().getIdLong());
+            return channel.sendSoundboardSound(this, guild.getIdLong());
+        } else {
+            return channel.sendSoundboardSound(this, null);
+        }
     }
 
     @Nonnull
