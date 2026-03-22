@@ -23,8 +23,12 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 
 public class GuildSoundboardSoundsUpdateHandler extends SocketHandler {
-    public GuildSoundboardSoundsUpdateHandler(JDAImpl api) {
+    private final GuildSoundboardSoundUpdateHandler soundboardSoundUpdateHandler;
+
+    public GuildSoundboardSoundsUpdateHandler(
+            JDAImpl api, GuildSoundboardSoundUpdateHandler soundboardSoundUpdateHandler) {
         super(api);
+        this.soundboardSoundUpdateHandler = soundboardSoundUpdateHandler;
     }
 
     @Override
@@ -43,14 +47,13 @@ public class GuildSoundboardSoundsUpdateHandler extends SocketHandler {
             return null;
         }
 
-        SocketHandler handler = getJDA().getClient().getHandlers().get("GUILD_SOUNDBOARD_SOUND_UPDATE");
         DataArray array = content.getArray("soundboard_sounds");
         for (int i = 0; i < array.length(); i++) {
             DataObject payload = array.getObject(i);
             // Just in case
-            payload.put("guild_id", content.getLong("guild_id"));
+            payload.put("guild_id", guildId);
 
-            handler.handle(
+            soundboardSoundUpdateHandler.handle(
                     responseNumber,
                     DataObject.empty().put("t", "GUILD_SOUNDBOARD_SOUND_UPDATE").put("d", payload));
         }
