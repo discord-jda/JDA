@@ -394,7 +394,7 @@ public class AudioConnection {
                             User user = getJDA().getUserById(userId);
                             if (user == null) {
                                 LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC"
-                                        + " is unknown to JDA!");
+                                        + " is unknown to JDA! You likely need to cache members.");
                                 continue;
                             }
                             short[] decodedAudio = opusPacket.decode();
