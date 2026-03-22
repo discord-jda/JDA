@@ -746,14 +746,11 @@ public class JDAImpl implements JDA {
     @Override
     public RestAction<@Unmodifiable List<SoundboardSound>> retrieveDefaultSoundboardSounds() {
         Route.CompiledRoute route = Route.SoundboardSounds.LIST_DEFAULT_SOUNDBOARD_SOUNDS.compile();
-        return new RestActionImpl<>(this, route, (response, request) -> {
-            DataArray array = response.getArray();
-            List<SoundboardSound> sounds = new ArrayList<>(array.length());
-            for (int i = 0; i < array.length(); i++) {
-                sounds.add(entityBuilder.createSoundboardSound(array.getObject(i)));
-            }
-            return Collections.unmodifiableList(sounds);
-        });
+        return new RestActionImpl<>(this, route, (response, request) -> Helpers.mapGracefully(
+                        response.getArray().stream(DataArray::getObject),
+                        entityBuilder::createSoundboardSound,
+                        "Failed to parse soundboard sound")
+                .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull

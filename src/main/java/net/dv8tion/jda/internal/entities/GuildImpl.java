@@ -972,8 +972,10 @@ public class GuildImpl implements Guild {
         return new RestActionImpl<>(
                 api,
                 Route.SoundboardSounds.LIST_GUILD_SOUNDBOARD_SOUNDS.compile(getId()),
-                (response, request) -> response.getArray().stream(DataArray::getObject)
-                        .map(o -> api.getEntityBuilder().createSoundboardSound(o))
+                (response, request) -> Helpers.mapGracefully(
+                                response.getArray().stream(DataArray::getObject),
+                                o -> api.getEntityBuilder().createSoundboardSound(o),
+                                "Failed to parse soundboard sound")
                         .collect(Helpers.toUnmodifiableList()));
     }
 
