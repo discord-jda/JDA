@@ -122,7 +122,7 @@ public class CheckboxImpl extends AbstractComponentImpl implements Checkbox, Lab
     public String toString() {
         return new EntityString(this)
                 .addMetadata("id", customId)
-                .addMetadata("selected", isDefault)
+                .addMetadata("checked", isDefault)
                 .toString();
     }
 }

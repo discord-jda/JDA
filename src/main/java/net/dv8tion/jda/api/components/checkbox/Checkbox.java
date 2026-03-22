@@ -98,6 +98,7 @@ public interface Checkbox extends ICustomId, LabelChildComponent {
      *
      * @return The new instance
      */
+    @Nonnull
     static Checkbox of(@Nonnull String customId) {
         Checks.notBlank(customId, "Custom ID");
         Checks.notLonger(customId, CUSTOM_ID_MAX_LENGTH, "Custom ID");
@@ -117,6 +118,7 @@ public interface Checkbox extends ICustomId, LabelChildComponent {
      *
      * @return The new instance
      */
+    @Nonnull
     static Checkbox of(@Nonnull String customId, boolean isDefault) {
         Checks.notBlank(customId, "Custom ID");
         Checks.notLonger(customId, CUSTOM_ID_MAX_LENGTH, "Custom ID");

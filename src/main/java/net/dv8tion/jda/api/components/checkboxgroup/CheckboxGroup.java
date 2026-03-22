@@ -520,7 +520,7 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
             }
             if ((minValues != -1 && maxValues != -1) && minValues > maxValues) {
                 throw new IllegalStateException(
-                        String.format("Min values (%d) cannot be greater than max values (%d)", minValues, maxValues));
+                        Helpers.format("Min values (%d) cannot be greater than max values (%d)", minValues, maxValues));
             }
             if (minValues == 0 && required) {
                 throw new IllegalStateException(

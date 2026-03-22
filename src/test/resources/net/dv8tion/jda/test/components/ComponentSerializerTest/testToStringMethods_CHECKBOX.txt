@@ -1,1 +1,1 @@
-Checkbox(id=checkbox, selected=false)
+Checkbox(id=checkbox, checked=false)
