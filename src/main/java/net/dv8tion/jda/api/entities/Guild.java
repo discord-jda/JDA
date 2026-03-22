@@ -2761,17 +2761,21 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Retrieves all the soundboard sounds from this guild.
      * <br>This also includes {@link SoundboardSound#isAvailable() unavailable} soundboard sounds.
      *
+     * <p>If {@link CacheFlag#SOUNDBOARD_SOUNDS} is enabled, this action immediately returns the cached sounds.
+     *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link RestAction} - Type: List of {@link SoundboardSound}
+     * @return {@link CacheRestAction} - Type: List of {@link SoundboardSound}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<SoundboardSound>> retrieveSoundboardSounds();
+    CacheRestAction<List<SoundboardSound>> retrieveSoundboardSounds();
 
     /**
      * Attempts to retrieve a {@link SoundboardSound} object for this guild based on the provided snowflake reference.
+     *
+     * <p>If {@link CacheFlag#SOUNDBOARD_SOUNDS} is enabled, this action immediately returns the cached sound.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -2787,11 +2791,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link SoundboardSound}
+     * @return {@link CacheRestAction} - Type: {@link SoundboardSound}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound);
+    CacheRestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound);
 
     /**
      * Modify a soundboard sound using {@link SoundboardSoundManager}.

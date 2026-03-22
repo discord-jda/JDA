@@ -543,13 +543,13 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
 
     @Nonnull
     @Override
-    public RestAction<List<SoundboardSound>> retrieveSoundboardSounds() {
+    public CacheRestAction<List<SoundboardSound>> retrieveSoundboardSounds() {
         throw detachedException();
     }
 
     @Nonnull
     @Override
-    public RestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+    public CacheRestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
         throw detachedException();
     }
 

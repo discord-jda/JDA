@@ -958,10 +958,20 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
-    public RestAction<List<SoundboardSound>> retrieveSoundboardSounds() {
+    @SuppressWarnings({"unchecked", "RedundantCast"})
+    public CacheRestAction<List<SoundboardSound>> retrieveSoundboardSounds() {
+        return (CacheRestAction<List<SoundboardSound>>) (Object) new DeferredRestAction<>(
+                api,
+                List.class,
+                () -> api.isCacheFlagSet(CacheFlag.SOUNDBOARD_SOUNDS) ? getSoundboardSounds() : null,
+                this::retrieveSoundboardSounds0);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private RestAction<List> retrieveSoundboardSounds0() {
         return new RestActionImpl<>(
                 api,
-                Route.SoundboardSounds.LIST_DEFAULT_SOUNDBOARD_SOUNDS.compile(),
+                Route.SoundboardSounds.LIST_GUILD_SOUNDBOARD_SOUNDS.compile(getId()),
                 (response, request) -> response.getArray().stream(DataArray::getObject)
                         .map(o -> api.getEntityBuilder().createSoundboardSound(o))
                         .collect(Helpers.toUnmodifiableList()));
@@ -969,12 +979,16 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
-    public RestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+    public CacheRestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
         Checks.notNull(sound, "Sound");
-        return new RestActionImpl<>(
+        return new DeferredRestAction<>(
                 api,
-                Route.SoundboardSounds.GET_GUILD_SOUNDBOARD_SOUND.compile(getId()),
-                (response, request) -> api.getEntityBuilder().createSoundboardSound(response.getObject()));
+                SoundboardSound.class,
+                () -> getSoundboardSoundById(sound.getIdLong()),
+                () -> new RestActionImpl<>(
+                        api,
+                        Route.SoundboardSounds.GET_GUILD_SOUNDBOARD_SOUND.compile(getId()),
+                        (response, request) -> api.getEntityBuilder().createSoundboardSound(response.getObject())));
     }
 
     @Nonnull
