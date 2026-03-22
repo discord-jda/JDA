@@ -50,7 +50,6 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     private final boolean isGuildCommand;
     private String subcommand;
     private String group;
-    private final Command.Type type;
 
     @SuppressWarnings("fallthrough")
     public CommandInteractionPayloadImpl(JDAImpl jda, DataObject data) {
@@ -58,7 +57,6 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
         DataObject commandData = data.getObject("data");
         this.commandId = commandData.getUnsignedLong("id");
         this.name = commandData.getString("name");
-        this.type = Command.Type.fromId(commandData.getInt("type", 1));
         // guild_id is always either null or the owner guild
         // (same as interaction guild_id)
         this.isGuildCommand = !commandData.isNull("guild_id");
@@ -76,6 +74,8 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
                 case SUB_COMMAND:
                     subcommand = option.getString("name");
                     options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
+                    break;
+                default:
                     break;
             }
         }
@@ -160,7 +160,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
     @Nonnull
     @Override
     public Command.Type getCommandType() {
-        return type;
+        return Command.Type.fromId(type);
     }
 
     @Nonnull

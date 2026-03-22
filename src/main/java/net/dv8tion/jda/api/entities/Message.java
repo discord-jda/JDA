@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.Component;
@@ -1691,8 +1693,9 @@ public interface Message extends ISnowflake, Formattable {
      * @return {@link MessageCreateAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
-    default MessageCreateAction replyFormat(@Nonnull String format, @Nonnull Object... args) {
+    default MessageCreateAction replyFormat(@Nonnull @FormatString String format, @Nonnull Object... args) {
         return getChannel().sendMessageFormat(format, args).setMessageReference(this);
     }
 
@@ -2925,7 +2928,7 @@ public interface Message extends ISnowflake, Formattable {
                 return false; // if width is -1, so is height
             }
             String extension = getFileExtension();
-            return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase());
+            return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase(Locale.ROOT));
         }
 
         /**
@@ -2939,7 +2942,7 @@ public interface Message extends ISnowflake, Formattable {
                 return false; // if width is -1, so is height
             }
             String extension = getFileExtension();
-            return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase());
+            return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase(Locale.ROOT));
         }
 
         /**

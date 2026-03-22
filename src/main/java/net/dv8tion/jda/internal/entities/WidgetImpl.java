@@ -206,7 +206,7 @@ public class WidgetImpl implements Widget {
         }
     }
 
-    public class MemberImpl implements Member {
+    public static class MemberImpl implements Member {
         private final boolean bot;
         private final long id;
         private final String username;
@@ -400,7 +400,7 @@ public class WidgetImpl implements Widget {
         }
     }
 
-    public class VoiceChannelImpl implements VoiceChannel {
+    public static class VoiceChannelImpl implements VoiceChannel {
         private final int position;
         private final long id;
         private final String name;
@@ -467,7 +467,7 @@ public class WidgetImpl implements Widget {
         }
     }
 
-    public class VoiceStateImpl implements VoiceState {
+    public static class VoiceStateImpl implements VoiceState {
         private final VoiceChannel channel;
         private final boolean muted;
         private final boolean deafened;

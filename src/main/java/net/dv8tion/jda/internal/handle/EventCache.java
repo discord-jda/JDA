@@ -24,8 +24,8 @@ import net.dv8tion.jda.internal.utils.CacheConsumer;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -79,7 +79,7 @@ public class EventCache {
 
         List<CacheNode> items = triggerCache.get(triggerId);
         if (items == null) {
-            items = new LinkedList<>();
+            items = new ArrayList<>();
             triggerCache.put(triggerId, items);
         }
 
@@ -136,7 +136,7 @@ public class EventCache {
         SCHEDULED_EVENT
     }
 
-    private class CacheNode {
+    private static class CacheNode {
         private final long responseTotal;
         private final DataObject event;
         private final CacheConsumer callback;

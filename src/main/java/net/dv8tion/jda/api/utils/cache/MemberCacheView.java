@@ -45,6 +45,7 @@ public interface MemberCacheView extends SnowflakeCacheView<Member> {
      *
      * @return Possibly-null member for the specified ID
      */
+    @Override
     @Nullable
     Member getElementById(long id);
 
@@ -60,6 +61,7 @@ public interface MemberCacheView extends SnowflakeCacheView<Member> {
      *
      * @return Possibly-null member for the specified ID
      */
+    @Override
     @Nullable
     default Member getElementById(@Nonnull String id) {
         return getElementById(MiscUtil.parseSnowflake(id));
