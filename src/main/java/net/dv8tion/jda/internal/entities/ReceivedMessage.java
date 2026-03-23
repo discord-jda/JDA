@@ -229,7 +229,9 @@ public class ReceivedMessage implements Message {
         }
     }
 
-    /*** {@code true} if the message has content that depends on the MESSAGE_CONTENT intent*/
+    /**
+     * {@code true} if the message has content that depends on the MESSAGE_CONTENT intent
+     */
     private boolean hasPrivilegedContent() {
         return !content.isEmpty()
                 || !embeds.isEmpty()
