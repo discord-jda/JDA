@@ -5746,7 +5746,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * <p>Any invalid entity referenced by the search query, will be ignored.
      *
-     * <p>The returned messages will be missing reactions.
+     * <p>The returned messages will be missing reactions, member objects (unless cached)
+     * and the containing thread's members will only contain the {@linkplain #getSelfMember() current member},
+     * if it has joined the thread.
      *
      * <p><b>Note:</b> The search may return fewer results when messages have not been accessed for a long time,
      * as such, you should not rely on the length of the messages list to paginate results.
