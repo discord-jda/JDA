@@ -160,6 +160,22 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
+    public MessageSearchAction channels(@Nonnull long... channels) {
+        Checks.notNull(channels, "Channels");
+        this.channels = Arrays.stream(channels).mapToObj(Long::toUnsignedString).collect(Collectors.toSet());
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageSearchAction channels(@Nonnull String... channels) {
+        Checks.noneNull(channels, "Channels");
+        this.channels = new HashSet<>(Arrays.asList(channels));
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public MessageSearchAction authorTypes(@Nonnull Collection<AuthorType> authorTypes) {
         Checks.noneNull(authorTypes, "Author types");
         this.authorTypes = Helpers.copyEnumSet(AuthorType.class, authorTypes);

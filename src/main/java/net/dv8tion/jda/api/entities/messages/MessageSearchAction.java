@@ -136,6 +136,9 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Sets the channels to search messages in.
+     * If you wish to search in archived threads, pass thread IDs instead.
+     *
+     * <p><b>Note:</b> This implicitly includes child threads!
      *
      * @param  channels
      *         The channels to search messages in, leave empty to remove the filter
@@ -159,6 +162,9 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Sets the channels to search messages in.
+     * If you wish to search in archived threads, pass thread IDs instead.
+     *
+     * <p><b>Note:</b> This implicitly includes child threads!
      *
      * @param  channels
      *         The channels to search messages in, leave empty to remove the filter
@@ -182,6 +188,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         Checks.noneNull(channels, "Channels");
         return channels(Arrays.asList(channels));
     }
+
+    @Nonnull
+    @CheckReturnValue
+    MessageSearchAction channels(@Nonnull long... channels);
+
+    @Nonnull
+    @CheckReturnValue
+    MessageSearchAction channels(@Nonnull String... channels);
 
     /**
      * Filters the messages by {@linkplain AuthorType author type}.
