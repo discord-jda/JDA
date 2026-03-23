@@ -55,7 +55,6 @@ public interface MessageSearchResponse {
         int getRetryAfter();
     }
 
-    // TODO there is also "threads" and "members", have yet to see what they could be useful for
     interface Body extends MessageSearchResponse {
         @Nonnull
         @Unmodifiable

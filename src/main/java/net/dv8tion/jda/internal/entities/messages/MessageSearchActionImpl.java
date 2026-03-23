@@ -17,9 +17,8 @@
 package net.dv8tion.jda.internal.entities.messages;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.messages.MessageSearchAction;
 import net.dv8tion.jda.api.entities.messages.MessageSearchResponse;
@@ -29,6 +28,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -415,20 +415,69 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
                     object.getInt("documents_indexed"), object.getInt("retry_after"));
         } else {
             searchResponse = new MessageSearchResponseImpl.BodyImpl(
-                    // get [[unknown]]
-                    object
-                            .getArray("messages")
-                            // Transform into Stream<[unknown]>
-                            .stream(DataArray::getArray)
-                            // Stream<[unknown]> -> Stream<object>
-                            .flatMap(array -> array.stream(DataArray::getObject))
-                            // Stream<object> -> Stream<Message>
-                            .map(d -> api.getEntityBuilder().createMessageWithLookup(d, guild, false))
-                            .collect(Helpers.toUnmodifiableList()),
+                    readMessages(object),
                     object.getBoolean("doing_deep_historical_index"),
                     object.getInt("total_results"));
         }
 
         request.onSuccess(searchResponse);
+    }
+
+    private List<Message> readMessages(DataObject object) {
+        Map<Long, ThreadChannel> threads = readThreadChannels(object);
+
+        return Helpers.mapGracefully(
+                        object
+                                .getArray("messages")
+                                // Flatten as the API returns a 2D array
+                                .stream(DataArray::getArray)
+                                .flatMap(array -> array.stream(DataArray::getObject)),
+                        d -> {
+                            long channelId = d.getUnsignedLong("channel_id");
+                            GuildMessageChannel channel = threads.get(channelId);
+                            if (channel == null) {
+                                channel = guild.getChannelById(GuildMessageChannel.class, channelId);
+                            }
+                            if (channel == null) {
+                                throw new IllegalStateException(Helpers.format(
+                                        "Could not find a thread or a regular channel with ID %d in guild %s",
+                                        channelId, guild.getId()));
+                            }
+                            return api.getEntityBuilder().createMessageWithChannel(d, channel, false);
+                        },
+                        "Unable to read a message from search results")
+                .collect(Helpers.toUnmodifiableList());
+    }
+
+    @Nonnull
+    private Map<Long, ThreadChannel> readThreadChannels(DataObject object) {
+        if (object.isNull("threads")) {
+            return Collections.emptyMap();
+        }
+
+        // Thread ID -> Thread member object
+        Map<Long, DataObject> selfThreadMemberObjects = readSelfThreadMemberObjects(object);
+
+        return Helpers.mapGracefully(
+                        object.getArray("threads").stream(DataArray::getObject),
+                        o -> {
+                            // Put the self thread member, if it did join the thread
+                            o.put("member", selfThreadMemberObjects.get(o.getUnsignedLong("id")));
+
+                            return api.getEntityBuilder()
+                                    .createThreadChannel((GuildImpl) guild, o, guild.getIdLong(), false);
+                        },
+                        "Unable to read a thread channel from search results")
+                .collect(Collectors.toMap(ISnowflake::getIdLong, c -> c));
+    }
+
+    @Nonnull
+    private static Map<Long, DataObject> readSelfThreadMemberObjects(DataObject object) {
+        if (object.isNull("members")) {
+            return Collections.emptyMap();
+        }
+
+        return object.getArray("members").stream(DataArray::getObject)
+                .collect(Collectors.toMap(o -> o.getUnsignedLong("id"), o -> o));
     }
 }
