@@ -34,14 +34,21 @@ public class VoiceChannelEffect {
     private final EmojiUnion emoji;
     private final Animation animation;
     private final SoundboardSound soundboardSound;
+    private final double soundVolume;
 
     public VoiceChannelEffect(
-            VoiceChannel channel, long userId, EmojiUnion emoji, Animation animation, SoundboardSound soundboardSound) {
+            VoiceChannel channel,
+            long userId,
+            EmojiUnion emoji,
+            Animation animation,
+            SoundboardSound soundboardSound,
+            double soundVolume) {
         this.channel = channel;
         this.userId = userId;
         this.emoji = emoji;
         this.animation = animation;
         this.soundboardSound = soundboardSound;
+        this.soundVolume = soundVolume;
     }
 
     /**
@@ -112,6 +119,15 @@ public class VoiceChannelEffect {
     @Nullable
     public SoundboardSound getSoundboardSound() {
         return soundboardSound;
+    }
+
+    /**
+     * The volume at which a soundboard sound was sent, this is {@code 0} if this isn't a soundboard sound effect.
+     *
+     * @return The soundboard sound's volume, or {@code 0}
+     */
+    public double getSoundVolume() {
+        return soundVolume;
     }
 
     /**

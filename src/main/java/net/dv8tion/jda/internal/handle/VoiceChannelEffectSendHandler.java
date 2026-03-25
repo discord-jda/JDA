@@ -67,8 +67,10 @@ public class VoiceChannelEffectSendHandler extends SocketHandler {
         SoundboardSound soundboardSound = content.opt("sound_id")
                 .map(id -> guild.getSoundboardSoundById((String) id))
                 .orElse(null);
+        double soundVolume = content.getDouble("sound_volume", 0);
 
-        VoiceChannelEffect effect = new VoiceChannelEffect(channel, userId, emoji, animation, soundboardSound);
+        VoiceChannelEffect effect =
+                new VoiceChannelEffect(channel, userId, emoji, animation, soundboardSound, soundVolume);
 
         api.handleEvent(new VoiceChannelEffectSendEvent(api, responseNumber, effect));
 
