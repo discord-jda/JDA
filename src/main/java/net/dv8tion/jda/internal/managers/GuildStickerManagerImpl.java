@@ -143,7 +143,8 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
     @Override
     protected boolean checkPermissions() {
         if (guild != null) {
-            GuildStickerImpl.checkManagePermissions(guild, null);
+            // We don't have the owner, assume we own the sticker
+            GuildStickerImpl.checkCreateOrManagePermissions(guild);
         }
         return super.checkPermissions();
     }

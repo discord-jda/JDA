@@ -181,13 +181,7 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
         SelfMember selfMember = getGuild().getSelfMember();
         if (owner != null) {
             if (owner.getIdLong() == selfMember.getIdLong()) {
-                if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
-                        && !selfMember.hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
-                    throw new InsufficientPermissionException(
-                            guild,
-                            Permission.MANAGE_GUILD_EXPRESSIONS,
-                            "Managing a custom emoji requires either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
-                }
+                checkCreateOrManagePermissions();
             } else {
                 if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
                     throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
@@ -195,13 +189,18 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
             }
         } else {
             // We don't know if we own the emoji, let's assume we do
-            if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
-                    && !selfMember.hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
-                throw new InsufficientPermissionException(
-                        guild,
-                        Permission.MANAGE_GUILD_EXPRESSIONS,
-                        "Managing a custom emoji requires either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
-            }
+            checkCreateOrManagePermissions();
+        }
+    }
+
+    private void checkCreateOrManagePermissions() {
+        SelfMember selfMember = getGuild().getSelfMember();
+        if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
+                && !selfMember.hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
+            throw new InsufficientPermissionException(
+                    guild,
+                    Permission.MANAGE_GUILD_EXPRESSIONS,
+                    "Managing a custom emoji requires either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
         }
     }
 
