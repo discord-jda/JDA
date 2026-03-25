@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities.emoji;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.SelfMember;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.*;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -133,8 +134,12 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
     @Override
     public CacheRestAction<User> retrieveOwner() {
         GuildImpl guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
-            throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
+                && !guild.getSelfMember().hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
+            throw new InsufficientPermissionException(
+                    guild,
+                    Permission.MANAGE_GUILD_EXPRESSIONS,
+                    "Cannot retrieve owner without either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
         }
         return new DeferredRestAction<>(api, User.class, this::getOwner, () -> {
             Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(guild.getId(), getId());
@@ -166,12 +171,38 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion {
         if (managed) {
             throw new UnsupportedOperationException("You cannot delete a managed emoji!");
         }
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
-            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
-        }
+        checkManagePermissions();
 
         Route.CompiledRoute route = Route.Emojis.DELETE_EMOJI.compile(getGuild().getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    public void checkManagePermissions() {
+        SelfMember selfMember = getGuild().getSelfMember();
+        if (owner != null) {
+            if (owner.getIdLong() == selfMember.getIdLong()) {
+                if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
+                        && !selfMember.hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
+                    throw new InsufficientPermissionException(
+                            guild,
+                            Permission.MANAGE_GUILD_EXPRESSIONS,
+                            "Managing a custom emoji requires either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
+                }
+            } else {
+                if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
+                    throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
+                }
+            }
+        } else {
+            // We don't know if we own the emoji, let's assume we do
+            if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
+                    && !selfMember.hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
+                throw new InsufficientPermissionException(
+                        guild,
+                        Permission.MANAGE_GUILD_EXPRESSIONS,
+                        "Managing a custom emoji requires either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
+            }
+        }
     }
 
     // -- Setters --
