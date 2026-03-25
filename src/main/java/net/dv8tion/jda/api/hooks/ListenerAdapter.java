@@ -481,6 +481,8 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onGuildVoiceRequestToSpeak(@Nonnull GuildVoiceRequestToSpeakEvent event) {}
 
+    public void onVoiceChannelEffectSend(@Nonnull VoiceChannelEffectSendEvent event) {}
+
     // Guild AutoMod Events
     public void onAutoModExecution(@Nonnull AutoModExecutionEvent event) {}
 
