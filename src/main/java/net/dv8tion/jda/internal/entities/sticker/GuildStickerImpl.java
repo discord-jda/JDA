@@ -19,7 +19,9 @@ package net.dv8tion.jda.internal.entities.sticker;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.SelfMember;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -110,9 +112,14 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
     @Nonnull
     @Override
     public CacheRestAction<User> retrieveOwner() {
-        Guild g = getGuild();
-        if (g != null && !g.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
-            throw new InsufficientPermissionException(g, Permission.MANAGE_GUILD_EXPRESSIONS);
+        Guild guild = getGuild();
+        if (guild != null
+                && !guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
+                && !guild.getSelfMember().hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
+            throw new InsufficientPermissionException(
+                    guild,
+                    Permission.MANAGE_GUILD_EXPRESSIONS,
+                    "Retrieving sticker owner requires either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
         }
         return new DeferredRestAction<>(jda, User.class, this::getOwner, () -> {
             Route.CompiledRoute route = Route.Stickers.GET_GUILD_STICKER.compile(getGuildId(), getId());
@@ -128,11 +135,40 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker {
     @Nonnull
     @Override
     public AuditableRestAction<Void> delete() {
+        Guild guild = getGuild();
         if (guild != null) {
-            return guild.deleteSticker(this);
+            checkManagePermissions(guild, owner);
         }
         Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(getGuildId(), getId());
         return new AuditableRestActionImpl<>(jda, route);
+    }
+
+    public static void checkManagePermissions(@Nonnull Guild guild, @Nullable UserSnowflake owner) {
+        SelfMember selfMember = guild.getSelfMember();
+        if (owner != null) {
+            if (owner.getIdLong() == selfMember.getIdLong()) {
+                if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
+                        && !selfMember.hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
+                    throw new InsufficientPermissionException(
+                            guild,
+                            Permission.MANAGE_GUILD_EXPRESSIONS,
+                            "Managing a sticker requires either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
+                }
+            } else {
+                if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
+                    throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
+                }
+            }
+        } else {
+            // We don't know if we own the sticker, let's assume we do
+            if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)
+                    && !selfMember.hasPermission(Permission.CREATE_GUILD_EXPRESSIONS)) {
+                throw new InsufficientPermissionException(
+                        guild,
+                        Permission.MANAGE_GUILD_EXPRESSIONS,
+                        "Managing a sticker requires either MANAGE_GUILD_EXPRESSIONS or CREATE_GUILD_EXPRESSIONS permissions");
+            }
+        }
     }
 
     @Nonnull

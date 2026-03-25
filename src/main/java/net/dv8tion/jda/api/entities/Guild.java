@@ -2656,7 +2656,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS}
+     *         nor {@link Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} in the guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
@@ -5615,7 +5616,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalStateException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS}
+     *         nor {@link Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} in the guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
