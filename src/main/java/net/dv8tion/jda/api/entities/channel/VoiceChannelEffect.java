@@ -104,7 +104,7 @@ public class VoiceChannelEffect {
     }
 
     /**
-     * The emoji sent with the effect, this is only present for emoji effects.
+     * The emoji sent with the effect, this is present for both emoji and soundboard sound effects.
      *
      * @return The emoji sent with the effect, or {@code null}
      */
@@ -114,7 +114,7 @@ public class VoiceChannelEffect {
     }
 
     /**
-     * The animation of the emoji, this is only present for emoji effects.
+     * The animation of the emoji, this is present for both emoji and soundboard sound effects.
      *
      * @return The animation of the emoji, or {@code null}
      */
@@ -143,7 +143,7 @@ public class VoiceChannelEffect {
     }
 
     /**
-     * Represents the animation used in emoji effects.
+     * Represents the animation of a voice channel effect.
      */
     public static class Animation implements ISnowflake {
         public Animation(long id, Animation.Type type) {
@@ -170,11 +170,13 @@ public class VoiceChannelEffect {
         }
 
         /**
-         * Represents the animation type used in emoji effects.
+         * Type of animation.
          */
         public enum Type {
             UNKNOWN(-1),
+            /** A fun animation, sent by a Nitro subscriber */
             PREMIUM(0),
+            /** The standard animation */
             BASIC(1);
 
             private final int value;
