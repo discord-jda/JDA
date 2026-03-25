@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.SoundboardSound;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -89,6 +90,17 @@ public class VoiceChannelEffect {
     @Nullable
     public User getUser() {
         return channel.getJDA().getUserById(userId);
+    }
+
+    /**
+     * The member which sent this effect.
+     * <br>This may be {@code null} if the member is not {@linkplain net.dv8tion.jda.api.utils.MemberCachePolicy cached}.
+     *
+     * @return The member which sent this effect, or {@code null}.
+     */
+    @Nullable
+    public Member getMember() {
+        return channel.getGuild().getMemberById(userId);
     }
 
     /**
