@@ -199,6 +199,9 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction channels(@Nonnull String... channels) {
         Checks.noneNull(channels, "Channels");
+        for (String channel : channels) {
+            Checks.isSnowflake(channel, "Channel");
+        }
         this.channels = new HashSet<>(Arrays.asList(channels));
         return this;
     }
