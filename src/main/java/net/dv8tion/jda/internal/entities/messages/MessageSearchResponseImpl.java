@@ -27,11 +27,11 @@ import javax.annotation.Nonnull;
 public class MessageSearchResponseImpl {
     private MessageSearchResponseImpl() {}
 
-    public static class FailureImpl implements MessageSearchResponse.Failure {
+    public static class NotReadyImpl implements MessageSearchResponse.NotReady {
 
         private final int documentsIndexed, retryAfter;
 
-        public FailureImpl(int documentsIndexed, int retryAfter) {
+        public NotReadyImpl(int documentsIndexed, int retryAfter) {
             this.documentsIndexed = documentsIndexed;
             this.retryAfter = retryAfter;
         }
@@ -43,13 +43,13 @@ public class MessageSearchResponseImpl {
 
         @Nonnull
         @Override
-        public Failure asFailure() {
+        public NotReady asNotReady() {
             return this;
         }
 
         @Nonnull
         @Override
-        public Body asBody() {
+        public Results asResults() {
             throw new IllegalStateException("The message search has failed");
         }
 
@@ -64,12 +64,12 @@ public class MessageSearchResponseImpl {
         }
     }
 
-    public static class BodyImpl implements MessageSearchResponse.Body {
+    public static class ResultsImpl implements MessageSearchResponse.Results {
         private final List<Message> messages;
         private final boolean doingDeepHistoricalIndex;
         private final int totalResults;
 
-        public BodyImpl(List<Message> messages, boolean doingDeepHistoricalIndex, int totalResults) {
+        public ResultsImpl(List<Message> messages, boolean doingDeepHistoricalIndex, int totalResults) {
             this.messages = messages;
             this.doingDeepHistoricalIndex = doingDeepHistoricalIndex;
             this.totalResults = totalResults;
@@ -82,13 +82,13 @@ public class MessageSearchResponseImpl {
 
         @Nonnull
         @Override
-        public Failure asFailure() {
+        public NotReady asNotReady() {
             throw new IllegalStateException("The message search has succeeded");
         }
 
         @Nonnull
         @Override
-        public Body asBody() {
+        public Results asResults() {
             return this;
         }
 

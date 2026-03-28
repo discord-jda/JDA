@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.messages;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -23,27 +24,58 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Base interface for message search responses.
+ *
+ * @see Guild#searchMessages()
+ */
 public interface MessageSearchResponse {
     /**
      * Whether the message search has failed, currently,
      * it can only "gracefully" fail when the message index is not yet available.
      *
-     * <p>If this returns {@code true}, you muse use {@link #asFailure()}
-     * and retry the request according to the returned {@linkplain Failure#getRetryAfter() delay}.
+     * <p>If this returns {@code true}, you muse use {@link #asNotReady()}
+     * and retry the request according to the returned {@linkplain NotReady#getRetryAfter() delay}.
      *
-     * <p>If this returns {@code false}, you must use {@link #asBody()} to read the results.
+     * <p>If this returns {@code false}, you must use {@link #asResults()} to read the results.
      *
      * @return {@code true} if the request failed, {@code false} otherwise
      */
     boolean hasFailed();
 
+    /**
+     * Returns this instance as {@link NotReady NotReady}, if it is one.
+     *
+     * @throws IllegalStateException
+     *         If the search has succeeded
+     *
+     * @return The {@link NotReady NotReady} state
+     */
     @Nonnull
-    Failure asFailure();
+    NotReady asNotReady();
 
+    /**
+     * Returns this instance as {@link Results Results}, if it is one.
+     *
+     * @throws IllegalStateException
+     *         If the search is not ready yet
+     *
+     * @return The {@link Results Results} state
+     */
     @Nonnull
-    Body asBody();
+    Results asResults();
 
-    interface Failure extends MessageSearchResponse {
+    /**
+     * Represents a response indicating the search index is not yet ready.
+     *
+     * @see #asNotReady()
+     */
+    interface NotReady extends MessageSearchResponse {
+        /**
+         * The number of documents that has been indexed thus far.
+         *
+         * @return Number of currently indexed documents
+         */
         int getDocumentsIndexed();
 
         /**
@@ -55,7 +87,12 @@ public interface MessageSearchResponse {
         int getRetryAfter();
     }
 
-    interface Body extends MessageSearchResponse {
+    /**
+     * Represents a response with the found messages.
+     *
+     * @see #asResults()
+     */
+    interface Results extends MessageSearchResponse {
         /**
          * The messages satisfying the search query.
          *
@@ -71,10 +108,15 @@ public interface MessageSearchResponse {
         @Unmodifiable
         List<Message> getMessages();
 
+        /**
+         * Whether the guild is still being indexed.
+         *
+         * @return {@code true} if the indexing is still being done
+         */
         boolean isDoingDeepHistoricalIndex();
 
         /**
-         * The total number of messages. May not be accurate.
+         * The total number of messages. May not be accurate as messages are created/deleted.
          *
          * @return The total results
          */
