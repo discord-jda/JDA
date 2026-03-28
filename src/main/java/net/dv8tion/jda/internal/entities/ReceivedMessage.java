@@ -214,7 +214,8 @@ public class ReceivedMessage implements Message {
             if (!Objects.equals(selfUser, author)
                     && !mentions.getUsers().contains(selfUser)
                     && isFromGuild()
-                    && !isBotOwnedWebhookMessage) {
+                    && !isBotOwnedWebhookMessage
+                    && !hasPrivilegedContent()) {
                 didContentIntentWarning = true;
                 JDAImpl.LOG.warn(
                         "Attempting to access message content without GatewayIntent.MESSAGE_CONTENT.\n"
@@ -226,6 +227,17 @@ public class ReceivedMessage implements Message {
                                 + "Or suppress this warning if this is intentional with Message.suppressContentIntentWarning()");
             }
         }
+    }
+
+    /**
+     * {@code true} if the message has content that depends on the MESSAGE_CONTENT intent
+     */
+    private boolean hasPrivilegedContent() {
+        return !content.isEmpty()
+                || !embeds.isEmpty()
+                || !attachments.isEmpty()
+                || !components.isEmpty()
+                || poll != null;
     }
 
     public ReceivedMessage withHook(WebhookClient<Message> hook) {
