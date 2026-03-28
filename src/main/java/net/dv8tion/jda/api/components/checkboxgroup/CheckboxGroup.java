@@ -398,7 +398,7 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
                     "Min values (%d) cannot be greater than max values (%d)",
                     minValues,
                     maxValues);
-            return setMinValues(minValues).setMinValues(maxValues);
+            return setMinValues(minValues).setMaxValues(maxValues);
         }
 
         /**
