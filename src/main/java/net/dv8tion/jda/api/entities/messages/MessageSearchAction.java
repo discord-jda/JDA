@@ -487,7 +487,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *         The IDs of the users which must be mentioned in the messages, leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}
+     *         If the array is, or contains {@code null}, or is not a valid snowflake
      *
      * @return This action for chaining
      */
