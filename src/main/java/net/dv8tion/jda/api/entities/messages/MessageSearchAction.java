@@ -52,7 +52,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction limit(@Nullable @Range(from = 1, to = 25) Integer limit);
 
     /**
-     * Sets the offset of the returned messages
+     * Sets the offset of the returned messages.
+     *
+     * <p><b>Note:</b> You must not offset the search by the number of messages received from a previous request,
+     * to implement some pagination, you should instead specify {@link #minId(Long)} or {@link #maxId(Long)},
+     * depending on the desired direction.
      *
      * @param  offset
      *         Offset of messages, between 1 and 9975, or {@code null} to remove the offset
@@ -68,7 +72,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Sets the ID of the message to start searching from.
-     * In other words, the searched messages will be after the specified ID.
+     * In other words, the results will only include messages newer than the specified ID.
+     *
+     * <p>This doesn't need to be a real message's ID,
+     * this filter is based on the {@linkplain net.dv8tion.jda.api.utils.TimeUtil#getDiscordTimestamp(long) timestamp encoded in the snowflake},
+     * meaning you can use this method to limit messages to a certain time period.
      *
      * <p><b>Tip:</b> If you want to include the message in the results, you can decrement the ID.
      *
@@ -76,7 +84,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *         The minimum message ID to search from (excluded), or {@code null} to remove the min ID
      *
      * @throws IllegalArgumentException
-     *         If the provided ID is negative and not {@code null}
+     *         If the provided ID not {@code null} and is negative
      *
      * @return This action for chaining
      */
@@ -86,7 +94,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Sets the ID of the message to end the search at.
-     * In other words, the searched messages will be before the specified ID.
+     * In other words, the results will only include messages older than the specified ID.
+     *
+     * <p>This doesn't need to be a real message's ID,
+     * this filter is based on the {@linkplain net.dv8tion.jda.api.utils.TimeUtil#getDiscordTimestamp(long) timestamp encoded in the snowflake},
+     * meaning you can use this method to limit messages to a certain time period.
      *
      * <p><b>Tip:</b> If you want to include the message in the results, you can increment the ID.
      *
@@ -94,7 +106,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *         The message ID to stop at (excluded), or {@code null} to remove the max ID
      *
      * @throws IllegalArgumentException
-     *         If the provided ID is negative and not {@code null}
+     *         If the provided ID not {@code null} and is negative
      *
      * @return This action for chaining
      */
@@ -129,6 +141,8 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *         If the content is longer than 1024 characters and not {@code null}
      *
      * @return This action for chaining
+     *
+     * @see #slop(Integer)
      */
     @Nonnull
     @CheckReturnValue

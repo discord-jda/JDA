@@ -56,6 +56,17 @@ public interface MessageSearchResponse {
     }
 
     interface Body extends MessageSearchResponse {
+        /**
+         * The messages satisfying the search query.
+         *
+         * <p>The returned messages will be missing reactions, member objects (unless cached)
+         * and the containing thread's members will only contain the {@linkplain net.dv8tion.jda.api.entities.Guild#getSelfMember() current member},
+         * if it has joined the thread.
+         *
+         * <p><b>Note:</b> Do not paginate using the length of this array!
+         *
+         * @return The matching messages
+         */
         @Nonnull
         @Unmodifiable
         List<Message> getMessages();
