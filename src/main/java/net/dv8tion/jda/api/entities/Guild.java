@@ -5757,7 +5757,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * the returned {@link RestAction} include the following:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>You are missing the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent, or the access to one of the searched channels have been revoked</li>
+     *     <br>You are missing the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent, or the search is filtered on a single channel which you don't have access to</li>
      * </ul>
      *
      * @throws InsufficientPermissionException
