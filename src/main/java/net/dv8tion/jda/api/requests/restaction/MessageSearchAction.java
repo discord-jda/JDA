@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.messages;
+package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.messages.MessageSearchResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Range;
