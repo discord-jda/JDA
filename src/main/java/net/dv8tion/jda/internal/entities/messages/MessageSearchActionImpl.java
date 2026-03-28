@@ -141,6 +141,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction channels(@Nonnull Collection<? extends GuildMessageChannel> channels) {
         Checks.noneNull(channels, "Channels");
+        Checks.check(channels.size() <= 500, "Cannot filter on more than 500 channels");
         for (GuildMessageChannel channel : channels) {
             Checks.check(
                     channel.getGuild().equals(guild),
@@ -162,6 +163,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction channels(@Nonnull long... channels) {
         Checks.notNull(channels, "Channels");
+        Checks.check(channels.length <= 500, "Cannot filter on more than 500 channels");
         this.channels = Arrays.stream(channels).mapToObj(Long::toUnsignedString).collect(Collectors.toSet());
         return this;
     }

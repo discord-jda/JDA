@@ -155,10 +155,10 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p><b>Note:</b> This implicitly includes child threads!
      *
      * @param  channels
-     *         The channels to search messages in, leave empty to remove the filter
+     *         The channels to search messages in, up to 500, leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the collection or one of its element is {@code null}
+     *         If the collection or one of its element is {@code null}, or the collection has more than 500 elements
      * @throws net.dv8tion.jda.api.exceptions.MissingAccessException
      *         If the {@linkplain Guild#getSelfMember() current member} does not have the access to one of the channels
      *         <ul>
@@ -181,10 +181,10 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p><b>Note:</b> This implicitly includes child threads!
      *
      * @param  channels
-     *         The channels to search messages in, leave empty to remove the filter
+     *         The channels to search messages in, up to 500, leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array or an element is {@code null}
+     *         If the array or an element is {@code null}, or the array has more than 500 elements
      * @throws net.dv8tion.jda.api.exceptions.MissingAccessException
      *         If the {@linkplain Guild#getSelfMember() current member} does not have the access to one of the channels
      *         <ul>
