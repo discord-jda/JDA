@@ -616,7 +616,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction pinned(boolean pinned);
+    MessageSearchAction pinned(@Nullable Boolean pinned);
 
     @Nonnull
     @CheckReturnValue

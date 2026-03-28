@@ -276,7 +276,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
-    public MessageSearchAction pinned(boolean pinned) {
+    public MessageSearchAction pinned(@Nullable Boolean pinned) {
         this.pinned = pinned;
         return this;
     }
