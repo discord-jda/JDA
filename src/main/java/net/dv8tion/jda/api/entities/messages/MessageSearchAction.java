@@ -698,11 +698,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction sortBy(@Nullable SortType sortType);
+    MessageSearchAction sortBy(@Nonnull SortType sortType);
 
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction sortOrder(@Nullable SortOrder sortOrder);
+    MessageSearchAction sortOrder(@Nonnull SortOrder sortOrder);
 
     @Nonnull
     @CheckReturnValue

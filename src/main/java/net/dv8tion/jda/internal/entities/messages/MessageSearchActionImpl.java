@@ -355,14 +355,16 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
-    public MessageSearchAction sortBy(@Nullable MessageSearchAction.SortType sortType) {
+    public MessageSearchAction sortBy(@Nonnull SortType sortType) {
+        Checks.notNull(sortType, "Sort type");
         this.sortBy = sortType;
         return this;
     }
 
     @Nonnull
     @Override
-    public MessageSearchAction sortOrder(@Nullable MessageSearchAction.SortOrder sortOrder) {
+    public MessageSearchAction sortOrder(@Nonnull SortOrder sortOrder) {
+        Checks.notNull(sortOrder, "Sort order");
         this.sortOrder = sortOrder;
         return this;
     }
