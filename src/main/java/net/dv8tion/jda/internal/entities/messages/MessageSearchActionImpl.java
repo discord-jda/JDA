@@ -47,7 +47,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     private Integer limit;
     private Integer offset;
-    private Long minId, maxId;
+    private String minId, maxId;
     private Integer slop;
     private String content;
     private Set<String> channels = Collections.emptySet();
@@ -101,6 +101,18 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     public MessageSearchAction minId(@Nullable Long minId) {
         if (minId != null) {
             Checks.notNegative(minId, "Min ID");
+            this.minId = Long.toUnsignedString(minId);
+        } else {
+            this.minId = null;
+        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageSearchAction minId(@Nullable String minId) {
+        if (minId != null) {
+            Checks.isSnowflake(minId, "Min ID");
         }
         this.minId = minId;
         return this;
@@ -111,6 +123,18 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     public MessageSearchAction maxId(@Nullable Long maxId) {
         if (maxId != null) {
             Checks.notNegative(maxId, "Max ID");
+            this.maxId = Long.toUnsignedString(maxId);
+        } else {
+            this.maxId = null;
+        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageSearchAction maxId(@Nullable String maxId) {
+        if (maxId != null) {
+            Checks.isSnowflake(maxId, "Max ID");
         }
         this.maxId = maxId;
         return this;
@@ -227,6 +251,9 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction repliesToMessages(@Nonnull Collection<String> repliedTo) {
         Checks.noneNull(repliedTo, "Messages");
+        for (String messageId : repliedTo) {
+            Checks.isSnowflake(messageId, "Message ID");
+        }
         this.repliesToMessages = new HashSet<>(repliedTo);
         return this;
     }
@@ -335,10 +362,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
             route = route.withQueryParams("offset", Integer.toString(offset));
         }
         if (minId != null) {
-            route = route.withQueryParams("min_id", Long.toString(minId));
+            route = route.withQueryParams("min_id", minId);
         }
         if (maxId != null) {
-            route = route.withQueryParams("max_id", Long.toString(maxId));
+            route = route.withQueryParams("max_id", maxId);
         }
         if (slop != null) {
             route = route.withQueryParams("slop", Integer.toString(slop));

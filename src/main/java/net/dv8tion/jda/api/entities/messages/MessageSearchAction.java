@@ -93,6 +93,28 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction minId(@Nullable Long minId);
 
     /**
+     * Sets the ID of the message to start searching from.
+     * In other words, the results will only include messages newer than the specified ID.
+     *
+     * <p>This doesn't need to be a real message's ID,
+     * this filter is based on the {@linkplain net.dv8tion.jda.api.utils.TimeUtil#getDiscordTimestamp(long) timestamp encoded in the snowflake},
+     * meaning you can use this method to limit messages to a certain time period.
+     *
+     * <p><b>Tip:</b> If you want to include the message in the results, you can decrement the ID.
+     *
+     * @param  minId
+     *         The minimum message ID to search from (excluded), or {@code null} to remove the min ID
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is not {@code null} and is not a valid snowflake
+     *
+     * @return This action for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageSearchAction minId(@Nullable String minId);
+
+    /**
      * Sets the ID of the message to end the search at.
      * In other words, the results will only include messages older than the specified ID.
      *
@@ -113,6 +135,28 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     @Nonnull
     @CheckReturnValue
     MessageSearchAction maxId(@Nullable Long maxId);
+
+    /**
+     * Sets the ID of the message to end the search at.
+     * In other words, the results will only include messages older than the specified ID.
+     *
+     * <p>This doesn't need to be a real message's ID,
+     * this filter is based on the {@linkplain net.dv8tion.jda.api.utils.TimeUtil#getDiscordTimestamp(long) timestamp encoded in the snowflake},
+     * meaning you can use this method to limit messages to a certain time period.
+     *
+     * <p><b>Tip:</b> If you want to include the message in the results, you can increment the ID.
+     *
+     * @param  maxId
+     *         The message ID to stop at (excluded), or {@code null} to remove the max ID
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is not {@code null} and is not a valid snowflake
+     *
+     * @return This action for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageSearchAction maxId(@Nullable String maxId);
 
     /**
      * Sets the maximum number of words to skip between matching tokens in the search {@linkplain #content(String) content}.
