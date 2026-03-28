@@ -281,13 +281,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction channels(@Nonnull String... channels);
 
     /**
-     * Keeps messages which are sent by the provided {@linkplain AuthorType author types}.
-     *
-     * <p>If there is an overlap with the {@linkplain #excludeAuthorTypes(Collection) exclusions},
-     * an {@link IllegalStateException} will be thrown upon sending the request.
+     * Includes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
+     * <br><b>This overrides exclusions.</b>
      *
      * @param  authorTypes
-     *         The type of authors to keep messages from, leave empty to remove the inclusion filter
+     *         The type of authors to keep, leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         If the collection or an element is {@code null}
@@ -299,13 +297,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction includeAuthorTypes(@Nonnull Collection<AuthorType> authorTypes);
 
     /**
-     * Keeps messages which are sent by the provided {@linkplain AuthorType author types}.
-     *
-     * <p>If there is an overlap with the {@linkplain #excludeAuthorTypes(AuthorType...) exclusions},
-     * an {@link IllegalStateException} will be thrown upon sending the request.
+     * Includes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
+     * <br><b>This overrides exclusions.</b>
      *
      * @param  authorTypes
-     *         The type of authors to keep messages from, leave empty to remove the inclusion filter
+     *         The type of authors to keep, leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         If the array or an element is {@code null}
@@ -320,13 +316,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     }
 
     /**
-     * Keeps messages which are <b>NOT</b> sent by the provided {@linkplain AuthorType author types}.
-     *
-     * <p>If there is an overlap with the {@linkplain #includeAuthorTypes(Collection) inclusions},
-     * an {@link IllegalStateException} will be thrown upon sending the request.
+     * Excludes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
+     * <br><b>This overrides inclusions.</b>
      *
      * @param  authorTypes
-     *         The type of authors to NOT keep messages from, leave empty to remove the exclusion filter
+     *         The type of authors to avoid, leave empty to remove the exclusion filter
      *
      * @throws IllegalArgumentException
      *         If the collection or an element is {@code null}
@@ -338,13 +332,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction excludeAuthorTypes(@Nonnull Collection<AuthorType> authorTypes);
 
     /**
-     * Keeps messages which are <b>NOT</b> sent by the provided {@linkplain AuthorType author types}.
-     *
-     * <p>If there is an overlap with the {@linkplain #includeAuthorTypes(AuthorType...) inclusions},
-     * an {@link IllegalStateException} will be thrown upon sending the request.
+     * Excludes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
+     * <br><b>This overrides inclusions.</b>
      *
      * @param  authorTypes
-     *         The type of authors to NOT keep messages from, leave empty to remove the exclusion filter
+     *         The type of authors to avoid, leave empty to remove the exclusion filter
      *
      * @throws IllegalArgumentException
      *         If the array or an element is {@code null}

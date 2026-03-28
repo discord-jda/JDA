@@ -211,6 +211,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     public MessageSearchAction includeAuthorTypes(@Nonnull Collection<AuthorType> authorTypes) {
         Checks.noneNull(authorTypes, "Author types");
         this.includedAuthorTypes = Helpers.copyEnumSet(AuthorType.class, authorTypes);
+        this.excludedAuthorTypes = Collections.emptySet();
         return this;
     }
 
@@ -218,6 +219,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction excludeAuthorTypes(@Nonnull Collection<AuthorType> authorTypes) {
         Checks.noneNull(authorTypes, "Author types");
+        this.includedAuthorTypes = Collections.emptySet();
         this.excludedAuthorTypes = Helpers.copyEnumSet(AuthorType.class, authorTypes);
         return this;
     }
@@ -376,12 +378,6 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Override
     protected Route.CompiledRoute finalizeRoute() {
-        Set<AuthorType> authorTypeConflicts = Helpers.intersection(includedAuthorTypes, excludedAuthorTypes);
-        if (!authorTypeConflicts.isEmpty()) {
-            throw new IllegalStateException(
-                    "Author types were found to be included and excluded at the same time: " + authorTypeConflicts);
-        }
-
         Route.CompiledRoute route = super.finalizeRoute();
         if (limit != null) {
             route = route.withQueryParams("limit", Integer.toString(limit));
@@ -404,11 +400,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
         if (!channels.isEmpty()) {
             route = appendList(route, "channel_id", channels);
         }
-        if (!includedAuthorTypes.isEmpty() || !excludedAuthorTypes.isEmpty()) {
-            route = appendList(
-                    route,
-                    "author_type",
-                    getTypesWithNegations(includedAuthorTypes, excludedAuthorTypes, AuthorType::getValue));
+        if (!includedAuthorTypes.isEmpty()) {
+            route = appendList(route, "author_type", includedAuthorTypes, AuthorType::getValue);
+        } else if (!excludedAuthorTypes.isEmpty()) {
+            route = appendList(route, "author_type", excludedAuthorTypes, authorType -> "-" + authorType.getValue());
         }
         if (!authors.isEmpty()) {
             route = appendList(route, "author_id", authors);
@@ -431,9 +426,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
         if (pinned != null) {
             route = route.withQueryParams("pinned", Boolean.toString(pinned));
         }
-        if (!includedHasTypes.isEmpty() || !excludedHasTypes.isEmpty()) {
-            route = appendList(
-                    route, "has", getTypesWithNegations(includedHasTypes, excludedHasTypes, HasType::getValue));
+        if (!includedHasTypes.isEmpty()) {
+            route = appendList(route, "has", includedHasTypes, HasType::getValue);
+        } else if (!excludedHasTypes.isEmpty()) {
+            route = appendList(route, "has", includedHasTypes, hasType -> "-" + hasType.getValue());
         }
         if (!embedTypes.isEmpty()) {
             route = appendList(route, "embed_type", embedTypes, EmbedType::getValue);
@@ -482,19 +478,6 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
             route = route.withQueryParams(paramName, valueFunction.apply(element));
         }
         return route;
-    }
-
-    @Nonnull
-    private static <T> Collection<String> getTypesWithNegations(
-            @Nonnull Set<T> includes, @Nonnull Set<T> excludes, @Nonnull Function<T, String> valueFunction) {
-        Set<String> types = new HashSet<>();
-        for (T include : includes) {
-            types.add(valueFunction.apply(include));
-        }
-        for (T exclude : excludes) {
-            types.add("-" + valueFunction.apply(exclude));
-        }
-        return types;
     }
 
     @Override

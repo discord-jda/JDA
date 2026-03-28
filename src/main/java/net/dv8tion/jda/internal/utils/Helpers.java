@@ -394,12 +394,4 @@ public final class Helpers {
         List<String> segments = parsedUrl.pathSegments();
         return segments.get(segments.size() - 1);
     }
-
-    @Nonnull
-    @Unmodifiable
-    public static <T> Set<T> intersection(@Nonnull Set<T> set1, @Nonnull Set<T> set2) {
-        Set<T> intersection = new HashSet<>(set1);
-        intersection.retainAll(set2);
-        return Collections.unmodifiableSet(intersection);
-    }
 }
