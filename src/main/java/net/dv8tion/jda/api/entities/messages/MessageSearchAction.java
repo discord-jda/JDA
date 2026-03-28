@@ -193,8 +193,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction content(@Nullable String content);
 
     /**
-     * Sets the channels to search messages in.
-     * If you wish to search in archived threads, pass thread IDs instead.
+     * Sets the channels to search messages in. Threads, archived or not, can also be passed.
      *
      * <p><b>Note:</b> This implicitly includes child threads!
      *
@@ -219,8 +218,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction channels(@Nonnull Collection<? extends GuildMessageChannel> channels);
 
     /**
-     * Sets the channels to search messages in.
-     * If you wish to search in archived threads, pass thread IDs instead.
+     * Sets the channels to search messages in. Threads, archived or not, can also be passed.
      *
      * <p><b>Note:</b> This implicitly includes child threads!
      *
@@ -247,10 +245,37 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return channels(Arrays.asList(channels));
     }
 
+    /**
+     * Sets the channels to search messages in. Threads, archived or not, can also be passed.
+     *
+     * <p><b>Note:</b> This implicitly includes child threads!
+     *
+     * @param  channels
+     *         The channels to search messages in, up to 500, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is {@code null}, or the array has more than 500 elements
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction channels(@Nonnull long... channels);
 
+    /**
+     * Sets the channels to search messages in. Threads, archived or not, can also be passed.
+     *
+     * <p><b>Note:</b> This implicitly includes child threads!
+     *
+     * @param  channels
+     *         The channels to search messages in, up to 500, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array or an element is {@code null}, an element isn't a valid snowflake,
+     *         or the array has more than 500 elements
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction channels(@Nonnull String... channels);
