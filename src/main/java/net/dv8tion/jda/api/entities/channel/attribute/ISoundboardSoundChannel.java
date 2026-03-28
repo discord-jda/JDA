@@ -50,7 +50,7 @@ public interface ISoundboardSoundChannel extends AudioChannel {
      * @param  sound
      *         The sound to send
      * @param  sourceGuildId
-     *         The guild ID from which this sound is from
+     *         The guild ID from which this sound is from, {@code null} for default sounds
      *
      * @throws InsufficientPermissionException
      *         If the bot does not have the following permissions:
@@ -59,7 +59,7 @@ public interface ISoundboardSoundChannel extends AudioChannel {
      *             <li>If the sound comes from other guilds, {@link Permission#VOICE_USE_EXTERNAL_SOUNDS VOICE_USE_EXTERNAL_SOUNDS} permission</li>
      *         </ul>
      * @throws IllegalArgumentException
-     *         If the provided sound is {@code null}, or the source guild ID is {@code null} or not a snowflake
+     *         If the provided sound is {@code null}, or the source guild ID is not null and not a snowflake
      * @throws IllegalStateException
      *         <ul>
      *             <li>If the bot is not connected to this channel</li>
@@ -92,7 +92,7 @@ public interface ISoundboardSoundChannel extends AudioChannel {
      * @param  sound
      *         The sound to send
      * @param  sourceGuildId
-     *         The guild ID from which this sound is from, {@code null} for default sounds
+     *         The guild ID from which this sound is from, {@code 0} for default sounds
      *
      * @throws InsufficientPermissionException
      *         If the bot does not have the following permissions:
@@ -115,6 +115,6 @@ public interface ISoundboardSoundChannel extends AudioChannel {
     @Nonnull
     @CheckReturnValue
     default RestAction<Void> sendSoundboardSound(@Nonnull SoundboardSoundSnowflake sound, long sourceGuildId) {
-        return sendSoundboardSound(sound, Long.toUnsignedString(sourceGuildId));
+        return sendSoundboardSound(sound, sourceGuildId == 0 ? null : Long.toUnsignedString(sourceGuildId));
     }
 }
