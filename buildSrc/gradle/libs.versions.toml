@@ -2,7 +2,7 @@
 gradle-plugin-download = "de.undercouch.download:de.undercouch.download.gradle.plugin:5.7.0"
 javaparser = "com.github.javaparser:javaparser-symbol-solver-core:3.28.0"
 javapoet = "com.palantir.javapoet:javapoet:0.12.0"
-tools-jackson = "tools.jackson.core:jackson-databind:3.1.0"
+tools-jackson = "tools.jackson.core:jackson-databind:3.1.1"
 
 [plugins]
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.0"

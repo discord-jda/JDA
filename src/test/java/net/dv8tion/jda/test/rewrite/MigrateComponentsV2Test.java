@@ -43,7 +43,6 @@ public class MigrateComponentsV2Test implements RewriteTest {
 
                                 public class Test1 { ActionComponent x() {} }""", """
                                 import net.dv8tion.jda.api.components.ActionComponent;
-                                import net.dv8tion.jda.api.interactions.components.*;
 
                                 public class Test1 { ActionComponent x() {} }"""),
                 // language=java

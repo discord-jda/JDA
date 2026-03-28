@@ -1,5 +1,5 @@
 [versions]
-jackson = "2.21.1"
+jackson = "2.21.2"
 
 [libraries]
 archunit = "com.tngtech.archunit:archunit:1.4.1"
@@ -22,7 +22,7 @@ junit-launcher-java8 = "org.junit.platform:junit-platform-launcher:1.14.0"
 logback-classic = "ch.qos.logback:logback-classic:1.5.32"
 mockito = "org.mockito:mockito-core:5.23.0"
 okhttp = "com.squareup.okhttp3:okhttp-jvm:5.3.2"
-openrewrite-bom = "org.openrewrite.recipe:rewrite-recipe-bom:3.26.1"
+openrewrite-bom = "org.openrewrite.recipe:rewrite-recipe-bom:3.27.0"
 opus = "club.minnced:opus-java:1.1.1"
 reflections = "org.reflections:reflections:0.10.2"
 slf4j = "org.slf4j:slf4j-api:2.0.17"
@@ -49,8 +49,8 @@ junit-java8 = [
 errorprone = "net.ltgt.errorprone:5.1.0"
 ideax = "org.jetbrains.gradle.plugin.idea-ext:1.4.1"
 jreleaser = "org.jreleaser:1.23.0"
-openrewrite = "org.openrewrite.rewrite:7.28.1"
-shadow = "com.gradleup.shadow:9.3.2"
+openrewrite = "org.openrewrite.rewrite:7.29.0"
+shadow = "com.gradleup.shadow:9.4.1"
 # @pin Version 8.0.0 is incompatible with jreleaser (see https://github.com/jreleaser/jreleaser/issues/1989)
 spotless = "com.diffplug.spotless:7.2.1"
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.0"

@@ -78,7 +78,7 @@ public class DefaultSendSystem implements IAudioSendSystem {
                 } catch (Exception e) {
                     AudioConnection.LOG.error("Error while sending udp audio data", e);
                 } finally {
-                    long sleepTime = OPUS_FRAME_TIME_AMOUNT - System.currentTimeMillis() - lastFrameSent;
+                    long sleepTime = OPUS_FRAME_TIME_AMOUNT - (System.currentTimeMillis() - lastFrameSent);
                     if (sleepTime > 0) {
                         try {
                             Thread.sleep(sleepTime);
