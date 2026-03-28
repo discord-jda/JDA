@@ -250,7 +250,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
-    public MessageSearchAction mentionsEveryone(boolean mentionsEveryone) {
+    public MessageSearchAction mentionsEveryone(@Nullable Boolean mentionsEveryone) {
         this.mentionsEveryone = mentionsEveryone;
         return this;
     }

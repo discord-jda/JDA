@@ -566,7 +566,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction mentionsEveryone(boolean mentionsEveryone);
+    MessageSearchAction mentionsEveryone(@Nullable Boolean mentionsEveryone);
 
     @Nonnull
     @CheckReturnValue
