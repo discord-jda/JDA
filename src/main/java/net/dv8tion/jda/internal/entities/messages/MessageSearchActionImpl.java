@@ -61,7 +61,8 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     private Set<String> repliesToUsers = Collections.emptySet();
     private Set<String> repliesToMessages = Collections.emptySet();
     private Boolean pinned;
-    private Set<HasType> hasTypes = Collections.emptySet();
+    private Set<HasType> includedHasTypes = Collections.emptySet();
+    private Set<HasType> excludedHasTypes = Collections.emptySet();
     private Set<EmbedType> embedTypes = Collections.emptySet();
     private Set<String> embedProviders = Collections.emptySet();
     private Set<String> linkHostnames = Collections.emptySet();
@@ -277,9 +278,17 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
-    public MessageSearchAction hasTypes(@Nonnull Collection<HasType> hasTypes) {
+    public MessageSearchAction includeHasTypes(@Nonnull Collection<HasType> hasTypes) {
         Checks.noneNull(hasTypes, "HasTypes");
-        this.hasTypes = Helpers.copyEnumSet(HasType.class, hasTypes);
+        this.includedHasTypes = Helpers.copyEnumSet(HasType.class, hasTypes);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageSearchAction excludeHasTypes(@Nonnull Collection<HasType> hasTypes) {
+        Checks.noneNull(hasTypes, "HasTypes");
+        this.excludedHasTypes = Helpers.copyEnumSet(HasType.class, hasTypes);
         return this;
     }
 
@@ -418,9 +427,9 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
         if (pinned != null) {
             route = route.withQueryParams("pinned", Boolean.toString(pinned));
         }
-        if (!hasTypes.isEmpty()) {
+        if (!includedHasTypes.isEmpty() || !excludedHasTypes.isEmpty()) {
             route = route.withQueryParams(
-                    "has", hasTypes.stream().map(HasType::getValue).collect(Collectors.joining(",")));
+                    "has", createTypesQueryWithNegations(includedHasTypes, excludedHasTypes, HasType::getValue));
         }
         if (!embedTypes.isEmpty()) {
             route = route.withQueryParams(

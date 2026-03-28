@@ -450,13 +450,24 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction hasTypes(@Nonnull Collection<HasType> hasTypes);
+    MessageSearchAction includeHasTypes(@Nonnull Collection<HasType> hasTypes);
 
     @Nonnull
     @CheckReturnValue
-    default MessageSearchAction hasTypes(@Nonnull HasType... hasTypes) {
+    default MessageSearchAction includeHasTypes(@Nonnull HasType... hasTypes) {
         Checks.noneNull(hasTypes, "HasTypes");
-        return hasTypes(Arrays.asList(hasTypes));
+        return includeHasTypes(Arrays.asList(hasTypes));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    MessageSearchAction excludeHasTypes(@Nonnull Collection<HasType> hasTypes);
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageSearchAction excludeHasTypes(@Nonnull HasType... hasTypes) {
+        Checks.noneNull(hasTypes, "HasTypes");
+        return excludeHasTypes(Arrays.asList(hasTypes));
     }
 
     @Nonnull
