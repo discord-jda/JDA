@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.entities.messages;
 
-import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -32,6 +32,11 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Extension of {@link RestAction} specifically designed to search messages.
+ *
+ * @see Guild#searchMessages()
+ */
 public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     /**
      * Sets the maximum number of messages to return.
@@ -564,14 +569,52 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return mentionsRoles(Arrays.asList(mentions));
     }
 
+    /**
+     * Filters messages by whether they are or are not mentioning {@linkplain Guild#getPublicRole() @everyone}.
+     * <br>When set to {@code true}, this will keep messages that mention everyone,
+     * when {@code false}, this will exclude them.
+     *
+     * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled},
+     * or done by a user missing {@link net.dv8tion.jda.api.Permission#MESSAGE_MENTION_EVERYONE Permission.MESSAGE_MENTION_EVERYONE},
+     * will not match.
+     *
+     * @param  mentionsEveryone
+     *         {@code true} to search messages mentioning everyone, {@code false} to exclude them, {@code null} to keep both
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction mentionsEveryone(@Nullable Boolean mentionsEveryone);
 
+    /**
+     * Keeps messages which {@linkplain net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) replies}
+     * to <b>any</b> of the provided users.
+     *
+     * @param  repliedTo
+     *         The users which must be replied to, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction repliesToUsers(@Nonnull Collection<? extends UserSnowflake> repliedTo);
 
+    /**
+     * Keeps messages which {@linkplain net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) replies}
+     * to <b>any</b> of the provided users.
+     *
+     * @param  repliedTo
+     *         The users which must be replied to, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction repliesToUsers(@Nonnull UserSnowflake... repliedTo) {
@@ -579,6 +622,18 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return repliesToUsers(Arrays.asList(repliedTo));
     }
 
+    /**
+     * Keeps messages which {@linkplain net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) replies}
+     * to <b>any</b> of the provided user IDs.
+     *
+     * @param  repliedTo
+     *         The user IDs which must be replied to, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}, or is not a valid snowflake
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction repliesToUsers(@Nonnull String... repliedTo) {
@@ -587,6 +642,18 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
                 Arrays.stream(repliedTo).map(UserSnowflake::fromId).collect(Collectors.toList()));
     }
 
+    /**
+     * Keeps messages which {@linkplain net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) replies}
+     * to <b>any</b> of the provided user IDs.
+     *
+     * @param  repliedTo
+     *         The user IDs which must be replied to, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction repliesToUsers(@Nonnull long... repliedTo) {
@@ -595,10 +662,34 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
                 Arrays.stream(repliedTo).mapToObj(UserSnowflake::fromId).collect(Collectors.toList()));
     }
 
+    /**
+     * Keeps messages which {@linkplain net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) replies}
+     * to <b>any</b> of the provided message IDs.
+     *
+     * @param  repliedTo
+     *         The message IDs which must be replied to, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction repliesToMessages(@Nonnull Collection<String> repliedTo);
 
+    /**
+     * Keeps messages which {@linkplain net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) replies}
+     * to <b>any</b> of the provided message IDs.
+     *
+     * @param  repliedTo
+     *         The message IDs which must be replied to, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction repliesToMessages(@Nonnull long... repliedTo) {
@@ -607,6 +698,18 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
                 Arrays.stream(repliedTo).mapToObj(Long::toUnsignedString).collect(Collectors.toList()));
     }
 
+    /**
+     * Keeps messages which {@linkplain net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) replies}
+     * to <b>any</b> of the provided message IDs.
+     *
+     * @param  repliedTo
+     *         The message IDs which must be replied to, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}, or is not a valid snowflake
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction repliesToMessages(@Nonnull String... repliedTo) {
@@ -614,14 +717,48 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return repliesToMessages(Arrays.asList(repliedTo));
     }
 
+    /**
+     * Filters messages by whether they are or are not pinned.
+     * <br>When set to {@code true}, this will keep messages that are pinned,
+     * when {@code false}, this will exclude them.
+     *
+     * @param  pinned
+     *         {@code true} to search pinned messages, {@code false} to exclude them, {@code null} to keep both
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction pinned(@Nullable Boolean pinned);
 
+    /**
+     * Includes messages which include content matching <b>any</b> of the provided {@linkplain HasType content types}.
+     * <br><b>This overrides exclusions.</b>
+     *
+     * @param  hasTypes
+     *         The content types to keep, leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction includeHasTypes(@Nonnull Collection<HasType> hasTypes);
 
+    /**
+     * Includes messages which include content matching <b>any</b> of the provided {@linkplain HasType content types}.
+     * <br><b>This overrides exclusions.</b>
+     *
+     * @param  hasTypes
+     *         The content types to keep, leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction includeHasTypes(@Nonnull HasType... hasTypes) {
@@ -629,10 +766,34 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return includeHasTypes(Arrays.asList(hasTypes));
     }
 
+    /**
+     * Excludes messages which include content matching <b>any</b> of the provided {@linkplain HasType content types}.
+     * <br><b>This overrides inclusions.</b>
+     *
+     * @param  hasTypes
+     *         The content types to exclude, leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction excludeHasTypes(@Nonnull Collection<HasType> hasTypes);
 
+    /**
+     * Excludes messages which include content matching <b>any</b> of the provided {@linkplain HasType content types}.
+     * <br><b>This overrides inclusions.</b>
+     *
+     * @param  hasTypes
+     *         The content types to exclude, leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction excludeHasTypes(@Nonnull HasType... hasTypes) {
@@ -640,30 +801,120 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return excludeHasTypes(Arrays.asList(hasTypes));
     }
 
+    /**
+     * Keeps messages which have embeds from <b>any</b> of the provided {@linkplain EmbedType embed types}.
+     *
+     * @param  embedTypes
+     *         The embed types, leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction embedTypes(@Nonnull Collection<EmbedType> embedTypes);
 
+    /**
+     * Keeps messages which have embeds from <b>any</b> of the provided {@linkplain EmbedType embed types}.
+     *
+     * @param  embedTypes
+     *         The embed types, leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction embedTypes(@Nonnull EmbedType... embedTypes) {
         return embedTypes(Arrays.asList(embedTypes));
     }
 
+    /**
+     * Keeps messages which have embeds created from <b>any</b> of the provided embed providers,
+     * such as {@code Tenor} or {@code Giphy}.
+     *
+     * @param  embedProviders
+     *         The embed provider names, case-sensitive, max 256 characters per provider, up to 100,
+     *         leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the collection or an element is {@code null}</li>
+     *             <li>If a provider is larger than 256 characters</li>
+     *             <li>If there is more than 100 providers</li>
+     *         </ul>
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction embedProvider(@Nonnull Collection<String> embedProviders);
 
+    /**
+     * Keeps messages which have embeds created from <b>any</b> of the provided embed providers,
+     * such as {@code Tenor} or {@code Giphy}.
+     *
+     * @param  embedProviders
+     *         The embed provider names, case-sensitive, max 256 characters per provider, up to 100,
+     *         leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the array or an element is {@code null}</li>
+     *             <li>If a provider is larger than 256 characters</li>
+     *             <li>If there is more than 100 providers</li>
+     *         </ul>
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction embedProvider(@Nonnull String... embedProviders) {
         return embedProvider(Arrays.asList(embedProviders));
     }
 
+    /**
+     * Keeps messages which have links from <b>any</b> of the provided hostnames,
+     * such as {@code media.discordapp.com} or {@code jda.wiki}.
+     *
+     * @param  linkHostnames
+     *         The link hostnames, max 256 characters per hostname, up to 100,
+     *         leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the collection or an element is {@code null}</li>
+     *             <li>If a hostname is larger than 256 characters</li>
+     *             <li>If there is more than 100 hostnames</li>
+     *         </ul>
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction linkHostnames(@Nonnull Collection<String> linkHostnames);
 
+    /**
+     * Keeps messages which have links from <b>any</b> of the provided hostnames,
+     * such as {@code media.discordapp.com} or {@code jda.wiki}.
+     *
+     * @param  linkHostnames
+     *         The link hostnames, max 256 characters per hostname, up to 100,
+     *         leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the array or an element is {@code null}</li>
+     *             <li>If a hostname is larger than 256 characters</li>
+     *             <li>If there is more than 100 hostnames</li>
+     *         </ul>
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction linkHostnames(@Nonnull String... linkHostnames) {
@@ -671,24 +922,86 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return linkHostnames(Arrays.asList(linkHostnames));
     }
 
-    // TODO docs when stable
-    @Incubating
+    /**
+     * Keeps messages which have attachments named after <b>any</b> of the provided names,
+     * including extension.
+     *
+     * @param  attachmentFilenames
+     *         The attachment file names, max 1024 characters per file name, up to 100,
+     *         leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the collection or an element is {@code null}</li>
+     *             <li>If a file name is larger than 1024 characters</li>
+     *             <li>If there is more than 100 file names</li>
+     *         </ul>
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction attachmentFilenames(@Nonnull Collection<String> attachmentFilenames);
 
-    // TODO docs when stable
-    @Incubating
+    /**
+     * Keeps messages which have attachments named after <b>any</b> of the provided names,
+     * including extension.
+     *
+     * @param  attachmentFilenames
+     *         The attachment file names, max 1024 characters per file name, up to 100,
+     *         leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the array or an element is {@code null}</li>
+     *             <li>If a file name is larger than 1024 characters</li>
+     *             <li>If there is more than 100 file names</li>
+     *         </ul>
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction attachmentFilenames(@Nonnull String... attachmentFilenames) {
         return attachmentFilenames(Arrays.asList(attachmentFilenames));
     }
 
+    /**
+     * Keeps messages which have attachments with an extension equal to <b>any</b> of the provided extensions.
+     *
+     * @param  attachmentExtensions
+     *         The attachment extensions, max 256 characters per extension, up to 100,
+     *         leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the collection or an element is {@code null}</li>
+     *             <li>If an extension is larger than 256 characters</li>
+     *             <li>If there is more than 100 extensions</li>
+     *         </ul>
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction attachmentExtensions(@Nonnull Collection<String> attachmentExtensions);
 
+    /**
+     * Keeps messages which have attachments with an extension equal to <b>any</b> of the provided extensions.
+     *
+     * @param  attachmentExtensions
+     *         The attachment extensions, max 256 characters per extension, up to 100,
+     *         leave empty to remove the inclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the array or an element is {@code null}</li>
+     *             <li>If an extension is larger than 256 characters</li>
+     *             <li>If there is more than 100 extensions</li>
+     *         </ul>
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction attachmentExtensions(@Nonnull String... attachmentExtensions) {
@@ -696,18 +1009,58 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return attachmentExtensions(Arrays.asList(attachmentExtensions));
     }
 
+    /**
+     * Sorts messages by the provided sorting algorithm.
+     * <br>The default is {@link SortType#RELEVANCE RELEVANCE}.
+     *
+     * @param  sortType
+     *         The sorting algorithm to use
+     *
+     * @throws IllegalArgumentException
+     *         If the argument is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction sortBy(@Nonnull SortType sortType);
 
+    /**
+     * Sorts messages by the provided sort order.
+     * This is only relevant when {@link SortType#TIMESTAMP SortType.TIMESTAMP} is used (used by default).
+     * <br>The default is {@link SortOrder#DESC DESC}.
+     *
+     * @param  sortOrder
+     *         The sort order to use
+     *
+     * @throws IllegalArgumentException
+     *         If the argument is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction sortOrder(@Nonnull SortOrder sortOrder);
 
+    /**
+     * Whether to include results from age-restricted channels.
+     * <br>Default: {@code false}
+     *
+     * @param  includeNsfw
+     *         {@code true} to include age-restricted channels
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction includeNsfw(boolean includeNsfw);
 
+    /**
+     * Represents a type of message author.
+     *
+     * @see MessageSearchAction#includeAuthorTypes(AuthorType...)
+     * @see MessageSearchAction#excludeAuthorTypes(AuthorType...)
+     */
     enum AuthorType {
         USER("user"),
         BOT("bot"),
@@ -725,6 +1078,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         }
     }
 
+    /**
+     * Represents a type of content in a message, a message can have multiple of them at once.
+     *
+     * @see MessageSearchAction#includeHasTypes(HasType...)
+     * @see MessageSearchAction#excludeHasTypes(HasType...)
+     */
     enum HasType {
         IMAGE("image"),
         SOUND("sound"),
@@ -749,9 +1108,18 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         }
     }
 
+    /**
+     * This is different from {@linkplain net.dv8tion.jda.api.entities.EmbedType Message's embed type},
+     * this encompasses a wider range of embed types.
+     *
+     * @see MessageSearchAction#embedTypes(EmbedType...)
+     */
     enum EmbedType {
         IMAGE("image"),
         VIDEO("video"),
+        /**
+         * <b>Note:</b> Messages sent before February 24, 2026, may not be properly indexed.
+         */
         GIF("gif"),
         SOUND("sound"),
         ARTICLE("article"),
@@ -763,12 +1131,22 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
             this.value = value;
         }
 
+        /**
+         * Returns the raw value Discord expects
+         *
+         * @return The raw value
+         */
         @Nonnull
         public String getValue() {
             return value;
         }
     }
 
+    /**
+     * The sorting algorithm with which search results are sorted.
+     *
+     * @see MessageSearchAction#sortBy(SortType)
+     */
     enum SortType {
         TIMESTAMP("timestamp"),
         RELEVANCE("relevance"),
@@ -780,12 +1158,22 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
             this.value = value;
         }
 
+        /**
+         * Returns the raw value Discord expects
+         *
+         * @return The raw value
+         */
         @Nonnull
         public String getValue() {
             return value;
         }
     }
 
+    /**
+     * The order in which search results are sorted.
+     *
+     * @see MessageSearchAction#sortOrder(SortOrder)
+     */
     enum SortOrder {
         DESC("desc"),
         ASC("asc");
@@ -796,6 +1184,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
             this.value = value;
         }
 
+        /**
+         * Returns the raw value Discord expects
+         *
+         * @return The raw value
+         */
         @Nonnull
         public String getValue() {
             return value;
