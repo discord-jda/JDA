@@ -193,7 +193,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction content(@Nullable String content);
 
     /**
-     * Sets the channels to search messages in. Threads, archived or not, can also be passed.
+     * Keeps messages from <b>any</b> of the provided channels. Threads, archived or not, can also be passed.
      *
      * <p><b>Note:</b> This implicitly includes child threads!
      *
@@ -218,7 +218,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction channels(@Nonnull Collection<? extends GuildMessageChannel> channels);
 
     /**
-     * Sets the channels to search messages in. Threads, archived or not, can also be passed.
+     * Keeps messages from <b>any</b> of the provided channels. Threads, archived or not, can also be passed.
      *
      * <p><b>Note:</b> This implicitly includes child threads!
      *
@@ -246,7 +246,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     }
 
     /**
-     * Sets the channels to search messages in. Threads, archived or not, can also be passed.
+     * Keeps messages from <b>any</b> of the provided channels. Threads, archived or not, can also be passed.
      *
      * <p><b>Note:</b> This implicitly includes child threads!
      *
@@ -263,7 +263,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction channels(@Nonnull long... channels);
 
     /**
-     * Sets the channels to search messages in. Threads, archived or not, can also be passed.
+     * Keeps messages from <b>any</b> of the provided channels. Threads, archived or not, can also be passed.
      *
      * <p><b>Note:</b> This implicitly includes child threads!
      *
@@ -350,10 +350,32 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return excludeAuthorTypes(Arrays.asList(authorTypes));
     }
 
+    /**
+     * Keeps messages which are sent by <b>any</b> of the provided authors.
+     *
+     * @param  authors
+     *         The authors to keep messages from, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction authors(@Nonnull Collection<? extends UserSnowflake> authors);
 
+    /**
+     * Keeps messages which are sent by <b>any</b> of the provided authors.
+     *
+     * @param  authors
+     *         The authors to keep messages from, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction authors(@Nonnull UserSnowflake... authors) {
@@ -361,6 +383,18 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return authors(Arrays.asList(authors));
     }
 
+    /**
+     * Keeps messages which are sent by <b>any</b> of the provided author IDs.
+     *
+     * @param  authors
+     *         The author IDs to keep messages from, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array or an element is {@code null},
+     *         or one of the author IDs is not a valid snowflake
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction authors(@Nonnull String... authors) {
@@ -368,6 +402,17 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return authors(Arrays.stream(authors).map(UserSnowflake::fromId).collect(Collectors.toList()));
     }
 
+    /**
+     * Keeps messages which are sent by <b>any</b> of the provided author IDs.
+     *
+     * @param  authors
+     *         The author IDs to keep messages from, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction authors(@Nonnull long... authors) {
@@ -375,10 +420,50 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return authors(Arrays.stream(authors).mapToObj(UserSnowflake::fromId).collect(Collectors.toList()));
     }
 
+    /**
+     * Keeps messages which mention <b>any</b> of the provided users.
+     *
+     * <p>A "mention" here includes anything that makes a "ping" (creates a special background on the client):
+     * <ul>
+     *     <li>{@linkplain UserSnowflake#getAsMention() Direct mentions}</li>
+     *     <li>{@linkplain net.dv8tion.jda.api.utils.messages.MessageCreateRequest#mentionRepliedUser(boolean) Reply mentions}</li>
+     * </ul>
+     *
+     * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled}
+     * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionUsers(long...) allowlisted}, will not match.
+     *
+     * @param  mentions
+     *         The users which must be mentioned in the messages, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction mentionsUsers(@Nonnull Collection<? extends UserSnowflake> mentions);
 
+    /**
+     * Keeps messages which mention <b>any</b> of the provided users.
+     *
+     * <p>A "mention" here includes anything that makes a "ping" (creates a special background on the client):
+     * <ul>
+     *     <li>{@linkplain UserSnowflake#getAsMention() Direct mentions}</li>
+     *     <li>{@linkplain net.dv8tion.jda.api.utils.messages.MessageCreateRequest#mentionRepliedUser(boolean) Reply mentions}</li>
+     * </ul>
+     *
+     * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled}
+     * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionUsers(long...) allowlisted}, will not match.
+     *
+     * @param  mentions
+     *         The users which must be mentioned in the messages, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction mentionsUsers(@Nonnull UserSnowflake... mentions) {
@@ -386,6 +471,26 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return mentionsUsers(Arrays.asList(mentions));
     }
 
+    /**
+     * Keeps messages which mention <b>any</b> of the provided users.
+     *
+     * <p>A "mention" here includes anything that makes a "ping" (creates a special background on the client):
+     * <ul>
+     *     <li>{@linkplain UserSnowflake#getAsMention() Direct mentions}</li>
+     *     <li>{@linkplain net.dv8tion.jda.api.utils.messages.MessageCreateRequest#mentionRepliedUser(boolean) Reply mentions}</li>
+     * </ul>
+     *
+     * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled}
+     * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionUsers(long...) allowlisted}, will not match.
+     *
+     * @param  mentions
+     *         The IDs of the users which must be mentioned in the messages, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction mentionsUsers(@Nonnull String... mentions) {
@@ -393,6 +498,26 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         return mentionsUsers(Arrays.stream(mentions).map(UserSnowflake::fromId).collect(Collectors.toList()));
     }
 
+    /**
+     * Keeps messages which mention <b>any</b> of the provided users.
+     *
+     * <p>A "mention" here includes anything that makes a "ping" (creates a special background on the client):
+     * <ul>
+     *     <li>{@linkplain UserSnowflake#getAsMention() Direct mentions}</li>
+     *     <li>{@linkplain net.dv8tion.jda.api.utils.messages.MessageCreateRequest#mentionRepliedUser(boolean) Reply mentions}</li>
+     * </ul>
+     *
+     * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled}
+     * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionUsers(long...) allowlisted}, will not match.
+     *
+     * @param  mentions
+     *         The IDs of the users which must be mentioned in the messages, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction mentionsUsers(@Nonnull long... mentions) {
@@ -401,10 +526,38 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
                 Arrays.stream(mentions).mapToObj(UserSnowflake::fromId).collect(Collectors.toList()));
     }
 
+    /**
+     * Keeps messages which {@linkplain Role#getAsMention() mention} <b>any</b> of the provided roles.
+     *
+     * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled}
+     * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionRoles(long...) allowlisted}, will not match.
+     *
+     * @param  mentions
+     *         The roles which must be mentioned in the messages, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     MessageSearchAction mentionsRoles(@Nonnull Collection<? extends Role> mentions);
 
+    /**
+     * Keeps messages which {@linkplain Role#getAsMention() mention} <b>any</b> of the provided roles.
+     *
+     * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled}
+     * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionRoles(long...) allowlisted}, will not match.
+     *
+     * @param  mentions
+     *         The roles which must be mentioned in the messages, leave empty to remove the filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array is, or contains {@code null}
+     *
+     * @return This action for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction mentionsRoles(@Nonnull Role... mentions) {
