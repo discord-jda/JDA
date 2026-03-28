@@ -116,6 +116,8 @@ public class GuildImpl implements Guild {
             new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache =
             new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
+    private final SnowflakeCacheViewImpl<SoundboardSound> soundboardCache =
+            new SnowflakeCacheViewImpl<>(SoundboardSound.class, SoundboardSound::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
     private final SnowflakeCacheViewImpl<GuildVoiceStateImpl> voiceStateCache = new SnowflakeCacheViewImpl<>(
@@ -809,6 +811,12 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
+    public SnowflakeCacheViewImpl<SoundboardSound> getSoundboardSoundCache() {
+        return soundboardCache;
+    }
+
+    @Nonnull
+    @Override
     public List<GuildChannel> getChannels(boolean includeHidden) {
         if (includeHidden) {
             return channelCache.applyStream(stream ->
@@ -938,6 +946,51 @@ public class GuildImpl implements Guild {
         }
         Checks.check(!(sticker instanceof StandardSticker), "Cannot edit a standard sticker.");
         return new GuildStickerManagerImpl(this, id, sticker);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings({"unchecked", "RedundantCast"})
+    public CacheRestAction<List<SoundboardSound>> retrieveSoundboardSounds() {
+        return (CacheRestAction<List<SoundboardSound>>) (Object) new DeferredRestAction<>(
+                api,
+                List.class,
+                () -> api.isCacheFlagSet(CacheFlag.SOUNDBOARD_SOUNDS) ? getSoundboardSounds() : null,
+                this::retrieveSoundboardSounds0);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private RestAction<List> retrieveSoundboardSounds0() {
+        return new RestActionImpl<>(
+                api,
+                Route.SoundboardSounds.LIST_GUILD_SOUNDBOARD_SOUNDS.compile(getId()),
+                (response, request) -> Helpers.mapGracefully(
+                                response.getArray().stream(DataArray::getObject),
+                                o -> api.getEntityBuilder().createSoundboardSound(o),
+                                "Failed to parse soundboard sound")
+                        .collect(Helpers.toUnmodifiableList()));
+    }
+
+    @Nonnull
+    @Override
+    public CacheRestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        Checks.notNull(sound, "Sound");
+        return new DeferredRestAction<>(
+                api,
+                SoundboardSound.class,
+                () -> getSoundboardSoundById(sound.getIdLong()),
+                () -> new RestActionImpl<>(
+                        api,
+                        Route.SoundboardSounds.GET_GUILD_SOUNDBOARD_SOUND.compile(getId(), sound.getId()),
+                        (response, request) -> api.getEntityBuilder().createSoundboardSound(response.getObject())));
+    }
+
+    @Nonnull
+    @Override
+    public SoundboardSoundManager editSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        Checks.notNull(sound, "Sound");
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
+        return new SoundboardSoundManagerImpl(this, sound);
     }
 
     @Nonnull
@@ -1913,6 +1966,27 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
+    public SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file) {
+        checkPermission(Permission.CREATE_GUILD_EXPRESSIONS);
+        Checks.notNull(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2 and 32 characters");
+        Checks.notNull(file, "File");
+        Route.CompiledRoute route = Route.SoundboardSounds.CREATE_GUILD_SOUNDBOARD_SOUND.compile(getId());
+        return new SoundboardSoundCreateActionImpl(getJDA(), route, name, file);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> deleteSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        Checks.notNull(sound, "Sound");
+        // This is the minimum requirements, there are more, but only if the soundboard sound is a complete instance
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
+        return new AuditableRestActionImpl<>(
+                api, Route.SoundboardSounds.DELETE_GUILD_SOUNDBOARD_SOUND.compile(this.getId(), sound.getId()));
+    }
+
+    @Nonnull
+    @Override
     public ChannelOrderAction modifyCategoryPositions() {
         return new ChannelOrderActionImpl(this, ChannelType.CATEGORY.getSortBucket());
     }
@@ -2235,6 +2309,10 @@ public class GuildImpl implements Guild {
 
     public SnowflakeCacheViewImpl<GuildSticker> getStickersView() {
         return stickerCache;
+    }
+
+    public SnowflakeCacheViewImpl<SoundboardSound> getSoundboardSoundsView() {
+        return soundboardCache;
     }
 
     public MemberCacheViewImpl getMembersView() {

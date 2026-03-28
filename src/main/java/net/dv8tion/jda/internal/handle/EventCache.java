@@ -131,6 +131,7 @@ public class EventCache {
         GUILD,
         CHANNEL,
         ROLE,
+        SOUNDBOARD_SOUND,
         RELATIONSHIP,
         CALL,
         SCHEDULED_EVENT

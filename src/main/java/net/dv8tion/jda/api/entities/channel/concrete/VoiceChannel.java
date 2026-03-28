@@ -18,10 +18,7 @@ package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
-import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
-import net.dv8tion.jda.api.entities.channel.attribute.IVoiceStatusChannel;
-import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -55,7 +52,8 @@ public interface VoiceChannel
                 IWebhookContainer,
                 IAgeRestrictedChannel,
                 ISlowmodeChannel,
-                IVoiceStatusChannel {
+                IVoiceStatusChannel,
+                ISoundboardSoundChannel {
     /**
      * The maximum limit you can set with {@link VoiceChannelManager#setUserLimit(int)}. ({@value})
      */
