@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.messages.MessageSearchResponse;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -836,7 +833,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Keeps messages which have embeds created from <b>any</b> of the provided embed providers,
-     * such as {@code Tenor} or {@code Giphy}.
+     * such as {@code Tenor} or {@code Giphy}, as defined by {@link MessageEmbed.Provider#getName()}.
      *
      * @param  embedProviders
      *         The embed provider names, case-sensitive, max 256 characters per provider, up to 100,
@@ -857,7 +854,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Keeps messages which have embeds created from <b>any</b> of the provided embed providers,
-     * such as {@code Tenor} or {@code Giphy}.
+     * such as {@code Tenor} or {@code Giphy}, as defined by {@link MessageEmbed.Provider#getName()}.
      *
      * @param  embedProviders
      *         The embed provider names, case-sensitive, max 256 characters per provider, up to 100,
