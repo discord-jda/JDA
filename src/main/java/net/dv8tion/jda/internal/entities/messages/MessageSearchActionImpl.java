@@ -402,53 +402,53 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
             route = route.withQueryParams("content", content);
         }
         if (!channels.isEmpty()) {
-            route = route.withQueryParams("channel_id", String.join(",", channels));
+            route = appendList(route, "channel_id", channels);
         }
         if (!includedAuthorTypes.isEmpty() || !excludedAuthorTypes.isEmpty()) {
-            route = route.withQueryParams(
+            route = appendList(
+                    route,
                     "author_type",
-                    createTypesQueryWithNegations(includedAuthorTypes, excludedAuthorTypes, AuthorType::getValue));
+                    getTypesWithNegations(includedAuthorTypes, excludedAuthorTypes, AuthorType::getValue));
         }
         if (!authors.isEmpty()) {
-            route = route.withQueryParams("author_id", String.join(",", authors));
+            route = appendList(route, "author_id", authors);
         }
         if (!mentionsUsers.isEmpty()) {
-            route = route.withQueryParams("mentions", String.join(",", mentionsUsers));
+            route = appendList(route, "mentions", mentionsUsers);
         }
         if (!mentionsRoles.isEmpty()) {
-            route = route.withQueryParams("mentions_role_id", String.join(",", mentionsRoles));
+            route = appendList(route, "mentions_role_id", mentionsRoles);
         }
         if (mentionsEveryone != null) {
             route = route.withQueryParams("mention_everyone", Boolean.toString(mentionsEveryone));
         }
         if (!repliesToUsers.isEmpty()) {
-            route = route.withQueryParams("replied_to_user_id", String.join(",", repliesToUsers));
+            route = appendList(route, "replied_to_user_id", repliesToUsers);
         }
         if (!repliesToMessages.isEmpty()) {
-            route = route.withQueryParams("replied_to_message_id", String.join(",", repliesToMessages));
+            route = appendList(route, "replied_to_message_id", repliesToMessages);
         }
         if (pinned != null) {
             route = route.withQueryParams("pinned", Boolean.toString(pinned));
         }
         if (!includedHasTypes.isEmpty() || !excludedHasTypes.isEmpty()) {
-            route = route.withQueryParams(
-                    "has", createTypesQueryWithNegations(includedHasTypes, excludedHasTypes, HasType::getValue));
+            route = appendList(
+                    route, "has", getTypesWithNegations(includedHasTypes, excludedHasTypes, HasType::getValue));
         }
         if (!embedTypes.isEmpty()) {
-            route = route.withQueryParams(
-                    "embed_type", embedTypes.stream().map(EmbedType::getValue).collect(Collectors.joining(",")));
+            route = appendList(route, "embed_type", embedTypes, EmbedType::getValue);
         }
         if (!embedProviders.isEmpty()) {
-            route = route.withQueryParams("embed_provider", String.join(",", embedProviders));
+            route = appendList(route, "embed_provider", embedProviders);
         }
         if (!linkHostnames.isEmpty()) {
-            route = route.withQueryParams("link_hostname", String.join(",", linkHostnames));
+            route = appendList(route, "link_hostname", linkHostnames);
         }
         if (!attachmentFilenames.isEmpty()) {
-            route = route.withQueryParams("attachment_filename", String.join(",", attachmentFilenames));
+            route = appendList(route, "attachment_filename", attachmentFilenames);
         }
         if (!attachmentExtensions.isEmpty()) {
-            route = route.withQueryParams("attachment_extension", String.join(",", attachmentExtensions));
+            route = appendList(route, "attachment_extension", attachmentExtensions);
         }
         if (sortBy != null) {
             route = route.withQueryParams("sort_by", sortBy.getValue());
@@ -464,7 +464,28 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     }
 
     @Nonnull
-    private static <T> String createTypesQueryWithNegations(
+    private static Route.CompiledRoute appendList(
+            @Nonnull Route.CompiledRoute route, @Nonnull String paramName, @Nonnull Collection<String> list) {
+        for (String element : list) {
+            route = route.withQueryParams(paramName, element);
+        }
+        return route;
+    }
+
+    @Nonnull
+    private static <T> Route.CompiledRoute appendList(
+            @Nonnull Route.CompiledRoute route,
+            @Nonnull String paramName,
+            @Nonnull Collection<T> list,
+            @Nonnull Function<? super T, String> valueFunction) {
+        for (T element : list) {
+            route = route.withQueryParams(paramName, valueFunction.apply(element));
+        }
+        return route;
+    }
+
+    @Nonnull
+    private static <T> Collection<String> getTypesWithNegations(
             @Nonnull Set<T> includes, @Nonnull Set<T> excludes, @Nonnull Function<T, String> valueFunction) {
         Set<String> types = new HashSet<>();
         for (T include : includes) {
@@ -473,7 +494,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
         for (T exclude : excludes) {
             types.add("-" + valueFunction.apply(exclude));
         }
-        return String.join(",", types);
+        return types;
     }
 
     @Override
