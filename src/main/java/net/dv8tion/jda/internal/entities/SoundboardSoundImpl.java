@@ -88,6 +88,7 @@ public class SoundboardSoundImpl extends SoundboardSoundSnowflakeImpl implements
         return guild;
     }
 
+    @Override
     public boolean isAvailable() {
         return available;
     }
