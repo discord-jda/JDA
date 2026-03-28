@@ -37,6 +37,7 @@ import net.dv8tion.jda.internal.utils.PermissionUtil;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -51,7 +52,8 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     private Integer slop;
     private String content;
     private Set<String> channels = Collections.emptySet();
-    private Set<AuthorType> authorTypes = Collections.emptySet();
+    private Set<AuthorType> includedAuthorTypes = Collections.emptySet();
+    private Set<AuthorType> excludedAuthorTypes = Collections.emptySet();
     private Set<String> authors = Collections.emptySet();
     private Set<String> mentionsUsers = Collections.emptySet();
     private Set<String> mentionsRoles = Collections.emptySet();
@@ -202,9 +204,17 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
-    public MessageSearchAction authorTypes(@Nonnull Collection<AuthorType> authorTypes) {
+    public MessageSearchAction includeAuthorTypes(@Nonnull Collection<AuthorType> authorTypes) {
         Checks.noneNull(authorTypes, "Author types");
-        this.authorTypes = Helpers.copyEnumSet(AuthorType.class, authorTypes);
+        this.includedAuthorTypes = Helpers.copyEnumSet(AuthorType.class, authorTypes);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageSearchAction excludeAuthorTypes(@Nonnull Collection<AuthorType> authorTypes) {
+        Checks.noneNull(authorTypes, "Author types");
+        this.excludedAuthorTypes = Helpers.copyEnumSet(AuthorType.class, authorTypes);
         return this;
     }
 
@@ -354,6 +364,12 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Override
     protected Route.CompiledRoute finalizeRoute() {
+        Set<AuthorType> authorTypeConflicts = Helpers.intersection(includedAuthorTypes, excludedAuthorTypes);
+        if (!authorTypeConflicts.isEmpty()) {
+            throw new IllegalStateException(
+                    "Author types were found to be included and excluded at the same time: " + authorTypeConflicts);
+        }
+
         Route.CompiledRoute route = super.finalizeRoute();
         if (limit != null) {
             route = route.withQueryParams("limit", Integer.toString(limit));
@@ -376,10 +392,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
         if (!channels.isEmpty()) {
             route = route.withQueryParams("channel_id", String.join(",", channels));
         }
-        if (!authorTypes.isEmpty()) {
+        if (!includedAuthorTypes.isEmpty() || !excludedAuthorTypes.isEmpty()) {
             route = route.withQueryParams(
                     "author_type",
-                    authorTypes.stream().map(AuthorType::getValue).collect(Collectors.joining(",")));
+                    createTypesQueryWithNegations(includedAuthorTypes, excludedAuthorTypes, AuthorType::getValue));
         }
         if (!authors.isEmpty()) {
             route = route.withQueryParams("author_id", String.join(",", authors));
@@ -433,6 +449,19 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
         }
 
         return route;
+    }
+
+    @Nonnull
+    private static <T> String createTypesQueryWithNegations(
+            @Nonnull Set<T> includes, @Nonnull Set<T> excludes, @Nonnull Function<T, String> valueFunction) {
+        Set<String> types = new HashSet<>();
+        for (T include : includes) {
+            types.add(valueFunction.apply(include));
+        }
+        for (T exclude : excludes) {
+            types.add("-" + valueFunction.apply(exclude));
+        }
+        return String.join(",", types);
     }
 
     @Override

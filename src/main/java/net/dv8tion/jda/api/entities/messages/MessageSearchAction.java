@@ -256,10 +256,13 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     MessageSearchAction channels(@Nonnull String... channels);
 
     /**
-     * Filters the messages by {@linkplain AuthorType author type}.
+     * Keeps messages which are sent by the provided {@linkplain AuthorType author types}.
+     *
+     * <p>If there is an overlap with the {@linkplain #excludeAuthorTypes(Collection) exclusions},
+     * an {@link IllegalStateException} will be thrown upon sending the request.
      *
      * @param  authorTypes
-     *         The type of authors to filter by, leave empty to remove the filter
+     *         The type of authors to keep messages from, leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         If the collection or an element is {@code null}
@@ -268,13 +271,16 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      */
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction authorTypes(@Nonnull Collection<AuthorType> authorTypes);
+    MessageSearchAction includeAuthorTypes(@Nonnull Collection<AuthorType> authorTypes);
 
     /**
-     * Filters the messages by {@linkplain AuthorType author type}.
+     * Keeps messages which are sent by the provided {@linkplain AuthorType author types}.
+     *
+     * <p>If there is an overlap with the {@linkplain #excludeAuthorTypes(AuthorType...) exclusions},
+     * an {@link IllegalStateException} will be thrown upon sending the request.
      *
      * @param  authorTypes
-     *         The type of authors to filter by, leave empty to remove the filter
+     *         The type of authors to keep messages from, leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         If the array or an element is {@code null}
@@ -283,9 +289,48 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      */
     @Nonnull
     @CheckReturnValue
-    default MessageSearchAction authorTypes(@Nonnull AuthorType... authorTypes) {
+    default MessageSearchAction includeAuthorTypes(@Nonnull AuthorType... authorTypes) {
         Checks.noneNull(authorTypes, "Author types");
-        return authorTypes(Arrays.asList(authorTypes));
+        return includeAuthorTypes(Arrays.asList(authorTypes));
+    }
+
+    /**
+     * Keeps messages which are <b>NOT</b> sent by the provided {@linkplain AuthorType author types}.
+     *
+     * <p>If there is an overlap with the {@linkplain #includeAuthorTypes(Collection) inclusions},
+     * an {@link IllegalStateException} will be thrown upon sending the request.
+     *
+     * @param  authorTypes
+     *         The type of authors to NOT keep messages from, leave empty to remove the exclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         If the collection or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageSearchAction excludeAuthorTypes(@Nonnull Collection<AuthorType> authorTypes);
+
+    /**
+     * Keeps messages which are <b>NOT</b> sent by the provided {@linkplain AuthorType author types}.
+     *
+     * <p>If there is an overlap with the {@linkplain #includeAuthorTypes(AuthorType...) inclusions},
+     * an {@link IllegalStateException} will be thrown upon sending the request.
+     *
+     * @param  authorTypes
+     *         The type of authors to NOT keep messages from, leave empty to remove the exclusion filter
+     *
+     * @throws IllegalArgumentException
+     *         If the array or an element is {@code null}
+     *
+     * @return This action for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageSearchAction excludeAuthorTypes(@Nonnull AuthorType... authorTypes) {
+        Checks.noneNull(authorTypes, "Author types");
+        return excludeAuthorTypes(Arrays.asList(authorTypes));
     }
 
     @Nonnull
