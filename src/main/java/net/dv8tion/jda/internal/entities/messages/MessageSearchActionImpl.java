@@ -309,6 +309,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction embedProvider(@Nonnull Collection<String> embedProviders) {
         Checks.noneNull(embedProviders, "Embed providers");
+        Checks.check(embedProviders.size() <= 100, "Cannot filter on more than 100 embed providers");
+        for (String embedProvider : embedProviders) {
+            Checks.notLonger(embedProvider, 256, "Embed provider");
+        }
         this.embedProviders = new HashSet<>(embedProviders);
         return this;
     }
@@ -317,6 +321,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction linkHostnames(@Nonnull Collection<String> linkHostnames) {
         Checks.noneNull(linkHostnames, "Link hostnames");
+        Checks.check(linkHostnames.size() <= 100, "Cannot filter on more than 100 attachment link hostnames");
+        for (String linkHostname : linkHostnames) {
+            Checks.notLonger(linkHostname, 256, "Link hostname");
+        }
         this.linkHostnames = new HashSet<>(linkHostnames);
         return this;
     }
@@ -325,6 +333,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction attachmentFilenames(@Nonnull Collection<String> attachmentFilenames) {
         Checks.noneNull(attachmentFilenames, "Attachment filenames");
+        Checks.check(attachmentFilenames.size() <= 100, "Cannot filter on more than 100 attachment filenames");
+        for (String attachmentFilename : attachmentFilenames) {
+            Checks.notLonger(attachmentFilename, 1024, "Attachment filename");
+        }
         this.attachmentFilenames = new HashSet<>(attachmentFilenames);
         return this;
     }
@@ -333,6 +345,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction attachmentExtensions(@Nonnull Collection<String> attachmentExtensions) {
         Checks.noneNull(attachmentExtensions, "Attachment extensions");
+        Checks.check(attachmentExtensions.size() <= 100, "Cannot filter on more than 100 attachment extensions");
+        for (String attachmentExtension : attachmentExtensions) {
+            Checks.notLonger(attachmentExtension, 256, "Attachment extension");
+        }
         this.attachmentExtensions = new HashSet<>(attachmentExtensions);
         return this;
     }
