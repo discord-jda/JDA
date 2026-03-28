@@ -2499,7 +2499,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
      *
      * @param  id
-     *         the sticker id
+     *         the soundboard sound id
      *
      * @throws NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
@@ -2522,10 +2522,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
      *
      * @param  id
-     *         the sticker id
+     *         the soundboard sound id
      *
-     * @throws NumberFormatException
-     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
@@ -2566,7 +2564,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
      *
      * @param  name
-     *         The name used to filter the returned {@link SoundboardSound SoundboardSounds}. Without colons.
+     *         The name used to filter the returned {@link SoundboardSound SoundboardSounds}.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
