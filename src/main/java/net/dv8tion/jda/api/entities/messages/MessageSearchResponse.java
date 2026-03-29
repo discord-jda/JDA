@@ -100,8 +100,6 @@ public interface MessageSearchResponse {
          * and the containing thread's members will only contain the {@linkplain net.dv8tion.jda.api.entities.Guild#getSelfMember() current member},
          * if it has joined the thread.
          *
-         * <p><b>Note:</b> Do not paginate using the length of this array!
-         *
          * @return The matching messages
          */
         @Nonnull

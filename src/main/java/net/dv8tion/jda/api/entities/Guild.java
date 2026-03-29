@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
@@ -5984,15 +5985,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Searches for messages in this guild.
      * The {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent must be enabled on the dev portal,
      * but the bot does not necessarily need to start with it.
+     * <br>If all you need is to iterate messages of a channel, use {@link MessageChannel#getIterableHistory()} instead.
      *
      * <p>Any invalid entity referenced by the search query, will be ignored.
      *
-     * <p>The returned messages will be missing reactions, member objects (unless cached)
-     * and the containing thread's members will only contain the {@linkplain #getSelfMember() current member},
-     * if it has joined the thread.
-     *
-     * <p><b>Note:</b> The search may return fewer results when messages have not been accessed for a long time,
-     * as such, you should not rely on the length of the messages list to paginate results.
+     * <p><b>Note:</b> The search may return fewer results when messages have not been accessed for a long time.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction} include the following:

@@ -41,6 +41,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *
      * <p><b>Note:</b> The search may return fewer results when messages have not been accessed for a long time,
      * as such, you should not rely on the length of the messages list to paginate results.
+     * Use {@link MessageSearchAction#minId(Long)} and/or {@link MessageSearchAction#maxId(Long)} instead.
      *
      * @param  limit
      *         Max number of messages to return, between 1 and 25, or {@code null} to use the default (25)
@@ -257,7 +258,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *         The channels to search messages in, up to 500, leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is {@code null}, or the array has more than 500 elements
+     *         If the array is {@code null}, or has more than 500 elements
      *
      * @return This action for chaining
      */
@@ -285,7 +286,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Includes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
-     * <br><b>This overrides exclusions.</b>
+     * <br><b>This overrides exclusions!</b>
      *
      * @param  authorTypes
      *         The type of authors to keep, leave empty to remove the inclusion filter
@@ -301,7 +302,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Includes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
-     * <br><b>This overrides exclusions.</b>
+     * <br><b>This overrides exclusions!</b>
      *
      * @param  authorTypes
      *         The type of authors to keep, leave empty to remove the inclusion filter
@@ -320,7 +321,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Excludes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
-     * <br><b>This overrides inclusions.</b>
+     * <br><b>This overrides inclusions!</b>
      *
      * @param  authorTypes
      *         The type of authors to avoid, leave empty to remove the exclusion filter
@@ -336,7 +337,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Excludes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
-     * <br><b>This overrides inclusions.</b>
+     * <br><b>This overrides inclusions!</b>
      *
      * @param  authorTypes
      *         The type of authors to avoid, leave empty to remove the exclusion filter
@@ -517,7 +518,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *         The IDs of the users which must be mentioned in the messages, leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}
+     *         If the array is {@code null}
      *
      * @return This action for chaining
      */
@@ -534,6 +535,9 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *
      * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled}
      * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionRoles(long...) allowlisted}, will not match.
+     *
+     * <p><b>Note:</b> If the {@code @everyone} role is included, it will only match those that were created from the mention,
+     * but not when the raw content is "@everyone", use {@link #mentionsEveryone(Boolean)} for those instead.
      *
      * @param  mentions
      *         The roles which must be mentioned in the messages, leave empty to remove the filter
@@ -552,6 +556,9 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *
      * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled}
      * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionRoles(long...) allowlisted}, will not match.
+     *
+     * <p><b>Note:</b> If the {@code @everyone} role is included, it will only match those that were created from the mention,
+     * but not when the raw content is "@everyone", use {@link #mentionsEveryone(Boolean)} for those instead.
      *
      * @param  mentions
      *         The roles which must be mentioned in the messages, leave empty to remove the filter
@@ -575,6 +582,9 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p>Mentions which have been {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#setAllowedMentions(Collection) disabled},
      * or done by a user missing {@link net.dv8tion.jda.api.Permission#MESSAGE_MENTION_EVERYONE Permission.MESSAGE_MENTION_EVERYONE},
      * will not match.
+     *
+     * <p><b>Note:</b> This will only match message which raw content is "@everyone",
+     * mentions of the `@everyone` role will not match, use {@link #mentionsRoles(Role...)} for those instead.
      *
      * @param  mentionsEveryone
      *         {@code true} to search messages mentioning everyone, {@code false} to exclude them, {@code null} to keep both
@@ -648,7 +658,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *         The user IDs which must be replied to, leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}
+     *         If the array is {@code null}
      *
      * @return This action for chaining
      */
@@ -684,7 +694,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *         The message IDs which must be replied to, leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}
+     *         If the array is {@code null}
      *
      * @return This action for chaining
      */
@@ -731,7 +741,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Includes messages which include content matching <b>any</b> of the provided {@linkplain HasType content types}.
-     * <br><b>This overrides exclusions.</b>
+     * <br><b>This overrides exclusions!</b>
      *
      * @param  hasTypes
      *         The content types to keep, leave empty to remove the inclusion filter
@@ -747,7 +757,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Includes messages which include content matching <b>any</b> of the provided {@linkplain HasType content types}.
-     * <br><b>This overrides exclusions.</b>
+     * <br><b>This overrides exclusions!</b>
      *
      * @param  hasTypes
      *         The content types to keep, leave empty to remove the inclusion filter
@@ -766,7 +776,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Excludes messages which include content matching <b>any</b> of the provided {@linkplain HasType content types}.
-     * <br><b>This overrides inclusions.</b>
+     * <br><b>This overrides inclusions!</b>
      *
      * @param  hasTypes
      *         The content types to exclude, leave empty to remove the inclusion filter
@@ -782,7 +792,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Excludes messages which include content matching <b>any</b> of the provided {@linkplain HasType content types}.
-     * <br><b>This overrides inclusions.</b>
+     * <br><b>This overrides inclusions!</b>
      *
      * @param  hasTypes
      *         The content types to exclude, leave empty to remove the inclusion filter
@@ -833,7 +843,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Keeps messages which have embeds created from <b>any</b> of the provided embed providers,
-     * such as {@code Tenor} or {@code Giphy}, as defined by {@link MessageEmbed.Provider#getName()}.
+     * such as {@code Tenor} or {@code Giphy}, as retrievable from {@link MessageEmbed.Provider#getName()}.
      *
      * @param  embedProviders
      *         The embed provider names, case-sensitive, max 256 characters per provider, up to 100,
@@ -854,7 +864,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Keeps messages which have embeds created from <b>any</b> of the provided embed providers,
-     * such as {@code Tenor} or {@code Giphy}, as defined by {@link MessageEmbed.Provider#getName()}.
+     * such as {@code Tenor} or {@code Giphy}, as retrievable from {@link MessageEmbed.Provider#getName()}.
      *
      * @param  embedProviders
      *         The embed provider names, case-sensitive, max 256 characters per provider, up to 100,
@@ -922,7 +932,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Keeps messages which have attachments named after <b>any</b> of the provided names,
-     * including extension.
+     * must include the extension.
      *
      * @param  attachmentFilenames
      *         The attachment file names, max 1024 characters per file name, up to 100,
@@ -943,7 +953,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Keeps messages which have attachments named after <b>any</b> of the provided names,
-     * including extension.
+     * must include the extension.
      *
      * @param  attachmentFilenames
      *         The attachment file names, max 1024 characters per file name, up to 100,
@@ -1009,7 +1019,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Sorts messages by the provided sorting algorithm.
-     * <br>The default is {@link SortType#RELEVANCE RELEVANCE}.
+     * <br>The default is {@link SortType#TIMESTAMP TIMESTAMP}.
      *
      * @param  sortType
      *         The sorting algorithm to use
@@ -1025,7 +1035,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Sorts messages by the provided sort order.
-     * This is only relevant when {@link SortType#TIMESTAMP SortType.TIMESTAMP} is used (used by default).
+     * This is only relevant when {@link SortType#TIMESTAMP SortType.TIMESTAMP} is used (the default).
      * <br>The default is {@link SortOrder#DESC DESC}.
      *
      * @param  sortOrder
@@ -1060,8 +1070,17 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * @see MessageSearchAction#excludeAuthorTypes(AuthorType...)
      */
     enum AuthorType {
+        /**
+         * Messages sent by regular users.
+         */
         USER("user"),
+        /**
+         * Messages sent by bots. Does <b>not</b> include interaction replies.
+         */
         BOT("bot"),
+        /**
+         * Messages sent by webhooks. Includes interaction replies.
+         */
         WEBHOOK("webhook");
 
         private final String value;
