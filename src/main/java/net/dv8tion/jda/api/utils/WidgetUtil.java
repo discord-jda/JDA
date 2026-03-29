@@ -25,9 +25,11 @@ import net.dv8tion.jda.internal.entities.WidgetImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +38,8 @@ import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static okhttp3.logging.HttpLoggingInterceptor.Level.BODY;
 
 /**
  * The WidgetUtil is a class for interacting with various facets of Discord's
@@ -195,7 +199,12 @@ public class WidgetUtil {
     public static Widget getWidget(long guildId) throws RateLimitedException {
         Checks.notNull(guildId, "GuildId");
 
-        OkHttpClient client = new OkHttpClient.Builder().build();
+        HttpLoggingInterceptor httpLoggingInterceptor =
+                new HttpLoggingInterceptor(JDALogger.getLog(OkHttpClient.class)::trace);
+        httpLoggingInterceptor.setLevel(BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build();
         Request request = new Request.Builder()
                 .url(String.format(WIDGET_URL, guildId))
                 .method("GET", null)
