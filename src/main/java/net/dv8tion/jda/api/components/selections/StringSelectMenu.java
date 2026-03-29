@@ -379,6 +379,8 @@ public interface StringSelectMenu extends SelectMenu {
          *             <li>If no options are provided</li>
          *             <li>If more than {@value #OPTIONS_MAX_AMOUNT} options are provided</li>
          *             <li>If the minimum value range is 0 and a selection is also explicitly required</li>
+         *             <li>If there are default values, and there are less than there is min values allowed</li>
+         *             <li>If there are default values, and there are more than there is max values allowed</li>
          *         </ul>
          *
          * @return The new {@link StringSelectMenu} instance
@@ -392,6 +394,17 @@ public interface StringSelectMenu extends SelectMenu {
                     options.size() <= OPTIONS_MAX_AMOUNT,
                     "Cannot build a select menu with more than %d options.",
                     OPTIONS_MAX_AMOUNT);
+            long defaultOptionsCount = countDefaultOptions();
+            if (defaultOptionsCount > 0) {
+                Checks.check(
+                        defaultOptionsCount >= minValues,
+                        "Cannot have less than %d default values, as required by the min value range",
+                        minValues);
+                Checks.check(
+                        defaultOptionsCount <= maxValues,
+                        "Cannot have more than %d default values, as required by the max value range",
+                        maxValues);
+            }
             if (required != null && required) {
                 Checks.check(
                         minValues > 0,
@@ -400,6 +413,10 @@ public interface StringSelectMenu extends SelectMenu {
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
             return new StringSelectMenuImpl(customId, uniqueId, placeholder, min, max, disabled, options, required);
+        }
+
+        private long countDefaultOptions() {
+            return options.stream().filter(SelectOption::isDefault).count();
         }
     }
 }
