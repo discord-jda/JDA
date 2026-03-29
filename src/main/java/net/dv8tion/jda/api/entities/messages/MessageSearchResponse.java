@@ -31,17 +31,25 @@ import javax.annotation.Nonnull;
  */
 public interface MessageSearchResponse {
     /**
-     * Whether the message search has failed, currently,
-     * it can only "gracefully" fail when the message index is not yet available.
+     * Whether the message search results are not ready yet.
      *
-     * <p>If this returns {@code true}, you muse use {@link #asNotReady()}
-     * and retry the request according to the returned {@linkplain NotReady#getRetryAfter() delay}.
+     * <p>If this returns {@code true}, you must use {@link #asNotReady()}
+     * to retry the request according to the returned {@linkplain NotReady#getRetryAfter() delay}.
      *
      * <p>If this returns {@code false}, you must use {@link #asResults()} to read the results.
      *
-     * @return {@code true} if the request failed, {@code false} otherwise
+     * <p><b>Tip:</b> You can use this in a guard condition:
+     * {@snippet lang=java:
+     * MessageSearchResponse searchResponse; // Assuming you have a response
+     * if (searchResponse.isNotReady()) {
+     *     // Reply
+     *     return;
+     * }
+     * }
+     *
+     * @return {@code true} if the index is not ready yet, {@code false} otherwise
      */
-    boolean hasFailed();
+    boolean isNotReady();
 
     /**
      * Returns this instance as {@link NotReady NotReady}, if it is one.

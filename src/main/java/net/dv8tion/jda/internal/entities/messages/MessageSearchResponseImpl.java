@@ -37,7 +37,7 @@ public class MessageSearchResponseImpl {
         }
 
         @Override
-        public boolean hasFailed() {
+        public boolean isNotReady() {
             return true;
         }
 
@@ -76,7 +76,7 @@ public class MessageSearchResponseImpl {
         }
 
         @Override
-        public boolean hasFailed() {
+        public boolean isNotReady() {
             return false;
         }
 
