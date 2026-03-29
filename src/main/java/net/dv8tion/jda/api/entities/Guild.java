@@ -5998,6 +5998,26 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     <br>You are missing the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent, or the search is filtered on a single channel which you don't have access to</li>
      * </ul>
      *
+     * <h4>Example - Finding {@code cat.png} attachments sent by users:</h4>
+     * {@snippet lang=java:
+     * guild.searchMessages()
+     *      .attachmentFilenames("cat.png")
+     *      // You can import AuthorType for better readability
+     *      .includeAuthorTypes(MessageSearchAction.AuthorType.USER)
+     *      .queue(response -> {
+     *          if (response.isNotReady()) {
+     *              var notReady = response.asNotReady();
+     *              int retryAfter = notReady.getRetryAfter();
+     *              // Reply
+     *              return;
+     *          }
+     *
+     *          var results = response.asResults();
+     *          var messages = results.getMessages();
+     *          // Handle messages
+     *      });
+     * }
+     *
      * @throws InsufficientPermissionException
      *         If the {@linkplain #getSelfMember() current member} does not have the {@link Permission#MESSAGE_HISTORY MESSAGE_HISTORY} permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
