@@ -196,6 +196,7 @@ dependencies {
     //Web Connection Support
     api(libs.websocket.client)
     api(libs.okhttp)
+    implementation(libs.okhttp.loggingInterceptor)
 
     //Opus library support
     api(libs.opus)
