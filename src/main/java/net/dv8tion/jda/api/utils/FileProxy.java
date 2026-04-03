@@ -118,7 +118,11 @@ public class FileProxy {
         // Otherwise, see if a default one has been assigned
         //  If there is no client then create a default one
         if (defaultHttpClient == null) {
-            defaultHttpClient = new OkHttpClient();
+            synchronized (FileProxy.class) {
+                if (defaultHttpClient == null) {
+                    defaultHttpClient = new OkHttpClient();
+                }
+            }
         }
 
         return defaultHttpClient;
