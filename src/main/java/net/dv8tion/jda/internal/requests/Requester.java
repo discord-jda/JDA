@@ -76,6 +76,7 @@ public class Requester {
     private final HttpUrl baseUrl;
     private final String userAgent;
     private final Consumer<? super okhttp3.Request.Builder> customBuilder;
+    private final RestMetricsCollector metricsCollector;
 
     private final OkHttpClient httpClient;
 
@@ -97,6 +98,7 @@ public class Requester {
         this.baseUrl = HttpUrl.get(config.getBaseUrl());
         this.userAgent = config.getUserAgent();
         this.customBuilder = config.getCustomBuilder();
+        this.metricsCollector = config.getMetricsCollector();
         this.httpClient = this.api.getHttpClient();
     }
 
@@ -158,6 +160,8 @@ public class Requester {
 
     public okhttp3.Response execute(WorkTask task, boolean retried, boolean handleOnRatelimit) {
         Route.CompiledRoute route = task.getRoute();
+        long start = System.nanoTime();
+        int attempts = 0;
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
 
@@ -188,11 +192,13 @@ public class Requester {
             int code = 0;
             for (int attempt = 0; attempt < responses.length; attempt++) {
                 if (apiRequest.isSkipped()) {
+                    emitRequestMetric(apiRequest, route, -1, attempts, start, false, null);
                     return null;
                 }
 
                 Call call = httpClient.newCall(request);
                 lastResponse = call.execute();
+                attempts = attempt + 1;
                 code = lastResponse.code();
                 responses[attempt] = lastResponse;
                 String cfRay = lastResponse.header("CF-RAY");
@@ -227,6 +233,7 @@ public class Requester {
             if (shouldRetry(code)) {
                 // Epic failure from other end. Attempted 4 times.
                 task.handleResponse(lastResponse, -1, rays);
+                emitRequestMetric(apiRequest, route, code, attempts, start, false, null);
                 return null;
             }
 
@@ -259,10 +266,12 @@ public class Requester {
                 }
             }
 
+            emitRequestMetric(apiRequest, route, code, attempts, start, code < 400, null);
             return lastResponse;
         } catch (UnknownHostException e) {
             LOG.error("DNS resolution failed: {}", e.getMessage());
             task.handleResponse(e, rays);
+            emitRequestMetric(apiRequest, route, -1, attempts, start, false, e);
             return null;
         } catch (IOException e) {
             if (retryOnTimeout && !retried && isRetry(e)) {
@@ -270,10 +279,12 @@ public class Requester {
             }
             LOG.error("There was an I/O error while executing a REST request: {}", e.getMessage());
             task.handleResponse(e, rays);
+            emitRequestMetric(apiRequest, route, -1, attempts, start, false, e);
             return null;
         } catch (Exception e) {
             LOG.error("There was an unexpected error while executing a REST request", e);
             task.handleResponse(e, rays);
+            emitRequestMetric(apiRequest, route, -1, attempts, start, false, e);
             return null;
         } finally {
             for (okhttp3.Response r : responses) {
@@ -355,6 +366,29 @@ public class Requester {
     private static String getContentType(okhttp3.Response response) {
         String type = response.header("content-type");
         return type == null ? "" : type.toLowerCase(Locale.ROOT);
+    }
+
+    private void emitRequestMetric(
+            Request<?> request,
+            Route.CompiledRoute route,
+            int statusCode,
+            int attempts,
+            long startNanos,
+            boolean success,
+            @Nullable Throwable error) {
+        if (metricsCollector == null) {
+            return;
+        }
+
+        long durationMillis = (System.nanoTime() - startNanos) / 1_000_000L;
+        RestMetricsCollector.RequestMetric metric = new RestMetricsCollector.RequestMetric(
+                request.getJDA(), route, statusCode, attempts, durationMillis, success, request.shouldQueue(), error);
+
+        try {
+            metricsCollector.onRequest(metric);
+        } catch (Exception ex) {
+            LOG.warn("Metrics collector threw an exception for request metric", ex);
+        }
     }
 
     private class WorkTask implements RestRateLimiter.Work {
