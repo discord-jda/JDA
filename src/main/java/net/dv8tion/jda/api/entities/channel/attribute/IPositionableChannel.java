@@ -54,8 +54,11 @@ public interface IPositionableChannel extends GuildChannel {
         if (position > -1) {
             return position;
         }
-        throw new IllegalStateException("Somehow when determining position we never found the "
-                + getType().name() + " in the Guild's channels? wtf?");
+        throw new IllegalStateException(String.format(
+                "Could not determine position of %s channel (%d)\n"
+                        + "- Make sure you do not keep entities stored, prefer getting them by ID\n"
+                        + "- Check your bot is not processing events requiring channel positions after JDA receives events deleting this channel, this is typically caused when events are processed asynchronously",
+                getType().name(), getIdLong()));
     }
 
     /**
