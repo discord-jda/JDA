@@ -104,6 +104,6 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
                 members.add(member);
             }
         });
-        return members;
+        return Collections.unmodifiableList(members);
     }
 }

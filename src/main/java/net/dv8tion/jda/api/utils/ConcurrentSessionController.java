@@ -82,11 +82,11 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
         private final int id;
         private Thread thread;
 
-        public Worker(int id) {
+        private Worker(int id) {
             this.id = id;
         }
 
-        public synchronized void start() {
+        private synchronized void start() {
             if (thread == null) {
                 thread = new Thread(this, "ConcurrentSessionController-Worker-" + id);
                 log.debug("Running worker");
@@ -94,20 +94,20 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
             }
         }
 
-        public synchronized void stop() {
+        private synchronized void stop() {
             thread = null;
             if (!queue.isEmpty()) {
                 start();
             }
         }
 
-        public void enqueue(@Nonnull SessionConnectNode node) {
+        private void enqueue(@Nonnull SessionConnectNode node) {
             log.trace("Appending node to queue {}", node.getShardInfo());
             queue.add(node);
             start();
         }
 
-        public void dequeue(@Nonnull SessionConnectNode node) {
+        private void dequeue(@Nonnull SessionConnectNode node) {
             log.trace("Removing node from queue {}", node.getShardInfo());
             queue.remove(node);
         }

@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -207,8 +209,10 @@ public interface WebhookClient<T> extends ISnowflake {
      * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
-    default WebhookMessageCreateAction<T> sendMessageFormat(@Nonnull String format, @Nonnull Object... args) {
+    default WebhookMessageCreateAction<T> sendMessageFormat(
+            @Nonnull @FormatString String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return sendMessage(String.format(format, args));
     }
@@ -727,9 +731,10 @@ public interface WebhookClient<T> extends ISnowflake {
      * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
     default WebhookMessageEditAction<T> editMessageFormatById(
-            @Nonnull String messageId, @Nonnull String format, @Nonnull Object... args) {
+            @Nonnull String messageId, @Nonnull @FormatString String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
     }
@@ -762,9 +767,10 @@ public interface WebhookClient<T> extends ISnowflake {
      * @return {@link WebhookMessageEditAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
     default WebhookMessageEditAction<T> editMessageFormatById(
-            long messageId, @Nonnull String format, @Nonnull Object... args) {
+            long messageId, @Nonnull @FormatString String format, @Nonnull Object... args) {
         return editMessageFormatById(Long.toUnsignedString(messageId), format, args);
     }
 

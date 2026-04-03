@@ -95,9 +95,10 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
                 return EnumSet.of(SelectTarget.CHANNEL);
             case MENTIONABLE_SELECT:
                 return EnumSet.of(SelectTarget.ROLE, SelectTarget.USER);
+            default:
+                // Ideally this never happens, so its undocumented
+                throw new IllegalStateException("Unsupported type: " + type);
         }
-        // Ideally this never happens, so its undocumented
-        throw new IllegalStateException("Unsupported type: " + type);
     }
 
     @Nonnull

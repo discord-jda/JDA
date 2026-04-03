@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -212,7 +214,8 @@ public class ReceivedMessage implements Message {
             if (!Objects.equals(selfUser, author)
                     && !mentions.getUsers().contains(selfUser)
                     && isFromGuild()
-                    && !isBotOwnedWebhookMessage) {
+                    && !isBotOwnedWebhookMessage
+                    && !hasPrivilegedContent()) {
                 didContentIntentWarning = true;
                 JDAImpl.LOG.warn(
                         "Attempting to access message content without GatewayIntent.MESSAGE_CONTENT.\n"
@@ -224,6 +227,17 @@ public class ReceivedMessage implements Message {
                                 + "Or suppress this warning if this is intentional with Message.suppressContentIntentWarning()");
             }
         }
+    }
+
+    /**
+     * {@code true} if the message has content that depends on the MESSAGE_CONTENT intent
+     */
+    private boolean hasPrivilegedContent() {
+        return !content.isEmpty()
+                || !embeds.isEmpty()
+                || !attachments.isEmpty()
+                || !components.isEmpty()
+                || poll != null;
     }
 
     public ReceivedMessage withHook(WebhookClient<Message> hook) {
@@ -782,7 +796,8 @@ public class ReceivedMessage implements Message {
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
+    @FormatMethod
+    public MessageEditAction editMessageFormat(@Nonnull @FormatString String format, @Nonnull Object... args) {
         MessageEditActionImpl action = editRequest();
         action.setContent(String.format(format, args));
 

@@ -19,6 +19,9 @@ package net.dv8tion.jda.api.components.label;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
+import net.dv8tion.jda.api.components.checkbox.Checkbox;
+import net.dv8tion.jda.api.components.checkboxgroup.CheckboxGroup;
+import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
@@ -32,6 +35,9 @@ import javax.annotation.Nonnull;
  *     <li>{@link StringSelectMenu}</li>
  *     <li>{@link EntitySelectMenu}</li>
  *     <li>{@link AttachmentUpload}</li>
+ *     <li>{@link RadioGroup}</li>
+ *     <li>{@link CheckboxGroup}</li>
+ *     <li>{@link Checkbox}</li>
  * </ul>
  */
 public interface LabelChildComponentUnion extends LabelChildComponent, IComponentUnion {
@@ -128,6 +134,72 @@ public interface LabelChildComponentUnion extends LabelChildComponent, IComponen
      */
     @Nonnull
     AttachmentUpload asAttachmentUpload();
+
+    /**
+     * Casts this union to a {@link RadioGroup}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * {@snippet lang="java":
+     * //These are the same!
+     * RadioGroup radioGroup = union.asRadioGroup();
+     * RadioGroup radioGroup2 = (Checkbox) union;
+     * }
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#RADIO_GROUP} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof RadioGroup</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link RadioGroup}.
+     *
+     * @return The component as a {@link RadioGroup}
+     */
+    @Nonnull
+    RadioGroup asRadioGroup();
+
+    /**
+     * Casts this union to a {@link CheckboxGroup}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * {@snippet lang="java":
+     * //These are the same!
+     * CheckboxGroup checkboxGroup = union.asCheckboxGroup();
+     * CheckboxGroup checkboxGroup2 = (CheckboxGroup) union;
+     * }
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#CHECKBOX_GROUP} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof CheckboxGroup</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link CheckboxGroup}.
+     *
+     * @return The component as a {@link CheckboxGroup}
+     */
+    @Nonnull
+    CheckboxGroup asCheckboxGroup();
+
+    /**
+     * Casts this union to a {@link Checkbox}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * {@snippet lang="java":
+     * //These are the same!
+     * Checkbox checkbox = union.asCheckbox();
+     * Checkbox checkbox2 = (Checkbox) union;
+     * }
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#CHECKBOX} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Checkbox</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link Checkbox}.
+     *
+     * @return The component as a {@link Checkbox}
+     */
+    @Nonnull
+    Checkbox asCheckbox();
 
     @Nonnull
     @Override

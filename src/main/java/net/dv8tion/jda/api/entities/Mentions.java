@@ -295,7 +295,7 @@ public interface Mentions {
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Member Members}.
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance. This only
-     * counts direct mentions of the role and not mentions through everyone mentions.
+     * counts direct mentions of the member and not mentions through roles or everyone mentions.
      *
      * <p>This is always empty in {@link PrivateChannel PrivateChannels} and {@link GroupChannel GroupChannels}.
      *

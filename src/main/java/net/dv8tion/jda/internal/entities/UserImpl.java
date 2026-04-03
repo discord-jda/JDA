@@ -30,10 +30,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import java.util.EnumSet;
-import java.util.FormattableFlags;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -253,11 +250,11 @@ public class UserImpl extends UserSnowflakeImpl implements User {
         if (!alt) {
             out = getAsMention();
         } else if (discriminator == 0 && upper) {
-            out = getName().toUpperCase();
+            out = getName().toUpperCase(formatter.locale());
         } else if (discriminator == 0) {
             out = getName();
         } else if (upper) {
-            out = getAsTag().toUpperCase();
+            out = getAsTag().toUpperCase(formatter.locale());
         } else {
             out = getAsTag();
         }

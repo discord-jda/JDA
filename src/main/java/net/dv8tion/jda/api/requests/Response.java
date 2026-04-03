@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -194,7 +195,7 @@ public class Response implements Closeable {
 
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(body));
+            reader = new BufferedReader(new InputStreamReader(body, StandardCharsets.UTF_8));
             reader.mark(1024);
             T t = parser.apply(reader);
             this.object = t;

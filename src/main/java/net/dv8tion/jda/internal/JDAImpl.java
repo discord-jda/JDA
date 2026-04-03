@@ -89,6 +89,7 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -745,6 +746,17 @@ public class JDAImpl implements JDA {
 
     @Nonnull
     @Override
+    public RestAction<@Unmodifiable List<SoundboardSound>> retrieveDefaultSoundboardSounds() {
+        Route.CompiledRoute route = Route.SoundboardSounds.LIST_DEFAULT_SOUNDBOARD_SOUNDS.compile();
+        return new RestActionImpl<>(this, route, (response, request) -> Helpers.mapGracefully(
+                        response.getArray().stream(DataArray::getObject),
+                        entityBuilder::createSoundboardSound,
+                        "Failed to parse soundboard sound")
+                .collect(Helpers.toUnmodifiableList()));
+    }
+
+    @Nonnull
+    @Override
     public SnowflakeCacheView<ScheduledEvent> getScheduledEventCache() {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getScheduledEventCache));
     }
@@ -1168,7 +1180,7 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public TestEntitlementCreateAction createTestEntitlement(
-            long skuId, long ownerId, @Nonnull TestEntitlementCreateActionImpl.OwnerType ownerType) {
+            long skuId, long ownerId, @Nonnull TestEntitlementCreateAction.OwnerType ownerType) {
         Checks.notNull(ownerType, "ownerType");
 
         return new TestEntitlementCreateActionImpl(this, skuId, ownerId, ownerType);

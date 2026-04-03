@@ -412,7 +412,7 @@ public interface Invite {
             String bannerId = getBannerId();
             return bannerId == null
                     ? null
-                    : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+                    : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
         }
 
         /**

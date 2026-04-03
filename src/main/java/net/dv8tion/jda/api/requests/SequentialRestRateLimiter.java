@@ -532,6 +532,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             return requests;
         }
 
+        @SuppressWarnings("ReferenceEquality")
         protected boolean moveRequest(@Nonnull Work request) {
             return MiscUtil.locked(lock, () -> {
                 // Attempt moving request to correct bucket if it has been created
@@ -563,6 +564,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             return false;
         }
 
+        @Override
         public void run() {
             log.trace("Bucket {} is running {} requests", bucketId, requests.size());
             while (!requests.isEmpty()) {

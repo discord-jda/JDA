@@ -610,10 +610,10 @@ public class DataObject implements SerializableData {
         try {
             value = get(OffsetDateTime.class, key, OffsetDateTime::parse, null);
         } catch (DateTimeParseException e) {
-            String reason =
+            throw new ParsingException(Helpers.format(
                     "Cannot parse value for %s into an OffsetDateTime object. Try double checking that %s is a valid"
-                            + " ISO8601 timestmap";
-            throw new ParsingException(String.format(reason, key, e.getParsedString()));
+                            + " ISO8601 timestmap",
+                    key, e.getParsedString()));
         }
         return value == null ? defaultValue : value;
     }

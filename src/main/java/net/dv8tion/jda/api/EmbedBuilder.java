@@ -29,7 +29,6 @@ import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -184,7 +183,7 @@ public class EmbedBuilder {
                 null,
                 footer,
                 image,
-                new LinkedList<>(fields));
+                new ArrayList<>(fields));
     }
 
     /**

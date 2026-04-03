@@ -116,6 +116,8 @@ public class GuildImpl implements Guild {
             new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache =
             new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
+    private final SnowflakeCacheViewImpl<SoundboardSound> soundboardCache =
+            new SnowflakeCacheViewImpl<>(SoundboardSound.class, SoundboardSound::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
     private final SnowflakeCacheViewImpl<GuildVoiceStateImpl> voiceStateCache = new SnowflakeCacheViewImpl<>(
@@ -614,11 +616,7 @@ public class GuildImpl implements Guild {
             @Nonnull String location,
             @Nonnull OffsetDateTime startTime,
             @Nonnull OffsetDateTime endTime) {
-        PermissionUtil.checkWithDeadline(
-                getSelfMember(),
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MANAGE_EVENTS,
-                /* new */ Permission.CREATE_SCHEDULED_EVENTS);
+        checkPermission(Permission.CREATE_SCHEDULED_EVENTS);
         return new ScheduledEventActionImpl(name, location, startTime, endTime, this);
     }
 
@@ -626,11 +624,7 @@ public class GuildImpl implements Guild {
     @Override
     public ScheduledEventAction createScheduledEvent(
             @Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime) {
-        PermissionUtil.checkWithDeadline(
-                getSelfMember(),
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MANAGE_EVENTS,
-                /* new */ Permission.CREATE_SCHEDULED_EVENTS);
+        checkPermission(Permission.CREATE_SCHEDULED_EVENTS);
         return new ScheduledEventActionImpl(name, channel, startTime, this);
     }
 
@@ -817,6 +811,12 @@ public class GuildImpl implements Guild {
 
     @Nonnull
     @Override
+    public SnowflakeCacheViewImpl<SoundboardSound> getSoundboardSoundCache() {
+        return soundboardCache;
+    }
+
+    @Nonnull
+    @Override
     public List<GuildChannel> getChannels(boolean includeHidden) {
         if (includeHidden) {
             return channelCache.applyStream(stream ->
@@ -946,6 +946,51 @@ public class GuildImpl implements Guild {
         }
         Checks.check(!(sticker instanceof StandardSticker), "Cannot edit a standard sticker.");
         return new GuildStickerManagerImpl(this, id, sticker);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings({"unchecked", "RedundantCast"})
+    public CacheRestAction<List<SoundboardSound>> retrieveSoundboardSounds() {
+        return (CacheRestAction<List<SoundboardSound>>) (Object) new DeferredRestAction<>(
+                api,
+                List.class,
+                () -> api.isCacheFlagSet(CacheFlag.SOUNDBOARD_SOUNDS) ? getSoundboardSounds() : null,
+                this::retrieveSoundboardSounds0);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private RestAction<List> retrieveSoundboardSounds0() {
+        return new RestActionImpl<>(
+                api,
+                Route.SoundboardSounds.LIST_GUILD_SOUNDBOARD_SOUNDS.compile(getId()),
+                (response, request) -> Helpers.mapGracefully(
+                                response.getArray().stream(DataArray::getObject),
+                                o -> api.getEntityBuilder().createSoundboardSound(o),
+                                "Failed to parse soundboard sound")
+                        .collect(Helpers.toUnmodifiableList()));
+    }
+
+    @Nonnull
+    @Override
+    public CacheRestAction<SoundboardSound> retrieveSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        Checks.notNull(sound, "Sound");
+        return new DeferredRestAction<>(
+                api,
+                SoundboardSound.class,
+                () -> getSoundboardSoundById(sound.getIdLong()),
+                () -> new RestActionImpl<>(
+                        api,
+                        Route.SoundboardSounds.GET_GUILD_SOUNDBOARD_SOUND.compile(getId(), sound.getId()),
+                        (response, request) -> api.getEntityBuilder().createSoundboardSound(response.getObject())));
+    }
+
+    @Nonnull
+    @Override
+    public SoundboardSoundManager editSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        Checks.notNull(sound, "Sound");
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
+        return new SoundboardSoundManagerImpl(this, sound);
     }
 
     @Nonnull
@@ -1821,11 +1866,7 @@ public class GuildImpl implements Guild {
     @Override
     public AuditableRestAction<RichCustomEmoji> createEmoji(
             @Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles) {
-        PermissionUtil.checkWithDeadline(
-                getSelfMember(),
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MANAGE_GUILD_EXPRESSIONS,
-                /* new */ Permission.CREATE_GUILD_EXPRESSIONS);
+        checkPermission(Permission.CREATE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
@@ -1859,11 +1900,7 @@ public class GuildImpl implements Guild {
             @Nonnull String description,
             @Nonnull FileUpload file,
             @Nonnull Collection<String> tags) {
-        PermissionUtil.checkWithDeadline(
-                getSelfMember(),
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MANAGE_GUILD_EXPRESSIONS,
-                /* new */ Permission.CREATE_GUILD_EXPRESSIONS);
+        checkPermission(Permission.CREATE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");
@@ -1925,6 +1962,27 @@ public class GuildImpl implements Guild {
         Checks.notNull(id, "Sticker");
         Route.CompiledRoute route = Route.Stickers.DELETE_GUILD_STICKER.compile(getId(), id.getId());
         return new AuditableRestActionImpl<>(api, route);
+    }
+
+    @Nonnull
+    @Override
+    public SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file) {
+        checkPermission(Permission.CREATE_GUILD_EXPRESSIONS);
+        Checks.notNull(name, "Name");
+        Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2 and 32 characters");
+        Checks.notNull(file, "File");
+        Route.CompiledRoute route = Route.SoundboardSounds.CREATE_GUILD_SOUNDBOARD_SOUND.compile(getId());
+        return new SoundboardSoundCreateActionImpl(getJDA(), route, name, file);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> deleteSoundboardSound(@Nonnull SoundboardSoundSnowflake sound) {
+        Checks.notNull(sound, "Sound");
+        // This is the minimum requirements, there are more, but only if the soundboard sound is a complete instance
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
+        return new AuditableRestActionImpl<>(
+                api, Route.SoundboardSounds.DELETE_GUILD_SOUNDBOARD_SOUND.compile(this.getId(), sound.getId()));
     }
 
     @Nonnull
@@ -2251,6 +2309,10 @@ public class GuildImpl implements Guild {
 
     public SnowflakeCacheViewImpl<GuildSticker> getStickersView() {
         return stickerCache;
+    }
+
+    public SnowflakeCacheViewImpl<SoundboardSound> getSoundboardSoundsView() {
+        return soundboardCache;
     }
 
     public MemberCacheViewImpl getMembersView() {

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.events.automod.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
+import net.dv8tion.jda.api.events.channel.VoiceChannelEffectSendEvent;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
 import net.dv8tion.jda.api.events.channel.forum.GenericForumTagEvent;
@@ -71,6 +72,13 @@ import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.events.self.*;
 import net.dv8tion.jda.api.events.session.*;
+import net.dv8tion.jda.api.events.soundboard.GenericSoundboardSoundEvent;
+import net.dv8tion.jda.api.events.soundboard.SoundboardSoundCreateEvent;
+import net.dv8tion.jda.api.events.soundboard.SoundboardSoundDeleteEvent;
+import net.dv8tion.jda.api.events.soundboard.update.GenericSoundboardSoundUpdateEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateNameEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateVolumeEvent;
 import net.dv8tion.jda.api.events.stage.GenericStageInstanceEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceCreateEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
@@ -544,6 +552,25 @@ public abstract class ListenerAdapter implements EventListener {
     public void onGuildStickerUpdateDescription(@Nonnull GuildStickerUpdateDescriptionEvent event) {}
 
     public void onGuildStickerUpdateAvailable(@Nonnull GuildStickerUpdateAvailableEvent event) {}
+
+    // Soundboard sound events
+    public void onGenericSoundboardSound(@Nonnull GenericSoundboardSoundEvent event) {}
+
+    public void onSoundboardSoundCreate(@Nonnull SoundboardSoundCreateEvent event) {}
+
+    public void onSoundboardSoundDelete(@Nonnull SoundboardSoundDeleteEvent event) {}
+
+    // Soundboard sound update events
+    public void onGenericSoundboardSoundUpdate(@Nonnull GenericSoundboardSoundUpdateEvent<?> event) {}
+
+    public void onSoundboardSoundUpdateName(@Nonnull SoundboardSoundUpdateNameEvent event) {}
+
+    public void onSoundboardSoundUpdateVolume(@Nonnull SoundboardSoundUpdateVolumeEvent event) {}
+
+    public void onSoundboardSoundUpdateEmoji(@Nonnull SoundboardSoundUpdateEmojiEvent event) {}
+
+    // Voice channel effect events
+    public void onVoiceChannelEffectSend(@Nonnull VoiceChannelEffectSendEvent event) {}
 
     // Entitlement events
     public void onEntitlementCreate(@Nonnull EntitlementCreateEvent event) {}
