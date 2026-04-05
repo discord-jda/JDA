@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
@@ -5979,6 +5980,54 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     ScheduledEventAction createScheduledEvent(
             @Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime);
+
+    /**
+     * Searches for messages in this guild.
+     * The {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent must be enabled on the dev portal,
+     * but the bot does not necessarily need to start with it.
+     * <br>If all you need is to iterate messages of a channel, use {@link MessageChannel#getIterableHistory()} instead.
+     *
+     * <p>Any invalid entity referenced by the search query, will be ignored.
+     *
+     * <p><b>Note:</b> The search may return fewer results when messages have not been accessed for a long time.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>You are missing the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent, or the search is filtered on a single channel which you don't have access to</li>
+     * </ul>
+     *
+     * <h4>Example - Finding {@code cat.png} attachments sent by users:</h4>
+     * {@snippet lang=java:
+     * guild.searchMessages()
+     *      .attachmentFilenames("cat.png")
+     *      // You can import AuthorType for better readability
+     *      .includeAuthorTypes(MessageSearchAction.AuthorType.USER)
+     *      .queue(response -> {
+     *          if (response.isNotReady()) {
+     *              var notReady = response.asNotReady();
+     *              int retryAfter = notReady.getRetryAfter();
+     *              // Reply
+     *              return;
+     *          }
+     *
+     *          var results = response.asResults();
+     *          var messages = results.getMessages();
+     *          // Handle messages
+     *      });
+     * }
+     *
+     * @throws InsufficientPermissionException
+     *         If the {@linkplain #getSelfMember() current member} does not have the {@link Permission#MESSAGE_HISTORY MESSAGE_HISTORY} permission
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link MessageSearchAction}, which, when completed, returns a {@link net.dv8tion.jda.api.entities.messages.MessageSearchResponse MessageSearchResponse}
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageSearchAction searchMessages();
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}

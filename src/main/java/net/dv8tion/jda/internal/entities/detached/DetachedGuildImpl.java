@@ -325,6 +325,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin {
         throw detachedException();
     }
 
+    @Nonnull
+    @Override
+    public MessageSearchAction searchMessages() {
+        throw detachedException();
+    }
+
     @Override
     public TextChannel getCommunityUpdatesChannel() {
         throw detachedException();
