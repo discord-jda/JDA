@@ -49,7 +49,7 @@ public class FileDisplayImpl extends AbstractComponentImpl
         this(
                 data.getInt("id", -1),
                 data.getObject("file").getString("url"),
-                new ResolvedMediaImpl(data.getObject("file")),
+                data.getObject("file").isNull("proxy_url") ? null : new ResolvedMediaImpl(data.getObject("file")),
                 data.getBoolean("spoiler", false));
     }
 

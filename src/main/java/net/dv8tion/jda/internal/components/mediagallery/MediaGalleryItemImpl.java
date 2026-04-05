@@ -45,7 +45,7 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
         this(
                 obj.getObject("media").getString("url"),
                 obj.getString("description", null),
-                new ResolvedMediaImpl(obj.getObject("media")),
+                obj.getObject("media").isNull("proxy_url") ? null : new ResolvedMediaImpl(obj.getObject("media")),
                 obj.getBoolean("spoiler", false));
     }
 
