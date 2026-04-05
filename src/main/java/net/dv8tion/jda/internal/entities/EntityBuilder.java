@@ -148,6 +148,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 .setGlobalName(self.getString("global_name", null))
                 .setDiscriminator(Short.parseShort(self.getString("discriminator", "0")))
                 .setAvatarId(self.getString("avatar", null))
+                .setCollectibles(CollectiblesImpl.EMPTY)
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
 
@@ -552,6 +553,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     .setGlobalName(user.getString("global_name", null))
                     .setDiscriminator(Short.parseShort(user.getString("discriminator", "0")))
                     .setAvatarId(user.getString("avatar", null))
+                    .setCollectibles(CollectiblesImpl.extractFrom(user))
                     .setBot(user.getBoolean("bot"))
                     .setSystem(user.getBoolean("system"))
                     .setFlags(user.getInt("public_flags", 0))
@@ -574,6 +576,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
         short newDiscriminator = Short.parseShort(user.getString("discriminator", "0"));
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
+        Collectibles oldCollectibles = userObj.getCollectibles();
+        Collectibles newCollectibles = CollectiblesImpl.extractFrom(user);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
         User.PrimaryGuild oldPrimaryGuild = userObj.getPrimaryGuild();
@@ -609,6 +613,13 @@ public class EntityBuilder extends AbstractEntityBuilder {
             jda.handleEvent(new UserUpdateAvatarEvent(
                     jda, responseNumber,
                     userObj, oldAvatar));
+        }
+
+        if (!Objects.equals(oldCollectibles, newCollectibles)) {
+            userObj.setCollectibles(newCollectibles);
+            jda.handleEvent(new UserUpdateCollectiblesEvent(
+                    jda, responseNumber,
+                    userObj, oldCollectibles));
         }
 
         if (oldFlags != newFlags) {
@@ -785,6 +796,15 @@ public class EntityBuilder extends AbstractEntityBuilder {
             if (!Objects.equals(oldAvatarId, newAvatarId)) {
                 member.setAvatarId(newAvatarId);
                 getJDA().handleEvent(new GuildMemberUpdateAvatarEvent(getJDA(), responseNumber, member, oldAvatarId));
+            }
+        }
+        if (content.hasKey("collectibles")) {
+            Collectibles oldCollectibles = member.getCollectibles();
+            Collectibles newCollectibles = CollectiblesImpl.extractFrom(content);
+            if (!Objects.equals(oldCollectibles, newCollectibles)) {
+                member.setCollectibles(newCollectibles);
+                getJDA().handleEvent(new GuildMemberUpdateCollectiblesEvent(
+                        getJDA(), responseNumber, member, oldCollectibles));
             }
         }
         if (content.hasKey("premium_since")) {
