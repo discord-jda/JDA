@@ -505,6 +505,8 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
          *             <li>If there is more than {@value #OPTIONS_MAX_AMOUNT} options</li>
          *             <li>If the minimum value range is greater than the maximum value range</li>
          *             <li>If the minimum value range is 0 and is also required</li>
+         *             <li>If there are default values, and there are less than there is min values allowed</li>
+         *             <li>If there are default values, and there are more than there is max values allowed</li>
          *         </ul>
          *
          * @return The new {@link CheckboxGroup}
@@ -518,6 +520,17 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
                 throw new IllegalStateException(
                         "Cannot build a checkbox group with more than " + OPTIONS_MAX_AMOUNT + " options");
             }
+            long defaultOptionsCount = countDefaultOptions();
+            if (defaultOptionsCount > 0) {
+                if (minValues != -1 && defaultOptionsCount < minValues) {
+                    throw new IllegalStateException(String.format(
+                            "Cannot have less than %d default values, as required by the min value range", minValues));
+                }
+                if (maxValues != -1 && defaultOptionsCount > maxValues) {
+                    throw new IllegalStateException(String.format(
+                            "Cannot have more than %d default values, as required by the max value range", maxValues));
+                }
+            }
             if ((minValues != -1 && maxValues != -1) && minValues > maxValues) {
                 throw new IllegalStateException(
                         Helpers.format("Min values (%d) cannot be greater than max values (%d)", minValues, maxValues));
@@ -530,6 +543,10 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
             return new CheckboxGroupImpl(uniqueId, customId, options, min, max, required);
+        }
+
+        private long countDefaultOptions() {
+            return options.stream().filter(CheckboxGroupOption::isDefault).count();
         }
     }
 }
