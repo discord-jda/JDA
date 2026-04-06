@@ -532,6 +532,11 @@ public class EmbedBuilder {
      * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
+     * <p><b>Note that the uploaded attachment will not be accessible in the resulting {@linkplain net.dv8tion.jda.api.entities.Message#getAttachments() message's attachments}.</b>
+     * <br>If you later edit with new attachments, Discord will consider the previous embed's attachments to be deleted.
+     * You can work around that by keeping the original message's data ({@link net.dv8tion.jda.api.utils.messages.MessageCreateData MessageCreateData} / {@link net.dv8tion.jda.api.utils.messages.MessageEditData MessageEditData}),
+     * and edit the message with this data, plus the new content.
+     *
      * <p><u>Example</u>
      * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
@@ -574,6 +579,11 @@ public class EmbedBuilder {
      * <br>When uploading an <u>image</u>
      * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><b>Note that the uploaded attachment will not be accessible in the resulting {@linkplain net.dv8tion.jda.api.entities.Message#getAttachments() message's attachments}.</b>
+     * <br>If you later edit with new attachments, Discord will consider the previous embed's attachments to be deleted.
+     * You can work around that by keeping the original message's data ({@link net.dv8tion.jda.api.utils.messages.MessageCreateData MessageCreateData} / {@link net.dv8tion.jda.api.utils.messages.MessageEditData MessageEditData}),
+     * and edit the message with this data, plus the new content.
      *
      * <p><u>Example</u>
      * {@snippet lang="java":
@@ -670,6 +680,11 @@ public class EmbedBuilder {
      * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
+     * <p><b>Note that the uploaded attachment will not be accessible in the resulting {@linkplain net.dv8tion.jda.api.entities.Message#getAttachments() message's attachments}.</b>
+     * <br>If you later edit with new attachments, Discord will consider the previous embed's attachments to be deleted.
+     * You can work around that by keeping the original message's data ({@link net.dv8tion.jda.api.utils.messages.MessageCreateData MessageCreateData} / {@link net.dv8tion.jda.api.utils.messages.MessageEditData MessageEditData}),
+     * and edit the message with this data, plus the new content.
+     *
      * <p><u>Example</u>
      * {@snippet lang="java":
      * MessageChannel channel; // = reference of a MessageChannel
@@ -744,6 +759,11 @@ public class EmbedBuilder {
      * <br>When uploading an <u>image</u>
      * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><b>Note that the uploaded attachment will not be accessible in the resulting {@linkplain net.dv8tion.jda.api.entities.Message#getAttachments() message's attachments}.</b>
+     * <br>If you later edit with new attachments, Discord will consider the previous embed's attachments to be deleted.
+     * You can work around that by keeping the original message's data ({@link net.dv8tion.jda.api.utils.messages.MessageCreateData MessageCreateData} / {@link net.dv8tion.jda.api.utils.messages.MessageEditData MessageEditData}),
+     * and edit the message with this data, plus the new content.
      *
      * <p><u>Example</u>
      * {@snippet lang="java":
