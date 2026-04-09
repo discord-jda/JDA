@@ -17,11 +17,16 @@
 package net.dv8tion.jda.internal.components;
 
 import net.dv8tion.jda.api.components.ResolvedMedia;
+import net.dv8tion.jda.api.entities.Placeholder;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.PlaceholderImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +37,8 @@ public class ResolvedMediaImpl implements ResolvedMedia {
     private final String proxyUrl;
     private final int width, height;
     private final String contentType;
+    private final Placeholder placeholder;
+    private final int flags;
 
     public ResolvedMediaImpl(DataObject data) {
         this(
@@ -40,17 +47,28 @@ public class ResolvedMediaImpl implements ResolvedMedia {
                 data.getString("proxy_url"),
                 data.getInt("width", 0),
                 data.getInt("height", 0),
-                data.getString("content_type", null));
+                data.getString("content_type", null),
+                data.getInt("flags", 0),
+                PlaceholderImpl.tryFromContainer(data));
     }
 
     public ResolvedMediaImpl(
-            String attachmentId, String url, String proxyUrl, int width, int height, String contentType) {
+            String attachmentId,
+            String url,
+            String proxyUrl,
+            int width,
+            int height,
+            String contentType,
+            int flags,
+            Placeholder placeholder) {
         this.attachmentId = attachmentId;
         this.url = url;
         this.proxyUrl = proxyUrl;
         this.width = width;
         this.height = height;
         this.contentType = contentType;
+        this.flags = flags;
+        this.placeholder = placeholder;
     }
 
     @Nullable
@@ -91,6 +109,24 @@ public class ResolvedMediaImpl implements ResolvedMedia {
     @Override
     public String getContentType() {
         return contentType;
+    }
+
+    @Nullable
+    @Override
+    public Placeholder getPlaceholder() {
+        return placeholder;
+    }
+
+    @Override
+    public long getFlagsRaw() {
+        return flags;
+    }
+
+    @Nonnull
+    @Override
+    @Unmodifiable
+    public Set<ResolvedMediaFlag> getFlags() {
+        return Collections.unmodifiableSet(ResolvedMediaFlag.fromBitField(flags));
     }
 
     @Override

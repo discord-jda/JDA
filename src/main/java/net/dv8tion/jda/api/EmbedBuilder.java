@@ -183,7 +183,8 @@ public class EmbedBuilder {
                 null,
                 footer,
                 image,
-                new ArrayList<>(fields));
+                new ArrayList<>(fields),
+                0);
     }
 
     /**
@@ -560,7 +561,7 @@ public class EmbedBuilder {
             this.thumbnail = null;
         } else {
             urlCheck(url);
-            this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0);
+            this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0, null, null, null, 0);
         }
         return this;
     }
@@ -605,7 +606,7 @@ public class EmbedBuilder {
             this.image = null;
         } else {
             urlCheck(url);
-            this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
+            this.image = new MessageEmbed.ImageInfo(url, null, 0, 0, null, null, null, 0);
         }
         return this;
     }

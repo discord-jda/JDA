@@ -1955,6 +1955,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 ephemeral,
                 waveform,
                 duration,
+                PlaceholderImpl.tryFromContainer(jsonObject),
                 getJDA());
     }
 
@@ -1980,7 +1981,11 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getString("url", null),
                     obj.getString("proxy_url", null),
                     obj.getInt("width", -1),
-                    obj.getInt("height", -1));
+                    obj.getInt("height", -1),
+                    obj.getString("description", null),
+                    obj.getString("content_type", null),
+                    PlaceholderImpl.tryFromContainer(obj),
+                    obj.getInt("flags", 0));
         }
 
         Provider provider;
@@ -2012,7 +2017,11 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getString("url", null),
                     obj.getString("proxy_url", null),
                     obj.getInt("width", -1),
-                    obj.getInt("height", -1));
+                    obj.getInt("height", -1),
+                    obj.getString("description", null),
+                    obj.getString("content_type", null),
+                    PlaceholderImpl.tryFromContainer(obj),
+                    obj.getInt("flags", 0));
         }
 
         Footer footer;
@@ -2035,7 +2044,11 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getString("url", null),
                     obj.getString("proxy_url", null),
                     obj.getInt("width", -1),
-                    obj.getInt("height", -1));
+                    obj.getInt("height", -1),
+                    obj.getString("description", null),
+                    obj.getString("content_type", null),
+                    PlaceholderImpl.tryFromContainer(obj),
+                    obj.getInt("flags", 0));
         }
 
         List<Field> fields = map(
@@ -2043,6 +2056,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 "fields",
                 (obj) -> new Field(
                         obj.getString("name", null), obj.getString("value", null), obj.getBoolean("inline"), false));
+
+        int flags = content.getInt("flags", 0);
 
         return createMessageEmbed(
                 url,
@@ -2057,7 +2072,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 video,
                 footer,
                 image,
-                fields);
+                fields,
+                flags);
     }
 
     public static MessageEmbed createMessageEmbed(
@@ -2073,7 +2089,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
             VideoInfo videoInfo,
             Footer footer,
             ImageInfo image,
-            List<Field> fields) {
+            List<Field> fields,
+            int flags) {
         return new MessageEmbed(
                 url,
                 title,
@@ -2087,7 +2104,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 videoInfo,
                 footer,
                 image,
-                fields);
+                fields,
+                flags);
     }
 
     public StickerItem createStickerItem(DataObject content) {
