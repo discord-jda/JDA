@@ -23,15 +23,16 @@ import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -125,6 +126,7 @@ public class MessageEmbed implements SerializableData {
     protected final Footer footer;
     protected final ImageInfo image;
     protected final List<Field> fields;
+    protected final int flags;
 
     protected volatile int length = -1;
     protected volatile DataObject json = null;
@@ -142,7 +144,8 @@ public class MessageEmbed implements SerializableData {
             VideoInfo videoInfo,
             Footer footer,
             ImageInfo image,
-            List<Field> fields) {
+            List<Field> fields,
+            int flags) {
         this.url = url;
         this.title = title;
         this.description = description;
@@ -157,6 +160,7 @@ public class MessageEmbed implements SerializableData {
         this.image = image;
         this.fields =
                 fields != null && !fields.isEmpty() ? Collections.unmodifiableList(fields) : Collections.emptyList();
+        this.flags = flags;
     }
 
     /**
@@ -391,6 +395,30 @@ public class MessageEmbed implements SerializableData {
 
         int length = getLength();
         return length <= EMBED_MAX_LENGTH_BOT;
+    }
+
+    /**
+     * Returns the raw embed flags of this embed.
+     *
+     * @return The raw embed flags
+     *
+     * @see    #getFlags()
+     */
+    public long getFlagsRaw() {
+        return flags;
+    }
+
+    /**
+     * Returns an unmodifiable set of all {@link MessageEmbedFlag MessageEmbedFlags} present for this embed.
+     *
+     * @return Unmodifiable set of present {@link MessageEmbedFlag MessageEmbedFlags}
+     *
+     * @see    MessageEmbedFlag
+     */
+    @Nonnull
+    @Unmodifiable
+    public Set<MessageEmbedFlag> getFlags() {
+        return Collections.unmodifiableSet(MessageEmbedFlag.fromBitField(flags));
     }
 
     @Override
@@ -1124,6 +1152,65 @@ public class MessageEmbed implements SerializableData {
         @Override
         public int hashCode() {
             return Objects.hash(name, value, inline);
+        }
+    }
+
+    /**
+     * Known embed flags.
+     */
+    public enum MessageEmbedFlag {
+        IS_CONTENT_INVENTORY_ENTRY(5);
+
+        private final int value;
+
+        MessageEmbedFlag(int offset) {
+            this.value = 1 << offset;
+        }
+
+        /**
+         * Returns the value of the flag as represented in the bitfield. It is always a power of 2. (single bit)
+         *
+         * @return Non-zero bit value of the field
+         */
+        public int getValue() {
+            return value;
+        }
+
+        /**
+         * Given a bitfield, this function extracts all enum values according to their bit values and returns
+         * a set containing all matching embed flags.
+         *
+         * @param  bitfield
+         *         Non-negative integer representing a bitfield of embed flags
+         *
+         * @return Set of embed flags found in the bitfield
+         */
+        @Nonnull
+        public static EnumSet<MessageEmbedFlag> fromBitField(int bitfield) {
+            return Arrays.stream(MessageEmbedFlag.values())
+                    .filter(e -> (e.value & bitfield) > 0)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(MessageEmbedFlag.class)));
+        }
+
+        /**
+         * Converts a collection of embed flags back to the integer representing the bitfield.
+         * This is the reverse operation of {@link #fromBitField(int)}.
+         *
+         * @param  flags
+         *         A non-null collection of embed flags
+         *
+         * @throws IllegalArgumentException
+         *         If the provided collection is {@code null}
+         *
+         * @return Integer value of the bitfield representing the given embed flags
+         */
+        public static int toBitField(@Nonnull Collection<MessageEmbedFlag> flags) {
+            Checks.notNull(flags, "Flags");
+            int rawFlags = 0;
+            for (MessageEmbedFlag flag : flags) {
+                rawFlags |= flag.value;
+            }
+            return rawFlags;
         }
     }
 }

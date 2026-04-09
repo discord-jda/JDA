@@ -2047,6 +2047,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 (obj) -> new Field(
                         obj.getString("name", null), obj.getString("value", null), obj.getBoolean("inline"), false));
 
+        int flags = content.getInt("flags", 0);
+
         return createMessageEmbed(
                 url,
                 title,
@@ -2060,7 +2062,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 video,
                 footer,
                 image,
-                fields);
+                fields,
+                flags);
     }
 
     public static MessageEmbed createMessageEmbed(
@@ -2076,7 +2079,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
             VideoInfo videoInfo,
             Footer footer,
             ImageInfo image,
-            List<Field> fields) {
+            List<Field> fields,
+            int flags) {
         return new MessageEmbed(
                 url,
                 title,
@@ -2090,7 +2094,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 videoInfo,
                 footer,
                 image,
-                fields);
+                fields,
+                flags);
     }
 
     public StickerItem createStickerItem(DataObject content) {

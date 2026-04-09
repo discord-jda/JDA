@@ -183,7 +183,8 @@ public class EmbedBuilder {
                 null,
                 footer,
                 image,
-                new ArrayList<>(fields));
+                new ArrayList<>(fields),
+                0);
     }
 
     /**
