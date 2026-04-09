@@ -560,12 +560,28 @@ public class MessageEmbed implements SerializableData {
         protected final String proxyUrl;
         protected final int width;
         protected final int height;
+        protected final String description;
+        protected final String contentType;
+        protected final Placeholder placeholder;
+        protected final int flags;
 
-        public Thumbnail(String url, String proxyUrl, int width, int height) {
+        public Thumbnail(
+                String url,
+                String proxyUrl,
+                int width,
+                int height,
+                String description,
+                String contentType,
+                Placeholder placeholder,
+                int flags) {
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
+            this.description = description;
+            this.contentType = contentType;
+            this.placeholder = placeholder;
+            this.flags = flags;
         }
 
         /**
@@ -618,6 +634,65 @@ public class MessageEmbed implements SerializableData {
          */
         public int getHeight() {
             return height;
+        }
+
+        /**
+         * The description of the thumbnail (alt text), or {@code null} if none is set.
+         *
+         * @return Description of the thumbnail, or {@code null}
+         */
+        @Nullable
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * The <a href="https://en.wikipedia.org/wiki/Media_type" target="_blank">media type</a>,
+         * if available, or {@code null}.
+         *
+         * <p>This may be absent if the media failed to load.
+         *
+         * @return The media type, or {@code null}
+         */
+        @Nullable
+        public String getContentType() {
+            return contentType;
+        }
+
+        /**
+         * The placeholder of the thumbnail, or {@code null}.
+         *
+         * @return The placeholder or {@code null}
+         *
+         * @see    Placeholder
+         */
+        @Nullable
+        public Placeholder getPlaceholder() {
+            return placeholder;
+        }
+
+        /**
+         * Returns the raw media embed flags of this thumbnail.
+         *
+         * @return The raw media flags
+         *
+         * @see    #getFlags()
+         */
+        public long getFlagsRaw() {
+            return flags;
+        }
+
+        /**
+         * Returns an unmodifiable set of all {@link MessageEmbedMediaFlag MessageEmbedMediaFlags} present for this thumbnail.
+         *
+         * @return Unmodifiable set of present {@link MessageEmbedMediaFlag MessageEmbedMediaFlags}
+         *
+         * @see    MessageEmbedMediaFlag
+         */
+        @Nonnull
+        @Unmodifiable
+        public Set<MessageEmbedMediaFlag> getFlags() {
+            return Collections.unmodifiableSet(MessageEmbedMediaFlag.fromBitField(flags));
         }
 
         @Override

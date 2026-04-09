@@ -1981,7 +1981,11 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getString("url", null),
                     obj.getString("proxy_url", null),
                     obj.getInt("width", -1),
-                    obj.getInt("height", -1));
+                    obj.getInt("height", -1),
+                    obj.getString("description", null),
+                    obj.getString("content_type", null),
+                    PlaceholderImpl.tryFromContainer(obj),
+                    obj.getInt("flags", 0));
         }
 
         Provider provider;

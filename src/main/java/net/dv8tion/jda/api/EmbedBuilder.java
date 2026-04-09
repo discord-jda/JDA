@@ -561,7 +561,7 @@ public class EmbedBuilder {
             this.thumbnail = null;
         } else {
             urlCheck(url);
-            this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0);
+            this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0, null, null, null, 0);
         }
         return this;
     }
