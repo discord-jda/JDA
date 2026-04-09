@@ -671,12 +671,14 @@ public class MessageEmbed implements SerializableData {
         protected final String proxyUrl;
         protected final int width;
         protected final int height;
+        protected final Placeholder placeholder;
 
-        public VideoInfo(String url, String proxyUrl, int width, int height) {
+        public VideoInfo(String url, String proxyUrl, int width, int height, Placeholder placeholder) {
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
+            this.placeholder = placeholder;
         }
 
         /**
@@ -738,6 +740,18 @@ public class MessageEmbed implements SerializableData {
             return height;
         }
 
+        /**
+         * The placeholder of the video, or {@code null}.
+         *
+         * @return The placeholder or {@code null}
+         *
+         * @see    Placeholder
+         */
+        @Nullable
+        public Placeholder getPlaceholder() {
+            return placeholder;
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof VideoInfo)) {
@@ -761,12 +775,14 @@ public class MessageEmbed implements SerializableData {
         protected final String proxyUrl;
         protected final int width;
         protected final int height;
+        protected final Placeholder placeholder;
 
-        public ImageInfo(String url, String proxyUrl, int width, int height) {
+        public ImageInfo(String url, String proxyUrl, int width, int height, Placeholder placeholder) {
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
+            this.placeholder = placeholder;
         }
 
         /**
@@ -819,6 +835,18 @@ public class MessageEmbed implements SerializableData {
          */
         public int getHeight() {
             return height;
+        }
+
+        /**
+         * The placeholder of the image, or {@code null}.
+         *
+         * @return The placeholder or {@code null}
+         *
+         * @see    Placeholder
+         */
+        @Nullable
+        public Placeholder getPlaceholder() {
+            return placeholder;
         }
 
         @Override

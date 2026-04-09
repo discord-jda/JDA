@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components;
 
+import net.dv8tion.jda.api.entities.Placeholder;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 
 import javax.annotation.Nonnull;
@@ -109,4 +110,14 @@ public interface ResolvedMedia {
      */
     @Nullable
     String getContentType();
+
+    /**
+     * The placeholder, if this is an image or video, or {@code null}.
+     *
+     * @return The placeholder or {@code null}
+     *
+     * @see    Placeholder
+     */
+    @Nullable
+    Placeholder getPlaceholder();
 }

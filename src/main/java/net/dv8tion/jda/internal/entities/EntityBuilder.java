@@ -1955,6 +1955,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 ephemeral,
                 waveform,
                 duration,
+                PlaceholderImpl.tryFromContainer(jsonObject),
                 getJDA());
     }
 
@@ -2012,7 +2013,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getString("url", null),
                     obj.getString("proxy_url", null),
                     obj.getInt("width", -1),
-                    obj.getInt("height", -1));
+                    obj.getInt("height", -1),
+                    PlaceholderImpl.tryFromContainer(obj));
         }
 
         Footer footer;
@@ -2035,7 +2037,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getString("url", null),
                     obj.getString("proxy_url", null),
                     obj.getInt("width", -1),
-                    obj.getInt("height", -1));
+                    obj.getInt("height", -1),
+                    PlaceholderImpl.tryFromContainer(obj));
         }
 
         List<Field> fields = map(

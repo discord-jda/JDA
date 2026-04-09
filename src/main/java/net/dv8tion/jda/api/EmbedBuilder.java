@@ -605,7 +605,7 @@ public class EmbedBuilder {
             this.image = null;
         } else {
             urlCheck(url);
-            this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
+            this.image = new MessageEmbed.ImageInfo(url, null, 0, 0, null);
         }
         return this;
     }
