@@ -699,13 +699,15 @@ public class MessageEmbed implements SerializableData {
         protected final String proxyUrl;
         protected final int width;
         protected final int height;
+        protected final String description;
         protected final Placeholder placeholder;
 
-        public VideoInfo(String url, String proxyUrl, int width, int height, Placeholder placeholder) {
+        public VideoInfo(String url, String proxyUrl, int width, int height, String description, Placeholder placeholder) {
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
+            this.description = description;
             this.placeholder = placeholder;
         }
 
@@ -769,6 +771,16 @@ public class MessageEmbed implements SerializableData {
         }
 
         /**
+         * The description of the video (alt text), or {@code null} if none is set.
+         *
+         * @return Description of the video, or {@code null}
+         */
+        @Nullable
+        public String getDescription() {
+            return description;
+        }
+
+        /**
          * The placeholder of the video, or {@code null}.
          *
          * @return The placeholder or {@code null}
@@ -803,13 +815,15 @@ public class MessageEmbed implements SerializableData {
         protected final String proxyUrl;
         protected final int width;
         protected final int height;
+        protected final String description;
         protected final Placeholder placeholder;
 
-        public ImageInfo(String url, String proxyUrl, int width, int height, Placeholder placeholder) {
+        public ImageInfo(String url, String proxyUrl, int width, int height, String description, Placeholder placeholder) {
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
+            this.description = description;
             this.placeholder = placeholder;
         }
 
@@ -863,6 +877,16 @@ public class MessageEmbed implements SerializableData {
          */
         public int getHeight() {
             return height;
+        }
+
+        /**
+         * The description of the image (alt text), or {@code null} if none is set.
+         *
+         * @return Description of the image, or {@code null}
+         */
+        @Nullable
+        public String getDescription() {
+            return description;
         }
 
         /**

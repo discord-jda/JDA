@@ -2014,6 +2014,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getString("proxy_url", null),
                     obj.getInt("width", -1),
                     obj.getInt("height", -1),
+                    obj.getString("description", null),
                     PlaceholderImpl.tryFromContainer(obj));
         }
 
@@ -2038,6 +2039,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getString("proxy_url", null),
                     obj.getInt("width", -1),
                     obj.getInt("height", -1),
+                    obj.getString("description", null),
                     PlaceholderImpl.tryFromContainer(obj));
         }
 
