@@ -700,6 +700,7 @@ public class MessageEmbed implements SerializableData {
         protected final int width;
         protected final int height;
         protected final String description;
+        protected final String contentType;
         protected final Placeholder placeholder;
         protected final int flags;
 
@@ -709,6 +710,7 @@ public class MessageEmbed implements SerializableData {
                 int width,
                 int height,
                 String description,
+                String contentType,
                 Placeholder placeholder,
                 int flags) {
             this.url = url;
@@ -716,6 +718,7 @@ public class MessageEmbed implements SerializableData {
             this.width = width;
             this.height = height;
             this.description = description;
+            this.contentType = contentType;
             this.placeholder = placeholder;
             this.flags = flags;
         }
@@ -790,6 +793,19 @@ public class MessageEmbed implements SerializableData {
         }
 
         /**
+         * The <a href="https://en.wikipedia.org/wiki/Media_type" target="_blank">media type</a>,
+         * if available, or {@code null}.
+         *
+         * <p>This may be absent if the media failed to load.
+         *
+         * @return The media type, or {@code null}
+         */
+        @Nullable
+        public String getContentType() {
+            return contentType;
+        }
+
+        /**
          * The placeholder of the video, or {@code null}.
          *
          * @return The placeholder or {@code null}
@@ -849,6 +865,7 @@ public class MessageEmbed implements SerializableData {
         protected final int width;
         protected final int height;
         protected final String description;
+        protected final String contentType;
         protected final Placeholder placeholder;
         protected final int flags;
 
@@ -858,6 +875,7 @@ public class MessageEmbed implements SerializableData {
                 int width,
                 int height,
                 String description,
+                String contentType,
                 Placeholder placeholder,
                 int flags) {
             this.url = url;
@@ -865,6 +883,7 @@ public class MessageEmbed implements SerializableData {
             this.width = width;
             this.height = height;
             this.description = description;
+            this.contentType = contentType;
             this.placeholder = placeholder;
             this.flags = flags;
         }
@@ -929,6 +948,19 @@ public class MessageEmbed implements SerializableData {
         @Nullable
         public String getDescription() {
             return description;
+        }
+
+        /**
+         * The <a href="https://en.wikipedia.org/wiki/Media_type" target="_blank">media type</a>,
+         * if available, or {@code null}.
+         *
+         * <p>This may be absent if the media failed to load.
+         *
+         * @return The media type, or {@code null}
+         */
+        @Nullable
+        public String getContentType() {
+            return contentType;
         }
 
         /**

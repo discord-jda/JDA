@@ -2015,6 +2015,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getInt("width", -1),
                     obj.getInt("height", -1),
                     obj.getString("description", null),
+                    obj.getString("content_type", null),
                     PlaceholderImpl.tryFromContainer(obj),
                     obj.getInt("flags", 0));
         }
@@ -2041,6 +2042,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getInt("width", -1),
                     obj.getInt("height", -1),
                     obj.getString("description", null),
+                    obj.getString("content_type", null),
                     PlaceholderImpl.tryFromContainer(obj),
                     obj.getInt("flags", 0));
         }
