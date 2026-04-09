@@ -701,14 +701,23 @@ public class MessageEmbed implements SerializableData {
         protected final int height;
         protected final String description;
         protected final Placeholder placeholder;
+        protected final int flags;
 
-        public VideoInfo(String url, String proxyUrl, int width, int height, String description, Placeholder placeholder) {
+        public VideoInfo(
+                String url,
+                String proxyUrl,
+                int width,
+                int height,
+                String description,
+                Placeholder placeholder,
+                int flags) {
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
             this.description = description;
             this.placeholder = placeholder;
+            this.flags = flags;
         }
 
         /**
@@ -792,6 +801,30 @@ public class MessageEmbed implements SerializableData {
             return placeholder;
         }
 
+        /**
+         * Returns the raw media embed flags of this video.
+         *
+         * @return The raw media flags
+         *
+         * @see    #getFlags()
+         */
+        public long getFlagsRaw() {
+            return flags;
+        }
+
+        /**
+         * Returns an unmodifiable set of all {@link MessageEmbedMediaFlag MessageEmbedMediaFlags} present for this video.
+         *
+         * @return Unmodifiable set of present {@link MessageEmbedMediaFlag MessageEmbedMediaFlags}
+         *
+         * @see    MessageEmbedMediaFlag
+         */
+        @Nonnull
+        @Unmodifiable
+        public Set<MessageEmbedMediaFlag> getFlags() {
+            return Collections.unmodifiableSet(MessageEmbedMediaFlag.fromBitField(flags));
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof VideoInfo)) {
@@ -817,14 +850,23 @@ public class MessageEmbed implements SerializableData {
         protected final int height;
         protected final String description;
         protected final Placeholder placeholder;
+        protected final int flags;
 
-        public ImageInfo(String url, String proxyUrl, int width, int height, String description, Placeholder placeholder) {
+        public ImageInfo(
+                String url,
+                String proxyUrl,
+                int width,
+                int height,
+                String description,
+                Placeholder placeholder,
+                int flags) {
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
             this.description = description;
             this.placeholder = placeholder;
+            this.flags = flags;
         }
 
         /**
@@ -899,6 +941,30 @@ public class MessageEmbed implements SerializableData {
         @Nullable
         public Placeholder getPlaceholder() {
             return placeholder;
+        }
+
+        /**
+         * Returns the raw media embed flags of this image.
+         *
+         * @return The raw media flags
+         *
+         * @see    #getFlags()
+         */
+        public long getFlagsRaw() {
+            return flags;
+        }
+
+        /**
+         * Returns an unmodifiable set of all {@link MessageEmbedMediaFlag MessageEmbedMediaFlags} present for this image.
+         *
+         * @return Unmodifiable set of present {@link MessageEmbedMediaFlag MessageEmbedMediaFlags}
+         *
+         * @see    MessageEmbedMediaFlag
+         */
+        @Nonnull
+        @Unmodifiable
+        public Set<MessageEmbedMediaFlag> getFlags() {
+            return Collections.unmodifiableSet(MessageEmbedMediaFlag.fromBitField(flags));
         }
 
         @Override
@@ -1232,6 +1298,65 @@ public class MessageEmbed implements SerializableData {
             Checks.notNull(flags, "Flags");
             int rawFlags = 0;
             for (MessageEmbedFlag flag : flags) {
+                rawFlags |= flag.value;
+            }
+            return rawFlags;
+        }
+    }
+
+    /**
+     * Known embed media flags.
+     */
+    public enum MessageEmbedMediaFlag {
+        IS_ANIMATED(5);
+
+        private final int value;
+
+        MessageEmbedMediaFlag(int offset) {
+            this.value = 1 << offset;
+        }
+
+        /**
+         * Returns the value of the flag as represented in the bitfield. It is always a power of 2. (single bit)
+         *
+         * @return Non-zero bit value of the field
+         */
+        public int getValue() {
+            return value;
+        }
+
+        /**
+         * Given a bitfield, this function extracts all enum values according to their bit values and returns
+         * a set containing all matching embed media flags.
+         *
+         * @param  bitfield
+         *         Non-negative integer representing a bitfield of embed media flags
+         *
+         * @return Set of embed media flags found in the bitfield
+         */
+        @Nonnull
+        public static EnumSet<MessageEmbedMediaFlag> fromBitField(int bitfield) {
+            return Arrays.stream(MessageEmbedMediaFlag.values())
+                    .filter(e -> (e.value & bitfield) > 0)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(MessageEmbedMediaFlag.class)));
+        }
+
+        /**
+         * Converts a collection of embed media flags back to the integer representing the bitfield.
+         * This is the reverse operation of {@link #fromBitField(int)}.
+         *
+         * @param  flags
+         *         A non-null collection of embed media flags
+         *
+         * @throws IllegalArgumentException
+         *         If the provided collection is {@code null}
+         *
+         * @return Integer value of the bitfield representing the given embed media flags
+         */
+        public static int toBitField(@Nonnull Collection<MessageEmbedMediaFlag> flags) {
+            Checks.notNull(flags, "Flags");
+            int rawFlags = 0;
+            for (MessageEmbedMediaFlag flag : flags) {
                 rawFlags |= flag.value;
             }
             return rawFlags;

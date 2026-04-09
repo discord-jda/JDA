@@ -2015,7 +2015,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getInt("width", -1),
                     obj.getInt("height", -1),
                     obj.getString("description", null),
-                    PlaceholderImpl.tryFromContainer(obj));
+                    PlaceholderImpl.tryFromContainer(obj),
+                    obj.getInt("flags", 0));
         }
 
         Footer footer;
@@ -2040,7 +2041,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     obj.getInt("width", -1),
                     obj.getInt("height", -1),
                     obj.getString("description", null),
-                    PlaceholderImpl.tryFromContainer(obj));
+                    PlaceholderImpl.tryFromContainer(obj),
+                    obj.getInt("flags", 0));
         }
 
         List<Field> fields = map(
