@@ -279,13 +279,25 @@ public enum ErrorResponse {
     CANNOT_UPDATE_POLL_MESSAGE(520003, "Cannot edit a poll message"),
     POLL_WITH_UNUSABLE_EMOJI(520004, "Cannot use an emoji included with the poll"),
     CANNOT_EXPIRE_MISSING_POLL(520006, "Cannot expire a non-poll message"),
-    CANNOT_USE_PROVISIONAL_ACCOUNTS(530000, "Application not granted permission to use provisional accounts"),
-    JWT_EXPIRED(530001, "ID token JWT is expired"),
-    JWT_ISSUER_MISMATCH(530002, "Issuer in the ID token JWT does not match configuration"),
-    JWT_AUDIENCE_MISMATCH(530003, "Audience in the ID token JWT does not match specified audience"),
-    ID_TOKEN_ISSUED_TOO_LONG_AGO(530004, "ID token provided was issued too long ago"),
-    UNIQUE_USERNAME_GENERATION_FAILED(530006, "Failed to generate a unique username (retry suggested)"),
-    CLIENT_SECRET_INVALID(530007, "Client secret is invalid"),
+    CANNOT_USE_PROVISIONAL_ACCOUNTS(
+            530000, "Your Discord application has not been granted the permission to use provisional accounts."),
+    JWT_EXPIRED(
+            530001,
+            "The ID token JWT you have provided is expired. You will need to get another one issued from the identity provider."),
+    JWT_ISSUER_MISMATCH(
+            530002, "The issuer in the ID token JWT you have provided does not match what you have configured."),
+    JWT_AUDIENCE_MISMATCH(
+            530003,
+            "The audience in the ID token JWT you have provided does not match the audience you specified in your OIDC configuration. Either update your configuration or pass in an ID token that was issued to your application."),
+    ID_TOKEN_ISSUED_TOO_LONG_AGO(
+            530004,
+            "The ID token you provided was issued too long ago. Discord will not accept ID tokens issued beyond a week ago. You will need to get a new ID token issued from the identity provider."),
+    UNIQUE_USERNAME_GENERATION_FAILED(
+            530006,
+            "Discord failed to generate a unique username within the allotted time. This is not a terminal error, and should resolve itself upon a retry."),
+    CLIENT_SECRET_INVALID(
+            530007,
+            "Your client secret is invalid. Double check what you are sending or regenerate your client secret."),
 
     SERVER_ERROR(0, "Discord encountered an internal server error! Not good!");
 
