@@ -64,9 +64,8 @@ public class VoiceChannelEffectSendHandler extends SocketHandler {
                     return new VoiceChannelEffect.Animation(animationId, type);
                 })
                 .orElse(null);
-        SoundboardSound soundboardSound = content.opt("sound_id")
-                .map(id -> guild.getSoundboardSoundById((String) id))
-                .orElse(null);
+        SoundboardSound soundboardSound =
+                content.isNull("sound_id") ? null : guild.getSoundboardSoundById(content.getUnsignedLong("sound_id"));
         double soundVolume = content.getDouble("sound_volume", 0);
 
         VoiceChannelEffect effect =
