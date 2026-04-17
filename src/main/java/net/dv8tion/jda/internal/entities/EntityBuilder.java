@@ -90,6 +90,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -1654,6 +1655,9 @@ public class EntityBuilder extends AbstractEntityBuilder {
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
         }
 
+        // Message snapshots need the message object to check intent requirements
+        AtomicReference<ReceivedMessage> ownerRef = new AtomicReference<>();
+
         long id = jsonObject.getLong("id");
         DataObject author = jsonObject.getObject("author");
         long authorId = author.getLong("id");
@@ -1785,7 +1789,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
             snapshots = map(
                     jsonObject,
                     "message_snapshots",
-                    (obj) -> createMessageSnapshot(finalReference, obj.getObject("message")));
+                    (obj) -> createMessageSnapshot(finalReference, obj.getObject("message"), ownerRef));
         }
 
         // Application command and component replies
@@ -1816,7 +1820,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
 
         int position = jsonObject.getInt("position", -1);
 
-        return new ReceivedMessage(
+        ReceivedMessage message = new ReceivedMessage(
                 id,
                 channelId,
                 guildId,
@@ -1848,6 +1852,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 interactionMetadata,
                 startedThread,
                 position);
+        ownerRef.set(message);
+        return message;
     }
 
     private static MessageActivity createMessageActivity(DataObject jsonObject) {
@@ -2197,7 +2203,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 targetMessageId);
     }
 
-    public MessageSnapshot createMessageSnapshot(MessageReference messageReference, DataObject jsonObject) {
+    public MessageSnapshot createMessageSnapshot(
+            MessageReference messageReference, DataObject jsonObject, AtomicReference<ReceivedMessage> ownerRef) {
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
 
         String content = jsonObject.getString("content", "");
@@ -2227,7 +2234,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 jsonObject.getArray("mentions"),
                 jsonObject.optArray("mention_roles").orElseGet(DataArray::empty));
 
-        return new MessageSnapshot(type, mentions, editTime, content, attachments, embeds, components, stickers, flags);
+        return new MessageSnapshot(
+                type, mentions, editTime, content, attachments, embeds, components, stickers, flags, ownerRef);
     }
 
     @Nullable
