@@ -29,11 +29,11 @@ jobs:
           distribution: temurin
           java-version: 25
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
       - name: Generate documentation directory
         run: ./gradlew --build-cache --parallel javadoc
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: './build/docs/javadoc'
       - name: Deploy to GitHub Pages
