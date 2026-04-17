@@ -157,6 +157,8 @@ public class MessageSnapshot {
     /**
      * The raw content of the message, including markdown and mentions.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return The raw message content.
      */
     @Nonnull
@@ -167,6 +169,8 @@ public class MessageSnapshot {
 
     /**
      * Invite codes found in the message content.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return The invite codes
      */
@@ -192,6 +196,8 @@ public class MessageSnapshot {
     /**
      * Message attachments of the forwarded message.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return Immutable {@link List} of {@link Attachment}
      */
     @Nonnull
@@ -203,6 +209,8 @@ public class MessageSnapshot {
 
     /**
      * Message embeds of the forwarded message.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable {@link List} of {@link MessageEmbed}
      */
@@ -218,6 +226,8 @@ public class MessageSnapshot {
      *
      * <p>Buttons and other interactive components are non-functional in forwarded messages.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return Immutable {@link List} of {@link MessageTopLevelComponentUnion}
      */
     @Nonnull
@@ -229,6 +239,8 @@ public class MessageSnapshot {
 
     /**
      * A {@link MessageComponentTree} constructed from {@link #getComponents()}.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return {@link MessageComponentTree}
      */
