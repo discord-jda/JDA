@@ -240,6 +240,7 @@ public enum ErrorResponse {
     MAX_ANNOUNCEMENT_THREADS(160007, "Maximum number of active announcement threads reached"),
     REFERENCED_MESSSAGE_NOT_FOUND(160008, "Message could not be found"),
     FORWARD_CANNOT_HAVE_CONTENT(160011, "Forward messages cannot have additional content"),
+    CANNOT_FORWARD_UNREADABLE_MESSAGE(160014, "You cannot forward a message whose content you cannot read"),
     INVALID_LOTTIE_JSON(170001, "Invalid JSON for uploaded Lottie file"),
     LOTTIE_CANNOT_CONTAIN_RASTERIZED_IMAGE(
             170002, "Uploaded Lotties cannot contain rasterized images such as PNG or JPEG"),
