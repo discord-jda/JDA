@@ -211,22 +211,28 @@ public class ReceivedMessage implements Message {
             boolean isBotOwnedWebhookMessage =
                     selfUser.getApplicationIdLong() == getApplicationIdLong() && isWebhookMessage();
 
+            // Content is available if bot is author/mentioned,
+            // or message is from DMs, or is a bot webhook,
+            // or it has content we're not supposed to get
             if (!Objects.equals(selfUser, author)
                     && !mentions.getUsers().contains(selfUser)
                     && isFromGuild()
                     && !isBotOwnedWebhookMessage
                     && !hasPrivilegedContent()) {
-                didContentIntentWarning = true;
-                JDAImpl.LOG.warn(
-                        "Attempting to access message content without GatewayIntent.MESSAGE_CONTENT.\n"
-                                + "Discord now requires to explicitly enable access to this using the MESSAGE_CONTENT intent.\n"
-                                + "Useful resources to learn more:\n"
-                                + "\t- https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ\n"
-                                + "\t- https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/\n"
-                                + "\t- https://jda.wiki/using-jda/troubleshooting/#cannot-get-message-content-attempting-to-access-message-content-without-gatewayintent\n"
-                                + "Or suppress this warning if this is intentional with Message.suppressContentIntentWarning()");
+                printContentIntentWarning();
             }
         }
+    }
+
+    public static void printContentIntentWarning() {
+        didContentIntentWarning = true;
+        JDAImpl.LOG.warn("Attempting to access message content without GatewayIntent.MESSAGE_CONTENT.\n"
+                + "Discord now requires to explicitly enable access to this using the MESSAGE_CONTENT intent.\n"
+                + "Useful resources to learn more:\n"
+                + "\t- https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ\n"
+                + "\t- https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/\n"
+                + "\t- https://jda.wiki/using-jda/troubleshooting/#cannot-get-message-content-attempting-to-access-message-content-without-gatewayintent\n"
+                + "Or suppress this warning if this is intentional with Message.suppressContentIntentWarning()");
     }
 
     /**
