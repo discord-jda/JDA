@@ -95,6 +95,7 @@ public interface MessageCreateAction
      * <p>Creates a snapshot of the referenced message at the current time and sends it in this channel.
      *
      * <p>You cannot forward messages from channels you do not have access to.
+     * The message must also be readable by the bot.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
      * <ul>
@@ -102,6 +103,8 @@ public interface MessageCreateAction
      *     <br>If the provided reference cannot be resolved to a message</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
      *     <br>If additional content is sent alongside a forwarded message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_FORWARD_UNREADABLE_MESSAGE CANNOT_FORWARD_UNREADABLE_MESSAGE}
+     *     <br>If the bot is missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent</li>
      * </ul>
      *
      * @param  type
@@ -145,6 +148,7 @@ public interface MessageCreateAction
      * <p>Creates a snapshot of the referenced message at the current time and sends it in this channel.
      *
      * <p>You cannot forward messages from channels you do not have access to.
+     * The message must also be readable by the bot.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
      * <ul>
@@ -152,6 +156,8 @@ public interface MessageCreateAction
      *     <br>If the provided reference cannot be resolved to a message</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
      *     <br>If additional content is sent alongside a forwarded message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_FORWARD_UNREADABLE_MESSAGE CANNOT_FORWARD_UNREADABLE_MESSAGE}
+     *     <br>If the bot is missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent</li>
      * </ul>
      *
      * @param  type
@@ -198,6 +204,7 @@ public interface MessageCreateAction
      * <p>Creates a snapshot of the referenced message at the current time and sends it in this channel.
      *
      * <p>You cannot forward messages from channels you do not have access to.
+     * The message must also be readable by the bot.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
      * <ul>
@@ -205,6 +212,8 @@ public interface MessageCreateAction
      *     <br>If the provided reference cannot be resolved to a message</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
      *     <br>If additional content is sent alongside a forwarded message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_FORWARD_UNREADABLE_MESSAGE CANNOT_FORWARD_UNREADABLE_MESSAGE}
+     *     <br>If the bot is missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent</li>
      * </ul>
      *
      * @param  type
