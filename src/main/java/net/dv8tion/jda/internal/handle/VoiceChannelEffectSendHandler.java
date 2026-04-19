@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.SoundboardSound;
 import net.dv8tion.jda.api.entities.channel.VoiceChannelEffect;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -64,12 +63,11 @@ public class VoiceChannelEffectSendHandler extends SocketHandler {
                     return new VoiceChannelEffect.Animation(animationId, type);
                 })
                 .orElse(null);
-        SoundboardSound soundboardSound =
-                content.isNull("sound_id") ? null : guild.getSoundboardSoundById(content.getUnsignedLong("sound_id"));
+        long soundboardSoundId = content.getUnsignedLong("sound_id", 0);
         double soundVolume = content.getDouble("sound_volume", 0);
 
         VoiceChannelEffect effect =
-                new VoiceChannelEffect(channel, userId, emoji, animation, soundboardSound, soundVolume);
+                new VoiceChannelEffect(channel, userId, emoji, animation, soundboardSoundId, soundVolume);
 
         api.handleEvent(new VoiceChannelEffectSendEvent(api, responseNumber, effect));
 
