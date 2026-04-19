@@ -144,8 +144,7 @@ public class VoiceChannelEffect {
 
     /**
      * The soundboard sound sent with the effect, this is only present for guild soundboard sound effects.
-     * <br>This may be {@code null} for default sounds or uncached guild sounds, use {@link #getSoundboardSoundId()}
-     * to get the ID instead.
+     * <br>This may be {@code null} for default sounds or {@linkplain net.dv8tion.jda.api.utils.cache.CacheFlag#SOUNDBOARD_SOUNDS uncached} guild sounds, you can use {@link #getSoundboardSoundId()} in these cases.
      *
      * @return The soundboard sound sent with the effect, or {@code null}
      */
