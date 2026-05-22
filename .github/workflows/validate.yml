@@ -18,9 +18,9 @@ jobs:
           distribution: temurin
           java-version: 25
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
       - name: Validate gradle wrapper jar
-        uses: gradle/actions/wrapper-validation@v5
+        uses: gradle/actions/wrapper-validation@v6
       - name: Build and test
         run: ./gradlew --build-cache --parallel build test
       - name: Upload JUnit XML Test Report
@@ -36,7 +36,7 @@ jobs:
           name: junit-html-test-report
           path: build/reports/tests/test
       - name: Annotate Failed Tests
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@v6.4.0
         if: ${{ !cancelled() }}
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
