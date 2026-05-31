@@ -22,6 +22,7 @@ import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import okio.Okio;
 import org.slf4j.Logger;
 
@@ -39,6 +40,8 @@ import java.util.zip.ZipException;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+
+import static okhttp3.logging.HttpLoggingInterceptor.Level.BODY;
 
 public class IOUtil {
     private static final Logger log = JDALogger.getLog(IOUtil.class);
@@ -102,7 +105,14 @@ public class IOUtil {
         dispatcher.setMaxRequestsPerHost(25);
         // Allow 5 idle threads with 10 seconds timeout for each
         ConnectionPool connectionPool = new ConnectionPool(5, 10, TimeUnit.SECONDS);
-        return new OkHttpClient.Builder().connectionPool(connectionPool).dispatcher(dispatcher);
+        HttpLoggingInterceptor httpLoggingInterceptor =
+                new HttpLoggingInterceptor(JDALogger.getLog(OkHttpClient.class)::trace);
+        httpLoggingInterceptor.setLevel(BODY);
+        httpLoggingInterceptor.redactHeader("authorization");
+        return new OkHttpClient.Builder()
+                .connectionPool(connectionPool)
+                .dispatcher(dispatcher)
+                .addInterceptor(httpLoggingInterceptor);
     }
 
     /**
