@@ -23,14 +23,16 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.Message.MessageFlag;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 
 import javax.annotation.Nonnull;
@@ -56,6 +58,8 @@ public class MessageSnapshot {
 
     private List<String> invites;
 
+    private final AtomicReference<ReceivedMessage> ownerRef;
+
     public MessageSnapshot(
             MessageType type,
             Mentions mentions,
@@ -65,7 +69,8 @@ public class MessageSnapshot {
             List<MessageEmbed> embeds,
             List<MessageTopLevelComponentUnion> components,
             List<StickerItem> stickers,
-            long flags) {
+            long flags,
+            AtomicReference<ReceivedMessage> ownerRef) {
         this.type = type;
         this.mentions = mentions;
         this.editTime = editTime;
@@ -75,6 +80,30 @@ public class MessageSnapshot {
         this.components = Collections.unmodifiableList(components);
         this.stickers = Collections.unmodifiableList(stickers);
         this.flags = flags;
+        this.ownerRef = ownerRef;
+    }
+
+    private void checkIntent() {
+        ReceivedMessage message = ownerRef.get();
+        JDAImpl jda = (JDAImpl) message.getJDA();
+
+        // Checks whether access to content is limited and the message content intent is not enabled
+        if (!ReceivedMessage.didContentIntentWarning && !jda.isIntent(GatewayIntent.MESSAGE_CONTENT)) {
+            SelfUser selfUser = jda.getSelfUser();
+
+            // Content is available if bot is mentioned, or message is from DMs,
+            // or it has content we're not supposed to get
+            if (!mentions.getUsers().contains(selfUser) && message.isFromGuild() && !hasPrivilegedContent()) {
+                ReceivedMessage.printContentIntentWarning();
+            }
+        }
+    }
+
+    /**
+     * {@code true} if the message has content that depends on the MESSAGE_CONTENT intent
+     */
+    private boolean hasPrivilegedContent() {
+        return !content.isEmpty() || !embeds.isEmpty() || !attachments.isEmpty() || !components.isEmpty();
     }
 
     /**
@@ -128,15 +157,20 @@ public class MessageSnapshot {
     /**
      * The raw content of the message, including markdown and mentions.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return The raw message content.
      */
     @Nonnull
     public String getContentRaw() {
+        checkIntent();
         return content;
     }
 
     /**
      * Invite codes found in the message content.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return The invite codes
      */
@@ -162,22 +196,28 @@ public class MessageSnapshot {
     /**
      * Message attachments of the forwarded message.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return Immutable {@link List} of {@link Attachment}
      */
     @Nonnull
     @Unmodifiable
     public List<Attachment> getAttachments() {
+        checkIntent();
         return attachments;
     }
 
     /**
      * Message embeds of the forwarded message.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return Immutable {@link List} of {@link MessageEmbed}
      */
     @Nonnull
     @Unmodifiable
     public List<MessageEmbed> getEmbeds() {
+        checkIntent();
         return embeds;
     }
 
@@ -186,22 +226,27 @@ public class MessageSnapshot {
      *
      * <p>Buttons and other interactive components are non-functional in forwarded messages.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return Immutable {@link List} of {@link MessageTopLevelComponentUnion}
      */
     @Nonnull
     @Unmodifiable
     public List<MessageTopLevelComponentUnion> getComponents() {
+        checkIntent();
         return components;
     }
 
     /**
      * A {@link MessageComponentTree} constructed from {@link #getComponents()}.
      *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
      * @return {@link MessageComponentTree}
      */
     @Nonnull
     public MessageComponentTree getComponentTree() {
-        return MessageComponentTree.of(components);
+        return MessageComponentTree.of(getComponents());
     }
 
     /**
