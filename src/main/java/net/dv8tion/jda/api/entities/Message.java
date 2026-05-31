@@ -1451,6 +1451,10 @@ public interface Message extends ISnowflake, Formattable {
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
      *     <br>If this is a {@link PrivateChannel} and the currently logged in account
+     *         cannot message the recipient User</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#NO_MUTUAL_GUILDS NO_MUTUAL_GUILDS}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
