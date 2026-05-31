@@ -17,4 +17,4 @@ jobs:
           distribution: temurin
           java-version: 25
       - name: Generate and submit dependency graph
-        uses: gradle/actions/dependency-submission@v5
+        uses: gradle/actions/dependency-submission@v6
