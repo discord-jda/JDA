@@ -562,7 +562,7 @@ public class MessageEmbed implements SerializableData {
         protected final int height;
         protected final String description;
         protected final String contentType;
-        protected final Placeholder placeholder;
+        protected final ThumbHashPlaceholder placeholder;
         protected final int flags;
 
         public Thumbnail(
@@ -572,7 +572,7 @@ public class MessageEmbed implements SerializableData {
                 int height,
                 String description,
                 String contentType,
-                Placeholder placeholder,
+                ThumbHashPlaceholder placeholder,
                 int flags) {
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -664,10 +664,10 @@ public class MessageEmbed implements SerializableData {
          *
          * @return The placeholder or {@code null}
          *
-         * @see    Placeholder
+         * @see    ThumbHashPlaceholder
          */
         @Nullable
-        public Placeholder getPlaceholder() {
+        public ThumbHashPlaceholder getPlaceholder() {
             return placeholder;
         }
 
@@ -776,7 +776,7 @@ public class MessageEmbed implements SerializableData {
         protected final int height;
         protected final String description;
         protected final String contentType;
-        protected final Placeholder placeholder;
+        protected final ThumbHashPlaceholder placeholder;
         protected final int flags;
 
         public VideoInfo(
@@ -786,7 +786,7 @@ public class MessageEmbed implements SerializableData {
                 int height,
                 String description,
                 String contentType,
-                Placeholder placeholder,
+                ThumbHashPlaceholder placeholder,
                 int flags) {
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -885,10 +885,10 @@ public class MessageEmbed implements SerializableData {
          *
          * @return The placeholder or {@code null}
          *
-         * @see    Placeholder
+         * @see    ThumbHashPlaceholder
          */
         @Nullable
-        public Placeholder getPlaceholder() {
+        public ThumbHashPlaceholder getPlaceholder() {
             return placeholder;
         }
 
@@ -941,7 +941,7 @@ public class MessageEmbed implements SerializableData {
         protected final int height;
         protected final String description;
         protected final String contentType;
-        protected final Placeholder placeholder;
+        protected final ThumbHashPlaceholder placeholder;
         protected final int flags;
 
         public ImageInfo(
@@ -951,7 +951,7 @@ public class MessageEmbed implements SerializableData {
                 int height,
                 String description,
                 String contentType,
-                Placeholder placeholder,
+                ThumbHashPlaceholder placeholder,
                 int flags) {
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -1043,10 +1043,10 @@ public class MessageEmbed implements SerializableData {
          *
          * @return The placeholder or {@code null}
          *
-         * @see    Placeholder
+         * @see    ThumbHashPlaceholder
          */
         @Nullable
-        public Placeholder getPlaceholder() {
+        public ThumbHashPlaceholder getPlaceholder() {
             return placeholder;
         }
 

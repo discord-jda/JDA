@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
  *
  * @see <a href="https://evanw.github.io/thumbhash/" target="_blank">ThumbHash website</a>
  */
-public interface Placeholder {
+public interface ThumbHashPlaceholder {
     /**
      * The version of the placeholder
      *

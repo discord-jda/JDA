@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.entities.Placeholder;
+import net.dv8tion.jda.api.entities.ThumbHashPlaceholder;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.util.Base64;
@@ -24,22 +24,22 @@ import java.util.Base64;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PlaceholderImpl implements Placeholder {
+public class ThumbHashPlaceholderImpl implements ThumbHashPlaceholder {
     private final int version;
     private final String encoded;
 
-    private PlaceholderImpl(String encoded, int version) {
+    private ThumbHashPlaceholderImpl(String encoded, int version) {
         this.encoded = encoded;
         this.version = version;
     }
 
     @Nullable
-    public static Placeholder tryFromContainer(@Nonnull DataObject containingObject) {
+    public static ThumbHashPlaceholder tryFromContainer(@Nonnull DataObject containingObject) {
         if (containingObject.isNull("placeholder")) {
             return null;
         }
 
-        return new PlaceholderImpl(
+        return new ThumbHashPlaceholderImpl(
                 containingObject.getString("placeholder"), containingObject.getInt("placeholder_version"));
     }
 

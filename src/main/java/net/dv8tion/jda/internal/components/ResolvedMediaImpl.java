@@ -17,10 +17,10 @@
 package net.dv8tion.jda.internal.components;
 
 import net.dv8tion.jda.api.components.ResolvedMedia;
-import net.dv8tion.jda.api.entities.Placeholder;
+import net.dv8tion.jda.api.entities.ThumbHashPlaceholder;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.PlaceholderImpl;
+import net.dv8tion.jda.internal.entities.ThumbHashPlaceholderImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -37,7 +37,7 @@ public class ResolvedMediaImpl implements ResolvedMedia {
     private final String proxyUrl;
     private final int width, height;
     private final String contentType;
-    private final Placeholder placeholder;
+    private final ThumbHashPlaceholder placeholder;
     private final int flags;
 
     public ResolvedMediaImpl(DataObject data) {
@@ -49,7 +49,7 @@ public class ResolvedMediaImpl implements ResolvedMedia {
                 data.getInt("height", 0),
                 data.getString("content_type", null),
                 data.getInt("flags", 0),
-                PlaceholderImpl.tryFromContainer(data));
+                ThumbHashPlaceholderImpl.tryFromContainer(data));
     }
 
     public ResolvedMediaImpl(
@@ -60,7 +60,7 @@ public class ResolvedMediaImpl implements ResolvedMedia {
             int height,
             String contentType,
             int flags,
-            Placeholder placeholder) {
+            ThumbHashPlaceholder placeholder) {
         this.attachmentId = attachmentId;
         this.url = url;
         this.proxyUrl = proxyUrl;
@@ -113,7 +113,7 @@ public class ResolvedMediaImpl implements ResolvedMedia {
 
     @Nullable
     @Override
-    public Placeholder getPlaceholder() {
+    public ThumbHashPlaceholder getPlaceholder() {
         return placeholder;
     }
 

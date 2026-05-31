@@ -2725,7 +2725,7 @@ public interface Message extends ISnowflake, Formattable {
         private final boolean ephemeral;
         private final String waveform;
         private final double duration;
-        private final Placeholder placeholder;
+        private final ThumbHashPlaceholder placeholder;
 
         private final JDAImpl jda;
 
@@ -2742,7 +2742,7 @@ public interface Message extends ISnowflake, Formattable {
                 boolean ephemeral,
                 String waveform,
                 double duration,
-                Placeholder placeholder,
+                ThumbHashPlaceholder placeholder,
                 JDAImpl jda) {
             this.id = id;
             this.url = url;
@@ -2963,10 +2963,10 @@ public interface Message extends ISnowflake, Formattable {
          *
          * @return The placeholder or {@code null}
          *
-         * @see    Placeholder
+         * @see    ThumbHashPlaceholder
          */
         @Nullable
-        public Placeholder getPlaceholder() {
+        public ThumbHashPlaceholder getPlaceholder() {
             return placeholder;
         }
 

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.components;
 
-import net.dv8tion.jda.api.entities.Placeholder;
+import net.dv8tion.jda.api.entities.ThumbHashPlaceholder;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
@@ -124,10 +124,10 @@ public interface ResolvedMedia {
      *
      * @return The placeholder or {@code null}
      *
-     * @see    Placeholder
+     * @see    ThumbHashPlaceholder
      */
     @Nullable
-    Placeholder getPlaceholder();
+    ThumbHashPlaceholder getPlaceholder();
 
     /**
      * Returns the raw media flags of this media.
