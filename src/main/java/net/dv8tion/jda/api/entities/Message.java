@@ -2731,6 +2731,7 @@ public interface Message extends ISnowflake, Formattable {
         private final boolean ephemeral;
         private final String waveform;
         private final double duration;
+        private final ThumbHashPlaceholder placeholder;
 
         private final JDAImpl jda;
 
@@ -2747,6 +2748,7 @@ public interface Message extends ISnowflake, Formattable {
                 boolean ephemeral,
                 String waveform,
                 double duration,
+                ThumbHashPlaceholder placeholder,
                 JDAImpl jda) {
             this.id = id;
             this.url = url;
@@ -2760,6 +2762,7 @@ public interface Message extends ISnowflake, Formattable {
             this.ephemeral = ephemeral;
             this.waveform = waveform;
             this.duration = duration;
+            this.placeholder = placeholder;
             this.jda = jda;
         }
 
@@ -2959,6 +2962,18 @@ public interface Message extends ISnowflake, Formattable {
          */
         public boolean isSpoiler() {
             return getFileName().startsWith("SPOILER_");
+        }
+
+        /**
+         * The placeholder, if this is an image or video, or {@code null}.
+         *
+         * @return The placeholder or {@code null}
+         *
+         * @see    ThumbHashPlaceholder
+         */
+        @Nullable
+        public ThumbHashPlaceholder getPlaceholder() {
+            return placeholder;
         }
 
         @Override
