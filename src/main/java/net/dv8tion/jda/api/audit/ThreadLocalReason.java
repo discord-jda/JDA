@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  * String previousReason = ThreadLocalReason.getCurrent();
  * ThreadLocalReason.setCurrent("Hello World");
  * try {
- *     guild.ban(user, 0).queue(v -> {
+ *     guild.ban(user, 0, TimeUnit.DAYS).queue(_ -> {
  *         guild.unban(user).queue(); // also uses the reason "Hello World"
  *     });
  * } finally {
@@ -47,8 +47,8 @@ import javax.annotation.Nullable;
  *
  * <p><b>Example with closable</b>
  * {@snippet lang="java":
- * try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable("Hello World")) {
- *     guild.ban(user, 0).queue(v -> {
+ * try (var _ = ThreadLocalReason.closable("Hello World")) {
+ *     guild.ban(user, 0, TimeUnit.DAYS).queue(_ -> {
  *         guild.unban(user).queue(); // also uses the reason "Hello World"
  *     });
  * } // automatically changes reason back
@@ -121,12 +121,11 @@ public final class ThreadLocalReason {
      *
      * <p>Example:
      * {@snippet lang="java":
-     * try (ThreadLocalReason.Closable closable = new ThreadLocalReason.Closable("Massban")) { // calls setCurrent("Massban")
-     *     List<Member> mentions = event.getMessage().getMentionedMembers();
-     *     Guild guild = event.getGuild();
-     *     mentions.stream()
-     *             .map(m -> guild.ban(m, 7))
-     *             .forEach(RestAction::queue);
+     * try (var _ = ThreadLocalReason.closable("Massban")) { // calls setCurrent("Massban")
+     *     var mentionedMembers = event.getMessage().getMentions().getMembers();
+     *     var guild = event.getGuild();
+     *     // Ban all mentioned members and delete messages that are less than 7 days old
+     *     guild.ban(mentionedMembers, Duration.ofDays(7)).queue();
      * } // calls resetCurrent()
      * }
      */
