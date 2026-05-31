@@ -1762,7 +1762,7 @@ public interface Message extends ISnowflake, Formattable {
     }
 
     /**
-     * Forwards this message into the provided channel.
+     * Forwards this message into the provided channel. The message must be readable by the bot.
      *
      * <p><b>A message forward request cannot contain additional content.</b>
      *
@@ -1772,6 +1772,8 @@ public interface Message extends ISnowflake, Formattable {
      *     <br>If the provided reference cannot be resolved to a message</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
      *     <br>If additional content is sent alongside a forwarded message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_FORWARD_UNREADABLE_MESSAGE CANNOT_FORWARD_UNREADABLE_MESSAGE}
+     *     <br>If the bot is missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent</li>
      * </ul>
      *
      * @param  channel
