@@ -104,8 +104,8 @@ public class EntityBuilder extends AbstractEntityBuilder {
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
     public static final String MISSING_USER = "MISSING_USER";
     public static final String UNKNOWN_MESSAGE_TYPE = "UNKNOWN_MESSAGE_TYPE";
-    public static final ComponentDeserializer DEFAULT_COMPONENT_DESERIALIZER =
-            new ComponentDeserializer(Collections.emptyList());
+    public static final ComponentDeserializer DEFAULT_COMPONENT_DESERIALIZER = new ComponentDeserializer(
+            Collections.emptyList(), EnumSet.of(ComponentDeserializer.DeserializerFeature.REQUIRE_MEDIA_PROXY_URL));
     private static final Set<String> richGameFields;
 
     static {
