@@ -1,5 +1,6 @@
 [versions]
 jackson = "2.21.2"
+okhttp = "5.3.2"
 
 [libraries]
 archunit = "com.tngtech.archunit:archunit:1.4.1"
@@ -21,7 +22,8 @@ junit-launcher = "org.junit.platform:junit-platform-launcher:6.0.1"
 junit-launcher-java8 = "org.junit.platform:junit-platform-launcher:1.14.0"
 logback-classic = "ch.qos.logback:logback-classic:1.5.32"
 mockito = "org.mockito:mockito-core:5.23.0"
-okhttp = "com.squareup.okhttp3:okhttp-jvm:5.3.2"
+okhttp = { module = "com.squareup.okhttp3:okhttp-jvm", version.ref = "okhttp" }
+okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 openrewrite-bom = "org.openrewrite.recipe:rewrite-recipe-bom:3.27.0"
 opus = "club.minnced:opus-java:1.1.1"
 reflections = "org.reflections:reflections:0.10.2"
