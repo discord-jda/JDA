@@ -49,7 +49,7 @@ public class ThumbnailImpl extends AbstractComponentImpl
         this(
                 data.getInt("id", -1),
                 data.getObject("media").getString("url"),
-                new ResolvedMediaImpl(data.getObject("media")),
+                data.getObject("media").isNull("proxy_url") ? null : new ResolvedMediaImpl(data.getObject("media")),
                 data.getString("description", null),
                 data.getBoolean("spoiler", false));
     }
