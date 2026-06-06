@@ -625,6 +625,8 @@ public interface EntitySelectMenu extends SelectMenu {
          *         <ul>
          *             <li>If {@link #getMinValues()} is greater than {@link #getMaxValues()}</li>
          *             <li>If the minimum value range is 0 and a selection is also explicitly required</li>
+         *             <li>If there are default values, and there are less than there is min values allowed</li>
+         *             <li>If there are default values, and there are more than there is max values allowed</li>
          *         </ul>
          *
          * @return The new {@link EntitySelectMenu} instance
@@ -633,6 +635,17 @@ public interface EntitySelectMenu extends SelectMenu {
         @Override
         public EntitySelectMenu build() {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
+            int defaultOptionsCount = defaultValues.size();
+            if (defaultOptionsCount > 0) {
+                Checks.check(
+                        defaultOptionsCount >= minValues,
+                        "Cannot have less than %d default values, as required by the min value range",
+                        minValues);
+                Checks.check(
+                        defaultOptionsCount <= maxValues,
+                        "Cannot have more than %d default values, as required by the max value range",
+                        maxValues);
+            }
             if (required != null && required) {
                 Checks.check(
                         minValues > 0,
