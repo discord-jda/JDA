@@ -192,8 +192,8 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         is PropertySchema.NestedObjectProperty -> className.nestedClass("${name.pascalCase()}Property")
         is PropertySchema.ReferenceProperty -> resolveReferencedTypeName(property.`$ref`)
         is PropertySchema.ArrayProperty -> resolveArrayTypeName(className, property, name)
-        is PropertySchema.UnionProperty -> TypeName.get(Object::class.java)
-        PropertySchema.NullProperty -> TypeName.get(Object::class.java)
+        is PropertySchema.UnionProperty -> TypeName.get(Any::class.java)
+        PropertySchema.NullProperty -> TypeName.get(Any::class.java)
     }
 
     private fun resolveObjectTypeName(
@@ -205,10 +205,10 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
             ParameterizedTypeName.get(
                     ClassName.get(Map::class.java),
                     TypeName.get(String::class.java),
-                    resolvePropertyTypeName(className, property.additionalProperties, "${name}_item")
+                    resolvePropertyTypeName(className, property.additionalProperties, "${name}_item").box()
             )
         } else {
-            TypeName.get(Object::class.java)
+            TypeName.get(Any::class.java)
         }
     }
 
@@ -217,7 +217,7 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
         return when (resolved) {
             is ComponentSchema.ObjectComponentSchema -> {
                 val resolvedReferenceType = typeNameModifier(getSimpleNameFromRef(ref))
-                return ClassName.get(packageName, resolvedReferenceType)
+                ClassName.get(packageName, resolvedReferenceType)
             }
 
             is ComponentSchema.IntegerComponentSchema -> {
@@ -259,11 +259,11 @@ class ModelSourceCodeGenerator(val packageName: String, val context: ParserConte
             is PropertySchema.ArrayProperty -> resolveArrayTypeName(className, property.items, "${name}_item")
             is PropertySchema.ObjectProperty -> resolveObjectTypeName(className, property.items, "${name}_item")
             is PropertySchema.NestedObjectProperty -> resolvePropertyTypeName(className, property, "${name}_item")
-            is PropertySchema.UnionProperty -> TypeName.get(Object::class.java)
-            PropertySchema.NullProperty -> TypeName.get(Object::class.java)
+            is PropertySchema.UnionProperty -> TypeName.get(Any::class.java)
+            PropertySchema.NullProperty -> TypeName.get(Any::class.java)
         }
 
-        return ParameterizedTypeName.get(ClassName.get(List::class.java), itemType)
+        return ParameterizedTypeName.get(ClassName.get(List::class.java), itemType.box())
     }
 
     inner class FieldConfig(
