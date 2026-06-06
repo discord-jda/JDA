@@ -95,8 +95,11 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
             }
             i--;
         }
-        throw new IllegalStateException(
-                "Somehow when determining position we never found the role in the Guild's roles? wtf?");
+        throw new IllegalStateException(String.format(
+                "Could not determine position of role %d in guild %d\n"
+                        + "- Make sure you do not keep entities stored, prefer getting them by ID\n"
+                        + "- Check your bot is not processing events requiring role positions after JDA receives events deleting this role, this is typically caused when events are processed asynchronously",
+                getIdLong(), getGuild().getIdLong()));
     }
 
     @Override
