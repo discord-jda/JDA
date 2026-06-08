@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.CheckReturnValue;
@@ -37,6 +38,14 @@ public interface IInviteContainer extends GuildChannel {
      * Creates a new {@link InviteAction InviteAction} which can be used to create a
      * new {@link net.dv8tion.jda.api.entities.Invite Invite}.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>If the bot does not have the {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} permission in the target guild.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}
+     *     <br>If at least one {@linkplain InviteAction#setTargetUsers(Collection) target user} ID is invalid.</li>
+     * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE CREATE_INSTANT_INVITE} in this channel
