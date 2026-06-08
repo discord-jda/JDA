@@ -94,7 +94,6 @@ public class ButtonImpl extends AbstractComponentImpl
     public ButtonImpl checkValid() {
         Checks.notNull(style, "Style");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
 
         switch (style) {
             case PRIMARY:
@@ -122,6 +121,8 @@ public class ButtonImpl extends AbstractComponentImpl
                 Checks.check(label.isEmpty(), "Cannot set a label on premium buttons");
                 Checks.notNull(sku, "SKU");
                 break;
+            case UNKNOWN:
+                throw new IllegalArgumentException("Cannot make button with unknown style!");
         }
 
         return this;

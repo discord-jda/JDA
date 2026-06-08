@@ -734,7 +734,7 @@ class AudioWebSocket extends WebSocketAdapter implements DaveProtocolCallbacks {
             // Take bytes between SSRC and PORT and put them into a string
             // null bytes at the beginning are skipped
             // and the rest are appended to the end of the string
-            String ourIP = new String(received, 8, received.length - 10);
+            String ourIP = new String(received, 8, received.length - 10, StandardCharsets.UTF_8);
             // Removes the extra nulls attached to the end of the IP string
             ourIP = ourIP.trim();
 

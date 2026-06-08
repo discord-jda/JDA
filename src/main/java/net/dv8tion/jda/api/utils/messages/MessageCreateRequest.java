@@ -347,6 +347,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setFiles(data.getFiles());
     }
 
+    @Override
     @Nonnull
     default R applyMessage(@Nonnull Message message) {
         return MessageRequest.super

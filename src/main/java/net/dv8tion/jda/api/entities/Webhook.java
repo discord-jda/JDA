@@ -80,6 +80,7 @@ public interface Webhook extends ISnowflake, WebhookClient<Message> {
      *
      * @return The current JDA instance of this Webhook
      */
+    @Override
     @Nonnull
     JDA getJDA();
 
@@ -188,6 +189,7 @@ public interface Webhook extends ISnowflake, WebhookClient<Message> {
      *
      * @return The execute token for this Webhook
      */
+    @Override
     @Nullable
     String getToken();
 

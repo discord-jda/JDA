@@ -271,7 +271,7 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * <p>Possible ErrorResponses include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SCHEDULED_EVENT UNKNOWN_SCHEDULED_EVENT}
-     *     <br>If the the event was already deleted.</li>
+     *     <br>If the event was already deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The send request was attempted after the account lost
@@ -282,7 +282,16 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS MANAGE_EVENTS}
+     *         <ul>
+     *             <li>If the currently logged in account created the event,
+     *                 and does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+     *                 nor {@link net.dv8tion.jda.api.Permission#CREATE_SCHEDULED_EVENTS Permission.CREATE_SCHEDULED_EVENTS}
+     *             </li>
+     *             <li>
+     *                 If the currently logged in account did not create the event,
+     *                 and does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+     *             </li>
+     *         </ul>
      *
      * @return {@link AuditableRestAction}
      */
@@ -349,7 +358,16 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent> {
      * <br>You can modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+     *         <ul>
+     *             <li>If the currently logged in account created the event,
+     *                 and does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+     *                 nor {@link net.dv8tion.jda.api.Permission#CREATE_SCHEDULED_EVENTS Permission.CREATE_SCHEDULED_EVENTS}
+     *             </li>
+     *             <li>
+     *                 If the currently logged in account did not create the event,
+     *                 and does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
+     *             </li>
+     *         </ul>
      *
      * @return The ScheduledEventManager of this event
      */

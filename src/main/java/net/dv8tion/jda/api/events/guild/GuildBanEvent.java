@@ -31,6 +31,8 @@ import javax.annotation.Nonnull;
  * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MODERATION GUILD_MODERATION} intent to be enabled.
+ * <br>This additionally requires either the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS BAN_MEMBERS}
+ * or {@link net.dv8tion.jda.api.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS} permission.
  *
  * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
  */

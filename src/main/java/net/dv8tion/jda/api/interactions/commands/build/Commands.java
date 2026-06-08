@@ -44,12 +44,12 @@ public class Commands {
     /**
      * Maximum amount of global or guild user context commands
      */
-    public static final int MAX_USER_COMMANDS = 5;
+    public static final int MAX_USER_COMMANDS = 15;
 
     /**
      * Maximum amount of global or guild message context commands
      */
-    public static final int MAX_MESSAGE_COMMANDS = 5;
+    public static final int MAX_MESSAGE_COMMANDS = 15;
 
     /**
      * Create a slash command builder.

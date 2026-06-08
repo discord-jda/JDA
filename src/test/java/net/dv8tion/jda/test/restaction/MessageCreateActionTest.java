@@ -198,6 +198,7 @@ public class MessageCreateActionTest extends IntegrationTest {
         assertThatRequestFrom(action).hasBodyMatchingSnapshot().whenQueueCalled();
     }
 
+    @Override
     @Nonnull
     protected DataObject normalizeRequestBody(@Nonnull DataObject body) {
         return body.put("nonce", FIXED_NONCE);

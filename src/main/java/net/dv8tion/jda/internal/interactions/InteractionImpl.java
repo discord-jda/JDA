@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
 public class InteractionImpl implements Interaction {
     protected final long id;
     protected final long channelId;
-    protected final int type;
+    protected final int interactionType;
     protected final String token;
     protected final Guild guild;
     protected final Member member;
@@ -69,7 +69,7 @@ public class InteractionImpl implements Interaction {
                 new InteractionEntityBuilder(jda, data.getLong("channel_id"), userObj.getUnsignedLong("id"));
         this.id = data.getUnsignedLong("id");
         this.token = data.getString("token");
-        this.type = data.getInt("type");
+        this.interactionType = data.getInt("type");
         this.guild = data.optObject("guild")
                 .map(guildJson -> {
                     if (!guildJson.hasKey("preferred_locale")) {
@@ -159,7 +159,7 @@ public class InteractionImpl implements Interaction {
 
     @Override
     public int getTypeRaw() {
-        return type;
+        return interactionType;
     }
 
     @Nonnull
@@ -185,6 +185,7 @@ public class InteractionImpl implements Interaction {
         return channelId;
     }
 
+    @Override
     @Nonnull
     public DiscordLocale getUserLocale() {
         return userLocale;

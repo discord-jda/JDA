@@ -59,17 +59,17 @@ class EntityManagerTest extends IntegrationTest {
         entityBuilder.createTextChannel(guild, TestData.CHANNEL_CREATE, Constants.GUILD_ID);
 
         GuildImpl newGuild = mock(GuildImpl.class);
+        SortedChannelCacheViewImpl<GuildChannel> channelCache = new SortedChannelCacheViewImpl<>(GuildChannel.class);
         when(newGuild.getJDA()).thenReturn(jda);
-        when(newGuild.getChannelView()).thenReturn(new SortedChannelCacheViewImpl<>(GuildChannel.class));
+        when(newGuild.getChannelView()).thenReturn(channelCache);
         when(newGuild.getTextChannelById(eq(Constants.CHANNEL_ID)))
-                .then(invocation -> newGuild.getChannelView().getElementById(Constants.CHANNEL_ID));
+                .then(invocation -> channelCache.getElementById(Constants.CHANNEL_ID));
 
         TextChannel createdChannel =
                 entityBuilder.createTextChannel(newGuild, TestData.CHANNEL_CREATE, Constants.GUILD_ID);
 
-        assertThat(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID))
-                .isNotNull();
-        assertThat(createdChannel).isSameAs(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID));
+        assertThat(channelCache.getElementById(Constants.CHANNEL_ID)).isNotNull();
+        assertThat(createdChannel).isSameAs(channelCache.getElementById(Constants.CHANNEL_ID));
 
         reset(jda);
 

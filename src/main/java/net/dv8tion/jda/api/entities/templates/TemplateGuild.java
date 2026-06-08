@@ -127,7 +127,9 @@ public class TemplateGuild implements ISnowflake {
      */
     @Nullable
     public String getIconUrl() {
-        return this.iconId == null ? null : getIconUrl(iconId.startsWith("a_") ? ImageFormat.GIF : ImageFormat.PNG);
+        return this.iconId == null
+                ? null
+                : getIconUrl(iconId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
     }
 
     /**

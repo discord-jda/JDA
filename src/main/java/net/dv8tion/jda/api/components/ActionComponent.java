@@ -38,6 +38,7 @@ public interface ActionComponent extends IDisableable, ICustomId {
      *
      * @return True, if this button is disabled
      */
+    @Override
     boolean isDisabled();
 
     /**
@@ -47,6 +48,7 @@ public interface ActionComponent extends IDisableable, ICustomId {
      *
      * @return New disabled component instance
      */
+    @Override
     @Nonnull
     @CheckReturnValue
     default ActionComponent asDisabled() {
@@ -58,6 +60,7 @@ public interface ActionComponent extends IDisableable, ICustomId {
      *
      * @return New enabled component instance
      */
+    @Override
     @Nonnull
     @CheckReturnValue
     default ActionComponent asEnabled() {
@@ -77,6 +80,7 @@ public interface ActionComponent extends IDisableable, ICustomId {
      *
      * @return New enabled/disabled component instance
      */
+    @Override
     @Nonnull
     @CheckReturnValue
     ActionComponent withDisabled(boolean disabled);

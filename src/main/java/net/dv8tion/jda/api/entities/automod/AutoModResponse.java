@@ -191,6 +191,8 @@ public interface AutoModResponse extends SerializableData {
         UNKNOWN(-1, EnumSet.noneOf(AutoModTriggerType.class));
 
         private final int key;
+
+        @SuppressWarnings("ImmutableEnumChecker") // We only return copies
         private final EnumSet<AutoModTriggerType> supportedTypes;
 
         Type(int key) {

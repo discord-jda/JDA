@@ -608,6 +608,8 @@ public interface EntitySelectMenu extends SelectMenu {
                                 "SelectTarget.ROLE and SelectTarget.USER",
                                 type);
                         break;
+                    default:
+                        throw new IllegalStateException("Unexpected component type: " + componentType);
                 }
             }
 
@@ -620,7 +622,12 @@ public interface EntitySelectMenu extends SelectMenu {
          * Creates a new {@link EntitySelectMenu} instance if all requirements are satisfied.
          *
          * @throws IllegalArgumentException
-         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()}
+         *         <ul>
+         *             <li>If {@link #getMinValues()} is greater than {@link #getMaxValues()}</li>
+         *             <li>If the minimum value range is 0 and a selection is also explicitly required</li>
+         *             <li>If there are default values, and there are less than there is min values allowed</li>
+         *             <li>If there are default values, and there are more than there is max values allowed</li>
+         *         </ul>
          *
          * @return The new {@link EntitySelectMenu} instance
          */
@@ -628,6 +635,22 @@ public interface EntitySelectMenu extends SelectMenu {
         @Override
         public EntitySelectMenu build() {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
+            int defaultOptionsCount = defaultValues.size();
+            if (defaultOptionsCount > 0) {
+                Checks.check(
+                        defaultOptionsCount >= minValues,
+                        "Cannot have less than %d default values, as required by the min value range",
+                        minValues);
+                Checks.check(
+                        defaultOptionsCount <= maxValues,
+                        "Cannot have more than %d default values, as required by the max value range",
+                        maxValues);
+            }
+            if (required != null && required) {
+                Checks.check(
+                        minValues > 0,
+                        "A select menu cannot have min values set to 0 and be required at the same time");
+            }
             EnumSet<ChannelType> channelTypes =
                     componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
             List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);

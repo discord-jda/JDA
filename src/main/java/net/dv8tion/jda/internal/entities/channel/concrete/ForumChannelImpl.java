@@ -153,10 +153,12 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         return Layout.fromKey(defaultLayout);
     }
 
+    @Override
     public int getRawFlags() {
         return flags;
     }
 
+    @Override
     public int getRawSortOrder() {
         return defaultSortOrder;
     }

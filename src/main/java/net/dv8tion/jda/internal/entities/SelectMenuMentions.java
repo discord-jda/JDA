@@ -260,6 +260,8 @@ public class SelectMenuMentions implements Mentions {
                 case CHANNEL:
                     mentions.addAll(getChannels());
                     break;
+                default:
+                    break;
             }
         }
 
@@ -317,6 +319,8 @@ public class SelectMenuMentions implements Mentions {
                     if (mentionable instanceof GuildChannel && getChannels().contains(mentionable)) {
                         return true;
                     }
+                    break;
+                default:
                     break;
             }
         }

@@ -61,12 +61,9 @@ public enum SystemChannelFlag {
      */
     SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES(5);
 
-    private final int offset;
-
     private final int rawValue;
 
     SystemChannelFlag(int offset) {
-        this.offset = offset;
         this.rawValue = 0b1 << offset;
     }
 

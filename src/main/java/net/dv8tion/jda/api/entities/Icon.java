@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 
@@ -274,7 +275,7 @@ public class Icon {
         @Nonnull
         public static IconType fromExtension(@Nonnull String extension) {
             Checks.notNull(extension, "Extension Type");
-            switch (extension.toLowerCase()) {
+            switch (extension.toLowerCase(Locale.ROOT)) {
                 case "jpe":
                 case "jif":
                 case "jfif":

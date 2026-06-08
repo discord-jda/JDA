@@ -231,6 +231,7 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
+    @Override
     @Nonnull
     default SnowflakeCacheView<Category> getCategoryCache() {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getCategoryCache));
@@ -705,6 +706,7 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getPrivateChannelCache));
     }
 
+    @Override
     @Nullable
     default GuildChannel getGuildChannelById(long id) {
         GuildChannel channel;
@@ -718,6 +720,7 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
         return null;
     }
 
+    @Override
     @Nullable
     default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id) {
         Checks.notNull(type, "ChannelType");
@@ -732,11 +735,13 @@ public interface ShardManager extends IGuildChannelContainer<Channel> {
         return null;
     }
 
+    @Override
     @Nonnull
     default SnowflakeCacheView<TextChannel> getTextChannelCache() {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getTextChannelCache));
     }
 
+    @Override
     @Nonnull
     default SnowflakeCacheView<VoiceChannel> getVoiceChannelCache() {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getVoiceChannelCache));

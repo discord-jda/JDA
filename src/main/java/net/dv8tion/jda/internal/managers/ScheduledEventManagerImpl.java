@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.ScheduledEventImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.RequestBody;
@@ -31,13 +32,14 @@ import okhttp3.RequestBody;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.Locale;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager> implements ScheduledEventManager {
-    protected ScheduledEvent event;
+    protected ScheduledEventImpl event;
     protected String name, description;
     protected long channelId;
     protected String location;
@@ -46,7 +48,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     protected ScheduledEvent.Type entityType;
     protected ScheduledEvent.Status status;
 
-    public ScheduledEventManagerImpl(ScheduledEvent event) {
+    public ScheduledEventManagerImpl(ScheduledEventImpl event) {
         super(
                 event.getJDA(),
                 Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(event.getGuild().getId(), event.getId()));
@@ -56,12 +58,18 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
         }
     }
 
+    @Override
+    protected boolean checkPermissions() {
+        event.checkManagePermissions();
+        return super.checkPermissions();
+    }
+
     @Nonnull
     @Override
     public ScheduledEvent getScheduledEvent() {
         ScheduledEvent realEvent = event.getGuild().getScheduledEventById(event.getIdLong());
         if (realEvent != null) {
-            event = realEvent;
+            event = (ScheduledEventImpl) realEvent;
         }
         return event;
     }
@@ -158,6 +166,10 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     public ScheduledEventManager setStatus(@Nonnull ScheduledEvent.Status newStatus) {
         Checks.notNull(newStatus, "Status");
         switch (newStatus) {
+            case ACTIVE:
+            case CANCELED:
+            case COMPLETED:
+                break;
             case SCHEDULED:
             case UNKNOWN:
                 throw new IllegalArgumentException("Cannot change scheduled event status to " + newStatus);
@@ -183,9 +195,10 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
 
             case COMPLETED:
             case CANCELED:
+            case UNKNOWN:
                 // event is completed or canceled -> can't update status
                 throw new IllegalArgumentException("Cannot perform status update! Event is "
-                        + currentStatus.name().toLowerCase() + ".");
+                        + currentStatus.name().toLowerCase(Locale.ROOT) + ".");
         }
 
         this.status = newStatus;

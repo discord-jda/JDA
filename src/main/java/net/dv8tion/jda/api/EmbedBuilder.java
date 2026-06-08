@@ -29,7 +29,6 @@ import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -184,7 +183,8 @@ public class EmbedBuilder {
                 null,
                 footer,
                 image,
-                new LinkedList<>(fields));
+                new ArrayList<>(fields),
+                0);
     }
 
     /**
@@ -561,7 +561,7 @@ public class EmbedBuilder {
             this.thumbnail = null;
         } else {
             urlCheck(url);
-            this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0);
+            this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0, null, null, null, 0);
         }
         return this;
     }
@@ -606,7 +606,7 @@ public class EmbedBuilder {
             this.image = null;
         } else {
             urlCheck(url);
-            this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
+            this.image = new MessageEmbed.ImageInfo(url, null, 0, 0, null, null, null, 0);
         }
         return this;
     }

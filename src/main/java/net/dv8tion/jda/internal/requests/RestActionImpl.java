@@ -330,6 +330,7 @@ public class RestActionImpl<T> implements RestAction<T> {
     */
     protected static class CheckWrapper implements BooleanSupplier {
         public static final CheckWrapper EMPTY = new CheckWrapper(null, null) {
+            @Override
             public boolean getAsBoolean() {
                 return true;
             }

@@ -28,8 +28,8 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -110,7 +110,7 @@ public class ReactionPaginationActionImpl extends PaginationActionImpl<User, Rea
     protected void handleSuccess(Response response, Request<List<User>> request) {
         EntityBuilder builder = api.getEntityBuilder();
         DataArray array = response.getArray();
-        List<User> users = new LinkedList<>();
+        List<User> users = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             try {
                 User user = builder.createUser(array.getObject(i));

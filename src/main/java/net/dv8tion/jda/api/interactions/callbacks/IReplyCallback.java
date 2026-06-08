@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
@@ -480,8 +482,9 @@ public interface IReplyCallback extends IDeferrableCallback {
      * @return {@link ReplyCallbackAction}
      */
     @Nonnull
+    @FormatMethod
     @CheckReturnValue
-    default ReplyCallbackAction replyFormat(@Nonnull String format, @Nonnull Object... args) {
+    default ReplyCallbackAction replyFormat(@Nonnull @FormatString String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return reply(String.format(format, args));
     }

@@ -43,7 +43,7 @@ public class MessagePollDataTest {
         assertDurationChecks("Duration", builder::setDuration)
                 .checksNotNull()
                 .checksPositive()
-                .checksNotLonger(Duration.ofHours(7 * 24), TimeUnit.HOURS);
+                .checksNotLonger(Duration.ofDays(7), TimeUnit.HOURS);
 
         ChecksHelper.<TimeUnit>assertChecks("TimeUnit", (unit) -> builder.setDuration(1, unit))
                 .checksNotNull();

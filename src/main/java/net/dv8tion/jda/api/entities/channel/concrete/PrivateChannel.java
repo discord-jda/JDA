@@ -17,8 +17,10 @@
 package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -85,4 +87,10 @@ public interface PrivateChannel extends MessageChannel {
     @Nonnull
     @Override
     String getName();
+
+    @Override
+    @Nonnull
+    default String getJumpUrl() {
+        return Helpers.format(GuildChannel.JUMP_URL, "@me", getId());
+    }
 }

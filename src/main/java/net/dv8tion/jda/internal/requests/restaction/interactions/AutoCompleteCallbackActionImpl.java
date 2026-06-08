@@ -99,7 +99,9 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
                 case STRING:
                     // String can be any type, we just toString it
                     String valueString = choice.getAsString();
-                    Checks.inRange(valueString, 1, OptionData.MAX_CHOICE_VALUE_LENGTH, "Choice value");
+                    Checks.notLonger(valueString, OptionData.MAX_CHOICE_VALUE_LENGTH, "Choice value");
+                    break;
+                default:
                     break;
             }
         }

@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.templates.Template;
@@ -33,7 +32,6 @@ import javax.annotation.Nullable;
 
 public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements TemplateManager {
     protected final Template template;
-    protected final JDA api;
 
     protected String name;
     protected String description;
@@ -49,7 +47,6 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
                 template.getJDA(),
                 Route.Templates.MODIFY_TEMPLATE.compile(template.getGuild().getId(), template.getCode()));
         this.template = template;
-        this.api = template.getJDA();
         if (isPermissionChecksEnabled()) {
             checkPermissions();
         }

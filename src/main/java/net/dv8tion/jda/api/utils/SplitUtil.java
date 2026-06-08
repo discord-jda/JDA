@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -142,7 +142,7 @@ public class SplitUtil {
             strategies = new Strategy[] {Strategy.ANYWHERE};
         }
         int offset = 0;
-        List<String> chunks = new LinkedList<>();
+        List<String> chunks = new ArrayList<>();
 
         while (offset < input.length()) {
             String chunk = null;

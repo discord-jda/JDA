@@ -222,7 +222,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
         return (MessageCreateAction) super.deadline(timestamp);
     }
 
-    private class MessageReferenceData implements SerializableData {
+    private static class MessageReferenceData implements SerializableData {
         private final MessageReference.MessageReferenceType type;
         private final String messageId;
         private final String channelId;

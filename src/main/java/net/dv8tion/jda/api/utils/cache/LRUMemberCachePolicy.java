@@ -225,8 +225,8 @@ public class LRUMemberCachePolicy implements MemberCachePolicy {
     }
 
     private static class MemberNode {
-        public final int insertionTime;
-        public final Member member;
+        private final int insertionTime;
+        private final Member member;
 
         private MemberNode(Member member) {
             this.member = member;

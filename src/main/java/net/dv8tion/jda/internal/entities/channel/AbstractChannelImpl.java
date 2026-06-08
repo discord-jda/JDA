@@ -64,6 +64,7 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
 
     // -- Union Hooks --
 
+    @Override
     @Nonnull
     public PrivateChannel asPrivateChannel() {
         return ChannelUtil.safeChannelCast(this, PrivateChannel.class);
@@ -75,31 +76,37 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return ChannelUtil.safeChannelCast(this, GroupChannel.class);
     }
 
+    @Override
     @Nonnull
     public TextChannel asTextChannel() {
         return ChannelUtil.safeChannelCast(this, TextChannel.class);
     }
 
+    @Override
     @Nonnull
     public NewsChannel asNewsChannel() {
         return ChannelUtil.safeChannelCast(this, NewsChannel.class);
     }
 
+    @Override
     @Nonnull
     public VoiceChannel asVoiceChannel() {
         return ChannelUtil.safeChannelCast(this, VoiceChannel.class);
     }
 
+    @Override
     @Nonnull
     public StageChannel asStageChannel() {
         return ChannelUtil.safeChannelCast(this, StageChannel.class);
     }
 
+    @Override
     @Nonnull
     public ThreadChannel asThreadChannel() {
         return ChannelUtil.safeChannelCast(this, ThreadChannel.class);
     }
 
+    @Override
     @Nonnull
     public Category asCategory() {
         return ChannelUtil.safeChannelCast(this, Category.class);
@@ -117,36 +124,43 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
         return ChannelUtil.safeChannelCast(this, MediaChannel.class);
     }
 
+    @Override
     @Nonnull
     public MessageChannel asMessageChannel() {
         return ChannelUtil.safeChannelCast(this, MessageChannel.class);
     }
 
+    @Override
     @Nonnull
     public AudioChannel asAudioChannel() {
         return ChannelUtil.safeChannelCast(this, AudioChannel.class);
     }
 
+    @Override
     @Nonnull
     public IThreadContainer asThreadContainer() {
         return ChannelUtil.safeChannelCast(this, IThreadContainer.class);
     }
 
+    @Override
     @Nonnull
     public GuildChannel asGuildChannel() {
         return ChannelUtil.safeChannelCast(this, GuildChannel.class);
     }
 
+    @Override
     @Nonnull
     public GuildMessageChannel asGuildMessageChannel() {
         return ChannelUtil.safeChannelCast(this, GuildMessageChannel.class);
     }
 
+    @Override
     @Nonnull
     public StandardGuildChannel asStandardGuildChannel() {
         return ChannelUtil.safeChannelCast(this, StandardGuildChannel.class);
     }
 
+    @Override
     @Nonnull
     public StandardGuildMessageChannel asStandardGuildMessageChannel() {
         return ChannelUtil.safeChannelCast(this, StandardGuildMessageChannel.class);

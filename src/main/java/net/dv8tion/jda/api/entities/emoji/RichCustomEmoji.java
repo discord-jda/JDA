@@ -126,7 +126,7 @@ public interface RichCustomEmoji extends CustomEmoji {
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}
-     *         in this guild
+     *         nor {@link net.dv8tion.jda.api.Permission#CREATE_GUILD_EXPRESSIONS Permission.CREATE_GUILD_EXPRESSIONS} in this guild
      *
      * @return {@link RestAction} - Type: {@link User}
      *
@@ -154,7 +154,16 @@ public interface RichCustomEmoji extends CustomEmoji {
      * @throws java.lang.UnsupportedOperationException
      *         If this emoji is managed by discord ({@link #isManaged()})
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the Permission {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} is not given
+     *         <ul>
+     *             <li>If the currently logged in account created the emoji,
+     *                 and does not have {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}
+     *                 nor {@link net.dv8tion.jda.api.Permission#CREATE_GUILD_EXPRESSIONS Permission.CREATE_GUILD_EXPRESSIONS}
+     *             </li>
+     *             <li>
+     *                 If the currently logged in account did not create the emoji,
+     *                 and does not have {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}
+     *             </li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this emoji.
@@ -169,7 +178,16 @@ public interface RichCustomEmoji extends CustomEmoji {
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}
+     *         <ul>
+     *             <li>If the currently logged in account created the emoji,
+     *                 and does not have {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}
+     *                 nor {@link net.dv8tion.jda.api.Permission#CREATE_GUILD_EXPRESSIONS Permission.CREATE_GUILD_EXPRESSIONS}
+     *             </li>
+     *             <li>
+     *                 If the currently logged in account did not create the emoji,
+     *                 and does not have {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}
+     *             </li>
+     *         </ul>
      *
      * @return The CustomEmojiManager for this emoji
      */

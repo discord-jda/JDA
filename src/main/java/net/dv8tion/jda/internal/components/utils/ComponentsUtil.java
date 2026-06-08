@@ -54,9 +54,8 @@ public class ComponentsUtil {
 
         String cleanedClassName = component.getClass().getSimpleName().replace("Impl", "");
         throw new IllegalArgumentException(Helpers.format(
-                "Cannot convert " + componentCategory + " of type %s to %s!",
-                cleanedClassName,
-                toUnionClass.getSimpleName()));
+                "Cannot convert %s of type %s to %s!",
+                componentCategory, cleanedClassName, toUnionClass.getSimpleName()));
     }
 
     /**
@@ -73,9 +72,8 @@ public class ComponentsUtil {
 
         String cleanedClassName = component.getClass().getSimpleName().replace("Impl", "");
         throw new IllegalArgumentException(Helpers.format(
-                "Cannot convert " + componentCategory + " of type %s to %s!",
-                cleanedClassName,
-                toUnionClass.getSimpleName()));
+                "Cannot convert %s of type %s to %s!",
+                componentCategory, cleanedClassName, toUnionClass.getSimpleName()));
     }
 
     /**

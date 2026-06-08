@@ -32,7 +32,7 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.net.HttpURLConnection;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -84,7 +84,7 @@ public class WidgetUtil {
     public static String getWidgetBanner(@Nonnull String guildId, @Nonnull BannerType type) {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(type, "BannerType");
-        return String.format(WIDGET_PNG, guildId, type.name().toLowerCase());
+        return String.format(WIDGET_PNG, guildId, type.name().toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -133,7 +133,7 @@ public class WidgetUtil {
         Checks.notNull(theme, "WidgetTheme");
         Checks.notNegative(width, "Width");
         Checks.notNegative(height, "Height");
-        return Helpers.format(WIDGET_HTML, guildId, theme.name().toLowerCase(), width, height);
+        return Helpers.format(WIDGET_HTML, guildId, theme.name().toLowerCase(Locale.ROOT), width, height);
     }
 
     /**
@@ -195,7 +195,6 @@ public class WidgetUtil {
     public static Widget getWidget(long guildId) throws RateLimitedException {
         Checks.notNull(guildId, "GuildId");
 
-        HttpURLConnection connection;
         OkHttpClient client = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
                 .url(String.format(WIDGET_URL, guildId))

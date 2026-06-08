@@ -648,6 +648,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return The timestamp when this thread was created
      */
+    @Override
     @Nonnull
     OffsetDateTime getTimeCreated();
 

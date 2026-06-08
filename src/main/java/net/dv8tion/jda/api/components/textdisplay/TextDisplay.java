@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.components.textdisplay;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
@@ -84,7 +86,8 @@ public interface TextDisplay
      * @return The new {@link TextDisplay}
      */
     @Nonnull
-    static TextDisplay ofFormat(@Nonnull String format, @Nonnull Object... args) {
+    @FormatMethod
+    static TextDisplay ofFormat(@Nonnull @FormatString String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format string");
         Checks.notNull(args, "Format args"); // Null array elements are allowed
         return of(String.format(format, args));

@@ -38,6 +38,7 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
      *
      * @return {@link List} of {@link SelectOption#getValue()}
      */
+    @Override
     @Nonnull
     @Unmodifiable
     List<String> getValues();

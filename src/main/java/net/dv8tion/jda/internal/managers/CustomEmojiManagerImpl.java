@@ -16,10 +16,8 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -137,9 +135,7 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager> impl
 
     @Override
     protected boolean checkPermissions() {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS)) {
-            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
-        }
+        emoji.checkManagePermissions();
         return super.checkPermissions();
     }
 }

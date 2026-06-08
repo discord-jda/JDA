@@ -91,6 +91,15 @@ public interface Channel extends IMentionable, IDetachableEntity {
     @CheckReturnValue
     RestAction<Void> delete();
 
+    /**
+     * Returns the jump-to URL for this channel. Clicking this URL in the Discord client will cause the client to
+     * jump to the specified channel.
+     *
+     * @return A String representing the jump-to URL for the channel.
+     */
+    @Nonnull
+    String getJumpUrl();
+
     @Nonnull
     @Override
     default String getAsMention() {

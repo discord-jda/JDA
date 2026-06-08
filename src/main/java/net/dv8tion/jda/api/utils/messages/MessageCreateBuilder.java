@@ -273,6 +273,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
                         <= Message.MAX_CONTENT_LENGTH_COMPONENT_V2;
     }
 
+    @Override
     @Nonnull
     public MessageCreateData build() {
         if (isUsingComponentsV2()) {
@@ -352,6 +353,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         return new MessageCreateData("", Collections.emptyList(), files, components, mentions, poll, tts, messageFlags);
     }
 
+    @Override
     @Nonnull
     public MessageCreateBuilder clear() {
         super.clear();

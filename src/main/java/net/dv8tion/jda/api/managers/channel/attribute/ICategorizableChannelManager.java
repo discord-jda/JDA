@@ -80,12 +80,7 @@ public interface ICategorizableChannelManager<
     @Nonnull
     @CheckReturnValue
     default M sync() {
-        if (!(getChannel() instanceof ICategorizableChannel)) {
-            throw new IllegalStateException(
-                    "sync() requires that the channel be categorizable as it syncs the channel to the parent category.");
-        }
-
-        ICategorizableChannel categorizableChannel = (ICategorizableChannel) getChannel();
+        ICategorizableChannel categorizableChannel = getChannel();
         if (categorizableChannel.getParentCategory() == null) {
             throw new IllegalStateException("sync() requires a parent category");
         }

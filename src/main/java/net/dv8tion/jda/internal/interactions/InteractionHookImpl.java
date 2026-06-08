@@ -38,7 +38,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -50,10 +50,9 @@ import javax.annotation.Nonnull;
 public class InteractionHookImpl extends AbstractWebhookClient<Message> implements InteractionHook {
     public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
     private final DeferrableInteractionImpl interaction;
-    private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
+    private final List<TriggerRestAction<?>> readyCallbacks = new ArrayList<>();
     private final Future<?> timeoutHandle;
     private final ReentrantLock mutex = new ReentrantLock();
-    private final String token;
     private Exception exception;
     private boolean isReady;
     private boolean ephemeral;
@@ -62,7 +61,6 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     public InteractionHookImpl(@Nonnull DeferrableInteractionImpl interaction, @Nonnull JDA api) {
         super(api.getSelfUser().getApplicationIdLong(), interaction.getToken(), api);
         this.interaction = interaction;
-        this.token = interaction.getToken();
         // 10 second timeout for our failure
         this.timeoutHandle = api.getGatewayPool()
                 .schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
@@ -98,8 +96,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         MiscUtil.locked(mutex, () -> {
             if (!isReady && this.exception == null) {
                 this.exception = exception;
-                if (!readyCallbacks.isEmpty()) // only log this if we even tried any responses
-                {
+                // only log this if we even tried any responses
+                if (!readyCallbacks.isEmpty()) {
                     if (exception instanceof TimeoutException) {
                         JDALogger.getLog(InteractionHook.class)
                                 .warn(

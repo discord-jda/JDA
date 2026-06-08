@@ -52,6 +52,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl
         return this;
     }
 
+    @Override
     @Nonnull
     protected RequestBody finalizeData() {
         DataObject json = DataObject.empty();

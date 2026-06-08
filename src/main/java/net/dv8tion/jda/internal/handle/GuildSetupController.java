@@ -268,6 +268,7 @@ public class GuildSetupController {
         timeoutHandle = null;
     }
 
+    @SuppressWarnings("ReferenceEquality")
     public boolean containsMember(long userId, @Nullable GuildSetupNode excludedNode) {
         for (TLongObjectIterator<GuildSetupNode> it = setupNodes.iterator(); it.hasNext(); ) {
             it.advance();

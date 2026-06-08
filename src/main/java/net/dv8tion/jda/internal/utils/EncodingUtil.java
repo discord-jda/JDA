@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.util.stream.Collectors;
 
 public class EncodingUtil {
+    @SuppressWarnings("JdkObsolete")
     public static String encodeUTF8(String chars) {
         try {
             return URLEncoder.encode(chars, "UTF-8");

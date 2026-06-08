@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import java.util.Collection;
 
@@ -41,6 +40,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         extends GuildMessageChannel, GuildMessageChannelUnion, GuildChannelMixin<T>, MessageChannelMixin<T> {
 
     // ---- Default implementations of interface ----
+    @Override
     @Nonnull
     @CheckReturnValue
     default RestAction<Void> deleteMessagesByIds(@Nonnull Collection<String> messageIds) {
@@ -123,6 +123,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
     // ---- Default implementation of parent mixins hooks ----
 
+    @Override
     default void checkCanSendMessage() {
         checkCanAccess();
         if (getType().isThread()) {
@@ -132,41 +133,44 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         }
     }
 
+    @Override
     default void checkCanSendMessageEmbeds() {
         checkCanAccess();
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
     }
 
+    @Override
     default void checkCanSendFiles() {
         checkCanAccess();
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
+    @Override
     default void checkCanViewHistory() {
         checkCanAccess();
         checkPermission(Permission.MESSAGE_HISTORY);
     }
 
+    @Override
     default void checkCanAddReactions() {
         checkCanAccess();
         checkPermission(Permission.MESSAGE_ADD_REACTION);
         checkPermission(Permission.MESSAGE_HISTORY, "You need MESSAGE_HISTORY to add reactions to a message");
     }
 
+    @Override
     default void checkCanRemoveReactions() {
         checkCanAccess();
         checkPermission(Permission.MESSAGE_HISTORY, "You need MESSAGE_HISTORY to remove reactions from a message");
     }
 
+    @Override
     default void checkCanControlMessagePins() {
         checkCanAccess();
-        PermissionUtil.checkWithDeadline(
-                this,
-                PermissionUtil.FEB_23_2026_DEADLINE,
-                /* old */ Permission.MESSAGE_MANAGE,
-                /* new */ Permission.PIN_MESSAGES);
+        checkPermission(Permission.PIN_MESSAGES);
     }
 
+    @Override
     default boolean canDeleteOtherUsersMessages() {
         return hasPermission(Permission.MESSAGE_MANAGE);
     }
