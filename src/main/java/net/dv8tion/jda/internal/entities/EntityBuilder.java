@@ -48,6 +48,8 @@ import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.*;
+import net.dv8tion.jda.api.entities.subscription.Subscription;
+import net.dv8tion.jda.api.entities.subscription.SubscriptionStatus;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
 import net.dv8tion.jda.api.entities.templates.TemplateGuild;
@@ -2769,6 +2771,61 @@ public class EntityBuilder extends AbstractEntityBuilder {
         Object oldValue = change.isNull("old_value") ? null : change.get("old_value");
         Object newValue = change.isNull("new_value") ? null : change.get("new_value");
         return new AuditLogChange(oldValue, newValue, key);
+    }
+
+    public Subscription createSubscription(DataObject object)
+    {
+        DataArray skuIDs = object.getArray("sku_ids");
+        DataArray entitlementsIDs = object.getArray("entitlement_ids");
+        DataArray renewalSkuIDs = object.optArray("renewal_sku_ids").orElse(null);
+        OffsetDateTime canceledAt = object.getOffsetDateTime("canceled_at", null);
+
+
+        List<Long> mappedSkuIds = mapDataArrayToLongList(skuIDs);
+        List<Long> mappedEntitlementsIds = mapDataArrayToLongList(entitlementsIDs);
+        List<Long> mappedRenewalSkuIds = Optional.ofNullable(renewalSkuIDs)
+                .map(this::mapDataArrayToLongList)
+                .orElse(null);
+
+
+        return new Subscription(
+                getJDA(),
+                object.getUnsignedLong("id"),
+                object.getUnsignedLong("user_id", 0),
+                mappedSkuIds,
+                mappedEntitlementsIds,
+                mappedRenewalSkuIds,
+                object.getOffsetDateTime("current_period_start"),
+                object.getOffsetDateTime("current_period_end"),
+                canceledAt,
+                mapJsonStatusToSubscriptionStatus(object.getInt("status")),
+                object.getString("country?")
+        );
+    }
+
+    public List<Long> mapDataArrayToLongList(DataArray dataArray)
+    {
+        return IntStream.range(0, dataArray.length())
+                .mapToObj(dataArray::getLong)
+                .collect(Collectors.toList());
+    }
+
+    public SubscriptionStatus mapJsonStatusToSubscriptionStatus(int value)
+    {
+        SubscriptionStatus status;
+        switch (value)
+        {
+        case 0:
+            status = SubscriptionStatus.ACTIVE;
+            break;
+        case 1:
+            status = SubscriptionStatus.ENDING;
+            break;
+        default:
+            status = SubscriptionStatus.INACTIVE;
+            break;
+        }
+        return status;
     }
 
     public Entitlement createEntitlement(DataObject object) {
