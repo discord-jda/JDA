@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import okhttp3.Headers;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
@@ -71,6 +73,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
 
     private final Future<?> cleanupWorker;
     private final RateLimitConfig config;
+    private final Consumer<? super RateLimitEvent> eventConsumer;
+    private final RestMetricsCollector metricsCollector;
 
     private boolean isStopped, isShutdown;
 
@@ -86,6 +90,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
 
     public SequentialRestRateLimiter(@Nonnull RateLimitConfig config) {
         this.config = config;
+        this.eventConsumer = config.getEventConsumer();
+        this.metricsCollector = config.getMetricsCollector();
         this.cleanupWorker = config.getScheduler().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
     }
 
@@ -94,8 +100,43 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
         MiscUtil.locked(lock, () -> {
             Bucket bucket = getBucket(task.getRoute());
             bucket.enqueue(task);
+            emitEvent(new RateLimitEvent(
+                    RateLimitEvent.Type.REQUEST_QUEUED,
+                    task.getJDA(),
+                    task.getRoute(),
+                    bucket.bucketId,
+                    bucket.requests.size(),
+                    -1,
+                    bucket.remaining,
+                    bucket.reset,
+                    -1,
+                    false,
+                    false,
+                    null));
             runBucket(bucket);
         });
+    }
+
+    private void emitEvent(@Nonnull RateLimitEvent event) {
+        if (eventConsumer == null) {
+            if (metricsCollector == null) {
+                return;
+            }
+        }
+        if (eventConsumer != null) {
+            try {
+                eventConsumer.accept(event);
+            } catch (Exception ex) {
+                log.warn("Rate limit event consumer threw an exception", ex);
+            }
+        }
+        if (metricsCollector != null) {
+            try {
+                metricsCollector.onRateLimit(event);
+            } catch (Exception ex) {
+                log.warn("Metrics collector threw an exception for rate-limit event", ex);
+            }
+        }
     }
 
     @Override
@@ -270,7 +311,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
         return System.currentTimeMillis();
     }
 
-    private Bucket updateBucket(Route.CompiledRoute route, Response response) {
+    private Bucket updateBucket(JDA jda, Route.CompiledRoute route, Response response) {
         return MiscUtil.locked(lock, () -> {
             try {
                 Bucket bucket = getBucket(route);
@@ -333,6 +374,20 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                         }
                     }
 
+                    emitEvent(new RateLimitEvent(
+                            RateLimitEvent.Type.RATE_LIMITED,
+                            jda,
+                            route,
+                            bucket.bucketId,
+                            bucket.requests.size(),
+                            response.code(),
+                            bucket.remaining,
+                            bucket.reset,
+                            retryAfter,
+                            global,
+                            cloudflare,
+                            scope));
+
                     log.trace("Updated bucket {} to retry after {}", bucket.bucketId, bucket.reset - now);
                     return bucket;
                 }
@@ -361,6 +416,19 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                         bucket.remaining,
                         limitHeader,
                         bucket.reset - now);
+                emitEvent(new RateLimitEvent(
+                        RateLimitEvent.Type.BUCKET_UPDATED,
+                        jda,
+                        route,
+                        bucket.bucketId,
+                        bucket.requests.size(),
+                        response.code(),
+                        bucket.remaining,
+                        bucket.reset,
+                        -1,
+                        false,
+                        false,
+                        null));
                 return bucket;
             } catch (Exception e) {
                 Bucket bucket = getBucket(route);
@@ -399,6 +467,19 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             if (!moveRequest(request)) {
                 requests.addFirst(request);
             }
+            emitEvent(new RateLimitEvent(
+                    RateLimitEvent.Type.REQUEST_REQUEUED,
+                    request.getJDA(),
+                    request.getRoute(),
+                    bucketId,
+                    requests.size(),
+                    -1,
+                    remaining,
+                    reset,
+                    -1,
+                    false,
+                    false,
+                    null));
         }
 
         public long getReset() {
@@ -468,7 +549,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
             try {
                 Response response = request.execute();
                 if (response != null) {
-                    updateBucket(request.getRoute(), response);
+                    updateBucket(request.getJDA(), request.getRoute(), response);
                 }
                 if (!request.isDone()) {
                     retry(request);
@@ -501,6 +582,22 @@ public final class SequentialRestRateLimiter implements RestRateLimiter {
                                 baseRoute);
                     }
                     log.debug("Backing off {} ms for bucket {} on route {}", rateLimit, bucketId, baseRoute);
+                    Work requestForEvent = requests.peekFirst();
+                    if (requestForEvent != null) {
+                        emitEvent(new RateLimitEvent(
+                                RateLimitEvent.Type.BACKOFF,
+                                requestForEvent.getJDA(),
+                                requestForEvent.getRoute(),
+                                bucketId,
+                                requests.size(),
+                                -1,
+                                remaining,
+                                reset,
+                                rateLimit,
+                                isGlobalRateLimit(),
+                                false,
+                                null));
+                    }
                     break;
                 }
 
