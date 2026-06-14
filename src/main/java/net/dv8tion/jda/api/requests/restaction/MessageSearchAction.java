@@ -41,7 +41,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      *
      * <p><b>Note:</b> The search may return fewer results when messages have not been accessed for a long time,
      * as such, you should not rely on the length of the messages list to paginate results.
-     * Use {@link MessageSearchAction#minId(Long)} and/or {@link MessageSearchAction#maxId(Long)} instead.
+     * Use {@link #minId(long)} and/or {@link #maxId(long)} instead.
      *
      * @param  limit
      *         Max number of messages to return, between 1 and 25, or {@code null} to use the default (25)
@@ -59,7 +59,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Sets the offset of the returned messages.
      *
      * <p><b>Note:</b> You must not offset the search by the number of messages received from a previous request,
-     * to implement some pagination, you should instead specify {@link #minId(Long)} or {@link #maxId(Long)},
+     * to implement some pagination, you should instead specify {@link #minId(long)} or {@link #maxId(long)},
      * depending on the desired direction.
      *
      * @param  offset
@@ -85,16 +85,16 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p><b>Tip:</b> If you want to include the message in the results, you can decrement the ID.
      *
      * @param  minId
-     *         The minimum message ID to search from (excluded), or {@code null} to remove the min ID
+     *         The minimum message ID to search from (excluded)
      *
      * @throws IllegalArgumentException
-     *         If the provided ID not {@code null} and is negative
+     *         If the provided ID is negative
      *
      * @return This action for chaining
      */
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction minId(@Nullable Long minId);
+    MessageSearchAction minId(long minId);
 
     /**
      * Sets the ID of the message to start searching from.
@@ -129,16 +129,16 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p><b>Tip:</b> If you want to include the message in the results, you can increment the ID.
      *
      * @param  maxId
-     *         The message ID to stop at (excluded), or {@code null} to remove the max ID
+     *         The message ID to stop at (excluded)
      *
      * @throws IllegalArgumentException
-     *         If the provided ID not {@code null} and is negative
+     *         If the provided ID is negative
      *
      * @return This action for chaining
      */
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction maxId(@Nullable Long maxId);
+    MessageSearchAction maxId(long maxId);
 
     /**
      * Sets the ID of the message to end the search at.

@@ -102,13 +102,9 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
-    public MessageSearchAction minId(@Nullable Long minId) {
-        if (minId != null) {
-            Checks.notNegative(minId, "Min ID");
-            this.minId = Long.toUnsignedString(minId);
-        } else {
-            this.minId = null;
-        }
+    public MessageSearchAction minId(long minId) {
+        Checks.notNegative(minId, "Min ID");
+        this.minId = Long.toUnsignedString(minId);
         return this;
     }
 
@@ -124,13 +120,9 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
-    public MessageSearchAction maxId(@Nullable Long maxId) {
-        if (maxId != null) {
-            Checks.notNegative(maxId, "Max ID");
-            this.maxId = Long.toUnsignedString(maxId);
-        } else {
-            this.maxId = null;
-        }
+    public MessageSearchAction maxId(long maxId) {
+        Checks.notNegative(maxId, "Max ID");
+        this.maxId = Long.toUnsignedString(maxId);
         return this;
     }
 
