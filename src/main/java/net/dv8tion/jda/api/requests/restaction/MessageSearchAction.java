@@ -882,6 +882,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction embedProvider(@Nonnull String... embedProviders) {
+        Checks.noneNull(embedProviders, "Embed providers");
         return embedProvider(Arrays.asList(embedProviders));
     }
 
@@ -971,6 +972,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     @Nonnull
     @CheckReturnValue
     default MessageSearchAction attachmentFilenames(@Nonnull String... attachmentFilenames) {
+        Checks.noneNull(attachmentFilenames, "Attachment filenames");
         return attachmentFilenames(Arrays.asList(attachmentFilenames));
     }
 
