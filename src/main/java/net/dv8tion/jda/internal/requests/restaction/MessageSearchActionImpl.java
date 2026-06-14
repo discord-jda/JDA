@@ -287,6 +287,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     public MessageSearchAction includeHasTypes(@Nonnull Collection<HasType> hasTypes) {
         Checks.noneNull(hasTypes, "HasTypes");
         this.includedHasTypes = Helpers.copyEnumSet(HasType.class, hasTypes);
+        this.excludedHasTypes = Collections.emptySet();
         return this;
     }
 
@@ -294,6 +295,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction excludeHasTypes(@Nonnull Collection<HasType> hasTypes) {
         Checks.noneNull(hasTypes, "HasTypes");
+        this.includedHasTypes = Collections.emptySet();
         this.excludedHasTypes = Helpers.copyEnumSet(HasType.class, hasTypes);
         return this;
     }
