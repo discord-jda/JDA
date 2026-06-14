@@ -83,7 +83,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     public MessageSearchAction limit(@Nullable Integer limit) {
         if (limit != null) {
             Checks.positive(limit, "Limit");
-            Checks.check(limit <= 25, "Limit must be lower than or equal to 25");
+            Checks.check(limit <= MAX_LIMIT, "Limit must be lower than or equal to %d", MAX_LIMIT);
         }
         this.limit = limit;
         return this;
@@ -94,7 +94,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     public MessageSearchAction offset(@Nullable Integer offset) {
         if (offset != null) {
             Checks.positive(offset, "Offset");
-            Checks.check(offset <= 9975, "Offset must be lower than or equal to 9975");
+            Checks.check(offset <= MAX_OFFSET, "Offset must be lower than or equal to %d", MAX_OFFSET);
         }
         this.offset = offset;
         return this;
@@ -141,7 +141,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     public MessageSearchAction slop(@Nullable Integer slop) {
         if (slop != null) {
             Checks.notNegative(slop, "Slop");
-            Checks.check(slop <= 100, "Slop must be lower than or equal to 100");
+            Checks.check(slop <= MAX_SLOP, "Slop must be lower than or equal to %d", MAX_SLOP);
         }
         this.slop = slop;
         return this;
@@ -151,7 +151,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction content(@Nullable String content) {
         if (content != null) {
-            Checks.inRange(content, 0, 1024, "Content");
+            Checks.inRange(content, 0, MAX_CONTENT_LENGTH, "Content");
         }
         this.content = content;
         return this;
@@ -161,7 +161,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction channels(@Nonnull Collection<? extends GuildMessageChannel> channels) {
         Checks.noneNull(channels, "Channels");
-        Checks.check(channels.size() <= 500, "Cannot filter on more than 500 channels");
+        Checks.check(channels.size() <= MAX_CHANNELS, "Cannot filter on more than %d channels", MAX_CHANNELS);
         for (GuildMessageChannel channel : channels) {
             Checks.check(
                     channel.getGuild().equals(guild),
@@ -183,7 +183,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction channels(@Nonnull long... channels) {
         Checks.notNull(channels, "Channels");
-        Checks.check(channels.length <= 500, "Cannot filter on more than 500 channels");
+        Checks.check(channels.length <= MAX_CHANNELS, "Cannot filter on more than %d channels", MAX_CHANNELS);
         this.channels = Arrays.stream(channels).mapToObj(Long::toUnsignedString).collect(Collectors.toSet());
         return this;
     }
@@ -192,6 +192,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction channels(@Nonnull String... channels) {
         Checks.noneNull(channels, "Channels");
+        Checks.check(channels.length <= MAX_CHANNELS, "Cannot filter on more than %d channels", MAX_CHANNELS);
         for (String channel : channels) {
             Checks.isSnowflake(channel, "Channel");
         }
@@ -221,6 +222,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction authors(@Nonnull Collection<? extends UserSnowflake> authors) {
         Checks.noneNull(authors, "Authors");
+        Checks.check(authors.size() <= MAX_AUTHORS, "Cannot filter on more than %d authors", MAX_AUTHORS);
         this.authors = authors.stream().map(UserSnowflake::getId).collect(Collectors.toSet());
         return this;
     }
@@ -229,6 +231,8 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction mentionsUsers(@Nonnull Collection<? extends UserSnowflake> mentions) {
         Checks.noneNull(mentions, "Mentions");
+        Checks.check(
+                mentions.size() <= MAX_USER_MENTIONS, "Cannot filter on more than %d user mentions", MAX_USER_MENTIONS);
         this.mentionsUsers = mentions.stream().map(UserSnowflake::getId).collect(Collectors.toSet());
         return this;
     }
@@ -237,6 +241,8 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction mentionsRoles(@Nonnull Collection<? extends Role> mentions) {
         Checks.noneNull(mentions, "Mentions");
+        Checks.check(
+                mentions.size() <= MAX_ROLE_MENTIONS, "Cannot filter on more than %d role mentions", MAX_ROLE_MENTIONS);
         this.mentionsRoles = mentions.stream().map(Role::getId).collect(Collectors.toSet());
         return this;
     }
@@ -252,6 +258,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction repliesToUsers(@Nonnull Collection<? extends UserSnowflake> repliedTo) {
         Checks.noneNull(repliedTo, "Users");
+        Checks.check(
+                repliedTo.size() <= MAX_REPLIED_TO_USERS,
+                "Cannot filter on more than %d users replied",
+                MAX_REPLIED_TO_USERS);
         this.repliesToUsers = repliedTo.stream().map(UserSnowflake::getId).collect(Collectors.toSet());
         return this;
     }
@@ -260,6 +270,10 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction repliesToMessages(@Nonnull Collection<String> repliedTo) {
         Checks.noneNull(repliedTo, "Messages");
+        Checks.check(
+                repliedTo.size() <= MAX_REPLIED_TO_MESSAGES,
+                "Cannot filter on more than %d messages replied",
+                MAX_REPLIED_TO_MESSAGES);
         for (String messageId : repliedTo) {
             Checks.isSnowflake(messageId, "Message ID");
         }
@@ -304,9 +318,12 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction embedProvider(@Nonnull Collection<String> embedProviders) {
         Checks.noneNull(embedProviders, "Embed providers");
-        Checks.check(embedProviders.size() <= 100, "Cannot filter on more than 100 embed providers");
+        Checks.check(
+                embedProviders.size() <= MAX_EMBED_PROVIDERS,
+                "Cannot filter on more than %d embed providers",
+                MAX_EMBED_PROVIDERS);
         for (String embedProvider : embedProviders) {
-            Checks.notLonger(embedProvider, 256, "Embed provider");
+            Checks.notLonger(embedProvider, MAX_EMBED_PROVIDER_LENGTH, "Embed provider");
         }
         this.embedProviders = new HashSet<>(embedProviders);
         return this;
@@ -316,9 +333,12 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction linkHostnames(@Nonnull Collection<String> linkHostnames) {
         Checks.noneNull(linkHostnames, "Link hostnames");
-        Checks.check(linkHostnames.size() <= 100, "Cannot filter on more than 100 attachment link hostnames");
+        Checks.check(
+                linkHostnames.size() <= MAX_LINK_HOSTNAMES,
+                "Cannot filter on more than %d link hostnames",
+                MAX_LINK_HOSTNAMES);
         for (String linkHostname : linkHostnames) {
-            Checks.notLonger(linkHostname, 256, "Link hostname");
+            Checks.notLonger(linkHostname, MAX_LINK_HOSTNAME_LENGTH, "Link hostname");
         }
         this.linkHostnames = new HashSet<>(linkHostnames);
         return this;
@@ -328,9 +348,12 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction attachmentFilenames(@Nonnull Collection<String> attachmentFilenames) {
         Checks.noneNull(attachmentFilenames, "Attachment filenames");
-        Checks.check(attachmentFilenames.size() <= 100, "Cannot filter on more than 100 attachment filenames");
+        Checks.check(
+                attachmentFilenames.size() <= MAX_ATTACHMENT_FILENAMES,
+                "Cannot filter on more than %d attachment filenames",
+                MAX_ATTACHMENT_FILENAMES);
         for (String attachmentFilename : attachmentFilenames) {
-            Checks.notLonger(attachmentFilename, 1024, "Attachment filename");
+            Checks.notLonger(attachmentFilename, MAX_ATTACHMENT_FILENAME_LENGTH, "Attachment filename");
         }
         this.attachmentFilenames = new HashSet<>(attachmentFilenames);
         return this;
@@ -340,9 +363,12 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
     @Override
     public MessageSearchAction attachmentExtensions(@Nonnull Collection<String> attachmentExtensions) {
         Checks.noneNull(attachmentExtensions, "Attachment extensions");
-        Checks.check(attachmentExtensions.size() <= 100, "Cannot filter on more than 100 attachment extensions");
+        Checks.check(
+                attachmentExtensions.size() <= MAX_ATTACHMENT_EXTENSIONS,
+                "Cannot filter on more than %d attachment extensions",
+                MAX_ATTACHMENT_EXTENSIONS);
         for (String attachmentExtension : attachmentExtensions) {
-            Checks.notLonger(attachmentExtension, 256, "Attachment extension");
+            Checks.notLonger(attachmentExtension, MAX_ATTACHMENT_EXTENSION_LENGTH, "Attachment extension");
         }
         this.attachmentExtensions = new HashSet<>(attachmentExtensions);
         return this;

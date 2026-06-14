@@ -36,6 +36,49 @@ import javax.annotation.Nullable;
  * @see Guild#searchMessages()
  */
 public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
+    /** The maximum amount of messages that can be skipped at once */
+    int MAX_OFFSET = 9975;
+    /** The maximum amount of messages that can be returned at once */
+    int MAX_LIMIT = 25;
+    /** The maximum amount of words that can be skipped when matching content */
+    int MAX_SLOP = 100;
+    /** The maximum length of the content to search for */
+    int MAX_CONTENT_LENGTH = 1024;
+    /** The maximum amount of channels this search can be limited to */
+    int MAX_CHANNELS = 500;
+    /** The maximum amount of authors this search can be limited to */
+    int MAX_AUTHORS = 100;
+
+    /** The maximum amount of user mentions this search can be filtered on */
+    int MAX_USER_MENTIONS = 100;
+    /** The maximum amount of role mentions this search can be filtered on */
+    int MAX_ROLE_MENTIONS = 100;
+
+    /** The maximum amount of users which must be replied to in order to include the message */
+    int MAX_REPLIED_TO_USERS = 100;
+    /** The maximum amount of messages which must be replied to in order to include the message */
+    int MAX_REPLIED_TO_MESSAGES = 100;
+
+    /** The maximum amount of embed providers */
+    int MAX_EMBED_PROVIDERS = 100;
+    /** The maximum length of an embed provider */
+    int MAX_EMBED_PROVIDER_LENGTH = 256;
+
+    /** The maximum amount of link hostnames */
+    int MAX_LINK_HOSTNAMES = 100;
+    /** The maximum length of an embed provider */
+    int MAX_LINK_HOSTNAME_LENGTH = 256;
+
+    /** The maximum amount of attachment filenames */
+    int MAX_ATTACHMENT_FILENAMES = 100;
+    /** The maximum length of an attachment filename */
+    int MAX_ATTACHMENT_FILENAME_LENGTH = 256;
+
+    /** The maximum amount of attachment extensions */
+    int MAX_ATTACHMENT_EXTENSIONS = 100;
+    /** The maximum length of an attachment extension */
+    int MAX_ATTACHMENT_EXTENSION_LENGTH = 256;
+
     /**
      * Sets the maximum number of messages to return.
      *
@@ -44,16 +87,16 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Use {@link #minId(long)} and/or {@link #maxId(long)} instead.
      *
      * @param  limit
-     *         Max number of messages to return, between 1 and 25, or {@code null} to use the default (25)
+     *         Max number of messages to return, between 1 and {@value #MAX_LIMIT}, or {@code null} to use the default (25)
      *
      * @throws IllegalArgumentException
-     *         If the provided limit is not between 1 and 25 and not {@code null}
+     *         If the provided limit is not between 1 and {@value #MAX_LIMIT} and not {@code null}
      *
      * @return This action for chaining
      */
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction limit(@Nullable @Range(from = 1, to = 25) Integer limit);
+    MessageSearchAction limit(@Nullable @Range(from = 1, to = MAX_LIMIT) Integer limit);
 
     /**
      * Sets the offset of the returned messages.
@@ -63,16 +106,16 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * depending on the desired direction.
      *
      * @param  offset
-     *         Offset of messages, between 1 and 9975, or {@code null} to remove the offset
+     *         Offset of messages, between 1 and {@value #MAX_OFFSET}, or {@code null} to remove the offset
      *
      * @throws IllegalArgumentException
-     *         If the provided offset is not between 1 and 9975 and not {@code null}
+     *         If the provided offset is not between 1 and {@value #MAX_OFFSET} and not {@code null}
      *
      * @return This action for chaining
      */
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction offset(@Nullable @Range(from = 1, to = 9975) Integer offset);
+    MessageSearchAction offset(@Nullable @Range(from = 1, to = MAX_OFFSET) Integer offset);
 
     /**
      * Sets the ID of the message to start searching from.
@@ -166,27 +209,27 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Sets the maximum number of words to skip between matching tokens in the search {@linkplain #content(String) content}.
      *
      * @param  slop
-     *         Maximum numbers of words to skip when matching content, up to 100,
+     *         Maximum numbers of words to skip when matching content, up to {@value #MAX_SLOP},
      *         or {@code null} to set to the default (2)
      *
      * @throws IllegalArgumentException
-     *         If the provided value is not between 0 and 100 and not {@code null}
+     *         If the provided value is not between 0 and {@value #MAX_SLOP} and not {@code null}
      *
      * @return This action for chaining
      */
     @Nonnull
     @CheckReturnValue
-    MessageSearchAction slop(@Nullable @Range(from = 0, to = 100) Integer slop);
+    MessageSearchAction slop(@Nullable @Range(from = 0, to = MAX_SLOP) Integer slop);
 
     /**
      * Sets the content to search for.
      *
      * @param  content
-     *         The content to search for, up to 1024 characters,
+     *         The content to search for, up to {@value #MAX_CONTENT_LENGTH} characters,
      *         or {@code null} to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the content is longer than 1024 characters and not {@code null}
+     *         If the content is longer than {@value #MAX_CONTENT_LENGTH} characters and not {@code null}
      *
      * @return This action for chaining
      *
@@ -202,10 +245,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p><b>Note:</b> This implicitly includes child threads!
      *
      * @param  channels
-     *         The channels to search messages in, up to 500, leave empty to remove the filter
+     *         The channels to search messages in, up to {@value #MAX_CHANNELS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the collection or one of its element is {@code null}, or the collection has more than 500 elements
+     *         If the collection or one of its element is {@code null}, or the collection has more than {@value #MAX_CHANNELS} elements
      * @throws net.dv8tion.jda.api.exceptions.MissingAccessException
      *         If the {@linkplain Guild#getSelfMember() current member} does not have the access to one of the channels
      *         <ul>
@@ -227,10 +271,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p><b>Note:</b> This implicitly includes child threads!
      *
      * @param  channels
-     *         The channels to search messages in, up to 500, leave empty to remove the filter
+     *         The channels to search messages in, up to {@value #MAX_CHANNELS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array or an element is {@code null}, or the array has more than 500 elements
+     *         If the array or an element is {@code null}, or the array has more than {@value #MAX_CHANNELS} elements
      * @throws net.dv8tion.jda.api.exceptions.MissingAccessException
      *         If the {@linkplain Guild#getSelfMember() current member} does not have the access to one of the channels
      *         <ul>
@@ -255,10 +300,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p><b>Note:</b> This implicitly includes child threads!
      *
      * @param  channels
-     *         The channels to search messages in, up to 500, leave empty to remove the filter
+     *         The channels to search messages in, up to {@value #MAX_CHANNELS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is {@code null}, or has more than 500 elements
+     *         If the array is {@code null}, or has more than {@value #MAX_CHANNELS} elements
      *
      * @return This action for chaining
      */
@@ -272,11 +318,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * <p><b>Note:</b> This implicitly includes child threads!
      *
      * @param  channels
-     *         The channels to search messages in, up to 500, leave empty to remove the filter
+     *         The channels to search messages in, up to {@value #MAX_CHANNELS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
      *         If the array or an element is {@code null}, an element isn't a valid snowflake,
-     *         or the array has more than 500 elements
+     *         or the array has more than {@value #MAX_CHANNELS} elements
      *
      * @return This action for chaining
      */
@@ -358,10 +405,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Keeps messages which are sent by <b>any</b> of the provided authors.
      *
      * @param  authors
-     *         The authors to keep messages from, leave empty to remove the filter
+     *         The authors to keep messages from, up to {@value #MAX_AUTHORS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the collection or an element is {@code null}
+     *         If the collection or an element is {@code null},
+     *         or the collection has more than {@value #MAX_AUTHORS} elements
      *
      * @return This action for chaining
      */
@@ -373,10 +422,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Keeps messages which are sent by <b>any</b> of the provided authors.
      *
      * @param  authors
-     *         The authors to keep messages from, leave empty to remove the filter
+     *         The authors to keep messages from, up to {@value #MAX_AUTHORS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array or an element is {@code null}
+     *         If the array or an element is {@code null},
+     *         or the array has more than {@value #MAX_AUTHORS} elements
      *
      * @return This action for chaining
      */
@@ -391,11 +442,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Keeps messages which are sent by <b>any</b> of the provided author IDs.
      *
      * @param  authors
-     *         The author IDs to keep messages from, leave empty to remove the filter
+     *         The author IDs to keep messages from, up to {@value #MAX_AUTHORS}, leave empty to remove the filter
      *
      * @throws IllegalArgumentException
      *         If the array or an element is {@code null},
-     *         or one of the author IDs is not a valid snowflake
+     *         or one of the author IDs is not a valid snowflake,
+     *         or the array has more than {@value #MAX_AUTHORS} elements
      *
      * @return This action for chaining
      */
@@ -410,10 +462,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Keeps messages which are sent by <b>any</b> of the provided author IDs.
      *
      * @param  authors
-     *         The author IDs to keep messages from, leave empty to remove the filter
+     *         The author IDs to keep messages from, up to {@value #MAX_AUTHORS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is {@code null}
+     *         If the array is {@code null},
+     *         or the array has more than {@value #MAX_AUTHORS} elements
      *
      * @return This action for chaining
      */
@@ -437,10 +491,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionUsers(long...) allowlisted}, will not match.
      *
      * @param  mentions
-     *         The users which must be mentioned in the messages, leave empty to remove the filter
+     *         The users which must be mentioned in the messages, up to {@value #MAX_USER_MENTIONS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the collection is, or contains {@code null}
+     *         If the collection is, or contains {@code null},
+     *         or the collection has more than {@value #MAX_USER_MENTIONS} elements
      *
      * @return This action for chaining
      */
@@ -461,10 +517,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionUsers(long...) allowlisted}, will not match.
      *
      * @param  mentions
-     *         The users which must be mentioned in the messages, leave empty to remove the filter
+     *         The users which must be mentioned in the messages, up to {@value #MAX_USER_MENTIONS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}
+     *         If the array is, or contains {@code null},
+     *         or the array has more than {@value #MAX_USER_MENTIONS} elements
      *
      * @return This action for chaining
      */
@@ -488,10 +546,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionUsers(long...) allowlisted}, will not match.
      *
      * @param  mentions
-     *         The IDs of the users which must be mentioned in the messages, leave empty to remove the filter
+     *         The IDs of the users which must be mentioned in the messages, up to {@value #MAX_USER_MENTIONS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}, or is not a valid snowflake
+     *         If the array is, or contains {@code null}, or is not a valid snowflake,
+     *         or the array has more than {@value #MAX_USER_MENTIONS} elements
      *
      * @return This action for chaining
      */
@@ -515,10 +575,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * and not {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#mentionUsers(long...) allowlisted}, will not match.
      *
      * @param  mentions
-     *         The IDs of the users which must be mentioned in the messages, leave empty to remove the filter
+     *         The IDs of the users which must be mentioned in the messages, up to {@value #MAX_USER_MENTIONS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is {@code null}
+     *         If the array is {@code null},
+     *         or the array has more than {@value #MAX_USER_MENTIONS} elements
      *
      * @return This action for chaining
      */
@@ -540,10 +602,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * but not when the raw content is "@everyone", use {@link #mentionsEveryone(Boolean)} for those instead.
      *
      * @param  mentions
-     *         The roles which must be mentioned in the messages, leave empty to remove the filter
+     *         The roles which must be mentioned in the messages, up to {@value #MAX_ROLE_MENTIONS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the collection is, or contains {@code null}
+     *         If the collection is, or contains {@code null},
+     *         or the collection has more than {@value #MAX_ROLE_MENTIONS} elements
      *
      * @return This action for chaining
      */
@@ -561,10 +625,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * but not when the raw content is "@everyone", use {@link #mentionsEveryone(Boolean)} for those instead.
      *
      * @param  mentions
-     *         The roles which must be mentioned in the messages, leave empty to remove the filter
+     *         The roles which must be mentioned in the messages, up to {@value #MAX_ROLE_MENTIONS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}
+     *         If the array is, or contains {@code null},
+     *         or the array has more than {@value #MAX_ROLE_MENTIONS} elements
      *
      * @return This action for chaining
      */
@@ -600,10 +666,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * to <b>any</b> of the provided users.
      *
      * @param  repliedTo
-     *         The users which must be replied to, leave empty to remove the filter
+     *         The users which must be replied to, up to {@value #MAX_REPLIED_TO_USERS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the collection is, or contains {@code null}
+     *         If the collection is, or contains {@code null},
+     *         or the collection has more than {@value #MAX_REPLIED_TO_USERS} elements
      *
      * @return This action for chaining
      */
@@ -616,10 +684,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * to <b>any</b> of the provided users.
      *
      * @param  repliedTo
-     *         The users which must be replied to, leave empty to remove the filter
+     *         The users which must be replied to, up to {@value #MAX_REPLIED_TO_USERS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}
+     *         If the array is, or contains {@code null},
+     *         or the array has more than {@value #MAX_REPLIED_TO_USERS} elements
      *
      * @return This action for chaining
      */
@@ -635,10 +705,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * to <b>any</b> of the provided user IDs.
      *
      * @param  repliedTo
-     *         The user IDs which must be replied to, leave empty to remove the filter
+     *         The user IDs which must be replied to, up to {@value #MAX_REPLIED_TO_USERS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}, or is not a valid snowflake
+     *         If the array is, or contains {@code null}, or is not a valid snowflake,
+     *         or the array has more than {@value #MAX_REPLIED_TO_USERS} elements
      *
      * @return This action for chaining
      */
@@ -655,10 +727,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * to <b>any</b> of the provided user IDs.
      *
      * @param  repliedTo
-     *         The user IDs which must be replied to, leave empty to remove the filter
+     *         The user IDs which must be replied to, up to {@value #MAX_REPLIED_TO_USERS},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is {@code null}
+     *         If the array is {@code null},
+     *         or the array has more than {@value #MAX_REPLIED_TO_USERS} elements
      *
      * @return This action for chaining
      */
@@ -675,10 +749,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * to <b>any</b> of the provided message IDs.
      *
      * @param  repliedTo
-     *         The message IDs which must be replied to, leave empty to remove the filter
+     *         The message IDs which must be replied to, up to {@value #MAX_REPLIED_TO_MESSAGES},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the collection is, or contains {@code null}
+     *         If the collection is, or contains {@code null},
+     *         or the collection has more than {@value #MAX_REPLIED_TO_MESSAGES} elements
      *
      * @return This action for chaining
      */
@@ -691,10 +767,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * to <b>any</b> of the provided message IDs.
      *
      * @param  repliedTo
-     *         The message IDs which must be replied to, leave empty to remove the filter
+     *         The message IDs which must be replied to, up to {@value #MAX_REPLIED_TO_MESSAGES},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is {@code null}
+     *         If the array is {@code null},
+     *         or the array has more than {@value #MAX_REPLIED_TO_MESSAGES} elements
      *
      * @return This action for chaining
      */
@@ -711,10 +789,12 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * to <b>any</b> of the provided message IDs.
      *
      * @param  repliedTo
-     *         The message IDs which must be replied to, leave empty to remove the filter
+     *         The message IDs which must be replied to, up to {@value #MAX_REPLIED_TO_MESSAGES},
+     *         leave empty to remove the filter
      *
      * @throws IllegalArgumentException
-     *         If the array is, or contains {@code null}, or is not a valid snowflake
+     *         If the array is, or contains {@code null}, or is not a valid snowflake,
+     *         or the array has more than {@value #MAX_REPLIED_TO_MESSAGES} elements
      *
      * @return This action for chaining
      */
@@ -846,14 +926,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * such as {@code Tenor} or {@code Giphy}, as retrievable from {@link MessageEmbed.Provider#getName()}.
      *
      * @param  embedProviders
-     *         The embed provider names, case-sensitive, max 256 characters per provider, up to 100,
+     *         The embed provider names, case-sensitive, max {@value #MAX_EMBED_PROVIDER_LENGTH} characters per provider, up to {@value #MAX_EMBED_PROVIDERS},
      *         leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the collection or an element is {@code null}</li>
-     *             <li>If a provider is larger than 256 characters</li>
-     *             <li>If there is more than 100 providers</li>
+     *             <li>If a provider is larger than {@value #MAX_EMBED_PROVIDER_LENGTH} characters</li>
+     *             <li>If there is more than {@value #MAX_EMBED_PROVIDERS} providers</li>
      *         </ul>
      *
      * @return This action for chaining
@@ -867,14 +947,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * such as {@code Tenor} or {@code Giphy}, as retrievable from {@link MessageEmbed.Provider#getName()}.
      *
      * @param  embedProviders
-     *         The embed provider names, case-sensitive, max 256 characters per provider, up to 100,
+     *         The embed provider names, case-sensitive, max {@value #MAX_EMBED_PROVIDER_LENGTH} characters per provider, up to {@value #MAX_EMBED_PROVIDERS},
      *         leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the array or an element is {@code null}</li>
-     *             <li>If a provider is larger than 256 characters</li>
-     *             <li>If there is more than 100 providers</li>
+     *             <li>If a provider is larger than {@value #MAX_EMBED_PROVIDER_LENGTH} characters</li>
+     *             <li>If there is more than {@value #MAX_EMBED_PROVIDERS} providers</li>
      *         </ul>
      *
      * @return This action for chaining
@@ -891,14 +971,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * such as {@code media.discordapp.com} or {@code jda.wiki}.
      *
      * @param  linkHostnames
-     *         The link hostnames, max 256 characters per hostname, up to 100,
+     *         The link hostnames, max {@value #MAX_LINK_HOSTNAME_LENGTH} characters per hostname, up to {@value #MAX_LINK_HOSTNAMES},
      *         leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the collection or an element is {@code null}</li>
-     *             <li>If a hostname is larger than 256 characters</li>
-     *             <li>If there is more than 100 hostnames</li>
+     *             <li>If a hostname is larger than {@value #MAX_LINK_HOSTNAME_LENGTH} characters</li>
+     *             <li>If there is more than {@value #MAX_LINK_HOSTNAMES} hostnames</li>
      *         </ul>
      *
      * @return This action for chaining
@@ -912,14 +992,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * such as {@code media.discordapp.com} or {@code jda.wiki}.
      *
      * @param  linkHostnames
-     *         The link hostnames, max 256 characters per hostname, up to 100,
+     *         The link hostnames, max {@value #MAX_LINK_HOSTNAME_LENGTH} characters per hostname, up to {@value #MAX_LINK_HOSTNAMES},
      *         leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the array or an element is {@code null}</li>
-     *             <li>If a hostname is larger than 256 characters</li>
-     *             <li>If there is more than 100 hostnames</li>
+     *             <li>If a hostname is larger than {@value #MAX_LINK_HOSTNAME_LENGTH} characters</li>
+     *             <li>If there is more than {@value #MAX_LINK_HOSTNAMES} hostnames</li>
      *         </ul>
      *
      * @return This action for chaining
@@ -936,14 +1016,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * must include the extension.
      *
      * @param  attachmentFilenames
-     *         The attachment file names, max 1024 characters per file name, up to 100,
+     *         The attachment file names, max {@value #MAX_ATTACHMENT_FILENAME_LENGTH} characters per file name, up to {@value #MAX_ATTACHMENT_FILENAMES},
      *         leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the collection or an element is {@code null}</li>
-     *             <li>If a file name is larger than 1024 characters</li>
-     *             <li>If there is more than 100 file names</li>
+     *             <li>If a file name is larger than {@value #MAX_ATTACHMENT_FILENAME_LENGTH} characters</li>
+     *             <li>If there is more than {@value #MAX_ATTACHMENT_FILENAMES} file names</li>
      *         </ul>
      *
      * @return This action for chaining
@@ -957,14 +1037,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * must include the extension.
      *
      * @param  attachmentFilenames
-     *         The attachment file names, max 1024 characters per file name, up to 100,
+     *         The attachment file names, max {@value #MAX_ATTACHMENT_FILENAME_LENGTH} characters per file name, up to {@value #MAX_ATTACHMENT_FILENAMES},
      *         leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the array or an element is {@code null}</li>
-     *             <li>If a file name is larger than 1024 characters</li>
-     *             <li>If there is more than 100 file names</li>
+     *             <li>If a file name is larger than {@value #MAX_ATTACHMENT_FILENAME_LENGTH} characters</li>
+     *             <li>If there is more than {@value #MAX_ATTACHMENT_FILENAMES} file names</li>
      *         </ul>
      *
      * @return This action for chaining
@@ -980,14 +1060,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Keeps messages which have attachments with an extension equal to <b>any</b> of the provided extensions.
      *
      * @param  attachmentExtensions
-     *         The attachment extensions, max 256 characters per extension, up to 100,
+     *         The attachment extensions, max {@value #MAX_ATTACHMENT_EXTENSION_LENGTH} characters per extension, up to {@value #MAX_ATTACHMENT_EXTENSIONS},
      *         leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the collection or an element is {@code null}</li>
-     *             <li>If an extension is larger than 256 characters</li>
-     *             <li>If there is more than 100 extensions</li>
+     *             <li>If an extension is larger than {@value #MAX_ATTACHMENT_EXTENSION_LENGTH} characters</li>
+     *             <li>If there is more than {@value #MAX_ATTACHMENT_EXTENSIONS} extensions</li>
      *         </ul>
      *
      * @return This action for chaining
@@ -1000,14 +1080,14 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
      * Keeps messages which have attachments with an extension equal to <b>any</b> of the provided extensions.
      *
      * @param  attachmentExtensions
-     *         The attachment extensions, max 256 characters per extension, up to 100,
+     *         The attachment extensions, max {@value #MAX_ATTACHMENT_EXTENSION_LENGTH} characters per extension, up to {@value #MAX_ATTACHMENT_EXTENSIONS},
      *         leave empty to remove the inclusion filter
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the array or an element is {@code null}</li>
-     *             <li>If an extension is larger than 256 characters</li>
-     *             <li>If there is more than 100 extensions</li>
+     *             <li>If an extension is larger than {@value #MAX_ATTACHMENT_EXTENSION_LENGTH} characters</li>
+     *             <li>If there is more than {@value #MAX_ATTACHMENT_EXTENSIONS} extensions</li>
      *         </ul>
      *
      * @return This action for chaining
