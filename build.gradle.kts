@@ -60,8 +60,11 @@ plugins {
 //                                //
 ////////////////////////////////////
 
+val exampleJavaVersion = JavaLanguageVersion.of(25)
+val libraryJavaVersion = JavaLanguageVersion.of(8)
+
 projectEnvironment {
-    version = Version(major = "6", minor = "4", revision = "0", classifier = null)
+    version = Version(major = "6", minor = "4", revision = "2", classifier = null)
 }
 
 artifactFilters {
@@ -147,12 +150,12 @@ val testJava8 by sourceSets.creating {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(exampleJavaVersion)
     }
 }
 
 val java8Toolchain = javaToolchains.launcherFor {
-    languageVersion.set(JavaLanguageVersion.of(8))
+    languageVersion.set(libraryJavaVersion)
     vendor.set(JvmVendorSpec.ADOPTIUM)
 }
 
@@ -216,13 +219,6 @@ dependencies {
 
     //Audio crypto libraries
     implementation(libs.tink)
-
-    //Sets the dependencies for the examples
-    configurations["examplesImplementation"].withDependencies {
-        addAll(configurations["api"].allDependencies)
-        addAll(configurations["implementation"].allDependencies)
-        addAll(configurations["compileOnly"].allDependencies)
-    }
 
     examplesImplementation(libs.jdave)
 
@@ -474,7 +470,7 @@ val javadoc by tasks.getting(Javadoc::class) {
         links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
         addStringOption("-link-modularity-mismatch", "info")
-        addStringOption("-release", "8")
+        addStringOption("-release", libraryJavaVersion.asInt().toString())
         addBooleanOption("-syntax-highlight", true)
         addBooleanOption("Xdoclint:all,-missing", true)
 
@@ -544,11 +540,11 @@ val compileJava by tasks.getting(JavaCompile::class) {
     dependsOn(generateJavaSources)
     source = generateJavaSources.get().source
 
-    options.release = 8
+    options.release = libraryJavaVersion.asInt()
 }
 
 tasks.named<JavaCompile>("compileTestJava8Java") {
-    options.release = 8
+    options.release = libraryJavaVersion.asInt()
 }
 
 tasks.named<JavaCompile>("compileExamplesJava") {

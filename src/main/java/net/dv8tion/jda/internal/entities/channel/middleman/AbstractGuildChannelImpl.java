@@ -37,7 +37,7 @@ public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImp
     @Nonnull
     @Override
     public Guild getGuild() {
-        Guild cachedGuild = getJDA().getGuildById(id);
+        Guild cachedGuild = getJDA().getGuildById(guild.getIdLong());
         if (cachedGuild instanceof GuildImpl) {
             return this.guild = cachedGuild;
         }

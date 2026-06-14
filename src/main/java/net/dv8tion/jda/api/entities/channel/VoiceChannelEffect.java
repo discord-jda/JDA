@@ -34,7 +34,7 @@ public class VoiceChannelEffect {
     private final long userId;
     private final EmojiUnion emoji;
     private final Animation animation;
-    private final SoundboardSound soundboardSound;
+    private final long soundboardSoundId;
     private final double soundVolume;
 
     public VoiceChannelEffect(
@@ -42,13 +42,13 @@ public class VoiceChannelEffect {
             long userId,
             EmojiUnion emoji,
             Animation animation,
-            SoundboardSound soundboardSound,
+            long soundboardSoundId,
             double soundVolume) {
         this.channel = channel;
         this.userId = userId;
         this.emoji = emoji;
         this.animation = animation;
-        this.soundboardSound = soundboardSound;
+        this.soundboardSoundId = soundboardSoundId;
         this.soundVolume = soundVolume;
     }
 
@@ -124,13 +124,33 @@ public class VoiceChannelEffect {
     }
 
     /**
-     * The soundboard sound sent with the effect, this is only present for soundboard sound effects.
+     * The ID of the soundboard sound sent with the effect, this is only present for soundboard sound effects.
+     *
+     * @return The soundboard sound ID, or {@code null}
+     */
+    @Nullable
+    public String getSoundboardSoundId() {
+        return soundboardSoundId == 0 ? null : Long.toUnsignedString(soundboardSoundId);
+    }
+
+    /**
+     * The ID of the soundboard sound sent with the effect, this is only present for soundboard sound effects.
+     *
+     * @return The soundboard sound ID, or {@code 0}
+     */
+    public long getSoundboardSoundIdLong() {
+        return soundboardSoundId;
+    }
+
+    /**
+     * The soundboard sound sent with the effect, this is only present for guild soundboard sound effects.
+     * <br>This may be {@code null} for default sounds or {@linkplain net.dv8tion.jda.api.utils.cache.CacheFlag#SOUNDBOARD_SOUNDS uncached} guild sounds, you can use {@link #getSoundboardSoundId()} in these cases.
      *
      * @return The soundboard sound sent with the effect, or {@code null}
      */
     @Nullable
     public SoundboardSound getSoundboardSound() {
-        return soundboardSound;
+        return soundboardSoundId == 0 ? null : channel.getGuild().getSoundboardSoundById(soundboardSoundId);
     }
 
     /**

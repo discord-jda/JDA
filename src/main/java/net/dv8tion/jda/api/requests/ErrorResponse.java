@@ -225,6 +225,7 @@ public enum ErrorResponse {
     CANNOT_SEND_VOICE_MESSAGE(50173, "You cannot send voice messages in this channel"),
     USER_MUST_BE_VERIFIED(50178, "The user account must first be verified"),
     INVALID_FILE_DURATION(50192, "The provided file does not have a valid duration"),
+    NO_MUTUAL_GUILDS(50278, "Cannot send messages to this user due to having no mutual guilds"),
     CANNOT_SEND_STICKER(50600, "You do not have permission to send this sticker"),
     MFA_NOT_ENABLED(60003, "MFA auth required but not enabled"),
     NO_USER_WITH_TAG_EXISTS(80004, "No users with DiscordTag exist"),
@@ -240,6 +241,7 @@ public enum ErrorResponse {
     MAX_ANNOUNCEMENT_THREADS(160007, "Maximum number of active announcement threads reached"),
     REFERENCED_MESSSAGE_NOT_FOUND(160008, "Message could not be found"),
     FORWARD_CANNOT_HAVE_CONTENT(160011, "Forward messages cannot have additional content"),
+    CANNOT_FORWARD_UNREADABLE_MESSAGE(160014, "You cannot forward a message whose content you cannot read"),
     INVALID_LOTTIE_JSON(170001, "Invalid JSON for uploaded Lottie file"),
     LOTTIE_CANNOT_CONTAIN_RASTERIZED_IMAGE(
             170002, "Uploaded Lotties cannot contain rasterized images such as PNG or JPEG"),

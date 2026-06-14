@@ -217,13 +217,14 @@ public final class Helpers {
         return out.toArray(new String[0]);
     }
 
-    @SuppressWarnings("ReferenceEquality")
+    @SuppressWarnings({"ReferenceEquality", "StringEquality"})
     public static boolean equals(String a, String b, boolean ignoreCase) {
-        return ignoreCase ? a == b || (a != null && b != null && a.equalsIgnoreCase(b)) : Objects.equals(a, b);
+        return ignoreCase ? a == b || (a != null && a.equalsIgnoreCase(b)) : Objects.equals(a, b);
     }
 
     // ## CollectionUtils ##
 
+    @SuppressWarnings("ReferenceEquality")
     public static boolean deepEquals(Collection<?> first, Collection<?> second) {
         if (first == second) {
             return true;
@@ -241,6 +242,7 @@ public final class Helpers {
         return true;
     }
 
+    @SuppressWarnings({"ReferenceEquality", "SuspiciousMethodCalls"})
     public static boolean deepEqualsUnordered(Collection<?> first, Collection<?> second) {
         if (first == second) {
             return true;

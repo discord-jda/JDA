@@ -1451,6 +1451,10 @@ public interface Message extends ISnowflake, Formattable {
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
      *     <br>If this is a {@link PrivateChannel} and the currently logged in account
+     *         cannot message the recipient User</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#NO_MUTUAL_GUILDS NO_MUTUAL_GUILDS}
+     *     <br>If this is a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
@@ -1762,7 +1766,7 @@ public interface Message extends ISnowflake, Formattable {
     }
 
     /**
-     * Forwards this message into the provided channel.
+     * Forwards this message into the provided channel. The message must be readable by the bot.
      *
      * <p><b>A message forward request cannot contain additional content.</b>
      *
@@ -1772,6 +1776,8 @@ public interface Message extends ISnowflake, Formattable {
      *     <br>If the provided reference cannot be resolved to a message</li>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
      *     <br>If additional content is sent alongside a forwarded message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_FORWARD_UNREADABLE_MESSAGE CANNOT_FORWARD_UNREADABLE_MESSAGE}
+     *     <br>If the bot is missing the {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent</li>
      * </ul>
      *
      * @param  channel
@@ -2725,6 +2731,7 @@ public interface Message extends ISnowflake, Formattable {
         private final boolean ephemeral;
         private final String waveform;
         private final double duration;
+        private final ThumbHashPlaceholder placeholder;
 
         private final JDAImpl jda;
 
@@ -2741,6 +2748,7 @@ public interface Message extends ISnowflake, Formattable {
                 boolean ephemeral,
                 String waveform,
                 double duration,
+                ThumbHashPlaceholder placeholder,
                 JDAImpl jda) {
             this.id = id;
             this.url = url;
@@ -2754,6 +2762,7 @@ public interface Message extends ISnowflake, Formattable {
             this.ephemeral = ephemeral;
             this.waveform = waveform;
             this.duration = duration;
+            this.placeholder = placeholder;
             this.jda = jda;
         }
 
@@ -2953,6 +2962,18 @@ public interface Message extends ISnowflake, Formattable {
          */
         public boolean isSpoiler() {
             return getFileName().startsWith("SPOILER_");
+        }
+
+        /**
+         * The placeholder, if this is an image or video, or {@code null}.
+         *
+         * @return The placeholder or {@code null}
+         *
+         * @see    ThumbHashPlaceholder
+         */
+        @Nullable
+        public ThumbHashPlaceholder getPlaceholder() {
+            return placeholder;
         }
 
         @Override

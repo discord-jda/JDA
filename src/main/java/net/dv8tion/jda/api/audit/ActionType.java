@@ -719,6 +719,21 @@ public enum ActionType {
     HOME_SETTINGS_UPDATE(191, TargetType.UNKNOWN),
 
     /**
+     * A moderator added an exception for the recurrence of a scheduled event.
+     */
+    GUILD_SCHEDULED_EVENT_EXCEPTION_CREATE(200, TargetType.SCHEDULED_EVENT),
+
+    /**
+     * A moderator updated an exception for the recurrence of a scheduled event.
+     */
+    GUILD_SCHEDULED_EVENT_EXCEPTION_UPDATE(201, TargetType.SCHEDULED_EVENT),
+
+    /**
+     * A moderator removed an exception for the recurrence of a scheduled event.
+     */
+    GUILD_SCHEDULED_EVENT_EXCEPTION_DELETE(202, TargetType.SCHEDULED_EVENT),
+
+    /**
      * A moderator updated the guild profile.
      */
     GUILD_PROFILE_UPDATE(211, TargetType.GUILD),

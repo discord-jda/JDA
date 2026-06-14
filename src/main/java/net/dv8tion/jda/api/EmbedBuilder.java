@@ -183,7 +183,8 @@ public class EmbedBuilder {
                 null,
                 footer,
                 image,
-                new ArrayList<>(fields));
+                new ArrayList<>(fields),
+                0);
     }
 
     /**
@@ -560,8 +561,52 @@ public class EmbedBuilder {
             this.thumbnail = null;
         } else {
             urlCheck(url);
-            this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0);
+            this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0, null, null, null, 0);
         }
+        return this;
+    }
+
+    /**
+     * Sets the Thumbnail of the embed.
+     *
+     * <p><b><a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/06-setThumbnail.png">Example</a></b>
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u>
+     * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
+     * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * {@snippet lang="java":
+     * MessageChannel channel; // = reference of a MessageChannel
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * embed.setThumbnail("attachment://cat.png", "Image of a cat") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
+     * }
+     *
+     * @param  url
+     *         the url of the thumbnail of the embed
+     * @param  description
+     *         The description of the thumbnail, used as alt-text for accessibility
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If null is provided</li>
+     *             <li>If the character limit for {@code url}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
+     *         </ul>
+     *
+     * @return the builder after the thumbnail has been set
+     */
+    @Nonnull
+    public EmbedBuilder setThumbnail(@Nonnull String url, @Nonnull String description) {
+        Checks.notEmpty(url, "Url");
+        Checks.notNull(description, "Description");
+        urlCheck(url);
+        this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0, description, null, null, 0);
         return this;
     }
 
@@ -605,8 +650,54 @@ public class EmbedBuilder {
             this.image = null;
         } else {
             urlCheck(url);
-            this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
+            this.image = new MessageEmbed.ImageInfo(url, null, 0, 0, null, null, null, 0);
         }
+        return this;
+    }
+
+    /**
+     * Sets the Image of the embed.
+     *
+     * <p><b><a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/11-setImage.png">Example</a></b>
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u>
+     * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
+     * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * {@snippet lang="java":
+     * MessageChannel channel; // = reference of a MessageChannel
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * embed.setImage("attachment://cat.png", "Image of a cat") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
+     * }
+     *
+     * @param  url
+     *         the url of the image of the embed
+     * @param  description
+     *         The description of the image, used as alt-text for accessibility
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If null is provided</li>
+     *             <li>If the character limit for {@code url}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
+     *         </ul>
+     *
+     * @return the builder after the image has been set
+     *
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)
+     */
+    @Nonnull
+    public EmbedBuilder setImage(@Nonnull String url, @Nonnull String description) {
+        Checks.notEmpty(url, "Url");
+        Checks.notNull(description, "Description");
+        urlCheck(url);
+        this.image = new MessageEmbed.ImageInfo(url, null, 0, 0, description, null, null, 0);
         return this;
     }
 
