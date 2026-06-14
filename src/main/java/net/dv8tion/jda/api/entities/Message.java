@@ -380,8 +380,8 @@ public interface Message extends ISnowflake, Formattable {
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
-     * This will return null if the message was retrieved through {@link MessageChannel#retrieveMessageById(long)} or similar means,
-     * unless the member is already cached.
+     * This will return null if the message was retrieved through {@link MessageChannel#retrieveMessageById(long)},
+     * the {@linkplain Guild#searchMessages() search API} or similar means, unless the member is already cached.
      *
      * @return Message author, or {@code null} if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook.
      *
