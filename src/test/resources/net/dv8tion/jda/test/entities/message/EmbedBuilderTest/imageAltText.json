@@ -2,5 +2,9 @@
   "image" : {
     "description" : "Test Image",
     "url" : "https://jda.wiki/image.png"
+  },
+  "thumbnail" : {
+    "description" : "Test Thumbnail",
+    "url" : "https://jda.wiki/image.png"
   }
 }

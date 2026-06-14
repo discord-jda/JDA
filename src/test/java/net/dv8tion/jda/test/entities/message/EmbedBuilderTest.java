@@ -28,6 +28,7 @@ class EmbedBuilderTest extends AbstractSnapshotTest {
     void imageAltText() {
         MessageEmbed embed = new EmbedBuilder()
                 .setImage("https://jda.wiki/image.png", "Test Image")
+                .setThumbnail("https://jda.wiki/image.png", "Test Thumbnail")
                 .build();
 
         assertThat(embed.getLength()).isEqualTo(0);
