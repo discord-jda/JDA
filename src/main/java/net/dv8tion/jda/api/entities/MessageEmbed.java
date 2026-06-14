@@ -535,7 +535,11 @@ public class MessageEmbed implements SerializableData {
                 obj.put("footer", footerObj);
             }
             if (image != null) {
-                obj.put("image", DataObject.empty().put("url", image.getUrl()));
+                DataObject imageData = DataObject.empty().put("url", image.getUrl());
+                if (!Helpers.isEmpty(image.getDescription())) {
+                    imageData.put("description", image.getDescription());
+                }
+                obj.put("image", imageData);
             }
             if (!fields.isEmpty()) {
                 DataArray fieldsArray = DataArray.empty();
