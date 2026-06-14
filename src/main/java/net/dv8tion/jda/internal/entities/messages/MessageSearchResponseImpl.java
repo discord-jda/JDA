@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.messages.MessageSearchResponse;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.time.Duration;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -58,9 +59,10 @@ public class MessageSearchResponseImpl {
             return documentsIndexed;
         }
 
+        @Nonnull
         @Override
-        public int getRetryAfter() {
-            return retryAfter;
+        public Duration getRetryAfter() {
+            return Duration.ofSeconds(retryAfter);
         }
     }
 

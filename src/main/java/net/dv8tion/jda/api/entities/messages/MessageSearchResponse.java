@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.time.Duration;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -78,12 +79,13 @@ public interface MessageSearchResponse {
         int getDocumentsIndexed();
 
         /**
-         * The delay (in seconds) after which you should retry the message search.
-         * <br>If the value is {@code 0}, you should retry the request after a short delay.
+         * The delay after which you should retry the message search.
+         * <br>If the value is zero, you should retry the request after a short delay.
          *
-         * @return Delay (in seconds) before retrying the request
+         * @return Delay before retrying the request
          */
-        int getRetryAfter();
+        @Nonnull
+        Duration getRetryAfter();
     }
 
     /**
