@@ -38,15 +38,6 @@ public interface MessageSearchResponse {
      *
      * <p>If this returns {@code false}, you must use {@link #asResults()} to read the results.
      *
-     * <p><b>Tip:</b> You can use this in a guard condition:
-     * {@snippet lang=java:
-     * MessageSearchResponse searchResponse; // Assuming you have a response
-     * if (searchResponse.isNotReady()) {
-     *     // Reply
-     *     return;
-     * }
-     * }
-     *
      * @return {@code true} if the index is not ready yet, {@code false} otherwise
      */
     boolean isNotReady();

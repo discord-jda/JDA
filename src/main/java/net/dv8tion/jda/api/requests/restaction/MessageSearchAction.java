@@ -286,7 +286,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
 
     /**
      * Includes messages which are sent by <b>any</b> of the provided {@linkplain AuthorType author types}.
-     * <br><b>This overrides exclusions!</b>
+     * <br><b>This overrides {@linkplain #excludeAuthorTypes(Collection) exclusions}!</b>
      *
      * @param  authorTypes
      *         The type of authors to keep, leave empty to remove the inclusion filter
@@ -427,7 +427,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     /**
      * Keeps messages which mention <b>any</b> of the provided users.
      *
-     * <p>A "mention" here includes anything that makes a "ping" (creates a special background on the client):
+     * <p>A "mention" here includes anything that makes a "ping" (highlighted for user):
      * <ul>
      *     <li>{@linkplain UserSnowflake#getAsMention() Direct mentions}</li>
      *     <li>{@linkplain net.dv8tion.jda.api.utils.messages.MessageCreateRequest#mentionRepliedUser(boolean) Reply mentions}</li>
@@ -1075,11 +1075,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
          */
         USER("user"),
         /**
-         * Messages sent by bots. Does <b>not</b> include interaction replies.
+         * Messages sent by bots. Use {@link #WEBHOOK} for interaction replies.
          */
         BOT("bot"),
         /**
-         * Messages sent by webhooks. Includes interaction replies.
+         * Messages sent by webhooks and interactions.
          */
         WEBHOOK("webhook");
 
@@ -1089,6 +1089,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
             this.value = value;
         }
 
+        /**
+         * Returns the raw value Discord expects.
+         *
+         * @return The raw value
+         */
         @Nonnull
         public String getValue() {
             return value;
@@ -1119,6 +1124,11 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
             this.value = value;
         }
 
+        /**
+         * Returns the raw value Discord expects.
+         *
+         * @return The raw value
+         */
         @Nonnull
         public String getValue() {
             return value;
@@ -1149,7 +1159,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         }
 
         /**
-         * Returns the raw value Discord expects
+         * Returns the raw value Discord expects.
          *
          * @return The raw value
          */
@@ -1176,7 +1186,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         }
 
         /**
-         * Returns the raw value Discord expects
+         * Returns the raw value Discord expects.
          *
          * @return The raw value
          */
@@ -1202,7 +1212,7 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
         }
 
         /**
-         * Returns the raw value Discord expects
+         * Returns the raw value Discord expects.
          *
          * @return The raw value
          */

@@ -5983,8 +5983,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
     /**
      * Searches for messages in this guild.
-     * The {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent must be enabled on the dev portal,
-     * but the bot does not necessarily need to start with it.
+     * The {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent must be enabled in the <a href="https://discord.com/developers/applications" target="_blank>application dashboard</a>.
      * <br>If all you need is to iterate messages of a channel, use {@link MessageChannel#getIterableHistory()} instead.
      *
      * <p>Any invalid entity referenced by the search query, will be ignored.
@@ -6002,12 +6001,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * {@snippet lang=java:
      * guild.searchMessages()
      *      .attachmentFilenames("cat.png")
-     *      // You can import AuthorType for better readability
      *      .includeAuthorTypes(MessageSearchAction.AuthorType.USER)
      *      .queue(response -> {
      *          if (response.isNotReady()) {
-     *              var notReady = response.asNotReady();
-     *              int retryAfter = notReady.getRetryAfter();
+     *              int retryAfter = response.asNotReady().getRetryAfter();
      *              // Reply
      *              return;
      *          }
@@ -6023,7 +6020,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link MessageSearchAction}, which, when completed, returns a {@link net.dv8tion.jda.api.entities.messages.MessageSearchResponse MessageSearchResponse}
+     * @return {@link MessageSearchAction}
      */
     @Nonnull
     @CheckReturnValue
