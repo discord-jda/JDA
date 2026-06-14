@@ -5983,7 +5983,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
     /**
      * Searches for messages in this guild.
-     * The {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent must be enabled in the <a href="https://discord.com/developers/applications" target="_blank>application dashboard</a>.
+     * The {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent must be enabled in the <a href="https://discord.com/developers/applications" target="_blank">application dashboard</a>.
      * <br>If all you need is to iterate messages of a channel, use {@link MessageChannel#getIterableHistory()} instead.
      *
      * <p>Any invalid entity referenced by the search query, will be ignored.
