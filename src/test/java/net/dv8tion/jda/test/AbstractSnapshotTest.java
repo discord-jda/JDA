@@ -19,6 +19,7 @@ package net.dv8tion.jda.test;
 import net.dv8tion.jda.api.utils.data.SerializableArray;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.test.assertions.logging.LoggingAssertions;
+import net.dv8tion.jda.test.util.MockitoVerifyUtils;
 import net.dv8tion.jda.test.util.SnapshotHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
@@ -59,5 +60,9 @@ public class AbstractSnapshotTest {
 
     protected void assertWithSnapshot(SerializableArray data, String suffix) {
         snapshotHandler.compareWithSnapshot(data.toDataArray(), suffix);
+    }
+
+    protected void assertInteractionsWithSnapshot(@Nonnull Object spy) {
+        snapshotHandler.compareWithSnapshot(MockitoVerifyUtils.getInteractions(spy), "interactions");
     }
 }

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.test.entities;
 
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -23,11 +24,16 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
+import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedChannelCacheViewImpl;
 import net.dv8tion.jda.test.Constants;
 import net.dv8tion.jda.test.IntegrationTest;
+import net.dv8tion.jda.test.util.MockitoVerifyUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -35,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class EntityManagerTest extends IntegrationTest {
+class EntityBuilderTest extends IntegrationTest {
     @Mock
     private GuildImpl guild;
 
@@ -77,6 +83,64 @@ class EntityManagerTest extends IntegrationTest {
         assertThat(createdChannel.getGuild()).isSameAs(newGuild);
 
         verify(jda, times(1)).getGuildById(anyLong());
+    }
+
+    @Test
+    void createMessageForUserAfterBan() {
+        EntityBuilder entityBuilder = jda.getEntityBuilder();
+        doReturn(new SnowflakeCacheViewImpl<>(User.class, User::getName))
+                .when(jda)
+                .getUsersView();
+        doReturn(new SelfUserImpl(Constants.BUTLER_USER_ID, jda)).when(jda).getSelfUser();
+
+        MemberCacheViewImpl memberCache = mock(MemberCacheViewImpl.class);
+        doReturn(memberCache).when(guild).getMembersView();
+
+        DataObject data = DataObject.fromJson("""
+                {
+                  "mention_everyone": false,
+                  "pinned": false,
+                  "components": [],
+                  "attachments": [],
+                  "author": {
+                    "primary_guild": null,
+                    "global_name": "minn",
+                    "avatar_decoration_data": null,
+                    "clan": null,
+                    "collectibles": null,
+                    "display_name_styles": null,
+                    "public_flags": 0,
+                    "id": "86699011792191488",
+                    "avatar": null,
+                    "username": "minn",
+                    "discriminator": "0"
+                  },
+                  "flags": 0,
+                  "type": 0,
+                  "mention_roles": [],
+                  "nonce": "1515403436928012378",
+                  "edited_timestamp": null,
+                  "content": "",
+                  "tts": false,
+                  "mentions": [],
+                  "guild_id": "125227483518861312",
+                  "id": "1515403436928012378",
+                  "channel_type": 0,
+                  "embeds": [],
+                  "channel_id": "125227483518861312",
+                  "timestamp": "2026-06-14T12:00:00.123456+00:00"
+                }
+                """);
+
+        assertThatLoggingFrom(() -> {
+                    ReceivedMessage message = entityBuilder.createMessageWithLookup(data, guild, true);
+                    assertThat(message.getAuthor()).isNotNull();
+                    assertThat(message.getMember()).isNotNull();
+                })
+                .matchesSnapshot("logging");
+
+        assertThat(MockitoVerifyUtils.getInteractions(memberCache)).isEmpty();
+        assertInteractionsWithSnapshot(memberCache);
     }
 
     static class TestData {

@@ -1580,7 +1580,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
     }
 
     public ReceivedMessage createMessageWithChannel(
-            DataObject json, @Nonnull MessageChannel channel, boolean modifyCache) {
+            DataObject json, @Nonnull MessageChannel channel, boolean gatewayEvent) {
         // Use channel directly if message is from a known guild channel
         if (channel instanceof GuildMessageChannel) {
             GuildMessageChannel messageChannel = (GuildMessageChannel) channel;
@@ -1588,31 +1588,31 @@ public class EntityBuilder extends AbstractEntityBuilder {
                     json,
                     channel,
                     messageChannel.isDetached() ? null : (GuildImpl) messageChannel.getGuild(),
-                    modifyCache);
+                    gatewayEvent);
         }
         if (channel instanceof GroupChannel) {
-            return createMessage0(json, channel, null, modifyCache);
+            return createMessage0(json, channel, null, gatewayEvent);
         }
 
         // Try to resolve private channel recipient if needed
         if (channel instanceof PrivateChannel) {
-            return createMessageWithLookup(json, null, modifyCache);
+            return createMessageWithLookup(json, null, gatewayEvent);
         }
         throw new IllegalArgumentException(MISSING_CHANNEL);
     }
 
-    public ReceivedMessage createMessageWithLookup(DataObject json, @Nullable Guild guild, boolean modifyCache) {
+    public ReceivedMessage createMessageWithLookup(DataObject json, @Nullable Guild guild, boolean gatewayEvent) {
         // Private channels may be partial in our cache and missing recipient information
         // we can try and derive the user from the message here
         if (guild == null) {
-            return createMessage0(json, createPrivateChannelByMessage(json), null, modifyCache);
+            return createMessage0(json, createPrivateChannelByMessage(json), null, gatewayEvent);
         }
         // If we know that the message was sent in a guild,
         // we can use the guild to resolve the channel directly
         MessageChannel channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id"));
         //        if (channel == null)
         //            throw new IllegalArgumentException(MISSING_CHANNEL);
-        return createMessage0(json, channel, (GuildImpl) guild, modifyCache);
+        return createMessage0(json, channel, (GuildImpl) guild, gatewayEvent);
     }
 
     // This tries to build a private channel instance through an arbitrary message object
@@ -1648,7 +1648,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
     }
 
     private ReceivedMessage createMessage0(
-            DataObject jsonObject, @Nullable MessageChannel channel, @Nullable GuildImpl guild, boolean modifyCache) {
+            DataObject jsonObject, @Nullable MessageChannel channel, @Nullable GuildImpl guild, boolean gatewayEvent) {
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         if (type == MessageType.UNKNOWN) {
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
@@ -1668,7 +1668,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
             member = createMember(guild, memberJson);
-            if (modifyCache) {
+            if (gatewayEvent) {
                 // Update member cache with new information if needed
                 updateMemberCache(member);
             }
@@ -1719,10 +1719,17 @@ public class EntityBuilder extends AbstractEntityBuilder {
             }
             user = member != null ? member.getUser() : null;
             if (user == null) {
-                if (fromWebhook || !modifyCache) {
-                    user = createUser(author); // Specifically for MESSAGE_CREATE
+                if (fromWebhook || !gatewayEvent) {
+                    user = createUser(author);
                 } else {
-                    throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
+                    // NOTE: Intentionally do not update member cache here,
+                    // since this is likely caused by a ban message race-condition
+                    member = createMember(
+                            guild, DataObject.empty().put("user", author).put("roles", DataArray.empty()));
+                    user = member.getUser();
+                    LOG.debug(
+                            "Received a message from a guild without an attached member, assuming empty roles. Message: {}",
+                            JDALogger.getLazyString(jsonObject::toPrettyString));
                 }
             }
         } else if (channel instanceof PrivateChannel) {
@@ -1740,7 +1747,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
             user = createUser(author);
         }
 
-        if (modifyCache && !fromWebhook) { // update the user information on message receive
+        if (gatewayEvent && !fromWebhook) { // update the user information on message receive
             updateUser((UserImpl) user, author);
         }
 
