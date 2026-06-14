@@ -70,7 +70,7 @@ public interface MessageSearchResponse {
      *
      * @see #asNotReady()
      */
-    interface NotReady extends MessageSearchResponse {
+    interface NotReady {
         /**
          * The number of documents that has been indexed thus far.
          *
@@ -93,7 +93,7 @@ public interface MessageSearchResponse {
      *
      * @see #asResults()
      */
-    interface Results extends MessageSearchResponse {
+    interface Results {
         /**
          * The messages satisfying the search query.
          *

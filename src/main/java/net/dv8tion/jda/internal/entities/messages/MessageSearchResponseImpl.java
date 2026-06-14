@@ -25,8 +25,35 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-public class MessageSearchResponseImpl {
-    private MessageSearchResponseImpl() {}
+public class MessageSearchResponseImpl implements MessageSearchResponse {
+    private final Object value;
+
+    public MessageSearchResponseImpl(Object value) {
+        this.value = value;
+    }
+
+    @Override
+    public boolean isNotReady() {
+        return value instanceof NotReady;
+    }
+
+    @Nonnull
+    @Override
+    public NotReady asNotReady() {
+        if (value instanceof NotReady) {
+            return (NotReady) value;
+        }
+        throw new IllegalStateException("The message search has succeeded");
+    }
+
+    @Nonnull
+    @Override
+    public Results asResults() {
+        if (value instanceof Results) {
+            return (Results) value;
+        }
+        throw new IllegalStateException("The message search has succeeded");
+    }
 
     public static class NotReadyImpl implements MessageSearchResponse.NotReady {
 
@@ -35,23 +62,6 @@ public class MessageSearchResponseImpl {
         public NotReadyImpl(int documentsIndexed, int retryAfter) {
             this.documentsIndexed = documentsIndexed;
             this.retryAfter = retryAfter;
-        }
-
-        @Override
-        public boolean isNotReady() {
-            return true;
-        }
-
-        @Nonnull
-        @Override
-        public NotReady asNotReady() {
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        public Results asResults() {
-            throw new IllegalStateException("The message search has failed");
         }
 
         @Override
@@ -75,23 +85,6 @@ public class MessageSearchResponseImpl {
             this.messages = messages;
             this.doingDeepHistoricalIndex = doingDeepHistoricalIndex;
             this.totalResults = totalResults;
-        }
-
-        @Override
-        public boolean isNotReady() {
-            return false;
-        }
-
-        @Nonnull
-        @Override
-        public NotReady asNotReady() {
-            throw new IllegalStateException("The message search has succeeded");
-        }
-
-        @Nonnull
-        @Override
-        public Results asResults() {
-            return this;
         }
 
         @Nonnull

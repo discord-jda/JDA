@@ -524,13 +524,13 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
         MessageSearchResponse searchResponse;
         DataObject object = response.getObject();
         if (response.code == 202) {
-            searchResponse = new MessageSearchResponseImpl.NotReadyImpl(
-                    object.getInt("documents_indexed"), object.getInt("retry_after"));
+            searchResponse = new MessageSearchResponseImpl(new MessageSearchResponseImpl.NotReadyImpl(
+                    object.getInt("documents_indexed"), object.getInt("retry_after")));
         } else {
-            searchResponse = new MessageSearchResponseImpl.ResultsImpl(
+            searchResponse = new MessageSearchResponseImpl(new MessageSearchResponseImpl.ResultsImpl(
                     readMessages(object),
                     object.getBoolean("doing_deep_historical_index"),
-                    object.getInt("total_results"));
+                    object.getInt("total_results")));
         }
 
         request.onSuccess(searchResponse);
