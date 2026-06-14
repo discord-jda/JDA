@@ -1080,20 +1080,23 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
             if (!(obj instanceof ImageInfo)) {
                 return false;
             }
             ImageInfo image = (ImageInfo) obj;
-            return image == this
-                    || (Objects.equals(image.url, url)
-                            && Objects.equals(image.proxyUrl, proxyUrl)
-                            && image.width == width
-                            && image.height == height);
+            return Objects.equals(image.getUrl(), url)
+                    && Objects.equals(image.getDescription(), description)
+                    && Objects.equals(image.getProxyUrl(), proxyUrl)
+                    && image.getWidth() == width
+                    && image.getHeight() == height;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(url, proxyUrl, width, height);
+            return Objects.hash(url, description, proxyUrl, width, height);
         }
     }
 
