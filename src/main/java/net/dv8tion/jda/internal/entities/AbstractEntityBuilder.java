@@ -16,9 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.RoleColors;
-import net.dv8tion.jda.api.entities.RoleIcon;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -195,6 +193,11 @@ public abstract class AbstractEntityBuilder {
     protected void configureMember(DataObject memberJson, MemberMixin<?> member) {
         member.setNickname(memberJson.getString("nick", null));
         member.setAvatarId(memberJson.getString("avatar", null));
+        AvatarDecoration avatarDecoration = memberJson
+                .optObject("avatar_decoration_data")
+                .map(AvatarDecoration::new)
+                .orElse(null);
+        member.setAvatarDecoration(avatarDecoration);
         if (!memberJson.isNull("flags")) {
             member.setFlags(memberJson.getInt("flags"));
         }
