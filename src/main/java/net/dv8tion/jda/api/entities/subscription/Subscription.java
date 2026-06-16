@@ -1,20 +1,37 @@
-package net.dv8tion.jda.internal.entities.subscription;
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package net.dv8tion.jda.api.entities.subscription;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Representation of a Discord Subscription
  *
  * @see <a href="https://discord.com/developers/docs/resources/subscription" target="_blank">Discord Docs about Subscriptions</a>
  */
-public interface Subscription extends ISnowflake
-{
+public interface Subscription extends ISnowflake {
     /**
      * The user who subscribed
      *
@@ -29,8 +46,7 @@ public interface Subscription extends ISnowflake
      * @return a use who subscribed
      */
     @Nonnull
-    default String getSubscriberId()
-    {
+    default String getSubscriberId() {
         return Long.toUnsignedString(getSubscriberIdLong());
     }
 
@@ -48,11 +64,8 @@ public interface Subscription extends ISnowflake
      * @return The list sku id's related to this {@link Subscription}
      */
     @Nonnull
-    default List<String> getSkuIds()
-    {
-        return getSkuIdsLong().stream()
-                .map(Long::toUnsignedString)
-                .collect(Collectors.toList());
+    default List<String> getSkuIds() {
+        return getSkuIdsLong().stream().map(Long::toUnsignedString).collect(Collectors.toList());
     }
 
     /**
@@ -69,11 +82,8 @@ public interface Subscription extends ISnowflake
      * @return The entitlements id's related to this {@link Subscription}
      */
     @Nonnull
-    default List<String> getEntitlementIds()
-    {
-        return getEntitlementIdsLong().stream()
-                .map(Long::toUnsignedString)
-                .collect(Collectors.toList());
+    default List<String> getEntitlementIds() {
+        return getEntitlementIdsLong().stream().map(Long::toUnsignedString).collect(Collectors.toList());
     }
 
     /**
@@ -90,11 +100,8 @@ public interface Subscription extends ISnowflake
      * @return The  renewal sku id's related to this {@link Subscription}
      */
     @Nullable
-    default List<String> getRenewalSkuIds()
-    {
-        return getRenewalSkuIdsLong().stream()
-                .map(Long::toUnsignedString)
-                .collect(Collectors.toList());
+    default List<String> getRenewalSkuIds() {
+        return getRenewalSkuIdsLong().stream().map(Long::toUnsignedString).collect(Collectors.toList());
     }
 
     /**

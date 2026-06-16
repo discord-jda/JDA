@@ -27,8 +27,6 @@ import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
-import net.dv8tion.jda.api.requests.restaction.pagination.SubscriptionPaginationAction;
-import net.dv8tion.jda.internal.entities.subscription.Subscription;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -43,7 +41,9 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.SubscriptionPaginationAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.entities.subscription.Subscription;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.Once;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -2054,8 +2054,8 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Subscription> retrieveSubscriptionBySkuId(@Nonnull SkuSnowflake skuId, @Nonnull String subscriptionId)
-    {
+    default RestAction<Subscription> retrieveSubscriptionBySkuId(
+            @Nonnull SkuSnowflake skuId, @Nonnull String subscriptionId) {
         return retrieveSubscriptionBySkuId(skuId, MiscUtil.parseSnowflake(subscriptionId));
     }
 

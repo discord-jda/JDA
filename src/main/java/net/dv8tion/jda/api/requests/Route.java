@@ -125,10 +125,9 @@ public class Route {
         public static final Route GET_USER = new Route(GET, "users/{user_id}");
     }
 
-    public static class Sku
-    {
-        public static final Route GET_SUBSCRIPTIONS =               new Route(GET, "skus/{sku.id}/subscriptions");
-        public static final Route GET_SUBSCRIPTION =                new Route(GET, "skus/{sku.id}/subscriptions/{subscription_id}");
+    public static class Sku {
+        public static final Route GET_SUBSCRIPTIONS = new Route(GET, "skus/{sku.id}/subscriptions");
+        public static final Route GET_SUBSCRIPTION = new Route(GET, "skus/{sku.id}/subscriptions/{subscription_id}");
     }
 
     public static class Guilds {
