@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
  */
 public enum SubscriptionStatus
 {
-    UNKNOWN(-1), ACTIVE(0), ENDING(1), INACTIVE(2);
+    ACTIVE(0), ENDING(2), INACTIVE(1);
 
     private final int id;
 
@@ -20,22 +20,16 @@ public enum SubscriptionStatus
 
     /**
      * Gets the Subscription status related to the provided key.
-     * <br>If an unknown key is provided, this returns {@link #UNKNOWN}
      *
      * @param  key
      *         The Discord key referencing a Subscription status.
      *
-     * @return The Subscription status that has the key provided, or {@link #UNKNOWN} for unknown key.
+     * @return The Subscription status that has the key provided
      */
     @Nonnull
     public static SubscriptionStatus fromKey(int key)
     {
-        for (SubscriptionStatus status : values())
-        {
-            if (status.id == key)
-                return status;
-        }
-        return UNKNOWN;
+        return SubscriptionStatus.values()[key];
     }
 
     public int getId()
