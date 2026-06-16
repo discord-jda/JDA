@@ -496,7 +496,11 @@ public class MessageEmbed implements SerializableData {
                 obj.put("color", color & 0xFFFFFF);
             }
             if (thumbnail != null) {
-                obj.put("thumbnail", DataObject.empty().put("url", thumbnail.getUrl()));
+                DataObject thumbnailData = DataObject.empty().put("url", thumbnail.getUrl());
+                if (!Helpers.isEmpty(thumbnail.getDescription())) {
+                    thumbnailData.put("description", thumbnail.getDescription());
+                }
+                obj.put("thumbnail", thumbnailData);
             }
             if (siteProvider != null) {
                 DataObject siteProviderObj = DataObject.empty();
@@ -535,7 +539,11 @@ public class MessageEmbed implements SerializableData {
                 obj.put("footer", footerObj);
             }
             if (image != null) {
-                obj.put("image", DataObject.empty().put("url", image.getUrl()));
+                DataObject imageData = DataObject.empty().put("url", image.getUrl());
+                if (!Helpers.isEmpty(image.getDescription())) {
+                    imageData.put("description", image.getDescription());
+                }
+                obj.put("image", imageData);
             }
             if (!fields.isEmpty()) {
                 DataArray fieldsArray = DataArray.empty();
@@ -697,20 +705,23 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
             if (!(obj instanceof Thumbnail)) {
                 return false;
             }
             Thumbnail thumbnail = (Thumbnail) obj;
-            return thumbnail == this
-                    || (Objects.equals(thumbnail.url, url)
-                            && Objects.equals(thumbnail.proxyUrl, proxyUrl)
-                            && thumbnail.width == width
-                            && thumbnail.height == height);
+            return Objects.equals(thumbnail.getUrl(), url)
+                    && Objects.equals(thumbnail.getDescription(), description)
+                    && Objects.equals(thumbnail.getProxyUrl(), proxyUrl)
+                    && thumbnail.getWidth() == width
+                    && thumbnail.getHeight() == height;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(url, proxyUrl, width, height);
+            return Objects.hash(url, description, proxyUrl, width, height);
         }
     }
 
@@ -1076,20 +1087,23 @@ public class MessageEmbed implements SerializableData {
 
         @Override
         public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
             if (!(obj instanceof ImageInfo)) {
                 return false;
             }
             ImageInfo image = (ImageInfo) obj;
-            return image == this
-                    || (Objects.equals(image.url, url)
-                            && Objects.equals(image.proxyUrl, proxyUrl)
-                            && image.width == width
-                            && image.height == height);
+            return Objects.equals(image.getUrl(), url)
+                    && Objects.equals(image.getDescription(), description)
+                    && Objects.equals(image.getProxyUrl(), proxyUrl)
+                    && image.getWidth() == width
+                    && image.getHeight() == height;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(url, proxyUrl, width, height);
+            return Objects.hash(url, description, proxyUrl, width, height);
         }
     }
 
