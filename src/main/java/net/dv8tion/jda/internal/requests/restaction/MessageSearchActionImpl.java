@@ -399,7 +399,13 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
 
     @Nonnull
     @Override
-    public MessageSearchAction setCheck(BooleanSupplier checks) {
+    public MessageSearchAction addCheck(@Nonnull BooleanSupplier checks) {
+        return (MessageSearchAction) super.addCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public MessageSearchAction setCheck(@Nullable BooleanSupplier checks) {
         return (MessageSearchAction) super.setCheck(checks);
     }
 

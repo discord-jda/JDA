@@ -24,6 +24,8 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Range;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
@@ -78,6 +80,22 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     int MAX_ATTACHMENT_EXTENSIONS = 100;
     /** The maximum length of an attachment extension */
     int MAX_ATTACHMENT_EXTENSION_LENGTH = 256;
+
+    @Nonnull
+    @Override
+    MessageSearchAction addCheck(@Nonnull BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    MessageSearchAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    MessageSearchAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    MessageSearchAction deadline(long timestamp);
 
     /**
      * Sets the maximum number of messages to return.
