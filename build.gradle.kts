@@ -135,13 +135,13 @@ base {
     archivesName.set("JDA")
 }
 
-val examples by sourceSets.creating {
+val examples = sourceSets.create("examples") {
     java.srcDir("src/examples/java")
     compileClasspath += sourceSets["main"].output
     runtimeClasspath += sourceSets["main"].output
 }
 
-val testJava8 by sourceSets.creating {
+val testJava8 = sourceSets.create("testJava8") {
     java.srcDir("src/test-java8/java")
     resources.srcDir("src/test-java8/resources")
     compileClasspath += sourceSets["main"].output
@@ -168,17 +168,17 @@ val java8Toolchain = javaToolchains.launcherFor {
 
 val currentJavaVersion = JavaVersion.current().majorVersion
 
-val mockitoAgent by configurations.creating
+val mockitoAgent = configurations.create("mockitoAgent")
 
-val testJava8Implementation by configurations.getting {
+val testJava8Implementation = configurations.getByName("testJava8Implementation") {
     extendsFrom(configurations.implementation.get())
 }
 
-val testJava8RuntimeOnly by configurations.getting {
+val testJava8RuntimeOnly = configurations.getByName("testJava8RuntimeOnly") {
     extendsFrom(configurations.runtimeOnly.get())
 }
 
-val examplesImplementation by configurations.getting {
+val examplesImplementation = configurations.getByName("examplesImplementation") {
     extendsFrom(configurations.implementation.get())
 }
 
@@ -334,7 +334,7 @@ tasks.named("spotlessJavaApply").configure {
     dependsOn(tasks.named("rewriteRun"))
 }
 
-val enableErrorpronePatching by tasks.registering {
+val enableErrorpronePatching = tasks.register("enableErrorpronePatching") {
     group = "verification"
 
     doFirst {
@@ -354,7 +354,7 @@ tasks.register("format") {
     dependsOn(tasks.named("versionCatalogFormat"))
 }
 
-val checkFormat by tasks.registering {
+val checkFormat = tasks.register("checkFormat") {
     group = "verification"
     dependsOn(tasks.named("spotlessCheck"))
     dependsOn(tasks.named("rewriteDryRun"))
@@ -384,17 +384,17 @@ tasks.withType(AbstractRewriteTask::class).configureEach {
 //                                //
 ////////////////////////////////////
 
-val jar by tasks.getting(Jar::class) {
+val jar = tasks.getByName<Jar>("jar") {
     archiveBaseName.set(project.name)
     manifest.attributes("Implementation-Version" to project.version, "Automatic-Module-Name" to "net.dv8tion.jda")
 }
 
-val shadowJar by tasks.getting(ShadowJar::class) {
+val shadowJar = tasks.getByName<ShadowJar>("shadowJar") {
     archiveClassifier.set("withDependencies")
     exclude("*.pom")
 }
 
-val sourcesForRelease by tasks.registering(Copy::class) {
+val sourcesForRelease = tasks.register<Copy>("sourcesForRelease") {
     from("src/main/java") {
         include("**/JDAInfo.java")
         val version = projectEnvironment.version.get()
@@ -417,7 +417,7 @@ val sourcesForRelease by tasks.registering(Copy::class) {
     includeEmptyDirs = false
 }
 
-val generateJavaSources by tasks.registering(SourceTask::class) {
+val generateJavaSources = tasks.register<SourceTask>("generateJavaSources") {
     val javaSources = sourceSets["main"].allJava.filter {
         it.name != "JDAInfo.java"
     }.asFileTree
@@ -426,7 +426,7 @@ val generateJavaSources by tasks.registering(SourceTask::class) {
     dependsOn(sourcesForRelease)
 }
 
-val noOpusJar by tasks.registering(ShadowJar::class) {
+val noOpusJar = tasks.register<ShadowJar>("noOpusJar") {
     dependsOn(shadowJar)
     archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
 
@@ -436,7 +436,7 @@ val noOpusJar by tasks.registering(ShadowJar::class) {
     manifest.from(jar.manifest)
 }
 
-val minimalJar by tasks.registering(ShadowJar::class) {
+val minimalJar = tasks.register<ShadowJar>("minimalJar") {
     dependsOn(shadowJar)
     minimize()
     archiveClassifier.set(shadowJar.archiveClassifier.get() + "-min")
@@ -447,7 +447,7 @@ val minimalJar by tasks.registering(ShadowJar::class) {
     manifest.from(jar.manifest)
 }
 
-val sourcesJar by tasks.registering(Jar::class) {
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
     from("src/main/java") {
         exclude("**/JDAInfo.java")
@@ -457,7 +457,7 @@ val sourcesJar by tasks.registering(Jar::class) {
     dependsOn(sourcesForRelease)
 }
 
-val javadoc by tasks.getting(Javadoc::class) {
+val javadoc = tasks.getByName<Javadoc>("javadoc") {
     isFailOnError = projectEnvironment.isGithubAction
 
     (options as? StandardJavadocDocletOptions)?.apply {
@@ -485,7 +485,7 @@ val javadoc by tasks.getting(Javadoc::class) {
     }
 }
 
-val javadocJar by tasks.registering(Jar::class) {
+val javadocJar = tasks.register<Jar>("javadocJar") {
     dependsOn(javadoc)
     archiveClassifier.set("javadoc")
     from(javadoc.destinationDir)
@@ -536,7 +536,7 @@ tasks.withType<JavaCompile>().configureEach {
     mustRunAfter(enableErrorpronePatching)
 }
 
-val compileJava by tasks.getting(JavaCompile::class) {
+val compileJava = tasks.getByName<JavaCompile>("compileJava") {
     dependsOn(generateJavaSources)
     source = generateJavaSources.get().source
 
@@ -573,7 +573,7 @@ tasks.build.configure {
 ////////////////////////////////////
 
 
-val downloadRecipeClasspath by tasks.registering(Download::class) {
+val downloadRecipeClasspath = tasks.register<Download>("downloadRecipeClasspath") {
     val targetVersion = "5.6.1"
     src("https://repo.maven.apache.org/maven2/net/dv8tion/JDA/$targetVersion/JDA-$targetVersion.jar")
     dest("src/test/resources/META-INF/rewrite/classpath/JDA-$targetVersion.jar")
@@ -614,7 +614,7 @@ tasks.test {
     }
 }
 
-val testJava8Compatibility by tasks.registering(Test::class) {
+val testJava8Compatibility = tasks.register<Test>("testJava8Compatibility") {
     group = "verification"
 
     useJUnitPlatform()
@@ -630,7 +630,7 @@ tasks.named("check").configure {
     dependsOn(testJava8Compatibility)
 }
 
-val verifyBytecodeVersion by tasks.registering(VerifyBytecodeVersion::class) {
+val verifyBytecodeVersion = tasks.register<VerifyBytecodeVersion>("verifyBytecodeVersion") {
     group = "verification"
 
     expectedMajorVersion = 52
