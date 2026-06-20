@@ -27,14 +27,14 @@ val apiModelGenerator = project.extensions.create<ApiModelGenerator>("apiModelGe
 
 val taskGroup = "model generator"
 
-val downloadApiSpec by tasks.registering(Download::class) {
+val downloadApiSpec = tasks.register<Download>("downloadApiSpec") {
     group = taskGroup
 
     src(apiModelGenerator.apiSpecDownloadUrl)
     dest(apiModelGenerator.apiSpecFile)
 }
 
-val generateApiModels by tasks.registering(GenerateApiModelsTask::class) {
+val generateApiModels = tasks.register<GenerateApiModelsTask>("generateApiModels") {
     group = taskGroup
 
     suffix = apiModelGenerator.generatorSuffix
@@ -42,7 +42,7 @@ val generateApiModels by tasks.registering(GenerateApiModelsTask::class) {
     outputDirectory = apiModelGenerator.outputDirectory
 }
 
-val filterGeneratedFiles by tasks.registering(FilterGeneratedTypesTask::class) {
+val filterGeneratedFiles = tasks.register<FilterGeneratedTypesTask>("filterGeneratedFiles") {
     group = taskGroup
 
     suffix = apiModelGenerator.generatorSuffix
@@ -52,7 +52,7 @@ val filterGeneratedFiles by tasks.registering(FilterGeneratedTypesTask::class) {
     dependsOn(generateApiModels)
 }
 
-project.tasks.named("compileJava") {
+tasks.named("compileJava") {
     dependsOn(filterGeneratedFiles)
 }
 
