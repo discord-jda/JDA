@@ -230,7 +230,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
             Checks.notNegative(minValues, "Min Values");
             Checks.check(
                     minValues <= OPTIONS_MAX_AMOUNT,
-                    "Min Values may not be greater than %d! Provided: %d",
+                    "Min Values may not be greater than %d ! Provided: %d",
                     OPTIONS_MAX_AMOUNT,
                     minValues);
             this.minValues = minValues;
@@ -256,7 +256,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
             Checks.positive(maxValues, "Max Values");
             Checks.check(
                     maxValues <= OPTIONS_MAX_AMOUNT,
-                    "Max Values may not be greater than %d! Provided: %d",
+                    "Max Values may not be greater than %d ! Provided: %d",
                     OPTIONS_MAX_AMOUNT,
                     maxValues);
             this.maxValues = maxValues;
