@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.jvm.JvmTargetValidationMode
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 /*
  * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
@@ -18,7 +15,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  */
 
 plugins {
-    kotlin("jvm") version "2.2.21"
+    alias(libs.plugins.kotlin)
 }
 
 repositories {
@@ -39,8 +36,4 @@ java {
         languageVersion.set(JavaLanguageVersion.of(25))
         vendor.set(JvmVendorSpec.ADOPTIUM)
     }
-}
-
-tasks.withType(KotlinCompile::class).configureEach {
-    jvmTargetValidationMode.set(JvmTargetValidationMode.IGNORE)
 }
