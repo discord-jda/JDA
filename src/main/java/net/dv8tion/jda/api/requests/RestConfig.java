@@ -32,6 +32,8 @@ import javax.annotation.Nullable;
  *
  * <p>This can be used to replace the {@link #setRateLimiterFactory(Function) rate-limit handling}
  * or to use a different {@link #setBaseUrl(String) base url} for requests, e.g. for mocked HTTP responses or proxies.
+ * It also supports observability hooks such as
+ * {@link #setRateLimitEventConsumer(Consumer)} and {@link #setMetricsCollector(RestMetricsCollector)}.
  */
 public class RestConfig {
     /**
@@ -48,6 +50,8 @@ public class RestConfig {
     private String baseUrl = DEFAULT_BASE_URL;
     private boolean relativeRateLimit = true;
     private Consumer<? super Request.Builder> customBuilder;
+    private Consumer<? super RestRateLimiter.RateLimitEvent> rateLimitEventConsumer;
+    private RestMetricsCollector metricsCollector;
     private Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> rateLimiter =
             SequentialRestRateLimiter::new;
 
@@ -160,6 +164,40 @@ public class RestConfig {
     }
 
     /**
+     * Optional observability hook for rate-limit processing.
+     * <br>The default {@link SequentialRestRateLimiter} emits structured events to this consumer.
+     *
+     * <p>This is useful for metrics, alerts, and operational dashboards.
+     * The callback should avoid blocking behavior to keep request processing fast.
+     *
+     * @param  rateLimitEventConsumer
+     *         Event consumer, or null to disable
+     *
+     * @return The current RestConfig for chaining convenience
+     */
+    @Nonnull
+    public RestConfig setRateLimitEventConsumer(
+            @Nullable Consumer<? super RestRateLimiter.RateLimitEvent> rateLimitEventConsumer) {
+        this.rateLimitEventConsumer = rateLimitEventConsumer;
+        return this;
+    }
+
+    /**
+     * Optional metrics collector for REST and rate-limit processing.
+     * <br>This provides a neutral bridge for custom integrations such as Micrometer/OpenTelemetry adapters.
+     *
+     * @param  metricsCollector
+     *         The metrics collector, or null to disable
+     *
+     * @return The current RestConfig for chaining convenience
+     */
+    @Nonnull
+    public RestConfig setMetricsCollector(@Nullable RestMetricsCollector metricsCollector) {
+        this.metricsCollector = metricsCollector;
+        return this;
+    }
+
+    /**
      * The adapted user-agent with the custom {@link #setUserAgentSuffix(String) suffix}.
      *
      * @return The user-agent
@@ -197,6 +235,26 @@ public class RestConfig {
     @Nullable
     public Consumer<? super Request.Builder> getCustomBuilder() {
         return customBuilder;
+    }
+
+    /**
+     * The optional consumer for rate-limit observability events.
+     *
+     * @return The consumer, or null if none is configured
+     */
+    @Nullable
+    public Consumer<? super RestRateLimiter.RateLimitEvent> getRateLimitEventConsumer() {
+        return rateLimitEventConsumer;
+    }
+
+    /**
+     * Optional metrics collector for REST and rate-limit processing.
+     *
+     * @return The metrics collector, or null if none is configured
+     */
+    @Nullable
+    public RestMetricsCollector getMetricsCollector() {
+        return metricsCollector;
     }
 
     /**

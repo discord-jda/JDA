@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Blocking;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -163,6 +164,196 @@ public interface RestRateLimiter {
     }
 
     /**
+     * Event model emitted by the default {@link SequentialRestRateLimiter} for observability integrations.
+     * <br>Use this to inspect queue pressure, retry behavior, and encountered 429 responses per route and bucket.
+     *
+     * <p>These events are optional and only emitted when
+     * {@link RateLimitConfig#getEventConsumer() RateLimitConfig.eventConsumer} or
+     * {@link RateLimitConfig#getMetricsCollector() RateLimitConfig.metricsCollector} is configured.
+     */
+    class RateLimitEvent {
+        public enum Type {
+            /**
+             * A request was queued in a bucket.
+             */
+            REQUEST_QUEUED,
+            /**
+             * A request was re-queued for retry.
+             */
+            REQUEST_REQUEUED,
+            /**
+             * The bucket state was updated from response headers.
+             */
+            BUCKET_UPDATED,
+            /**
+             * The bucket encountered a 429 response.
+             */
+            RATE_LIMITED,
+            /**
+             * The bucket entered a backoff window before processing can continue.
+             */
+            BACKOFF
+        }
+
+        private final Type type;
+        private final JDA jda;
+        private final Route.CompiledRoute route;
+        private final String bucketId;
+        private final int queueSize;
+        private final int responseCode;
+        private final int remaining;
+        private final long resetTimestamp;
+        private final long retryAfterMillis;
+        private final boolean globalRateLimit;
+        private final boolean cloudflareRateLimit;
+        private final String scope;
+
+        public RateLimitEvent(
+                @Nonnull Type type,
+                @Nonnull JDA jda,
+                @Nonnull Route.CompiledRoute route,
+                @Nonnull String bucketId,
+                int queueSize,
+                int responseCode,
+                int remaining,
+                long resetTimestamp,
+                long retryAfterMillis,
+                boolean globalRateLimit,
+                boolean cloudflareRateLimit,
+                @Nullable String scope) {
+            this.type = type;
+            this.jda = jda;
+            this.route = route;
+            this.bucketId = bucketId;
+            this.queueSize = queueSize;
+            this.responseCode = responseCode;
+            this.remaining = remaining;
+            this.resetTimestamp = resetTimestamp;
+            this.retryAfterMillis = retryAfterMillis;
+            this.globalRateLimit = globalRateLimit;
+            this.cloudflareRateLimit = cloudflareRateLimit;
+            this.scope = scope;
+        }
+
+        /**
+         * The event type.
+         *
+         * @return The type
+         */
+        @Nonnull
+        public Type getType() {
+            return type;
+        }
+
+        /**
+         * The JDA instance that emitted the event.
+         *
+         * @return The JDA instance
+         */
+        @Nonnull
+        public JDA getJDA() {
+            return jda;
+        }
+
+        /**
+         * The compiled route associated with this event.
+         *
+         * @return The route
+         */
+        @Nonnull
+        public Route.CompiledRoute getRoute() {
+            return route;
+        }
+
+        /**
+         * The bucket identifier used by the rate-limiter.
+         *
+         * @return The bucket identifier
+         */
+        @Nonnull
+        public String getBucketId() {
+            return bucketId;
+        }
+
+        /**
+         * Current queue size for the bucket when this event was emitted.
+         *
+         * @return The queue size
+         */
+        public int getQueueSize() {
+            return queueSize;
+        }
+
+        /**
+         * HTTP status code related to this event.
+         * <br>This value is {@code -1} for non-response events such as queueing and backoff.
+         *
+         * @return The response code or {@code -1}
+         */
+        public int getResponseCode() {
+            return responseCode;
+        }
+
+        /**
+         * Remaining requests in the bucket after the update.
+         * <br>This value can be {@code -1} if not applicable.
+         *
+         * @return Remaining requests or {@code -1}
+         */
+        public int getRemaining() {
+            return remaining;
+        }
+
+        /**
+         * Unix timestamp in milliseconds when the current bucket window resets.
+         * <br>This value can be {@code -1} if not applicable.
+         *
+         * @return Reset timestamp or {@code -1}
+         */
+        public long getResetTimestamp() {
+            return resetTimestamp;
+        }
+
+        /**
+         * Retry delay in milliseconds associated with this event.
+         * <br>This is set for {@link Type#RATE_LIMITED} and {@link Type#BACKOFF}.
+         *
+         * @return Retry delay in milliseconds or {@code -1}
+         */
+        public long getRetryAfterMillis() {
+            return retryAfterMillis;
+        }
+
+        /**
+         * Whether this event refers to the global (token-wide) Discord rate-limit.
+         *
+         * @return True, if this is global
+         */
+        public boolean isGlobalRateLimit() {
+            return globalRateLimit;
+        }
+
+        /**
+         * Whether this event refers to a cloudflare rate-limit.
+         *
+         * @return True, if this is cloudflare
+         */
+        public boolean isCloudflareRateLimit() {
+            return cloudflareRateLimit;
+        }
+
+        /**
+         * Scope information from {@code X-RateLimit-Scope} when available.
+         *
+         * @return The scope, or null if unavailable
+         */
+        @Nullable
+        public String getScope() {
+            return scope;
+        }
+    }
+
+    /**
      * Global rate-limit store.
      * <br>This can be used to share the global rate-limit information between multiple instances.
      */
@@ -244,12 +435,14 @@ public interface RestRateLimiter {
         private final ExecutorService elastic;
         private final GlobalRateLimit globalRateLimit;
         private final boolean isRelative;
+        private final Consumer<? super RateLimitEvent> eventConsumer;
+        private final RestMetricsCollector metricsCollector;
 
         public RateLimitConfig(
                 @Nonnull ScheduledExecutorService scheduler,
                 @Nonnull GlobalRateLimit globalRateLimit,
                 boolean isRelative) {
-            this(scheduler, scheduler, globalRateLimit, isRelative);
+            this(scheduler, scheduler, globalRateLimit, isRelative, null, null);
         }
 
         public RateLimitConfig(
@@ -257,10 +450,48 @@ public interface RestRateLimiter {
                 @Nonnull ExecutorService elastic,
                 @Nonnull GlobalRateLimit globalRateLimit,
                 boolean isRelative) {
+            this(scheduler, elastic, globalRateLimit, isRelative, null, null);
+        }
+
+        public RateLimitConfig(
+                @Nonnull ScheduledExecutorService scheduler,
+                @Nonnull GlobalRateLimit globalRateLimit,
+                boolean isRelative,
+                @Nullable Consumer<? super RateLimitEvent> eventConsumer) {
+            this(scheduler, scheduler, globalRateLimit, isRelative, eventConsumer, null);
+        }
+
+        public RateLimitConfig(
+                @Nonnull ScheduledExecutorService scheduler,
+                @Nonnull ExecutorService elastic,
+                @Nonnull GlobalRateLimit globalRateLimit,
+                boolean isRelative,
+                @Nullable Consumer<? super RateLimitEvent> eventConsumer) {
+            this(scheduler, elastic, globalRateLimit, isRelative, eventConsumer, null);
+        }
+
+        public RateLimitConfig(
+                @Nonnull ScheduledExecutorService scheduler,
+                @Nonnull GlobalRateLimit globalRateLimit,
+                boolean isRelative,
+                @Nullable Consumer<? super RateLimitEvent> eventConsumer,
+                @Nullable RestMetricsCollector metricsCollector) {
+            this(scheduler, scheduler, globalRateLimit, isRelative, eventConsumer, metricsCollector);
+        }
+
+        public RateLimitConfig(
+                @Nonnull ScheduledExecutorService scheduler,
+                @Nonnull ExecutorService elastic,
+                @Nonnull GlobalRateLimit globalRateLimit,
+                boolean isRelative,
+                @Nullable Consumer<? super RateLimitEvent> eventConsumer,
+                @Nullable RestMetricsCollector metricsCollector) {
             this.scheduler = scheduler;
             this.elastic = elastic;
             this.globalRateLimit = globalRateLimit;
             this.isRelative = isRelative;
+            this.eventConsumer = eventConsumer;
+            this.metricsCollector = metricsCollector;
         }
 
         /**
@@ -304,6 +535,27 @@ public interface RestRateLimiter {
          */
         public boolean isRelative() {
             return isRelative;
+        }
+
+        /**
+         * Optional consumer for rate-limit observability events.
+         * <br>The default {@link SequentialRestRateLimiter} emits events when available.
+         *
+         * @return The consumer, or null if none was configured
+         */
+        @Nullable
+        public Consumer<? super RateLimitEvent> getEventConsumer() {
+            return eventConsumer;
+        }
+
+        /**
+         * Optional metrics collector for rate-limit and request metrics.
+         *
+         * @return The metrics collector, or null if none is configured
+         */
+        @Nullable
+        public RestMetricsCollector getMetricsCollector() {
+            return metricsCollector;
         }
     }
 }
