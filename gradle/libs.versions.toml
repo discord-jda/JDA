@@ -49,6 +49,7 @@ junit-java8 = [
 errorprone = "net.ltgt.errorprone:5.1.0"
 ideax = "org.jetbrains.gradle.plugin.idea-ext:1.4.1"
 jreleaser = "org.jreleaser:1.24.0"
+kotlin = "org.jetbrains.kotlin.jvm:2.4.0"
 openrewrite = "org.openrewrite.rewrite:7.34.0"
 shadow = "com.gradleup.shadow:9.4.2"
 # @pin Version 8.0.0 is incompatible with jreleaser (see https://github.com/jreleaser/jreleaser/issues/1989)
