@@ -126,6 +126,7 @@ public class AttachmentUploadImpl extends AbstractComponentImpl implements Attac
         return new EntityString(this)
                 .addMetadata("custom_id", customId)
                 .addMetadata("required", required)
+                .addMetadata("file_types", fileTypes)
                 .toString();
     }
 
