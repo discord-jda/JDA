@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.FileType;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -35,6 +36,7 @@ import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -606,6 +608,7 @@ public interface Command extends ISnowflake, ICommandReference {
         private Number minValue;
         private Number maxValue;
         private Integer minLength, maxLength;
+        private final List<FileType> fileTypes;
 
         public Option(@Nonnull DataObject json) {
             this.name = json.getString("name");
@@ -636,6 +639,10 @@ public interface Command extends ISnowflake, ICommandReference {
             if (!json.isNull("max_length")) {
                 this.maxLength = json.getInt("max_length");
             }
+            this.fileTypes = json.optArray("file_types")
+                    .map(it ->
+                            it.stream(DataArray::getString).map(FileType::new).collect(Helpers.toUnmodifiableList()))
+                    .orElse(Collections.emptyList());
         }
 
         /**
@@ -773,6 +780,19 @@ public interface Command extends ISnowflake, ICommandReference {
         @Nullable
         public Integer getMaxLength() {
             return maxLength;
+        }
+
+        /**
+         * The <b>immutable</b> list of file types accepted by this option.
+         * Returns an empty list if file types are not filtered,
+         * or this isn't an {@link OptionType#ATTACHMENT ATTACHMENT} option.
+         *
+         * @return Immutable list of file types accepted by this option
+         */
+        @Nonnull
+        @Unmodifiable
+        public List<FileType> getFileTypes() {
+            return fileTypes;
         }
 
         /**

@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.interactions.commands.build;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.FileType;
+import net.dv8tion.jda.api.interactions.IFilterableFileTypes;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
@@ -27,8 +29,10 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,7 +43,7 @@ import javax.annotation.Nullable;
 /**
  * Builder for a Slash-Command option.
  */
-public class OptionData implements SerializableData {
+public class OptionData implements SerializableData, IFilterableFileTypes<OptionData> {
     /**
      * The highest positive amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
@@ -90,6 +94,7 @@ public class OptionData implements SerializableData {
     private Number maxValue;
     private Integer minLength, maxLength;
     private List<Command.Choice> choices;
+    private List<FileType> fileTypes;
 
     /**
      * Create an option builder.
@@ -330,6 +335,19 @@ public class OptionData implements SerializableData {
     @Nullable
     public Integer getMaxLength() {
         return maxLength;
+    }
+
+    /**
+     * The <b>unmodifiable list view</b> of file types to filter for.
+     * Returns an empty list if file types are not filtered,
+     * or this isn't an {@link OptionType#ATTACHMENT ATTACHMENT} option.
+     *
+     * @return Unmodifiable list view of file types
+     */
+    @Nonnull
+    @UnmodifiableView
+    public List<FileType> getFileTypes() {
+        return Collections.unmodifiableList(fileTypes);
     }
 
     /**
@@ -826,6 +844,37 @@ public class OptionData implements SerializableData {
         return this;
     }
 
+    @Nonnull
+    @Override
+    public OptionData addFileTypes(@Nonnull Collection<FileType> fileTypes) {
+        Checks.noneNull(fileTypes, "File types");
+        if (this.fileTypes == null) {
+            setFileTypes(fileTypes);
+        } else {
+            Checks.check(
+                    this.fileTypes.size() + fileTypes.size() <= MAX_FILE_TYPES,
+                    "Cannot have more than %d file types (provided: %d + %d)",
+                    MAX_FILE_TYPES,
+                    this.fileTypes.size(),
+                    fileTypes.size());
+            this.fileTypes.addAll(fileTypes);
+        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public OptionData setFileTypes(@Nonnull Collection<FileType> fileTypes) {
+        Checks.noneNull(fileTypes, "File types");
+        Checks.check(
+                fileTypes.size() <= MAX_FILE_TYPES,
+                "Cannot have more than %d file types (provided: %d)",
+                MAX_FILE_TYPES,
+                fileTypes.size());
+        this.fileTypes = Helpers.copyAsUnmodifiableList(fileTypes);
+        return this;
+    }
+
     /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
@@ -1040,6 +1089,9 @@ public class OptionData implements SerializableData {
             if (maxLength != null) {
                 json.put("max_length", maxLength);
             }
+        }
+        if (type == OptionType.ATTACHMENT && fileTypes != null) {
+            json.put("file_types", fileTypes.stream().map(FileType::getValue).collect(Collectors.toList()));
         }
         return json;
     }
