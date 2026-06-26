@@ -28,8 +28,8 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.interactions.FileTypesImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -94,7 +94,7 @@ public class OptionData implements SerializableData, IFilterableFileTypes<Option
     private Number maxValue;
     private Integer minLength, maxLength;
     private List<Command.Choice> choices;
-    private List<FileType> fileTypes;
+    private final FileTypesImpl fileTypes = FileTypesImpl.empty();
 
     /**
      * Create an option builder.
@@ -347,7 +347,7 @@ public class OptionData implements SerializableData, IFilterableFileTypes<Option
     @Nonnull
     @UnmodifiableView
     public List<FileType> getFileTypes() {
-        return Collections.unmodifiableList(fileTypes);
+        return fileTypes.asView();
     }
 
     /**
@@ -847,31 +847,14 @@ public class OptionData implements SerializableData, IFilterableFileTypes<Option
     @Nonnull
     @Override
     public OptionData addFileTypes(@Nonnull Collection<FileType> fileTypes) {
-        Checks.noneNull(fileTypes, "File types");
-        if (this.fileTypes == null) {
-            setFileTypes(fileTypes);
-        } else {
-            Checks.check(
-                    this.fileTypes.size() + fileTypes.size() <= MAX_FILE_TYPES,
-                    "Cannot have more than %d file types (provided: %d + %d)",
-                    MAX_FILE_TYPES,
-                    this.fileTypes.size(),
-                    fileTypes.size());
-            this.fileTypes.addAll(fileTypes);
-        }
+        this.fileTypes.addAll(fileTypes);
         return this;
     }
 
     @Nonnull
     @Override
     public OptionData setFileTypes(@Nonnull Collection<FileType> fileTypes) {
-        Checks.noneNull(fileTypes, "File types");
-        Checks.check(
-                fileTypes.size() <= MAX_FILE_TYPES,
-                "Cannot have more than %d file types (provided: %d)",
-                MAX_FILE_TYPES,
-                fileTypes.size());
-        this.fileTypes = Helpers.copyAsUnmodifiableList(fileTypes);
+        this.fileTypes.setAll(fileTypes);
         return this;
     }
 
@@ -1090,8 +1073,8 @@ public class OptionData implements SerializableData, IFilterableFileTypes<Option
                 json.put("max_length", maxLength);
             }
         }
-        if (type == OptionType.ATTACHMENT && fileTypes != null) {
-            json.put("file_types", fileTypes.stream().map(FileType::getValue).collect(Collectors.toList()));
+        if (type == OptionType.ATTACHMENT) {
+            json.put("file_types", fileTypes.toData());
         }
         return json;
     }

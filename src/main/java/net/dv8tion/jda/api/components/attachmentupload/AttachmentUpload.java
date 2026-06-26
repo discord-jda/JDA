@@ -22,12 +22,11 @@ import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.interactions.FileType;
 import net.dv8tion.jda.api.interactions.IFilterableFileTypes;
 import net.dv8tion.jda.internal.components.attachmentupload.AttachmentUploadImpl;
+import net.dv8tion.jda.internal.interactions.FileTypesImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.CheckReturnValue;
@@ -130,7 +129,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
         protected String customId;
         protected int minValues = 1;
         protected int maxValues = 1;
-        protected List<FileType> fileTypes = null;
+        protected final FileTypesImpl fileTypes = FileTypesImpl.empty();
         protected boolean required = true;
 
         protected Builder(@Nonnull String customId) {
@@ -229,31 +228,14 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
         @Nonnull
         @Override
         public Builder addFileTypes(@Nonnull Collection<FileType> fileTypes) {
-            Checks.noneNull(fileTypes, "File types");
-            if (this.fileTypes == null) {
-                setFileTypes(fileTypes);
-            } else {
-                Checks.check(
-                        this.fileTypes.size() + fileTypes.size() <= MAX_FILE_TYPES,
-                        "Cannot have more than %d file types (provided: %d + %d)",
-                        MAX_FILE_TYPES,
-                        this.fileTypes.size(),
-                        fileTypes.size());
-                this.fileTypes.addAll(fileTypes);
-            }
+            this.fileTypes.addAll(fileTypes);
             return this;
         }
 
         @Nonnull
         @Override
         public Builder setFileTypes(@Nonnull Collection<FileType> fileTypes) {
-            Checks.noneNull(fileTypes, "File types");
-            Checks.check(
-                    fileTypes.size() <= MAX_FILE_TYPES,
-                    "Cannot have more than %d file types (provided: %d)",
-                    MAX_FILE_TYPES,
-                    fileTypes.size());
-            this.fileTypes = Helpers.copyAsUnmodifiableList(fileTypes);
+            this.fileTypes.setAll(fileTypes);
             return this;
         }
 
@@ -324,7 +306,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
         @Nonnull
         @UnmodifiableView
         public List<FileType> getFileTypes() {
-            return Collections.unmodifiableList(fileTypes);
+            return fileTypes.asView();
         }
 
         /**

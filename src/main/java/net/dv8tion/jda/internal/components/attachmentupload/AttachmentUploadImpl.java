@@ -19,17 +19,14 @@ package net.dv8tion.jda.internal.components.attachmentupload;
 import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
 import net.dv8tion.jda.api.components.label.LabelChildComponentUnion;
 import net.dv8tion.jda.api.interactions.FileType;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
+import net.dv8tion.jda.internal.interactions.FileTypesImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -38,7 +35,7 @@ public class AttachmentUploadImpl extends AbstractComponentImpl implements Attac
     protected final String customId;
     protected final int minValues;
     protected final int maxValues;
-    protected final List<FileType> fileTypes;
+    protected final FileTypesImpl fileTypes;
     protected final boolean required;
 
     public AttachmentUploadImpl(DataObject data) {
@@ -47,21 +44,17 @@ public class AttachmentUploadImpl extends AbstractComponentImpl implements Attac
                 data.getString("custom_id"),
                 data.getInt("min_values", 1),
                 data.getInt("max_values", 1),
-                data.optArray("file_types")
-                        .map(it -> it.stream(DataArray::getString)
-                                .map(FileType::new)
-                                .collect(Helpers.toUnmodifiableList()))
-                        .orElse(Collections.emptyList()),
+                data.optArray("file_types").map(FileTypesImpl::fromArray).orElse(FileTypesImpl.empty()),
                 data.getBoolean("required", true));
     }
 
     public AttachmentUploadImpl(
-            int uniqueId, String customId, int minValues, int maxValues, List<FileType> fileTypes, boolean required) {
+            int uniqueId, String customId, int minValues, int maxValues, FileTypesImpl fileTypes, boolean required) {
         this.uniqueId = uniqueId;
         this.customId = customId;
         this.minValues = minValues;
         this.maxValues = maxValues;
-        this.fileTypes = Helpers.copyAsUnmodifiableList(fileTypes);
+        this.fileTypes = fileTypes.copy();
         this.required = required;
     }
 
@@ -102,7 +95,7 @@ public class AttachmentUploadImpl extends AbstractComponentImpl implements Attac
     @Nonnull
     @Override
     public List<FileType> getFileTypes() {
-        return fileTypes;
+        return fileTypes.asView();
     }
 
     @Override
@@ -118,14 +111,11 @@ public class AttachmentUploadImpl extends AbstractComponentImpl implements Attac
                 .put("custom_id", customId)
                 .put("required", required)
                 .put("min_values", minValues)
-                .put("max_values", maxValues);
+                .put("max_values", maxValues)
+                .put("file_types", fileTypes.toData());
 
         if (uniqueId >= 0) {
             json.put("id", uniqueId);
-        }
-
-        if (fileTypes != null) {
-            json.put("file_types", fileTypes.stream().map(FileType::getValue).collect(Collectors.toList()));
         }
 
         return json;
