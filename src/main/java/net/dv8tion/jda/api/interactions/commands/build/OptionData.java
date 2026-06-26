@@ -1132,6 +1132,12 @@ public class OptionData implements SerializableData, IFilterableFileTypes<Option
                 option.setMaxLength(json.getInt("max_length"));
             }
         }
+        if (type == OptionType.ATTACHMENT) {
+            if (!json.isNull("file_types")) {
+                option.setFileTypes(
+                        FileTypesImpl.fromArray(json.getArray("file_types")).asView());
+            }
+        }
         json.optArray("choices")
                 .ifPresent(choices1 -> option.addChoices(choices1.stream(DataArray::getObject)
                         .map(Command.Choice::new)
@@ -1190,6 +1196,9 @@ public class OptionData implements SerializableData, IFilterableFileTypes<Option
                 if (maxLength != null) {
                     data.setMaxLength(maxLength);
                 }
+                break;
+            case ATTACHMENT:
+                data.setFileTypes(option.getFileTypes());
                 break;
             default:
                 break;
