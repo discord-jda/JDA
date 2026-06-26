@@ -64,6 +64,33 @@ public final class FileType {
     }
 
     /**
+     * Whether this file type accepts all image formats supported by Discord.
+     *
+     * @return {@code true} if this file type accepts all image formats supported by Discord, {@code false} if not
+     */
+    public boolean isImage() {
+        return value.equals("image");
+    }
+
+    /**
+     * Whether this file type accepts all video formats supported by Discord.
+     *
+     * @return {@code true} if this file type accepts all video formats supported by Discord, {@code false} if not
+     */
+    public boolean isVideo() {
+        return value.equals("video");
+    }
+
+    /**
+     * Whether this file type accepts all audio formats supported by Discord.
+     *
+     * @return {@code true} if this file type accepts all audio formats supported by Discord, {@code false} if not
+     */
+    public boolean isAudio() {
+        return value.equals("audio");
+    }
+
+    /**
      * The raw value of this file type.
      *
      * @return The raw value
