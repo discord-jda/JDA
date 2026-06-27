@@ -27,6 +27,9 @@ import javax.annotation.Nonnull;
 /**
  * Represents a type of file, you can use presets such as {@link #IMAGE},
  * or specify an extension using {@link #ofExtension(String)}.
+ *
+ * <p>Remember that this only checks the extension, Discord does not check for any file signature/MIME type,
+ * and thus does not guarantee receiving a valid file.
  */
 public final class FileType {
     /** Matches any image supported by the Discord client. */
