@@ -136,27 +136,15 @@ public class Requester {
                 || e instanceof SSLPeerUnverifiedException; // SSL Certificate was wrong
     }
 
-    public okhttp3.Response execute(WorkTask task) {
+    private okhttp3.Response execute(WorkTask task) {
         return execute(task, false);
     }
 
-    /**
-     * Used to execute a Request. Processes request related to provided bucket.
-     *
-     * @param  task
-     *         The API request that needs to be sent
-     * @param  handleOnRateLimit
-     *         Whether to forward rate-limits, false if rate limit handling should take over
-     *
-     * @return Non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
-     *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
-     *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
-     */
-    public okhttp3.Response execute(WorkTask task, boolean handleOnRateLimit) {
+    private okhttp3.Response execute(WorkTask task, boolean handleOnRateLimit) {
         return execute(task, false, handleOnRateLimit);
     }
 
-    public okhttp3.Response execute(WorkTask task, boolean retried, boolean handleOnRatelimit) {
+    private okhttp3.Response execute(WorkTask task, boolean retried, boolean handleOnRatelimit) {
         Route.CompiledRoute route = task.getRoute();
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
