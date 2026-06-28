@@ -158,7 +158,7 @@ public class EmbedBuilder {
         }
         if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH) {
             throw new IllegalStateException(Helpers.format(
-                    "Description is longer than %d! Please limit your input!", MessageEmbed.DESCRIPTION_MAX_LENGTH));
+                    "Description is longer than %d. Please limit your input!", MessageEmbed.DESCRIPTION_MAX_LENGTH));
         }
         if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT) {
             throw new IllegalStateException(Helpers.format(
