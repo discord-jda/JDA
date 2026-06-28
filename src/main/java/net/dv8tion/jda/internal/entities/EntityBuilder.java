@@ -1934,6 +1934,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         int width = jsonObject.getInt("width", -1);
         int height = jsonObject.getInt("height", -1);
         int size = jsonObject.getInt("size");
+        int flags = jsonObject.getInt("flags", 0);
         String url = jsonObject.getString("url");
         String proxyUrl = jsonObject.getString("proxy_url");
         String filename = jsonObject.getString("filename");
@@ -1952,6 +1953,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 size,
                 height,
                 width,
+                flags,
                 ephemeral,
                 waveform,
                 duration,
