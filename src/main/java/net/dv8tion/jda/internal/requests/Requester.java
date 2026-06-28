@@ -136,7 +136,7 @@ public class Requester {
                 || e instanceof SSLPeerUnverifiedException; // SSL Certificate was wrong
     }
 
-    public okhttp3.Response execute(WorkTask task) {
+    private okhttp3.Response execute(WorkTask task) {
         return execute(task, false);
     }
 
@@ -152,11 +152,11 @@ public class Requester {
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public okhttp3.Response execute(WorkTask task, boolean handleOnRateLimit) {
+    private okhttp3.Response execute(WorkTask task, boolean handleOnRateLimit) {
         return execute(task, false, handleOnRateLimit);
     }
 
-    public okhttp3.Response execute(WorkTask task, boolean retried, boolean handleOnRatelimit) {
+    private okhttp3.Response execute(WorkTask task, boolean retried, boolean handleOnRatelimit) {
         Route.CompiledRoute route = task.getRoute();
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();

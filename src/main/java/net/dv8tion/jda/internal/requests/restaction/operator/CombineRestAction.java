@@ -38,6 +38,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O> {
     private final BiFunction<? super I1, ? super I2, ? extends O> accumulator;
     private volatile boolean failed = false;
 
+    @SuppressWarnings("ReferenceEquality")
     public CombineRestAction(
             RestAction<I1> action1,
             RestAction<I2> action2,

@@ -69,6 +69,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
     }
 
     @Override
+    @SuppressWarnings("ReferenceEquality")
     public T complete(boolean shouldQueue) throws RateLimitedException {
         try {
             return action.complete(shouldQueue);
@@ -82,6 +83,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
                     return then.complete(shouldQueue);
                 }
             } catch (Throwable e) {
+                // Rethrow known if error mapping threw another error
                 if (e instanceof IllegalStateException && e.getCause() == error) {
                     throw (IllegalStateException) e;
                 } else if (e instanceof RateLimitedException) {
