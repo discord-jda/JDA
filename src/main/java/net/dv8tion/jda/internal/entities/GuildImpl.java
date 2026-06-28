@@ -628,6 +628,13 @@ public class GuildImpl implements Guild {
         return new ScheduledEventActionImpl(name, channel, startTime, this);
     }
 
+    @Nonnull
+    @Override
+    public MessageSearchAction searchMessages() {
+        checkPermission(Permission.MESSAGE_HISTORY);
+        return new MessageSearchActionImpl(this);
+    }
+
     @Override
     public TextChannel getCommunityUpdatesChannel() {
         return communityUpdatesChannel;
