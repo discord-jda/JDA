@@ -19,13 +19,12 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.messages.MessageSearchResponse;
+import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Range;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
@@ -37,7 +36,7 @@ import javax.annotation.Nullable;
  *
  * @see Guild#searchMessages()
  */
-public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
+public interface MessageSearchAction extends FluentRestAction<MessageSearchResponse, MessageSearchAction> {
     /** The maximum amount of messages that can be skipped at once */
     int MAX_OFFSET = 9975;
     /** The maximum amount of messages that can be returned at once */
@@ -80,22 +79,6 @@ public interface MessageSearchAction extends RestAction<MessageSearchResponse> {
     int MAX_ATTACHMENT_EXTENSIONS = 100;
     /** The maximum length of an attachment extension */
     int MAX_ATTACHMENT_EXTENSION_LENGTH = 256;
-
-    @Nonnull
-    @Override
-    MessageSearchAction addCheck(@Nonnull BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    MessageSearchAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    MessageSearchAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    MessageSearchAction deadline(long timestamp);
 
     /**
      * Sets the maximum number of messages to return.
