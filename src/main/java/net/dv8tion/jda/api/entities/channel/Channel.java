@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
+import java.util.regex.Pattern;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -37,6 +38,51 @@ public interface Channel extends IMentionable, IDetachableEntity {
      * The maximum length a channel name can be. ({@value #MAX_NAME_LENGTH})
      */
     int MAX_NAME_LENGTH = 100;
+
+    /**
+     * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
+     *
+     * <p><b>Groups</b><br>
+     * <table>
+     *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
+     *   <tr>
+     *     <th>Index</th>
+     *     <th>Name</th>
+     *     <th>Description</th>
+     *   </tr>
+     *   <tr>
+     *     <td>0</td>
+     *     <td>N/A</td>
+     *     <td>The entire link</td>
+     *   </tr>
+     *   <tr>
+     *     <td>1</td>
+     *     <td>guild</td>
+     *     <td>The ID of the target guild or {@code @me} if the channel is not a guild channel</td>
+     *   </tr>
+     *   <tr>
+     *     <td>2</td>
+     *     <td>channel</td>
+     *     <td>The ID of the target channel</td>
+     *   </tr>
+     * </table>
+     *
+     * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+     * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
+     *
+     * @see #getJumpUrl()
+     */
+    Pattern JUMP_URL_PATTERN = Pattern.compile(
+            "(?x)                                       # enable comment mode \n"
+                    + "(?:https?+://)?+                 # 'https://' or 'http://' or '' \n"
+                    + "(?:\\w+\\.)?                     # for example 'canary.' or 'ptb.'\n"
+                    + "discord(?:app)?+\\.com/channels/ # 'discord(app).com/channels/' \n"
+                    + "(?:(?<guild>\\d++)|@me)          # '@me' or the guild id as named group \n"
+                    + "/                                # '/' \n"
+                    + "(?<channel>\\d++)                # the textchannel id as named group \n"
+                    + "(?:\\?\\S*)?                     # useless query appendix \n"
+                    + "(?-x:#\\S*)?                     # useless URN appendix",
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * The flags configured for this channel.
