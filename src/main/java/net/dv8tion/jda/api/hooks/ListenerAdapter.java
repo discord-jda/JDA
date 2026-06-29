@@ -89,6 +89,10 @@ import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent;
 import net.dv8tion.jda.api.events.sticker.GuildStickerAddedEvent;
 import net.dv8tion.jda.api.events.sticker.GuildStickerRemovedEvent;
 import net.dv8tion.jda.api.events.sticker.update.*;
+import net.dv8tion.jda.api.events.subscription.GenericSubscriptionEvent;
+import net.dv8tion.jda.api.events.subscription.SubscriptionCreateEvent;
+import net.dv8tion.jda.api.events.subscription.SubscriptionDeleteEvent;
+import net.dv8tion.jda.api.events.subscription.SubscriptionUpdateEvent;
 import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
 import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
 import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
@@ -553,6 +557,13 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onGuildStickerUpdateAvailable(@Nonnull GuildStickerUpdateAvailableEvent event) {}
 
+    // Subscription events
+    public void onSubscriptionCreate(@Nonnull SubscriptionCreateEvent event) {}
+
+    public void onSubscriptionUpdate(@Nonnull SubscriptionUpdateEvent event) {}
+
+    public void onSubscriptionDelete(@Nonnull SubscriptionDeleteEvent event) {}
+
     // Soundboard sound events
     public void onGenericSoundboardSound(@Nonnull GenericSoundboardSoundEvent event) {}
 
@@ -662,6 +673,8 @@ public abstract class ListenerAdapter implements EventListener {
     public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
 
     public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent<?> event) {}
+
+    public void onGenericSubscription(@Nonnull GenericSubscriptionEvent event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();

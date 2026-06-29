@@ -41,7 +41,9 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.SubscriptionPaginationAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.entities.subscription.Subscription;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.Once;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -2026,6 +2028,51 @@ public interface JDA extends IGuildChannelContainer<Channel> {
     @Nonnull
     @CheckReturnValue
     RestAction<Void> deleteTestEntitlement(long entitlementId);
+
+    /**
+     * Retrieves a List of {@link Subscription} by SKU id
+     *
+     * @param skuId
+     *        The SKU id of the List
+     *
+     * @return {@link SubscriptionPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    SubscriptionPaginationAction retrieveSubscriptionsBySkuId(@Nonnull SkuSnowflake skuId);
+
+    /**
+     * Retrieves a {@link Subscription} by its id and SKU id
+     *
+     * @param skuId
+     *        The SKU id of the List where to find subscription
+     * @param subscriptionId
+     *        The String id of the subscription to retrieve
+     *
+     * @return {@link RestAction} - Type: {@link Subscription}
+     *         <br> The Subscription with the provided id
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Subscription> retrieveSubscriptionBySkuId(
+            @Nonnull SkuSnowflake skuId, @Nonnull String subscriptionId) {
+        return retrieveSubscriptionBySkuId(skuId, MiscUtil.parseSnowflake(subscriptionId));
+    }
+
+    /**
+     * Retrieves a {@link Subscription} by its id and SKU id
+     *
+     * @param skuId
+     *        The SKU id of the List where to find subscription
+     * @param subscriptionId
+     *        The id of the subscription to retrieve
+     *
+     * @return {@link RestAction} - Type: {@link Subscription}
+     *         <br> The Subscription with the provided id
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Subscription> retrieveSubscriptionBySkuId(@Nonnull SkuSnowflake skuId, long subscriptionId);
 
     /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
