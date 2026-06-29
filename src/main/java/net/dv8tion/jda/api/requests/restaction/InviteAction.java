@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.Invite;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -233,5 +233,263 @@ public interface InviteAction extends AuditableRestAction<Invite> {
     default InviteAction setTargetStream(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return setTargetStream(member.getIdLong());
+    }
+
+    /**
+     * Sets the users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
+     *
+     * <p>If unknown users are found,
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
+     *
+     * @param  users
+     *         The users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         If the provided collection is or contains {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return This instance for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetUsers(@Nonnull Collection<? extends UserSnowflake> users);
+
+    /**
+     * Sets the users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
+     *
+     * <p>If unknown users are found,
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
+     *
+     * @param  users
+     *         The users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         If the provided array is or contains {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return This instance for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetUsers(@Nonnull UserSnowflake... users);
+
+    /**
+     * Sets IDs of users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
+     *
+     * <p>If unknown users are found,
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         If the provided collection is or contains {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return This instance for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetUserIds(@Nonnull Collection<Long> ids);
+
+    /**
+     * Sets IDs of users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
+     *
+     * <p>If unknown users are found,
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         If the provided array is or contains {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return This instance for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetUserIds(@Nonnull long... ids);
+
+    /**
+     * Sets IDs of users allowed to use this invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission!
+     *
+     * <p>If unknown users are found,
+     * Discord will respond to the request with {@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY Invalid Form Body}.
+     *
+     * @param  ids
+     *         IDs of users allowed to use the invite
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided array is or contains {@code null}</li>
+     *             <li>If one of the strings is empty</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     * @throws NumberFormatException
+     *         If one of the IDs is an invalid snowflake
+     *
+     * @return This instance for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetUserIds(@Nonnull String... ids);
+
+    /**
+     * Sets roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * @param  roles
+     *         The roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided collection is {@code null} or contains {@code null}</li>
+     *             <li>If one of the roles isn't from the target guild</li>
+     *         </ul>
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setRoles(@Nonnull Collection<? extends Role> roles);
+
+    /**
+     * Sets roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * @param  roles
+     *         The roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided array is {@code null} or contains {@code null}</li>
+     *             <li>If one of the roles isn't from the target guild</li>
+     *         </ul>
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setRoles(@Nonnull Role... roles) {
+        Checks.noneNull(roles, "Roles");
+        return setRoles(Arrays.asList(roles));
+    }
+
+    /**
+     * Sets IDs of roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * <p>IDs that do not point to an existing role in the targeted guild will be ignored.
+     *
+     * @param  ids
+     *         The IDs of the roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         If the provided collection is {@code null} or contains {@code null}
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setRoleIds(@Nonnull Collection<Long> ids) {
+        Checks.noneNull(ids, "IDs");
+        return setRoleIds(ids.stream().mapToLong(Long::longValue).toArray());
+    }
+
+    /**
+     * Sets IDs of roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * <p>IDs that do not point to an existing role in the targeted guild will be ignored.
+     *
+     * @param  ids
+     *         The IDs of the roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         If the provided array is {@code null}
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setRoleIds(@Nonnull long... ids);
+
+    /**
+     * Sets IDs of roles to be assigned when accepting the created invite.
+     * <br>This requires the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission!
+     *
+     * <p>IDs that do not point to an existing role in the targeted guild will be ignored.
+     *
+     * @param  ids
+     *         The IDs of the roles to assign upon invite acceptation
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES} permission
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the {@linkplain Guild#getSelfMember() self member}
+     *         cannot {@linkplain SelfMember#canInteract(Role) interact} with one of the roles
+     *         due to the role being higher than the bot's highest role
+     * @throws IllegalArgumentException
+     *         If the provided array is {@code null}, contains {@code null}, or, has an empty string
+     * @throws NumberFormatException
+     *         If one of the IDs is not a valid snowflake
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setRoleIds(@Nonnull String... ids) {
+        Checks.noneNull(ids, "IDs");
+
+        long[] arr = new long[ids.length];
+        for (int i = 0; i < ids.length; i++) {
+            arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        }
+        return setRoleIds(arr);
     }
 }
