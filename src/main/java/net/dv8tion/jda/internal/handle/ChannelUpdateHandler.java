@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
 import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateEmojiEvent;
@@ -108,45 +109,54 @@ public class ChannelUpdateHandler extends SocketHandler {
             return null;
         }
 
+        boolean wasObfuscated = channel.getFlags().contains(ChannelFlag.OBFUSCATED);
+        boolean becameObfuscated =
+                ChannelFlag.fromRaw(content.getInt("flags", 0)).contains(ChannelFlag.OBFUSCATED);
+        boolean obfuscationChange = wasObfuscated != becameObfuscated;
+        ObfuscationAwareUpdater dispatch = new ObfuscationAwareUpdater(obfuscationChange);
+
+        // TODO: Obfuscation event?
+
         // Handle shared properties
 
         String oldName = channel.getName();
         String name = content.getString("name", oldName);
         if (!Objects.equals(oldName, name)) {
             channel.setName(name);
-            getJDA().handleEvent(new ChannelUpdateNameEvent(getJDA(), responseNumber, channel, oldName, name));
+            dispatch.handleUpdate(new ChannelUpdateNameEvent(getJDA(), responseNumber, channel, oldName, name));
         }
 
         if (channel instanceof ITopicChannelMixin<?>) {
-            handleTopic((ITopicChannelMixin<?>) channel, content.getString("topic", null));
+            dispatch.handleTopic((ITopicChannelMixin<?>) channel, content.getString("topic", null));
         }
 
         if (channel instanceof ISlowmodeChannelMixin<?>) {
-            handleSlowmode((ISlowmodeChannelMixin<?>) channel, content.getInt("rate_limit_per_user", 0));
+            dispatch.handleSlowmode((ISlowmodeChannelMixin<?>) channel, content.getInt("rate_limit_per_user", 0));
         }
 
         if (channel instanceof IAgeRestrictedChannelMixin<?>) {
-            handleNsfw((IAgeRestrictedChannelMixin<?>) channel, content.getBoolean("nsfw"));
+            dispatch.handleNsfw((IAgeRestrictedChannelMixin<?>) channel, content.getBoolean("nsfw"));
         }
 
         if (channel instanceof ICategorizableChannelMixin<?>) {
-            handleParentCategory((ICategorizableChannelMixin<?>) channel, content.getUnsignedLong("parent_id", 0));
+            dispatch.handleParentCategory(
+                    (ICategorizableChannelMixin<?>) channel, content.getUnsignedLong("parent_id", 0));
         }
 
         if (channel instanceof IPositionableChannelMixin<?>) {
-            handlePosition((IPositionableChannelMixin<?>) channel, content.getInt("position", 0));
+            dispatch.handlePosition((IPositionableChannelMixin<?>) channel, content.getInt("position", 0));
         }
 
         if (channel instanceof IThreadContainerMixin<?>) {
-            handleThreadContainer((IThreadContainerMixin<?>) channel, content);
+            dispatch.handleThreadContainer((IThreadContainerMixin<?>) channel, content);
         }
 
         if (channel instanceof AudioChannelMixin<?>) {
-            handleAudioChannel((AudioChannelMixin<?>) channel, content);
+            dispatch.handleAudioChannel((AudioChannelMixin<?>) channel, content);
         }
 
         if (channel instanceof IPostContainerMixin<?>) {
-            handlePostContainer((IPostContainerMixin<?>) channel, content);
+            dispatch.handlePostContainer((IPostContainerMixin<?>) channel, content);
         }
 
         // Handle concrete type specific properties
@@ -160,7 +170,7 @@ public class ChannelUpdateHandler extends SocketHandler {
 
                 if (oldLayout != layout) {
                     forumChannel.setDefaultLayout(layout);
-                    getJDA().handleEvent(new ChannelUpdateDefaultLayoutEvent(
+                    dispatch.handleUpdate(new ChannelUpdateDefaultLayoutEvent(
                             getJDA(),
                             responseNumber,
                             forumChannel,
@@ -179,11 +189,11 @@ public class ChannelUpdateHandler extends SocketHandler {
         }
 
         DataArray permOverwrites = content.getArray("permission_overwrites");
-        applyPermissions((IPermissionContainerMixin<?>) channel, permOverwrites);
+        dispatch.applyPermissions((IPermissionContainerMixin<?>) channel, permOverwrites);
 
         boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission(channel, Permission.VIEW_CHANNEL);
         if (channel instanceof IThreadContainer && !hasAccessToChannel) {
-            handleHideChildThreads((IThreadContainer) channel);
+            dispatch.handleHideChildThreads((IThreadContainer) channel);
         }
 
         return null;
@@ -243,306 +253,323 @@ public class ChannelUpdateHandler extends SocketHandler {
         return channel;
     }
 
-    private void applyPermissions(IPermissionContainerMixin<?> channel, DataArray permOverwrites) {
-        TLongObjectMap<PermissionOverride> currentOverrides =
-                new TLongObjectHashMap<>(channel.getPermissionOverrideMap());
-        List<IPermissionHolder> changed = new ArrayList<>(currentOverrides.size());
-        Guild guild = channel.getGuild();
-        for (int i = 0; i < permOverwrites.length(); i++) {
-            DataObject overrideJson = permOverwrites.getObject(i);
-            long id = overrideJson.getUnsignedLong("id", 0);
-            if (handlePermissionOverride(currentOverrides.remove(id), overrideJson, id, channel)) {
-                addPermissionHolder(changed, guild, id);
+    private class ObfuscationAwareUpdater {
+        private final boolean suppressEvents;
+
+        private ObfuscationAwareUpdater(boolean suppressEvents) {
+            this.suppressEvents = suppressEvents;
+        }
+
+        void handleUpdate(GenericEvent event) {
+            if (!suppressEvents) {
+                api.handleEvent(event);
             }
         }
 
-        currentOverrides.forEachValue(override -> {
-            channel.getPermissionOverrideMap().remove(override.getIdLong());
-            addPermissionHolder(changed, guild, override.getIdLong());
-            api.handleEvent(new PermissionOverrideDeleteEvent(
-                    api, responseNumber,
-                    channel, override));
-            return true;
-        });
-    }
-
-    private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id) {
-        IPermissionHolder holder = guild.getRoleById(id);
-        if (holder == null) {
-            holder = guild.getMemberById(id);
-        }
-        if (holder != null) { // Members might not be cached
-            changed.add(holder);
-        }
-    }
-
-    // True => override status changed (created/deleted/updated)
-    // False => nothing changed, ignore
-    private boolean handlePermissionOverride(
-            PermissionOverride currentOverride,
-            DataObject override,
-            long overrideId,
-            IPermissionContainerMixin<?> channel) {
-        long allow = override.getLong("allow");
-        long deny = override.getLong("deny");
-        int type = override.getInt("type");
-        boolean isRole = type == 0;
-        if (!isRole) {
-            if (type != 1) {
-                EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
-                return false;
-            } else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES)
-                    && overrideId != api.getSelfUser().getIdLong()) {
-                return false;
-            }
-        }
-
-        if (currentOverride != null) // Permissions were updated?
-        {
-            long oldAllow = currentOverride.getAllowedRaw();
-            long oldDeny = currentOverride.getDeniedRaw();
-            PermissionOverrideImpl impl = (PermissionOverrideImpl) currentOverride;
-            if (oldAllow == allow && oldDeny == deny) {
-                return false;
+        private void applyPermissions(IPermissionContainerMixin<?> channel, DataArray permOverwrites) {
+            TLongObjectMap<PermissionOverride> currentOverrides =
+                    new TLongObjectHashMap<>(channel.getPermissionOverrideMap());
+            List<IPermissionHolder> changed = new ArrayList<>(currentOverrides.size());
+            Guild guild = channel.getGuild();
+            for (int i = 0; i < permOverwrites.length(); i++) {
+                DataObject overrideJson = permOverwrites.getObject(i);
+                long id = overrideJson.getUnsignedLong("id", 0);
+                if (handlePermissionOverride(currentOverrides.remove(id), overrideJson, id, channel)) {
+                    addPermissionHolder(changed, guild, id);
+                }
             }
 
-            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L) {
-                // We delete empty overrides for the @everyone role because that's what the client
-                // also does, otherwise our sync checks don't work!
-                channel.getPermissionOverrideMap().remove(overrideId);
-                api.handleEvent(new PermissionOverrideDeleteEvent(
+            currentOverrides.forEachValue(override -> {
+                channel.getPermissionOverrideMap().remove(override.getIdLong());
+                addPermissionHolder(changed, guild, override.getIdLong());
+                handleUpdate(new PermissionOverrideDeleteEvent(
                         api, responseNumber,
-                        channel, currentOverride));
-                return true;
-            }
-
-            impl.setAllow(allow);
-            impl.setDeny(deny);
-            api.handleEvent(new PermissionOverrideUpdateEvent(
-                    api, responseNumber, channel, currentOverride, oldAllow, oldDeny));
-        } else // New override?
-        {
-            // Empty @everyone overrides should be treated as not existing at all
-            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L) {
-                return false;
-            }
-            PermissionOverrideImpl impl;
-            currentOverride = impl = new PermissionOverrideImpl(channel, overrideId, isRole);
-            impl.setAllow(allow);
-            impl.setDeny(deny);
-            channel.getPermissionOverrideMap().put(overrideId, currentOverride);
-            api.handleEvent(new PermissionOverrideCreateEvent(
-                    api, responseNumber,
-                    channel, currentOverride));
-        }
-
-        return true;
-    }
-
-    private void handleHideChildThreads(IThreadContainer channel) {
-        List<ThreadChannel> threads = channel.getThreadChannels();
-        if (threads.isEmpty()) {
-            return;
-        }
-
-        for (ThreadChannel thread : threads) {
-            GuildImpl guild = (GuildImpl) channel.getGuild();
-            ChannelCacheViewImpl<GuildChannel> guildThreadView = guild.getChannelView();
-            ChannelCacheViewImpl<Channel> threadView = getJDA().getChannelsView();
-            try (UnlockHook vlock = guildThreadView.writeLock();
-                    UnlockHook jlock = threadView.writeLock()) {
-                threadView.remove(thread.getType(), thread.getIdLong());
-                guildThreadView.remove(thread);
-            }
-        }
-
-        // Fire these events outside the write locks
-        for (ThreadChannel thread : threads) {
-            api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
-        }
-    }
-
-    private void handleTagsUpdate(IPostContainerMixin<?> channel, DataArray tags) {
-        if (!api.isCacheFlagSet(CacheFlag.FORUM_TAGS)) {
-            return;
-        }
-        EntityBuilder builder = api.getEntityBuilder();
-
-        SortedSnowflakeCacheViewImpl<ForumTag> view = channel.getAvailableTagCache();
-
-        try (UnlockHook hook = view.writeLock()) {
-            TLongObjectMap<ForumTag> cache = view.getMap();
-            TLongSet removedTags = new TLongHashSet(cache.keySet());
-
-            for (int i = 0; i < tags.length(); i++) {
-                DataObject tagJson = tags.getObject(i);
-                long id = tagJson.getUnsignedLong("id");
-                if (removedTags.remove(id)) {
-                    ForumTagImpl impl = (ForumTagImpl) cache.get(id);
-                    if (impl == null) {
-                        continue;
-                    }
-
-                    String name = tagJson.getString("name");
-                    boolean moderated = tagJson.getBoolean("moderated");
-
-                    String oldName = impl.getName();
-                    EmojiUnion oldEmoji = impl.getEmoji();
-
-                    impl.setEmoji(tagJson);
-
-                    impl.setPosition(i);
-                    if (!Objects.equals(oldEmoji, impl.getEmoji())) {
-                        api.handleEvent(new ForumTagUpdateEmojiEvent(api, responseNumber, channel, impl, oldEmoji));
-                    }
-                    if (!name.equals(oldName)) {
-                        impl.setName(name);
-                        api.handleEvent(new ForumTagUpdateNameEvent(api, responseNumber, channel, impl, oldName));
-                    }
-                    if (moderated != impl.isModerated()) {
-                        impl.setModerated(moderated);
-                        api.handleEvent(
-                                new ForumTagUpdateModeratedEvent(api, responseNumber, channel, impl, moderated));
-                    }
-                } else {
-                    ForumTag tag = builder.createForumTag(channel, tagJson, i);
-                    cache.put(id, tag);
-                    api.handleEvent(new ForumTagAddEvent(api, responseNumber, channel, tag));
-                }
-            }
-
-            removedTags.forEach(id -> {
-                ForumTag tag = cache.remove(id);
-                if (tag != null) {
-                    api.handleEvent(new ForumTagRemoveEvent(api, responseNumber, channel, tag));
-                }
+                        channel, override));
                 return true;
             });
         }
-    }
 
-    private void handleTopic(ITopicChannelMixin<?> channel, String topic) {
-        String oldTopic = channel.getTopic();
-        if (Objects.equals(oldTopic, topic)) {
-            return;
+        private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id) {
+            IPermissionHolder holder = guild.getRoleById(id);
+            if (holder == null) {
+                holder = guild.getMemberById(id);
+            }
+            if (holder != null) { // Members might not be cached
+                changed.add(holder);
+            }
         }
 
-        channel.setTopic(topic);
-        api.handleEvent(new ChannelUpdateTopicEvent(api, responseNumber, channel, oldTopic, topic));
-    }
+        // True => override status changed (created/deleted/updated)
+        // False => nothing changed, ignore
+        private boolean handlePermissionOverride(
+                PermissionOverride currentOverride,
+                DataObject override,
+                long overrideId,
+                IPermissionContainerMixin<?> channel) {
+            long allow = override.getLong("allow");
+            long deny = override.getLong("deny");
+            int type = override.getInt("type");
+            boolean isRole = type == 0;
+            if (!isRole) {
+                if (type != 1) {
+                    EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
+                    return false;
+                } else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES)
+                        && overrideId != api.getSelfUser().getIdLong()) {
+                    return false;
+                }
+            }
 
-    private void handleSlowmode(ISlowmodeChannelMixin<?> channel, int slowmode) {
-        int oldSlowmode = channel.getSlowmode();
-        if (oldSlowmode == slowmode) {
-            return;
+            if (currentOverride != null) // Permissions were updated?
+            {
+                long oldAllow = currentOverride.getAllowedRaw();
+                long oldDeny = currentOverride.getDeniedRaw();
+                PermissionOverrideImpl impl = (PermissionOverrideImpl) currentOverride;
+                if (oldAllow == allow && oldDeny == deny) {
+                    return false;
+                }
+
+                if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L) {
+                    // We delete empty overrides for the @everyone role because that's what the client
+                    // also does, otherwise our sync checks don't work!
+                    channel.getPermissionOverrideMap().remove(overrideId);
+                    handleUpdate(new PermissionOverrideDeleteEvent(
+                            api, responseNumber,
+                            channel, currentOverride));
+                    return true;
+                }
+
+                impl.setAllow(allow);
+                impl.setDeny(deny);
+                handleUpdate(new PermissionOverrideUpdateEvent(
+                        api, responseNumber, channel, currentOverride, oldAllow, oldDeny));
+            } else // New override?
+            {
+                // Empty @everyone overrides should be treated as not existing at all
+                if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L) {
+                    return false;
+                }
+                PermissionOverrideImpl impl;
+                currentOverride = impl = new PermissionOverrideImpl(channel, overrideId, isRole);
+                impl.setAllow(allow);
+                impl.setDeny(deny);
+                channel.getPermissionOverrideMap().put(overrideId, currentOverride);
+                handleUpdate(new PermissionOverrideCreateEvent(
+                        api, responseNumber,
+                        channel, currentOverride));
+            }
+
+            return true;
         }
 
-        channel.setSlowmode(slowmode);
-        api.handleEvent(new ChannelUpdateSlowmodeEvent(api, responseNumber, channel, oldSlowmode, slowmode));
-    }
+        private void handleHideChildThreads(IThreadContainer channel) {
+            List<ThreadChannel> threads = channel.getThreadChannels();
+            if (threads.isEmpty()) {
+                return;
+            }
 
-    private void handleNsfw(IAgeRestrictedChannelMixin<?> channel, boolean nsfw) {
-        boolean oldNsfw = channel.isNSFW();
-        if (oldNsfw == nsfw) {
-            return;
+            for (ThreadChannel thread : threads) {
+                GuildImpl guild = (GuildImpl) channel.getGuild();
+                ChannelCacheViewImpl<GuildChannel> guildThreadView = guild.getChannelView();
+                ChannelCacheViewImpl<Channel> threadView = getJDA().getChannelsView();
+                try (UnlockHook vlock = guildThreadView.writeLock();
+                        UnlockHook jlock = threadView.writeLock()) {
+                    threadView.remove(thread.getType(), thread.getIdLong());
+                    guildThreadView.remove(thread);
+                }
+            }
+
+            // Fire these events outside the write locks
+            for (ThreadChannel thread : threads) {
+                handleUpdate(new ThreadHiddenEvent(api, responseNumber, thread));
+            }
         }
 
-        channel.setNSFW(nsfw);
-        api.handleEvent(new ChannelUpdateNSFWEvent(api, responseNumber, channel, oldNsfw, nsfw));
-    }
+        private void handleTagsUpdate(IPostContainerMixin<?> channel, DataArray tags) {
+            if (!api.isCacheFlagSet(CacheFlag.FORUM_TAGS)) {
+                return;
+            }
+            EntityBuilder builder = api.getEntityBuilder();
 
-    private void handleParentCategory(ICategorizableChannelMixin<?> channel, long parentId) {
-        long oldParentId = channel.getParentCategoryIdLong();
-        if (oldParentId == parentId) {
-            return;
+            SortedSnowflakeCacheViewImpl<ForumTag> view = channel.getAvailableTagCache();
+
+            try (UnlockHook hook = view.writeLock()) {
+                TLongObjectMap<ForumTag> cache = view.getMap();
+                TLongSet removedTags = new TLongHashSet(cache.keySet());
+
+                for (int i = 0; i < tags.length(); i++) {
+                    DataObject tagJson = tags.getObject(i);
+                    long id = tagJson.getUnsignedLong("id");
+                    if (removedTags.remove(id)) {
+                        ForumTagImpl impl = (ForumTagImpl) cache.get(id);
+                        if (impl == null) {
+                            continue;
+                        }
+
+                        String name = tagJson.getString("name");
+                        boolean moderated = tagJson.getBoolean("moderated");
+
+                        String oldName = impl.getName();
+                        EmojiUnion oldEmoji = impl.getEmoji();
+
+                        impl.setEmoji(tagJson);
+
+                        impl.setPosition(i);
+                        if (!Objects.equals(oldEmoji, impl.getEmoji())) {
+                            handleUpdate(new ForumTagUpdateEmojiEvent(api, responseNumber, channel, impl, oldEmoji));
+                        }
+                        if (!name.equals(oldName)) {
+                            impl.setName(name);
+                            handleUpdate(new ForumTagUpdateNameEvent(api, responseNumber, channel, impl, oldName));
+                        }
+                        if (moderated != impl.isModerated()) {
+                            impl.setModerated(moderated);
+                            handleUpdate(
+                                    new ForumTagUpdateModeratedEvent(api, responseNumber, channel, impl, moderated));
+                        }
+                    } else {
+                        ForumTag tag = builder.createForumTag(channel, tagJson, i);
+                        cache.put(id, tag);
+                        handleUpdate(new ForumTagAddEvent(api, responseNumber, channel, tag));
+                    }
+                }
+
+                removedTags.forEach(id -> {
+                    ForumTag tag = cache.remove(id);
+                    if (tag != null) {
+                        handleUpdate(new ForumTagRemoveEvent(api, responseNumber, channel, tag));
+                    }
+                    return true;
+                });
+            }
         }
 
-        Category oldParent = channel.getParentCategory();
-        channel.setParentCategory(parentId);
-        Category newParent = channel.getParentCategory();
+        private void handleTopic(ITopicChannelMixin<?> channel, String topic) {
+            String oldTopic = channel.getTopic();
+            if (Objects.equals(oldTopic, topic)) {
+                return;
+            }
 
-        api.handleEvent(new ChannelUpdateParentEvent(api, responseNumber, channel, oldParent, newParent));
-    }
-
-    private void handlePosition(IPositionableChannelMixin<?> channel, int position) {
-        int oldPosition = channel.getPositionRaw();
-        if (oldPosition == position) {
-            return;
+            channel.setTopic(topic);
+            handleUpdate(new ChannelUpdateTopicEvent(api, responseNumber, channel, oldTopic, topic));
         }
 
-        channel.setPosition(position);
-        api.handleEvent(new ChannelUpdatePositionEvent(api, responseNumber, channel, oldPosition, position));
-    }
+        private void handleSlowmode(ISlowmodeChannelMixin<?> channel, int slowmode) {
+            int oldSlowmode = channel.getSlowmode();
+            if (oldSlowmode == slowmode) {
+                return;
+            }
 
-    private void handleThreadContainer(IThreadContainerMixin<?> channel, DataObject content) {
-        int oldDefaultThreadSlowmode = channel.getDefaultThreadSlowmode();
-        int defaultThreadSlowmode = content.getInt("default_thread_rate_limit_per_user", 0);
-        if (oldDefaultThreadSlowmode != defaultThreadSlowmode) {
-            channel.setDefaultThreadSlowmode(defaultThreadSlowmode);
-            api.handleEvent(new ChannelUpdateDefaultThreadSlowmodeEvent(
-                    api, responseNumber, channel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
-        }
-    }
-
-    private void handleAudioChannel(AudioChannelMixin<?> channel, DataObject content) {
-        int oldBitrate = channel.getBitrate();
-        int bitrate = content.getInt("bitrate");
-
-        if (oldBitrate != bitrate) {
-            channel.setBitrate(bitrate);
-            api.handleEvent(new ChannelUpdateBitrateEvent(api, responseNumber, channel, oldBitrate, bitrate));
+            channel.setSlowmode(slowmode);
+            handleUpdate(new ChannelUpdateSlowmodeEvent(api, responseNumber, channel, oldSlowmode, slowmode));
         }
 
-        int userLimit = content.getInt("user_limit");
-        int oldLimit = channel.getUserLimit();
+        private void handleNsfw(IAgeRestrictedChannelMixin<?> channel, boolean nsfw) {
+            boolean oldNsfw = channel.isNSFW();
+            if (oldNsfw == nsfw) {
+                return;
+            }
 
-        if (oldLimit != userLimit) {
-            channel.setUserLimit(userLimit);
-            getJDA().handleEvent(
-                            new ChannelUpdateUserLimitEvent(getJDA(), responseNumber, channel, oldLimit, userLimit));
+            channel.setNSFW(nsfw);
+            handleUpdate(new ChannelUpdateNSFWEvent(api, responseNumber, channel, oldNsfw, nsfw));
         }
 
-        String oldRegion = channel.getRegionRaw();
-        String regionRaw = content.getString("rtc_region", null);
+        private void handleParentCategory(ICategorizableChannelMixin<?> channel, long parentId) {
+            long oldParentId = channel.getParentCategoryIdLong();
+            if (oldParentId == parentId) {
+                return;
+            }
 
-        if (!Objects.equals(oldRegion, regionRaw)) {
-            channel.setRegion(regionRaw);
-            api.handleEvent(new ChannelUpdateRegionEvent(
-                    api, responseNumber, channel, Region.fromKey(oldRegion), Region.fromKey(regionRaw)));
-        }
-    }
+            Category oldParent = channel.getParentCategory();
+            channel.setParentCategory(parentId);
+            Category newParent = channel.getParentCategory();
 
-    private void handlePostContainer(IPostContainerMixin<?> channel, DataObject content) {
-        content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(channel, array));
-
-        EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
-                .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
-                .orElse(null);
-        EmojiUnion oldDefaultReaction = channel.getDefaultReaction();
-
-        if (!Objects.equals(oldDefaultReaction, defaultReaction)) {
-            channel.setDefaultReaction(
-                    content.optObject("default_reaction_emoji").orElse(null));
-            getJDA().handleEvent(new ChannelUpdateDefaultReactionEvent(
-                    getJDA(), responseNumber, channel, oldDefaultReaction, defaultReaction));
+            handleUpdate(new ChannelUpdateParentEvent(api, responseNumber, channel, oldParent, newParent));
         }
 
-        int sortOrder = content.getInt("default_sort_order", channel.getRawSortOrder());
-        int oldSortOrder = channel.getRawSortOrder();
+        private void handlePosition(IPositionableChannelMixin<?> channel, int position) {
+            int oldPosition = channel.getPositionRaw();
+            if (oldPosition == position) {
+                return;
+            }
 
-        if (oldSortOrder != sortOrder) {
-            channel.setDefaultSortOrder(sortOrder);
-            getJDA().handleEvent(new ChannelUpdateDefaultSortOrderEvent(
-                    getJDA(), responseNumber, channel, IPostContainer.SortOrder.fromKey(oldSortOrder)));
+            channel.setPosition(position);
+            handleUpdate(new ChannelUpdatePositionEvent(api, responseNumber, channel, oldPosition, position));
         }
 
-        int newFlags = content.getInt("flags", 0);
-        int oldFlags = channel.getRawFlags();
+        private void handleThreadContainer(IThreadContainerMixin<?> channel, DataObject content) {
+            int oldDefaultThreadSlowmode = channel.getDefaultThreadSlowmode();
+            int defaultThreadSlowmode = content.getInt("default_thread_rate_limit_per_user", 0);
+            if (oldDefaultThreadSlowmode != defaultThreadSlowmode) {
+                channel.setDefaultThreadSlowmode(defaultThreadSlowmode);
+                handleUpdate(new ChannelUpdateDefaultThreadSlowmodeEvent(
+                        api, responseNumber, channel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
+            }
+        }
 
-        if (oldFlags != newFlags) {
-            channel.setFlags(newFlags);
-            getJDA().handleEvent(new ChannelUpdateFlagsEvent(
-                    getJDA(), responseNumber, channel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(newFlags)));
+        private void handleAudioChannel(AudioChannelMixin<?> channel, DataObject content) {
+            int oldBitrate = channel.getBitrate();
+            int bitrate = content.getInt("bitrate");
+
+            if (oldBitrate != bitrate) {
+                channel.setBitrate(bitrate);
+                handleUpdate(new ChannelUpdateBitrateEvent(api, responseNumber, channel, oldBitrate, bitrate));
+            }
+
+            int userLimit = content.getInt("user_limit");
+            int oldLimit = channel.getUserLimit();
+
+            if (oldLimit != userLimit) {
+                channel.setUserLimit(userLimit);
+                handleUpdate(new ChannelUpdateUserLimitEvent(getJDA(), responseNumber, channel, oldLimit, userLimit));
+            }
+
+            String oldRegion = channel.getRegionRaw();
+            String regionRaw = content.getString("rtc_region", null);
+
+            if (!Objects.equals(oldRegion, regionRaw)) {
+                channel.setRegion(regionRaw);
+                handleUpdate(new ChannelUpdateRegionEvent(
+                        api, responseNumber, channel, Region.fromKey(oldRegion), Region.fromKey(regionRaw)));
+            }
+        }
+
+        private void handlePostContainer(IPostContainerMixin<?> channel, DataObject content) {
+            content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(channel, array));
+
+            EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
+                    .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
+                    .orElse(null);
+            EmojiUnion oldDefaultReaction = channel.getDefaultReaction();
+
+            if (!Objects.equals(oldDefaultReaction, defaultReaction)) {
+                channel.setDefaultReaction(
+                        content.optObject("default_reaction_emoji").orElse(null));
+                handleUpdate(new ChannelUpdateDefaultReactionEvent(
+                        getJDA(), responseNumber, channel, oldDefaultReaction, defaultReaction));
+            }
+
+            int sortOrder = content.getInt("default_sort_order", channel.getRawSortOrder());
+            int oldSortOrder = channel.getRawSortOrder();
+
+            if (oldSortOrder != sortOrder) {
+                channel.setDefaultSortOrder(sortOrder);
+                handleUpdate(new ChannelUpdateDefaultSortOrderEvent(
+                        getJDA(), responseNumber, channel, IPostContainer.SortOrder.fromKey(oldSortOrder)));
+            }
+
+            int newFlags = content.getInt("flags", 0);
+            int oldFlags = channel.getRawFlags();
+
+            if (oldFlags != newFlags) {
+                channel.setFlags(newFlags);
+                handleUpdate(new ChannelUpdateFlagsEvent(
+                        getJDA(),
+                        responseNumber,
+                        channel,
+                        ChannelFlag.fromRaw(oldFlags),
+                        ChannelFlag.fromRaw(newFlags)));
+            }
         }
     }
 }
