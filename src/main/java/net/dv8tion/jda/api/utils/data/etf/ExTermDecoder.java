@@ -269,7 +269,7 @@ public class ExTermDecoder {
             list.add(unpack0(buffer));
         }
         Object tail = unpack0(buffer);
-        if (tail != Collections.emptyList()) {
+        if (!Objects.equals(tail, Collections.emptyList())) {
             throw new IllegalArgumentException("Unexpected tail " + tail);
         }
         return list;

@@ -22,9 +22,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import okhttp3.MultipartBody;
+import org.jetbrains.annotations.Contract;
 
 import java.util.Objects;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -35,10 +37,14 @@ import javax.annotation.Nullable;
 public class AttachmentUpdate implements AttachedFile, ISnowflake {
     private final long id;
     private final String name;
+    private final String description;
+    private final Boolean isSpoiler;
 
-    protected AttachmentUpdate(long id, String name) {
+    protected AttachmentUpdate(long id, String name, String description, Boolean isSpoiler) {
         this.id = id;
         this.name = name;
+        this.description = description;
+        this.isSpoiler = isSpoiler;
     }
 
     /**
@@ -52,7 +58,7 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake {
      */
     @Nonnull
     public static AttachmentUpdate fromAttachment(long id) {
-        return new AttachmentUpdate(id, null);
+        return new AttachmentUpdate(id, null, null, null);
     }
 
     /**
@@ -84,7 +90,8 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake {
     @Nonnull
     public static AttachmentUpdate fromAttachment(@Nonnull Message.Attachment attachment) {
         Checks.notNull(attachment, "Attachment");
-        return new AttachmentUpdate(attachment.getIdLong(), attachment.getFileName());
+        return new AttachmentUpdate(
+                attachment.getIdLong(), attachment.getFileName(), attachment.getDescription(), attachment.isSpoiler());
     }
 
     /**
@@ -95,6 +102,63 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake {
     @Nullable
     public String getName() {
         return name;
+    }
+
+    /**
+     * Whether this attachment will be marked as a spoiler after the update request.
+     *
+     * <p>This is {@code null} for attachment updates that do not overwrite the spoiler state.
+     *
+     * @return {@code true}, if the attachment will be marked as a spoiler, {@code false} otherwise, or {@code null} if not provided
+     */
+    @Nullable
+    public Boolean getSpoiler() {
+        return isSpoiler;
+    }
+
+    /**
+     * The updated attachment description.
+     *
+     * @return The description, or {@code null} if not provided
+     */
+    @Nullable
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * The new description for this attachment.
+     *
+     * @param description
+     *        The updated description
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided, or the description is longer than {@value AttachedFile#MAX_DESCRIPTION_LENGTH}
+     *
+     * @return The updated AttachmentUpdate
+     */
+    @Nonnull
+    @Contract("_->new")
+    @CheckReturnValue
+    public AttachmentUpdate withDescription(@Nonnull String description) {
+        Checks.notNull(description, "Description");
+        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+        return new AttachmentUpdate(id, name, description, isSpoiler);
+    }
+
+    /**
+     * Whether this attachment will be marked as a spoiler after the update request.
+     *
+     * @param  spoiler
+     *         True, if the attachment will be marked as a spoiler, false otherwise
+     *
+     * @return The updated AttachmentUpdate
+     */
+    @Nonnull
+    @Contract("_->new")
+    @CheckReturnValue
+    public AttachmentUpdate withSpoiler(boolean spoiler) {
+        return new AttachmentUpdate(id, name, description, spoiler);
     }
 
     @Override
@@ -111,6 +175,12 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake {
         DataObject object = DataObject.empty().put("id", getId());
         if (name != null) {
             object.put("filename", name);
+        }
+        if (isSpoiler != null) {
+            object.put("is_spoiler", isSpoiler);
+        }
+        if (description != null) {
+            object.put("description", description);
         }
         return object;
     }

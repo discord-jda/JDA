@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -115,5 +116,22 @@ public class DefaultMemberPermissions {
     @Nonnull
     public static DefaultMemberPermissions enabledFor(long permissions) {
         return new DefaultMemberPermissions(permissions);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DefaultMemberPermissions)) {
+            return false;
+        }
+        DefaultMemberPermissions that = (DefaultMemberPermissions) o;
+        return Objects.equals(permissions, that.permissions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(permissions);
     }
 }

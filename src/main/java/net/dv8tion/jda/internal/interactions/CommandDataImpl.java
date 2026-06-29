@@ -122,7 +122,7 @@ public class CommandDataImpl implements SlashCommandData {
                         integrationTypes.stream().map(IntegrationType::getType).collect(Collectors.toList()))
                 .put(
                         "default_member_permissions",
-                        defaultMemberPermissions == DefaultMemberPermissions.ENABLED
+                        DefaultMemberPermissions.ENABLED.equals(defaultMemberPermissions)
                                 ? null
                                 : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()))
                 .put("name_localizations", nameLocalizations);
