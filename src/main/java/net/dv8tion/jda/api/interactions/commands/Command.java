@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.FileType;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
+import net.dv8tion.jda.internal.interactions.FileTypesImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -606,6 +608,7 @@ public interface Command extends ISnowflake, ICommandReference {
         private Number minValue;
         private Number maxValue;
         private Integer minLength, maxLength;
+        private final FileTypesImpl fileTypes;
 
         public Option(@Nonnull DataObject json) {
             this.name = json.getString("name");
@@ -636,6 +639,8 @@ public interface Command extends ISnowflake, ICommandReference {
             if (!json.isNull("max_length")) {
                 this.maxLength = json.getInt("max_length");
             }
+            this.fileTypes =
+                    json.optArray("file_types").map(FileTypesImpl::fromArray).orElse(FileTypesImpl.empty());
         }
 
         /**
@@ -773,6 +778,20 @@ public interface Command extends ISnowflake, ICommandReference {
         @Nullable
         public Integer getMaxLength() {
             return maxLength;
+        }
+
+        /**
+         * The <b>immutable</b> list of file types accepted by this option.
+         * Returns an empty list if file types are not filtered,
+         * or this isn't an {@link OptionType#ATTACHMENT ATTACHMENT} option.
+         *
+         * @return Immutable list of file types accepted by this option
+         */
+        @Nonnull
+        @Unmodifiable
+        public List<FileType> getFileTypes() {
+            // No need for an extra copy
+            return fileTypes.asView();
         }
 
         /**

@@ -19,8 +19,15 @@ package net.dv8tion.jda.api.components.attachmentupload;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.attribute.ICustomId;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
+import net.dv8tion.jda.api.interactions.FileType;
+import net.dv8tion.jda.api.interactions.IFilterableFileTypes;
 import net.dv8tion.jda.internal.components.attachmentupload.AttachmentUploadImpl;
+import net.dv8tion.jda.internal.interactions.FileTypesImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.UnmodifiableView;
+
+import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -28,7 +35,8 @@ import javax.annotation.Nonnull;
 /**
  * Component accepting files from users.
  *
- * <p>The user can send up to {@value #MAX_UPLOADS} files, the requested number of files can be adjusted or be completely optional.
+ * <p>The user can send up to {@value #MAX_UPLOADS} files, the requested number of files can be adjusted or be completely optional,
+ * additionally, the accepted file types can be configured.
  *
  * <p>Can only be used inside {@link net.dv8tion.jda.api.components.label.Label Labels}!
  */
@@ -93,6 +101,16 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
     int getMaxValues();
 
     /**
+     * The <b>unmodifiable list view</b> of file types to filter for.
+     * Returns an empty list if file types are not filtered.
+     *
+     * @return Unmodifiable list view of file types
+     */
+    @Nonnull
+    @UnmodifiableView
+    List<FileType> getFileTypes();
+
+    /**
      * Whether the user must send attachments.
      *
      * <p>This attribute is completely separate from the value range,
@@ -106,11 +124,12 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
     /**
      * Builder for {@link AttachmentUpload AttachmentUploads}.
      */
-    class Builder {
+    class Builder implements IFilterableFileTypes<Builder> {
         protected int uniqueId = -1;
         protected String customId;
         protected int minValues = 1;
         protected int maxValues = 1;
+        protected final FileTypesImpl fileTypes = FileTypesImpl.empty();
         protected boolean required = true;
 
         protected Builder(@Nonnull String customId) {
@@ -206,6 +225,20 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
             return setMinValues(min).setMaxValues(max);
         }
 
+        @Nonnull
+        @Override
+        public Builder addFileTypes(@Nonnull Collection<FileType> fileTypes) {
+            this.fileTypes.addAll(fileTypes);
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        public Builder setFileTypes(@Nonnull Collection<FileType> fileTypes) {
+            this.fileTypes.setAll(fileTypes);
+            return this;
+        }
+
         /**
          * Changes whether the user must upload files.
          * <br>Default: {@code true}
@@ -265,6 +298,18 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
         }
 
         /**
+         * The <b>unmodifiable list view</b> of file types to filter for.
+         * Returns an empty list if file types are not filtered.
+         *
+         * @return Unmodifiable list view of file types
+         */
+        @Nonnull
+        @UnmodifiableView
+        public List<FileType> getFileTypes() {
+            return fileTypes.asView();
+        }
+
+        /**
          * Whether the user must send attachments.
          *
          * <p>This attribute is completely separate from the value range,
@@ -288,7 +333,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
         @Nonnull
         public AttachmentUpload build() {
             Checks.check(maxValues >= minValues, "Max (%s) must be higher or equal to min (%s)", maxValues, minValues);
-            return new AttachmentUploadImpl(uniqueId, customId, minValues, maxValues, required);
+            return new AttachmentUploadImpl(uniqueId, customId, minValues, maxValues, fileTypes, required);
         }
     }
 }
