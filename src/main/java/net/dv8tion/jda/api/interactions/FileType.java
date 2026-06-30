@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 
@@ -32,6 +33,8 @@ import javax.annotation.Nonnull;
  * and thus does not guarantee receiving a valid file.
  */
 public final class FileType {
+    private static final Pattern EXTENSION_PATTERN = Pattern.compile("[\\w\\-.]+");
+
     /** Matches any image supported by the Discord client. */
     public static final FileType IMAGE = new FileType("image");
     /** Matches any video supported by the Discord client. */
@@ -55,14 +58,14 @@ public final class FileType {
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the extension is {@code null} or empty</li>
-     *             <li>If the extension isn't alphanumeric</li>
+     *             <li>If the extension does not match {@code [\w\-.]+} (latin letters, digits, dashes or dots)</li>
      *         </ul>
      *
      * @return The new {@link FileType}
      */
     @Nonnull
     public static FileType ofExtension(@Nonnull String extension) {
-        Checks.matches(extension, Checks.ALPHANUMERIC, "Extension");
+        Checks.matches(extension, EXTENSION_PATTERN, "Extension");
         return new FileType("." + extension);
     }
 

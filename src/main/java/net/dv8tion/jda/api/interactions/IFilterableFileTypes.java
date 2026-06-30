@@ -74,7 +74,7 @@ public interface IFilterableFileTypes<T extends IFilterableFileTypes<T>> {
      *         <ul>
      *             <li>If there are more than {@value #MAX_FILE_TYPES} extensions</li>
      *             <li>If an extension is {@code null} or empty</li>
-     *             <li>If an extension isn't alphanumeric</li>
+     *             <li>If the extension does not match {@code [\w\-.]+} (latin letters, digits, dashes or dots)</li>
      *         </ul>
      *
      * @return This instance for chaining
@@ -97,7 +97,7 @@ public interface IFilterableFileTypes<T extends IFilterableFileTypes<T>> {
      *         <ul>
      *             <li>If there are more than {@value #MAX_FILE_TYPES} extensions</li>
      *             <li>If an extension is {@code null} or empty</li>
-     *             <li>If an extension isn't alphanumeric</li>
+     *             <li>If the extension does not match {@code [\w\-.]+} (latin letters, digits, dashes or dots)</li>
      *         </ul>
      *
      * @return This instance for chaining
@@ -154,7 +154,7 @@ public interface IFilterableFileTypes<T extends IFilterableFileTypes<T>> {
      *         <ul>
      *             <li>If there are more than {@value #MAX_FILE_TYPES} extensions</li>
      *             <li>If an extension is {@code null} or empty</li>
-     *             <li>If an extension isn't alphanumeric</li>
+     *             <li>If the extension does not match {@code [\w\-.]+} (latin letters, digits, dashes or dots)</li>
      *         </ul>
      *
      * @return This instance for chaining
@@ -178,7 +178,7 @@ public interface IFilterableFileTypes<T extends IFilterableFileTypes<T>> {
      *         <ul>
      *             <li>If there are more than {@value #MAX_FILE_TYPES} extensions</li>
      *             <li>If an extension is {@code null} or empty</li>
-     *             <li>If an extension isn't alphanumeric</li>
+     *             <li>If the extension does not match {@code [\w\-.]+} (latin letters, digits, dashes or dots)</li>
      *         </ul>
      *
      * @return This instance for chaining
