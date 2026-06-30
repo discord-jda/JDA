@@ -2434,7 +2434,16 @@ public interface Message extends ISnowflake, Formattable {
 
     /**
      * Returns a possibly {@code null} {@link ThreadChannel ThreadChannel} that was started from this message.
-     * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
+     *
+     * <p>This can be {@code null} if:
+     * <ul>
+     *     <li>No ThreadChannel was started from it</li>
+     *     <li>The ThreadChannel was deleted</li>
+     *     <li>This message is from a create/update event in response to a thread being created,
+     *         which happens <b>before</b> the thread is created.
+     *     <br>To know about new threads, listen to {@link net.dv8tion.jda.api.events.channel.ChannelCreateEvent ChannelCreateEvent} instead.
+     *     </li>
+     * </ul>
      *
      * @return The {@link ThreadChannel ThreadChannel} that was started from this message.
      */
