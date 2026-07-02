@@ -1803,8 +1803,10 @@ public class JDABuilder {
         return this;
     }
 
+    @SuppressWarnings("ReferenceEquality")
     protected void checkIntents() {
         boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
+        // Intentional comparison with reference equality to check if default is used
         if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL) {
             throw new IllegalStateException(
                     "Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");

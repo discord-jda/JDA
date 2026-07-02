@@ -9,6 +9,7 @@
     "duration_secs" : 3.0,
     "filename" : "voice-message.ogg",
     "id" : 0,
+    "is_spoiler" : false,
     "waveform" : "AQID"
   } ],
   "components" : [ ],

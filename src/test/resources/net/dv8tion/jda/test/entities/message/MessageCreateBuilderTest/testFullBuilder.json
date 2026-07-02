@@ -7,7 +7,8 @@
     "content_type" : "application/octet-stream; charset=utf-8",
     "description" : "",
     "filename" : "logo.png",
-    "id" : 0
+    "id" : 0,
+    "is_spoiler" : false
   } ],
   "components" : [ {
     "components" : [ {

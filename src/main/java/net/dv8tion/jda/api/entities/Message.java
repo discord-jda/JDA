@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.messages.AttachmentFlag;
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -2728,6 +2729,7 @@ public interface Message extends ISnowflake, Formattable {
         private final int size;
         private final int height;
         private final int width;
+        private final int flags;
         private final boolean ephemeral;
         private final String waveform;
         private final double duration;
@@ -2745,6 +2747,7 @@ public interface Message extends ISnowflake, Formattable {
                 int size,
                 int height,
                 int width,
+                int flags,
                 boolean ephemeral,
                 String waveform,
                 double duration,
@@ -2759,6 +2762,7 @@ public interface Message extends ISnowflake, Formattable {
             this.size = size;
             this.height = height;
             this.width = width;
+            this.flags = flags;
             this.ephemeral = ephemeral;
             this.waveform = waveform;
             this.duration = duration;
@@ -2955,13 +2959,12 @@ public interface Message extends ISnowflake, Formattable {
         }
 
         /**
-         * Whether or not this attachment is marked as spoiler,
-         * based on {@link #getFileName()}.
+         * Whether this attachment is marked as spoiler.
          *
          * @return True if this attachment is marked as spoiler
          */
         public boolean isSpoiler() {
-            return getFileName().startsWith("SPOILER_");
+            return (flags & AttachmentFlag.IS_SPOILER.getRaw()) != 0;
         }
 
         /**
@@ -2974,6 +2977,29 @@ public interface Message extends ISnowflake, Formattable {
         @Nullable
         public ThumbHashPlaceholder getPlaceholder() {
             return placeholder;
+        }
+
+        /**
+         * The raw flags for this attachment.
+         *
+         * <p>Use {@link #getFlags()} for a typed set instead.
+         *
+         * @return The raw flags
+         *
+         * @see #getFlags()
+         */
+        public int getFlagsRaw() {
+            return flags;
+        }
+
+        /**
+         * The {@linkplain AttachmentFlag flags} of this attachment.
+         *
+         * @return {@link EnumSet} of {@link AttachmentFlag}
+         */
+        @Nonnull
+        public EnumSet<AttachmentFlag> getFlags() {
+            return AttachmentFlag.fromBitField(flags);
         }
 
         @Override
