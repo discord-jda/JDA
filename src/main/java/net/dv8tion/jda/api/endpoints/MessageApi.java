@@ -46,7 +46,7 @@ import javax.annotation.Nonnull;
 /**
  * Common interface for API requests relative to messages.
  *
- * <h3>Stability note</h3>
+ * <h2>Stability note</h2>
  * The API and ABI of this interface is <b>subject to changes without warning</b>.
  *
  * @see ApiEndpoints#messages(JDA, long)

@@ -17,7 +17,7 @@
 /**
  * Contains REST-only interfaces to work with the Discord API.
  *
- * <h3>Stability note</h3>
+ * <h2>Stability note</h2>
  * The API and ABI of all contained classes are <b>subject to changes without warning</b>.
  *
  * @see net.dv8tion.jda.api.endpoints.ApiEndpoints

@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 /**
  * Entrypoint for REST-only APIs.
  *
- * <h3>Stability note</h3>
+ * <h2>Stability note</h2>
  * The API and ABI of this interface and all objects returned by it, are <b>subject to changes without warning</b>.
  */
 @ExperimentalRestApi
