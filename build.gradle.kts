@@ -31,8 +31,6 @@ import org.jetbrains.gradle.ext.JUnit as JUnitRunConfiguration
 import org.jetbrains.gradle.ext.copyright
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
-import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
-import org.jreleaser.model.Active
 import org.openrewrite.gradle.AbstractRewriteTask
 
 plugins {
@@ -42,15 +40,17 @@ plugins {
     `model-generator`
     `java-library`
     `maven-publish`
+    signing
 
     alias(libs.plugins.shadow)
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
-    alias(libs.plugins.jreleaser)
     alias(libs.plugins.spotless)
     alias(libs.plugins.errorprone)
     alias(libs.plugins.openrewrite)
     alias(libs.plugins.ideax)
+    alias(libs.plugins.nmcp)
+    alias(libs.plugins.nmcp.aggregation)
 }
 
 
@@ -256,6 +256,9 @@ dependencies {
 
     // Linting & Formatting
     errorprone(libs.errorprone.core)
+
+    // Publishing
+    nmcpAggregation(rootProject)
 }
 
 fun isNonStable(version: String): Boolean {
@@ -696,6 +699,11 @@ shadow {
     addShadowVariantIntoJavaComponent = false
 }
 
+val mavenCentralUsername: String? = System.getenv("MAVENCENTRAL_USERNAME")?.takeIf { it.isNotBlank() }
+val mavenCentralPassword: String? = System.getenv("MAVENCENTRAL_TOKEN")?.takeIf { it.isNotBlank() }
+val gpgSecretKey: String? = System.getenv("GPG_SECRET_KEY")?.takeIf { it.isNotBlank() }
+val gpgPassphrase: String? = System.getenv("GPG_PASSPHRASE")?.takeIf { it.isNotBlank() }
+
 val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
 
 publishing {
@@ -713,41 +721,23 @@ publishing {
             pom.populate()
         }
     }
+}
 
-    repositories.maven {
-        url = stagingDirectory.asFile.toURI()
+if (gpgSecretKey != null) {
+    signing {
+        useInMemoryPgpKeys(gpgSecretKey, gpgPassphrase ?: "")
+        sign(publishing.publications)
     }
 }
 
-jreleaser {
-    project {
-        versionPattern = "CUSTOM"
+nmcpAggregation {
+    localRepository {
+        name = "staging-deploy"
+        path = stagingDirectory.asFile.path
     }
 
-    release {
-        github {
-            enabled = false
-        }
+    centralPortal {
+        username.set(mavenCentralUsername)
+        password.set(mavenCentralPassword)
     }
-
-    signing.pgp {
-        active = Active.RELEASE
-        armored = true
-    }
-
-    deploy {
-        maven {
-            mavenCentral {
-                register("sonatype") {
-                    active = Active.RELEASE
-                    url = "https://central.sonatype.com/api/v1/publisher"
-                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
-                }
-            }
-        }
-    }
-}
-
-tasks.withType<AbstractJReleaserTask>().configureEach {
-    mustRunAfter(tasks.named("publish"))
 }
