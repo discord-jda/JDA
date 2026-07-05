@@ -496,6 +496,7 @@ tasks.withType<JavaCompile>().configureEach {
     options.isIncremental = true
 
     options.compilerArgs.addAll(listOf(
+            "-Werror",
             "-Xlint:all",
             // warnings for --release 8
             "-Xlint:-options",
@@ -599,7 +600,7 @@ tasks.test {
     useJUnitPlatform()
     failFast = false
 
-    jvmArgs = listOf(
+    jvmArgs(
             "-javaagent:${mockitoAgent.asPath}",
             // https://github.com/raphw/byte-buddy/issues/1803
             "-Dnet.bytebuddy.safe=true"
