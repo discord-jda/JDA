@@ -600,7 +600,7 @@ tasks.test {
     useJUnitPlatform()
     failFast = false
 
-    jvmArgs = listOf(
+    jvmArgs(
             "-javaagent:${mockitoAgent.asPath}",
             // https://github.com/raphw/byte-buddy/issues/1803
             "-Dnet.bytebuddy.safe=true"
