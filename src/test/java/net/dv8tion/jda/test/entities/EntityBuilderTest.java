@@ -87,7 +87,7 @@ class EntityBuilderTest extends IntegrationTest {
 
     @Test
     void createMessageForUserAfterBan() {
-        EntityBuilder entityBuilder = jda.getEntityBuilder();
+        EntityBuilder entityBuilder = new EntityBuilder(jda);
         doReturn(new SnowflakeCacheViewImpl<>(User.class, User::getName))
                 .when(jda)
                 .getUsersView();

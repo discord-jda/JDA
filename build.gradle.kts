@@ -496,6 +496,7 @@ tasks.withType<JavaCompile>().configureEach {
     options.isIncremental = true
 
     options.compilerArgs.addAll(listOf(
+            "-Werror",
             "-Xlint:all",
             // warnings for --release 8
             "-Xlint:-options",
