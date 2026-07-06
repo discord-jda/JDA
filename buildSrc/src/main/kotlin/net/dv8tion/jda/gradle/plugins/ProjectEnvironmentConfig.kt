@@ -20,11 +20,11 @@ import net.dv8tion.jda.gradle.Version
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 
-val jreleaserEnvironmentKeys = setOf(
-    "JRELEASER_MAVENCENTRAL_USERNAME",
-    "JRELEASER_MAVENCENTRAL_TOKEN",
-    "JRELEASER_GPG_PUBLIC_KEY",
-    "JRELEASER_GPG_SECRET_KEY",
+val publishingEnvironmentKeys = setOf(
+    "MAVENCENTRAL_USERNAME",
+    "MAVENCENTRAL_TOKEN",
+    "GPG_PUBLIC_KEY",
+    "GPG_SECRET_KEY",
 )
 
 abstract class ProjectEnvironmentConfig(
@@ -46,7 +46,7 @@ abstract class ProjectEnvironmentConfig(
     }
 
     val hasReleaseCredentials: Boolean
-        get() = jreleaserEnvironmentKeys.all { System.getenv(it) != null }
+        get() = publishingEnvironmentKeys.all { System.getenv(it) != null }
 
     val canPublish: Boolean get() = isCI && hasReleaseCredentials
 }
