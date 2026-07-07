@@ -99,10 +99,12 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
             }
         }
 
+        // In case classes were removed
+        outputDirectory.deleteRecursively()
         outputDirectory.mkdirs()
         for (file in inputDirectory.listFiles()) {
             if (filesToKeep.contains(file.name)) {
-                file.copyTo(outputDirectory.resolve(file.name), overwrite = true)
+                file.copyTo(outputDirectory.resolve(file.name))
             }
         }
     }
