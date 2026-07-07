@@ -49,8 +49,8 @@ val filterGeneratedFiles = tasks.register<FilterGeneratedTypesTask>("filterGener
 
     suffix = apiModelGenerator.generatorSuffix
     includes = apiModelGenerator.includes
-    from = temporaryDirectory
-    outputDir = apiModelGenerator.outputDirectory
+    inputDirectory = temporaryDirectory
+    outputDirectory = apiModelGenerator.outputDirectory
 
     dependsOn(generateApiModels)
 }

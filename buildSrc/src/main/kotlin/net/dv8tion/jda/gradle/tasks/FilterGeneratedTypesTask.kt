@@ -19,6 +19,7 @@ package net.dv8tion.jda.gradle.tasks
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ast.type.ClassOrInterfaceType
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -39,11 +40,10 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:SkipWhenEmpty
-    @get:IgnoreEmptyDirectories
-    abstract val from: DirectoryProperty
+    abstract val inputDirectory: DirectoryProperty
 
     @get:OutputDirectory
-    abstract val outputDir: DirectoryProperty
+    abstract val outputDirectory: DirectoryProperty
 
     @get:Input
     @get:Optional
@@ -61,8 +61,8 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
 
         val packageName = "net.dv8tion.jda.internal.generated"
 
-        val inputDirectory = from.get().asFile.resolve(packageName.replace(".", File.separator))
-        val outputDirectory = outputDir.get().asFile.resolve(packageName.replace(".", File.separator))
+        val inputDirectory = inputDirectory.get().asFile.resolve(packageName.replace(".", File.separator))
+        val outputDirectory = outputDirectory.get().asFile.resolve(packageName.replace(".", File.separator))
         val typeSuffix = suffix.getOrElse("")
 
         val inclusions = includes.get().map { "$it$typeSuffix" }
