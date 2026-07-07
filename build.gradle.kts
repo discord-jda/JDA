@@ -147,6 +147,9 @@ val testJava8 = sourceSets.create("testJava8") {
 }
 
 java {
+    withJavadocJar()
+    withSourcesJar()
+
     toolchain {
         languageVersion.set(exampleJavaVersion)
     }
@@ -416,14 +419,6 @@ val minimalJar = tasks.register<ShadowJar>("minimalJar") {
     manifest.from(jar.manifest)
 }
 
-// TODO I think the publishing plugin can generate it, or we can do "java.withSourcesJar()"
-//  same for javadocJar
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-
-    from(sourceSets["main"].allSource)
-}
-
 val javadoc = tasks.getByName<Javadoc>("javadoc") {
     isFailOnError = projectEnvironment.isGithubAction
 
@@ -447,12 +442,6 @@ val javadoc = tasks.getByName<Javadoc>("javadoc") {
     exclude {
         it.file.absolutePath.contains("internal", ignoreCase = false)
     }
-}
-
-val javadocJar = tasks.register<Jar>("javadocJar") {
-    dependsOn(javadoc)
-    archiveClassifier.set("javadoc")
-    from(javadoc.destinationDir)
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -517,14 +506,11 @@ tasks.named<JavaCompile>("compileExamplesJava") {
 
 tasks.build.configure {
     dependsOn(jar)
-    dependsOn(javadocJar)
-    dependsOn(sourcesJar)
     dependsOn(shadowJar)
     dependsOn(noOpusJar)
     dependsOn(minimalJar)
 
     jar.mustRunAfter(tasks.clean)
-    shadowJar.mustRunAfter(sourcesJar)
 }
 
 
@@ -672,9 +658,6 @@ publishing {
             artifactId = project.name
             groupId = project.group as String
             version = project.version as String
-
-            artifact(sourcesJar)
-            artifact(javadocJar)
 
             pom.populate()
         }
