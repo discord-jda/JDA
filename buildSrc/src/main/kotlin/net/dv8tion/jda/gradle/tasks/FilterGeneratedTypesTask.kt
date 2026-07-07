@@ -27,6 +27,7 @@ import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
@@ -39,7 +40,10 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:SkipWhenEmpty
     @get:IgnoreEmptyDirectories
-    abstract val directory: DirectoryProperty
+    abstract val from: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
 
     @get:Input
     @get:Optional
@@ -57,7 +61,8 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
 
         val packageName = "net.dv8tion.jda.internal.generated"
 
-        val dir = directory.get().asFile.resolve(packageName.replace(".", File.separator))
+        val inputDirectory = from.get().asFile.resolve(packageName.replace(".", File.separator))
+        val outputDirectory = outputDir.get().asFile.resolve(packageName.replace(".", File.separator))
         val typeSuffix = suffix.getOrElse("")
 
         val inclusions = includes.get().map { "$it$typeSuffix" }
@@ -79,7 +84,7 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
 
             for (typeDeclaration in types) {
                 val typeName = typeDeclaration.name.asString()
-                val dependencyFile = dir.resolve("$typeName.java")
+                val dependencyFile = inputDirectory.resolve("$typeName.java")
                 if (dependencyFile.exists()) {
                     parseDependencies(dependencyFile)
                 }
@@ -88,15 +93,16 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
 
         for (inclusion in inclusions) {
             val fileName = "$inclusion.java"
-            val file = dir.resolve(fileName)
+            val file = inputDirectory.resolve(fileName)
             if (file.exists() && file.canRead()) {
                 parseDependencies(file)
             }
         }
 
-        for (file in dir.listFiles()) {
-            if (!filesToKeep.contains(file.name)) {
-                file.delete()
+        outputDirectory.mkdirs()
+        for (file in inputDirectory.listFiles()) {
+            if (filesToKeep.contains(file.name)) {
+                file.copyTo(outputDirectory.resolve(file.name), overwrite = true)
             }
         }
     }
