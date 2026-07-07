@@ -21,7 +21,6 @@ import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.gradle.Version
 import net.dv8tion.jda.gradle.plugins.applyAudioExclusions
 import net.dv8tion.jda.gradle.plugins.applyOpusExclusions
-import net.dv8tion.jda.gradle.tasks.GenerateJDAInfo
 import net.dv8tion.jda.gradle.tasks.VerifyBytecodeVersion
 import net.ltgt.gradle.errorprone.errorprone
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
@@ -396,19 +395,6 @@ val shadowJar = tasks.getByName<ShadowJar>("shadowJar") {
     exclude("*.pom")
 }
 
-val generateJDAInfo = tasks.register<GenerateJDAInfo>("generateJDAInfo") {
-    description = "Generate the 'JDAInfo' Java source file"
-
-    version = projectEnvironment.version
-    commitHash = projectEnvironment.commitHash
-}
-
-sourceSets {
-    main {
-        java.srcDir(generateJDAInfo)
-    }
-}
-
 val noOpusJar = tasks.register<ShadowJar>("noOpusJar") {
     dependsOn(shadowJar)
     archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
@@ -434,12 +420,8 @@ val minimalJar = tasks.register<ShadowJar>("minimalJar") {
 //  same for javadocJar
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
-    from("src/main/java") {
-//        exclude("**/JDAInfo.java")
-    }
-//    from(sourcesForRelease.get().destinationDir)
-//
-//    dependsOn(sourcesForRelease)
+
+    from(sourceSets["main"].allSource)
 }
 
 val javadoc = tasks.getByName<Javadoc>("javadoc") {
