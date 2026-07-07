@@ -58,5 +58,5 @@ val filterGeneratedFiles = tasks.register<FilterGeneratedTypesTask>("filterGener
 val sourceSets = the<SourceSetContainer>()
 
 sourceSets.named("main").configure {
-    java.srcDir(apiModelGenerator.outputDirectory)
+    java.srcDir(generateApiModels)
 }
