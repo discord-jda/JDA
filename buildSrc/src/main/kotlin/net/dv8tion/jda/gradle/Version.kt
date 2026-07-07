@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.gradle
 
+import java.io.Serializable
+
 data class Version(
         val major: String,
         val minor: String,
         val revision: String,
         val classifier: String? = null
-) {
+) : Serializable {
     companion object {
         fun parse(string: String): Version {
             val (major, minor, revision) = string.substringBefore("-").split(".")

@@ -19,13 +19,12 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.gradle.Version
-import net.dv8tion.jda.gradle.nullableReplacement
 import net.dv8tion.jda.gradle.plugins.applyAudioExclusions
 import net.dv8tion.jda.gradle.plugins.applyOpusExclusions
+import net.dv8tion.jda.gradle.tasks.GenerateJDAInfo
 import net.dv8tion.jda.gradle.tasks.VerifyBytecodeVersion
 import net.ltgt.gradle.errorprone.errorprone
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
-import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.gradle.ext.Gradle as GradleRunConfiguration
 import org.jetbrains.gradle.ext.JUnit as JUnitRunConfiguration
 import org.jetbrains.gradle.ext.copyright
@@ -397,36 +396,17 @@ val shadowJar = tasks.getByName<ShadowJar>("shadowJar") {
     exclude("*.pom")
 }
 
-val sourcesForRelease = tasks.register<Copy>("sourcesForRelease") {
-    from("src/main/java") {
-        include("**/JDAInfo.java")
-        val version = projectEnvironment.version.get()
+val generateJDAInfo = tasks.register<GenerateJDAInfo>("generateJDAInfo") {
+    description = "Generate the 'JDAInfo' Java source file"
 
-        val tokens = mapOf(
-                "versionMajor" to version.major,
-                "versionMinor" to version.minor,
-                "versionRevision" to version.revision,
-                "versionClassifier" to nullableReplacement(version.classifier),
-                "commitHash" to projectEnvironment.commitHash
-        )
-        // Allow for setting null on some strings without breaking the source
-        // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
-        filter { it.replace(Regex("\"!@|@!\""), "@") }
-        // Then we can replace the @...@ with the respective values here
-        filter<ReplaceTokens>("tokens" to tokens)
-    }
-    into("build/filteredSrc")
-
-    includeEmptyDirs = false
+    version = projectEnvironment.version
+    commitHash = projectEnvironment.commitHash
 }
 
-val generateJavaSources = tasks.register<SourceTask>("generateJavaSources") {
-    val javaSources = sourceSets["main"].allJava.filter {
-        it.name != "JDAInfo.java"
-    }.asFileTree
-
-    source = javaSources + fileTree(sourcesForRelease.get().destinationDir)
-    dependsOn(sourcesForRelease)
+sourceSets {
+    main {
+        java.srcDir(generateJDAInfo)
+    }
 }
 
 val noOpusJar = tasks.register<ShadowJar>("noOpusJar") {
@@ -450,14 +430,16 @@ val minimalJar = tasks.register<ShadowJar>("minimalJar") {
     manifest.from(jar.manifest)
 }
 
+// TODO I think the publishing plugin can generate it, or we can do "java.withSourcesJar()"
+//  same for javadocJar
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
     from("src/main/java") {
-        exclude("**/JDAInfo.java")
+//        exclude("**/JDAInfo.java")
     }
-    from(sourcesForRelease.get().destinationDir)
-
-    dependsOn(sourcesForRelease)
+//    from(sourcesForRelease.get().destinationDir)
+//
+//    dependsOn(sourcesForRelease)
 }
 
 val javadoc = tasks.getByName<Javadoc>("javadoc") {
@@ -479,9 +461,6 @@ val javadoc = tasks.getByName<Javadoc>("javadoc") {
 
         overview = "$projectDir/overview.html"
     }
-
-    dependsOn(generateJavaSources)
-    source = generateJavaSources.get().source
 
     exclude {
         it.file.absolutePath.contains("internal", ignoreCase = false)
@@ -541,9 +520,6 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 val compileJava = tasks.getByName<JavaCompile>("compileJava") {
-    dependsOn(generateJavaSources)
-    source = generateJavaSources.get().source
-
     options.release = libraryJavaVersion.asInt()
 }
 
