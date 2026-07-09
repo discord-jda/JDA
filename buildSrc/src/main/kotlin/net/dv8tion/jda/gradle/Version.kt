@@ -25,6 +25,8 @@ data class Version(
         val classifier: String? = null
 ) : Serializable {
     companion object {
+        private const val serialVersionUID: Long = 42L
+
         fun parse(string: String): Version {
             val (major, minor, revision) = string.substringBefore("-").split(".")
             val classifier = string.substringAfter("-").takeIf { "-" in string }
