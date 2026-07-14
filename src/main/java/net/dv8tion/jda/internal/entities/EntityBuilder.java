@@ -2834,7 +2834,6 @@ public class EntityBuilder extends AbstractEntityBuilder {
     }
 
     private <T> List<T> map(DataObject jsonObject, String key, Function<DataObject, T> convert) {
-
         if (jsonObject.isNull(key)) {
             return Collections.emptyList();
         }
