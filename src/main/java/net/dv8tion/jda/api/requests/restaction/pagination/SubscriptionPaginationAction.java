@@ -25,10 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * {@link PaginationAction PaginationAction} that paginates over
- * {@link Subscription Subscriptions} returned from the
- * <a href="https://discord.com/developers/docs/resources/subscription#list-sku-subscriptions"
- * target="_blank">List SKU Subscriptions</a> endpoint.
+ * {@link PaginationAction PaginationAction} that paginates over {@link Subscription Subscriptions} for an SKU.
  * <br>This action allows retrieval of subscriptions for a specific SKU, optionally filtered by a user.
  *
  * <p>Use {@link #user(UserSnowflake)} to limit results to a specific user, or {@code null} to remove the filter.
