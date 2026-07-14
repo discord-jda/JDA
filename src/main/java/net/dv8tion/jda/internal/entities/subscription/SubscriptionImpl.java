@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.subscription.SubscriptionStatus;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
