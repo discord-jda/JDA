@@ -41,7 +41,7 @@ public interface Subscription extends ISnowflake {
     long getSubscriberIdLong();
 
     /**
-     * The user who subscribed
+     * The ID for the user who subscribed
      *
      * @return The ID for the user who subscribed
      */
