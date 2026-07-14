@@ -86,7 +86,7 @@ public interface Subscription extends ISnowflake {
     @Nonnull
     @Unmodifiable
     default List<String> getEntitlementIds() {
-        return getEntitlementIdsLong().stream().map(Long::toUnsignedString).collect(Collectors.toList());
+        return getEntitlementIdsLong().stream().map(Long::toUnsignedString).collect(Helpers.toUnmodifiableList());
     }
 
     /**
