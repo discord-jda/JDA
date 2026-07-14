@@ -105,6 +105,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 public class JDAImpl implements JDA {
@@ -1181,6 +1182,7 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public SubscriptionPaginationAction retrieveSubscriptionsBySkuId(@Nonnull SkuSnowflake skuId) {
+        Checks.notNull(skuId, "SKU id");
         return new SubscriptionPaginationActionImpl(this, skuId.getId());
     }
 
@@ -1188,6 +1190,7 @@ public class JDAImpl implements JDA {
     @Override
     public RestAction<Subscription> retrieveSubscriptionBySkuId(
             @Nonnull SkuSnowflake skuId, @Nonnull long subscriptionId) {
+        Checks.notNull(skuId, "SKU id");
         return new RestActionImpl<>(
                 this,
                 Route.Sku.GET_SUBSCRIPTION.compile(
