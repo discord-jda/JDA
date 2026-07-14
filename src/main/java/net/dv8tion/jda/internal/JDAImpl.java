@@ -1194,7 +1194,7 @@ public class JDAImpl implements JDA {
         return new RestActionImpl<>(
                 this,
                 Route.Sku.GET_SUBSCRIPTION.compile(
-                        Long.toUnsignedString(skuId.getIdLong()), Long.toUnsignedString(subscriptionId)));
+                        skuId.getId(), Long.toUnsignedString(subscriptionId)));
     }
 
     @Nonnull
