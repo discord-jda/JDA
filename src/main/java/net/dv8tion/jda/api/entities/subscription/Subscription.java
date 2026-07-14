@@ -94,6 +94,7 @@ public interface Subscription extends ISnowflake {
      * @return The renewal sku IDs
      */
     @Nullable
+    @Unmodifiable
     List<Long> getRenewalSkuIdsLong();
 
     /**
