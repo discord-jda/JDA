@@ -32,6 +32,10 @@ import javax.annotation.Nullable;
  * <br>Results are ordered according to {@link PaginationOrder} and support typical pagination
  * parameters such as {@link #limit(int)} and {@link #cache(boolean)}.
  *
+ * <p><b>Limits:</b><br>
+ * Minimum - 1
+ * <br> Maximum - 100
+ *
  * @see PaginationAction
  * @see Subscription
  */
