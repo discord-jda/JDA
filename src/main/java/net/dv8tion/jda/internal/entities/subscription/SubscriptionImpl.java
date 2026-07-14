@@ -125,6 +125,6 @@ public class SubscriptionImpl implements Subscription {
 
     @Override
     public String toString() {
-        return new EntityString(this).addMetadata("id", id).toString();
+        return new EntityString(this).toString();
     }
 }
