@@ -2809,7 +2809,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         List<Long> mappedSkuIds = mapToLongList(skuIDs);
         List<Long> mappedEntitlementsIds = mapToLongList(entitlementsIDs);
         List<Long> mappedRenewalSkuIds =
-                Optional.ofNullable(renewalSkuIDs).map(this::mapToLongList).orElse(null);
+                Optional.ofNullable(renewalSkuIDs).map(this::mapToLongList).orElse(new ArrayList<>());
 
         return new SubscriptionImpl(
                 object.getUnsignedLong("id"),
