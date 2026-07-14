@@ -69,7 +69,7 @@ public interface Subscription extends ISnowflake {
     }
 
     /**
-     * The entitlements id's related to this {@link Subscription}
+     * The entitlements id's granted for this Subscription
      *
      * @return The sku id's related to this {@link Subscription}
      */
