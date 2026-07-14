@@ -130,7 +130,7 @@ public interface Subscription extends ISnowflake {
     OffsetDateTime getCanceledAt();
 
     /**
-     * The status of this {@link Subscription}
+     * The status of this Subscription
      *
      * @return The status of this {@link Subscription}
      */
