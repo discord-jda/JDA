@@ -19,6 +19,7 @@ package net.dv8tion.jda.gradle.tasks
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ast.type.ClassOrInterfaceType
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -27,6 +28,7 @@ import org.gradle.api.tasks.IgnoreEmptyDirectories
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
@@ -38,8 +40,10 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:SkipWhenEmpty
-    @get:IgnoreEmptyDirectories
-    abstract val directory: DirectoryProperty
+    abstract val inputDirectory: DirectoryProperty
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
 
     @get:Input
     @get:Optional
@@ -57,7 +61,8 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
 
         val packageName = "net.dv8tion.jda.internal.generated"
 
-        val dir = directory.get().asFile.resolve(packageName.replace(".", File.separator))
+        val inputDirectory = inputDirectory.get().asFile.resolve(packageName.replace(".", File.separator))
+        val outputDirectory = outputDirectory.get().asFile.resolve(packageName.replace(".", File.separator))
         val typeSuffix = suffix.getOrElse("")
 
         val inclusions = includes.get().map { "$it$typeSuffix" }
@@ -79,7 +84,7 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
 
             for (typeDeclaration in types) {
                 val typeName = typeDeclaration.name.asString()
-                val dependencyFile = dir.resolve("$typeName.java")
+                val dependencyFile = inputDirectory.resolve("$typeName.java")
                 if (dependencyFile.exists()) {
                     parseDependencies(dependencyFile)
                 }
@@ -88,15 +93,18 @@ abstract class FilterGeneratedTypesTask : DefaultTask() {
 
         for (inclusion in inclusions) {
             val fileName = "$inclusion.java"
-            val file = dir.resolve(fileName)
+            val file = inputDirectory.resolve(fileName)
             if (file.exists() && file.canRead()) {
                 parseDependencies(file)
             }
         }
 
-        for (file in dir.listFiles()) {
-            if (!filesToKeep.contains(file.name)) {
-                file.delete()
+        // In case classes were removed
+        outputDirectory.deleteRecursively()
+        outputDirectory.mkdirs()
+        for (file in inputDirectory.listFiles()) {
+            if (filesToKeep.contains(file.name)) {
+                file.copyTo(outputDirectory.resolve(file.name))
             }
         }
     }
