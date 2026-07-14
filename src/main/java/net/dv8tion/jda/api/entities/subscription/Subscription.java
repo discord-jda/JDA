@@ -132,7 +132,7 @@ public interface Subscription extends ISnowflake {
     /**
      * The status of this Subscription
      *
-     * @return The status of this {@link Subscription}
+     * @return The status of this Subscription
      */
     @Nonnull
     SubscriptionStatus getStatus();
