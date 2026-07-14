@@ -76,6 +76,7 @@ public interface Subscription extends ISnowflake {
      * @return The sku id's granted for this Subscription
      */
     @Nonnull
+    @Unmodifiable
     List<Long> getEntitlementIdsLong();
 
     /**
