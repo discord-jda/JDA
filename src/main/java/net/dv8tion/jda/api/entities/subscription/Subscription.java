@@ -100,6 +100,7 @@ public interface Subscription extends ISnowflake {
      * @return The renewal sku IDs
      */
     @Nullable
+    @Unmodifiable
     default List<String> getRenewalSkuIds() {
         return getRenewalSkuIdsLong().stream().map(Long::toUnsignedString).collect(Helpers.toUnmodifiableList());
     }
