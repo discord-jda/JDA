@@ -1187,7 +1187,7 @@ public class JDAImpl implements JDA {
     @Nonnull
     @Override
     public RestAction<Subscription> retrieveSubscriptionBySkuId(
-            @Nonnull SkuSnowflake skuId, @Nonnull long subscriptionId) {
+            @Nonnull SkuSnowflake skuId, long subscriptionId) {
         return new RestActionImpl<>(
                 this,
                 Route.Sku.GET_SUBSCRIPTION.compile(
