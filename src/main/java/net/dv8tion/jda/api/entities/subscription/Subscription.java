@@ -124,7 +124,7 @@ public interface Subscription extends ISnowflake {
      * The time when this subscription was canceled.
      * <br>This is {@code null} if the subscription has not been canceled.
      *
-     * @return The canceled time of this {@link Subscription}
+     * @return The time when this subscription was canceled, or {@code null} if this subscription has not been canceled.
      */
     @Nullable
     OffsetDateTime getCanceledAt();
