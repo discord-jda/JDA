@@ -50,7 +50,7 @@ public enum SubscriptionStatus {
      * @return The Subscription status that has the key provided
      */
     @Nonnull
-    public static SubscriptionStatus fromValue(int key) {
+    public static SubscriptionStatus fromId(int id) {
         for (SubscriptionStatus status : values()) {
             if (id == status.getId()) {
                 return status;
