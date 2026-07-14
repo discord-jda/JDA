@@ -42,12 +42,12 @@ public enum SubscriptionStatus {
     }
 
     /**
-     * Gets the Subscription status related to the provided key.
+     * Gets the Subscription status related to the provided id.
      *
-     * @param  key
-     *         The Discord key referencing a Subscription status.
+     * @param  id
+     *         The Discord id referencing a Subscription status.
      *
-     * @return The Subscription status that has the key provided
+     * @return The Subscription status that has the id provided
      */
     @Nonnull
     public static SubscriptionStatus fromId(int id) {

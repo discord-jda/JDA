@@ -2820,7 +2820,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 object.getOffsetDateTime("current_period_start"),
                 object.getOffsetDateTime("current_period_end"),
                 canceledAt,
-                SubscriptionStatus.fromValue(object.getInt("status")));
+                SubscriptionStatus.fromId(object.getInt("status")));
     }
 
     public List<Long> mapToLongList(DataArray dataArray) {
