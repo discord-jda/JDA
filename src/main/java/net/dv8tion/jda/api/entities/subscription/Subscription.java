@@ -43,7 +43,7 @@ public interface Subscription extends ISnowflake {
     /**
      * The user who subscribed
      *
-     * @return a use who subscribed
+     * @return The ID for the user who subscribed
      */
     @Nonnull
     default String getSubscriberId() {
