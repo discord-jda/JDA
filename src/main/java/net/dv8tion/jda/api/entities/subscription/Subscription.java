@@ -77,7 +77,7 @@ public interface Subscription extends ISnowflake {
     List<Long> getEntitlementIdsLong();
 
     /**
-     * The entitlements id's related to this {@link Subscription}
+     * The entitlements id's granted for this Subscription
      *
      * @return The entitlements id's related to this {@link Subscription}
      */
