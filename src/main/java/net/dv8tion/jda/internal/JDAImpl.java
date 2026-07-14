@@ -105,7 +105,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 public class JDAImpl implements JDA {
