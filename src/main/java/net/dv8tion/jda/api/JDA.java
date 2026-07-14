@@ -2035,6 +2035,8 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @param skuId
      *        The SKU id of the List
      *
+     * @throws IllegalArgumentException if null is provided
+     *
      * @return {@link SubscriptionPaginationAction}
      */
     @Nonnull
@@ -2048,6 +2050,8 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      *        The SKU id of the List where to find subscription
      * @param subscriptionId
      *        The String id of the subscription to retrieve
+     *
+     * @throws IllegalArgumentException if null or and invalid snowflake is provided
      *
      * @return {@link RestAction} - Type: {@link Subscription}
      *         <br> The Subscription with the provided id
@@ -2066,6 +2070,8 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      *        The SKU id of the List where to find subscription
      * @param subscriptionId
      *        The id of the subscription to retrieve
+     *
+     * @throws IllegalArgumentException if null is provided
      *
      * @return {@link RestAction} - Type: {@link Subscription}
      *         <br> The Subscription with the provided id
