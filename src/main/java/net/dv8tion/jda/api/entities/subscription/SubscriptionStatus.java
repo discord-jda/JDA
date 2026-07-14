@@ -59,7 +59,7 @@ public enum SubscriptionStatus {
         return UNKNOWN;
     }
 
-    public int getValue() {
+    public int getId() {
         return value;
     }
 }
