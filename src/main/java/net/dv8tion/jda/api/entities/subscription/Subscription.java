@@ -113,7 +113,7 @@ public interface Subscription extends ISnowflake {
     OffsetDateTime getCurrentPeriodStart();
 
     /**
-     * The end of period of this {@link Subscription}
+     * End of the current subscription period
      *
      * @return The end of period of this {@link Subscription}
      */
