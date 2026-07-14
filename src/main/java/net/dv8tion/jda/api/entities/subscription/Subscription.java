@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  */
 public interface Subscription extends ISnowflake {
     /**
-     * The user who subscribed
+     * The ID for the user who subscribed
      *
      * @return The ID for the user who subscribed
      */
