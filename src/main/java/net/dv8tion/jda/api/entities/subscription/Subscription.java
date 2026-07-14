@@ -61,7 +61,7 @@ public interface Subscription extends ISnowflake {
     /**
      * The SKU id's related to this
      *
-     * @return The list sku id's related to this {@link Subscription}
+     * @return The list sku id's related to this Subscription
      */
     @Nonnull
     default List<String> getSkuIds() {
