@@ -867,11 +867,9 @@ public class EntityBuilder extends AbstractEntityBuilder {
         }
 
         if (removedRoles.size() > 0) {
-
             getJDA().handleEvent(new GuildMemberRoleRemoveEvent(getJDA(), responseNumber, member, removedRoles));
         }
         if (newRoles.size() > 0) {
-
             getJDA().handleEvent(new GuildMemberRoleAddEvent(getJDA(), responseNumber, member, newRoles));
         }
     }
@@ -2834,7 +2832,6 @@ public class EntityBuilder extends AbstractEntityBuilder {
     }
 
     private <T> List<T> map(DataObject jsonObject, String key, Function<DataObject, T> convert) {
-
         if (jsonObject.isNull(key)) {
             return Collections.emptyList();
         }

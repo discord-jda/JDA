@@ -50,9 +50,9 @@ public class SubscriptionImpl implements Subscription {
 
         this.id = id;
         this.subscriberId = subscriberId;
-        this.skuIDs = skuIDs;
-        this.entitlementIDs = entitlementIDs;
-        this.renewalSkuIDs = renewalSkuIDs;
+        this.skuIDs = Collections.unmodifiableList(skuIDs);
+        this.entitlementIDs = Collections.unmodifiableList(entitlementIDs);
+        this.renewalSkuIDs = Collections.unmodifiableList(renewalSkuIDs);
         this.currentPeriodStart = currentPeriodStart;
         this.currentPeriodEnd = currentPeriodEnd;
         this.canceledAt = canceledAt;
@@ -125,6 +125,6 @@ public class SubscriptionImpl implements Subscription {
 
     @Override
     public String toString() {
-        return new EntityString(this).addMetadata("id", id).toString();
+        return new EntityString(this).toString();
     }
 }
