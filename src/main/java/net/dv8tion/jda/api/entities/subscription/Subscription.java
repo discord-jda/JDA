@@ -87,7 +87,7 @@ public interface Subscription extends ISnowflake {
     }
 
     /**
-     * The renewal SKU id's related to this {@link Subscription}
+     * List of SKUs the user will be subsribed to on renewal
      *
      * @return The  renewal sku id's related to this {@link Subscription}
      */
