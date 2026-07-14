@@ -107,7 +107,7 @@ public interface Subscription extends ISnowflake {
     /**
      * Start of the current subscription period
      *
-     * @return The start of period of this {@link Subscription}
+     * @return Start of the current subscription period
      */
     @Nonnull
     OffsetDateTime getCurrentPeriodStart();
