@@ -79,7 +79,7 @@ public interface Subscription extends ISnowflake {
     /**
      * The entitlements id's granted for this Subscription
      *
-     * @return The entitlements id's related to this {@link Subscription}
+     * @return The entitlements id's granted for this Subscription
      */
     @Nonnull
     default List<String> getEntitlementIds() {
