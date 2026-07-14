@@ -105,7 +105,7 @@ public interface Subscription extends ISnowflake {
     }
 
     /**
-     * The start of period of this {@link Subscription}
+     * Start of the current subscription period
      *
      * @return The start of period of this {@link Subscription}
      */
