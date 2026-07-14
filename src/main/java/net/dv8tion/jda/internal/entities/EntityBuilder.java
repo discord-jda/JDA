@@ -867,7 +867,6 @@ public class EntityBuilder extends AbstractEntityBuilder {
         }
 
         if (removedRoles.size() > 0) {
-
             getJDA().handleEvent(new GuildMemberRoleRemoveEvent(getJDA(), responseNumber, member, removedRoles));
         }
         if (newRoles.size() > 0) {
