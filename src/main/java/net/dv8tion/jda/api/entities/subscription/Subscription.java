@@ -18,6 +18,8 @@
 package net.dv8tion.jda.api.entities.subscription;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
