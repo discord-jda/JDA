@@ -25,9 +25,15 @@ import javax.annotation.Nonnull;
  * @see <a href="https://discord.com/developers/docs/resources/subscription#subscription-statuses" target="_blank">Discord Docs about Subscription Statuses</a>
  */
 public enum SubscriptionStatus {
+    /** Subscription is active and scheduled to renew. */
     ACTIVE(0),
+    /** Subscription is inactive and not being charged. */
+    INACTIVE(1),
+    /** Subscription is active but will not renew. */
     ENDING(2),
-    INACTIVE(1);
+    /** Placeholder for unsupported types */
+    UNKNOWN(-1),
+    ;
 
     private final int value;
 
