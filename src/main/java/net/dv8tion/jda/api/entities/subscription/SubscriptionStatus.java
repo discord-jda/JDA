@@ -51,7 +51,12 @@ public enum SubscriptionStatus {
      */
     @Nonnull
     public static SubscriptionStatus fromValue(int key) {
-        return SubscriptionStatus.values()[key];
+        for (SubscriptionStatus status : values()) {
+            if (id == status.getId()) {
+                return status;
+            }
+        }
+        return UNKNOWN;
     }
 
     public int getValue() {
