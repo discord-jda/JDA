@@ -25,6 +25,8 @@ plugins {
 
 val apiModelGenerator = project.extensions.create<ApiModelGenerator>("apiModelGenerator")
 
+val temporaryDirectory = project.layout.buildDirectory.dir("generated/tmp")
+
 val taskGroup = "model generator"
 
 val downloadApiSpec = tasks.register<Download>("downloadApiSpec") {
@@ -39,7 +41,7 @@ val generateApiModels = tasks.register<GenerateApiModelsTask>("generateApiModels
 
     suffix = apiModelGenerator.generatorSuffix
     apiSpecFile = apiModelGenerator.apiSpecFile
-    outputDirectory = apiModelGenerator.outputDirectory
+    outputDirectory = temporaryDirectory
 }
 
 val filterGeneratedFiles = tasks.register<FilterGeneratedTypesTask>("filterGeneratedFiles") {
@@ -47,17 +49,14 @@ val filterGeneratedFiles = tasks.register<FilterGeneratedTypesTask>("filterGener
 
     suffix = apiModelGenerator.generatorSuffix
     includes = apiModelGenerator.includes
-    directory = apiModelGenerator.outputDirectory
+    inputDirectory = temporaryDirectory
+    outputDirectory = apiModelGenerator.outputDirectory
 
     dependsOn(generateApiModels)
-}
-
-tasks.named("compileJava") {
-    dependsOn(filterGeneratedFiles)
 }
 
 val sourceSets = the<SourceSetContainer>()
 
 sourceSets.named("main").configure {
-    java.srcDir(apiModelGenerator.outputDirectory)
+    java.srcDir(generateApiModels)
 }

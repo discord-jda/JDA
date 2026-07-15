@@ -43,12 +43,12 @@ import javax.annotation.Nullable;
  * {@snippet lang="java":
  * //Fetch all entitlements for a given SKU id
  * public static void fetchEntitlements(JDA api, String skuId, Consumer<List<Entitlement>> callback) {
- *     List<Entitlement> entitlements = new ArrayList<>()
- *     EntitlementPaginationAction action = api.retrieveEntitlements().skuIds(skuId).excludeEnded(true)
+ *     List<Entitlement> entitlements = new ArrayList<>();
+ *     EntitlementPaginationAction action = api.retrieveEntitlements().skuIds(skuId).excludeEnded(true);
  *     action.forEachAsync((entitlement) -> {
- *           entitlements.add(entitlement)
+ *           entitlements.add(entitlement);
  *           return true; //continues to retrieve all entitlements until there are none left to retrieve
- *     }.thenRun(() -> callback.accept(entitlements));
+ *     }).thenRun(() -> callback.accept(entitlements));
  * }
  * }
  */

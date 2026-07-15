@@ -316,6 +316,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *     <li>the bot must have be online to receive the update</li>
      * </ul>
      *
+     * <p>If this thread was referenced by the {@linkplain Guild#searchMessages() search API},
+     * only the {@linkplain Guild#getSelfMember() current member} can be present in this list.
+     *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
@@ -331,6 +334,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * <p>Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
      * As the cache is likely to be unpopulated, this method is likely to return null.
+     *
+     * <p>If this thread was referenced by the {@linkplain Guild#searchMessages() search API},
+     * only the {@linkplain Guild#getSelfMember() current member} can be retrieved.
      *
      * <p>Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
@@ -358,6 +364,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * <p>Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
      * As the cache is likely to be unpopulated, this method is likely to return null.
      *
+     * <p>If this thread was referenced by the {@linkplain Guild#searchMessages() search API},
+     * only the {@linkplain Guild#getSelfMember() current member} can be retrieved.
+     *
      * <p>Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
      * @param   user
@@ -384,6 +393,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * <p>Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
      * As the cache is likely to be unpopulated, this method is likely to return null.
      *
+     * <p>If this thread was referenced by the {@linkplain Guild#searchMessages() search API},
+     * only the {@linkplain Guild#getSelfMember() current member} can be retrieved.
+     *
      * <p>Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
      * @param id
@@ -408,6 +420,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * <p>Note that this operation relies on the {@link #getThreadMembers() ThreadMember cache} for this ThreadChannel.
      * As the cache is likely to be unpopulated, this method is likely to return null.
+     *
+     * <p>If this thread was referenced by the {@linkplain Guild#searchMessages() search API},
+     * only the {@linkplain Guild#getSelfMember() current member} can be retrieved.
      *
      * <p>Use of {@link #retrieveThreadMember(Member)} is preferred instead, once it is released.
      *
