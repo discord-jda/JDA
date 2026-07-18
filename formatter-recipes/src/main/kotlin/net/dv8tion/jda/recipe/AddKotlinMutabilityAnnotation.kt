@@ -59,7 +59,7 @@ private val collectionNames = listOf(
         "java.util.Map",
 )
 
-class AddKotlinMutabilityAnnotationVisitor : JavaIsoVisitor<ExecutionContext>() {
+class AddKotlinMutabilityAnnotationVisitor : NullableJavaIsoVisitor<ExecutionContext>() {
 
     override fun visitClassDeclaration(classDecl: J.ClassDeclaration, p: ExecutionContext): J.ClassDeclaration {
         cursor.putMessage("declaringClass", classDecl)
@@ -97,8 +97,6 @@ class AddKotlinMutabilityAnnotationVisitor : JavaIsoVisitor<ExecutionContext>() 
         return super.visitMethodDeclaration(method, ctx)
     }
 
-    // TODO fix after https://github.com/openrewrite/rewrite/issues/8290
-    @Suppress("RETURN_TYPE_MISMATCH_ON_OVERRIDE") // https://github.com/JetBrains/kotlin/blob/eddf936e0832dfcd1de64bfbff6a421116310d27/compiler/fir/checkers/gen/org/jetbrains/kotlin/fir/analysis/diagnostics/FirNonSuppressibleErrorNames.kt#L428
     override fun visitAnnotation(annotation: J.Annotation, p: ExecutionContext): J.Annotation? {
         val isUnmodifiable: Boolean? = cursor.getNearestMessage("isUnmodifiable")
 
