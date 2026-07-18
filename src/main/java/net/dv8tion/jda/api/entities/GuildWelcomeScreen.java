@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.GuildWelcomeScreenImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -85,6 +86,7 @@ public interface GuildWelcomeScreen {
      * @return Possibly-empty, unmodifiable list of the channels shown in the welcome screen
      */
     @Nonnull
+    @Unmodifiable
     List<Channel> getChannels();
 
     /**

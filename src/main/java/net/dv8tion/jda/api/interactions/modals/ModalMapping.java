@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.entities.SelectMenuMentions;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
 import java.util.List;
@@ -226,6 +227,7 @@ public class ModalMapping {
      * @return The string list representation of this component.
      */
     @Nonnull
+    @Unmodifiable
     public List<String> getAsStringList() {
         if (type != Component.Type.STRING_SELECT
                 && !type.isEntitySelectMenu()
@@ -249,6 +251,7 @@ public class ModalMapping {
      * @return This component's value as a list of Longs.
      */
     @Nonnull
+    @Unmodifiable
     public List<Long> getAsLongList() {
         if (!type.isEntitySelectMenu()) {
             typeError("List<Long>");
@@ -294,6 +297,7 @@ public class ModalMapping {
      * @return This component's value as a list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} objects
      */
     @Nonnull
+    @Unmodifiable
     public List<Message.Attachment> getAsAttachmentList() {
         if (type != Component.Type.FILE_UPLOAD) {
             typeError("List<Message.Attachment>");

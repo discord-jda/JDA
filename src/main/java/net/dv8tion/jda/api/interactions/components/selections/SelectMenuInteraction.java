@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -66,6 +67,7 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
      * @return {@link List} of {@link T}
      */
     @Nonnull
+    @Unmodifiable
     List<T> getValues();
 
     /**

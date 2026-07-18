@@ -1458,6 +1458,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         </a>
      */
     @Nonnull
+    @Unmodifiable
     Set<SystemChannelFlag> getSystemChannelFlags();
 
     /**

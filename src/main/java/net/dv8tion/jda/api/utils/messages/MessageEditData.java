@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 
@@ -233,6 +234,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      */
     @Override
     @Nonnull
+    @Unmodifiable
     public List<MessageEmbed> getEmbeds() {
         return embeds;
     }
@@ -244,6 +246,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      */
     @Override
     @Nonnull
+    @Unmodifiable
     public List<MessageTopLevelComponentUnion> getComponents() {
         return components;
     }
@@ -260,6 +263,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      */
     @Override
     @Nonnull
+    @Unmodifiable
     public List<AttachedFile> getAttachments() {
         return files;
     }
@@ -276,6 +280,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      */
     @Override
     @Nonnull
+    @Unmodifiable
     public Set<String> getMentionedUsers() {
         return mentions.getMentionedUsers();
     }
@@ -287,6 +292,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      */
     @Override
     @Nonnull
+    @Unmodifiable
     public Set<String> getMentionedRoles() {
         return mentions.getMentionedRoles();
     }
@@ -346,6 +352,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      * @return The list of file uploads
      */
     @Nonnull
+    @Unmodifiable
     public synchronized List<FileUpload> getFiles() {
         return files.stream()
                 .filter(FileUpload.class::isInstance)
@@ -361,11 +368,13 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      * @return The set of all file uploads
      */
     @Nonnull
+    @Unmodifiable
     public Set<? extends AttachedFile> getAllDistinctFiles() {
         return allDistinctFiles;
     }
 
     @Nonnull
+    @Unmodifiable
     public static Set<AttachedFile> createAllDistinctFiles(
             @Nullable Collection<AttachedFile> files, @Nonnull Collection<MessageTopLevelComponentUnion> components) {
         List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);

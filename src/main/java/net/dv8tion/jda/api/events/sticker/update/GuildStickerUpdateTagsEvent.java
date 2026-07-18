@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.sticker.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 
@@ -52,6 +53,7 @@ public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<
 
     @Nonnull
     @Override
+    @Unmodifiable
     @SuppressWarnings("ConstantConditions")
     public Set<String> getOldValue() {
         return super.getOldValue();
@@ -59,6 +61,7 @@ public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<
 
     @Nonnull
     @Override
+    @Unmodifiable
     @SuppressWarnings("ConstantConditions")
     public Set<String> getNewValue() {
         return super.getNewValue();

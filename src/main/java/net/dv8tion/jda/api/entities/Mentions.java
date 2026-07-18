@@ -302,6 +302,7 @@ public interface Mentions {
      * @return Immutable list of mentioned Members, or an empty list
      */
     @Nonnull
+    @Unmodifiable
     List<Member> getMembers();
 
     /**

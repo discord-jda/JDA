@@ -590,6 +590,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return List of currently registered Objects acting as EventListeners.
      */
     @Nonnull
+    @Unmodifiable
     List<Object> getRegisteredListeners();
 
     /**

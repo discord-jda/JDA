@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -175,6 +176,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<? extends AttachedFile> getAttachments() {
         return Collections.unmodifiableList(attachments);
     }

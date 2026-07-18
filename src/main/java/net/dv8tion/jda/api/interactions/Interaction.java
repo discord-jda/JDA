@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalInteraction;
 import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.internal.utils.ChannelUtil;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -246,6 +247,7 @@ public interface Interaction extends ISnowflake {
      * @return The {@link List List} of {@link Entitlement Entitlement}
      */
     @Nonnull
+    @Unmodifiable
     List<Entitlement> getEntitlements();
 
     /**

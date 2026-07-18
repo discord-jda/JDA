@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -128,6 +129,7 @@ public class GenericInteractionCreateEvent extends Event implements Interaction 
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<Entitlement> getEntitlements() {
         return interaction.getEntitlements();
     }

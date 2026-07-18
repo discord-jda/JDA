@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.MediaType;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.File;
 import java.util.Arrays;
@@ -255,6 +256,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     @Nonnull
     @Override
+    @Unmodifiable
     List<FileUpload> getAttachments();
 
     /**

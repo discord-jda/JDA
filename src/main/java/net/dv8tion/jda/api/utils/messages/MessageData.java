@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.AttachedFile;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -55,6 +56,7 @@ public interface MessageData {
      * @see    MessageRequest#setEmbeds(Collection)
      */
     @Nonnull
+    @Unmodifiable
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -67,6 +69,7 @@ public interface MessageData {
      * @see    MessageRequest#setEmbeds(Collection)
      */
     @Nonnull
+    @Unmodifiable
     List<MessageTopLevelComponentUnion> getComponents();
 
     /**
@@ -102,6 +105,7 @@ public interface MessageData {
      * @see    MessageRequest#setFiles(Collection)
      */
     @Nonnull
+    @Unmodifiable
     List<? extends AttachedFile> getAttachments();
 
     /**
@@ -117,6 +121,7 @@ public interface MessageData {
      * @return The user IDs which are mention whitelisted
      */
     @Nonnull
+    @Unmodifiable
     Set<String> getMentionedUsers();
 
     /**
@@ -125,6 +130,7 @@ public interface MessageData {
      * @return The role IDs which are mention whitelisted
      */
     @Nonnull
+    @Unmodifiable
     Set<String> getMentionedRoles();
 
     /**
