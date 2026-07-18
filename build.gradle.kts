@@ -193,6 +193,7 @@ dependencies {
     //Code safety
     compileOnly(libs.findbugs)
     compileOnly(libs.jetbrains.annotations)
+    compileOnly(libs.kotlin.annotations)
 
     //Logger
     api(libs.slf4j)
@@ -295,6 +296,7 @@ rewrite {
     activeRecipe("org.openrewrite.staticanalysis.NeedBraces")
     activeRecipe("org.openrewrite.staticanalysis.NoFinalizedLocalVariables")
     activeRecipe("net.dv8tion.jda.recipe.JavadocFormatter")
+    activeRecipe("net.dv8tion.jda.recipe.AddKotlinMutabilityAnnotation")
     activeRecipe("MigrateToJavaxAnnotations")
 
     exclusion("*.kts", "**/*.kts", "**/*.kt")

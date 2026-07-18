@@ -1,5 +1,6 @@
 [versions]
 jackson = "2.22.0"
+kotlin = "2.4.0"
 
 [libraries]
 archunit = "com.tngtech.archunit:archunit:1.4.2"
@@ -19,6 +20,7 @@ junit-java8 = "org.junit.jupiter:junit-jupiter:5.14.4"
 junit-launcher = "org.junit.platform:junit-platform-launcher:6.1.0"
 # @pin Newer versions require java 17 or higher
 junit-launcher-java8 = "org.junit.platform:junit-platform-launcher:1.14.4"
+kotlin-annotations = { module = "org.jetbrains.kotlin:kotlin-annotations-jvm", version.ref = "kotlin" }
 logback-classic = "ch.qos.logback:logback-classic:1.5.37"
 mockito = "org.mockito:mockito-core:5.23.0"
 okhttp = "com.squareup.okhttp3:okhttp-jvm:5.4.0"
@@ -48,7 +50,7 @@ junit-java8 = [
 [plugins]
 errorprone = "net.ltgt.errorprone:5.1.0"
 ideax = "org.jetbrains.gradle.plugin.idea-ext:1.4.1"
-kotlin = "org.jetbrains.kotlin.jvm:2.4.0"
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 nmcp = "com.gradleup.nmcp:1.6.1"
 nmcp-aggregation = "com.gradleup.nmcp.aggregation:1.6.1"
 openrewrite = "org.openrewrite.rewrite:7.36.0"
