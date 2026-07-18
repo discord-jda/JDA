@@ -25,12 +25,12 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -273,7 +273,7 @@ public interface CommandInteractionPayload extends Interaction {
     @Nonnull
     default List<OptionMapping> getOptionsByName(@Nonnull String name) {
         Checks.notNull(name, "Name");
-        return getOptions().stream().filter(opt -> opt.getName().equals(name)).collect(Collectors.toList());
+        return getOptions().stream().filter(opt -> opt.getName().equals(name)).collect(Helpers.toMutableList());
     }
 
     /**
@@ -295,7 +295,7 @@ public interface CommandInteractionPayload extends Interaction {
     @Nonnull
     default List<OptionMapping> getOptionsByType(@Nonnull OptionType type) {
         Checks.notNull(type, "Type");
-        return getOptions().stream().filter(it -> it.getType() == type).collect(Collectors.toList());
+        return getOptions().stream().filter(it -> it.getType() == type).collect(Helpers.toMutableList());
     }
 
     /**

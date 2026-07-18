@@ -230,7 +230,7 @@ public class ErrorResponseException extends RuntimeException {
     private static SchemaError parseSchemaError(String location, DataObject obj) {
         List<ErrorCode> codes = obj.getArray("_errors").stream(DataArray::getObject)
                 .map(json -> new ErrorCode(json.getString("code"), json.getString("message")))
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
         return new SchemaError(location, codes);
     }
 

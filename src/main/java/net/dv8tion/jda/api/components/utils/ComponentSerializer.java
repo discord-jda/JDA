@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -93,7 +93,7 @@ public class ComponentSerializer {
         return components.stream()
                 .map(SerializableData.class::cast)
                 .map(SerializableData::toData)
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
     }
 
     /**

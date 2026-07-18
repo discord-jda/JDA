@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -145,7 +145,7 @@ public class Commands {
     @Nonnull
     public static List<CommandData> fromList(@Nonnull DataArray array) {
         Checks.notNull(array, "DataArray");
-        return array.stream(DataArray::getObject).map(CommandData::fromData).collect(Collectors.toList());
+        return array.stream(DataArray::getObject).map(CommandData::fromData).collect(Helpers.toMutableList());
     }
 
     /**

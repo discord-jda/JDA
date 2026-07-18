@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -36,7 +36,7 @@ public class MessageUtil {
                 .filter(FileContainerMixin.class::isInstance)
                 .map(FileContainerMixin.class::cast)
                 .flatMap(FileContainerMixin::getFiles)
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
     }
 
     public static DataArray getAttachmentsData(@Nonnull Collection<? extends AttachedFile> files) {
