@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.emoji;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -66,6 +67,7 @@ public interface RichCustomEmoji extends CustomEmoji {
      * @return An immutable list of the roles this emoji is active for (all roles if empty)
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<Role> getRoles();
 

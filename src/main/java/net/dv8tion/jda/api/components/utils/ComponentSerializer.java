@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.utils;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
@@ -88,6 +89,7 @@ public class ComponentSerializer {
      * @return {@link List} of {@link DataObject}
      */
     @Nonnull
+    @Mutable
     public List<DataObject> serializeAll(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
         return components.stream()
@@ -108,6 +110,7 @@ public class ComponentSerializer {
      * @return The implicit {@link FileUpload} instances for the provided component
      */
     @Nonnull
+    @Mutable
     public List<FileUpload> getFileUploads(@Nonnull Component component) {
         Checks.notNull(component, "Component");
         return MessageUtil.getIndirectFiles(Collections.singletonList(component));
@@ -125,6 +128,7 @@ public class ComponentSerializer {
      * @return The implicit {@link FileUpload} instances for the provided components
      */
     @Nonnull
+    @Mutable
     public List<FileUpload> getFileUploads(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
         return MessageUtil.getIndirectFiles(components);

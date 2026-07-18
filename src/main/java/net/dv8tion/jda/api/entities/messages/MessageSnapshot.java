@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.entities.Mentions;
@@ -141,6 +142,7 @@ public class MessageSnapshot {
      * @return The invite codes
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<String> getInvites() {
         if (invites != null) {
@@ -165,6 +167,7 @@ public class MessageSnapshot {
      * @return Immutable {@link List} of {@link Attachment}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<Attachment> getAttachments() {
         return attachments;
@@ -176,6 +179,7 @@ public class MessageSnapshot {
      * @return Immutable {@link List} of {@link MessageEmbed}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<MessageEmbed> getEmbeds() {
         return embeds;
@@ -189,6 +193,7 @@ public class MessageSnapshot {
      * @return Immutable {@link List} of {@link MessageTopLevelComponentUnion}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<MessageTopLevelComponentUnion> getComponents() {
         return components;
@@ -210,6 +215,7 @@ public class MessageSnapshot {
      * @return Immutable {@link List} of {@link StickerItem}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<StickerItem> getStickers() {
         return stickers;

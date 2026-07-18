@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -287,6 +288,7 @@ public class SubcommandGroupData implements SerializableData {
      * @return Immutable list of {@link SubcommandData}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<SubcommandData> getSubcommands() {
         return Collections.unmodifiableList(subcommands);

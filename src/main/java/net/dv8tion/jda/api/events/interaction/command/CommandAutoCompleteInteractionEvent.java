@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.interaction.command;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
@@ -101,6 +102,7 @@ public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInte
     }
 
     @Nonnull
+    @Mutable
     @Override
     public List<OptionMapping> getOptions() {
         return interaction.getOptions();

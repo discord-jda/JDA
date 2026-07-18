@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.interaction;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.Guild;
@@ -129,6 +130,7 @@ public class GenericInteractionCreateEvent extends Event implements Interaction 
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<Entitlement> getEntitlements() {
         return interaction.getEntitlements();

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.guild.update;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
@@ -50,6 +51,7 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
      * @return An unmodifiable set of old system channel flags for this guild.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public Set<SystemChannelFlag> getOldFlags() {
         return getOldValue();
@@ -61,6 +63,7 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
      * @return An unmodifiable set of new system channel flags for this guild.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public Set<SystemChannelFlag> getNewFlags() {
         return getNewValue();

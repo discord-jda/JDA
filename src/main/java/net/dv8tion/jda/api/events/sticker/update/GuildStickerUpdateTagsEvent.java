@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.sticker.update;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -53,6 +54,7 @@ public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     @SuppressWarnings("ConstantConditions")
     public Set<String> getOldValue() {
@@ -61,6 +63,7 @@ public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     @SuppressWarnings("ConstantConditions")
     public Set<String> getNewValue() {

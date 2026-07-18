@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.IntegrationType;
@@ -354,6 +356,7 @@ public interface ApplicationInfo extends ISnowflake {
      * @return Immutable list containing the tags of this bot's application
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<String> getTags();
 
@@ -365,6 +368,7 @@ public interface ApplicationInfo extends ISnowflake {
      * @return Immutable list containing the OAuth2 redirect URIs of this bot's application
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<String> getRedirectUris();
 
@@ -409,6 +413,7 @@ public interface ApplicationInfo extends ISnowflake {
      * @return Immutable list of scopes the default authorization URL is set up with.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<String> getScopes();
 
@@ -461,6 +466,7 @@ public interface ApplicationInfo extends ISnowflake {
      * @return The configurations for each integration type
      */
     @Nonnull
+    @Mutable
     Map<IntegrationType, IntegrationTypeConfiguration> getIntegrationTypesConfig();
 
     /**
@@ -491,6 +497,7 @@ public interface ApplicationInfo extends ISnowflake {
          * @return The required scopes granted to the bot when invited
          */
         @Nonnull
+        @ReadOnly
         @Unmodifiable
         List<String> getScopes();
 
@@ -501,6 +508,7 @@ public interface ApplicationInfo extends ISnowflake {
          * @return The permissions your bot asks for when invited
          */
         @Nonnull
+        @ReadOnly
         @Unmodifiable
         Set<Permission> getPermissions();
     }

@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.components.actionrow;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -106,6 +108,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
+    @Mutable
     static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> components) {
         return ActionRowImpl.partitionOf(components);
     }
@@ -139,6 +142,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
+    @Mutable
     static List<ActionRow> partitionOf(
             @Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components) {
         Checks.notNull(component, "Component");
@@ -177,6 +181,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return Unmodifiable {@link List} of {@link ActionRowChildComponentUnion} contained in this action row
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<ActionRowChildComponentUnion> getComponents();
 
@@ -186,6 +191,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return Immutable {@link List} copy of {@link ActionComponent ActionComponents} in this row
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<ActionComponent> getActionComponents() {
         return getComponents().stream()
@@ -200,6 +206,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return Immutable {@link List} of {@link Button Buttons}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<Button> getButtons() {
         return getComponents().stream()

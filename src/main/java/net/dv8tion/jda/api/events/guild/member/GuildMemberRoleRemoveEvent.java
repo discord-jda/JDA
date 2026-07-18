@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.guild.member;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -57,6 +58,7 @@ public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent {
      * @return The removed roles
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<Role> getRoles() {
         return removedRoles;

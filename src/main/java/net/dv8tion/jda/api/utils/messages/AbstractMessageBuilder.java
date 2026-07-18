@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
@@ -116,6 +117,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public Set<String> getMentionedUsers() {
         return mentions.getMentionedUsers();
@@ -123,6 +125,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public Set<String> getMentionedRoles() {
         return mentions.getMentionedRoles();
@@ -154,6 +157,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<MessageEmbed> getEmbeds() {
         return Collections.unmodifiableList(embeds);
@@ -188,6 +192,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<MessageTopLevelComponentUnion> getComponents() {
         return Collections.unmodifiableList(components);

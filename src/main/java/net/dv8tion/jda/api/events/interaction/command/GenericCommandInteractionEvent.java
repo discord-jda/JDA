@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.interaction.command;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -86,6 +87,7 @@ public class GenericCommandInteractionEvent extends GenericInteractionCreateEven
     }
 
     @Nonnull
+    @Mutable
     @Override
     public List<OptionMapping> getOptions() {
         return getInteraction().getOptions();

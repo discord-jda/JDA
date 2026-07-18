@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.Mutable;
+
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -54,6 +56,7 @@ public interface SKU extends SkuSnowflake {
      * @return set of flags.
      */
     @Nonnull
+    @Mutable
     Set<SKUFlag> getFlags();
 
     /**

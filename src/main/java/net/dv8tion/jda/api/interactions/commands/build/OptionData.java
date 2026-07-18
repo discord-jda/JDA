@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
@@ -342,6 +343,7 @@ public class OptionData implements SerializableData {
      * @see #addChoice(String, String)
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<Command.Choice> getChoices() {
         if (choices == null || choices.isEmpty()) {

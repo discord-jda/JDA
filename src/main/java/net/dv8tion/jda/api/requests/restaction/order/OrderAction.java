@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction.order;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -75,6 +76,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @return Immutable List representing the current order
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<T> getCurrentOrder();
 

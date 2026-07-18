@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
@@ -256,6 +257,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     List<FileUpload> getAttachments();
 

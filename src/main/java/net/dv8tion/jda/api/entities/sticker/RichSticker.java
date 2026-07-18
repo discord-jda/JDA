@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
+import kotlin.annotations.jvm.ReadOnly;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
@@ -42,6 +43,7 @@ public interface RichSticker extends Sticker {
      * @return Possibly-empty unmodifiable Set of tags of the sticker
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     Set<String> getTags();
 

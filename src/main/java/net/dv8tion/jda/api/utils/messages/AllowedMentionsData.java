@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
@@ -109,12 +110,14 @@ class AllowedMentionsData implements SerializableData {
     }
 
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public Set<String> getMentionedUsers() {
         return Collections.unmodifiableSet(new HashSet<>(mentionUsers));
     }
 
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public Set<String> getMentionedRoles() {
         return Collections.unmodifiableSet(new HashSet<>(mentionRoles));

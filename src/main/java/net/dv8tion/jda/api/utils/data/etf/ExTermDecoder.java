@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.utils.data.etf;
 
+import kotlin.annotations.jvm.Mutable;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -91,6 +93,7 @@ public class ExTermDecoder {
      * @return The parsed {@link Map} instance
      */
     @Nonnull
+    @Mutable
     @SuppressWarnings("unchecked")
     public static Map<String, Object> unpackMap(@Nonnull ByteBuffer buffer) {
         byte tag = buffer.get(1);
@@ -123,6 +126,7 @@ public class ExTermDecoder {
      * @return The parsed {@link List} instance
      */
     @Nonnull
+    @Mutable
     @SuppressWarnings("unchecked")
     public static List<Object> unpackList(@Nonnull ByteBuffer buffer) {
         byte tag = buffer.get(1);

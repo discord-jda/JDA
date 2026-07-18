@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.events.channel.update;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
@@ -60,6 +62,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      * @return The tags that were added to the post
      */
     @Nonnull
+    @Mutable
     public List<ForumTag> getAddedTags() {
         List<ForumTag> newTags = new ArrayList<>(getNewTags());
         newTags.removeAll(getOldTags());
@@ -74,6 +77,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      * @return The tags that were removed from the post
      */
     @Nonnull
+    @Mutable
     public List<ForumTag> getRemovedTags() {
         List<ForumTag> oldTags = new ArrayList<>(getOldTags());
         oldTags.removeAll(getNewTags());
@@ -88,6 +92,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      * @return The updated list of applied tags
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<ForumTag> getNewTags() {
         SortedSnowflakeCacheView<ForumTag> cache = getChannel()
@@ -110,6 +115,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
      * @return The previous list of applied tags
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<ForumTag> getOldTags() {
         SortedSnowflakeCacheView<ForumTag> cache = getChannel()
@@ -126,6 +132,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<Long> getOldValue() {
         return super.getOldValue();
@@ -133,6 +140,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<Lis
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<Long> getNewValue() {
         return super.getNewValue();

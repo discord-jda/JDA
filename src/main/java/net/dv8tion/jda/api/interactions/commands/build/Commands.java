@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -143,6 +144,7 @@ public class Commands {
      * @see    SlashCommandData#fromData(DataObject)
      */
     @Nonnull
+    @Mutable
     public static List<CommandData> fromList(@Nonnull DataArray array) {
         Checks.notNull(array, "DataArray");
         return array.stream(DataArray::getObject).map(CommandData::fromData).collect(Helpers.toMutableList());
@@ -166,6 +168,7 @@ public class Commands {
      * @see    SlashCommandData#fromData(DataObject)
      */
     @Nonnull
+    @Mutable
     public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection) {
         Checks.noneNull(collection, "CommandData");
         return fromList(DataArray.fromCollection(collection));

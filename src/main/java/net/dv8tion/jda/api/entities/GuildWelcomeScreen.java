@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -86,6 +87,7 @@ public interface GuildWelcomeScreen {
      * @return Possibly-empty, unmodifiable list of the channels shown in the welcome screen
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<Channel> getChannels();
 

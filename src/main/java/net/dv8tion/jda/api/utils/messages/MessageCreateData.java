@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -216,6 +217,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<MessageEmbed> getEmbeds() {
         return embeds;
@@ -228,6 +230,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<MessageTopLevelComponentUnion> getComponents() {
         return components;
@@ -240,6 +243,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<? extends FileUpload> getAttachments() {
         return getFiles();
@@ -294,6 +298,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public Set<String> getMentionedUsers() {
         return mentions.getMentionedUsers();
@@ -306,6 +311,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public Set<String> getMentionedRoles() {
         return mentions.getMentionedRoles();
@@ -358,6 +364,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      * @return The list of file uploads
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<FileUpload> getFiles() {
         return files;
@@ -371,6 +378,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      * @return The set of all file uploads
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public Set<? extends FileUpload> getAllDistinctFiles() {
         return allDistinctFiles;

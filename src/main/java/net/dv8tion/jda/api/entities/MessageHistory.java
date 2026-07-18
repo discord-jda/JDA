@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -305,6 +306,7 @@ public class MessageHistory {
      * @return An immutable List of Messages, sorted newest to oldest.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<Message> getRetrievedHistory() {
         int size = size();

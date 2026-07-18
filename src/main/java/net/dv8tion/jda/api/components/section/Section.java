@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.section;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -215,6 +216,7 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
      * @return {@link List} of {@link SectionContentComponentUnion} in this section
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<SectionContentComponentUnion> getContentComponents();
 

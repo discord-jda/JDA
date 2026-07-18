@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -590,6 +592,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return List of currently registered Objects acting as EventListeners.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<Object> getRegisteredListeners();
 
@@ -913,6 +916,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Immutable list of all created AudioManager instances
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<AudioManager> getAudioManagers() {
         return getAudioManagerCache().asList();
@@ -946,6 +950,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Immutable list of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<User> getUsers() {
         return getUserCache().asList();
@@ -1077,6 +1082,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @incubating This will be replaced in the future when the rollout of globally unique usernames has been completed.
      */
     @Nonnull
+    @ReadOnly
     @Incubating
     @Unmodifiable
     default List<User> getUsersByName(@Nonnull String name, boolean ignoreCase) {
@@ -1094,6 +1100,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @see    Guild#isMember(UserSnowflake)
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<Guild> getMutualGuilds(@Nonnull UserSnowflake... users);
 
@@ -1106,6 +1113,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.UserSnowflake Users} in them.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<Guild> getMutualGuilds(@Nonnull Collection<? extends UserSnowflake> users);
 
@@ -1196,6 +1204,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Possibly-empty immutable list of all the {@link Guild Guilds} that this account is connected to.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<Guild> getGuilds() {
         return getGuildCache().asList();
@@ -1244,6 +1253,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Possibly-empty immutable list of all the {@link Guild Guilds} that all have the same name as the provided name.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<Guild> getGuildsByName(@Nonnull String name, boolean ignoreCase) {
         return getGuildCache().getElementsByName(name, ignoreCase);
@@ -1259,6 +1269,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Possibly-empty set of guild IDs for unavailable guilds
      */
     @Nonnull
+    @Mutable
     Set<String> getUnavailableGuilds();
 
     /**
@@ -1295,6 +1306,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Immutable List of all visible Roles
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<Role> getRoles() {
         return getRoleCache().asList();
@@ -1346,6 +1358,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Immutable List of all Roles matching the parameters provided.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase) {
         return getRoleCache().getElementsByName(name, ignoreCase);
@@ -1376,6 +1389,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Possibly-empty immutable list of all known {@link ScheduledEvent ScheduledEvents}.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<ScheduledEvent> getScheduledEvents() {
         return getScheduledEventCache().asList();
@@ -1436,6 +1450,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      *         same name as the provided name.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase) {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
@@ -1461,6 +1476,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Possibly-empty list of all {@link PrivateChannel PrivateChannels}.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<PrivateChannel> getPrivateChannels() {
         return getPrivateChannelCache().asList();
@@ -1594,6 +1610,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return An immutable list of Custom Emojis (which may or may not be available to usage).
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<RichCustomEmoji> getEmojis() {
         return getEmojiCache().asList();
@@ -1654,6 +1671,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      *         name as the provided name.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase) {
         return getEmojiCache().getElementsByName(name, ignoreCase);

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.attribute;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -80,6 +81,7 @@ public interface IPermissionContainer extends GuildChannel {
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<PermissionOverride> getPermissionOverrides();
 
@@ -97,6 +99,7 @@ public interface IPermissionContainer extends GuildChannel {
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<PermissionOverride> getMemberPermissionOverrides() {
         return getPermissionOverrides().stream()
@@ -116,6 +119,7 @@ public interface IPermissionContainer extends GuildChannel {
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<PermissionOverride> getRolePermissionOverrides() {
         return getPermissionOverrides().stream()

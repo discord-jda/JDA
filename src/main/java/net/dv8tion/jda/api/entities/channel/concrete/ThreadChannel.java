@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.concrete;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
@@ -194,6 +195,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @return Immutable {@link List} of {@link net.dv8tion.jda.api.entities.channel.forums.ForumTag ForumTags} applied to this post
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<ForumTag> getAppliedTags();
 
@@ -327,6 +329,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #retrieveThreadMembers()
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<ThreadMember> getThreadMembers();
 

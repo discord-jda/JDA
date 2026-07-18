@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -251,6 +252,7 @@ public interface CommandInteractionPayload extends Interaction {
      * @see    #getOption(String)
      */
     @Nonnull
+    @Mutable
     List<OptionMapping> getOptions();
 
     /**
@@ -271,6 +273,7 @@ public interface CommandInteractionPayload extends Interaction {
      * @see   #getOptions()
      */
     @Nonnull
+    @Mutable
     default List<OptionMapping> getOptionsByName(@Nonnull String name) {
         Checks.notNull(name, "Name");
         return getOptions().stream().filter(opt -> opt.getName().equals(name)).collect(Helpers.toMutableList());
@@ -293,6 +296,7 @@ public interface CommandInteractionPayload extends Interaction {
      * @see    #getOptions()
      */
     @Nonnull
+    @Mutable
     default List<OptionMapping> getOptionsByType(@Nonnull OptionType type) {
         Checks.notNull(type, "Type");
         return getOptions().stream().filter(it -> it.getType() == type).collect(Helpers.toMutableList());

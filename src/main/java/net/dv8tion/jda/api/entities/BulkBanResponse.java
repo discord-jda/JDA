@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.ReadOnly;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.Duration;
@@ -45,6 +46,7 @@ public class BulkBanResponse {
      * @return {@link List} of {@link UserSnowflake}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<UserSnowflake> getBannedUsers() {
         return bannedUsers;
@@ -56,6 +58,7 @@ public class BulkBanResponse {
      * @return {@link List} of {@link UserSnowflake}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<UserSnowflake> getFailedUsers() {
         return failedUsers;

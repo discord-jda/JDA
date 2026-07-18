@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -415,6 +416,7 @@ public class SubcommandData implements SerializableData {
      * @return Immutable list of {@link OptionData}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<OptionData> getOptions() {
         return Collections.unmodifiableList(options);

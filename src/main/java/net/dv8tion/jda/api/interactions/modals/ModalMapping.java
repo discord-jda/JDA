@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.entities.Mentions;
 import net.dv8tion.jda.api.entities.Message;
@@ -227,6 +228,7 @@ public class ModalMapping {
      * @return The string list representation of this component.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<String> getAsStringList() {
         if (type != Component.Type.STRING_SELECT
@@ -251,6 +253,7 @@ public class ModalMapping {
      * @return This component's value as a list of Longs.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<Long> getAsLongList() {
         if (!type.isEntitySelectMenu()) {
@@ -297,6 +300,7 @@ public class ModalMapping {
      * @return This component's value as a list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} objects
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<Message.Attachment> getAsAttachmentList() {
         if (type != Component.Type.FILE_UPLOAD) {

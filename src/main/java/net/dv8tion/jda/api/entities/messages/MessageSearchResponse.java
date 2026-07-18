@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import org.jetbrains.annotations.Unmodifiable;
@@ -104,6 +105,7 @@ public interface MessageSearchResponse {
          * @return The matching messages
          */
         @Nonnull
+        @ReadOnly
         @Unmodifiable
         List<Message> getMessages();
 

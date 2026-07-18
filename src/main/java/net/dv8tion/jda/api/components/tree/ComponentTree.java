@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.components.tree;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -134,6 +136,7 @@ public interface ComponentTree<E extends Component> {
      * @return An unmodifiable list of components in this tree
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<E> getComponents();
 
@@ -150,6 +153,7 @@ public interface ComponentTree<E extends Component> {
      * @return A modifiable list of components with the specified type
      */
     @Nonnull
+    @Mutable
     default <T extends Component> List<T> findAll(@Nonnull Class<T> type) {
         return findAll(type, c -> true);
     }
@@ -168,6 +172,7 @@ public interface ComponentTree<E extends Component> {
      * @return A modifiable list of components satisfying the type and filter
      */
     @Nonnull
+    @Mutable
     default <T extends Component> List<T> findAll(@Nonnull Class<T> type, @Nonnull Predicate<? super T> filter) {
         Checks.notNull(type, "Component type");
         Checks.notNull(filter, "Component filter");
