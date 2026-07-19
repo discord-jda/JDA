@@ -16,11 +16,14 @@
 
 package net.dv8tion.jda.test.compliance;
 
+import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.managers.Manager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -29,6 +32,7 @@ import net.dv8tion.jda.api.utils.IOFunction;
 import org.jetbrains.annotations.Contract;
 import org.junit.jupiter.api.Test;
 
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.CheckForNull;
@@ -168,6 +172,18 @@ public class ArchUnitComplianceTest {
                 .check(SourceSets.getApiClasses());
     }
 
+    @Test
+    void testReturnedCollectionsHaveKotlinMutabilityAnnotation() {
+        methods()
+                .that()
+                .arePublic()
+                .or()
+                .areProtected()
+                .and(returnACollection())
+                .should(haveKotlinMutabilityAnnotation())
+                .check(SourceSets.getApiClasses());
+    }
+
     private ArchCondition<JavaMethod> haveNonPrimitiveParametersAnnotatedWithNullability() {
         return new ArchCondition<>("have non-primitive parameters annotated with @Nonnull or @Nullable") {
             @Override
@@ -179,6 +195,61 @@ public class ArchUnitComplianceTest {
                                 && !parameter.isAnnotatedWith(CheckForNull.class))
                         .forEach(parameter -> events.add(SimpleConditionEvent.violated(
                                 method, parameter.getDescription() + " is not annotated with @Nonnull or @Nullable")));
+            }
+        };
+    }
+
+    private static DescribedPredicate<JavaMethod> returnACollection() {
+        return new DescribedPredicate<>("return a Collection") {
+            @Override
+            public boolean test(JavaMethod method) {
+                //  ArchUnit for some reason gives use a JavaMethod of SortedSnowflakeCacheView#asSet with a return type
+                // of Set instead of NavigableSet
+                //  **then gives the method again but with the correct return type**
+                //  So we do an approximative check then check the actual type using reflection
+                if (!method.getRawReturnType().isAssignableTo(Collection.class)) {
+                    return false;
+                }
+
+                var reflected = method.reflect();
+                var returnType = reflected.getReturnType();
+                return returnType == Collection.class
+                        || returnType == List.class
+                        || returnType == Set.class
+                        || returnType == Map.class;
+
+                // TODO use this when https://github.com/TNG/ArchUnit/issues/1669 is fixed
+                //                return rawReturnType.isEquivalentTo(List.class) ||
+                // rawReturnType.isEquivalentTo(Set.class) || rawReturnType.isEquivalentTo(Map.class);
+            }
+        };
+    }
+
+    private static ArchCondition<JavaMethod> haveKotlinMutabilityAnnotation() {
+        return new ArchCondition<>("have Kotlin mutability annotation") {
+            @Override
+            public void check(JavaMethod method, ConditionEvents events) {
+                // TODO use this instead when https://github.com/TNG/ArchUnit/issues/1382 is fixed
+
+                //                if (method.isAnnotatedWith(Unmodifiable.class) ||
+                // method.isAnnotatedWith(UnmodifiableView.class)) {
+                //                    if (!method.isAnnotatedWith(ReadOnly.class)) {
+                //                        events.add(SimpleConditionEvent.violated(method, method.getDescription() + "
+                // is not annotated with " + ReadOnly.class.getSimpleName()));
+                //                    }
+                //                } else {
+                //                    if (!method.isAnnotatedWith(Mutable.class)) {
+                //                        events.add(SimpleConditionEvent.violated(method, method.getDescription() + "
+                // is not annotated with " + Mutable.class.getSimpleName()));
+                //                    }
+                //                }
+
+                if (!method.isAnnotatedWith(ReadOnly.class) && !method.isAnnotatedWith(Mutable.class)) {
+                    events.add(SimpleConditionEvent.violated(
+                            method,
+                            method.getDescription() + " is not annotated with " + ReadOnly.class.getSimpleName()
+                                    + " or " + Mutable.class.getSimpleName()));
+                }
             }
         };
     }

@@ -231,6 +231,7 @@ dependencies {
     testImplementation(libs.commons.lang3)
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
+    testImplementation(libs.kotlin.annotations)
 
     testJava8Implementation(libs.bundles.junit.java8)
     testJava8Implementation(libs.assertj)
