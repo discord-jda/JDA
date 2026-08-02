@@ -98,7 +98,7 @@ public class ComponentsUtil {
                 .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ReferenceEquality"})
     public static <R, E extends Component> R doReplace(
             // This isn't '? extends E' as users are not required to return unions
             Class<? extends Component> expectedChildrenType,

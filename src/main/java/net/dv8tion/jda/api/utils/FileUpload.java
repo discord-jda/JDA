@@ -28,6 +28,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okio.Okio;
 import okio.Source;
+import org.jetbrains.annotations.Contract;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -57,17 +58,20 @@ public class FileUpload implements Closeable, AttachedFile {
     private MediaType mediaType = Requester.MEDIA_TYPE_OCTET;
     private byte[] waveform;
     private double durationSeconds;
+    private boolean spoiler;
 
     protected FileUpload(InputStream resource, String name) {
         this.resource = resource;
         this.resourceSupplier = null;
         this.name = name;
+        this.spoiler = name != null && name.startsWith("SPOILER_");
     }
 
     protected FileUpload(Supplier<? extends Source> resourceSupplier, String name) {
         this.resourceSupplier = resourceSupplier;
         this.resource = null;
         this.name = name;
+        this.spoiler = name != null && name.startsWith("SPOILER_");
     }
 
     /**
@@ -294,17 +298,31 @@ public class FileUpload implements Closeable, AttachedFile {
     }
 
     /**
-     * Changes the name of this file, to be prefixed as {@code SPOILER_}.
+     * Mark this file as a spoiler.
      * <br>This will cause the file to be rendered as a spoiler attachment in the client.
      *
      * @return The updated FileUpload instance
      */
     @Nonnull
+    @Contract(" -> this")
     public FileUpload asSpoiler() {
-        if (name.startsWith("SPOILER_")) {
+        return asSpoiler(true);
+    }
+
+    /**
+     * Set whether this file should be marked as a spoiler.
+     * <br>If {@code true}, this will cause the file to be rendered as a spoiler attachment in the client.
+     *
+     * @return The updated FileUpload instance
+     */
+    @Nonnull
+    @Contract("_->this")
+    public FileUpload asSpoiler(boolean isSpoiler) {
+        if (this.spoiler == isSpoiler) {
             return this;
         }
-        return setName("SPOILER_" + name);
+        this.spoiler = isSpoiler;
+        return this;
     }
 
     /**
@@ -319,6 +337,7 @@ public class FileUpload implements Closeable, AttachedFile {
      * @return The updated FileUpload instance
      */
     @Nonnull
+    @Contract("_->this")
     public FileUpload setName(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         this.name = name;
@@ -337,6 +356,7 @@ public class FileUpload implements Closeable, AttachedFile {
      * @return The same FileUpload instance with the new description
      */
     @Nonnull
+    @Contract("_->this")
     public FileUpload setDescription(@Nullable String description) {
         if (description != null) {
             Checks.notLonger(description = description.trim(), MAX_DESCRIPTION_LENGTH, "Description");
@@ -361,6 +381,7 @@ public class FileUpload implements Closeable, AttachedFile {
      * @return The same FileUpload instance configured as a voice message attachment
      */
     @Nonnull
+    @Contract("_,_,_->this")
     public FileUpload asVoiceMessage(
             @Nonnull MediaType mediaType, @Nonnull byte[] waveform, @Nonnull Duration duration) {
         Checks.notNull(duration, "Duration");
@@ -383,6 +404,7 @@ public class FileUpload implements Closeable, AttachedFile {
      * @return The same FileUpload instance configured as a voice message attachment
      */
     @Nonnull
+    @Contract("_,_,_->this")
     public FileUpload asVoiceMessage(@Nonnull MediaType mediaType, @Nonnull byte[] waveform, double durationSeconds) {
         Checks.notNull(mediaType, "Media type");
         Checks.notNull(waveform, "Waveform");
@@ -482,6 +504,7 @@ public class FileUpload implements Closeable, AttachedFile {
                 .put("id", index)
                 .put("description", description == null ? "" : description)
                 .put("content_type", mediaType.toString())
+                .put("is_spoiler", spoiler)
                 .put("filename", name);
         if (waveform != null && durationSeconds > 0) {
             attachment.put("waveform", new String(Base64.getEncoder().encode(waveform), StandardCharsets.UTF_8));
