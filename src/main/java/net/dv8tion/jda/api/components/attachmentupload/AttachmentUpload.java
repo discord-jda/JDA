@@ -101,7 +101,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
     int getMaxValues();
 
     /**
-     * The <b>unmodifiable list view</b> of file types to filter for.
+     * The <b>unmodifiable</b> list <b>view</b> of file types to filter for.
      * Returns an empty list if any file is accepted.
      *
      * @return Unmodifiable list view of file types
@@ -298,7 +298,7 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
         }
 
         /**
-         * The <b>unmodifiable list view</b> of file types to filter for.
+         * The <b>unmodifiable</b> list <b>view</b> of file types to filter for.
          * Returns an empty list if any file is accepted.
          *
          * @return Unmodifiable list view of file types

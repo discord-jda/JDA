@@ -338,7 +338,7 @@ public class OptionData implements SerializableData, IFilterableFileTypes<Option
     }
 
     /**
-     * The <b>unmodifiable list view</b> of file types to filter for.
+     * The <b>unmodifiable</b> list <b>view</b> of file types to filter for.
      * Returns an empty list if any file is accepted,
      * or this isn't an {@link OptionType#ATTACHMENT ATTACHMENT} option.
      *
