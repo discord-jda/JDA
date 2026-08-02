@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.components.label;
 
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
+import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.internal.components.label.LabelImpl;
 
 import javax.annotation.CheckReturnValue;
@@ -32,7 +33,7 @@ import javax.annotation.Nullable;
  * @see LabelChildComponent
  * @see LabelChildComponentUnion
  */
-public interface Label extends ModalTopLevelComponent {
+public interface Label extends ModalTopLevelComponent, IReplaceable {
     /**
      * The maximum length a label can have. ({@value})
      */
