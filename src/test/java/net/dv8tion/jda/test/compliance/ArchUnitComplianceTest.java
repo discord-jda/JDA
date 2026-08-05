@@ -19,6 +19,7 @@ package net.dv8tion.jda.test.compliance;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
@@ -179,6 +180,11 @@ public class ArchUnitComplianceTest {
                 .arePublic()
                 .or()
                 .areProtected()
+                .and()
+                // Overrides with different return/parameter types makes javac generate synthetic bridges,
+                // ArchUnit picks them up as it reads the bytecode,
+                // we can ignore those as they are inaccessible without reflection.
+                .doNotHaveModifier(JavaModifier.SYNTHETIC)
                 .and(returnACollection())
                 .should(haveKotlinMutabilityAnnotation())
                 .check(SourceSets.getApiClasses());
@@ -203,24 +209,10 @@ public class ArchUnitComplianceTest {
         return new DescribedPredicate<>("return a Collection") {
             @Override
             public boolean test(JavaMethod method) {
-                //  ArchUnit for some reason gives use a JavaMethod of SortedSnowflakeCacheView#asSet with a return type
-                // of Set instead of NavigableSet
-                //  **then gives the method again but with the correct return type**
-                //  So we do an approximative check then check the actual type using reflection
-                if (!method.getRawReturnType().isAssignableTo(Collection.class)) {
-                    return false;
-                }
-
-                var reflected = method.reflect();
-                var returnType = reflected.getReturnType();
-                return returnType == Collection.class
-                        || returnType == List.class
-                        || returnType == Set.class
-                        || returnType == Map.class;
-
-                // TODO use this when https://github.com/TNG/ArchUnit/issues/1669 is fixed
-                //                return rawReturnType.isEquivalentTo(List.class) ||
-                // rawReturnType.isEquivalentTo(Set.class) || rawReturnType.isEquivalentTo(Map.class);
+                var rawReturnType = method.getRawReturnType();
+                return rawReturnType.isEquivalentTo(List.class)
+                        || rawReturnType.isEquivalentTo(Set.class)
+                        || rawReturnType.isEquivalentTo(Map.class);
             }
         };
     }
