@@ -38,7 +38,7 @@ public interface IFilterableFileTypes<T extends IFilterableFileTypes<T>> {
      *         The file types, up to {@value #MAX_FILE_TYPES}
      *
      * @throws IllegalArgumentException
-     *         If there are more than {@value #MAX_FILE_TYPES} file types
+     *         If {@code null} is provided, or there are more than {@value #MAX_FILE_TYPES} file types
      *
      * @return This instance for chaining
      */
@@ -52,7 +52,7 @@ public interface IFilterableFileTypes<T extends IFilterableFileTypes<T>> {
      *         The file types, up to {@value #MAX_FILE_TYPES}
      *
      * @throws IllegalArgumentException
-     *         If there are more than {@value #MAX_FILE_TYPES} file types
+     *         If {@code null} is provided, or there are more than {@value #MAX_FILE_TYPES} file types
      *
      * @return This instance for chaining
      */
@@ -116,7 +116,7 @@ public interface IFilterableFileTypes<T extends IFilterableFileTypes<T>> {
      *         The file types, up to {@value #MAX_FILE_TYPES}
      *
      * @throws IllegalArgumentException
-     *         If there are more than {@value #MAX_FILE_TYPES} file types
+     *         If {@code null} is provided, or there are more than {@value #MAX_FILE_TYPES} file types
      *
      * @return This instance for chaining
      */
@@ -131,7 +131,7 @@ public interface IFilterableFileTypes<T extends IFilterableFileTypes<T>> {
      *         The file types, up to {@value #MAX_FILE_TYPES}
      *
      * @throws IllegalArgumentException
-     *         If there are more than {@value #MAX_FILE_TYPES} file types
+     *         If {@code null} is provided, or there are more than {@value #MAX_FILE_TYPES} file types
      *
      * @return This instance for chaining
      */
