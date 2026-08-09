@@ -34,7 +34,6 @@ import net.dv8tion.jda.internal.interactions.MemberInteractionPermissions;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.List;
@@ -49,6 +48,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     private User user;
     private String nickname;
     private String avatarId;
+    private AvatarDecoration avatarDecoration;
     private long joinDate, boostDate, timeOutEnd;
     private boolean pending = false;
     private int flags;
@@ -161,6 +161,12 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Override
     public String getAvatarId() {
         return avatarId;
+    }
+
+    @Nullable
+    @Override
+    public AvatarDecoration getAvatarDecoration() {
+        return avatarDecoration;
     }
 
     @Nonnull
@@ -318,6 +324,12 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     public DetachedMemberImpl setAvatarId(String avatarId) {
         this.avatarId = avatarId;
         return this;
+    }
+
+    @Override
+    public DetachedMemberImpl setAvatarDecoration(AvatarDecoration avatarDecoration) {
+        this.avatarDecoration = avatarDecoration;
+        return null;
     }
 
     @Override
