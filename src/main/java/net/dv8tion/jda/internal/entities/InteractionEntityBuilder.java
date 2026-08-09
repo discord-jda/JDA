@@ -113,11 +113,14 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
     public Category createCategory(@Nonnull Guild guild, DataObject json) {
         if (!guild.isDetached()) {
-            return guild.getCategoryById(json.getLong("id"));
+            Category channel = guild.getCategoryById(json.getLong("id"));
+            if (channel == null || !channel.isObfuscated()) {
+                return channel;
+            }
         }
 
         long id = json.getLong("id");
-        DetachedCategoryImpl channel = new DetachedCategoryImpl(id, (DetachedGuildImpl) guild);
+        DetachedCategoryImpl channel = new DetachedCategoryImpl(id, guild);
         configureCategory(json, channel);
         configureChannelInteractionPermissions(channel, json);
         return channel;
@@ -125,11 +128,14 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
     public TextChannel createTextChannel(@Nonnull Guild guild, DataObject json) {
         if (!guild.isDetached()) {
-            return guild.getTextChannelById(json.getLong("id"));
+            TextChannel channel = guild.getTextChannelById(json.getLong("id"));
+            if (channel == null || !channel.isObfuscated()) {
+                return channel;
+            }
         }
 
         long id = json.getLong("id");
-        DetachedTextChannelImpl channel = new DetachedTextChannelImpl(id, (DetachedGuildImpl) guild);
+        DetachedTextChannelImpl channel = new DetachedTextChannelImpl(id, guild);
         configureTextChannel(json, channel);
         configureChannelInteractionPermissions(channel, json);
         return channel;
@@ -137,11 +143,14 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
     public NewsChannel createNewsChannel(@Nonnull Guild guild, DataObject json) {
         if (!guild.isDetached()) {
-            return guild.getNewsChannelById(json.getLong("id"));
+            NewsChannel channel = guild.getNewsChannelById(json.getLong("id"));
+            if (channel == null || !channel.isObfuscated()) {
+                return channel;
+            }
         }
 
         long id = json.getLong("id");
-        DetachedNewsChannelImpl channel = new DetachedNewsChannelImpl(id, (DetachedGuildImpl) guild);
+        DetachedNewsChannelImpl channel = new DetachedNewsChannelImpl(id, guild);
         configureNewsChannel(json, channel);
         configureChannelInteractionPermissions(channel, json);
         return channel;
@@ -149,11 +158,14 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
     public VoiceChannel createVoiceChannel(@Nonnull Guild guild, DataObject json) {
         if (!guild.isDetached()) {
-            return guild.getVoiceChannelById(json.getLong("id"));
+            VoiceChannel channel = guild.getVoiceChannelById(json.getLong("id"));
+            if (channel == null || !channel.isObfuscated()) {
+                return channel;
+            }
         }
 
         long id = json.getLong("id");
-        DetachedVoiceChannelImpl channel = new DetachedVoiceChannelImpl(id, (DetachedGuildImpl) guild);
+        DetachedVoiceChannelImpl channel = new DetachedVoiceChannelImpl(id, guild);
         configureVoiceChannel(json, channel);
         configureChannelInteractionPermissions(channel, json);
         return channel;
@@ -161,10 +173,13 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
     public StageChannel createStageChannel(@Nonnull Guild guild, DataObject json) {
         if (!guild.isDetached()) {
-            return guild.getStageChannelById(json.getLong("id"));
+            StageChannel channel = guild.getStageChannelById(json.getLong("id"));
+            if (channel == null || !channel.isObfuscated()) {
+                return channel;
+            }
         }
         long id = json.getLong("id");
-        DetachedStageChannelImpl channel = new DetachedStageChannelImpl(id, (DetachedGuildImpl) guild);
+        DetachedStageChannelImpl channel = new DetachedStageChannelImpl(id, guild);
         configureStageChannel(json, channel);
         configureChannelInteractionPermissions(channel, json);
         return channel;
@@ -172,11 +187,14 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
     public MediaChannel createMediaChannel(@Nonnull Guild guild, DataObject json) {
         if (!guild.isDetached()) {
-            return guild.getMediaChannelById(json.getLong("id"));
+            MediaChannel channel = guild.getMediaChannelById(json.getLong("id"));
+            if (channel == null || !channel.isObfuscated()) {
+                return channel;
+            }
         }
 
         long id = json.getLong("id");
-        DetachedMediaChannelImpl channel = new DetachedMediaChannelImpl(id, (DetachedGuildImpl) guild);
+        DetachedMediaChannelImpl channel = new DetachedMediaChannelImpl(id, guild);
         configureMediaChannel(json, channel);
         configureChannelInteractionPermissions(channel, json);
         return channel;
@@ -202,11 +220,14 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
 
     public ForumChannel createForumChannel(@Nonnull Guild guild, DataObject json) {
         if (!guild.isDetached()) {
-            return guild.getForumChannelById(json.getLong("id"));
+            ForumChannel channel = guild.getForumChannelById(json.getLong("id"));
+            if (channel == null || !channel.isObfuscated()) {
+                return channel;
+            }
         }
 
         long id = json.getLong("id");
-        DetachedForumChannelImpl channel = new DetachedForumChannelImpl(id, (DetachedGuildImpl) guild);
+        DetachedForumChannelImpl channel = new DetachedForumChannelImpl(id, guild);
         configureForumChannel(json, channel);
         configureChannelInteractionPermissions(channel, json);
         return channel;
@@ -265,7 +286,8 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
             }
         } else {
             LOG.warn(
-                    "Private channel has no recipient and will fallback to a detached PrivateChannel with no user, please report to the devs, channel JSON: {}",
+                    "Private channel has no recipient and will fallback to a detached PrivateChannel with no user,"
+                            + " please report to the devs, channel JSON: {}",
                     json.toPrettyString());
             channel = new DetachedPrivateChannelImpl(getJDA(), channelId, null);
         }

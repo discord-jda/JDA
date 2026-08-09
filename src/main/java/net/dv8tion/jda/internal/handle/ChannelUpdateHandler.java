@@ -119,6 +119,8 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         // Handle shared properties
 
+        channel.setFlags(content.getInt("flags", 0));
+
         String oldName = channel.getName();
         String name = content.getString("name", oldName);
         if (!Objects.equals(oldName, name)) {

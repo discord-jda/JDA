@@ -18,11 +18,14 @@ package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.PrivateChannelMixin;
+
+import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,6 +61,12 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
     @Override
     public User getUser() {
         return user;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<ChannelFlag> getFlags() {
+        return EnumSet.noneOf(ChannelFlag.class);
     }
 
     @Nonnull

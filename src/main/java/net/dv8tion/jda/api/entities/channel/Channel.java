@@ -45,9 +45,7 @@ public interface Channel extends IMentionable, IDetachableEntity {
      * @return {@link EnumSet} of the configured {@link ChannelFlag ChannelFlags}, changes to this enum set are not reflected in the API.
      */
     @Nonnull
-    default EnumSet<ChannelFlag> getFlags() {
-        return EnumSet.noneOf(ChannelFlag.class);
-    }
+    EnumSet<ChannelFlag> getFlags();
 
     /**
      * Whether this channel is obfuscated.

@@ -116,6 +116,9 @@ public class InteractionImpl implements Interaction {
                 throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: "
                         + channelJson.getInt("type"));
             }
+            if (channel.isObfuscated()) {
+                channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
+            }
             this.channel = channel;
         } else {
             // (G)DMs

@@ -45,6 +45,9 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>>
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
+    // ---- Setters ---
+    T setFlags(int flags);
+
     // ---- Helpers ---
     default boolean hasPermission(Permission permission) {
         IPermissionContainer permChannel = getPermissionContainer();

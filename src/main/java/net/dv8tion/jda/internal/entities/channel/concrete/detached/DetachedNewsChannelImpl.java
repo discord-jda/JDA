@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -26,7 +27,6 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildMessageChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.NewsChannelMixin;
-import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class DetachedNewsChannelImpl extends AbstractStandardGuildMessageChannel
                 IInteractionPermissionMixin<DetachedNewsChannelImpl> {
     private ChannelInteractionPermissions interactionPermissions;
 
-    public DetachedNewsChannelImpl(long id, DetachedGuildImpl guild) {
+    public DetachedNewsChannelImpl(long id, Guild guild) {
         super(id, guild);
     }
 
