@@ -50,9 +50,9 @@ public interface Channel extends IMentionable, IDetachableEntity {
     /**
      * Whether this channel is obfuscated.
      *
-     * <p>An obfuscated channel is inaccessible and to the logged-in account.
+     * <p>An obfuscated channel is inaccessible to the logged-in account.
      * It does not provide anything besides positional information.
-     * Methods like {@link #getName()} will return not return the actual name of the channel.
+     * Methods like {@link #getName()} will not return the actual name of the channel.
      *
      * @return True, if this channel is obfuscated.
      */
