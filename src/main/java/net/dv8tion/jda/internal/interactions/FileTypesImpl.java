@@ -59,6 +59,10 @@ public final class FileTypesImpl {
         return Collections.unmodifiableList(fileTypes);
     }
 
+    public boolean isEmpty() {
+        return fileTypes.isEmpty();
+    }
+
     public void addAll(@Nonnull Collection<FileType> fileTypes) {
         Checks.noneNull(fileTypes, "File types");
         Checks.check(

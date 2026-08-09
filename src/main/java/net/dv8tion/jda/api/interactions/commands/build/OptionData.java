@@ -1074,7 +1074,9 @@ public class OptionData implements SerializableData, IFilterableFileTypes<Option
             }
         }
         if (type == OptionType.ATTACHMENT) {
-            json.put("file_types", fileTypes.toData());
+            if (!fileTypes.isEmpty()) {
+                json.put("file_types", fileTypes.toData());
+            }
         }
         return json;
     }
