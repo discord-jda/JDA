@@ -190,7 +190,7 @@ public class ChannelUpdateHandler extends SocketHandler {
                 WebSocketClient.LOG.debug("CHANNEL_UPDATE provided an unrecognized channel type JSON: {}", content);
         }
 
-        DataArray permOverwrites = content.getArray("permission_overwrites");
+        DataArray permOverwrites = content.optArray("permission_overwrites").orElseGet(DataArray::empty);
         dispatch.applyPermissions((IPermissionContainerMixin<?>) channel, permOverwrites);
 
         boolean hasAccessToChannel = channel.getGuild().getSelfMember().hasPermission(channel, Permission.VIEW_CHANNEL);
