@@ -146,8 +146,9 @@ public class LabelImpl extends AbstractComponentImpl implements Label, ModalTopL
         return obj;
     }
 
+    @Nonnull
     @Override
-    public @Nonnull Label replace(@Nonnull ComponentReplacer replacer) {
+    public Label replace(@Nonnull ComponentReplacer replacer) {
         Checks.notNull(replacer, "ComponentReplacer");
 
         LabelChildComponent newChild = ComponentsUtil.doReplace(
