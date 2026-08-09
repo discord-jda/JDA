@@ -29,6 +29,8 @@ import javax.annotation.Nonnull;
 import static net.dv8tion.jda.api.interactions.IFilterableFileTypes.MAX_FILE_TYPES;
 
 public final class FileTypesImpl {
+    public static final FileTypesImpl EMPTY_AND_IMMUTABLE = new FileTypesImpl(Collections.emptyList());
+
     private final List<FileType> fileTypes;
 
     private FileTypesImpl(List<FileType> fileTypes) {

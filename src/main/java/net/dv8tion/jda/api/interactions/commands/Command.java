@@ -640,7 +640,7 @@ public interface Command extends ISnowflake, ICommandReference {
                 this.maxLength = json.getInt("max_length");
             }
             this.fileTypes =
-                    json.optArray("file_types").map(FileTypesImpl::fromArray).orElse(FileTypesImpl.empty());
+                    json.optArray("file_types").map(FileTypesImpl::fromArray).orElse(FileTypesImpl.EMPTY_AND_IMMUTABLE);
         }
 
         /**
