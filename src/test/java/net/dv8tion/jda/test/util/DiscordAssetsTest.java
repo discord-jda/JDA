@@ -31,6 +31,7 @@ public class DiscordAssetsTest extends AbstractSnapshotTest {
     private static final ImageFormat EXAMPLE_FORMAT = ImageFormat.ANIMATED_WEBP;
     private static final String EXAMPLE_SNOWFLAKE = "222046562543468545";
     private static final String EXAMPLE_HASH = "86185a18d168f88b91c";
+    private static final String EXAMPLE_NAMEPLATE_ASSET = "nameplates/nameplates_v3/touch_grass/";
 
     @Test
     void testDiscordAssetsOutputIsChecked() {
@@ -64,6 +65,12 @@ public class DiscordAssetsTest extends AbstractSnapshotTest {
                 "memberAvatar",
                 memberAvatar(EXAMPLE_FORMAT, EXAMPLE_SNOWFLAKE, EXAMPLE_SNOWFLAKE, EXAMPLE_HASH)
                         .getUrl());
+        data.put(
+                "staticNameplate",
+                staticNameplate(EXAMPLE_FORMAT, EXAMPLE_NAMEPLATE_ASSET).getUrl());
+        data.put(
+                "animatedNameplate",
+                animatedNameplate(EXAMPLE_FORMAT, EXAMPLE_NAMEPLATE_ASSET).getUrl());
         data.put(
                 "roleIcon",
                 roleIcon(EXAMPLE_FORMAT, EXAMPLE_SNOWFLAKE, EXAMPLE_HASH).getUrl());
