@@ -2912,7 +2912,15 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         Minimum number of days since a member has been offline to get affected.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
+     *         <ul>
+     *             <li>If the server has the {@code PRUNE_REQUIRES_ADMIN} feature enabled,
+     *                 and the account doesn't have {@link net.dv8tion.jda.api.Permission#ADMINISTRATOR ADMINISTRATOR} Permission
+     *             </li>
+     *             <li>If the server <b>does not</b> have the {@code PRUNE_REQUIRES_ADMIN} feature enabled,
+     *                 and the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBERS}
+     *                 and {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} Permission
+     *             </li>
+     *         </ul>
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1} or more than {@code 30}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
