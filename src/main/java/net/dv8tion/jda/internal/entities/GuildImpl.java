@@ -1511,7 +1511,12 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles) {
-        checkPermission(Permission.KICK_MEMBERS);
+        if (features.contains("PRUNE_REQUIRES_ADMIN")) {
+            checkPermission(Permission.ADMINISTRATOR);
+        } else {
+            checkPermission(Permission.MANAGE_SERVER);
+            checkPermission(Permission.KICK_MEMBERS);
+        }
 
         Checks.check(days >= 1 && days <= 30, "Provided %d days must be between 1 and 30.", days);
         Checks.notNull(roles, "Roles");
