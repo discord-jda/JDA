@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.components.label.LabelChildComponentUnion;
+import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -142,6 +144,20 @@ public class LabelImpl extends AbstractComponentImpl implements Label, ModalTopL
         }
 
         return obj;
+    }
+
+    @Nonnull
+    @Override
+    public Label replace(@Nonnull ComponentReplacer replacer) {
+        Checks.notNull(replacer, "ComponentReplacer");
+
+        LabelChildComponent newChild = ComponentsUtil.doReplace(
+                LabelChildComponent.class,
+                Collections.singletonList(child),
+                replacer,
+                newChildren -> newChildren.isEmpty() ? null : newChildren.get(0));
+
+        return validated(label, description, newChild);
     }
 
     @Override
