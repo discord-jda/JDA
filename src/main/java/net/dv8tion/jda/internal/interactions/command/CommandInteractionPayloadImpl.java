@@ -135,19 +135,15 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
             });
             resolveJson.optObject("channels").ifPresent(channels -> channels.keys()
                     .forEach(id -> {
-                        ISnowflake channelObj = jda.getGuildChannelById(id);
                         DataObject channelJson = channels.getObject(id);
+                        ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
+                        ISnowflake channelObj = channelType.isThread()
+                                ? interactionEntityBuilder.createThreadChannel(guild, channelJson)
+                                : channelType.isGuild()
+                                        ? interactionEntityBuilder.createGuildChannel(guild, channelJson)
+                                        : null;
                         if (channelObj != null) {
                             resolved.put(channelObj.getIdLong(), channelObj);
-                        } else if (ChannelType.fromId(channelJson.getInt("type"))
-                                .isThread()) {
-                            resolved.put(
-                                    Long.parseUnsignedLong(id),
-                                    interactionEntityBuilder.createThreadChannel(guild, channelJson));
-                        } else {
-                            resolved.put(
-                                    Long.parseUnsignedLong(id),
-                                    interactionEntityBuilder.createGuildChannel(guild, channelJson));
                         }
                     }));
         }

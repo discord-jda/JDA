@@ -21,9 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -31,10 +29,8 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.InteractionEntityBuilder;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.List;
@@ -86,46 +82,22 @@ public class InteractionImpl implements Interaction {
 
         DataObject channelJson = data.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
-        boolean isObfuscatedChannel =
-                ChannelFlag.fromRaw(channelJson.getInt("flags", 0)).contains(ChannelFlag.OBFUSCATED);
 
-        if (guild instanceof DetachedGuildImpl || (guild != null && isObfuscatedChannel)) {
-            member = interactionEntityBuilder.createMember(guild, data.getObject("member"));
-            user = member.getUser();
+        if (this.guild != null) {
+            this.member = interactionEntityBuilder.createMember(guild, data.getObject("member"));
+            this.user = member.getUser();
 
-            if (channelType.isThread()) {
-                channel = interactionEntityBuilder.createThreadChannel(guild, channelJson);
-            } else {
-                channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
+            if (!this.guild.isDetached() && this.member instanceof MemberImpl) {
+                jda.getEntityBuilder().updateMemberCache((MemberImpl) this.member);
             }
-            if (channel == null) {
-                throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: "
-                        + channelJson.getInt("type"));
-            }
-        } else if (guild instanceof GuildImpl) {
-            member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
-            jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
-            user = member.getUser();
 
-            GuildChannel channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
-            if (channel == null && channelType.isThread()) {
-                channel = api.getEntityBuilder()
-                        .createThreadChannel((GuildImpl) guild, channelJson, guild.getIdLong(), false);
-            }
-            if (channel == null) {
-                throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: "
-                        + channelJson.getInt("type"));
-            }
-            if (channel.isObfuscated()) {
-                channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
-            }
-            this.channel = channel;
+            this.channel = channelType.isThread()
+                    ? interactionEntityBuilder.createThreadChannel(guild, channelJson)
+                    : interactionEntityBuilder.createGuildChannel(guild, channelJson);
         } else {
-            // (G)DMs
             user = jda.getEntityBuilder().createUser(userObj);
             member = null;
-            ChannelType type = channelType;
-            switch (type) {
+            switch (channelType) {
                 case PRIVATE:
                     this.channel = interactionEntityBuilder.createPrivateChannel(channelJson, user);
                     break;
@@ -133,9 +105,14 @@ public class InteractionImpl implements Interaction {
                     this.channel = interactionEntityBuilder.createGroupChannel(channelJson);
                     break;
                 default:
-                    throw new IllegalArgumentException(
-                            "Received interaction in unexpected channel type! Type " + type + " is not supported yet!");
+                    throw new IllegalArgumentException("Received interaction in unexpected channel type! Type "
+                            + channelType + " is not supported yet!");
             }
+        }
+
+        if (channel == null) {
+            throw new IllegalStateException(
+                    "Failed to create channel instance for interaction! Channel Type: " + channelJson.getInt("type"));
         }
 
         this.entitlements = data.optArray("entitlements").orElseGet(DataArray::empty).stream(DataArray::getObject)

@@ -26,6 +26,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
+import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Arrays;
@@ -413,6 +415,15 @@ public class PermissionUtil {
             return ALL_PERMISSIONS;
         }
 
+        if (channel instanceof IInteractionPermissionMixin<?>) {
+            ChannelInteractionPermissions interactionPermissions =
+                    ((IInteractionPermissionMixin<?>) channel).getInteractionPermissions();
+            if (interactionPermissions.getMemberId() == member.getIdLong()) {
+                return interactionPermissions.getPermissions();
+            }
+            return 0L;
+        }
+
         // MANAGE_CHANNEL allows to delete channels within a category
         // (this is undocumented behavior)
         if (channel instanceof ICategorizableChannel) {
@@ -582,6 +593,15 @@ public class PermissionUtil {
         if (member.isDetached()) {
             throw new DetachedEntityException("Cannot get the explicit permissions of a detached member. "
                     + "Instead, please use the Member methods while supplying a GuildChannel");
+        }
+
+        if (channel instanceof IInteractionPermissionMixin<?>) {
+            ChannelInteractionPermissions interactionPermissions =
+                    ((IInteractionPermissionMixin<?>) channel).getInteractionPermissions();
+            if (interactionPermissions.getMemberId() == member.getIdLong()) {
+                return interactionPermissions.getPermissions();
+            }
+            return 0L;
         }
 
         long permission = includeRoles ? getExplicitPermission(member) : 0L;
