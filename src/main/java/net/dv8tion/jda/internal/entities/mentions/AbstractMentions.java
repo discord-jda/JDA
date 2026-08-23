@@ -29,9 +29,9 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.bag.HashBag;
+import org.apache.commons.collections4.MultiSet;
+import org.apache.commons.collections4.multiset.HashMultiSet;
 
 import java.util.*;
 import java.util.function.Function;
@@ -87,9 +87,11 @@ public abstract class AbstractMentions implements Mentions {
     }
 
     @Nonnull
+    @Deprecated
     @Override
-    public Bag<User> getUsersBag() {
-        Bag<User> bag = processMentions(Message.MentionType.USER, false, this::matchUser, toBag());
+    public org.apache.commons.collections4.Bag<User> getUsersBag() {
+        org.apache.commons.collections4.Bag<User> bag =
+                processMentions(Message.MentionType.USER, false, this::matchUser, toBag());
 
         // Handle reply mentions
         for (User user : getUsers()) {
@@ -103,6 +105,21 @@ public abstract class AbstractMentions implements Mentions {
 
     @Nonnull
     @Override
+    public MultiSet<User> getUsersMultiSet() {
+        MultiSet<User> set = processMentions(Message.MentionType.USER, false, this::matchUser, toMultiSet());
+
+        // Handle reply mentions
+        for (User user : getUsers()) {
+            if (!set.contains(user)) {
+                set.add(user, 1);
+            }
+        }
+
+        return set;
+    }
+
+    @Nonnull
+    @Override
     public synchronized List<GuildChannel> getChannels() {
         if (mentionedChannels != null) {
             return mentionedChannels;
@@ -112,9 +129,16 @@ public abstract class AbstractMentions implements Mentions {
     }
 
     @Nonnull
+    @Deprecated
     @Override
-    public Bag<GuildChannel> getChannelsBag() {
+    public org.apache.commons.collections4.Bag<GuildChannel> getChannelsBag() {
         return processMentions(Message.MentionType.CHANNEL, false, this::matchChannel, toBag());
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<GuildChannel> getChannelsMultiSet() {
+        return processMentions(Message.MentionType.CHANNEL, false, this::matchChannel, toMultiSet());
     }
 
     @Nonnull
@@ -125,8 +149,9 @@ public abstract class AbstractMentions implements Mentions {
     }
 
     @Nonnull
+    @Deprecated
     @Override
-    public <T extends GuildChannel> Bag<T> getChannelsBag(@Nonnull Class<T> clazz) {
+    public <T extends GuildChannel> org.apache.commons.collections4.Bag<T> getChannelsBag(@Nonnull Class<T> clazz) {
         Checks.notNull(clazz, "clazz");
         Function<Matcher, T> matchTypedChannel = matcher -> {
             GuildChannel channel = this.matchChannel(matcher);
@@ -134,6 +159,18 @@ public abstract class AbstractMentions implements Mentions {
         };
 
         return processMentions(Message.MentionType.CHANNEL, false, matchTypedChannel, toBag());
+    }
+
+    @Nonnull
+    @Override
+    public <T extends GuildChannel> MultiSet<T> getChannelsMultiSet(@Nonnull Class<T> clazz) {
+        Checks.notNull(clazz, "clazz");
+        Function<Matcher, T> matchTypedChannel = matcher -> {
+            GuildChannel channel = this.matchChannel(matcher);
+            return clazz.isInstance(channel) ? clazz.cast(channel) : null;
+        };
+
+        return processMentions(Message.MentionType.CHANNEL, false, matchTypedChannel, toMultiSet());
     }
 
     @Nonnull
@@ -150,12 +187,22 @@ public abstract class AbstractMentions implements Mentions {
     }
 
     @Nonnull
+    @Deprecated
     @Override
-    public Bag<Role> getRolesBag() {
+    public org.apache.commons.collections4.Bag<Role> getRolesBag() {
         if (guild == null) {
-            return new HashBag<>();
+            return new org.apache.commons.collections4.bag.HashBag<>();
         }
         return processMentions(Message.MentionType.ROLE, false, this::matchRole, toBag());
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<Role> getRolesMultiSet() {
+        if (guild == null) {
+            return new HashMultiSet<>();
+        }
+        return processMentions(Message.MentionType.ROLE, false, this::matchRole, toMultiSet());
     }
 
     @Nonnull
@@ -169,9 +216,16 @@ public abstract class AbstractMentions implements Mentions {
     }
 
     @Nonnull
+    @Deprecated
     @Override
-    public Bag<CustomEmoji> getCustomEmojisBag() {
+    public org.apache.commons.collections4.Bag<CustomEmoji> getCustomEmojisBag() {
         return processMentions(Message.MentionType.EMOJI, false, this::matchEmoji, toBag());
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<CustomEmoji> getCustomEmojisMultiSet() {
+        return processMentions(Message.MentionType.EMOJI, false, this::matchEmoji, toMultiSet());
     }
 
     @Nonnull
@@ -188,12 +242,14 @@ public abstract class AbstractMentions implements Mentions {
     }
 
     @Nonnull
+    @Deprecated
     @Override
-    public Bag<Member> getMembersBag() {
+    public org.apache.commons.collections4.Bag<Member> getMembersBag() {
         if (guild == null) {
-            return new HashBag<>();
+            return new org.apache.commons.collections4.bag.HashBag<>();
         }
-        Bag<Member> bag = processMentions(Message.MentionType.USER, false, this::matchMember, toBag());
+        org.apache.commons.collections4.Bag<Member> bag =
+                processMentions(Message.MentionType.USER, false, this::matchMember, toBag());
 
         // Handle reply mentions
         for (Member member : getMembers()) {
@@ -207,6 +263,24 @@ public abstract class AbstractMentions implements Mentions {
 
     @Nonnull
     @Override
+    public MultiSet<Member> getMembersMultiSet() {
+        if (guild == null) {
+            return new HashMultiSet<>();
+        }
+        MultiSet<Member> set = processMentions(Message.MentionType.USER, false, this::matchMember, toMultiSet());
+
+        // Handle reply mentions
+        for (Member member : getMembers()) {
+            if (!set.contains(member)) {
+                set.add(member, 1);
+            }
+        }
+
+        return set;
+    }
+
+    @Nonnull
+    @Override
     public synchronized List<SlashCommandReference> getSlashCommands() {
         if (mentionedSlashCommands != null) {
             return mentionedSlashCommands;
@@ -216,9 +290,16 @@ public abstract class AbstractMentions implements Mentions {
     }
 
     @Nonnull
+    @Deprecated
     @Override
-    public Bag<SlashCommandReference> getSlashCommandsBag() {
+    public org.apache.commons.collections4.Bag<SlashCommandReference> getSlashCommandsBag() {
         return processMentions(Message.MentionType.SLASH_COMMAND, false, this::matchSlashCommand, toBag());
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<SlashCommandReference> getSlashCommandsMultiSet() {
+        return processMentions(Message.MentionType.SLASH_COMMAND, false, this::matchSlashCommand, toMultiSet());
     }
 
     @Nonnull
@@ -338,8 +419,13 @@ public abstract class AbstractMentions implements Mentions {
         return collector.finisher().apply(accumulator);
     }
 
-    protected static <T> Collector<T, ?, HashBag<T>> toBag() {
-        return Collectors.toCollection(HashBag::new);
+    @Deprecated
+    protected static <T> Collector<T, ?, org.apache.commons.collections4.bag.HashBag<T>> toBag() {
+        return Collectors.toCollection(org.apache.commons.collections4.bag.HashBag::new);
+    }
+
+    protected static <T> Collector<T, ?, HashMultiSet<T>> toMultiSet() {
+        return Collectors.toCollection(HashMultiSet::new);
     }
 
     protected abstract User matchUser(Matcher matcher);
