@@ -15,7 +15,6 @@
  */
 
 import com.diffplug.spotless.LineEnding
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.gradle.Version
@@ -41,7 +40,6 @@ plugins {
     signing
 
     alias(libs.plugins.shadow)
-    alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.spotless)
     alias(libs.plugins.errorprone)
@@ -267,14 +265,6 @@ fun isNonStable(version: String): Boolean {
     val regex = "^[0-9,.v-]+(-r)?$".toRegex()
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()
-}
-
-tasks.withType<DependencyUpdatesTask> {
-    rejectVersionIf {
-        isNonStable(candidate.version)
-    }
-
-    gradleReleaseChannel = "current"
 }
 
 versionCatalogUpdate {
