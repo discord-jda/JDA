@@ -145,11 +145,6 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     }
 
     @Override
-    public int getRawFlags() {
-        return flags;
-    }
-
-    @Override
     public int getRawSortOrder() {
         return defaultSortOrder;
     }

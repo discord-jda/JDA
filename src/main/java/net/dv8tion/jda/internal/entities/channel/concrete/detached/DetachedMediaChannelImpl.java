@@ -137,11 +137,6 @@ public class DetachedMediaChannelImpl extends AbstractGuildChannelImpl<DetachedM
     }
 
     @Override
-    public int getRawFlags() {
-        return flags;
-    }
-
-    @Override
     public int getRawSortOrder() {
         return defaultSortOrder;
     }

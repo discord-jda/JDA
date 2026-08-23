@@ -115,11 +115,7 @@ public class ChannelUpdateHandler extends SocketHandler {
         boolean obfuscationChange = wasObfuscated != becameObfuscated;
         ObfuscationAwareUpdater dispatch = new ObfuscationAwareUpdater(obfuscationChange);
 
-        // TODO: Obfuscation event?
-
         // Handle shared properties
-
-        channel.setFlags(content.getInt("flags", 0));
 
         String oldName = channel.getName();
         String name = content.getString("name", oldName);
@@ -127,6 +123,8 @@ public class ChannelUpdateHandler extends SocketHandler {
             channel.setName(name);
             dispatch.handleUpdate(new ChannelUpdateNameEvent(getJDA(), responseNumber, channel, oldName, name));
         }
+
+        dispatch.handleFlagsUpdate(channel, content);
 
         if (channel instanceof ITopicChannelMixin<?>) {
             dispatch.handleTopic((ITopicChannelMixin<?>) channel, content.getString("topic", null));
@@ -559,9 +557,11 @@ public class ChannelUpdateHandler extends SocketHandler {
                 handleUpdate(new ChannelUpdateDefaultSortOrderEvent(
                         getJDA(), responseNumber, channel, IPostContainer.SortOrder.fromKey(oldSortOrder)));
             }
+        }
 
+        private void handleFlagsUpdate(AbstractGuildChannelImpl<?> channel, DataObject content) {
             int newFlags = content.getInt("flags", 0);
-            int oldFlags = channel.getRawFlags();
+            int oldFlags = channel.getFlagsRaw();
 
             if (oldFlags != newFlags) {
                 channel.setFlags(newFlags);

@@ -144,11 +144,6 @@ public class DetachedForumChannelImpl extends AbstractGuildChannelImpl<DetachedF
     }
 
     @Override
-    public int getRawFlags() {
-        return flags;
-    }
-
-    @Override
     public int getRawSortOrder() {
         return defaultSortOrder;
     }
