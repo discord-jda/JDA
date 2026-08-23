@@ -79,7 +79,7 @@ public enum ChannelFlag {
         }
 
         for (ChannelFlag flag : values()) {
-            if (flag.value == bitset) {
+            if ((flag.getRaw() & bitset) != 0) {
                 set.add(flag);
             }
         }
