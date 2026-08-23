@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.interactions.FileType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
@@ -82,7 +83,10 @@ public enum OptionType {
      */
     NUMBER(10, true),
     /**
-     * Options which accept a file attachment
+     * Options which accept a file attachment.
+     *
+     * <p>File types accepted by these can be filtered, such as with {@link net.dv8tion.jda.api.interactions.commands.build.OptionData#addFileTypes(FileType...) OptionData.addFileTypes(FileType...)}
+     * or {@link net.dv8tion.jda.api.interactions.commands.build.OptionData#setFileTypes(FileType...) OptionData.setFileTypes(FileType...)}
      * @see OptionMapping#getAsAttachment()
      */
     ATTACHMENT(11),
