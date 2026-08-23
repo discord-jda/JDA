@@ -27,9 +27,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.apache.commons.collections4.Bag;
-import org.apache.commons.collections4.BagUtils;
-import org.apache.commons.collections4.bag.HashBag;
+import org.apache.commons.collections4.MultiSet;
+import org.apache.commons.collections4.MultiSetUtils;
+import org.apache.commons.collections4.multiset.HashMultiSet;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,8 +92,15 @@ public class SelectMenuMentions implements Mentions {
 
     @Nonnull
     @Override
-    public Bag<User> getUsersBag() {
-        return new HashBag<>(getUsers());
+    @Deprecated
+    public org.apache.commons.collections4.Bag<User> getUsersBag() {
+        return new org.apache.commons.collections4.bag.HashBag<>(getUsers());
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<User> getUsersMultiSet() {
+        return new HashMultiSet<>(getUsers());
     }
 
     @Nonnull
@@ -130,8 +137,15 @@ public class SelectMenuMentions implements Mentions {
 
     @Nonnull
     @Override
-    public Bag<GuildChannel> getChannelsBag() {
-        return new HashBag<>(getChannels());
+    @Deprecated
+    public org.apache.commons.collections4.Bag<GuildChannel> getChannelsBag() {
+        return new org.apache.commons.collections4.bag.HashBag<>(getChannels());
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<GuildChannel> getChannelsMultiSet() {
+        return new HashMultiSet<>(getChannels());
     }
 
     @Nonnull
@@ -142,8 +156,15 @@ public class SelectMenuMentions implements Mentions {
 
     @Nonnull
     @Override
-    public <T extends GuildChannel> Bag<T> getChannelsBag(@Nonnull Class<T> clazz) {
-        return new HashBag<>(getChannels(clazz));
+    @Deprecated
+    public <T extends GuildChannel> org.apache.commons.collections4.Bag<T> getChannelsBag(@Nonnull Class<T> clazz) {
+        return new org.apache.commons.collections4.bag.HashBag<>(getChannels(clazz));
+    }
+
+    @Nonnull
+    @Override
+    public <T extends GuildChannel> MultiSet<T> getChannelsMultiSet(@Nonnull Class<T> clazz) {
+        return new HashMultiSet<>(getChannels(clazz));
     }
 
     @Nonnull
@@ -173,8 +194,15 @@ public class SelectMenuMentions implements Mentions {
 
     @Nonnull
     @Override
-    public Bag<Role> getRolesBag() {
-        return new HashBag<>(getRoles());
+    @Deprecated
+    public org.apache.commons.collections4.Bag<Role> getRolesBag() {
+        return new org.apache.commons.collections4.bag.HashBag<>(getRoles());
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<Role> getRolesMultiSet() {
+        return new HashMultiSet<>(getRoles());
     }
 
     @Nonnull
@@ -185,8 +213,15 @@ public class SelectMenuMentions implements Mentions {
 
     @Nonnull
     @Override
-    public Bag<CustomEmoji> getCustomEmojisBag() {
-        return BagUtils.emptyBag();
+    @Deprecated
+    public org.apache.commons.collections4.Bag<CustomEmoji> getCustomEmojisBag() {
+        return org.apache.commons.collections4.BagUtils.emptyBag();
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<CustomEmoji> getCustomEmojisMultiSet() {
+        return MultiSetUtils.emptyMultiSet();
     }
 
     @Nonnull
@@ -197,8 +232,15 @@ public class SelectMenuMentions implements Mentions {
 
     @Nonnull
     @Override
-    public Bag<SlashCommandReference> getSlashCommandsBag() {
-        return BagUtils.emptyBag();
+    @Deprecated
+    public org.apache.commons.collections4.Bag<SlashCommandReference> getSlashCommandsBag() {
+        return org.apache.commons.collections4.BagUtils.emptyBag();
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<SlashCommandReference> getSlashCommandsMultiSet() {
+        return MultiSetUtils.emptyMultiSet();
     }
 
     @Nonnull
@@ -231,8 +273,15 @@ public class SelectMenuMentions implements Mentions {
 
     @Nonnull
     @Override
-    public Bag<Member> getMembersBag() {
-        return new HashBag<>(getMembers());
+    @Deprecated
+    public org.apache.commons.collections4.Bag<Member> getMembersBag() {
+        return new org.apache.commons.collections4.bag.HashBag<>(getMembers());
+    }
+
+    @Nonnull
+    @Override
+    public MultiSet<Member> getMembersMultiSet() {
+        return new HashMultiSet<>(getMembers());
     }
 
     @Nonnull
