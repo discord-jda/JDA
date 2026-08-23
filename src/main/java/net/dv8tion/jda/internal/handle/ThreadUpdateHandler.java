@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -107,40 +108,62 @@ public class ThreadUpdateHandler extends SocketHandler {
         int oldSlowmode = thread.getSlowmode();
         int oldFlags = thread.getRawFlags();
 
+        boolean wasObfuscated = thread.isObfuscated();
+        boolean becameObfuscated = (flags & ChannelFlag.OBFUSCATED.getRaw()) != 0;
+        boolean obfuscationChanged = wasObfuscated != becameObfuscated;
+
         if (!Objects.equals(oldName, name)) {
             thread.setName(name);
-            api.handleEvent(new ChannelUpdateNameEvent(getJDA(), responseNumber, thread, oldName, name));
+            handleUpdate(
+                    obfuscationChanged, new ChannelUpdateNameEvent(getJDA(), responseNumber, thread, oldName, name));
         }
         if (oldFlags != flags) {
             thread.setFlags(flags);
-            api.handleEvent(new ChannelUpdateFlagsEvent(
-                    getJDA(), responseNumber, thread, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
+            handleUpdate(
+                    obfuscationChanged,
+                    new ChannelUpdateFlagsEvent(
+                            getJDA(),
+                            responseNumber,
+                            thread,
+                            ChannelFlag.fromRaw(oldFlags),
+                            ChannelFlag.fromRaw(flags)));
         }
         if (oldSlowmode != slowmode) {
             thread.setSlowmode(slowmode);
-            api.handleEvent(new ChannelUpdateSlowmodeEvent(api, responseNumber, thread, oldSlowmode, slowmode));
+            handleUpdate(
+                    obfuscationChanged,
+                    new ChannelUpdateSlowmodeEvent(api, responseNumber, thread, oldSlowmode, slowmode));
         }
         if (oldAutoArchiveDuration != autoArchiveDuration) {
             thread.setAutoArchiveDuration(autoArchiveDuration);
-            api.handleEvent(new ChannelUpdateAutoArchiveDurationEvent(
-                    api, responseNumber, thread, oldAutoArchiveDuration, autoArchiveDuration));
+            handleUpdate(
+                    obfuscationChanged,
+                    new ChannelUpdateAutoArchiveDurationEvent(
+                            api, responseNumber, thread, oldAutoArchiveDuration, autoArchiveDuration));
         }
         if (oldLocked != locked) {
             thread.setLocked(locked);
-            api.handleEvent(new ChannelUpdateLockedEvent(api, responseNumber, thread, oldLocked, locked));
+            handleUpdate(
+                    obfuscationChanged, new ChannelUpdateLockedEvent(api, responseNumber, thread, oldLocked, locked));
         }
         if (oldArchived != archived) {
             thread.setArchived(archived);
-            api.handleEvent(new ChannelUpdateArchivedEvent(api, responseNumber, thread, oldArchived, archived));
+            handleUpdate(
+                    obfuscationChanged,
+                    new ChannelUpdateArchivedEvent(api, responseNumber, thread, oldArchived, archived));
         }
         if (oldArchiveTimestamp != archiveTimestamp) {
             thread.setArchiveTimestamp(archiveTimestamp);
-            api.handleEvent(new ChannelUpdateArchiveTimestampEvent(
-                    api, responseNumber, thread, oldArchiveTimestamp, archiveTimestamp));
+            handleUpdate(
+                    obfuscationChanged,
+                    new ChannelUpdateArchiveTimestampEvent(
+                            api, responseNumber, thread, oldArchiveTimestamp, archiveTimestamp));
         }
         if (oldInvitable != invitable) {
             thread.setInvitable(invitable);
-            api.handleEvent(new ChannelUpdateInvitableEvent(api, responseNumber, thread, oldInvitable, invitable));
+            handleUpdate(
+                    obfuscationChanged,
+                    new ChannelUpdateInvitableEvent(api, responseNumber, thread, oldInvitable, invitable));
         }
 
         if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS) && !content.isNull("applied_tags")) {
@@ -152,7 +175,9 @@ public class ThreadUpdateHandler extends SocketHandler {
             if (!oldTags.equals(tags)) {
                 List<Long> oldTagList = LongStream.of(oldTags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
                 List<Long> newTagList = LongStream.of(tags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
-                api.handleEvent(new ChannelUpdateAppliedTagsEvent(api, responseNumber, thread, oldTagList, newTagList));
+                handleUpdate(
+                        obfuscationChanged,
+                        new ChannelUpdateAppliedTagsEvent(api, responseNumber, thread, oldTagList, newTagList));
             }
         }
 
@@ -164,5 +189,11 @@ public class ThreadUpdateHandler extends SocketHandler {
         }
 
         return null;
+    }
+
+    private void handleUpdate(boolean obfuscationChanged, GenericEvent event) {
+        if (!obfuscationChanged) {
+            api.handleEvent(event);
+        }
     }
 }
