@@ -565,7 +565,8 @@ public class ChannelUpdateHandler extends SocketHandler {
 
             if (oldFlags != newFlags) {
                 channel.setFlags(newFlags);
-                handleUpdate(new ChannelUpdateFlagsEvent(
+                // Intentionally dispatch flag updates even when channel is obfuscated
+                api.handleEvent(new ChannelUpdateFlagsEvent(
                         getJDA(),
                         responseNumber,
                         channel,
