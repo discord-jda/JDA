@@ -363,6 +363,51 @@ public final class DiscordAssets {
     }
 
     /**
+     * Returns an {@link ImageProxy} of a member's banner.
+     * <br>This returns {@code null} if the banner ID is {@code null}.
+     *
+     * <p>At the time of writing, the supported formats are:
+     * <ul>
+     *     <li>{@link ImageFormat#PNG PNG}</li>
+     *     <li>{@link ImageFormat#JPG JPG}</li>
+     *     <li>{@link ImageFormat#STATIC_WEBP STATIC_WEBP}</li>
+     *     <li>{@link ImageFormat#ANIMATED_WEBP ANIMATED_WEBP}</li>
+     *     <li>{@link ImageFormat#GIF GIF}</li>
+     * </ul>
+     *
+     * @param  format
+     *         The image format to request the image as
+     * @param  guildId
+     *         The guild ID
+     * @param  userId
+     *         The user ID
+     * @param  bannerId
+     *         The member's banner ID
+     *
+     * @throws IllegalArgumentException
+     *         If an argument is {@code null}, except for the banner ID
+     *
+     * @return An {@link ImageProxy} of the member's banner, or {@code null}
+     */
+    @Contract("_, _, _, null -> null; _, _, _, !null -> !null")
+    public static ImageProxy memberBanner(
+            @Nonnull ImageFormat format, @Nonnull String guildId, @Nonnull String userId, @Nullable String bannerId) {
+        Checks.notNull(format, "Format");
+        Checks.isSnowflake(guildId, "Guild ID");
+        Checks.isSnowflake(userId, "User ID");
+        if (bannerId == null) {
+            return null;
+        }
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("guilds")
+                .addPathSegment(guildId)
+                .addEncodedPathSegment("users")
+                .addPathSegment(userId)
+                .addEncodedPathSegment("banners");
+        return format.finishProxy(builder, bannerId);
+    }
+
+    /**
      * Returns an {@link ImageProxy} of a role's icon.
      * <br>This returns {@code null} if the icon ID is {@code null}.
      *

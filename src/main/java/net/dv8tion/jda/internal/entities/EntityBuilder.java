@@ -787,6 +787,14 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 getJDA().handleEvent(new GuildMemberUpdateAvatarEvent(getJDA(), responseNumber, member, oldAvatarId));
             }
         }
+        if (content.hasKey("banner")) {
+            String oldBannerId = member.getBannerId();
+            String newBannerId = content.getString("banner", null);
+            if (!Objects.equals(oldBannerId, newBannerId)) {
+                member.setBannerId(newBannerId);
+                getJDA().handleEvent(new GuildMemberUpdateBannerEvent(getJDA(), responseNumber, member, oldBannerId));
+            }
+        }
         if (content.hasKey("premium_since")) {
             long epoch = 0;
             if (!content.isNull("premium_since")) {
