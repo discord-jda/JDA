@@ -119,14 +119,12 @@ public class ThreadUpdateHandler extends SocketHandler {
         }
         if (oldFlags != flags) {
             thread.setFlags(flags);
-            handleUpdate(
-                    obfuscationChanged,
-                    new ChannelUpdateFlagsEvent(
-                            getJDA(),
-                            responseNumber,
-                            thread,
-                            ChannelFlag.fromRaw(oldFlags),
-                            ChannelFlag.fromRaw(flags)));
+            api.handleEvent(new ChannelUpdateFlagsEvent(
+                    getJDA(),
+                    responseNumber,
+                    thread,
+                    ChannelFlag.fromRaw(oldFlags),
+                    ChannelFlag.fromRaw(flags)));
         }
         if (oldSlowmode != slowmode) {
             thread.setSlowmode(slowmode);
