@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities.channel.mixin.middleman;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -50,8 +49,7 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>>
 
     // ---- Helpers ---
     default boolean hasPermission(Permission permission) {
-        IPermissionContainer permChannel = getPermissionContainer();
-        return getGuild().getSelfMember().hasPermission(permChannel, permission);
+        return getGuild().getSelfMember().hasPermission(this, permission);
     }
 
     default void checkPermission(Permission permission) {
