@@ -713,6 +713,13 @@ public class PermissionUtil {
     }
 
     private static long getInteractionPermissions(IInteractionPermissionMixin<?> channel, Member member) {
+        Checks.notNull(member, "Member");
+        checkGuild(channel.getGuild(), member.getGuild(), "Member");
+
+        if (member.isOwner()) {
+            return ALL_PERMISSIONS;
+        }
+
         ChannelInteractionPermissions interactionPermissions = channel.getInteractionPermissions();
         if (interactionPermissions.getMemberId() == member.getIdLong()) {
             return interactionPermissions.getPermissions();
@@ -776,6 +783,7 @@ public class PermissionUtil {
     }
 
     private static void checkGuild(Guild o1, Guild o2, String name) {
-        Checks.check(o1.equals(o2), "Specified %s is not in the same guild! (%s / %s)", name, o1, o2);
+        Checks.check(
+                o1.getIdLong() == o2.getIdLong(), "Specified %s is not in the same guild! (%s / %s)", name, o1, o2);
     }
 }
