@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.ThreadMember;
@@ -32,7 +33,6 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.ThreadChannelMixin;
-import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -62,7 +62,7 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
     private int memberCount;
     private int slowmode;
 
-    public DetachedThreadChannelImpl(long id, DetachedGuildImpl guild, ChannelType type) {
+    public DetachedThreadChannelImpl(long id, Guild guild, ChannelType type) {
         super(id, guild);
         this.type = type;
     }

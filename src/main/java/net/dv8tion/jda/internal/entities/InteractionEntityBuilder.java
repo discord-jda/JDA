@@ -205,15 +205,15 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
         long channelId = json.getUnsignedLong("id");
         if (!guild.isDetached()) {
             ThreadChannel threadChannel = guild.getThreadChannelById(channelId);
-            if (threadChannel != null && !threadChannel.isObfuscated()) {
-                return threadChannel;
-            } else {
+            if (threadChannel == null) {
                 return entityBuilder.createThreadChannel((GuildImpl) guild, json, guild.getIdLong(), false);
+            } else if (!threadChannel.isObfuscated()) {
+                return threadChannel;
             }
         }
 
         ChannelType type = ChannelType.fromId(json.getInt("type"));
-        DetachedThreadChannelImpl channel = new DetachedThreadChannelImpl(channelId, (DetachedGuildImpl) guild, type);
+        DetachedThreadChannelImpl channel = new DetachedThreadChannelImpl(channelId, guild, type);
         configureThreadChannel(json, channel);
         configureChannelInteractionPermissions(channel, json);
         return channel;
