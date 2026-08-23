@@ -120,11 +120,7 @@ public class ThreadUpdateHandler extends SocketHandler {
         if (oldFlags != flags) {
             thread.setFlags(flags);
             api.handleEvent(new ChannelUpdateFlagsEvent(
-                    getJDA(),
-                    responseNumber,
-                    thread,
-                    ChannelFlag.fromRaw(oldFlags),
-                    ChannelFlag.fromRaw(flags)));
+                    getJDA(), responseNumber, thread, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
         }
         if (oldSlowmode != slowmode) {
             thread.setSlowmode(slowmode);
