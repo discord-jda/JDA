@@ -284,7 +284,7 @@ public class PermissionUtil {
      *         if the {@link net.dv8tion.jda.api.entities.Member Member} effectively has the specified {@link net.dv8tion.jda.api.Permission Permissions}.
      */
     public static boolean checkPermission(GuildChannel channel, Member member, Permission... permissions) {
-        if (channel instanceof IInteractionPermissionMixin<?>) {
+        if (isInteractionPermissionOverride(channel)) {
             IInteractionPermissionMixin<?> mixin = (IInteractionPermissionMixin<?>) channel;
             long interactionPermissions = getInteractionPermissions(mixin, member);
             long rawPermissions = Permission.getRaw(permissions);
@@ -406,11 +406,11 @@ public class PermissionUtil {
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
 
-        if (channel instanceof IInteractionPermissionMixin<?>) {
+        if (isInteractionPermissionOverride(channel)) {
             return getInteractionPermissions(((IInteractionPermissionMixin<?>) channel), member);
         }
 
-        if (channel.getPermissionContainer() != channel) {
+        if (isInheritingPermissionsFromContainer(channel)) {
             return getEffectivePermission(channel.getPermissionContainer(), member);
         }
 
@@ -493,7 +493,7 @@ public class PermissionUtil {
             return 0L;
         }
 
-        if (channel.getPermissionContainer() != channel) {
+        if (isInheritingPermissionsFromContainer(channel)) {
             return getEffectivePermission(channel.getPermissionContainer(), role);
         }
 
@@ -613,7 +613,7 @@ public class PermissionUtil {
                     + "Instead, please use the Member methods while supplying a GuildChannel");
         }
 
-        if (channel instanceof IInteractionPermissionMixin<?>) {
+        if (isInteractionPermissionOverride(channel)) {
             return getInteractionPermissions((IInteractionPermissionMixin<?>) channel, member);
         }
 
@@ -710,6 +710,16 @@ public class PermissionUtil {
         override = permsChannel.getPermissionOverride(role);
 
         return override == null ? permission : apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
+    }
+
+    @SuppressWarnings("ReferenceEquality")
+    private static boolean isInheritingPermissionsFromContainer(GuildChannel channel) {
+        // Intentionally checking reference equality to handle "return this;" implementation
+        return channel.getPermissionContainer() != channel;
+    }
+
+    private static boolean isInteractionPermissionOverride(GuildChannel channel) {
+        return channel instanceof IInteractionPermissionMixin<?>;
     }
 
     private static long getInteractionPermissions(IInteractionPermissionMixin<?> channel, Member member) {
