@@ -44,6 +44,11 @@ public class DetachedGroupChannelImpl extends AbstractChannelImpl<DetachedGroupC
         return EnumSet.noneOf(ChannelFlag.class);
     }
 
+    @Override
+    public long getFlagsRaw() {
+        return 0L;
+    }
+
     @Nonnull
     @Override
     public ChannelType getType() {

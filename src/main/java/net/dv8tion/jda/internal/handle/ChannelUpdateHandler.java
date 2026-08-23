@@ -561,7 +561,7 @@ public class ChannelUpdateHandler extends SocketHandler {
 
         private void handleFlagsUpdate(AbstractGuildChannelImpl<?> channel, DataObject content) {
             int newFlags = content.getInt("flags", 0);
-            int oldFlags = channel.getFlagsRaw();
+            int oldFlags = (int) channel.getFlagsRaw();
 
             if (oldFlags != newFlags) {
                 channel.setFlags(newFlags);

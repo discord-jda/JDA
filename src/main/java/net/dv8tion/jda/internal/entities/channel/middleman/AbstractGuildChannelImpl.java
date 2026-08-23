@@ -59,7 +59,8 @@ public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImp
         return ChannelFlag.fromRaw(flags);
     }
 
-    public int getFlagsRaw() {
+    @Override
+    public long getFlagsRaw() {
         return flags;
     }
 

@@ -69,6 +69,11 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
         return EnumSet.noneOf(ChannelFlag.class);
     }
 
+    @Override
+    public long getFlagsRaw() {
+        return 0L;
+    }
+
     @Nonnull
     @Override
     public String getName() {
