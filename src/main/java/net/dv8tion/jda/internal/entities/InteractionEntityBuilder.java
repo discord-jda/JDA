@@ -205,7 +205,7 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder {
         long channelId = json.getUnsignedLong("id");
         if (!guild.isDetached()) {
             ThreadChannel threadChannel = guild.getThreadChannelById(channelId);
-            if (threadChannel != null) {
+            if (threadChannel != null && !threadChannel.isObfuscated()) {
                 return threadChannel;
             } else {
                 return entityBuilder.createThreadChannel((GuildImpl) guild, json, guild.getIdLong(), false);
