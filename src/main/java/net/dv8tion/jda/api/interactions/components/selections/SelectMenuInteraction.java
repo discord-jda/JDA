@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.selections.SelectMenu;
 import net.dv8tion.jda.api.components.tree.MessageComponentTree;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
@@ -66,6 +68,8 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
      * @return {@link List} of {@link T}
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     List<T> getValues();
 
     /**

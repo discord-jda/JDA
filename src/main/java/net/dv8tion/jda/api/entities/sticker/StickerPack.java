@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.sticker;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
@@ -46,6 +47,7 @@ public interface StickerPack extends ISnowflake {
      * @return Immutable List of {@link StandardSticker StandardStickers}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<StandardSticker> getStickers();
 

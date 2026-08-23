@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.api.events.interaction.command;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.interactions.commands.privileges.PrivilegeTargetType;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
 import java.util.List;
@@ -116,6 +118,8 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent {
      * @return Unmodifiable list containing the new IntegrationPrivileges.
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     public List<IntegrationPrivilege> getPrivileges() {
         return privileges;
     }

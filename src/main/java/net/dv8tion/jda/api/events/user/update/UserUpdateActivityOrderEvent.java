@@ -16,10 +16,12 @@
 
 package net.dv8tion.jda.api.events.user.update;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -69,12 +71,16 @@ public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Ac
 
     @Nonnull
     @Override
+    @ReadOnly
+    @Unmodifiable
     public List<Activity> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
+    @ReadOnly
+    @Unmodifiable
     public List<Activity> getNewValue() {
         return super.getNewValue();
     }

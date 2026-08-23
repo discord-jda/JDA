@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.hooks;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -77,6 +78,7 @@ public class InterfacedEventManager implements IEventManager {
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     public List<Object> getRegisteredListeners() {
         return Collections.unmodifiableList(new ArrayList<>(listeners));

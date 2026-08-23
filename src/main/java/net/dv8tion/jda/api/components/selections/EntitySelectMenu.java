@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.selections;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -127,6 +128,7 @@ public interface EntitySelectMenu extends SelectMenu {
      * @return Immutable list of {@link DefaultValue default values}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<DefaultValue> getDefaultValues();
 

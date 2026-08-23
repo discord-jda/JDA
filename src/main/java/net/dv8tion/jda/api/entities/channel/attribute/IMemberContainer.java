@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.attribute;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -56,6 +57,7 @@ public interface IMemberContainer extends GuildChannel {
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<Member> getMembers();
 }

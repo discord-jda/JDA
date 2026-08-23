@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.localization;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -126,6 +127,7 @@ public class LocalizationMap implements SerializableData {
      * @return The unmodifiable map of this LocalizationMap
      */
     @Nonnull
+    @Mutable
     public Map<DiscordLocale, String> toMap() {
         return Collections.unmodifiableMap(map);
     }

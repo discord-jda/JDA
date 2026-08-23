@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -186,6 +188,8 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
     @Nonnull
     @Override
+    @ReadOnly
+    @Unmodifiable
     public List<FileUpload> getAttachments() {
         return Collections.unmodifiableList(files);
     }

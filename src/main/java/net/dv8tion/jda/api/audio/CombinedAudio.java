@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.audio;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +46,8 @@ public class CombinedAudio {
      * @return Never-null list of all users that provided audio.
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     public List<User> getUsers() {
         return users;
     }

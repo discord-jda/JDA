@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.channel.middleman;
 
 import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -161,6 +162,7 @@ public interface MessageChannel extends Channel, Formattable {
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @Mutable
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull List<String> messageIds) {
         if (messageIds == null || messageIds.isEmpty()) {
             return Collections.emptyList();
@@ -191,6 +193,7 @@ public interface MessageChannel extends Channel, Formattable {
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @Mutable
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull String... messageIds) {
         if (messageIds == null || messageIds.length == 0) {
             return Collections.emptyList();
@@ -221,6 +224,7 @@ public interface MessageChannel extends Channel, Formattable {
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @Mutable
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull Message... messages) {
         if (messages == null || messages.length == 0) {
             return Collections.emptyList();
@@ -253,6 +257,7 @@ public interface MessageChannel extends Channel, Formattable {
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @Mutable
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages) {
         if (messages == null || messages.isEmpty()) {
             return Collections.emptyList();
@@ -296,6 +301,7 @@ public interface MessageChannel extends Channel, Formattable {
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @Mutable
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds) {
         if (messageIds == null || messageIds.length == 0) {
             return Collections.emptyList();

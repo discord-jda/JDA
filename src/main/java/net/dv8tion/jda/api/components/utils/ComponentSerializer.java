@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.utils;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
@@ -23,12 +24,12 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -88,12 +89,13 @@ public class ComponentSerializer {
      * @return {@link List} of {@link DataObject}
      */
     @Nonnull
+    @Mutable
     public List<DataObject> serializeAll(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
         return components.stream()
                 .map(SerializableData.class::cast)
                 .map(SerializableData::toData)
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
     }
 
     /**
@@ -108,6 +110,7 @@ public class ComponentSerializer {
      * @return The implicit {@link FileUpload} instances for the provided component
      */
     @Nonnull
+    @Mutable
     public List<FileUpload> getFileUploads(@Nonnull Component component) {
         Checks.notNull(component, "Component");
         return MessageUtil.getIndirectFiles(Collections.singletonList(component));
@@ -125,6 +128,7 @@ public class ComponentSerializer {
      * @return The implicit {@link FileUpload} instances for the provided components
      */
     @Nonnull
+    @Mutable
     public List<FileUpload> getFileUploads(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
         return MessageUtil.getIndirectFiles(components);

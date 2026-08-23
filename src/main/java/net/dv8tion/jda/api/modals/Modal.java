@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.modals;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
@@ -29,6 +31,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.modals.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,6 +116,8 @@ public interface Modal extends SerializableData {
      * @return List of ModalTopLevelComponentUnions
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     List<ModalTopLevelComponentUnion> getComponents();
 
     /**
@@ -290,6 +295,7 @@ public interface Modal extends SerializableData {
          * @return A modifiable list of all components
          */
         @Nonnull
+        @Mutable
         public List<ModalTopLevelComponentUnion> getComponents() {
             return components;
         }

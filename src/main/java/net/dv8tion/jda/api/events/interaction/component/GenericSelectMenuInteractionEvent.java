@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.api.events.interaction.component;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -62,6 +64,8 @@ public class GenericSelectMenuInteractionEvent<T, S extends SelectMenu> extends 
 
     @Nonnull
     @Override
+    @ReadOnly
+    @Unmodifiable
     public List<T> getValues() {
         return menuInteraction.getValues();
     }

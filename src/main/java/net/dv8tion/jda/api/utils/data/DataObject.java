@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.exceptions.DataObjectParsingException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -26,6 +28,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.SerializationUtil;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -702,6 +705,8 @@ public class DataObject implements SerializableData {
      * @return {@link java.util.Collection} for all values
      */
     @Nonnull
+    @ReadOnly
+    @UnmodifiableView
     public Collection<Object> values() {
         return data.values();
     }
@@ -712,6 +717,8 @@ public class DataObject implements SerializableData {
      * @return {@link Set} of keys
      */
     @Nonnull
+    @ReadOnly
+    @UnmodifiableView
     public Set<String> keys() {
         return data.keySet();
     }
@@ -762,6 +769,7 @@ public class DataObject implements SerializableData {
      * @return The resulting map
      */
     @Nonnull
+    @Mutable
     public Map<String, Object> toMap() {
         return data;
     }

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.interaction;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -63,6 +65,8 @@ public class ModalInteractionEvent extends GenericInteractionCreateEvent impleme
 
     @Nonnull
     @Override
+    @ReadOnly
+    @Unmodifiable
     public List<ModalMapping> getValues() {
         return interaction.getValues();
     }

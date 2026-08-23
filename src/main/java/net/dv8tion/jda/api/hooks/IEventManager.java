@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.hooks;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.events.GenericEvent;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -89,5 +91,7 @@ public interface IEventManager {
      * @return A list of listeners that have already been registered
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     List<Object> getRegisteredListeners();
 }

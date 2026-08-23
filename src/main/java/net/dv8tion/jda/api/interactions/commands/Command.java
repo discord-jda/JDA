@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -157,6 +158,7 @@ public interface Command extends ISnowflake, ICommandReference {
      * @return Immutable list of command options
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<Option> getOptions();
 
@@ -166,6 +168,7 @@ public interface Command extends ISnowflake, ICommandReference {
      * @return Immutable list of subcommands
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<Subcommand> getSubcommands();
 
@@ -175,6 +178,7 @@ public interface Command extends ISnowflake, ICommandReference {
      * @return Immutable list of subcommand groups
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<SubcommandGroup> getSubcommandGroups();
 
@@ -727,6 +731,7 @@ public interface Command extends ISnowflake, ICommandReference {
          * @return Immutable {@link Set} of {@link ChannelType}
          */
         @Nonnull
+        @ReadOnly
         @Unmodifiable
         public Set<ChannelType> getChannelTypes() {
             return channelTypes;
@@ -801,6 +806,7 @@ public interface Command extends ISnowflake, ICommandReference {
          * @return Immutable {@link List} of {@link Choice}
          */
         @Nonnull
+        @ReadOnly
         @Unmodifiable
         public List<Choice> getChoices() {
             return choices;
@@ -936,6 +942,7 @@ public interface Command extends ISnowflake, ICommandReference {
          * @return Immutable list of Options
          */
         @Nonnull
+        @ReadOnly
         @Unmodifiable
         public List<Option> getOptions() {
             return options;
@@ -1050,6 +1057,7 @@ public interface Command extends ISnowflake, ICommandReference {
          * @return Immutable {@link List} of {@link Subcommand}
          */
         @Nonnull
+        @ReadOnly
         @Unmodifiable
         public List<Subcommand> getSubcommands() {
             return subcommands;

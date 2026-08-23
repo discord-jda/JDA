@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.attribute;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -88,6 +89,7 @@ public interface IPostContainer extends IThreadContainer {
      * @return Immutable {@link List} of {@link ForumTag}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<ForumTag> getAvailableTags() {
         return getAvailableTagCache().asList();
@@ -113,6 +115,7 @@ public interface IPostContainer extends IThreadContainer {
      * @return Immutable {@link List} of {@link ForumTag} with the given name
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<ForumTag> getAvailableTagsByName(@Nonnull String name, boolean ignoreCase) {
         return getAvailableTagCache().getElementsByName(name, ignoreCase);

@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.AttachedFile;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -55,6 +57,8 @@ public interface MessageData {
      * @see    MessageRequest#setEmbeds(Collection)
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -67,6 +71,8 @@ public interface MessageData {
      * @see    MessageRequest#setEmbeds(Collection)
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     List<MessageTopLevelComponentUnion> getComponents();
 
     /**
@@ -102,6 +108,8 @@ public interface MessageData {
      * @see    MessageRequest#setFiles(Collection)
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     List<? extends AttachedFile> getAttachments();
 
     /**
@@ -117,6 +125,8 @@ public interface MessageData {
      * @return The user IDs which are mention whitelisted
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     Set<String> getMentionedUsers();
 
     /**
@@ -125,6 +135,8 @@ public interface MessageData {
      * @return The role IDs which are mention whitelisted
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     Set<String> getMentionedRoles();
 
     /**

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.concrete;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
@@ -64,6 +65,7 @@ public interface Category
      * @return Immutable list of all child channels
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<GuildChannel> getChannels() {
         SortedChannelCacheView<ICategorizableChannel> filtered =
@@ -83,6 +85,7 @@ public interface Category
      * @return Immutable list of all child TextChannels
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<TextChannel> getTextChannels() {
         SortedSnowflakeCacheView<TextChannel> filtered = getGuild().getTextChannelCache();
@@ -101,6 +104,7 @@ public interface Category
      * @return Immutable list of all child NewsChannels
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<NewsChannel> getNewsChannels() {
         SortedSnowflakeCacheView<NewsChannel> filtered = getGuild().getNewsChannelCache();
@@ -118,6 +122,7 @@ public interface Category
      * @return Immutable list of all child ForumChannels
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<ForumChannel> getForumChannels() {
         SortedSnowflakeCacheView<ForumChannel> filtered = getGuild().getForumChannelCache();
@@ -135,6 +140,7 @@ public interface Category
      * @return Immutable list of all child ForumChannels
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<MediaChannel> getMediaChannels() {
         SnowflakeCacheView<MediaChannel> filtered = getGuild().getMediaChannelCache();
@@ -153,6 +159,7 @@ public interface Category
      * @return Immutable list of all child VoiceChannels
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<VoiceChannel> getVoiceChannels() {
         SortedSnowflakeCacheView<VoiceChannel> filtered = getGuild().getVoiceChannelCache();
@@ -171,6 +178,7 @@ public interface Category
      * @return Immutable list of all child StageChannel
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<StageChannel> getStageChannels() {
         SortedSnowflakeCacheView<StageChannel> filtered = getGuild().getStageChannelCache();
@@ -477,6 +485,7 @@ public interface Category
 
     @Nonnull
     @Override
+    @ReadOnly
     @Unmodifiable
     default List<Member> getMembers() {
         return getChannels().stream()

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.interaction;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -128,6 +130,8 @@ public class GenericInteractionCreateEvent extends Event implements Interaction 
 
     @Nonnull
     @Override
+    @ReadOnly
+    @Unmodifiable
     public List<Entitlement> getEntitlements() {
         return interaction.getEntitlements();
     }

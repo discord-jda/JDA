@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.audit;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -191,6 +193,7 @@ public class AuditLogEntry implements ISnowflake {
      * @return Key-Value Map of changes
      */
     @Nonnull
+    @Mutable
     public Map<String, AuditLogChange> getChanges() {
         return changes;
     }
@@ -235,6 +238,7 @@ public class AuditLogEntry implements ISnowflake {
      * @return Possibly-empty, never-null immutable list of {@link AuditLogChange AuditLogChanges}
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<AuditLogChange> getChangesForKeys(@Nonnull AuditLogKey... keys) {
         Checks.notNull(keys, "Keys");
@@ -261,6 +265,7 @@ public class AuditLogEntry implements ISnowflake {
      * @return Key-Value Map of changes
      */
     @Nonnull
+    @Mutable
     public Map<String, Object> getOptions() {
         return options;
     }
@@ -321,6 +326,7 @@ public class AuditLogEntry implements ISnowflake {
      * @return Unmodifiable list of representative values
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<Object> getOptions(@Nonnull AuditLogOption... options) {
         Checks.notNull(options, "Options");

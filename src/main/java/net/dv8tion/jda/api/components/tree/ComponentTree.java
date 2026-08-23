@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.components.tree;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -25,13 +27,13 @@ import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.internal.components.tree.ComponentTreeImpl;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -134,6 +136,7 @@ public interface ComponentTree<E extends Component> {
      * @return An unmodifiable list of components in this tree
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<E> getComponents();
 
@@ -150,6 +153,7 @@ public interface ComponentTree<E extends Component> {
      * @return A modifiable list of components with the specified type
      */
     @Nonnull
+    @Mutable
     default <T extends Component> List<T> findAll(@Nonnull Class<T> type) {
         return findAll(type, c -> true);
     }
@@ -168,6 +172,7 @@ public interface ComponentTree<E extends Component> {
      * @return A modifiable list of components satisfying the type and filter
      */
     @Nonnull
+    @Mutable
     default <T extends Component> List<T> findAll(@Nonnull Class<T> type, @Nonnull Predicate<? super T> filter) {
         Checks.notNull(type, "Component type");
         Checks.notNull(filter, "Component filter");
@@ -176,7 +181,7 @@ public interface ComponentTree<E extends Component> {
                 .filter(type::isInstance)
                 .map(type::cast)
                 .filter(filter)
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
     }
 
     /**

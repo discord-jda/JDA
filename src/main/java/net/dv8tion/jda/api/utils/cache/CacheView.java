@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.cache;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.ClosableIterator;
@@ -72,6 +73,7 @@ public interface CacheView<T> extends Iterable<T> {
      * @return Immutable list of cached elements
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<T> asList();
 
@@ -82,6 +84,7 @@ public interface CacheView<T> extends Iterable<T> {
      * @return Immutable set of cached elements
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     Set<T> asSet();
 
@@ -227,6 +230,7 @@ public interface CacheView<T> extends Iterable<T> {
      * @return Immutable list of elements with the given name
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<T> getElementsByName(@Nonnull String name, boolean ignoreCase);
 
@@ -244,6 +248,7 @@ public interface CacheView<T> extends Iterable<T> {
      * @return Immutable list of elements with the given name
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<T> getElementsByName(@Nonnull String name) {
         return getElementsByName(name, false);

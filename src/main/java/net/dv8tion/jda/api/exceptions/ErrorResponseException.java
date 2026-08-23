@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.exceptions;
 
+import kotlin.annotations.jvm.Mutable;
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -24,6 +26,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -143,6 +146,8 @@ public class ErrorResponseException extends RuntimeException {
      * @return Possibly-empty list of {@link SchemaError SchemaError}
      */
     @Nonnull
+    @ReadOnly
+    @Unmodifiable
     public List<SchemaError> getSchemaErrors() {
         return schemaErrors;
     }
@@ -228,7 +233,7 @@ public class ErrorResponseException extends RuntimeException {
     private static SchemaError parseSchemaError(String location, DataObject obj) {
         List<ErrorCode> codes = obj.getArray("_errors").stream(DataArray::getObject)
                 .map(json -> new ErrorCode(json.getString("code"), json.getString("message")))
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
         return new SchemaError(location, codes);
     }
 
@@ -427,6 +432,7 @@ public class ErrorResponseException extends RuntimeException {
          * @return The error codes
          */
         @Nonnull
+        @Mutable
         public List<ErrorCode> getErrors() {
             return errors;
         }

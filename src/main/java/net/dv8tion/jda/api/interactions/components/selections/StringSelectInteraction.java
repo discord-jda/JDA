@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
@@ -39,6 +40,7 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
      * @return {@link List} of {@link SelectOption#getValue()}
      */
     @Override
+    @ReadOnly
     @Nonnull
     @Unmodifiable
     List<String> getValues();
@@ -50,6 +52,7 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
      * @return Immutable {@link List} of the selected options
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     default List<SelectOption> getSelectedOptions() {
         StringSelectMenu menu = getComponent();

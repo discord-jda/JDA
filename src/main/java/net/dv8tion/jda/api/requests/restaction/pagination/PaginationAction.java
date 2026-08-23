@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Procedure;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -234,6 +235,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      * @return Immutable {@link java.util.List List} containing all currently cached entities for this PaginationAction
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<T> getCached();
 

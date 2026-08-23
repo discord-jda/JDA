@@ -193,6 +193,7 @@ dependencies {
     //Code safety
     compileOnly(libs.findbugs)
     compileOnly(libs.jetbrains.annotations)
+    compileOnly(libs.kotlin.annotations)
 
     //Logger
     api(libs.slf4j)
@@ -230,6 +231,7 @@ dependencies {
     testImplementation(libs.commons.lang3)
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
+    testImplementation(libs.kotlin.annotations)
 
     testJava8Implementation(libs.bundles.junit.java8)
     testJava8Implementation(libs.assertj)
@@ -295,6 +297,7 @@ rewrite {
     activeRecipe("org.openrewrite.staticanalysis.NeedBraces")
     activeRecipe("org.openrewrite.staticanalysis.NoFinalizedLocalVariables")
     activeRecipe("net.dv8tion.jda.recipe.JavadocFormatter")
+    activeRecipe("net.dv8tion.jda.recipe.AddKotlinMutabilityAnnotation")
     activeRecipe("MigrateToJavaxAnnotations")
 
     exclusion("*.kts", "**/*.kts", "**/*.kt")

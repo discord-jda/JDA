@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.HttpUrl;
@@ -149,6 +150,7 @@ public final class ImageFormat {
      * @return An immutable list of query parameters
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     public List<String> getQueryParameters() {
         return queryParameters;

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.container;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -218,6 +219,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
      * @return {@link List} of {@link ContainerChildComponentUnion} in this container
      */
     @Nonnull
+    @ReadOnly
     @Unmodifiable
     List<ContainerChildComponentUnion> getComponents();
 

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import kotlin.annotations.jvm.ReadOnly;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.MediaType;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.File;
 import java.util.Arrays;
@@ -255,6 +257,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     @Nonnull
     @Override
+    @ReadOnly
+    @Unmodifiable
     List<FileUpload> getAttachments();
 
     /**
