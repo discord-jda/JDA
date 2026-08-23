@@ -2649,7 +2649,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         String iconId = object.getString("icon", null);
         long id = object.getUnsignedLong("id");
-        long flags = object.getUnsignedLong("flags", 0);
+        long flags = object.getUnsignedLong("flags_new", 0);
         String name = object.getString("name");
         boolean isBotPublic = object.getBoolean("bot_public");
         User owner = createUser(object.getObject("owner"));
