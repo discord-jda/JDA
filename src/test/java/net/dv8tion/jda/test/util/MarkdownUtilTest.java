@@ -46,8 +46,12 @@ public class MarkdownUtilTest {
     @Test
     void testMonospace() {
         assertThat(monospace("Hello World")).isEqualTo("`Hello World`");
-        assertThat(monospace("Hello `Test` World")).isEqualTo("`Hello \\`Test\\` World`");
+        assertThat(monospace("Hello `Test` World")).isEqualTo("``Hello `Test` World``");
         assertThat(monospace("Hello ``Test`` World")).isEqualTo("`Hello ``Test`` World`");
+        assertThat(monospace("`Hello` World")).isEqualTo("`` `Hello` World``");
+        assertThat(monospace("Hello `World`")).isEqualTo("``Hello `World` ``");
+        assertThat(monospace("``Hello`` World")).isEqualTo("` ``Hello`` World`");
+        assertThat(monospace("Hello ``World``")).isEqualTo("`Hello ``World`` `");
     }
 
     @Test
