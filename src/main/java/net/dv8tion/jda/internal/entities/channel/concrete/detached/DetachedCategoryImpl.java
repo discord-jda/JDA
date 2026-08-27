@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
@@ -26,7 +27,6 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.CategoryMixin;
-import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 
 import javax.annotation.Nonnull;
@@ -37,7 +37,7 @@ public class DetachedCategoryImpl extends AbstractGuildChannelImpl<DetachedCateg
 
     private int position;
 
-    public DetachedCategoryImpl(long id, DetachedGuildImpl guild) {
+    public DetachedCategoryImpl(long id, Guild guild) {
         super(id, guild);
     }
 

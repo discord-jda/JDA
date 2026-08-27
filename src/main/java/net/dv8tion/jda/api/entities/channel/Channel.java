@@ -45,8 +45,33 @@ public interface Channel extends IMentionable, IDetachableEntity {
      * @return {@link EnumSet} of the configured {@link ChannelFlag ChannelFlags}, changes to this enum set are not reflected in the API.
      */
     @Nonnull
-    default EnumSet<ChannelFlag> getFlags() {
-        return EnumSet.noneOf(ChannelFlag.class);
+    EnumSet<ChannelFlag> getFlags();
+
+    /**
+     * The raw channel flags available for this channel.
+     *
+     * <p>For {@linkplain #isObfuscated() obfuscated channels} this will always be {@link ChannelFlag#OBFUSCATED} ({@code 1 << 17}).
+     *
+     * @return The raw flags for this channel
+     *
+     * @see #getFlags()
+     */
+    long getFlagsRaw();
+
+    /**
+     * Whether this channel is obfuscated.
+     *
+     * <p>An obfuscated channel is inaccessible to the logged-in account.
+     * It does not provide anything besides positional information.
+     * Methods like {@link #getName()} will not return the actual name of the channel.
+     *
+     * <p>Note that channels in interactions are never obfuscated
+     * and will instead be {@linkplain #isDetached() detached} channels when the channel is otherwise inaccessible.
+     *
+     * @return True, if this channel is obfuscated.
+     */
+    default boolean isObfuscated() {
+        return (getFlagsRaw() & ChannelFlag.OBFUSCATED.getRaw()) != 0L;
     }
 
     /**

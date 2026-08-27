@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.ThreadMember;
-import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -33,12 +33,10 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.ThreadChannelMixin;
-import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.time.OffsetDateTime;
-import java.util.EnumSet;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -63,9 +61,8 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
     private int totalMessageCount;
     private int memberCount;
     private int slowmode;
-    private int flags;
 
-    public DetachedThreadChannelImpl(long id, DetachedGuildImpl guild, ChannelType type) {
+    public DetachedThreadChannelImpl(long id, Guild guild, ChannelType type) {
         super(id, guild);
         this.type = type;
     }
@@ -73,12 +70,6 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
     @Override
     public boolean isDetached() {
         return true;
-    }
-
-    @Nonnull
-    @Override
-    public EnumSet<ChannelFlag> getFlags() {
-        return ChannelFlag.fromRaw(flags);
     }
 
     @Nonnull
@@ -329,12 +320,6 @@ public class DetachedThreadChannelImpl extends AbstractGuildChannelImpl<Detached
     @Override
     public DetachedThreadChannelImpl setSlowmode(int slowmode) {
         this.slowmode = slowmode;
-        return this;
-    }
-
-    @Override
-    public DetachedThreadChannelImpl setFlags(int flags) {
-        this.flags = flags;
         return this;
     }
 

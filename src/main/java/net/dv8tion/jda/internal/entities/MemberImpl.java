@@ -228,7 +228,7 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
         }
 
-        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
     }
 
     @Nonnull
@@ -240,7 +240,7 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Nonnull
     @Override
     public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel) {
-        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
 
     @Override
@@ -250,7 +250,7 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
 
     @Override
     public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
-        return PermissionUtil.checkPermission(channel.getPermissionContainer(), this, permissions);
+        return PermissionUtil.checkPermission(channel, this, permissions);
     }
 
     @Override

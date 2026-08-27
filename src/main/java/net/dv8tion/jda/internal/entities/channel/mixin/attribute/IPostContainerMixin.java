@@ -61,9 +61,5 @@ public interface IPostContainerMixin<T extends IPostContainerMixin<T>>
 
     T setDefaultSortOrder(int defaultSortOrder);
 
-    T setFlags(int flags);
-
     int getRawSortOrder();
-
-    int getRawFlags();
 }

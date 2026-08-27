@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -27,7 +28,6 @@ import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.StageChannelMixin;
-import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -49,7 +49,7 @@ public class DetachedStageChannelImpl extends AbstractStandardGuildChannelImpl<D
     private boolean ageRestricted;
     private long latestMessageId;
 
-    public DetachedStageChannelImpl(long id, DetachedGuildImpl guild) {
+    public DetachedStageChannelImpl(long id, Guild guild) {
         super(id, guild);
     }
 

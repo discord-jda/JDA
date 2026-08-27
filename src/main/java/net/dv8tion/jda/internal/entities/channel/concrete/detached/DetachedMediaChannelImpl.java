@@ -17,9 +17,9 @@
 package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.concrete.MediaChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
@@ -30,13 +30,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.MediaChannelMixin;
-import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -55,12 +53,11 @@ public class DetachedMediaChannelImpl extends AbstractGuildChannelImpl<DetachedM
     private long parentCategoryId;
     private boolean nsfw = false;
     private int position;
-    private int flags;
     private int slowmode;
     private int defaultSortOrder;
     protected int defaultThreadSlowmode;
 
-    public DetachedMediaChannelImpl(long id, DetachedGuildImpl guild) {
+    public DetachedMediaChannelImpl(long id, Guild guild) {
         super(id, guild);
     }
 
@@ -79,12 +76,6 @@ public class DetachedMediaChannelImpl extends AbstractGuildChannelImpl<DetachedM
     @Override
     public List<Member> getMembers() {
         throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public EnumSet<ChannelFlag> getFlags() {
-        return ChannelFlag.fromRaw(flags);
     }
 
     @Nonnull
@@ -146,11 +137,6 @@ public class DetachedMediaChannelImpl extends AbstractGuildChannelImpl<DetachedM
     }
 
     @Override
-    public int getRawFlags() {
-        return flags;
-    }
-
-    @Override
     public int getRawSortOrder() {
         return defaultSortOrder;
     }
@@ -190,12 +176,6 @@ public class DetachedMediaChannelImpl extends AbstractGuildChannelImpl<DetachedM
     @Override
     public DetachedMediaChannelImpl setTopic(String topic) {
         this.topic = topic;
-        return this;
-    }
-
-    @Override
-    public DetachedMediaChannelImpl setFlags(int flags) {
-        this.flags = flags;
         return this;
     }
 

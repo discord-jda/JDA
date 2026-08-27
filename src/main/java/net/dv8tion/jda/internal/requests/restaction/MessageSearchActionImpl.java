@@ -170,8 +170,7 @@ public class MessageSearchActionImpl extends RestActionImpl<MessageSearchRespons
                     guild,
                     channel.getGuild());
             Checks.checkAccess(guild.getSelfMember(), channel);
-            if (!PermissionUtil.checkPermission(
-                    channel.getPermissionContainer(), guild.getSelfMember(), Permission.MESSAGE_HISTORY)) {
+            if (!PermissionUtil.checkPermission(channel, guild.getSelfMember(), Permission.MESSAGE_HISTORY)) {
                 throw new InsufficientPermissionException(channel, Permission.MESSAGE_HISTORY);
             }
         }
