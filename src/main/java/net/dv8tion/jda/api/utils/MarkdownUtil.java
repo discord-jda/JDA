@@ -74,9 +74,13 @@ public final class MarkdownUtil {
     }
 
     /**
-     * Escapes already existing monospace (single backtick) regions in the input
-     * and applies monospace formatting to the entire string.
-     * <br>The resulting string will be {@code "`" + escaped(input) + "`"}.
+     * Applies monospace formatting to the input, checking for
+     * backticks present and handling them appropriately.
+     * <br>The resulting string will be {@code "`" + input + "`"}
+     * or {@code "``" + input + "``"} depending on whether backticks
+     * are present. If there are backticks directly in the beginning
+     * or end of the input, an extra space will be added before or
+     * after them to ensure the input is properly monospaced.
      *
      * @param  input
      *         The input to monospace
@@ -85,8 +89,14 @@ public final class MarkdownUtil {
      */
     @Nonnull
     public static String monospace(@Nonnull String input) {
-        String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.MONO);
-        return "`" + sanitized + "`";
+        if (input.contains("`") && !input.contains("``")) {
+            String prefix = input.startsWith("`") ? "`` " : "``";
+            String suffix = input.endsWith("`") ? " ``" : "``";
+            return prefix + input + suffix;
+        }
+        String prefix = input.startsWith("`") ? "` " : "`";
+        String suffix = input.endsWith("`") ? " `" : "`";
+        return prefix + input + suffix;
     }
 
     /**
