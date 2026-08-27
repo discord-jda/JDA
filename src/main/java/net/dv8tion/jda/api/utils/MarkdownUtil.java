@@ -89,9 +89,6 @@ public final class MarkdownUtil {
      */
     @Nonnull
     public static String monospace(@Nonnull String input) {
-        if (input.isEmpty()) {
-            return "` `";
-        }
         if (input.contains("`") && !input.contains("``")) {
             String prefix = input.startsWith("`") ? "`` " : "``";
             String suffix = input.endsWith("`") ? " ``" : "``";
