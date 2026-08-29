@@ -100,7 +100,11 @@ public interface Sticker extends StickerSnowflake {
      */
     @Nonnull
     default String getIconUrl() {
-        return Helpers.format(ICON_URL, getId(), getFormatType().getExtension());
+        StickerFormat format = getFormatType();
+        if (format == StickerFormat.GIF) {
+            return Helpers.format("https://media.discordapp.net/stickers/%s.%s", getId(), format.getExtension());
+        }
+        return Helpers.format(ICON_URL, getId(), format.getExtension());
     }
 
     /**
