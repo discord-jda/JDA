@@ -114,7 +114,7 @@ public enum MessageType {
     GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17, true, true),
 
     /**
-     * This is sent to a TextChannel when a message thread is created if the message from which the thread was started is "old".
+     * This is sent to a TextChannel when a message thread is created on no specific message, or if the message from which the thread was started is "old".
      * The definition of "old" is loose, but is currently a very liberal definition.
      */
     THREAD_CREATED(18, true, true),
