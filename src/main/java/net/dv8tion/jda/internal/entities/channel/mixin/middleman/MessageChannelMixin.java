@@ -148,15 +148,6 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
     @Override
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
-        checkCanSendMessage();
-        checkCanSendMessageEmbeds();
-        return MessageChannelUnion.super.sendMessageEmbeds(embed, other);
-    }
-
-    @Override
-    @Nonnull
-    @CheckReturnValue
     default MessageCreateAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         checkCanSendMessage();
         checkCanSendMessageEmbeds();
