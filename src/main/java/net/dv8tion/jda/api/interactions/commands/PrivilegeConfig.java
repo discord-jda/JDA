@@ -17,10 +17,14 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.SelfUser;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.interactions.commands.PrivilegeHelper;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
@@ -136,5 +140,29 @@ public class PrivilegeConfig {
     @Nonnull
     public Map<String, List<IntegrationPrivilege>> getAsMap() {
         return privileges;
+    }
+
+    /**
+     * Determines whether the {@link Command} can be run by the {@link Member} in the {@link GuildChannel}.
+     *
+     * <p>This will always return {@code true} for guild {@link Member#isOwner() Owners} and {@link Permission#ADMINISTRATOR Administrators}.
+     *
+     * <p>Implements <a href="https://discord.com/assets/6da3bd6082744a5eca59bb032c890092.svg" target="_blank">Discord's flow chart for command permissions logic</a>.
+     *
+     * @param  channel
+     *         The channel in which the command would run in
+     * @param  member
+     *         The member which would run the command
+     * @param  command
+     *         The command which should be tested for
+     *
+     * @return {@code true} if the command can be run by the specified member, in the guild channel, {@code false} otherwise.
+     */
+    public boolean canMemberRun(@Nonnull GuildChannel channel, @Nonnull Member member, @Nonnull Command command)
+    {
+        Checks.notNull(channel, "Channel");
+        Checks.notNull(member, "Member");
+        Checks.notNull(command, "Command");
+        return PrivilegeHelper.canMemberRun(this, channel, member, command);
     }
 }
