@@ -45,6 +45,7 @@ import okhttp3.OkHttpClient;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
@@ -81,6 +82,7 @@ public class JDABuilder {
     protected ConcurrentMap<String, String> contextMap = null;
     protected SessionController controller = null;
     protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
+    protected Consumer<OkHttpClient.Builder> httpClientBuilderPreprocessor = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
     protected WebSocketFactory wsFactory = null;
@@ -797,13 +799,38 @@ public class JDABuilder {
     }
 
     /**
+     * Sets a consumer used to preprocess the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDAs
+     * requester before it is used to build the client.
+     * <br>This can be used to set things such as connection timeout and proxy.
+     * <br>If also {@link #setHttpClient} is set, this option is ignored.
+     * <br>If also {@link #setHttpClientBuilder} is set, this option is still used before the client is built.
+     *
+     * @param  builderPreprocessor
+     *         The new {@link Consumer Consumer&lt;Builder&gt;} to use
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setHttpClient
+     * @see    #setHttpClientBuilder
+     */
+    @Nonnull
+    public JDABuilder setHttpClientBuilderPreprocessor(@Nullable Consumer<OkHttpClient.Builder> builderPreprocessor) {
+        this.httpClientBuilderPreprocessor = builderPreprocessor;
+        return this;
+    }
+
+    /**
      * Sets the {@link okhttp3.OkHttpClient.Builder Builder} that will be used by JDAs requester.
      * <br>This can be used to set things such as connection timeout and proxy.
+     * <br>If also {@link #setHttpClient} is set, this option is ignored.
      *
      * @param  builder
      *         The new {@link okhttp3.OkHttpClient.Builder Builder} to use
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setHttpClient
+     * @see    #setHttpClientBuilderPreprocessor
      */
     @Nonnull
     public JDABuilder setHttpClientBuilder(@Nullable OkHttpClient.Builder builder) {
@@ -814,11 +841,15 @@ public class JDABuilder {
     /**
      * Sets the {@link okhttp3.OkHttpClient OkHttpClient} that will be used by JDAs requester.
      * <br>This can be used to set things such as connection timeout and proxy.
+     * <br>If this is set, {@link #setHttpClientBuilder} and {@link #setHttpClientBuilderPreprocessor} are ignored.
      *
      * @param  client
      *         The new {@link okhttp3.OkHttpClient OkHttpClient} to use
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setHttpClientBuilder
+     * @see    #setHttpClientBuilderPreprocessor
      */
     @Nonnull
     public JDABuilder setHttpClient(@Nullable OkHttpClient client) {
@@ -1743,6 +1774,9 @@ public class JDABuilder {
         if (httpClient == null) {
             if (this.httpClientBuilder == null) {
                 this.httpClientBuilder = IOUtil.newHttpClientBuilder();
+            }
+            if (this.httpClientBuilderPreprocessor != null) {
+                this.httpClientBuilderPreprocessor.accept(this.httpClientBuilder);
             }
             httpClient = this.httpClientBuilder.build();
         }
