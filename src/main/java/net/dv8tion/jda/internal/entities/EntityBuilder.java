@@ -787,6 +787,14 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 getJDA().handleEvent(new GuildMemberUpdateAvatarEvent(getJDA(), responseNumber, member, oldAvatarId));
             }
         }
+        if (content.hasKey("banner")) {
+            String oldBannerId = member.getBannerId();
+            String newBannerId = content.getString("banner", null);
+            if (!Objects.equals(oldBannerId, newBannerId)) {
+                member.setBannerId(newBannerId);
+                getJDA().handleEvent(new GuildMemberUpdateBannerEvent(getJDA(), responseNumber, member, oldBannerId));
+            }
+        }
         if (content.hasKey("premium_since")) {
             long epoch = 0;
             if (!content.isNull("premium_since")) {
@@ -2649,7 +2657,7 @@ public class EntityBuilder extends AbstractEntityBuilder {
         boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         String iconId = object.getString("icon", null);
         long id = object.getUnsignedLong("id");
-        long flags = object.getUnsignedLong("flags", 0);
+        long flags = object.getUnsignedLong("flags_new", 0);
         String name = object.getString("name");
         boolean isBotPublic = object.getBoolean("bot_public");
         User owner = createUser(object.getObject("owner"));

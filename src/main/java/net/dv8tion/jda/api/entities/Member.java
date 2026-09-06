@@ -421,6 +421,81 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     }
 
     /**
+     * The Discord Id for this member's per guild banner image.
+     * If the member has not set a per guild banner, this will return null.
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild banner id.
+     */
+    @Nullable
+    String getBannerId();
+
+    /**
+     * The URL for the member's per guild banner image.
+     * If the member has not set a per guild banner, this will return null.
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild banner url.
+     */
+    @Nullable
+    default String getBannerUrl() {
+        String bannerId = getBannerId();
+        return bannerId == null
+                ? null
+                : getBannerUrl(bannerId.startsWith("a_") ? ImageFormat.ANIMATED_WEBP : ImageFormat.PNG);
+    }
+
+    /**
+     * The URL for the member's per guild banner image.
+     * If the member has not set a per guild banner, this will return null.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.Member} per guild banner url.
+     *
+     * @see    DiscordAssets#memberBanner(ImageFormat, String, String, String)
+     */
+    @Nullable
+    default String getBannerUrl(@Nonnull ImageFormat format) {
+        ImageProxy proxy = getBanner(format);
+        return proxy == null ? null : proxy.getUrl();
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this member's banner.
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's banner
+     *
+     * @see    #getBannerUrl()
+     */
+    @Nullable
+    default ImageProxy getBanner() {
+        String bannerUrl = getBannerUrl();
+        return bannerUrl == null ? null : new ImageProxy(bannerUrl);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this member's banner.
+     *
+     * @param  format
+     *         The format in which the image should be
+     *
+     * @throws IllegalArgumentException
+     *         If the format is {@code null}
+     *
+     * @return Possibly-null {@link ImageProxy} of this member's banner
+     *
+     * @see    #getBannerUrl(ImageFormat)
+     * @see    DiscordAssets#memberBanner(ImageFormat, String, String, String)
+     */
+    @Nullable
+    default ImageProxy getBanner(@Nonnull ImageFormat format) {
+        return DiscordAssets.memberBanner(format, getGuild().getId(), getId(), getBannerId());
+    }
+
+    /**
      * The roles applied to this Member.
      * <br>The roles are ordered based on their position. The highest role being at index 0
      * and the lowest at the last index. Prefer {@link #getUnsortedRoles()} if the order is not relevant.

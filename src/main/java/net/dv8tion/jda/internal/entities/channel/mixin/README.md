@@ -1,6 +1,6 @@
 # Entity Mixins
 Entity Mixins are a system in JDA that provide the following core functionalities:
-- Code reuse through composition instead of purely through inheritence
+- Code reuse through composition instead of purely through inheritance
 - A way to expose internal state setters and getters without exposing them to the library user
 
 ## Example Mixin with Usage

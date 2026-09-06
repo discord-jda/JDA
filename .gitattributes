@@ -1,5 +1,5 @@
 # Preserve gradlew's line ending
-gradlew binary
+gradlew text eol=lf
 
 .git* text eol=crlf
 *.java text eol=crlf

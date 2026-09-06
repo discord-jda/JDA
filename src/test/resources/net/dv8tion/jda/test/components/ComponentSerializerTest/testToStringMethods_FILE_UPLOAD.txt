@@ -1,1 +1,1 @@
-AttachmentUpload(custom_id=file-upload, required=true)
+AttachmentUpload(custom_id=file-upload, required=true, file_types=[])

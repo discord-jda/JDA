@@ -16,13 +16,14 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandReference;
-import org.apache.commons.collections4.Bag;
+import org.apache.commons.collections4.MultiSet;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
@@ -91,10 +92,45 @@ public interface Mentions {
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned users
      *
+     * @deprecated Use {@link #getUsersMultiSet()} instead.
+     *
      * @see    #getUsers()
      */
     @Nonnull
-    Bag<User> getUsersBag();
+    @Deprecated
+    @ReplaceWith("getUsersMultiSet()")
+    org.apache.commons.collections4.Bag<User> getUsersBag();
+
+    /**
+     * A {@link MultiSet} of mentioned {@link net.dv8tion.jda.api.entities.User Users}.
+     * <br>This can be used to retrieve the amount of times a user was mentioned. This only
+     * counts direct mentions of the user and not mentions through roles or everyone mentions.
+     * The count may be {@code 1}, if the user was mentioned through a message reply.
+     *
+     * <p>This might also contain users which are not present in {@link #getMembers()}.
+     *
+     * <p><b>Example</b><br>
+     * {@snippet lang="java":
+     * void sendCount(Message msg) {
+     *     List<User> mentions = msg.getMentions().getUsers(); // distinct list, in order of appearance
+     *     MultiSet<User> count = msg.getMentions().getUsersMultiSet();
+     *     StringBuilder content = new StringBuilder();
+     *     for (User user : mentions) {
+     *         content.append(user.getAsTag())
+     *                .append(": ")
+     *                .append(count.getCount(user))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }
+     *
+     * @return {@link MultiSet} of mentioned users
+     *
+     * @see    #getUsers()
+     */
+    @Nonnull
+    MultiSet<User> getUsersMultiSet();
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannels}.
@@ -134,10 +170,43 @@ public interface Mentions {
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels
      *
+     * @deprecated Use {@link #getChannelsMultiSet()} instead.
+     *
      * @see    #getChannels()
      */
     @Nonnull
-    Bag<GuildChannel> getChannelsBag();
+    @Deprecated
+    @ReplaceWith("getChannelsMultiSet()")
+    org.apache.commons.collections4.Bag<GuildChannel> getChannelsBag();
+
+    /**
+     * A {@link MultiSet} of mentioned channels.
+     * <br>This can be used to retrieve the amount of times a channel was mentioned.
+     *
+     * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * <p><b>Example</b><br>
+     * {@snippet lang="java":
+     * void sendCount(Message msg) {
+     *     MultiSet<GuildChannel> mentions = msg.getMentions().getChannelsMultiSet();
+     *     StringBuilder content = new StringBuilder();
+     *     for (GuildChannel channel : mentions.uniqueSet()) {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(mentions.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }
+     *
+     * @return {@link MultiSet} of mentioned channels
+     *
+     * @see    #getChannels()
+     */
+    @Nonnull
+    MultiSet<GuildChannel> getChannelsMultiSet();
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannels} of type {@code clazz}.
@@ -200,10 +269,49 @@ public interface Mentions {
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels of type {@code clazz}
      *
+     * @deprecated Use {@link #getChannelsMultiSet(Class)} instead.
+     *
      * @see    #getChannels(Class)
      */
     @Nonnull
-    <T extends GuildChannel> Bag<T> getChannelsBag(@Nonnull Class<T> clazz);
+    @Deprecated
+    @ReplaceWith("getChannelsMultiSet()")
+    <T extends GuildChannel> org.apache.commons.collections4.Bag<T> getChannelsBag(@Nonnull Class<T> clazz);
+
+    /**
+     * A {@link MultiSet} of mentioned channels of type {@code clazz}.
+     * <br>This can be used to retrieve the amount of times a channel was mentioned.
+     *
+     * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * <p><b>Example</b><br>
+     * {@snippet lang="java":
+     * void sendCount(Message msg) {
+     *     MultiSet<GuildMessageChannel> mentions = msg.getMentions().getChannelsMultiSet(GuildMessageChannel.class);
+     *     StringBuilder content = new StringBuilder();
+     *     for (GuildMessageChannel channel : mentions.uniqueSet()) {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(mentions.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }
+     *
+     * @param  clazz
+     *         The {@link GuildChannel} sub-class {@link Class class object} of the type of channel desired
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If {@code clazz} is {@code null}
+     *
+     * @return {@link MultiSet} of mentioned channels of type {@code clazz}
+     *
+     * @see    #getChannels(Class)
+     */
+    @Nonnull
+    <T extends GuildChannel> MultiSet<T> getChannelsMultiSet(@Nonnull Class<T> clazz);
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Role Roles}.
@@ -245,10 +353,44 @@ public interface Mentions {
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned roles
      *
+     * @deprecated Use {@link #getRolesMultiSet()} instead.
+     *
      * @see    #getRoles()
      */
     @Nonnull
-    Bag<Role> getRolesBag();
+    @Deprecated
+    @ReplaceWith("getRolesMultiSet()")
+    org.apache.commons.collections4.Bag<Role> getRolesBag();
+
+    /**
+     * A {@link MultiSet} of mentioned roles.
+     * <br>This can be used to retrieve the amount of times a role was mentioned. This only
+     * counts direct mentions of the role and not mentions through everyone mentions.
+     *
+     * <p><b>This may include Roles from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * <p><b>Example</b><br>
+     * {@snippet lang="java":
+     * void sendCount(Message msg) {
+     *     List<Role> mentions = msg.getMentions().getRoles(); // distinct list, in order of appearance
+     *     MultiSet<Role> count = msg.getMentions().getRolesMultiSet();
+     *     StringBuilder content = new StringBuilder();
+     *     for (Role role : mentions) {
+     *         content.append(role.getName())
+     *                .append(": ")
+     *                .append(count.getCount(role))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }
+     *
+     * @return {@link MultiSet} of mentioned roles
+     *
+     * @see    #getRoles()
+     */
+    @Nonnull
+    MultiSet<Role> getRolesMultiSet();
 
     /**
      * All {@link net.dv8tion.jda.api.entities.emoji.CustomEmoji CustomEmojis} used.
@@ -287,10 +429,41 @@ public interface Mentions {
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of used custom emojis
      *
+     * @deprecated Use {@link #getCustomEmojisMultiSet()} instead.
+     *
      * @see    #getCustomEmojis()
      */
     @Nonnull
-    Bag<CustomEmoji> getCustomEmojisBag();
+    @Deprecated
+    @ReplaceWith("getCustomEmojisMultiSet()")
+    org.apache.commons.collections4.Bag<CustomEmoji> getCustomEmojisBag();
+
+    /**
+     * A {@link MultiSet} of custom emojis used.
+     * <br>This can be used to retrieve the amount of times an emoji was used.
+     *
+     * <p><b>Example</b><br>
+     * {@snippet lang="java":
+     * void sendCount(Message msg) {
+     *     List<CustomEmoji> emojis = msg.getMentions().getCustomEmojis(); // distinct list, in order of appearance
+     *     MultiSet<CustomEmoji> count = msg.getMentions().getCustomEmojisMultiSet();
+     *     StringBuilder content = new StringBuilder();
+     *     for (CustomEmoji emoji : emojis) {
+     *         content.append(emojis.getName())
+     *                .append(": ")
+     *                .append(count.getCount(emoji))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }
+     *
+     * @return {@link MultiSet} of used custom emojis
+     *
+     * @see    #getCustomEmojis()
+     */
+    @Nonnull
+    MultiSet<CustomEmoji> getCustomEmojisMultiSet();
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Member Members}.
@@ -330,10 +503,43 @@ public interface Mentions {
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned members
      *
+     * @deprecated Use {@link #getMembersMultiSet()} instead.
+     *
      * @see    #getMembers()
      */
     @Nonnull
-    Bag<Member> getMembersBag();
+    @Deprecated
+    @ReplaceWith("getMembersMultiSet()")
+    org.apache.commons.collections4.Bag<Member> getMembersBag();
+
+    /**
+     * A {@link MultiSet} of mentioned {@link net.dv8tion.jda.api.entities.Member Members}.
+     * <br>This can be used to retrieve the amount of times a user was mentioned. This only
+     * counts direct mentions of the member and not mentions through roles or everyone mentions.
+     * The count may be {@code 1}, if the user was mentioned through a message reply.
+     *
+     * <p><b>Example</b><br>
+     * {@snippet lang="java":
+     * void sendCount(Message msg) {
+     *     List<Member> mentions = msg.getMentions().getMembers(); // distinct list, in order of appearance
+     *     MultiSet<Member> count = msg.getMentions().getMembersMultiSet();
+     *     StringBuilder content = new StringBuilder();
+     *     for (Member user : mentions) {
+     *         content.append(member.getUser().getAsTag())
+     *                .append(": ")
+     *                .append(count.getCount(member))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }
+     *
+     * @return {@link MultiSet} of mentioned members
+     *
+     * @see    #getMembers()
+     */
+    @Nonnull
+    MultiSet<Member> getMembersMultiSet();
 
     /**
      * An immutable list of all mentioned {@link SlashCommandReference slash commands}.
@@ -373,10 +579,43 @@ public interface Mentions {
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned slash commands
      *
+     * @deprecated Use {@link #getSlashCommandsMultiSet()} instead.
+     *
      * @see    #getSlashCommands()
      */
     @Nonnull
-    Bag<SlashCommandReference> getSlashCommandsBag();
+    @Deprecated
+    @ReplaceWith("getSlashCommandsMultiSet()")
+    org.apache.commons.collections4.Bag<SlashCommandReference> getSlashCommandsBag();
+
+    /**
+     * A {@link MultiSet} of mentioned {@link SlashCommandReference slash commands}.
+     * <br>This can be used to retrieve the amount of times a slash commands was mentioned.
+     *
+     * <p>Be aware these mentions could be mentioning a non-existent command
+     *
+     * <p><b>Example</b><br>
+     * {@snippet lang="java":
+     * void sendCount(Message msg) {
+     *     List<SlashCommandReference> mentions = msg.getMentions().getSlashCommands(); // distinct list, in order of appearance
+     *     MultiSet<SlashCommandReference> count = msg.getMentions().getSlashCommandsMultiSet();
+     *     StringBuilder content = new StringBuilder();
+     *     for (SlashCommandReference commandRef : mentions) {
+     *         content.append(commandRef.getAsMention())
+     *                .append(": ")
+     *                .append(count.getCount(commandRef))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }
+     *
+     * @return {@link MultiSet} of mentioned slash commands
+     *
+     * @see    #getSlashCommands()
+     */
+    @Nonnull
+    MultiSet<SlashCommandReference> getSlashCommandsMultiSet();
 
     /**
      * Combines all instances of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
