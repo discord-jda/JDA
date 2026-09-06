@@ -22,10 +22,11 @@ junit-launcher-java8 = "org.junit.platform:junit-platform-launcher:1.14.4"
 logback-classic = "ch.qos.logback:logback-classic:1.6.3"
 mockito = "org.mockito:mockito-core:5.23.0"
 okhttp = "com.squareup.okhttp3:okhttp-jvm:5.5.0"
+# @pin this is the last version available on maven central
 openrewrite-bom = "org.openrewrite.recipe:rewrite-recipe-bom:3.37.0"
 opus = "club.minnced:opus-java:1.1.1"
 reflections = "org.reflections:reflections:0.10.2"
-slf4j = "org.slf4j:slf4j-api:2.0.18"
+slf4j = "org.slf4j:slf4j-api:2.0.19"
 # @pin Newer versions require java 11 or higher
 tink = "com.google.crypto.tink:tink:1.18.0"
 trove4j = "net.sf.trove4j:core:3.1.0"
@@ -46,12 +47,13 @@ junit-java8 = [
 ]
 
 [plugins]
-errorprone = "net.ltgt.errorprone:5.1.0"
+errorprone = "net.ltgt.errorprone:5.1.1"
 ideax = "org.jetbrains.gradle.plugin.idea-ext:1.4.1"
 kotlin = "org.jetbrains.kotlin.jvm:2.4.10"
-nmcp = "com.gradleup.nmcp:1.6.1"
-nmcp-aggregation = "com.gradleup.nmcp.aggregation:1.6.1"
+nmcp = "com.gradleup.nmcp:1.6.2"
+nmcp-aggregation = "com.gradleup.nmcp.aggregation:1.6.2"
+# @pin this is the last version available on maven central
 openrewrite = "org.openrewrite.rewrite:7.39.0"
 shadow = "com.gradleup.shadow:9.6.1"
-spotless = "com.diffplug.spotless:8.10.0"
+spotless = "com.diffplug.spotless:8.10.2"
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.1.1"
