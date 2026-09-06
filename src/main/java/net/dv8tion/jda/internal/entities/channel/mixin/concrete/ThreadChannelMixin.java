@@ -41,6 +41,4 @@ public interface ThreadChannelMixin<T extends ThreadChannelMixin<T>>
     T setTotalMessageCount(int messageCount);
 
     T setMemberCount(int memberCount);
-
-    T setFlags(int flags);
 }

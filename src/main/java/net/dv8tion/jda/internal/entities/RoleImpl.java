@@ -142,7 +142,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     @Nonnull
     @Override
     public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel) {
-        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
     }
 
     @Nonnull
@@ -154,7 +154,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
     @Nonnull
     @Override
     public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel) {
-        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
 
     @Nonnull
@@ -182,7 +182,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl> {
 
     @Override
     public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
-        long effectivePerms = PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
+        long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
         for (Permission perm : permissions) {
             long rawValue = perm.getRawValue();
             if ((effectivePerms & rawValue) != rawValue) {

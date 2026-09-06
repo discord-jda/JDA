@@ -17,10 +17,13 @@
 package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.GroupChannelMixin;
 import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
+
+import java.util.EnumSet;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +36,17 @@ public class DetachedGroupChannelImpl extends AbstractChannelImpl<DetachedGroupC
 
     public DetachedGroupChannelImpl(JDA api, long id) {
         super(id, api);
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<ChannelFlag> getFlags() {
+        return EnumSet.noneOf(ChannelFlag.class);
+    }
+
+    @Override
+    public long getFlagsRaw() {
+        return 0L;
     }
 
     @Nonnull
