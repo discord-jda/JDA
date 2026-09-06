@@ -60,7 +60,7 @@ val exampleJavaVersion = JavaLanguageVersion.of(25)
 val libraryJavaVersion = JavaLanguageVersion.of(8)
 
 projectEnvironment {
-    version = Version(major = "6", minor = "5", revision = "0", classifier = null)
+    version = Version(major = "6", minor = "6", revision = "0", classifier = null)
 }
 
 artifactFilters {
