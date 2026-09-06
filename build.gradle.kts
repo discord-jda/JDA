@@ -28,7 +28,6 @@ import org.jetbrains.gradle.ext.JUnit as JUnitRunConfiguration
 import org.jetbrains.gradle.ext.copyright
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
-import org.openrewrite.gradle.AbstractRewriteTask
 
 plugins {
     artifacts
@@ -43,7 +42,6 @@ plugins {
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.spotless)
     alias(libs.plugins.errorprone)
-    alias(libs.plugins.openrewrite)
     alias(libs.plugins.ideax)
     alias(libs.plugins.nmcp)
     alias(libs.plugins.nmcp.aggregation)
@@ -236,23 +234,6 @@ dependencies {
         isTransitive = false
     }
 
-    // OpenRewrite
-    testImplementation(platform(libs.openrewrite.bom))
-    rewrite(platform(libs.openrewrite.bom))
-
-    // rewrite-java dependencies only necessary for Java Recipe development
-    testImplementation("org.openrewrite:rewrite-java")
-    testImplementation("org.openrewrite.recipe:rewrite-java-dependencies")
-
-    testRuntimeOnly("org.openrewrite:rewrite-java-${currentJavaVersion}")
-
-    // For authoring tests for any kind of Recipe
-    testImplementation("org.openrewrite:rewrite-test")
-
-    // Needed for rewrite gradle tasks
-    rewrite("org.openrewrite.recipe:rewrite-static-analysis")
-    rewrite("net.dv8tion.jda:formatter-recipes")
-
     // Linting & Formatting
     errorprone(libs.errorprone.core)
 
@@ -277,18 +258,6 @@ versionCatalogUpdate {
 //    Formatting and Linting      //
 //                                //
 ////////////////////////////////////
-
-rewrite {
-    failOnDryRunResults = true
-    throwOnParseFailures = true
-
-    activeRecipe("org.openrewrite.staticanalysis.NeedBraces")
-    activeRecipe("org.openrewrite.staticanalysis.NoFinalizedLocalVariables")
-    activeRecipe("net.dv8tion.jda.recipe.JavadocFormatter")
-    activeRecipe("MigrateToJavaxAnnotations")
-
-    exclusion("*.kts", "**/*.kts", "**/*.kt")
-}
 
 spotless {
     encoding("UTF-8")
@@ -320,14 +289,6 @@ spotless {
     }
 }
 
-tasks.named("spotlessJavaCheck").configure {
-    dependsOn(tasks.named("rewriteDryRun"))
-}
-
-tasks.named("spotlessJavaApply").configure {
-    dependsOn(tasks.named("rewriteRun"))
-}
-
 val enableErrorpronePatching = tasks.register("enableErrorpronePatching") {
     group = "verification"
 
@@ -351,7 +312,6 @@ tasks.register("format") {
 val checkFormat = tasks.register("checkFormat") {
     group = "verification"
     dependsOn(tasks.named("spotlessCheck"))
-    dependsOn(tasks.named("rewriteDryRun"))
 }
 
 tasks.named("check").configure {
@@ -363,13 +323,6 @@ tasks.named("versionCatalogFormat").configure {
 
     inputs.file(versionCatalogFile)
     outputs.file(versionCatalogFile)
-}
-
-tasks.withType(AbstractRewriteTask::class).configureEach {
-    inputs.files(fileTree("src") {
-        include("**/*.java")
-    })
-    outputs.upToDateWhen { true }
 }
 
 ////////////////////////////////////
@@ -521,18 +474,6 @@ tasks.build.configure {
 //       Test Configuration       //
 //                                //
 ////////////////////////////////////
-
-
-val downloadRecipeClasspath = tasks.register<Download>("downloadRecipeClasspath") {
-    val targetVersion = "5.6.1"
-    src("https://repo.maven.apache.org/maven2/net/dv8tion/JDA/$targetVersion/JDA-$targetVersion.jar")
-    dest("src/test/resources/META-INF/rewrite/classpath/JDA-$targetVersion.jar")
-    overwrite(false)
-}
-
-tasks.named("processTestResources").configure {
-    dependsOn(downloadRecipeClasspath)
-}
 
 
 tasks.register<Test>("updateTestSnapshots") {
