@@ -16,41 +16,36 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.internal.utils.Checks;
 
-public class MessageCreateActionImpl extends AbstractMessageCreateActionImpl {
+public class RestMessageCreateActionImpl extends AbstractMessageCreateActionImpl {
 
-    private final MessageChannel channel;
+    private final String channelId;
 
-    public MessageCreateActionImpl(MessageChannel channel) {
-        super(channel.getJDA(), channel.getId());
-        this.channel = channel;
+    public RestMessageCreateActionImpl(JDA jda, String channelId) {
+        super(jda, channelId);
+        this.channelId = channelId;
     }
 
     @Override
     protected void handleSuccess(Response response, Request<Message> request) {
-        request.onSuccess(api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false));
-    }
+        MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
 
-    @Override
-    protected void requireGuildChannel(String message) {
-        if (!channel.getType().isGuild()) {
-            throw new IllegalStateException(message);
+        if (channel != null) {
+            request.onSuccess(api.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false));
+        } else {
+            request.onSuccess(api.getEntityBuilder().createMessageFromWebhook(response.getObject(), null));
         }
     }
 
     @Override
-    protected void checkStickerProvenance(GuildSticker sticker) {
-        GuildChannel guildChannel = (GuildChannel) channel;
+    protected void requireGuildChannel(String message) {}
 
-        Checks.check(
-                sticker.getGuildIdLong() == guildChannel.getGuild().getIdLong(),
-                "Sticker must be from the same guild. Cross-guild sticker posting is not supported!");
-    }
+    @Override
+    protected void checkStickerProvenance(GuildSticker sticker) {}
 }

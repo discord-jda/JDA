@@ -557,7 +557,8 @@ public interface Message extends ISnowflake, Formattable {
     /**
      * Whether this message instance has an available {@link #getChannel()}.
      *
-     * <p>This can be {@code false} for messages sent via webhooks, or in the context of interactions.
+     * <p>This can be {@code false} for messages sent via webhooks, or in the context of interactions,
+     * or if the message was created by a REST-only API and the channel isn't in our cache (typically due to sharding).
      *
      * @return True, if {@link #getChannel()} is available
      */
@@ -626,7 +627,8 @@ public interface Message extends ISnowflake, Formattable {
      * <br>This is different from {@link #isFromGuild()}, which checks whether the message was sent in a guild.
      * This method describes whether {@link #getGuild()} is usable.
      *
-     * <p>This can be {@code false} for messages sent via webhooks, or in the context of interactions.
+     * <p>This can be {@code false} for messages sent via webhooks, or in the context of interactions,
+     * or if the message was created by a REST-only API and the channel isn't in our cache (typically due to sharding).
      *
      * @return True, if {@link #getGuild()} is provided
      */
