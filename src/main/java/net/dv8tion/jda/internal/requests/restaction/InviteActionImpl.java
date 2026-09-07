@@ -16,16 +16,25 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.invite.InviteTargetUsers;
 import okhttp3.RequestBody;
 
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -33,6 +42,8 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements InviteAction {
+    private final IInviteContainer channel;
+
     private Integer maxAge = null;
     private Integer maxUses = null;
     private Boolean temporary = null;
@@ -40,9 +51,12 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     private Long targetApplication = null;
     private Long targetUser = null;
     private Invite.TargetType targetType = null;
+    private final InviteTargetUsers targetUsers = new InviteTargetUsers();
+    private final Set<Long> roleIds = new HashSet<>();
 
-    public InviteActionImpl(JDA api, String channelId) {
-        super(api, Route.Invites.CREATE_INVITE.compile(channelId));
+    public InviteActionImpl(IInviteContainer channel) {
+        super(channel.getJDA(), Route.Invites.CREATE_INVITE.compile(channel.getId()));
+        this.channel = channel;
     }
 
     @Nonnull
@@ -145,9 +159,113 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         return this;
     }
 
+    @Nonnull
+    @Override
+    public InviteActionImpl setTargetUsers(@Nonnull Collection<? extends UserSnowflake> users) {
+        checkCanManageServer();
+        targetUsers.setUsers(users);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setTargetUsers(@Nonnull UserSnowflake... users) {
+        checkCanManageServer();
+        targetUsers.setUsers(users);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setTargetUserIds(@Nonnull Collection<Long> ids) {
+        checkCanManageServer();
+        targetUsers.setUserIds(ids);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setTargetUserIds(@Nonnull long... ids) {
+        checkCanManageServer();
+        targetUsers.setUserIds(ids);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setTargetUserIds(@Nonnull String... ids) {
+        checkCanManageServer();
+        targetUsers.setUserIds(ids);
+        return this;
+    }
+
+    private void checkCanManageServer() {
+        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_SERVER)) {
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_SERVER);
+        }
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setRoles(@Nonnull Collection<? extends Role> roles) {
+        Checks.noneNull(roles, "Roles");
+
+        Guild guild = channel.getGuild();
+        if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_ROLES)) {
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_ROLES);
+        }
+
+        for (Role role : roles) {
+            Checks.check(role.getGuild().equals(guild), "%s is not from the same guild! (%s)", role, guild);
+            if (!guild.getSelfMember().canInteract(role)) {
+                throw new HierarchyException(
+                        String.format("%s is higher in than the highest role of the self member!", role));
+            }
+        }
+
+        roleIds.clear();
+        for (Role role : roles) {
+            roleIds.add(role.getIdLong());
+        }
+
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl setRoleIds(@Nonnull long... ids) {
+        Checks.notNull(ids, "IDs");
+
+        Guild guild = channel.getGuild();
+        if (!guild.getSelfMember().hasPermission(channel, Permission.MANAGE_ROLES)) {
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_ROLES);
+        }
+
+        for (long id : ids) {
+            Role role = guild.getRoleById(id);
+
+            // Discord ignores unknown roles
+            if (role == null) {
+                continue;
+            }
+            if (!guild.getSelfMember().canInteract(role)) {
+                throw new HierarchyException(
+                        String.format("%s is higher in than the highest role of the self member!", role));
+            }
+        }
+
+        roleIds.clear();
+        for (long id : ids) {
+            roleIds.add(id);
+        }
+
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
+        Set<AttachedFile> files = new HashSet<>(1);
 
         if (this.maxAge != null) {
             object.put("max_age", this.maxAge);
@@ -170,8 +288,14 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         if (this.targetApplication != null) {
             object.put("target_application_id", targetApplication);
         }
+        if (!targetUsers.isEmpty()) {
+            files.add(targetUsers.toAttachedFile());
+        }
+        if (!roleIds.isEmpty()) {
+            object.put("role_ids", roleIds);
+        }
 
-        return getRequestBody(object);
+        return getMultipartBody(files, object);
     }
 
     @Override
