@@ -45,7 +45,7 @@ public interface Webhook extends ISnowflake, WebhookClient<Message> {
      *
      * <p><b>Groups</b><br>
      * <table>
-     *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
+     *   <caption style="display: none">JavaDoc is stupid, this is not a required tag</caption>
      *   <tr>
      *     <th>Index</th>
      *     <th>Name</th>
@@ -72,7 +72,13 @@ public interface Webhook extends ISnowflake, WebhookClient<Message> {
      * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
      */
     Pattern WEBHOOK_URL = Pattern.compile(
-            "https?://(?:[^\\s.]+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(?<id>\\d+)/(?<token>[^\\s/]+)",
+            "(?x)                                                        # enable comment mode \n"
+                    + "(?:https?+://)?+                                  # 'https://' or 'http://' or '' \n"
+                    + "(?:\\w+\\.)?                                      # for example 'canary.' or 'ptb.'\n"
+                    + "discord(?:app)?+\\.com/api(?:/v\\d++)?+/webhooks/ # 'discord(app).com/api(/v123)/webhooks/' \n"
+                    + "(?<id>\\d++)                                      # the webhook id as named group \n"
+                    + "/                                                 # '/' \n"
+                    + "(?<token>[^\\s/]++)                               # the webhook token as named group",
             Pattern.CASE_INSENSITIVE);
 
     /**
