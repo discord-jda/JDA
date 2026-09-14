@@ -168,6 +168,11 @@ public class RestActionImpl<T> implements RestAction<T> {
     }
 
     @Nonnull
+    public Route.CompiledRoute getRoute() {
+        return route;
+    }
+
+    @Nonnull
     @Override
     public RestAction<T> deadline(long timestamp) {
         this.deadline = timestamp;
