@@ -1,7 +1,7 @@
 [libraries]
 gradle-plugin-download = "de.undercouch.download:de.undercouch.download.gradle.plugin:5.7.0"
 javaparser = "com.github.javaparser:javaparser-symbol-solver-core:3.28.2"
-javapoet = "com.palantir.javapoet:javapoet:0.19.0"
+javapoet = "com.palantir.javapoet:javapoet:0.20.0"
 tools-jackson = "tools.jackson.core:jackson-databind:3.2.2"
 
 [plugins]

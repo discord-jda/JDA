@@ -49,7 +49,7 @@ junit-java8 = [
 [plugins]
 errorprone = "net.ltgt.errorprone:5.1.1"
 ideax = "org.jetbrains.gradle.plugin.idea-ext:1.4.1"
-kotlin = "org.jetbrains.kotlin.jvm:2.4.10"
+kotlin = "org.jetbrains.kotlin.jvm:2.4.20"
 nmcp = "com.gradleup.nmcp:1.6.2"
 nmcp-aggregation = "com.gradleup.nmcp.aggregation:1.6.2"
 # @pin this is the last version available on maven central
