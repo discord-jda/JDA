@@ -17,15 +17,17 @@
 package net.dv8tion.jda.test.util;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.exceptions.DetachedEntityException;
+import net.dv8tion.jda.internal.entities.channel.concrete.detached.DetachedTextChannelImpl;
+import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.test.Constants;
 import net.dv8tion.jda.test.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,9 +38,10 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PermissionUtilTest extends IntegrationTest {
@@ -82,6 +85,7 @@ public class PermissionUtilTest extends IntegrationTest {
     @BeforeEach
     void setupMocks() {
         when(member.getGuild()).thenReturn(guild);
+        when(guild.getJDA()).thenReturn(jda);
         when(guild.getPublicRole()).thenReturn(publicRole);
         when(member.getRoles()).thenReturn(Collections.singletonList(role));
         when(member.getUnsortedRoles()).thenReturn(Collections.singleton(role));
@@ -181,5 +185,45 @@ public class PermissionUtilTest extends IntegrationTest {
         assertThat(ALL_PERMISSIONS)
                 .allSatisfy(permission -> assertThat(PermissionUtil.checkPermission(textChannel, member, permission))
                         .isEqualTo(permission == Permission.VIEW_CHANNEL));
+    }
+
+    @Test
+    void testInteractionPermissionOverwrite_Member() {
+        SelfUser selfUser = mock(SelfUser.class);
+        when(selfUser.getIdLong()).thenReturn(Constants.BUTLER_USER_ID);
+        when(jda.getSelfUser()).thenReturn(selfUser);
+
+        EnumSet<Permission> memberPermissions =
+                EnumSet.of(Permission.VIEW_CHANNEL, Permission.USE_APPLICATION_COMMANDS);
+
+        DetachedTextChannelImpl channel = new DetachedTextChannelImpl(Constants.CHANNEL_ID, guild);
+        channel.setInteractionPermissions(
+                new ChannelInteractionPermissions(Constants.MINN_USER_ID, Permission.getRaw(memberPermissions)));
+
+        assertThat(ALL_PERMISSIONS)
+                .as("Permissions for other members are unknown")
+                .allMatch(permission -> !PermissionUtil.checkPermission(channel, member, permission));
+
+        assertThatExceptionOfType(DetachedEntityException.class).isThrownBy(() -> {
+            channel.setFlags(ChannelFlag.OBFUSCATED.getRaw());
+            PermissionUtil.checkPermission(channel, member, Permission.VIEW_CHANNEL);
+        });
+
+        Member selfMember = mock(Member.class);
+        when(selfMember.getIdLong()).thenReturn(Constants.BUTLER_USER_ID);
+        when(selfMember.getGuild()).thenReturn(guild);
+
+        assertThat(ALL_PERMISSIONS)
+                .as("Permissions for self member are 0")
+                .allMatch(permission -> !PermissionUtil.checkPermission(channel, selfMember, permission));
+
+        Member interactionMember = mock(Member.class);
+        when(interactionMember.getIdLong()).thenReturn(Constants.MINN_USER_ID);
+        when(interactionMember.getGuild()).thenReturn(guild);
+
+        assertThat(ALL_PERMISSIONS)
+                .as("Permissions for interaction member are set")
+                .allMatch(permission -> memberPermissions.contains(permission)
+                        == PermissionUtil.checkPermission(channel, interactionMember, permission));
     }
 }

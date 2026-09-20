@@ -488,6 +488,7 @@ public class PermissionUtil {
     public static long getEffectivePermission(GuildChannel channel, Role role) {
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
+        checkGuild(channel.getGuild(), role.getGuild(), "Role");
 
         if (channel.isDetached()) {
             return 0L;
@@ -495,10 +496,6 @@ public class PermissionUtil {
 
         if (isInheritingPermissionsFromContainer(channel)) {
             return getEffectivePermission(channel.getPermissionContainer(), role);
-        }
-
-        if (!channel.getGuild().equals(role.getGuild())) {
-            throw new IllegalArgumentException("Provided channel and role are not of the same guild!");
         }
 
         long permissions = getExplicitPermission(channel, role);
@@ -688,6 +685,8 @@ public class PermissionUtil {
             throw new DetachedEntityException("Cannot get the explicit permissions of a detached role");
         }
 
+        checkGuild(channel.getGuild(), role.getGuild(), "Role");
+
         if (channel.isDetached()) {
             return 0L;
         }
@@ -695,7 +694,6 @@ public class PermissionUtil {
         IPermissionContainer permsChannel = channel.getPermissionContainer();
 
         Guild guild = role.getGuild();
-        checkGuild(channel.getGuild(), guild, "Role");
 
         long permission =
                 includeRoles ? role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw() : 0;
@@ -734,6 +732,19 @@ public class PermissionUtil {
         if (interactionPermissions.getMemberId() == member.getIdLong()) {
             return interactionPermissions.getPermissions();
         }
+
+        if (channel.isObfuscated()) {
+            if (member.getIdLong() == channel.getJDA().getSelfUser().getIdLong()) {
+                // We know if the channel is obfuscated, the self-user has no permissions to see it
+                return 0L;
+            }
+
+            throw new DetachedEntityException(Helpers.format(
+                    "The requested member %s is not the interacting user (%s). "
+                            + "Since the used channel is obfuscated the permissions of other members cannot be determined.",
+                    member.getId(), Long.toUnsignedString(interactionPermissions.getMemberId())));
+        }
+
         return 0L;
     }
 
