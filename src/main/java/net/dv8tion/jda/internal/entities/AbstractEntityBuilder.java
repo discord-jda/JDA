@@ -202,6 +202,7 @@ public abstract class AbstractEntityBuilder {
         member.setNickname(memberJson.getString("nick", null));
         member.setAvatarId(memberJson.getString("avatar", null));
         member.setBannerId(memberJson.getString("banner", null));
+        member.setCollectibles(CollectiblesImpl.extractFrom(memberJson));
         if (!memberJson.isNull("flags")) {
             member.setFlags(memberJson.getInt("flags"));
         }

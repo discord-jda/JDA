@@ -187,6 +187,8 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
 
+    public void onUserUpdateCollectibles(@Nonnull UserUpdateCollectiblesEvent event) {}
+
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
 
     public void onUserUpdateActivityOrder(@Nonnull UserUpdateActivityOrderEvent event) {}
@@ -459,6 +461,8 @@ public abstract class ListenerAdapter implements EventListener {
     public void onGuildMemberUpdateAvatar(@Nonnull GuildMemberUpdateAvatarEvent event) {}
 
     public void onGuildMemberUpdateBanner(@Nonnull GuildMemberUpdateBannerEvent event) {}
+
+    public void onGuildMemberUpdateCollectibles(@Nonnull GuildMemberUpdateCollectiblesEvent event) {}
 
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
 

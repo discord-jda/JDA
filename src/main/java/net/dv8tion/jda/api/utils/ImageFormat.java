@@ -82,6 +82,11 @@ public final class ImageFormat {
      */
     public static final ImageFormat ANIMATED_WEBP = new ImageFormat("webp", Arrays.asList("animated", "true"));
 
+    /**
+     * Audiovisual media <i>container</i>, which supports multiple video and audio codecs.
+     */
+    public static final ImageFormat WEBM = new ImageFormat("webm", Collections.emptyList());
+
     private final String extension;
     private final List<String> queryParameters;
 

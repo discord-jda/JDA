@@ -53,6 +53,7 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     private String nickname;
     private String avatarId;
     private String bannerId;
+    private Collectibles collectibles;
     private long joinDate, boostDate, timeOutEnd;
     private boolean pending = false;
     private int flags;
@@ -187,6 +188,12 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Override
     public String getBannerId() {
         return bannerId;
+    }
+
+    @Nonnull
+    @Override
+    public Collectibles getCollectibles() {
+        return collectibles;
     }
 
     @Nonnull
@@ -375,6 +382,12 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl> {
     @Override
     public MemberImpl setBannerId(String bannerId) {
         this.bannerId = bannerId;
+        return this;
+    }
+
+    @Override
+    public MemberImpl setCollectibles(Collectibles collectibles) {
+        this.collectibles = collectibles;
         return this;
     }
 
