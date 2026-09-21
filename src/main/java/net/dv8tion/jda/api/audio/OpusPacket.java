@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.api.audio;
 
+import net.dv8tion.jda.api.audio.opus.IOpusDecoder;
 import net.dv8tion.jda.internal.audio.AudioPacket;
-import net.dv8tion.jda.internal.audio.Decoder;
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -32,6 +34,8 @@ import javax.annotation.Nullable;
  * @see AudioReceiveHandler#handleEncodedAudio(OpusPacket)
  */
 public final class OpusPacket implements Comparable<OpusPacket> {
+    private static final Logger LOG = JDALogger.getLog(OpusPacket.class);
+
     /** (Hz) We want to use the highest of qualities! All the bandwidth! */
     public static final int OPUS_SAMPLE_RATE = 48000;
     /** An opus frame size of 960 at 48000hz represents 20 milliseconds of audio. */
@@ -43,13 +47,13 @@ public final class OpusPacket implements Comparable<OpusPacket> {
 
     private final long userId;
     private final byte[] opusAudio;
-    private final Decoder decoder;
+    private final IOpusDecoder decoder;
     private final AudioPacket rawPacket;
 
     private short[] decoded;
     private boolean triedDecode;
 
-    public OpusPacket(@Nonnull AudioPacket packet, long userId, @Nullable Decoder decoder) {
+    public OpusPacket(@Nonnull AudioPacket packet, long userId, @Nullable IOpusDecoder decoder) {
         this.rawPacket = packet;
         this.userId = userId;
         this.decoder = decoder;
@@ -150,7 +154,13 @@ public final class OpusPacket implements Comparable<OpusPacket> {
             throw new IllegalStateException("Packet is not in order");
         }
         triedDecode = true;
-        return decoded = decoder.decodeFromOpus(rawPacket); // null if failed to decode
+        try {
+            return decoded = decoder.decode(rawPacket); // null if failed to decode
+        } catch (Exception e) {
+            // Catch exceptions in case the underlying decoder doesn't return null on errors
+            LOG.error("Unexpected exception when decoding Opus packet", e);
+            return decoded = null;
+        }
     }
 
     /**

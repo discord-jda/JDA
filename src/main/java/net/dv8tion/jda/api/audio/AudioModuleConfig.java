@@ -21,11 +21,13 @@ import net.dv8tion.jda.api.audio.dave.DaveSessionFactory;
 import net.dv8tion.jda.api.audio.dave.PassthroughDaveSessionFactory;
 import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
+import net.dv8tion.jda.api.audio.opus.IOpusCodecFactory;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Configuration for audio features in JDA.
@@ -38,15 +40,18 @@ import javax.annotation.Nonnull;
  *   new AudioModuleConfig()
  *     .withAudioSendFactory(new NativeAudioSendFactory())
  *     .withDaveSessionFactory(new JDaveSessionFactory())
+ *     .withOpusCodecFactory(new OpusCodecFactory())
  * )
  * }
  *
  * @see #withAudioSendFactory(IAudioSendFactory)
  * @see #withDaveSessionFactory(DaveSessionFactory)
+ * @see #withOpusCodecFactory(IOpusCodecFactory)
  */
 public class AudioModuleConfig {
     private DaveSessionFactory daveSessionFactory = new PassthroughDaveSessionFactory();
     private IAudioSendFactory audioSendFactory = new DefaultSendFactory();
+    private IOpusCodecFactory opusCodecFactory = null;
 
     /**
      * The factory used for DAVE sessions.
@@ -126,11 +131,49 @@ public class AudioModuleConfig {
         return newConfig;
     }
 
+    /**
+     * The currently configured {@link IOpusCodecFactory}.
+     *
+     * @return {@link IOpusCodecFactory}
+     *
+     * @see #withOpusCodecFactory(IOpusCodecFactory)
+     */
+    @Nullable
+    public IOpusCodecFactory getOpusCodecFactory() {
+        return opusCodecFactory;
+    }
+
+    /**
+     * Changes the factory used to create Opus encoders and decoder objects.
+     * <br>{@link AudioSendHandler AudioSendHandlers} will require this if the provided audio is not already Opus-encoded.
+     * For {@link AudioReceiveHandler AudioReceiveHandlers}, only {@link AudioReceiveHandler#handleEncodedAudio(OpusPacket) handleEncodedAudio(OpusPacket)} will work without an {@link IOpusCodecFactory} set.
+     *
+     * <p>This is typically not needed for libraries which handle Opus themselves such as
+     * <a href="https://github.com/lavalink-devs/lavaplayer" target="_blank">Lavaplayer</a>
+     * and <a href="https://github.com/lavalink-devs/lavalink" target="_blank">Lavalink</a>.
+     *
+     * @param  opusCodecFactory
+     *         The new {@link IOpusCodecFactory} to be used when attempting to decode/encode Opus-encoded audio
+     *
+     * @return A <b>new</b> AudioModuleConfig with the provided factory
+     *
+     * @see IOpusCodecFactory
+     */
+    @Nonnull
+    @Contract("_ -> new")
+    @CheckReturnValue
+    public AudioModuleConfig withOpusCodecFactory(@Nullable IOpusCodecFactory opusCodecFactory) {
+        AudioModuleConfig newConfig = copy();
+        newConfig.opusCodecFactory = opusCodecFactory;
+        return newConfig;
+    }
+
     @Nonnull
     private AudioModuleConfig copy() {
         AudioModuleConfig config = new AudioModuleConfig();
         config.daveSessionFactory = this.daveSessionFactory;
         config.audioSendFactory = this.audioSendFactory;
+        config.opusCodecFactory = this.opusCodecFactory;
         return config;
     }
 }

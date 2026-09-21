@@ -19,7 +19,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.gradle.Version
 import net.dv8tion.jda.gradle.plugins.applyAudioExclusions
-import net.dv8tion.jda.gradle.plugins.applyOpusExclusions
 import net.dv8tion.jda.gradle.tasks.VerifyBytecodeVersion
 import net.ltgt.gradle.errorprone.errorprone
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
@@ -64,7 +63,6 @@ projectEnvironment {
 }
 
 artifactFilters {
-    opusExclusions.addAll("natives/**", "com/sun/jna/**", "club/minnced/opus/util/*", "tomp2p/opuswrapper/*")
     additionalAudioExclusions.addAll("com/google/crypto/tink/**", "com/google/gson/**", "com/google/protobuf/**", "google/protobuf/**")
 }
 
@@ -199,16 +197,8 @@ dependencies {
     api(libs.websocket.client)
     api(libs.okhttp)
 
-    //Opus library support
-    api(libs.opus)
-
     //Collections Utility
     api(libs.commons.collections)
-
-    //we use this only together with opus-java
-    // if that dependency is excluded it also doesn't need jna anymore
-    // since jna is a transitive runtime dependency of opus-java we don't include it explicitly as dependency
-    compileOnly(libs.jna)
 
     /* Internal dependencies */
 
@@ -388,14 +378,6 @@ val shadowJar = tasks.getByName<ShadowJar>("shadowJar") {
     exclude("*.pom")
 }
 
-val noOpusJar = tasks.register<ShadowJar>("noOpusJar") {
-    dependsOn(shadowJar)
-    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
-
-    from(sourceSets["main"].output)
-    applyOpusExclusions(artifactFilters)
-}
-
 val minimalJar = tasks.register<ShadowJar>("minimalJar") {
     dependsOn(shadowJar)
     minimize()
@@ -509,7 +491,6 @@ tasks.named<JavaCompile>("compileExamplesJava") {
 tasks.build.configure {
     dependsOn(jar)
     dependsOn(shadowJar)
-    dependsOn(noOpusJar)
     dependsOn(minimalJar)
 
     jar.mustRunAfter(tasks.clean)

@@ -20,20 +20,11 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.AbstractCopyTask
 
 interface ArtifactFilters {
-    val opusExclusions: SetProperty<String>
     val additionalAudioExclusions: SetProperty<String>
 }
 
-fun AbstractCopyTask.applyOpusExclusions(filters: ArtifactFilters) {
-    for (exclusion in filters.opusExclusions.get()) {
-        exclude(exclusion)
-    }
-}
-
 fun AbstractCopyTask.applyAudioExclusions(filters: ArtifactFilters) {
-    applyOpusExclusions(filters)
-
-    for (exclusion in filters.opusExclusions.get()) {
+    for (exclusion in filters.additionalAudioExclusions.get()) {
         exclude(exclusion)
     }
 }
