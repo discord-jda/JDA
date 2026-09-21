@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils.compress;
+package net.dv8tion.jda.internal.requests.gateway.messages;
 
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import org.slf4j.Logger;
+import net.dv8tion.jda.api.exceptions.DecompressionException;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
-import java.util.zip.DataFormatException;
-
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface Decompressor {
-    Logger LOG = JDALogger.getLog(Decompressor.class);
+public interface GatewayMessageReader {
+    @Nullable
+    String getCompressionQueryParameter();
 
-    Compression getType();
+    @Nullable
+    DataObject read(@Nonnull byte[] data) throws DecompressionException;
 
     void reset();
 
-    void shutdown();
-
-    // returns null when the decompression isn't done,
-    // for example when no Z_SYNC_FLUSH was present
-    @Nullable
-    byte[] decompress(byte[] data) throws DataFormatException;
+    void close();
 }

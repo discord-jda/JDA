@@ -14,36 +14,18 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils;
+package net.dv8tion.jda.internal.requests.gateway.decoder;
+
+import net.dv8tion.jda.api.utils.data.DataObject;
+
+import java.io.InputStream;
 
 import javax.annotation.Nonnull;
 
-/**
- * Compression algorithms that can be used with JDA.
- *
- * @see net.dv8tion.jda.api.requests.gateway.GatewayConfig GatewayConfig
- * @see #ZLIB
- */
-@Deprecated
-public enum Compression {
-    /** Don't use any compression */
-    NONE(""),
-    /** Use ZLIB transport compression */
-    ZLIB("zlib-stream");
-
-    private final String key;
-
-    Compression(String key) {
-        this.key = key;
-    }
-
-    /**
-     * The key used for the gateway query to enable this compression
-     *
-     * @return The query key
-     */
+public interface Decoder {
     @Nonnull
-    public String getKey() {
-        return key;
-    }
+    DataObject decode(@Nonnull byte[] data);
+
+    @Nonnull
+    DataObject decode(@Nonnull InputStream stream);
 }

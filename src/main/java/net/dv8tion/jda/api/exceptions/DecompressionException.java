@@ -14,36 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils;
+package net.dv8tion.jda.api.exceptions;
 
-import javax.annotation.Nonnull;
+import java.io.IOException;
 
 /**
- * Compression algorithms that can be used with JDA.
- *
- * @see net.dv8tion.jda.api.requests.gateway.GatewayConfig GatewayConfig
- * @see #ZLIB
+ * Exception caused by a decompression issue. Such exceptions will close the shard on which it happened.
  */
-@Deprecated
-public enum Compression {
-    /** Don't use any compression */
-    NONE(""),
-    /** Use ZLIB transport compression */
-    ZLIB("zlib-stream");
-
-    private final String key;
-
-    Compression(String key) {
-        this.key = key;
+public class DecompressionException extends IOException {
+    public DecompressionException(Throwable cause) {
+        super(cause);
     }
 
-    /**
-     * The key used for the gateway query to enable this compression
-     *
-     * @return The query key
-     */
-    @Nonnull
-    public String getKey() {
-        return key;
+    public DecompressionException(String message) {
+        super(message);
+    }
+
+    public DecompressionException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
