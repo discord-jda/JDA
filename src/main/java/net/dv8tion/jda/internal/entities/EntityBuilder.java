@@ -60,6 +60,8 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.entities.subscription.Subscription;
+import net.dv8tion.jda.api.entities.subscription.SubscriptionStatus;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -73,6 +75,7 @@ import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
 import net.dv8tion.jda.internal.entities.messages.MessagePollImpl;
 import net.dv8tion.jda.internal.entities.sticker.*;
+import net.dv8tion.jda.internal.entities.subscription.SubscriptionImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.IntegrationOwnersImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -2801,6 +2804,35 @@ public class EntityBuilder extends AbstractEntityBuilder {
                 object.getOffsetDateTime("starts_at", null),
                 object.getOffsetDateTime("ends_at", null),
                 object.getBoolean("consumed", false));
+    }
+
+    public Subscription createSubscription(DataObject object) {
+        DataArray skuIDs = object.getArray("sku_ids");
+        DataArray entitlementsIDs = object.getArray("entitlement_ids");
+        DataArray renewalSkuIDs = object.optArray("renewal_sku_ids").orElse(null);
+        OffsetDateTime canceledAt = object.getOffsetDateTime("canceled_at", null);
+
+        List<Long> mappedSkuIds = mapToLongList(skuIDs);
+        List<Long> mappedEntitlementsIds = mapToLongList(entitlementsIDs);
+        List<Long> mappedRenewalSkuIds =
+                Optional.ofNullable(renewalSkuIDs).map(this::mapToLongList).orElse(new ArrayList<>());
+
+        return new SubscriptionImpl(
+                object.getUnsignedLong("id"),
+                object.getUnsignedLong("user_id"),
+                mappedSkuIds,
+                mappedEntitlementsIds,
+                mappedRenewalSkuIds,
+                object.getOffsetDateTime("current_period_start"),
+                object.getOffsetDateTime("current_period_end"),
+                canceledAt,
+                SubscriptionStatus.fromId(object.getInt("status")));
+    }
+
+    public List<Long> mapToLongList(DataArray dataArray) {
+        return IntStream.range(0, dataArray.length())
+                .mapToObj(dataArray::getLong)
+                .collect(Collectors.toList());
     }
 
     private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList) {

@@ -53,7 +53,9 @@ import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.SubscriptionPaginationAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.entities.subscription.Subscription;
 import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -78,6 +80,7 @@ import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandListUpdateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.TestEntitlementCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.EntitlementPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.SubscriptionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -1168,11 +1171,29 @@ public class JDAImpl implements JDA {
 
     @Nonnull
     @Override
-    public RestAction<Entitlement> retrieveEntitlementById(long entitlementId) {
+    public RestAction<Entitlement> retrieveEntitlementById(@Nonnull long entitlementId) {
         return new RestActionImpl<>(
                 this,
                 Route.Applications.GET_ENTITLEMENT.compile(
                         getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId)));
+    }
+
+    @Nonnull
+    @Override
+    public SubscriptionPaginationAction retrieveSubscriptionsBySkuId(@Nonnull SkuSnowflake skuId) {
+        Checks.notNull(skuId, "SKU id");
+        return new SubscriptionPaginationActionImpl(this, skuId.getId());
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Subscription> retrieveSubscriptionBySkuId(
+            @Nonnull SkuSnowflake skuId, long subscriptionId) {
+        Checks.notNull(skuId, "SKU id");
+        return new RestActionImpl<>(
+                this,
+                Route.Sku.GET_SUBSCRIPTION.compile(
+                        skuId.getId(), Long.toUnsignedString(subscriptionId)));
     }
 
     @Nonnull
