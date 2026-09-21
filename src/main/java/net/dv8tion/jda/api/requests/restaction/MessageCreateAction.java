@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.endpoints.MessageApi;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReference.MessageReferenceType;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -40,6 +41,7 @@ import javax.annotation.Nullable;
  * Specialized {@link net.dv8tion.jda.api.requests.RestAction RestAction} used for sending messages to {@link MessageChannel MessageChannels}.
  *
  * @see MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(...)
+ * @see MessageApi#sendMessage(MessageCreateData) MessageApi.sendMessage(...)
  */
 public interface MessageCreateAction
         extends MessageCreateRequest<MessageCreateAction>, FluentRestAction<Message, MessageCreateAction> {
