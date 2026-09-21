@@ -85,7 +85,8 @@ public interface MessageCreateAction
      * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
-     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     * If this permission is missing, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or you may receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
      *
      * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
      * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.
@@ -96,6 +97,10 @@ public interface MessageCreateAction
      *
      * <p>You cannot forward messages from channels you do not have access to.
      * The message must also be readable by the bot.
+     *
+     * <p>If the {@code channelId} is a NSFW channel, it can only be sent to another NSFW channel.
+     * If it isn't, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or it may result in a {@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_REFERENCE_NSFW_MESSAGE ErrorResponse.CANNOT_REFERENCE_NSFW_MESSAGE}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
      * <ul>
@@ -138,7 +143,8 @@ public interface MessageCreateAction
      * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
-     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     * If this permission is missing, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or you may receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
      *
      * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
      * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.
@@ -149,6 +155,10 @@ public interface MessageCreateAction
      *
      * <p>You cannot forward messages from channels you do not have access to.
      * The message must also be readable by the bot.
+     *
+     * <p>If the {@code channelId} is a NSFW channel, it can only be sent to another NSFW channel.
+     * If it isn't, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or it may result in a {@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_REFERENCE_NSFW_MESSAGE ErrorResponse.CANNOT_REFERENCE_NSFW_MESSAGE}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
      * <ul>
@@ -194,7 +204,8 @@ public interface MessageCreateAction
      * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
-     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     * If this permission is missing, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or you may receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
      *
      * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
      * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.
@@ -205,6 +216,10 @@ public interface MessageCreateAction
      *
      * <p>You cannot forward messages from channels you do not have access to.
      * The message must also be readable by the bot.
+     *
+     * <p>If the {@code channelId} is a NSFW channel, it can only be sent to another NSFW channel.
+     * If it isn't, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or it may result in a {@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_REFERENCE_NSFW_MESSAGE ErrorResponse.CANNOT_REFERENCE_NSFW_MESSAGE}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
      * <ul>
@@ -242,7 +257,8 @@ public interface MessageCreateAction
      * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
-     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     * If this permission is missing, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or you may receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
      *
      * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
      * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.
@@ -267,7 +283,8 @@ public interface MessageCreateAction
      * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
-     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     * If this permission is missing, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or you may receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
      *
      * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
      * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.
@@ -291,7 +308,8 @@ public interface MessageCreateAction
      * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
-     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     * If this permission is missing, {@link IllegalArgumentException} is thrown upon sending the request,
+     * or you may receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
      *
      * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
      * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.

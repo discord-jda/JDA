@@ -240,6 +240,7 @@ public enum ErrorResponse {
     MAX_ACTIVE_THREADS(160006, "Maximum number of active threads reached"),
     MAX_ANNOUNCEMENT_THREADS(160007, "Maximum number of active announcement threads reached"),
     REFERENCED_MESSSAGE_NOT_FOUND(160008, "Message could not be found"),
+    CANNOT_REFERENCE_NSFW_MESSAGE(160010, "NSFW channel message reference not allowed"),
     FORWARD_CANNOT_HAVE_CONTENT(160011, "Forward messages cannot have additional content"),
     CANNOT_FORWARD_UNREADABLE_MESSAGE(160014, "You cannot forward a message whose content you cannot read"),
     INVALID_LOTTIE_JSON(170001, "Invalid JSON for uploaded Lottie file"),

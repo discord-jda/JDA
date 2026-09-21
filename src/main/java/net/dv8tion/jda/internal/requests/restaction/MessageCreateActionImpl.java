@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReference;
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -30,6 +32,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
@@ -73,6 +76,20 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
 
     @Override
     protected RequestBody finalizeData() {
+        if (messageReference != null && channel instanceof GuildChannelMixin<?>) {
+            // Message references always require message history
+            ((GuildChannelMixin<?>) channel).checkPermission(Permission.MESSAGE_HISTORY);
+
+            // NSFW message references cannot be forwarded to non-NSFW channels, including DMs
+            IAgeRestrictedChannel originalChannel =
+                    api.getChannelById(IAgeRestrictedChannel.class, messageReference.channelId);
+            if (originalChannel != null && originalChannel.isNSFW()) {
+                Checks.check(
+                        channel instanceof IAgeRestrictedChannel && ((IAgeRestrictedChannel) channel).isNSFW(),
+                        "Cannot forward a message from a NSFW channel to a non-NSFW channel");
+            }
+        }
+
         if (builder.isUsingComponentsV2()) {
             Checks.check(stickers.isEmpty(), "Cannot send stickers when using Components V2!");
         }
@@ -225,11 +242,17 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
     private static class MessageReferenceData implements SerializableData {
         private final MessageReference.MessageReferenceType type;
         private final String messageId;
+
+        @Nonnull
         private final String channelId;
+
         private final String guildId;
 
         private MessageReferenceData(
-                MessageReference.MessageReferenceType type, String guildId, String channelId, String messageId) {
+                MessageReference.MessageReferenceType type,
+                String guildId,
+                @Nonnull String channelId,
+                String messageId) {
             this.type = type;
             this.messageId = messageId;
             this.guildId = guildId;
