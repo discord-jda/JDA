@@ -460,6 +460,10 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onGuildMemberUpdateBanner(@Nonnull GuildMemberUpdateBannerEvent event) {}
 
+    public void onUserUpdateAvatarDecoration(@Nonnull UserUpdateAvatarDecorationEvent event) {}
+
+    public void onGuildMemberUpdateAvatarDecoration(@Nonnull GuildMemberUpdateAvatarDecorationEvent event) {}
+
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
 
     public void onGuildMemberUpdatePending(@Nonnull GuildMemberUpdatePendingEvent event) {}

@@ -138,6 +138,33 @@ public final class DiscordAssets {
     }
 
     /**
+     * Returns an {@link ImageProxy} of an avatar decoration's asset.
+     * <br>This returns {@code null} if the icon ID is {@code null}.
+     *
+     * <p>At the time of writing, the only supported format is an {@linkplain ImageFormat#PNG animated PNG}.
+     *
+     * @param  format
+     *         The image format to request the image as
+     * @param  decorationId
+     *         The decoration ID
+     *
+     * @throws IllegalArgumentException
+     *         If an argument is {@code null}, except for the decoration ID
+     *
+     * @return An {@link ImageProxy} of the avatar decoration, or {@code null}
+     */
+    @Contract("_, null -> null; _, !null -> !null")
+    public static ImageProxy avatarDecoration(@Nonnull ImageFormat format, @Nullable String decorationId) {
+        Checks.notNull(format, "Format");
+        if (decorationId == null) {
+            return null;
+        }
+
+        HttpUrl.Builder builder = newUrl().addEncodedPathSegment("avatar-decoration-presets");
+        return format.finishProxy(builder, decorationId);
+    }
+
+    /**
      * Returns an {@link ImageProxy} of a channel's icon.
      * <br>This returns {@code null} if the icon ID is {@code null}.
      *

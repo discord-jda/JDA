@@ -341,6 +341,14 @@ public interface User extends UserSnowflake {
     }
 
     /**
+     * Returns the {@link AvatarDecoration} of this user, or {@code null} if none is used.
+     *
+     * @return Avatar decoration of this user, or {@code null}
+     */
+    @Nullable
+    AvatarDecoration getAvatarDecoration();
+
+    /**
      * Loads the user's {@link User.Profile} data.
      * Returns a completed RestAction if this User has been retrieved using {@link JDA#retrieveUserById(long)}.
      * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new profile with up-to-date information.
