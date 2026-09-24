@@ -1,5 +1,6 @@
 [versions]
 jackson = "2.22.2"
+kotlin = "2.4.20"
 
 [libraries]
 archunit = "com.tngtech.archunit:archunit:1.5.0"
@@ -14,11 +15,8 @@ jdave = "club.minnced:jdave-api:0.1.8"
 jetbrains-annotations = "org.jetbrains:annotations:26.1.0"
 jna = "net.java.dev.jna:jna:5.19.1"
 junit = "org.junit.jupiter:junit-jupiter:6.1.0"
-# @pin Newer versions require java 17 or higher
-junit-java8 = "org.junit.jupiter:junit-jupiter:5.14.4"
 junit-launcher = "org.junit.platform:junit-platform-launcher:6.1.0"
-# @pin Newer versions require java 17 or higher
-junit-launcher-java8 = "org.junit.platform:junit-platform-launcher:1.14.4"
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 logback-classic = "ch.qos.logback:logback-classic:1.6.3"
 mockito = "org.mockito:mockito-core:5.23.0"
 okhttp = "com.squareup.okhttp3:okhttp-jvm:5.5.0"
@@ -41,12 +39,11 @@ junit = [
     "junit",
     "junit-launcher",
 ]
-junit-java8 = [
-    "junit-java8",
-    "junit-launcher-java8",
-]
 
 [plugins]
+detekt = "dev.detekt:2.0.0-alpha.6"
+# @pin 2.2.0 and 2.3.0-Beta both fail on JDK 25 (javac registry keys Dokka does not know).
+dokka = "org.jetbrains.dokka:2.1.0"
 errorprone = "net.ltgt.errorprone:5.1.1"
 ideax = "org.jetbrains.gradle.plugin.idea-ext:1.4.1"
 kotlin = "org.jetbrains.kotlin.jvm:2.4.20"

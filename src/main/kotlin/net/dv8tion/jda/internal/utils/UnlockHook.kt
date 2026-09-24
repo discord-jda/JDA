@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils;
+package net.dv8tion.jda.internal.utils
 
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.Lock
 
-public class UnlockHook implements AutoCloseable {
-    private final Lock lock;
-
-    public UnlockHook(Lock lock) {
-        this.lock = lock;
-    }
-
-    @Override
-    public void close() {
-        lock.unlock();
+class UnlockHook(
+    private val lock: Lock,
+) : AutoCloseable {
+    override fun close() {
+        lock.unlock()
     }
 }

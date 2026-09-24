@@ -14,16 +14,30 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils;
+package net.dv8tion.jda.internal.utils
 
-public class UnionUtil {
-    public static <T> T safeUnionCast(String classCategory, Object instance, Class<T> toObjectClass) {
-        if (toObjectClass.isInstance(instance)) {
-            return toObjectClass.cast(instance);
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
+import javax.annotation.Nonnull
+
+object ClockProvider {
+    private var fixedTime: Clock? = null
+
+    @JvmStatic
+    @Nonnull
+    fun getClock(): Clock = fixedTime ?: Clock.systemUTC()
+
+    @JvmStatic
+    fun withFixedTime(
+        @Nonnull instant: Instant,
+        @Nonnull runnable: Runnable,
+    ) {
+        fixedTime = Clock.fixed(instant, ZoneOffset.UTC)
+        try {
+            runnable.run()
+        } finally {
+            fixedTime = null
         }
-
-        String cleanedClassName = instance.getClass().getSimpleName().replace("Impl", "");
-        throw new IllegalStateException(Helpers.format(
-                "Cannot convert %s of type %s to %s!", classCategory, cleanedClassName, toObjectClass.getSimpleName()));
     }
 }

@@ -20,7 +20,9 @@ import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.gradle.Version
 import net.dv8tion.jda.gradle.plugins.applyAudioExclusions
 import net.dv8tion.jda.gradle.plugins.applyOpusExclusions
+import net.dv8tion.jda.gradle.tasks.GeneratePublicApiDump
 import net.dv8tion.jda.gradle.tasks.VerifyBytecodeVersion
+import net.dv8tion.jda.gradle.tasks.VerifyPublicApi
 import net.ltgt.gradle.errorprone.errorprone
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.jetbrains.gradle.ext.Gradle as GradleRunConfiguration
@@ -28,6 +30,8 @@ import org.jetbrains.gradle.ext.JUnit as JUnitRunConfiguration
 import org.jetbrains.gradle.ext.copyright
 import org.jetbrains.gradle.ext.runConfigurations
 import org.jetbrains.gradle.ext.settings
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.openrewrite.gradle.AbstractRewriteTask
 
 plugins {
@@ -39,6 +43,9 @@ plugins {
     `maven-publish`
     signing
 
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.kotlin)
     alias(libs.plugins.shadow)
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.spotless)
@@ -56,8 +63,7 @@ plugins {
 //                                //
 ////////////////////////////////////
 
-val exampleJavaVersion = JavaLanguageVersion.of(25)
-val libraryJavaVersion = JavaLanguageVersion.of(8)
+val javaVersion = JavaLanguageVersion.of(25)
 
 projectEnvironment {
     version = Version(major = "6", minor = "7", revision = "0", classifier = null)
@@ -137,27 +143,48 @@ val examples = sourceSets.create("examples") {
     runtimeClasspath += sourceSets["main"].output
 }
 
-val testJava8 = sourceSets.create("testJava8") {
-    java.srcDir("src/test-java8/java")
-    resources.srcDir("src/test-java8/resources")
-    compileClasspath += sourceSets["main"].output
-    runtimeClasspath += sourceSets["main"].output
-}
-
 java {
     withJavadocJar()
     withSourcesJar()
 
     toolchain {
-        languageVersion.set(exampleJavaVersion)
+        languageVersion.set(javaVersion)
     }
 }
 
-val java8Toolchain = javaToolchains.launcherFor {
-    languageVersion.set(libraryJavaVersion)
-    vendor.set(JvmVendorSpec.ADOPTIUM)
+kotlin {
+    jvmToolchain(25)
+
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_25)
+        // Keeps interface default methods as real default methods in bytecode, with DefaultImpls
+        // retained, so Java implementors of converted interfaces are unaffected.
+        // Kotlin 2.2 renamed -Xjvm-default=all-compatibility to -jvm-default=enable.
+        freeCompilerArgs.add("-jvm-default=enable")
+        allWarningsAsErrors.set(true)
+    }
 }
 
+detekt {
+    config.setFrom(files("gradle/detekt.yml"))
+    buildUponDefaultConfig = true
+    parallel = true
+}
+
+val detektSourceRoots = fileTree(projectDir) {
+    include("src/main/kotlin/**/*.kt", "src/test/kotlin/**/*.kt")
+}
+
+tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
+    setSource(detektSourceRoots)
+    reports {
+        html.required.set(true)
+        sarif.required.set(false)
+    }
+
+    // detekt has no work to do until Kotlin sources exist outside the build scripts.
+    onlyIf { !detektSourceRoots.isEmpty }
+}
 
 ////////////////////////////////////
 //                                //
@@ -168,14 +195,6 @@ val java8Toolchain = javaToolchains.launcherFor {
 val currentJavaVersion = JavaVersion.current().majorVersion
 
 val mockitoAgent = configurations.create("mockitoAgent")
-
-val testJava8Implementation = configurations.getByName("testJava8Implementation") {
-    extendsFrom(configurations.implementation.get())
-}
-
-val testJava8RuntimeOnly = configurations.getByName("testJava8RuntimeOnly") {
-    extendsFrom(configurations.runtimeOnly.get())
-}
 
 val examplesImplementation = configurations.getByName("examplesImplementation") {
     extendsFrom(configurations.implementation.get())
@@ -191,6 +210,14 @@ dependencies {
     //Code safety
     compileOnly(libs.findbugs)
     compileOnly(libs.jetbrains.annotations)
+
+    //Kotlin
+    // Required at runtime by converted classes: Kotlin emits calls to kotlin.jvm.internal.Intrinsics
+    // for parameter null checks, so consumers need the stdlib on their classpath. It previously
+    // arrived transitively through okhttp, which is not a guarantee we control.
+    // `kotlin.stdlib.default.dependency=false` in gradle.properties still suppresses the plugin's
+    // own implicit `implementation` edge; this is the deliberate, published replacement for it.
+    api(libs.kotlin.stdlib)
 
     //Logger
     api(libs.slf4j)
@@ -228,9 +255,6 @@ dependencies {
     testImplementation(libs.commons.lang3)
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
-
-    testJava8Implementation(libs.bundles.junit.java8)
-    testJava8Implementation(libs.assertj)
 
     mockitoAgent(libs.mockito) {
         isTransitive = false
@@ -294,6 +318,11 @@ spotless {
     encoding("UTF-8")
     lineEndings = LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME
 
+    val copyrightHeader = file("gradle/copyright-header.txt")
+            .readText(Charsets.UTF_8)
+            .trim()
+            .prependIndent(" * ")
+
     kotlinGradle {
         target("*.gradle.kts", "buildSrc/*.gradle.kts", "buildSrc/src/**/*.kt*")
 
@@ -301,14 +330,17 @@ spotless {
         leadingTabsToSpaces()
     }
 
+    kotlin {
+        target("src/**/*.kt")
+
+        ktlint("1.6.0")
+        licenseHeader("/*\n$copyrightHeader\n */\n\n")
+        trimTrailingWhitespace()
+    }
+
     java {
         palantirJavaFormat("2.84.0")
                 .formatJavadoc(false)
-
-        val copyrightHeader = file("gradle/copyright-header.txt")
-                .readText(Charsets.UTF_8)
-                .trim()
-                .prependIndent(" * ")
 
         licenseHeader("/*\n$copyrightHeader\n */\n\n")
 
@@ -434,7 +466,7 @@ val javadoc = tasks.getByName<Javadoc>("javadoc") {
         links("https://docs.oracle.com/en/java/javase/$currentJavaVersion/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
 
         addStringOption("-link-modularity-mismatch", "info")
-        addStringOption("-release", libraryJavaVersion.asInt().toString())
+        addStringOption("-release", javaVersion.asInt().toString())
         addBooleanOption("-syntax-highlight", true)
         addBooleanOption("Xdoclint:all,-missing", true)
 
@@ -453,8 +485,8 @@ tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.addAll(listOf(
             "-Werror",
             "-Xlint:all",
-            // warnings for --release 8
-            "-Xlint:-options",
+            // warnings for overriding finalize(), which is deprecated for removal but still supported (Error Prone's Finalize check is disabled too)
+            "-Xlint:-removal",
             // warnings for missing serialVersionUID in exceptions (we don't intend for exceptions to be serialized)
             "-Xlint:-serial",
             // warnings for calling member methods in constructor, which we do for argument checks
@@ -482,8 +514,12 @@ tasks.withType<JavaCompile>().configureEach {
                 "MathAbsoluteNegative",
                 "MixedMutabilityReturnType",
                 "OperatorPrecedence",
+                "PatternMatchingInstanceof",
+                "StatementSwitchToExpressionSwitch",
+                "StringConcatToTextBlock",
                 "StringSplitter",
                 "TypeParameterUnusedInFormals",
+                "UnnamedVariable",
                 "UnnecessaryLambda",
                 "UnusedMethod",
         )
@@ -493,11 +529,7 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 val compileJava = tasks.getByName<JavaCompile>("compileJava") {
-    options.release = libraryJavaVersion.asInt()
-}
-
-tasks.named<JavaCompile>("compileTestJava8Java") {
-    options.release = libraryJavaVersion.asInt()
+    options.release = javaVersion.asInt()
 }
 
 tasks.named<JavaCompile>("compileExamplesJava") {
@@ -564,32 +596,80 @@ tasks.test {
     }
 }
 
-val testJava8Compatibility = tasks.register<Test>("testJava8Compatibility") {
-    group = "verification"
-
-    useJUnitPlatform()
-    failFast = true
-
-    testClassesDirs = testJava8.output.classesDirs
-    classpath = testJava8.runtimeClasspath
-
-    javaLauncher = java8Toolchain.get()
+val kotlinClasses = tasks.named<KotlinCompile>("compileKotlin").map { task ->
+    task.outputs.files.asFileTree.matching {
+        include("**/*.class")
+    }
 }
 
-tasks.named("check").configure {
-    dependsOn(testJava8Compatibility)
-}
+// Directory form of the compile output. `javap` resolves a binary name only against directory or
+// jar classpath entries, so the loose-.class `kotlinClasses` FileTree above cannot be used for the
+// API tasks: javap would fail to resolve every Kotlin class and report it as removed.
+val mainClassesDirs = sourceSets.main.get().output.classesDirs
 
 val verifyBytecodeVersion = tasks.register<VerifyBytecodeVersion>("verifyBytecodeVersion") {
     group = "verification"
 
-    expectedMajorVersion = 52
+    expectedMajorVersion = 69
     classes.from(compileJava.outputs.files.asFileTree.matching {
         include("**/*.class")
     })
+    // Kotlin output has to clear the same gate; without this, the first converted file would
+    // silently escape the check until someone noticed downstream.
+    classes.from(kotlinClasses)
 }
 
 compileJava.finalizedBy(verifyBytecodeVersion)
+tasks.named<KotlinCompile>("compileKotlin") {
+    finalizedBy(verifyBytecodeVersion)
+}
+
+////////////////////////////////////////////////////////////////////////////
+//                                                                        //
+//    Public API compatibility (net.dv8tion.jda.api only)                 //
+//                                                                        //
+//    Implemented with the JDK's javap rather than a bytecode library,    //
+//    because binary-compatibility-validator cannot read major 69.        //
+//                                                                        //
+////////////////////////////////////////////////////////////////////////////
+
+val publicApiPrefix = "net.dv8tion.jda.api."
+val publicApiBaseline = layout.projectDirectory.file("api/JDA.api")
+
+val apiClasspath = sourceSets.main.get().compileClasspath
+
+val apiDump = tasks.register<GeneratePublicApiDump>("apiDump") {
+    group = "verification"
+    description = "Regenerates the public API baseline. Review the diff before committing."
+
+    packagePrefix.set(publicApiPrefix)
+    classes.from(mainClassesDirs)
+    classpath.from(apiClasspath, mainClassesDirs)
+    outputFile.set(publicApiBaseline)
+}
+
+val apiCheck = tasks.register<VerifyPublicApi>("apiCheck") {
+    group = "verification"
+    description = "Fails if the public API baseline loses classes or members."
+
+    packagePrefix.set(publicApiPrefix)
+    classes.from(mainClassesDirs)
+    classpath.from(apiClasspath, mainClassesDirs)
+    baseline.set(publicApiBaseline)
+}
+
+tasks.named("check") {
+    dependsOn(apiCheck)
+    dependsOn(tasks.named("detekt"))
+}
+
+// apiDump writes the file apiCheck reads, so Gradle's implicit-dependency validation rejects a
+// combined `./gradlew check apiDump`. Order them explicitly: validate the committed baseline first,
+// then regenerate it. The reverse ordering would make apiCheck compare against a baseline it had
+// just rewritten, which always passes and silently defeats the gate.
+apiDump.configure {
+    mustRunAfter(apiCheck)
+}
 
 tasks.withType<Test>().configureEach {
     systemProperties.putAll(mapOf(

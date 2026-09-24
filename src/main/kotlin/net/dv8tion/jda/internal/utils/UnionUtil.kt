@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils;
+package net.dv8tion.jda.internal.utils
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
+import javax.annotation.Nonnull
 
-import javax.annotation.Nonnull;
-
-public class ClockProvider {
-    private static Clock fixedTime = null;
-
+object UnionUtil {
     @Nonnull
-    public static Clock getClock() {
-        if (fixedTime != null) {
-            return fixedTime;
+    @JvmStatic
+    fun <T> safeUnionCast(
+        @Nonnull classCategory: String,
+        @Nonnull instance: Any,
+        @Nonnull toObjectClass: Class<T>,
+    ): T {
+        if (toObjectClass.isInstance(instance)) {
+            return toObjectClass.cast(instance)
         }
-        return Clock.systemUTC();
-    }
 
-    public static void withFixedTime(@Nonnull Instant instant, @Nonnull Runnable runnable) {
-        fixedTime = Clock.fixed(instant, ZoneOffset.UTC);
-        try {
-            runnable.run();
-        } finally {
-            fixedTime = null;
-        }
+        val cleanedClassName = instance.javaClass.simpleName.replace("Impl", "")
+        throw IllegalStateException(
+            Helpers.format(
+                "Cannot convert %s of type %s to %s!",
+                classCategory,
+                cleanedClassName,
+                toObjectClass.simpleName,
+            ),
+        )
     }
 }

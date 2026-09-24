@@ -1,0 +1,58 @@
+# detekt configuration for the Kotlin migration.
+#
+# detekt stands in for the class of checks Error Prone provides on Java. It runs with
+# buildUponDefaultConfig = true, so the default rule set applies and this file only carries
+# project-specific deviations.
+#
+# Keep this file small. A rule is disabled here only with a stated reason, matching the
+# project's policy on javac -Xlint suppressions.
+
+style:
+  MaxLineLength:
+    # The Java sources use a 180-column limit; see .editorconfig.
+    maxLineLength: 180
+
+naming:
+  # JDA's public API is deliberately spelled in the existing Java style, and Kotlin
+  # conversions must preserve those names for Java consumers. Naming rules that would
+  # rename public declarations are therefore not applicable.
+  MatchingDeclarationName:
+    active: false
+  FunctionNaming:
+    active: false
+  VariableNaming:
+    active: false
+  TopLevelPropertyNaming:
+    active: false
+  EnumNaming:
+    active: false
+
+complexity:
+  # Converted types are large by design; the migration converts existing shapes rather
+  # than restructuring them.
+  TooManyFunctions:
+    active: false
+  LargeClass:
+    active: false
+  LongMethod:
+    active: false
+  LongParameterList:
+    active: false
+  CyclomaticComplexMethod:
+    active: false
+
+comments:
+  # The Java sources carry Javadoc, not KDoc comments; do not require comments that the
+  # original files never had.
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false
+  UndocumentedPublicProperty:
+    active: false
+
+potential-bugs:
+  # @JvmStatic, @JvmName, and @JvmOverloads are load-bearing for Java interop and are
+  # frequently flagged as redundant when called from Kotlin only.
+  IgnoredReturnValue:
+    active: true

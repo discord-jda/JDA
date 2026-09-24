@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils;
+package net.dv8tion.jda.internal.utils
 
-import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.DataObject
 
-@FunctionalInterface
-public interface CacheConsumer {
-    void execute(long responseTotal, DataObject allContent);
+fun interface CacheConsumer {
+    fun execute(
+        responseTotal: Long,
+        allContent: DataObject,
+    )
 }
