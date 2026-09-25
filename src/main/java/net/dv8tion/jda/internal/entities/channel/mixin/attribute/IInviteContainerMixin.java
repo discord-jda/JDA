@@ -44,7 +44,7 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>>
         checkAttached();
         checkPermission(Permission.CREATE_INSTANT_INVITE);
 
-        return new InviteActionImpl(this.getJDA(), this.getId());
+        return new InviteActionImpl(this);
     }
 
     @Nonnull

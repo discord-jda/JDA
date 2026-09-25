@@ -33,12 +33,14 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.InviteUpdateTargetUsersActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,6 +53,7 @@ public class InviteImpl implements Invite {
     private final String code;
     private final boolean expanded;
     private final Guild guild;
+    private final List<Role> roles;
     private final Group group;
     private final InviteTarget target;
     private final User inviter;
@@ -75,6 +78,7 @@ public class InviteImpl implements Invite {
             int uses,
             Channel channel,
             Guild guild,
+            List<Role> roles,
             Group group,
             InviteTarget target,
             Invite.InviteType type) {
@@ -90,6 +94,7 @@ public class InviteImpl implements Invite {
         this.uses = uses;
         this.channel = channel;
         this.guild = guild;
+        this.roles = roles;
         this.group = group;
         this.target = target;
         this.type = type;
@@ -108,6 +113,83 @@ public class InviteImpl implements Invite {
         JDAImpl jda = (JDAImpl) api;
         return new RestActionImpl<>(
                 api, route, (response, request) -> jda.getEntityBuilder().createInvite(response.getObject()));
+    }
+
+    public static InviteUpdateTargetUsersActionImpl updateTargetUsers(@Nonnull JDA api, @Nonnull String code) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+
+        return new InviteUpdateTargetUsersActionImpl(api, code);
+    }
+
+    public static RestAction<List<? extends UserSnowflake>> retrieveTargetUsers(JDA api, String code) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+
+        Route.CompiledRoute route = Route.Invites.GET_TARGET_USERS.compile(code);
+
+        return new RestActionImpl<>(api, route, (response, request) -> {
+            String content = response.getString();
+            String[] lines = content.split("\n");
+            // At least the header and one user ID
+            if (lines.length < 2) {
+                throw new IllegalArgumentException("Malformed target user list: '" + content + "'");
+            }
+
+            return Arrays.stream(lines).skip(1).map(UserSnowflake::fromId).collect(Helpers.toUnmodifiableList());
+        });
+    }
+
+    public static RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus(JDA api, String code) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+
+        Route.CompiledRoute route = Route.Invites.GET_TARGET_USERS_JOB_STATUS.compile(code);
+
+        return new RestActionImpl<>(
+                api, route, (response, request) -> new TargetUsersJobStatusImpl(response.getObject()));
+    }
+
+    public static RestAction<Void> addTargetUser(JDA api, String code, UserSnowflake user) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+        Checks.notNull(user, "user");
+
+        return new RestActionImpl<>(api, Route.Invites.ADD_TARGET_USER.compile(code, user.getId()));
+    }
+
+    public static RestAction<Void> removeTargetUser(JDA api, String code, UserSnowflake user) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+        Checks.notNull(user, "user");
+
+        return new RestActionImpl<>(api, Route.Invites.REMOVE_TARGET_USER.compile(code, user.getId()));
+    }
+
+    public static RestAction<Void> addTargetUsers(JDA api, String code, List<? extends UserSnowflake> users) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+        Checks.noneNull(users, "users");
+        Checks.check(
+                users.size() <= 1000,
+                "Cannot add more than 1000 users in a single request using this endpoint, please use 'updateTargetUsers' instead.");
+
+        DataObject json = DataObject.empty()
+                .put("user_ids", users.stream().map(ISnowflake::getId).collect(Collectors.toList()));
+        return new RestActionImpl<>(api, Route.Invites.BULK_ADD_TARGET_USER.compile(code), json);
+    }
+
+    public static RestAction<Void> removeTargetUsers(JDA api, String code, List<? extends UserSnowflake> users) {
+        Checks.notNull(code, "code");
+        Checks.notNull(api, "api");
+        Checks.noneNull(users, "users");
+        Checks.check(
+                users.size() <= 1000,
+                "Cannot remove more than 1000 users in a single request using this endpoint, please use 'updateTargetUsers' instead.");
+
+        DataObject json = DataObject.empty()
+                .put("user_ids", users.stream().map(ISnowflake::getId).collect(Collectors.toList()));
+        return new RestActionImpl<>(api, Route.Invites.BULK_REMOVE_TARGET_USER.compile(code), json);
     }
 
     @Nonnull
@@ -169,6 +251,62 @@ public class InviteImpl implements Invite {
 
     @Nonnull
     @Override
+    public InviteUpdateTargetUsersActionImpl updateTargetUsers() {
+        checkIsInGuild("Cannot update target users of a Group DM invite");
+
+        return updateTargetUsers(api, code);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<? extends UserSnowflake>> retrieveTargetUsers() {
+        checkIsInGuild("Cannot get target users of a Group DM invite");
+
+        return retrieveTargetUsers(api, code);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<TargetUsersJobStatus> retrieveTargetUsersJobStatus() {
+        checkIsInGuild("Cannot get target users job status of a Group DM invite");
+
+        return retrieveTargetUsersJobStatus(api, code);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> addTargetUser(@Nonnull UserSnowflake user) {
+        checkIsInGuild("Cannot update target users of a Group DM invite");
+
+        return addTargetUser(api, code, user);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeTargetUser(@Nonnull UserSnowflake user) {
+        checkIsInGuild("Cannot update target users of a Group DM invite");
+
+        return removeTargetUser(api, code, user);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> addTargetUsers(@Nonnull List<? extends UserSnowflake> users) {
+        checkIsInGuild("Cannot update target users of a Group DM invite");
+
+        return addTargetUsers(api, code, users);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeTargetUsers(@Nonnull List<? extends UserSnowflake> users) {
+        checkIsInGuild("Cannot update target users of a Group DM invite");
+
+        return removeTargetUsers(api, code, users);
+    }
+
+    @Nonnull
+    @Override
     public Invite.InviteType getType() {
         return this.type;
     }
@@ -193,6 +331,12 @@ public class InviteImpl implements Invite {
     @Override
     public Guild getGuild() {
         return this.guild;
+    }
+
+    @Nonnull
+    @Override
+    public List<Role> getRoles() {
+        return roles;
     }
 
     @Override
@@ -266,6 +410,14 @@ public class InviteImpl implements Invite {
     @Override
     public boolean isGuest() {
         return this.guest;
+    }
+
+    private void checkIsInGuild(String message) {
+        // Discord throws an error for guilds the bot isn't in,
+        // but we can't check as sharded bots may throw false positives
+        if (guild == null) {
+            throw new IllegalStateException(message);
+        }
     }
 
     @Override
@@ -472,6 +624,52 @@ public class InviteImpl implements Invite {
         }
     }
 
+    public static class RoleImpl implements Role {
+        private final long id;
+        private final String name;
+        private final RoleIcon icon;
+        private final int positionRaw;
+        private final RoleColors colors;
+
+        public RoleImpl(DataObject o) {
+            this.id = o.getUnsignedLong("id");
+            this.name = o.getString("name");
+            String iconHash = o.getString("icon", null);
+            String unicodeEmoji = o.getString("unicode_emoji", null);
+            this.icon = iconHash == null && unicodeEmoji == null ? null : new RoleIcon(iconHash, unicodeEmoji, id);
+            this.positionRaw = o.getInt("position");
+            this.colors = EntityBuilder.createRoleColors(o.getObject("colors"));
+        }
+
+        @Override
+        public long getIdLong() {
+            return id;
+        }
+
+        @Override
+        public int getPositionRaw() {
+            return positionRaw;
+        }
+
+        @Nonnull
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Nonnull
+        @Override
+        public RoleColors getColors() {
+            return colors;
+        }
+
+        @Nullable
+        @Override
+        public RoleIcon getIcon() {
+            return icon;
+        }
+    }
+
     public static class GroupImpl implements Group {
         private final String iconId, name;
         private final long id;
@@ -633,6 +831,56 @@ public class InviteImpl implements Invite {
         @Override
         public String toString() {
             return new EntityString(this).setName(name).toString();
+        }
+    }
+
+    public static class TargetUsersJobStatusImpl implements TargetUsersJobStatus {
+        private final Status status;
+        private final int totalUsers, processedUsers;
+        private final OffsetDateTime createdAt, completedAt;
+        private final String errorMessage;
+
+        public TargetUsersJobStatusImpl(DataObject o) {
+            this.status = Status.fromKey(o.getInt("status"));
+            this.totalUsers = o.getInt("total_users");
+            this.processedUsers = o.getInt("processed_users");
+            this.createdAt = o.getOffsetDateTime("created_at");
+            this.completedAt = o.getOffsetDateTime("completed_at", null);
+            this.errorMessage = o.getString("error_message", null);
+        }
+
+        @Nonnull
+        @Override
+        public Status getStatus() {
+            return status;
+        }
+
+        @Override
+        public int getTotalUsers() {
+            return totalUsers;
+        }
+
+        @Override
+        public int getProcessedUsers() {
+            return processedUsers;
+        }
+
+        @Nonnull
+        @Override
+        public OffsetDateTime getCreatedAt() {
+            return createdAt;
+        }
+
+        @Nullable
+        @Override
+        public OffsetDateTime getCompletedAt() {
+            return completedAt;
+        }
+
+        @Nullable
+        @Override
+        public String getErrorMessage() {
+            return errorMessage;
         }
     }
 }
