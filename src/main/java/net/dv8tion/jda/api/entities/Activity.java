@@ -76,9 +76,12 @@ public interface Activity {
 
     /**
      * The displayed name of the {@link Activity Activity}.
-     * <br>For {@link ActivityType#CUSTOM_STATUS} this will return the custom status text.
      *
-     * @return String containing the Activity's name.
+     * <p>For {@link ActivityType#CUSTOM_STATUS} this will return the custom status text.
+     * <br>However, this may be empty if the user has set their profile privacy settings to "Friends Only"
+     * or "Friends &amp; Small Servers Only" and the presence originated from a server with more than 200 members.
+     *
+     * @return String containing the Activity's name, or empty if unavailable.
      */
     @Nonnull
     String getName();
