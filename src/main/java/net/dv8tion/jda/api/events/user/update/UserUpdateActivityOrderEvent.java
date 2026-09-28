@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Activity>>
+public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<@Unmodifiable List<Activity>>
         implements GenericUserPresenceEvent {
     public static final String IDENTIFIER = "activity_order";
 
@@ -69,12 +70,14 @@ public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Ac
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<Activity> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<Activity> getNewValue() {
         return super.getNewValue();
     }

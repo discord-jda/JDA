@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -131,7 +132,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<Command>> retrieveCommands() {
+    default RestAction<@Mutable List<Command>> retrieveCommands() {
         return retrieveCommands(false);
     }
 
@@ -149,7 +150,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Command>> retrieveCommands(boolean withLocalizations);
+    RestAction<@Mutable List<Command>> retrieveCommands(boolean withLocalizations);
 
     /**
      * Retrieves the existing {@link Command} instance by id.
@@ -392,7 +393,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId);
+    RestAction<@Mutable List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(@Nonnull String targetId);
 
     /**
      * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for the target with the specified ID.
@@ -415,7 +416,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(long targetId) {
+    default RestAction<@Mutable List<IntegrationPrivilege>> retrieveIntegrationPrivilegesById(long targetId) {
         return retrieveIntegrationPrivilegesById(Long.toUnsignedString(targetId));
     }
 
@@ -1458,6 +1459,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         </a>
      */
     @Nonnull
+    @Unmodifiable
     Set<SystemChannelFlag> getSystemChannelFlags();
 
     /**
@@ -1828,7 +1830,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<ScheduledEvent>> retrieveScheduledEvents() {
+    default RestAction<@Unmodifiable List<ScheduledEvent>> retrieveScheduledEvents() {
         return retrieveScheduledEvents(false);
     }
 
@@ -1845,7 +1847,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount);
+    RestAction<@Unmodifiable List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount);
 
     /**
      * Gets a list of all {@link ScheduledEvent ScheduledEvents} in this Guild that have the same
@@ -2787,7 +2789,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    CacheRestAction<List<SoundboardSound>> retrieveSoundboardSounds();
+    CacheRestAction<@Unmodifiable List<SoundboardSound>> retrieveSoundboardSounds();
 
     /**
      * Attempts to retrieve a {@link SoundboardSound} object for this guild based on the provided snowflake reference.
@@ -3378,7 +3380,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> loadMembers() {
+    default Task<@Mutable List<Member>> loadMembers() {
         return findMembers((m) -> true);
     }
 
@@ -3406,7 +3408,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> findMembers(@Nonnull Predicate<? super Member> filter) {
+    default Task<@Mutable List<Member>> findMembers(@Nonnull Predicate<? super Member> filter) {
         Checks.notNull(filter, "Filter");
         List<Member> list = new ArrayList<>();
         CompletableFuture<List<Member>> future = new CompletableFuture<>();
@@ -3445,7 +3447,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> findMembersWithRoles(@Nonnull Collection<Role> roles) {
+    default Task<@Mutable List<Member>> findMembersWithRoles(@Nonnull Collection<Role> roles) {
         Checks.noneNull(roles, "Roles");
         for (Role role : roles) {
             Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
@@ -3489,7 +3491,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> findMembersWithRoles(@Nonnull Role... roles) {
+    default Task<@Mutable List<Member>> findMembersWithRoles(@Nonnull Role... roles) {
         Checks.noneNull(roles, "Roles");
         return findMembersWithRoles(Arrays.asList(roles));
     }
@@ -3693,10 +3695,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(@Nonnull Collection<? extends UserSnowflake> users) {
+    default Task<@Mutable List<Member>> retrieveMembers(@Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
         if (users.isEmpty()) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
@@ -3733,10 +3735,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids) {
+    default Task<@Mutable List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty()) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
@@ -3773,10 +3775,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(@Nonnull String... ids) {
+    default Task<@Mutable List<Member>> retrieveMembersByIds(@Nonnull String... ids) {
         Checks.notNull(ids, "Array");
         if (ids.length == 0) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] arr = new long[ids.length];
@@ -3816,7 +3818,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(@Nonnull long... ids) {
+    default Task<@Mutable List<Member>> retrieveMembersByIds(@Nonnull long... ids) {
         boolean presence = getJDA().getGatewayIntents().contains(GatewayIntent.GUILD_PRESENCES);
         return retrieveMembersByIds(presence, ids);
     }
@@ -3852,11 +3854,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(
+    default Task<@Mutable List<Member>> retrieveMembers(
             boolean includePresence, @Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
         if (users.isEmpty()) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
@@ -3894,10 +3896,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull Collection<Long> ids) {
+    default Task<@Mutable List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty()) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
@@ -3935,10 +3937,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull String... ids) {
+    default Task<@Mutable List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull String... ids) {
         Checks.notNull(ids, "Array");
         if (ids.length == 0) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] arr = new long[ids.length];
@@ -3979,7 +3981,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids);
+    Task<@Mutable List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids);
 
     /**
      * Queries a list of members using a radix tree based on the provided name prefix.
@@ -4013,7 +4015,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
+    Task<@Mutable List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
 
     /**
      * Retrieves the active threads in this guild.

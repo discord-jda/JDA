@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -100,7 +101,7 @@ public interface Command extends ISnowflake, ICommandReference {
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild);
+    RestAction<@Mutable List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild);
 
     /**
      * Returns the {@link JDA JDA} instance of this Command

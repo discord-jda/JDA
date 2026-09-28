@@ -20,6 +20,7 @@ import com.google.errorprone.annotations.FormatMethod;
 import com.google.errorprone.annotations.FormatString;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -56,6 +57,25 @@ public final class Helpers {
     @SuppressWarnings("unchecked")
     public static <T> Consumer<T> emptyConsumer() {
         return (Consumer<T>) EMPTY_CONSUMER;
+    }
+
+    @Nonnull
+    @Mutable
+    public static <T> List<T> emptyMutableList() {
+        return new ArrayList<>(0);
+    }
+
+    @Nonnull
+    @Mutable
+    public static <T> List<T> mutableSingletonList(T t) {
+        //noinspection ArraysAsListWithZeroOrOneArgument
+        return Arrays.asList(t);
+    }
+
+    @Nonnull
+    @Mutable
+    public static <K, V> Map<K, V> emptyMutableMap() {
+        return new HashMap<>(0);
     }
 
     public static OffsetDateTime toOffset(long instant) {
@@ -324,16 +344,25 @@ public final class Helpers {
         return false;
     }
 
-    public static <T> Collector<T, ?, List<T>> toUnmodifiableList() {
+    public static <T> Collector<T, ?, @Unmodifiable List<T>> toUnmodifiableList() {
         return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 
-    public static <E extends Enum<E>> Collector<E, ?, Set<E>> toUnmodifiableEnumSet(Class<E> enumType) {
+    public static <T> Collector<T, ?, @Unmodifiable Set<T>> toUnmodifiableSet() {
+        return Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet);
+    }
+
+    public static <T> Collector<T, ?, List<T>> toMutableList() {
+        return Collectors.toCollection(ArrayList::new);
+    }
+
+    public static <E extends Enum<E>> Collector<E, ?, @Unmodifiable Set<E>> toUnmodifiableEnumSet(Class<E> enumType) {
         return Collectors.collectingAndThen(
                 Collectors.toCollection(() -> EnumSet.noneOf(enumType)), Collections::unmodifiableSet);
     }
 
     @SafeVarargs
+    @Unmodifiable
     public static <E extends Enum<E>> Set<E> unmodifiableEnumSet(E first, E... rest) {
         return Collections.unmodifiableSet(EnumSet.of(first, rest));
     }

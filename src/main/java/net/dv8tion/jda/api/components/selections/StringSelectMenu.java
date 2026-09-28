@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.selections;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteract
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction;
 import net.dv8tion.jda.internal.components.selections.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -94,6 +96,7 @@ public interface StringSelectMenu extends SelectMenu {
      * @see    Builder#getOptions()
      */
     @Nonnull
+    @Unmodifiable
     List<SelectOption> getOptions();
 
     /**
@@ -288,6 +291,7 @@ public interface StringSelectMenu extends SelectMenu {
          * @return The list of {@link SelectOption SelectOptions}
          */
         @Nonnull
+        @Mutable
         public List<SelectOption> getOptions() {
             return options;
         }

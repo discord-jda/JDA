@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -969,6 +970,7 @@ public class EmbedBuilder {
      * @return Mutable List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Fields}
      */
     @Nonnull
+    @Mutable
     public List<MessageEmbed.Field> getFields() {
         return fields;
     }

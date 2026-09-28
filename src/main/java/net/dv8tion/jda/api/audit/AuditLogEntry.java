@@ -191,6 +191,7 @@ public class AuditLogEntry implements ISnowflake {
      * @return Key-Value Map of changes
      */
     @Nonnull
+    @Unmodifiable
     public Map<String, AuditLogChange> getChanges() {
         return changes;
     }
@@ -261,6 +262,7 @@ public class AuditLogEntry implements ISnowflake {
      * @return Key-Value Map of changes
      */
     @Nonnull
+    @Unmodifiable
     public Map<String, Object> getOptions() {
         return options;
     }

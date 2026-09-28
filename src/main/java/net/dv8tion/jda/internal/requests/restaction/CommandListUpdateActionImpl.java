@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.RequestBody;
 
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
@@ -137,7 +137,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     protected void handleSuccess(Response response, Request<List<Command>> request) {
         List<Command> commands = response.getArray().stream(DataArray::getObject)
                 .map(obj -> new CommandImpl(api, guild, obj))
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
         request.onSuccess(commands);
     }
 }

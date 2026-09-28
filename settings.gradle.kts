@@ -9,3 +9,5 @@ includeBuild("formatter-recipes") {
         substitute(module("net.dv8tion.jda:formatter-recipes")).using(project(":"))
     }
 }
+
+include(":fake-kotlin-annotations")

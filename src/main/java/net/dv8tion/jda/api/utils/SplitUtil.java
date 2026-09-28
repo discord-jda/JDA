@@ -16,10 +16,11 @@
 
 package net.dv8tion.jda.api.utils;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -100,6 +101,7 @@ public class SplitUtil {
      * @see    Strategy#WHITESPACE
      */
     @Nonnull
+    @Mutable
     public static List<String> split(@Nonnull String input, int limit, @Nonnull Strategy... strategies) {
         return split(input, limit, false, strategies);
     }
@@ -133,10 +135,11 @@ public class SplitUtil {
      * @see    Strategy#WHITESPACE
      */
     @Nonnull
+    @Mutable
     public static List<String> split(@Nonnull String input, int limit, boolean trim, @Nonnull Strategy... strategies) {
         Checks.notNull(input, "Input string");
         if (input.isEmpty() || input.length() <= limit) {
-            return Collections.singletonList(input);
+            return Helpers.mutableSingletonList(input);
         }
         if (strategies.length == 0) {
             strategies = new Strategy[] {Strategy.ANYWHERE};

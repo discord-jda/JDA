@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.guild.member;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +57,7 @@ public class GuildMemberRoleAddEvent extends GenericGuildMemberEvent {
      * @return The list of roles that were added
      */
     @Nonnull
+    @Unmodifiable
     public List<Role> getRoles() {
         return addedRoles;
     }

@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -63,6 +64,7 @@ public class ModalInteractionEvent extends GenericInteractionCreateEvent impleme
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<ModalMapping> getValues() {
         return interaction.getValues();
     }

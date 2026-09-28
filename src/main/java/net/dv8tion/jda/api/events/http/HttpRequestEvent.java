@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.http;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -118,6 +119,7 @@ public class HttpRequestEvent extends Event {
     }
 
     @Nonnull
+    @Mutable
     public Set<String> getCFRays() {
         return this.response.getCFRays();
     }

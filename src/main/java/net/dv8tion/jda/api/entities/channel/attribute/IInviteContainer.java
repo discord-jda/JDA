@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -70,5 +71,5 @@ public interface IInviteContainer extends GuildChannel {
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Invite>> retrieveInvites();
+    RestAction<@Unmodifiable List<Invite>> retrieveInvites();
 }

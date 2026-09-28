@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ import javax.annotation.Nullable;
  * <p>This also requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled.
  * You can enable the cache flag with {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) enableCache(CacheFlag.ACTIVITY)}.
  */
-public class UserUpdateActivitiesEvent extends GenericUserUpdateEvent<List<Activity>>
+public class UserUpdateActivitiesEvent extends GenericUserUpdateEvent<@Unmodifiable List<Activity>>
         implements GenericUserPresenceEvent {
     public static final String IDENTIFIER = "activities";
     private final Member member;

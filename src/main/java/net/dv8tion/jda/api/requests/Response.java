@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.IOFunction;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -128,6 +129,7 @@ public class Response implements Closeable {
     }
 
     @Nonnull
+    @Mutable
     public Set<String> getCFRays() {
         return cfRays;
     }

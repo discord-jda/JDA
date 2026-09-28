@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -680,6 +682,7 @@ public interface Invite {
          * @return Never-null, unmodifiable Set containing all of the Guild's features.
          */
         @Nonnull
+        @Unmodifiable
         Set<String> getFeatures();
 
         /**
@@ -787,6 +790,7 @@ public interface Invite {
          *
          * @return The names of the group's users or null if not preset in the invite
          */
+        @Mutable
         @Nullable
         List<String> getUsers();
     }

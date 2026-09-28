@@ -248,7 +248,7 @@ public class GuildImpl implements Guild {
         return new RestActionImpl<>(
                 getJDA(), route, (response, request) -> response.getArray().stream(DataArray::getObject)
                         .map(json -> new CommandImpl(getJDA(), this, json))
-                        .collect(Collectors.toList()));
+                        .collect(Helpers.toMutableList()));
     }
 
     @Nonnull
@@ -322,7 +322,7 @@ public class GuildImpl implements Guild {
     private List<IntegrationPrivilege> parsePrivilegesList(DataObject obj) {
         return obj.getArray("permissions").stream(DataArray::getObject)
                 .map(this::parsePrivilege)
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
     }
 
     private IntegrationPrivilege parsePrivilege(DataObject data) {
@@ -1242,7 +1242,7 @@ public class GuildImpl implements Guild {
                 "Cannot retrieve presences of members without GUILD_PRESENCES intent!");
 
         if (ids.length == 0) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
         Checks.check(ids.length <= 100, "You can only request 100 members at once");
         MemberChunkManager chunkManager = api.getClient().getChunkManager();

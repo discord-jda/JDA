@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
 import java.util.List;
@@ -81,6 +82,7 @@ public class MessageBulkDeleteEvent extends Event {
      * @return The list of message ids
      */
     @Nonnull
+    @Unmodifiable
     public List<String> getMessageIds() {
         return messageIds;
     }

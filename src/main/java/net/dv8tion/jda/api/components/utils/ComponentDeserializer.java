@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.utils;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -117,9 +118,10 @@ public class ComponentDeserializer {
      * @see    #deserializeAs(Class, List)
      */
     @Nonnull
+    @Mutable
     public List<IComponentUnion> deserializeAll(@Nonnull List<DataObject> components) {
         Checks.noneNull(components, "Components");
-        return components.stream().map(this::parseComponent).collect(Collectors.toList());
+        return components.stream().map(this::parseComponent).collect(Helpers.toMutableList());
     }
 
     /**
