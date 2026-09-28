@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.audit;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -191,6 +192,7 @@ public class AuditLogEntry implements ISnowflake {
      * @return Key-Value Map of changes
      */
     @Nonnull
+    @Mutable
     public Map<String, AuditLogChange> getChanges() {
         return changes;
     }
@@ -261,6 +263,7 @@ public class AuditLogEntry implements ISnowflake {
      * @return Key-Value Map of changes
      */
     @Nonnull
+    @Mutable
     public Map<String, Object> getOptions() {
         return options;
     }

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.IntegrationType;
@@ -461,6 +462,7 @@ public interface ApplicationInfo extends ISnowflake {
      * @return The configurations for each integration type
      */
     @Nonnull
+    @Mutable
     Map<IntegrationType, IntegrationTypeConfiguration> getIntegrationTypesConfig();
 
     /**

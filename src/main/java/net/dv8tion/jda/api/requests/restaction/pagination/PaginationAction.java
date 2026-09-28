@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Procedure;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -364,7 +365,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeWhileAsync(@Nonnull Predicate<? super T> rule) {
+    default CompletableFuture<@Mutable List<T>> takeWhileAsync(@Nonnull Predicate<? super T> rule) {
         Checks.notNull(rule, "Rule");
         return takeUntilAsync(rule.negate());
     }
@@ -389,7 +390,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeWhileAsync(int limit, @Nonnull Predicate<? super T> rule) {
+    default CompletableFuture<@Mutable List<T>> takeWhileAsync(int limit, @Nonnull Predicate<? super T> rule) {
         Checks.notNull(rule, "Rule");
         return takeUntilAsync(limit, rule.negate());
     }
@@ -412,7 +413,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeUntilAsync(@Nonnull Predicate<? super T> rule) {
+    default CompletableFuture<@Mutable List<T>> takeUntilAsync(@Nonnull Predicate<? super T> rule) {
         return takeUntilAsync(0, rule);
     }
 
@@ -436,7 +437,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<List<T>> takeUntilAsync(int limit, @Nonnull Predicate<? super T> rule) {
+    default CompletableFuture<@Mutable List<T>> takeUntilAsync(int limit, @Nonnull Predicate<? super T> rule) {
         Checks.notNull(rule, "Rule");
         Checks.notNegative(limit, "Limit");
         List<T> result = new ArrayList<>();
@@ -471,7 +472,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      */
     @Nonnull
     @CheckReturnValue
-    CompletableFuture<List<T>> takeAsync(int amount);
+    CompletableFuture<@Mutable List<T>> takeAsync(int amount);
 
     /**
      * Convenience method to retrieve an amount of entities from this pagination action.
@@ -486,7 +487,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>>
      */
     @Nonnull
     @CheckReturnValue
-    CompletableFuture<List<T>> takeRemainingAsync(int amount);
+    CompletableFuture<@Mutable List<T>> takeRemainingAsync(int amount);
 
     /**
      * Iterates over all entities until the provided action returns {@code false}!

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.actionrow;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -106,6 +107,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
+    @Mutable
     static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> components) {
         return ActionRowImpl.partitionOf(components);
     }
@@ -139,6 +141,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
+    @Mutable
     static List<ActionRow> partitionOf(
             @Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components) {
         Checks.notNull(component, "Component");

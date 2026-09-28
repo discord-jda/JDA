@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.exceptions;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -429,6 +430,7 @@ public class ErrorResponseException extends RuntimeException {
          * @return The error codes
          */
         @Nonnull
+        @Mutable
         public List<ErrorCode> getErrors() {
             return errors;
         }

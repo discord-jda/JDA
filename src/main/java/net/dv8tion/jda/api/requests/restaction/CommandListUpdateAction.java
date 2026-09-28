@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -38,7 +39,7 @@ import javax.annotation.Nullable;
  *
  * <p>This operation is idempotent. Commands will persist between restarts of your bot, you only have to create a command once.
  */
-public interface CommandListUpdateAction extends RestAction<List<Command>> {
+public interface CommandListUpdateAction extends RestAction<@Mutable List<Command>> {
     @Nonnull
     @Override
     @CheckReturnValue

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.exceptions.DataObjectParsingException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -765,6 +766,7 @@ public class DataObject implements SerializableData {
      * @return The resulting map
      */
     @Nonnull
+    @Mutable
     public Map<String, Object> toMap() {
         return data;
     }

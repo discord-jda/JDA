@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.checkboxgroup;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.attribute.ICustomId;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.internal.components.checkboxgroup.CheckboxGroupImpl;
@@ -329,6 +330,7 @@ public interface CheckboxGroup extends ICustomId, LabelChildComponent {
          * @return The modifiable list of options
          */
         @Nonnull
+        @Mutable
         public List<CheckboxGroupOption> getOptions() {
             return options;
         }

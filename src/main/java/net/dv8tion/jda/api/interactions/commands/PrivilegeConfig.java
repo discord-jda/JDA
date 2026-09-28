@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SelfUser;
@@ -134,6 +135,7 @@ public class PrivilegeConfig {
      * @return Unmodifiable Map containing all privileges on this guild.
      */
     @Nonnull
+    @Mutable
     public Map<String, @Unmodifiable List<IntegrationPrivilege>> getAsMap() {
         return privileges;
     }

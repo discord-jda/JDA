@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
@@ -115,6 +116,7 @@ public class ThreadCreateMetadata {
      * @return The applied tags
      */
     @Nonnull
+    @Mutable
     public List<ForumTagSnowflake> getAppliedTags() {
         return appliedTags;
     }

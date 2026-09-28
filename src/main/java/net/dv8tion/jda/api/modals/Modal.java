@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.modals;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
@@ -292,6 +293,7 @@ public interface Modal extends SerializableData {
          * @return A modifiable list of all components
          */
         @Nonnull
+        @Mutable
         public List<ModalTopLevelComponentUnion> getComponents() {
             return components;
         }

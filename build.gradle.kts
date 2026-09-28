@@ -191,6 +191,7 @@ dependencies {
     //Code safety
     compileOnly(libs.findbugs)
     compileOnly(libs.jetbrains.annotations)
+    compileOnly(project(":fake-kotlin-annotations"))
 
     //Logger
     api(libs.slf4j)

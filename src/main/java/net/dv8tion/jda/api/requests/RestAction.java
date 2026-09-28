@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
@@ -277,7 +278,7 @@ public interface RestAction<T> {
     @Nonnull
     @SafeVarargs
     @CheckReturnValue
-    static <E> RestAction<List<E>> allOf(
+    static <E> RestAction<@Mutable List<E>> allOf(
             @Nonnull RestAction<? extends E> first, @Nonnull RestAction<? extends E>... others) {
         Checks.notNull(first, "RestAction");
         Checks.noneNull(others, "RestAction");
@@ -307,7 +308,7 @@ public interface RestAction<T> {
      */
     @Nonnull
     @CheckReturnValue
-    static <E> RestAction<List<E>> allOf(@Nonnull Collection<? extends RestAction<? extends E>> actions) {
+    static <E> RestAction<@Mutable List<E>> allOf(@Nonnull Collection<? extends RestAction<? extends E>> actions) {
         return accumulate(actions, Helpers.toMutableList());
     }
 
@@ -1057,7 +1058,8 @@ public interface RestAction<T> {
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked")
-    default RestAction<List<T>> zip(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other) {
+    default RestAction<@Mutable List<T>> zip(
+            @Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other) {
         Checks.notNull(first, "RestAction");
         Checks.noneNull(other, "RestAction");
         List<RestAction<? extends T>> list = new ArrayList<>();

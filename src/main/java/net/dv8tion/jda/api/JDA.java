@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -643,7 +644,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<Command>> retrieveCommands() {
+    default RestAction<@Mutable List<Command>> retrieveCommands() {
         return retrieveCommands(false);
     }
 
@@ -658,7 +659,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Command>> retrieveCommands(boolean withLocalizations);
+    RestAction<@Mutable List<Command>> retrieveCommands(boolean withLocalizations);
 
     /**
      * Retrieves the existing {@link Command} instance by id.
@@ -1259,6 +1260,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * @return Possibly-empty set of guild IDs for unavailable guilds
      */
     @Nonnull
+    @Mutable
     Set<String> getUnavailableGuilds();
 
     /**

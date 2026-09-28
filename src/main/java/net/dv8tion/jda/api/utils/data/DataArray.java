@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.exceptions.DataArrayParsingException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
@@ -704,6 +705,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
      * @return The resulting list
      */
     @Nonnull
+    @Mutable
     public List<Object> toList() {
         return data;
     }
@@ -750,6 +752,7 @@ public class DataArray implements Iterable<Object>, SerializableArray {
     }
 
     @Nonnull
+    @Mutable
     @Override
     public Iterator<Object> iterator() {
         return data.iterator();

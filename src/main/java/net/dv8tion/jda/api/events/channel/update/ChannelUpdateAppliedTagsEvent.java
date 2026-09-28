@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.channel.update;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
@@ -60,6 +61,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<@Un
      * @return The tags that were added to the post
      */
     @Nonnull
+    @Mutable
     public List<ForumTag> getAddedTags() {
         List<ForumTag> newTags = new ArrayList<>(getNewTags());
         newTags.removeAll(getOldTags());
@@ -74,6 +76,7 @@ public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<@Un
      * @return The tags that were removed from the post
      */
     @Nonnull
+    @Mutable
     public List<ForumTag> getRemovedTags() {
         List<ForumTag> oldTags = new ArrayList<>(getOldTags());
         oldTags.removeAll(getNewTags());
