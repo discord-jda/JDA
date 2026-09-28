@@ -329,7 +329,7 @@ public final class Helpers {
         return false;
     }
 
-    public static <T> Collector<T, ?, List<T>> toUnmodifiableList() {
+    public static <T> Collector<T, ?, @Unmodifiable List<T>> toUnmodifiableList() {
         return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 
@@ -347,6 +347,7 @@ public final class Helpers {
     }
 
     @SafeVarargs
+    @Unmodifiable
     public static <E extends Enum<E>> Set<E> unmodifiableEnumSet(E first, E... rest) {
         return Collections.unmodifiableSet(EnumSet.of(first, rest));
     }

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.WidgetUtil;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
@@ -75,6 +76,7 @@ public interface Widget extends ISnowflake {
      * @return the list of voice channels in the guild
      */
     @Nonnull
+    @Unmodifiable
     List<VoiceChannel> getVoiceChannels();
 
     /**
@@ -116,6 +118,7 @@ public interface Widget extends ISnowflake {
      * @return the list of members
      */
     @Nonnull
+    @Unmodifiable
     List<Member> getMembers();
 
     /**

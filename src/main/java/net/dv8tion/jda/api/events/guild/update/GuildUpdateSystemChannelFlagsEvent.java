@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.guild.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 
@@ -31,7 +32,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code system_channel_flags}
  */
-public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<Set<SystemChannelFlag>> {
+public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<@Unmodifiable Set<SystemChannelFlag>> {
     public static final String IDENTIFIER = "system_channel_flags";
 
     public GuildUpdateSystemChannelFlagsEvent(
@@ -49,6 +50,7 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
      * @return An unmodifiable set of old system channel flags for this guild.
      */
     @Nonnull
+    @Unmodifiable
     public Set<SystemChannelFlag> getOldFlags() {
         return getOldValue();
     }
@@ -59,6 +61,7 @@ public class GuildUpdateSystemChannelFlagsEvent extends GenericGuildUpdateEvent<
      * @return An unmodifiable set of new system channel flags for this guild.
      */
     @Nonnull
+    @Unmodifiable
     public Set<SystemChannelFlag> getNewFlags() {
         return getNewValue();
     }

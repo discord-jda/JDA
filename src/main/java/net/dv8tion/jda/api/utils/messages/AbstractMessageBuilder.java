@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 
@@ -115,12 +116,14 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    @Unmodifiable
     public Set<String> getMentionedUsers() {
         return mentions.getMentionedUsers();
     }
 
     @Nonnull
     @Override
+    @Unmodifiable
     public Set<String> getMentionedRoles() {
         return mentions.getMentionedRoles();
     }
@@ -151,6 +154,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<MessageEmbed> getEmbeds() {
         return Collections.unmodifiableList(embeds);
     }
@@ -184,6 +188,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<MessageTopLevelComponentUnion> getComponents() {
         return Collections.unmodifiableList(components);
     }

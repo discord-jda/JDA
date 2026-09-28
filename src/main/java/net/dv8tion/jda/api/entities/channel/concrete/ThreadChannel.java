@@ -327,6 +327,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #retrieveThreadMembers()
      */
     @Nonnull
+    @Unmodifiable
     List<ThreadMember> getThreadMembers();
 
     /**

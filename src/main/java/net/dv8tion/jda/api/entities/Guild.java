@@ -1458,6 +1458,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         </a>
      */
     @Nonnull
+    @Unmodifiable
     Set<SystemChannelFlag> getSystemChannelFlags();
 
     /**
@@ -1828,7 +1829,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<ScheduledEvent>> retrieveScheduledEvents() {
+    default RestAction<@Unmodifiable List<ScheduledEvent>> retrieveScheduledEvents() {
         return retrieveScheduledEvents(false);
     }
 
@@ -1845,7 +1846,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount);
+    RestAction<@Unmodifiable List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount);
 
     /**
      * Gets a list of all {@link ScheduledEvent ScheduledEvents} in this Guild that have the same
@@ -2787,7 +2788,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    CacheRestAction<List<SoundboardSound>> retrieveSoundboardSounds();
+    CacheRestAction<@Unmodifiable List<SoundboardSound>> retrieveSoundboardSounds();
 
     /**
      * Attempts to retrieve a {@link SoundboardSound} object for this guild based on the provided snowflake reference.

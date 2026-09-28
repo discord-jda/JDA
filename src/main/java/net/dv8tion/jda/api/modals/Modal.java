@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.modals.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,6 +114,7 @@ public interface Modal extends SerializableData {
      * @return List of ModalTopLevelComponentUnions
      */
     @Nonnull
+    @Unmodifiable
     List<ModalTopLevelComponentUnion> getComponents();
 
     /**
