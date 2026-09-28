@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -143,6 +144,7 @@ public class ErrorResponseException extends RuntimeException {
      * @return Possibly-empty list of {@link SchemaError SchemaError}
      */
     @Nonnull
+    @Unmodifiable
     public List<SchemaError> getSchemaErrors() {
         return schemaErrors;
     }

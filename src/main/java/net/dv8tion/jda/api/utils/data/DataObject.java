@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.SerializationUtil;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -702,6 +703,7 @@ public class DataObject implements SerializableData {
      * @return {@link java.util.Collection} for all values
      */
     @Nonnull
+    @UnmodifiableView
     public Collection<Object> values() {
         return data.values();
     }
@@ -712,6 +714,7 @@ public class DataObject implements SerializableData {
      * @return {@link Set} of keys
      */
     @Nonnull
+    @UnmodifiableView
     public Set<String> keys() {
         return data.keySet();
     }

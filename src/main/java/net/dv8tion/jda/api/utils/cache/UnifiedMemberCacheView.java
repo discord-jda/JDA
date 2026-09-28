@@ -46,6 +46,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member> {
      * @return Possibly-empty unmodifiable list of member for the specified ID
      */
     @Nonnull
+    @Unmodifiable
     List<Member> getElementsById(long id);
 
     /**
@@ -61,6 +62,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member> {
      * @return Possibly-empty unmodifiable list of member for the specified ID
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getElementsById(@Nonnull String id) {
         return getElementsById(MiscUtil.parseSnowflake(id));
     }

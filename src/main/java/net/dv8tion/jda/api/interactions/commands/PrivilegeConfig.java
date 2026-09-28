@@ -134,7 +134,8 @@ public class PrivilegeConfig {
      * @return Unmodifiable Map containing all privileges on this guild.
      */
     @Nonnull
-    public Map<String, List<IntegrationPrivilege>> getAsMap() {
+    @Unmodifiable
+    public Map<String, @Unmodifiable List<IntegrationPrivilege>> getAsMap() {
         return privileges;
     }
 }

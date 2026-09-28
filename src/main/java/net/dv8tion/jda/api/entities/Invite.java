@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.entities.InviteImpl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -680,6 +681,7 @@ public interface Invite {
          * @return Never-null, unmodifiable Set containing all of the Guild's features.
          */
         @Nonnull
+        @Unmodifiable
         Set<String> getFeatures();
 
         /**

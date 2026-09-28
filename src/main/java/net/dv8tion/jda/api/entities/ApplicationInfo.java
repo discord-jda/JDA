@@ -491,6 +491,7 @@ public interface ApplicationInfo extends ISnowflake {
          * @return The required scopes granted to the bot when invited
          */
         @Nonnull
+        @Unmodifiable
         List<String> getScopes();
 
         /**
@@ -500,6 +501,7 @@ public interface ApplicationInfo extends ISnowflake {
          * @return The permissions your bot asks for when invited
          */
         @Nonnull
+        @Unmodifiable
         Set<Permission> getPermissions();
     }
 
