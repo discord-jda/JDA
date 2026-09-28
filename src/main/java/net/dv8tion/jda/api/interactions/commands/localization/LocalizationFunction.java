@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.commands.localization;
 
-import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Map;
 
@@ -102,6 +102,6 @@ public interface LocalizationFunction {
      * @return Never-null map of discord locales to their localized strings
      */
     @Nonnull
-    @Mutable
+    @Unmodifiable
     Map<DiscordLocale, String> apply(@Nonnull String localizationKey);
 }
