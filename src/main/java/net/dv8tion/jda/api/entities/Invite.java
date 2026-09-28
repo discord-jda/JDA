@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -789,6 +790,7 @@ public interface Invite {
          *
          * @return The names of the group's users or null if not preset in the invite
          */
+        @Mutable
         @Nullable
         List<String> getUsers();
     }

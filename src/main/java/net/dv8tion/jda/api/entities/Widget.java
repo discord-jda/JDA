@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.utils.DiscordAssets;
 import net.dv8tion.jda.api.utils.ImageFormat;
@@ -424,6 +425,7 @@ public interface Widget extends ISnowflake {
          * @return never-null, possibly-empty list of members in the channel
          */
         @Nonnull
+        @Mutable
         List<Member> getMembers();
 
         /**

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components.radiogroup;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.attribute.ICustomId;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.internal.components.radiogroup.RadioGroupImpl;
@@ -290,6 +291,7 @@ public interface RadioGroup extends ICustomId, LabelChildComponent {
          * @return The modifiable list of options
          */
         @Nonnull
+        @Mutable
         public List<RadioGroupOption> getOptions() {
             return options;
         }

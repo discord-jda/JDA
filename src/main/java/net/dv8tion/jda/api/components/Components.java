@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.components;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
@@ -75,6 +76,7 @@ public class Components {
      * @see ComponentDeserializer#deserializeAs(Class, DataArray)
      */
     @Nonnull
+    @Mutable
     public static <T extends Component> List<T> parseComponents(
             @Nonnull Class<T> componentType, @Nonnull DataArray data) {
         return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data).collect(Helpers.toMutableList());

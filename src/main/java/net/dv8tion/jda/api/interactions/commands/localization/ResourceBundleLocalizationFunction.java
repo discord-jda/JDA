@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.localization;
 
+import kotlin.annotations.jvm.Mutable;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -39,6 +40,7 @@ public class ResourceBundleLocalizationFunction implements LocalizationFunction 
     }
 
     @Nonnull
+    @Mutable
     @Override
     public Map<DiscordLocale, String> apply(@Nonnull String localizationKey) {
         Map<DiscordLocale, String> map = new HashMap<>();
