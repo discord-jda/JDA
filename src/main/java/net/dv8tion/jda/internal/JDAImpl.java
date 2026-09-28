@@ -100,7 +100,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -1039,7 +1038,7 @@ public class JDAImpl implements JDA {
 
         return new RestActionImpl<>(this, route, (response, request) -> response.getArray().stream(DataArray::getObject)
                 .map(json -> new CommandImpl(this, null, json))
-                .collect(Collectors.toList()));
+                .collect(Helpers.toMutableList()));
     }
 
     @Nonnull

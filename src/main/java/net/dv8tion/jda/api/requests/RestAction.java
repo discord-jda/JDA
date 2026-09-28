@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.operator.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Blocking;
 
 import java.time.Duration;
@@ -36,7 +37,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.*;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -308,7 +308,7 @@ public interface RestAction<T> {
     @Nonnull
     @CheckReturnValue
     static <E> RestAction<List<E>> allOf(@Nonnull Collection<? extends RestAction<? extends E>> actions) {
-        return accumulate(actions, Collectors.toList());
+        return accumulate(actions, Helpers.toMutableList());
     }
 
     /**

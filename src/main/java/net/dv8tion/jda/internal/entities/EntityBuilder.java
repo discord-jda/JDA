@@ -2414,10 +2414,10 @@ public class EntityBuilder extends AbstractEntityBuilder {
             if (guildObject.isNull("features")) {
                 guildFeatures = Collections.emptySet();
             } else {
-                guildFeatures = Collections.unmodifiableSet(
-                        StreamSupport.stream(guildObject.getArray("features").spliterator(), false)
-                                .map(String::valueOf)
-                                .collect(Collectors.toSet()));
+                guildFeatures = StreamSupport.stream(
+                                guildObject.getArray("features").spliterator(), false)
+                        .map(String::valueOf)
+                        .collect(Helpers.toUnmodifiableSet());
             }
 
             GuildWelcomeScreen welcomeScreen = guildObject.isNull("welcome_screen")
