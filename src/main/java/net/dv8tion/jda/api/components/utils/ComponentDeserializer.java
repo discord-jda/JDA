@@ -119,7 +119,7 @@ public class ComponentDeserializer {
     @Nonnull
     public List<IComponentUnion> deserializeAll(@Nonnull List<DataObject> components) {
         Checks.noneNull(components, "Components");
-        return components.stream().map(this::parseComponent).collect(Collectors.toList());
+        return components.stream().map(this::parseComponent).collect(Helpers.toMutableList());
     }
 
     /**

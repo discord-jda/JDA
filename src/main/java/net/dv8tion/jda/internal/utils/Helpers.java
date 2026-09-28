@@ -58,6 +58,24 @@ public final class Helpers {
         return (Consumer<T>) EMPTY_CONSUMER;
     }
 
+    @Nonnull
+    public static <T> List<T> emptyMutableList() {
+        return new ArrayList<>(0);
+    }
+
+    @Nonnull
+    @Mutable
+    public static <T> List<T> mutableSingletonList(T t) {
+        //noinspection ArraysAsListWithZeroOrOneArgument
+        return Arrays.asList(t);
+    }
+
+    @Nonnull
+    @Mutable
+    public static <K, V> Map<K, V> emptyMutableMap() {
+        return new HashMap<>(0);
+    }
+
     public static OffsetDateTime toOffset(long instant) {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(instant), OFFSET);
     }
@@ -328,7 +346,15 @@ public final class Helpers {
         return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 
-    public static <E extends Enum<E>> Collector<E, ?, Set<E>> toUnmodifiableEnumSet(Class<E> enumType) {
+    public static <T> Collector<T, ?, @Unmodifiable Set<T>> toUnmodifiableSet() {
+        return Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet);
+    }
+
+    public static <T> Collector<T, ?, List<T>> toMutableList() {
+        return Collectors.toCollection(ArrayList::new);
+    }
+
+    public static <E extends Enum<E>> Collector<E, ?, @Unmodifiable Set<E>> toUnmodifiableEnumSet(Class<E> enumType) {
         return Collectors.collectingAndThen(
                 Collectors.toCollection(() -> EnumSet.noneOf(enumType)), Collections::unmodifiableSet);
     }

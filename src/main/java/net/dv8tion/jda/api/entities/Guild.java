@@ -3696,7 +3696,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembers(@Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
         if (users.isEmpty()) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
@@ -3736,7 +3736,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty()) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
@@ -3776,7 +3776,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembersByIds(@Nonnull String... ids) {
         Checks.notNull(ids, "Array");
         if (ids.length == 0) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] arr = new long[ids.length];
@@ -3856,7 +3856,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
             boolean includePresence, @Nonnull Collection<? extends UserSnowflake> users) {
         Checks.noneNull(users, "Users");
         if (users.isEmpty()) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] ids = users.stream().mapToLong(UserSnowflake::getIdLong).toArray();
@@ -3897,7 +3897,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty()) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
@@ -3938,7 +3938,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull String... ids) {
         Checks.notNull(ids, "Array");
         if (ids.length == 0) {
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Helpers.emptyMutableList()), () -> {});
         }
 
         long[] arr = new long[ids.length];

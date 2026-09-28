@@ -44,6 +44,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.internal.entities.channel.mixin.ChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -59,7 +60,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages) {
         checkCanAccess();
         if (messages == null || messages.isEmpty()) {
-            return Collections.emptyList();
+            return Helpers.emptyMutableList();
         }
 
         if (!canDeleteOtherUsersMessages()) {
@@ -85,7 +86,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>>
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds) {
         checkCanAccess();
         if (messageIds == null || messageIds.length == 0) {
-            return Collections.emptyList();
+            return Helpers.emptyMutableList();
         }
 
         // If we can't use the bulk delete system, then use the standard purge defined in

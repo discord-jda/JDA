@@ -23,9 +23,9 @@ import net.dv8tion.jda.api.components.utils.ComponentSerializer;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -77,7 +77,7 @@ public class Components {
     @Nonnull
     public static <T extends Component> List<T> parseComponents(
             @Nonnull Class<T> componentType, @Nonnull DataArray data) {
-        return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data).collect(Collectors.toList());
+        return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data).collect(Helpers.toMutableList());
     }
 
     /**

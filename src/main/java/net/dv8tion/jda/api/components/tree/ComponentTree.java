@@ -25,13 +25,13 @@ import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.internal.components.tree.ComponentTreeImpl;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -176,7 +176,7 @@ public interface ComponentTree<E extends Component> {
                 .filter(type::isInstance)
                 .map(type::cast)
                 .filter(filter)
-                .collect(Collectors.toList());
+                .collect(Helpers.toMutableList());
     }
 
     /**
