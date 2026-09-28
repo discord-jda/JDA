@@ -313,6 +313,7 @@ spotless {
         licenseHeader("/*\n$copyrightHeader\n */\n\n")
 
         target("src/**/*.java")
+        targetExclude("src/main/java/kotlin/annotations/jvm/*.java")
 
         removeUnusedImports()
         importOrder("", "java", "javax", "\\#")
