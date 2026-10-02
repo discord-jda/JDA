@@ -2857,7 +2857,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS BAN_MEMBERS}
+     *         or {@link net.dv8tion.jda.api.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS} permission.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
@@ -2886,7 +2887,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         This can be a user instance or {@link User#fromId(long)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS BAN_MEMBERS}
+     *         or {@link net.dv8tion.jda.api.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS} permission.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *

@@ -1003,9 +1003,7 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public BanPaginationActionImpl retrieveBanList() {
-        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
-        }
+        PermissionUtil.requireAnyPermission(getSelfMember(), Permission.BAN_MEMBERS, Permission.VIEW_AUDIT_LOGS);
 
         return new BanPaginationActionImpl(this);
     }
@@ -1013,9 +1011,7 @@ public class GuildImpl implements Guild {
     @Nonnull
     @Override
     public RestAction<Ban> retrieveBan(@Nonnull UserSnowflake user) {
-        if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS)) {
-            throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
-        }
+        PermissionUtil.requireAnyPermission(getSelfMember(), Permission.BAN_MEMBERS, Permission.VIEW_AUDIT_LOGS);
 
         Checks.notNull(user, "User");
 
