@@ -58,5 +58,5 @@ fun buildJavaDataObject(value: String): DataObject = DataObject.empty().put("pro
 /** Uses a Java static that throws, so the Kotlin side observes the Java contract rather than reimplementing it. */
 fun requireNonNull(value: String?): String {
     Checks.notNull(value, "value")
-    return value!!
+    return value
 }

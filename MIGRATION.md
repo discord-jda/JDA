@@ -1,8 +1,8 @@
 # Migrating JDA to Kotlin
 
-Status: **Phase 1 complete. Phase 2 in progress — pilot (`SkuSnowflake`) and the `internal.utils` leaves have landed and verified.**
+Status: **Phase 1 complete. Phase 2 in progress — pilot (`SkuSnowflake`) and all of `internal.utils` except `PermissionUtil` have landed and verified.**
 
-Work is parked on branch `kotlin-migration` (fork `astatio/JDA`), reviewed via **draft PR #1**, whose base is the throwaway branch `kotlin-migration-base` (`399755a`, the last pre-migration upstream merge) chosen only to give the diff a meaningful base. Fork `master` already contains these commits; the PR is a review surface, not a merge candidate. Resume by reading `AGENTS.md`, then converting the remaining `internal.utils` classes (`Checks`, `JDALogger`, `Helpers`, `IOUtil`, `PermissionUtil`, `SerializationUtil`, `ChannelUtil`), which are now unblocked because their dependencies converted.
+Work is parked on branch `kotlin-migration` (fork `astatio/JDA`), reviewed via **draft PR #1**, whose base is the throwaway branch `kotlin-migration-base` (`399755a`, the last pre-migration upstream merge) chosen only to give the diff a meaningful base. Fork `master` already contains these commits; the PR is a review surface, not a merge candidate. Resume by reading `AGENTS.md`, then converting `PermissionUtil` (the last Java class directly in `internal.utils`; see the note below on its null checks) and then the `internal.utils` sub-packages (`cache`, `compress`, `concurrent`, `config`, `localization`, `message`, `requestbody`, `tuple`).
 
 This document describes an incremental, in-place migration of the JDA codebase from Java to Kotlin, while preserving the public API contract for Java consumers. It targets **JVM 25 bytecode** and the **latest stable Kotlin release**.
 
@@ -223,6 +223,25 @@ Conventions this batch fixed, each forced by a real failure:
 - **`@Nonnull` at the boundary.** Written explicitly even on internal code, so the annotation survives as `RuntimeVisibleAnnotations` and the files stay consistent with the pilot rule.
 
 detekt is a source-level gate here (unlike the ABI gate, which is blind to `internal`), and it surfaced four findings, handled on merit rather than blanket-suppressed: the two magic numbers (`1.25` buffer growth, radix `16`) became named constants; `ReturnCount` on `hasNext` and `IteratorNotThrowingNoSuchElementException` on `ClassWalker.next` are suppressed with a written reason, because both flag control flow faithfully preserved from the Java original (`ClassWalker.next` does throw — `removeFirst()` on an empty deque raises `NoSuchElementException`; detekt cannot see through the deque).
+
+#### Second batch: `Checks`, `Helpers`, `JDALogger`, `IOUtil`, `ChannelUtil`, `SerializationUtil`
+
+These six were deferred from the first batch because everything else in the package calls them (361 files use `Checks`/`Helpers`/`JDALogger`). All became `object` declarations (no subclasses or instances anywhere in `src/`), with `@JvmStatic` on methods and `@JvmField`/`const val` on constants, so no Java call site changed. `./gradlew check` passes (505 tests / 0 failures, `--rerun-tasks`), apart from the OpenRewrite tasks (see below).
+
+Conventions this batch fixed:
+
+- **Null checks are behavior, not noise.** JDA validates user input with `Checks.notNull(...)` and promises an `IllegalArgumentException`. A non-null Kotlin parameter would instead throw an `NPE` from `Intrinsics.checkNotNullParameter` before the check runs (`DataObject.fromJson(null)` goes straight into `SerializationUtil.fromJson`, so this is reachable). Parameters that the Java body passes to `Checks.notNull` are therefore declared **nullable** in Kotlin (`@Nonnull data: ByteArray?`) and keep the `Checks.notNull` call; the `@Nonnull` annotation documents the contract for callers. Likewise `Helpers` keeps `String?`/`CharSequence?`/`Collection<*>?` wherever the Java original tolerated `null` (`isEmpty`, `truncate`, `equals`, `deepEquals`, ...), and `Checks.isSnowflake(String)` forwards a possibly-null value as its own name, so its `message` is `String?`.
+- **`Checks.notNull` carries a Kotlin contract** (`returns() implies (argument != null)`, opted in with `@OptIn(ExperimentalContracts::class)`), mirroring its `@Contract("null, _ -> fail")`. Converted callers get smart casts instead of `!!`. Consequence: an existing `!!` after `Checks.notNull` becomes an "unnecessary non-null assertion" warning, which `allWarningsAsErrors` turns into a build failure (this hit `KotlinJavaInteropProbe.kt`).
+- **`@SafeVarargs` on Kotlin generic `vararg` functions** (`Helpers.setOf/listOf/mergeVararg/unmodifiableEnumSet`) is accepted and keeps Java callers free of `unchecked generic array creation` warnings under `-Werror`.
+- **`@Unmodifiable` is a type-use annotation** and cannot sit on a Kotlin function; it moves to the return type (`: @Unmodifiable List<E>`).
+- **okhttp 5 deprecations are errors.** `HttpUrl.parse`/`pathSegments()` are deprecated for Kotlin callers; use `toHttpUrlOrNull()` and `.pathSegments`.
+- **Fluent Java setters are not Kotlin properties.** `WebSocketFactory.setServerName` returns the factory, so it stays a method call.
+- **Multi-catch becomes separate `catch` blocks** (`JDALogger`, `IOUtil.getBody`); `printStackTrace(PrintWriter)` becomes `stackTraceToString()` (detekt `PrintStackTrace`).
+- **detekt policy held:** `ReturnCount` is suppressed inline with a reason on functions whose control flow is ported unchanged (`toOffsetDateTime`, `deepEquals`, `deepEqualsUnordered`, `newFallbackLogger`, `getBody`, `pruneOneLevel`, `ChannelUtil.compare`); magic numbers became named constants or loops.
+
+`PermissionUtil` is next but is the riskiest remaining class in the package: ~800 lines, almost every public method opens with `Checks.notNull(...)` on its parameters, so by the rule above nearly all parameters must stay nullable in Kotlin. Convert it on its own.
+
+Local verification caveat: the OpenRewrite tasks (`rewriteDryRun`, `rewriteRun`, `downloadRecipeClasspath`'s recipe jar) could not be run in the authoring container: `formatter-recipes` pins an `ADOPTIUM` toolchain that was not downloadable there (foojay/Adoptium hosts are blocked) and Maven Central rate-limited the recipe jar. Those tasks only look at Java sources; run `./gradlew check` unmodified in CI before merging.
 
 #### Conversion order
 
