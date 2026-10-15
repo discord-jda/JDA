@@ -352,13 +352,19 @@ public interface User extends UserSnowflake {
     CacheRestAction<Profile> retrieveProfile();
 
     /**
-     * The "tag" for this user
-     * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", user)
+     * The "tag" for this user.
+     * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", user).
      *
      * <p>Users without a discriminator use {@code #0000} instead.
      *
+     * <p>Deprecated by Discord because usernames no longer use discriminators.
+     * Use {@link #getName()} instead.
+     *
      * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
+     * @see #getName()
+     * @deprecated Deprecated by Discord. Use {@link #getName()} instead.
      */
+    @Deprecated
     @Nonnull
     String getAsTag();
 
