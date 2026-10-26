@@ -2717,7 +2717,7 @@ public interface Message extends ISnowflake, Formattable {
      */
     class Attachment implements ISnowflake, AttachedFile {
         private static final Set<String> IMAGE_EXTENSIONS =
-                new HashSet<>(Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
+                new HashSet<>(Arrays.asList("jpg", "jpeg", "png", "gif", "webp", "avif", "tiff", "svg", "apng"));
         private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(
                 Arrays.asList("webm", "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg", "mpeg", "gifv"));
         private final long id;
@@ -2932,7 +2932,10 @@ public interface Message extends ISnowflake, Formattable {
 
         /**
          * Whether or not this attachment is an Image,
-         * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getFileExtension()}.
+         * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getContentType()}.
+         *
+         * <p>If the content type is missing or does not identify the attachment as either an image or a video,
+         * such as {@code application/octet-stream}, this falls back to checking {@link #getFileExtension()}.
          *
          * @return True if this attachment is an image
          */
@@ -2940,13 +2943,22 @@ public interface Message extends ISnowflake, Formattable {
             if (width < 0) {
                 return false; // if width is -1, so is height
             }
+            if (hasMediaType("image")) {
+                return true;
+            }
+            if (hasMediaType("video")) {
+                return false;
+            }
             String extension = getFileExtension();
             return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase(Locale.ROOT));
         }
 
         /**
          * Whether or not this attachment is a video,
-         * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getFileExtension()}.
+         * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getContentType()}.
+         *
+         * <p>If the content type is missing or does not identify the attachment as either an image or a video,
+         * such as {@code application/octet-stream}, this falls back to checking {@link #getFileExtension()}.
          *
          * @return True if this attachment is a video
          */
@@ -2954,8 +2966,18 @@ public interface Message extends ISnowflake, Formattable {
             if (width < 0) {
                 return false; // if width is -1, so is height
             }
+            if (hasMediaType("video")) {
+                return true;
+            }
+            if (hasMediaType("image")) {
+                return false;
+            }
             String extension = getFileExtension();
             return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase(Locale.ROOT));
+        }
+
+        private boolean hasMediaType(String type) {
+            return contentType != null && contentType.toLowerCase(Locale.ROOT).startsWith(type + "/");
         }
 
         /**
