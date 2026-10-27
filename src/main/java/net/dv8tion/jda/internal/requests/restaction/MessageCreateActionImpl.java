@@ -66,6 +66,12 @@ public class MessageCreateActionImpl extends RestActionImpl<Message>
         this.channel = channel;
     }
 
+    @Nonnull
+    @Override
+    public MessageChannel getChannel() {
+        return channel;
+    }
+
     @Override
     public MessageCreateBuilder getBuilder() {
         return builder;

@@ -376,4 +376,12 @@ public interface MessageCreateAction
         }
         return setStickers(stickers == null ? null : Arrays.asList(stickers));
     }
+
+    /**
+     * The target {@link MessageChannel} to which the message will be sent.
+     *
+     * @return The target MessageChannel
+     */
+    @Nonnull
+    MessageChannel getChannel();
 }

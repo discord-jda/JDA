@@ -69,6 +69,12 @@ public class MessageCreateActionTest extends IntegrationTest {
     }
 
     @Test
+    void testGetChannel() {
+        MessageCreateAction action = new MessageCreateActionImpl(channel);
+        assertThat(action.getChannel()).isSameAs(channel);
+    }
+
+    @Test
     void testEmpty() {
         assertThatIllegalStateException()
                 .isThrownBy(() -> new MessageCreateActionImpl(channel).queue())
