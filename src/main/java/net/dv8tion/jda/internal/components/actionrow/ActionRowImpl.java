@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
+import net.dv8tion.jda.internal.components.utils.ActionRowUtil;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -86,11 +87,13 @@ public class ActionRowImpl extends AbstractComponentImpl
         List<ActionRow> rows = new ArrayList<>();
         // The current action row we are building
         List<ActionRowChildComponentUnion> currentRow = new ArrayList<>();
-        // The component types contained in that row (for now it can't have mixed types)
+        // The component types contained in that row
         Component.Type type = null;
 
         for (ActionRowChildComponentUnion current : componentUnions) {
-            if ((type != null && type != current.getType())
+            if ((type != null && !ActionRowUtil.canBeMixed(type, current.getType()))
+                    // TODO: Revisit if a component can be mixed with another one that has a different 'max allowed'
+                    //  value
                     || currentRow.size() == ActionRow.getMaxAllowed(current.getType())) {
                 rows.add(ActionRow.of(currentRow));
                 currentRow.clear();
@@ -162,13 +165,15 @@ public class ActionRowImpl extends AbstractComponentImpl
     private static void checkIsValid(Collection<? extends ActionRowChildComponent> components) {
         Map<Component.Type, List<ActionRowChildComponent>> groups =
                 components.stream().collect(Collectors.groupingBy(Component::getType));
-        // TODO: You can't mix components right now but maybe in the future, we need to check back
-        // on this when that happens
+        // If multiple component types are mixed, we need to check compatibilities
         if (groups.size() > 1) {
-            throw new IllegalArgumentException(
-                    "Cannot create action row containing different component types! Provided: " + groups.keySet());
+            ActionRowUtil.checkMixedComponents(groups.keySet());
         }
 
+        // TODO: This works only if:
+        //  1. The row has only one type of component
+        //  2. All types present in the row have the same 'ActionRow.getMaxAllowed' value
+        //  This currently works, however this needs to be reworked if rule #2 is broken
         for (Map.Entry<Component.Type, List<ActionRowChildComponent>> entry : groups.entrySet()) {
             Component.Type type = entry.getKey();
             List<ActionRowChildComponent> list = entry.getValue();
