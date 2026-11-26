@@ -154,6 +154,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
     static int getMaxAllowed(@Nonnull Component.Type type) {
         switch (type) {
             case BUTTON:
+            case OVERFLOW_MENU:
                 return 5;
             case STRING_SELECT:
             case USER_SELECT:

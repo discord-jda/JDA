@@ -27,6 +27,8 @@ import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
 import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
@@ -95,6 +97,8 @@ public class ComponentTestData {
                         .addOption("label", "value")
                         .build();
             case CHECKBOX -> Checkbox.of("checkbox");
+            case OVERFLOW_MENU -> OverflowMenu.ofSingleGroup(OverflowMenuActionItem.ofDefault("customId", "label"));
+            case OVERFLOW_MENU_ITEM -> OverflowMenuActionItem.ofDefault("customId", "label");
         };
     }
 

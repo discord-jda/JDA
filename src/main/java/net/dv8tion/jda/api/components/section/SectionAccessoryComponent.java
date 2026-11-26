@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.components.section;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 
 import javax.annotation.Nonnull;
@@ -27,6 +28,7 @@ import javax.annotation.Nonnull;
  * <ul>
  *     <li>{@link Button}</li>
  *     <li>{@link Thumbnail}</li>
+ *     <li>{@link OverflowMenu}</li>
  * </ul>
  */
 public interface SectionAccessoryComponent extends Component {

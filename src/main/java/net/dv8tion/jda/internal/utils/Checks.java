@@ -83,6 +83,11 @@ public class Checks {
         }
     }
 
+    @FormatMethod
+    public static void checkMaxSize(Collection<?> collection, @PrintFormat @FormatString String message, int max) {
+        check(collection.size() <= max, message, max);
+    }
+
     @Contract("null, _ -> fail")
     public static void notNull(Object argument, String name) {
         if (argument == null) {

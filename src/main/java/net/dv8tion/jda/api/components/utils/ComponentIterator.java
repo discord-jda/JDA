@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
 import net.dv8tion.jda.api.components.section.Section;
 
 import java.util.*;
@@ -114,6 +115,11 @@ public class ComponentIterator implements Iterator<Component> {
         } else if (component instanceof Label) {
             Label label = (Label) component;
             return Collections.singleton(label.getChild()).iterator();
+        } else if (component instanceof OverflowMenu) {
+            OverflowMenu overflowMenu = ((OverflowMenu) component);
+            return overflowMenu.getGroups().stream()
+                    .flatMap(group -> group.getItems().stream())
+                    .iterator();
         }
 
         return null;
