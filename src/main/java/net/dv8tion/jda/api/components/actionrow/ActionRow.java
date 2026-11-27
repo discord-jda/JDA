@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
@@ -37,6 +38,9 @@ import javax.annotation.Nonnull;
 
 /**
  * One row of action components.
+ *
+ * <h2>Mixing child components</h2>
+ * Currently, only {@link Button} and {@link OverflowMenu} can be mixed in an ActionRow.
  *
  * @see ActionRowChildComponent
  */
