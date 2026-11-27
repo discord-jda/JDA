@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.components.overflowmenu;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponent;
 import net.dv8tion.jda.internal.components.overflowmenu.OverflowMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -31,7 +33,7 @@ import java.util.List;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface OverflowMenu extends Component, ActionRowChildComponent, SectionAccessoryComponent {
+public interface OverflowMenu extends Component, IReplaceable, ActionRowChildComponent, SectionAccessoryComponent {
     int MAX_GROUPS = 8;
 
     @Nonnull
@@ -76,6 +78,11 @@ public interface OverflowMenu extends Component, ActionRowChildComponent, Sectio
     static OverflowMenu ofSingleGroup(@Nonnull Collection<? extends OverflowMenuActionItem> items) {
         return of(Collections.singleton(OverflowMenuGroup.of(items)));
     }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    OverflowMenu replace(@Nonnull ComponentReplacer replacer);
 
     @Nonnull
     @Override

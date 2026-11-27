@@ -18,19 +18,24 @@ package net.dv8tion.jda.internal.components.overflowmenu;
 
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroup;
+import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
+import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -61,6 +66,20 @@ public class OverflowMenuImpl extends AbstractComponentImpl
     @Override
     public Type getType() {
         return Type.OVERFLOW_MENU;
+    }
+
+    @Nonnull
+    @Override
+    public OverflowMenu replace(@Nonnull ComponentReplacer replacer) {
+        List<OverflowMenuGroup> newGroups = new ArrayList<>(groups.size());
+        for (OverflowMenuGroup group : groups) {
+            newGroups.add(OverflowMenuGroup.of(
+                    group.getLabel(),
+                    ComponentsUtil.doReplace(
+                            OverflowMenuActionItem.class, group.getItems(), replacer, Function.identity())));
+        }
+
+        return new OverflowMenuImpl(uniqueId, newGroups);
     }
 
     @Nonnull
