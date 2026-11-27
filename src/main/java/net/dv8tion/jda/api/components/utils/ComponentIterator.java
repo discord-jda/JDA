@@ -118,7 +118,7 @@ public class ComponentIterator implements Iterator<Component> {
         } else if (component instanceof OverflowMenu) {
             OverflowMenu overflowMenu = ((OverflowMenu) component);
             return overflowMenu.getGroups().stream()
-                    .flatMap(group -> group.getItems().stream())
+                    .flatMap(group -> group.getComponents().stream())
                     .iterator();
         }
 

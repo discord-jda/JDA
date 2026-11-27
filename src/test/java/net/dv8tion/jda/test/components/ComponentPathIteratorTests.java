@@ -84,7 +84,7 @@ public class ComponentPathIteratorTests {
                     ComponentPathIterator.createStream("root", Collections.singleton(overflowMenu))
                             .toList();
                     verify(overflowMenu, times(1)).getGroups();
-                    verify(group, times(1)).getItems();
+                    verify(group, times(1)).getComponents();
                 }
                 default ->
                     fail(

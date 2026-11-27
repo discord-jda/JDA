@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.components.overflowmenu;
 
-import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroup;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroupChildComponent;
 import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -36,19 +36,19 @@ import javax.annotation.Nullable;
 
 public class OverflowMenuGroupImpl implements OverflowMenuGroup, SerializableData {
     private final String label;
-    private final List<OverflowMenuActionItem> items;
+    private final List<OverflowMenuGroupChildComponent> components;
 
     public OverflowMenuGroupImpl(ComponentDeserializer deserializer, DataObject object) {
         this(
                 object.getString("label", null),
                 object.getArray("components").stream(DataArray::getObject)
-                        .map(o -> deserializer.deserializeAs(OverflowMenuActionItem.class, o))
+                        .map(o -> deserializer.deserializeAs(OverflowMenuGroupChildComponent.class, o))
                         .collect(Collectors.toList()));
     }
 
-    public OverflowMenuGroupImpl(String label, Collection<? extends OverflowMenuActionItem> items) {
+    public OverflowMenuGroupImpl(String label, Collection<? extends OverflowMenuGroupChildComponent> components) {
         this.label = label;
-        this.items = Helpers.copyAsUnmodifiableList(items);
+        this.components = Helpers.copyAsUnmodifiableList(components);
     }
 
     @Nonnull
@@ -58,16 +58,16 @@ public class OverflowMenuGroupImpl implements OverflowMenuGroup, SerializableDat
             Checks.notEmpty(label, "Label");
             Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         }
-        return new OverflowMenuGroupImpl(label, items);
+        return new OverflowMenuGroupImpl(label, components);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuGroup withItems(@Nonnull Collection<? extends OverflowMenuActionItem> items) {
-        Checks.notEmpty(items, "Items");
-        Checks.noneNull(items, "Items");
-        Checks.checkMaxSize(items, "Overflow menu groups can contain at most %d items", MAX_ITEMS);
-        return new OverflowMenuGroupImpl(label, items);
+    public OverflowMenuGroup withComponents(@Nonnull Collection<? extends OverflowMenuGroupChildComponent> components) {
+        Checks.notEmpty(components, "Components");
+        Checks.noneNull(components, "Components");
+        Checks.checkMaxSize(components, "Overflow menu groups can contain at most %d components", MAX_COMPONENTS);
+        return new OverflowMenuGroupImpl(label, components);
     }
 
     @Nullable
@@ -78,14 +78,14 @@ public class OverflowMenuGroupImpl implements OverflowMenuGroup, SerializableDat
 
     @Nonnull
     @Override
-    public List<OverflowMenuActionItem> getItems() {
-        return items;
+    public List<OverflowMenuGroupChildComponent> getComponents() {
+        return components;
     }
 
     @Nonnull
     @Override
     public DataObject toData() {
-        final DataObject json = DataObject.empty().put("components", DataArray.fromCollection(items));
+        final DataObject json = DataObject.empty().put("components", DataArray.fromCollection(components));
         if (label != null) {
             json.put("label", label);
         }
@@ -102,19 +102,19 @@ public class OverflowMenuGroupImpl implements OverflowMenuGroup, SerializableDat
             return false;
         }
         OverflowMenuGroupImpl that = (OverflowMenuGroupImpl) o;
-        return Objects.equals(label, that.label) && Objects.equals(items, that.items);
+        return Objects.equals(label, that.label) && Objects.equals(components, that.components);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(label, items);
+        return Objects.hash(label, components);
     }
 
     @Override
     public String toString() {
         return new EntityString(this)
                 .addMetadata("label", label)
-                .addMetadata("items", items)
+                .addMetadata("components", components)
                 .toString();
     }
 }

@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.components.overflowmenu;
 
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
-import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroup;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroupChildComponent;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
@@ -76,7 +76,10 @@ public class OverflowMenuImpl extends AbstractComponentImpl
             newGroups.add(OverflowMenuGroup.of(
                     group.getLabel(),
                     ComponentsUtil.doReplace(
-                            OverflowMenuActionItem.class, group.getItems(), replacer, Function.identity())));
+                            OverflowMenuGroupChildComponent.class,
+                            group.getComponents(),
+                            replacer,
+                            Function.identity())));
         }
 
         return new OverflowMenuImpl(uniqueId, newGroups);

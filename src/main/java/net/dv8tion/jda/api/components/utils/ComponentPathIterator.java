@@ -109,7 +109,7 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
             int index = 0;
             for (OverflowMenuGroup group : overflowMenu.getGroups()) {
                 stack.push(new CollectionAttributeIterator(
-                        componentWithPath.path, "groups[" + index++ + "].items", group.getItems()));
+                        componentWithPath.path, "groups[" + index++ + "].components", group.getComponents()));
             }
         }
 

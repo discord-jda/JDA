@@ -31,39 +31,44 @@ import javax.annotation.Nullable;
 public interface OverflowMenuGroup {
     int LABEL_MAX_LENGTH = 80;
 
-    int MAX_ITEMS = 8;
+    int MAX_COMPONENTS = 8;
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuGroup of(@Nonnull OverflowMenuActionItem item, @Nonnull OverflowMenuActionItem... items) {
-        return of(null, item, items);
+    static OverflowMenuGroup of(
+            @Nonnull OverflowMenuGroupChildComponent component,
+            @Nonnull OverflowMenuGroupChildComponent... components) {
+        return of(null, component, components);
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuGroup of(@Nonnull Collection<? extends OverflowMenuActionItem> items) {
-        return of(null, items);
+    static OverflowMenuGroup of(@Nonnull Collection<? extends OverflowMenuGroupChildComponent> components) {
+        return of(null, components);
     }
 
     @Nonnull
     @CheckReturnValue
     static OverflowMenuGroup of(
-            @Nullable String label, @Nonnull OverflowMenuActionItem item, @Nonnull OverflowMenuActionItem... items) {
-        Checks.notNull(item, "Item");
-        Checks.noneNull(items, "Items");
-        return of(label, Helpers.mergeVararg(item, items));
+            @Nullable String label,
+            @Nonnull OverflowMenuGroupChildComponent component,
+            @Nonnull OverflowMenuGroupChildComponent... components) {
+        Checks.notNull(component, "Component");
+        Checks.noneNull(components, "Components");
+        return of(label, Helpers.mergeVararg(component, components));
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuGroup of(@Nullable String label, @Nonnull Collection<? extends OverflowMenuActionItem> items) {
+    static OverflowMenuGroup of(
+            @Nullable String label, @Nonnull Collection<? extends OverflowMenuGroupChildComponent> components) {
         if (label != null) {
             Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         }
-        Checks.notEmpty(items, "Items");
-        Checks.noneNull(items, "Items");
-        Checks.checkMaxSize(items, "Overflow menu groups can contain at most %d items", MAX_ITEMS);
-        return new OverflowMenuGroupImpl(label, items);
+        Checks.notEmpty(components, "Components");
+        Checks.noneNull(components, "Components");
+        Checks.checkMaxSize(components, "Overflow menu groups can contain at most %d components", MAX_COMPONENTS);
+        return new OverflowMenuGroupImpl(label, components);
     }
 
     @Nonnull
@@ -72,15 +77,16 @@ public interface OverflowMenuGroup {
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuGroup withItems(@Nonnull Collection<? extends OverflowMenuActionItem> items);
+    OverflowMenuGroup withComponents(@Nonnull Collection<? extends OverflowMenuGroupChildComponent> components);
 
     @Nonnull
     @CheckReturnValue
-    default OverflowMenuGroup withItems(
-            @Nonnull OverflowMenuActionItem item, @Nonnull OverflowMenuActionItem... items) {
-        Checks.notNull(item, "Item");
-        Checks.noneNull(items, "Items");
-        return withItems(Helpers.mergeVararg(item, items));
+    default OverflowMenuGroup withComponents(
+            @Nonnull OverflowMenuGroupChildComponent component,
+            @Nonnull OverflowMenuGroupChildComponent... components) {
+        Checks.notNull(component, "Component");
+        Checks.noneNull(components, "Components");
+        return withComponents(Helpers.mergeVararg(component, components));
     }
 
     @Nullable
@@ -88,5 +94,5 @@ public interface OverflowMenuGroup {
 
     @Nonnull
     @Unmodifiable
-    List<OverflowMenuActionItem> getItems();
+    List<OverflowMenuGroupChildComponent> getComponents();
 }

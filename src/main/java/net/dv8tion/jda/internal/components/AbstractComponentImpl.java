@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
 import net.dv8tion.jda.api.components.radiogroup.RadioGroup;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
@@ -132,6 +133,11 @@ public abstract class AbstractComponentImpl implements SerializableData {
     @Nonnull
     public OverflowMenu asOverflowMenu() {
         return toComponentType(OverflowMenu.class);
+    }
+
+    @Nonnull
+    public OverflowMenuActionItem asOverflowMenuActionItem() {
+        return toComponentType(OverflowMenuActionItem.class);
     }
 
     protected <T extends Component> T toComponentType(Class<T> type) {

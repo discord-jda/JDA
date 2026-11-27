@@ -56,27 +56,31 @@ public interface OverflowMenu extends Component, IReplaceable, ActionRowChildCom
     @Nonnull
     @CheckReturnValue
     static OverflowMenu ofSingleGroup(
-            @Nonnull String label, @Nonnull OverflowMenuActionItem item, @Nonnull OverflowMenuActionItem... items) {
-        return of(Collections.singleton(OverflowMenuGroup.of(label, item, items)));
+            @Nonnull String label,
+            @Nonnull OverflowMenuGroupChildComponent component,
+            @Nonnull OverflowMenuGroupChildComponent... components) {
+        return of(Collections.singleton(OverflowMenuGroup.of(label, component, components)));
     }
 
     @Nonnull
     @CheckReturnValue
     static OverflowMenu ofSingleGroup(
-            @Nonnull String label, @Nonnull Collection<? extends OverflowMenuActionItem> items) {
-        return of(Collections.singleton(OverflowMenuGroup.of(label, items)));
+            @Nonnull String label, @Nonnull Collection<? extends OverflowMenuGroupChildComponent> components) {
+        return of(Collections.singleton(OverflowMenuGroup.of(label, components)));
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenu ofSingleGroup(@Nonnull OverflowMenuActionItem item, @Nonnull OverflowMenuActionItem... items) {
-        return of(Collections.singleton(OverflowMenuGroup.of(item, items)));
+    static OverflowMenu ofSingleGroup(
+            @Nonnull OverflowMenuGroupChildComponent component,
+            @Nonnull OverflowMenuGroupChildComponent... components) {
+        return of(Collections.singleton(OverflowMenuGroup.of(component, components)));
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenu ofSingleGroup(@Nonnull Collection<? extends OverflowMenuActionItem> items) {
-        return of(Collections.singleton(OverflowMenuGroup.of(items)));
+    static OverflowMenu ofSingleGroup(@Nonnull Collection<? extends OverflowMenuGroupChildComponent> components) {
+        return of(Collections.singleton(OverflowMenuGroup.of(components)));
     }
 
     @Nonnull

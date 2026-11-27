@@ -16,12 +16,13 @@
 
 package net.dv8tion.jda.internal.components.overflowmenu;
 
-import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroupChildComponentUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -32,7 +33,8 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class OverflowMenuActionItemImpl implements IComponentUnion, OverflowMenuActionItem, SerializableData {
+public class OverflowMenuActionItemImpl extends AbstractComponentImpl
+        implements OverflowMenuGroupChildComponentUnion, OverflowMenuActionItem, SerializableData {
     private final int uniqueId;
     private final Style style;
     private final String customId;

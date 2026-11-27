@@ -25,7 +25,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface OverflowMenuActionItem extends ActionComponent {
+public interface OverflowMenuActionItem extends ActionComponent, OverflowMenuGroupChildComponent {
     /**
      * The maximum length an item ID can be.
      */
