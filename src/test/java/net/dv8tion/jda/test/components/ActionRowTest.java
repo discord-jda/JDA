@@ -99,7 +99,7 @@ public class ActionRowTest extends AbstractSnapshotTest {
                         // Make sure the throwing check isn't the one checking max count
                         // The component types are in a set, order could change
                         .withMessageMatching(
-                                "Action rows containing \\w+ cannot also contain \\w+! Complete row: \\[\\w+, \\w+]");
+                                "Action rows cannot contain other component types when \\w+ is present! Complete row: \\[\\w+, \\w+]");
                 assertThatNoException().isThrownBy(() -> ActionRow.of(EXAMPLE_MENU));
             }
             case OVERFLOW_MENU -> {

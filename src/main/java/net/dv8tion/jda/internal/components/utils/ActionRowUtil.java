@@ -51,16 +51,21 @@ public class ActionRowUtil {
     public static void checkMixedComponents(Set<Component.Type> types) {
         if (types.size() == 1) return;
 
+        // NOTE: These checks aren't in a single loop
+        // to avoid different exceptions when the Set has a different iteration order
         for (Component.Type type : types) {
-            Set<Component.Type> compatibleTypes = COMPATIBILITIES.get(type);
             // There is more than 1 component type and this component has no compatibilities,
             // therefore it is incompatible with everything else
-            if (compatibleTypes == null) {
+            if (!COMPATIBILITIES.containsKey(type)) {
                 throw new IllegalArgumentException("Action rows cannot contain other component types when " + type
                         + " is present! Complete row: " + types);
             }
+        }
 
-            // Let's see if the components contain anything that is incompatible
+        // All components have *some* compatibility, let's see if they support each other
+        for (Component.Type type : types) {
+            Set<Component.Type> compatibleTypes = COMPATIBILITIES.getOrDefault(type, Collections.emptySet());
+
             for (Component.Type siblingType : types) {
                 if (type == siblingType) continue;
                 if (!compatibleTypes.contains(siblingType)) {
