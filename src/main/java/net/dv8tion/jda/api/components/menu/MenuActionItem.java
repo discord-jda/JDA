@@ -118,6 +118,10 @@ public interface MenuActionItem extends ActionComponent, OverflowMenuGroupChildC
     MenuActionItem withUniqueId(int uniqueId);
 
     @Nonnull
+    @CheckReturnValue
+    MenuActionItem withCustomId(@Nonnull String customId);
+
+    @Nonnull
     @Override
     @CheckReturnValue
     MenuActionItem withDisabled(boolean disabled);

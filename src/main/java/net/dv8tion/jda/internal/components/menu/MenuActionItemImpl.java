@@ -117,6 +117,14 @@ public class MenuActionItemImpl extends AbstractComponentImpl
 
     @Nonnull
     @Override
+    public MenuActionItem withCustomId(@Nonnull String customId) {
+        Checks.notBlank(customId, "Custom ID");
+        Checks.notLonger(customId, CUSTOM_ID_MAX_LENGTH, "Custom ID");
+        return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
+    }
+
+    @Nonnull
+    @Override
     public MenuActionItem withDisabled(boolean disabled) {
         return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
