@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.OverflowMenuActionItemInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -37,6 +38,7 @@ import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionIm
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.components.buttons.ButtonInteractionImpl;
+import net.dv8tion.jda.internal.interactions.components.overflowmenu.OverflowMenuActionItemInteractionImpl;
 import net.dv8tion.jda.internal.interactions.components.selections.EntitySelectInteractionImpl;
 import net.dv8tion.jda.internal.interactions.components.selections.StringSelectInteractionImpl;
 import net.dv8tion.jda.internal.interactions.modal.ModalInteractionImpl;
@@ -132,6 +134,10 @@ public class InteractionCreateHandler extends SocketHandler {
             case CHANNEL_SELECT:
                 api.handleEvent(new EntitySelectInteractionEvent(
                         api, responseNumber, new EntitySelectInteractionImpl(api, content)));
+                break;
+            case OVERFLOW_MENU_ITEM:
+                api.handleEvent(new OverflowMenuActionItemInteractionEvent(
+                        api, responseNumber, new OverflowMenuActionItemInteractionImpl(api, content)));
                 break;
             default:
                 WebSocketClient.LOG.debug("Received interaction with unknown component type {}", type);
