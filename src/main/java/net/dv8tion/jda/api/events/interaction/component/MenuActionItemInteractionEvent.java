@@ -17,43 +17,43 @@
 package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
-import net.dv8tion.jda.api.interactions.components.overflowmenu.OverflowMenuActionItemInteraction;
+import net.dv8tion.jda.api.components.menu.MenuActionItem;
+import net.dv8tion.jda.api.interactions.components.overflowmenu.MenuActionItemInteraction;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link OverflowMenuActionItem} on one of the bots messages (or a webhook owned by the bot) was clicked by a user.
+ * Indicates that a {@link MenuActionItem} on one of the bots messages (or a webhook owned by the bot) was clicked by a user.
  *
  * <p><b>Requirements</b><br>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class OverflowMenuActionItemInteractionEvent extends GenericComponentInteractionCreateEvent
-        implements OverflowMenuActionItemInteraction {
-    private final OverflowMenuActionItemInteraction interaction;
+public class MenuActionItemInteractionEvent extends GenericComponentInteractionCreateEvent
+        implements MenuActionItemInteraction {
+    private final MenuActionItemInteraction interaction;
 
-    public OverflowMenuActionItemInteractionEvent(
-            @Nonnull JDA api, long responseNumber, @Nonnull OverflowMenuActionItemInteraction interaction) {
+    public MenuActionItemInteractionEvent(
+            @Nonnull JDA api, long responseNumber, @Nonnull MenuActionItemInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItemInteraction getInteraction() {
+    public MenuActionItemInteraction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem getComponent() {
+    public MenuActionItem getComponent() {
         return interaction.getComponent();
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem getItem() {
+    public MenuActionItem getItem() {
         return interaction.getItem();
     }
 }

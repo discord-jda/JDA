@@ -17,23 +17,22 @@
 package net.dv8tion.jda.internal.interactions.components.overflowmenu;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
-import net.dv8tion.jda.api.interactions.components.overflowmenu.OverflowMenuActionItemInteraction;
+import net.dv8tion.jda.api.components.menu.MenuActionItem;
+import net.dv8tion.jda.api.interactions.components.overflowmenu.MenuActionItemInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.components.ComponentInteractionImpl;
 
 import javax.annotation.Nonnull;
 
-public class OverflowMenuActionItemInteractionImpl extends ComponentInteractionImpl
-        implements OverflowMenuActionItemInteraction {
-    private final OverflowMenuActionItem item;
+public class MenuActionItemInteractionImpl extends ComponentInteractionImpl implements MenuActionItemInteraction {
+    private final MenuActionItem item;
 
-    public OverflowMenuActionItemInteractionImpl(JDAImpl jda, DataObject data) {
+    public MenuActionItemInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         if (message != null) {
             item = message.getComponentTree()
-                    .find(OverflowMenuActionItem.class, b -> customId.equals(b.getCustomId()))
+                    .find(MenuActionItem.class, b -> customId.equals(b.getCustomId()))
                     .orElse(null);
         } else {
             item = null;
@@ -48,7 +47,7 @@ public class OverflowMenuActionItemInteractionImpl extends ComponentInteractionI
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem getItem() {
+    public MenuActionItem getItem() {
         return item;
     }
 }

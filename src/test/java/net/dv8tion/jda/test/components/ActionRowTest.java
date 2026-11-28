@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.menu.MenuActionItem;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
-import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
@@ -45,9 +45,8 @@ public class ActionRowTest extends AbstractSnapshotTest {
             (ActionRowChildComponentUnion) EntitySelectMenu.create("id", EntitySelectMenu.SelectTarget.ROLE)
                     .setUniqueId(2)
                     .build();
-    private static final ActionRowChildComponentUnion EXAMPLE_OVERFLOW_MENU =
-            (ActionRowChildComponentUnion) OverflowMenu.ofSingleGroup(OverflowMenuActionItem.ofDefault("id", "label"))
-                    .withUniqueId(3);
+    private static final ActionRowChildComponentUnion EXAMPLE_OVERFLOW_MENU = (ActionRowChildComponentUnion)
+            OverflowMenu.ofSingleGroup(MenuActionItem.ofDefault("id", "label")).withUniqueId(3);
 
     @Test
     void testGetMaxAllowedIsUpdated() {

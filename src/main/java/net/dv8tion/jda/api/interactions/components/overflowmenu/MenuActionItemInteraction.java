@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.api.interactions.components.overflowmenu;
 
-import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
+import net.dv8tion.jda.api.components.menu.MenuActionItem;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.component.OverflowMenuActionItemInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.MenuActionItemInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -31,26 +31,26 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Interaction on a {@link OverflowMenuActionItem} component.
+ * Interaction on a {@link MenuActionItem} component.
  *
- * @see OverflowMenuActionItemInteractionEvent
+ * @see MenuActionItemInteractionEvent
  */
-public interface OverflowMenuActionItemInteraction extends ComponentInteraction {
+public interface MenuActionItemInteraction extends ComponentInteraction {
     @Nonnull
     @Override
-    default OverflowMenuActionItem getComponent() {
+    default MenuActionItem getComponent() {
         return getItem();
     }
 
     /**
-     * The {@link OverflowMenuActionItem} this interaction belongs to.
+     * The {@link MenuActionItem} this interaction belongs to.
      *
-     * @return The {@link OverflowMenuActionItem}
+     * @return The {@link MenuActionItem}
      *
      * @see    #getComponentId()
      */
     @Nonnull
-    OverflowMenuActionItem getItem();
+    MenuActionItem getItem();
 
     /**
      * Update the overflow menu item with a new instance.
@@ -65,7 +65,7 @@ public interface OverflowMenuActionItemInteraction extends ComponentInteraction 
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> editItem(@Nullable OverflowMenuActionItem newItem) {
+    default RestAction<Void> editItem(@Nullable MenuActionItem newItem) {
         Message message = getMessage();
         MessageComponentTree newTree =
                 message.getComponentTree().replace(ComponentReplacer.byUniqueId(getItem(), newItem));

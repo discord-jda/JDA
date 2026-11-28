@@ -19,38 +19,39 @@ package net.dv8tion.jda.api.components.overflowmenu;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
+import net.dv8tion.jda.api.components.menu.MenuActionItem;
 
 import javax.annotation.Nonnull;
 
 /**
  * Represents a union of {@link OverflowMenuGroupChildComponent OverflowMenuGroupChildComponents} that can be one of:
  * <ul>
- *     <li>{@link OverflowMenuActionItem}</li>
+ *     <li>{@link MenuActionItem}</li>
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
 public interface OverflowMenuGroupChildComponentUnion extends IComponentUnion {
     /**
-     * Casts this union to a {@link OverflowMenuActionItem}.
+     * Casts this union to a {@link MenuActionItem}.
      * This method exists for developer discoverability.
      *
      * <p>Note: This is effectively equivalent to using the cast operator:
-     * {@snippet lang="java":
+     * {@snippet lang = "java":
      * //These are the same!
-     * OverflowMenuActionItem item = union.asOverflowMenuActionItem();
-     * OverflowMenuActionItem item2 = (OverflowMenuActionItem) union;
-     * }
+     * MenuActionItem item = union.asMenuActionItem();
+     * MenuActionItem item2 = (MenuActionItem) union;
+     *}
      *
      * You can use {@link #getType()} to see if the component is of type {@link Component.Type#OVERFLOW_MENU_ITEM} to validate
-     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof OverflowMenuActionItem</code>
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof MenuActionItem</code>
      *
      * @throws IllegalStateException
-     *         If the component represented by this union is not actually a {@link OverflowMenuActionItem}.
+     *         If the component represented by this union is not actually a {@link MenuActionItem}.
      *
-     * @return The component as a {@link OverflowMenuActionItem}
+     * @return The component as a {@link MenuActionItem}
      */
     @Nonnull
-    OverflowMenuActionItem asOverflowMenuActionItem();
+    MenuActionItem asMenuActionItem();
 
     @Nonnull
     @Override

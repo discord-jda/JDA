@@ -1,1 +1,1 @@
-OverflowMenu(id=-1, groups=[OverflowMenuGroup(label=null, components=[OverflowMenuActionItem[DEFAULT](id=-1, label=label, custom id=customId)])])
+OverflowMenu(id=-1, groups=[OverflowMenuGroup(label=null, components=[MenuActionItem[DEFAULT](id=-1, label=label, custom id=customId)])])

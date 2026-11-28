@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.components.overflowmenu;
+package net.dv8tion.jda.internal.components.menu;
 
-import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuActionItem;
+import net.dv8tion.jda.api.components.menu.MenuActionItem;
 import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroupChildComponentUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -33,8 +33,8 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class OverflowMenuActionItemImpl extends AbstractComponentImpl
-        implements OverflowMenuGroupChildComponentUnion, OverflowMenuActionItem, SerializableData {
+public class MenuActionItemImpl extends AbstractComponentImpl
+        implements OverflowMenuGroupChildComponentUnion, MenuActionItem, SerializableData {
     private final int uniqueId;
     private final Style style;
     private final String customId;
@@ -44,7 +44,7 @@ public class OverflowMenuActionItemImpl extends AbstractComponentImpl
     private final String url;
     private final boolean disabled;
 
-    public OverflowMenuActionItemImpl(DataObject object) {
+    public MenuActionItemImpl(DataObject object) {
         this(
                 object.getInt("id", -1),
                 Style.fromKey(object.getInt("style")),
@@ -56,7 +56,7 @@ public class OverflowMenuActionItemImpl extends AbstractComponentImpl
                 object.getBoolean("disabled", false));
     }
 
-    private OverflowMenuActionItemImpl(
+    private MenuActionItemImpl(
             int uniqueId,
             Style style,
             String customId,
@@ -75,22 +75,22 @@ public class OverflowMenuActionItemImpl extends AbstractComponentImpl
         this.disabled = disabled;
     }
 
-    public static OverflowMenuActionItem validated(
+    public static MenuActionItem validated(
             Style style, String customId, String label, Emoji emoji, String description, String url) {
         switch (style) {
             case UNKNOWN:
-                throw new IllegalArgumentException("Cannot create an OverflowMenuActionItem of UNKNOWN style");
+                throw new IllegalArgumentException("Cannot create a MenuActionItem of UNKNOWN style");
             case DEFAULT:
             case DANGER:
                 Checks.notLonger(customId, ID_MAX_LENGTH, "Custom ID");
                 Checks.check(
                         url == null,
-                        "Cannot set an URL on a %s-styled OverflowMenuActionItem",
+                        "Cannot set an URL on a %s-styled MenuActionItem",
                         style.name().toLowerCase(Locale.ROOT));
                 break;
             case LINK:
                 Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-                Checks.check(customId == null, "Cannot set a custom ID on a link-styled OverflowMenuActionItem");
+                Checks.check(customId == null, "Cannot set a custom ID on a link-styled MenuActionItem");
                 break;
         }
 
@@ -99,7 +99,7 @@ public class OverflowMenuActionItemImpl extends AbstractComponentImpl
             Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
         }
 
-        return new OverflowMenuActionItemImpl(-1, style, customId, label, emoji, description, url, false);
+        return new MenuActionItemImpl(-1, style, customId, label, emoji, description, url, false);
     }
 
     @Nonnull
@@ -110,86 +110,84 @@ public class OverflowMenuActionItemImpl extends AbstractComponentImpl
 
     @Nonnull
     @Override
-    public OverflowMenuActionItemImpl withUniqueId(int uniqueId) {
+    public MenuActionItemImpl withUniqueId(int uniqueId) {
         Checks.positive(uniqueId, "Unique ID");
-        return new OverflowMenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
+        return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem withDisabled(boolean disabled) {
-        return new OverflowMenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
+    public MenuActionItem withDisabled(boolean disabled) {
+        return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem withStyle(@Nonnull Style style) {
-        Checks.check(style != Style.UNKNOWN, "Cannot create an OverflowMenuActionItem of UNKNOWN style");
+    public MenuActionItem withStyle(@Nonnull Style style) {
+        Checks.check(style != Style.UNKNOWN, "Cannot create an MenuActionItem of UNKNOWN style");
         // Allow T => T || DEFAULT <=> DANGER, nothing else
         Checks.check(
                 this.style == style
                         || (this.style == Style.DEFAULT && style == Style.DANGER)
                         || (this.style == Style.DANGER && style == Style.DEFAULT),
                 "Items can only be switched from and to DEFAULT/DANGER");
-        return new OverflowMenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
+        return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem withLabel(@Nonnull String label) {
+    public MenuActionItem withLabel(@Nonnull String label) {
         Checks.notEmpty(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new OverflowMenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
+        return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem withUrl(@Nullable String url) {
+    public MenuActionItem withUrl(@Nullable String url) {
         Checks.notEmpty(url, "URL");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new OverflowMenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
+        return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem withEmoji(@Nullable Emoji emoji) {
-        return new OverflowMenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
+    public MenuActionItem withEmoji(@Nullable Emoji emoji) {
+        return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem withDescription(@Nullable String description) {
+    public MenuActionItem withDescription(@Nullable String description) {
         if (description != null) {
             Checks.notEmpty(description, "Description");
             Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
         }
-        return new OverflowMenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
+        return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem asDefault(@Nonnull String customId) {
+    public MenuActionItem asDefault(@Nonnull String customId) {
         Checks.notEmpty(customId, "Custom ID");
         Checks.notLonger(customId, ID_MAX_LENGTH, "Custom ID");
-        return new OverflowMenuActionItemImpl(
-                uniqueId, Style.DEFAULT, customId, label, emoji, description, null, disabled);
+        return new MenuActionItemImpl(uniqueId, Style.DEFAULT, customId, label, emoji, description, null, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem asDanger(@Nonnull String customId) {
+    public MenuActionItem asDanger(@Nonnull String customId) {
         Checks.notEmpty(customId, "Custom ID");
         Checks.notLonger(customId, ID_MAX_LENGTH, "Custom ID");
-        return new OverflowMenuActionItemImpl(
-                uniqueId, Style.DANGER, customId, label, emoji, description, null, disabled);
+        return new MenuActionItemImpl(uniqueId, Style.DANGER, customId, label, emoji, description, null, disabled);
     }
 
     @Nonnull
     @Override
-    public OverflowMenuActionItem asLink(@Nonnull String url) {
+    public MenuActionItem asLink(@Nonnull String url) {
         Checks.notEmpty(url, "URL");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new OverflowMenuActionItemImpl(uniqueId, style, null, label, emoji, description, url, disabled);
+        return new MenuActionItemImpl(uniqueId, style, null, label, emoji, description, url, disabled);
     }
 
     @Nonnull
@@ -271,10 +269,10 @@ public class OverflowMenuActionItemImpl extends AbstractComponentImpl
         if (o == this) {
             return true;
         }
-        if (!(o instanceof OverflowMenuActionItemImpl)) {
+        if (!(o instanceof MenuActionItemImpl)) {
             return false;
         }
-        OverflowMenuActionItemImpl that = (OverflowMenuActionItemImpl) o;
+        MenuActionItemImpl that = (MenuActionItemImpl) o;
         return uniqueId == that.uniqueId
                 && style == that.style
                 && Objects.equals(customId, that.customId)

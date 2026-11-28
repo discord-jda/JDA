@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.components.overflowmenu;
+package net.dv8tion.jda.api.components.menu;
 
 import net.dv8tion.jda.api.components.ActionComponent;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroupChildComponent;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
-import net.dv8tion.jda.internal.components.overflowmenu.OverflowMenuActionItemImpl;
+import net.dv8tion.jda.internal.components.menu.MenuActionItemImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface OverflowMenuActionItem extends ActionComponent, OverflowMenuGroupChildComponent {
+public interface MenuActionItem extends ActionComponent, OverflowMenuGroupChildComponent {
     /**
      * The maximum length an item ID can be.
      */
@@ -48,110 +49,110 @@ public interface OverflowMenuActionItem extends ActionComponent, OverflowMenuGro
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuActionItem of(
+    static MenuActionItem of(
             @Nonnull Style style,
             @Nullable String customId,
             @Nonnull String label,
             @Nullable Emoji emoji,
             @Nullable String description,
             @Nullable String url) {
-        return OverflowMenuActionItemImpl.validated(style, customId, label, emoji, description, url);
+        return MenuActionItemImpl.validated(style, customId, label, emoji, description, url);
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuActionItem ofDefault(@Nonnull String customId, @Nonnull String label) {
+    static MenuActionItem ofDefault(@Nonnull String customId, @Nonnull String label) {
         return ofDefault(customId, label, null, null);
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuActionItem ofDefault(
+    static MenuActionItem ofDefault(
             @Nonnull String customId, @Nonnull String label, @Nullable Emoji emoji, @Nullable String description) {
-        return OverflowMenuActionItemImpl.validated(Style.DEFAULT, customId, label, emoji, description, null);
+        return MenuActionItemImpl.validated(Style.DEFAULT, customId, label, emoji, description, null);
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuActionItem ofDanger(@Nonnull String customId, @Nonnull String label) {
+    static MenuActionItem ofDanger(@Nonnull String customId, @Nonnull String label) {
         return ofDanger(customId, label, null, null);
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuActionItem ofDanger(
+    static MenuActionItem ofDanger(
             @Nonnull String customId, @Nonnull String label, @Nullable Emoji emoji, @Nullable String description) {
-        return OverflowMenuActionItemImpl.validated(Style.DANGER, customId, label, emoji, description, null);
+        return MenuActionItemImpl.validated(Style.DANGER, customId, label, emoji, description, null);
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuActionItem ofLink(@Nonnull String label, @Nonnull String url) {
+    static MenuActionItem ofLink(@Nonnull String label, @Nonnull String url) {
         return ofLink(label, url, null, null);
     }
 
     @Nonnull
     @CheckReturnValue
-    static OverflowMenuActionItem ofLink(
+    static MenuActionItem ofLink(
             @Nonnull String label, @Nonnull String url, @Nullable Emoji emoji, @Nullable String description) {
-        return OverflowMenuActionItemImpl.validated(Style.LINK, null, label, emoji, description, url);
+        return MenuActionItemImpl.validated(Style.LINK, null, label, emoji, description, url);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default OverflowMenuActionItem asDisabled() {
-        return (OverflowMenuActionItem) ActionComponent.super.asDisabled();
+    default MenuActionItem asDisabled() {
+        return (MenuActionItem) ActionComponent.super.asDisabled();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    default OverflowMenuActionItem asEnabled() {
-        return (OverflowMenuActionItem) ActionComponent.super.asEnabled();
+    default MenuActionItem asEnabled() {
+        return (MenuActionItem) ActionComponent.super.asEnabled();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    OverflowMenuActionItem withUniqueId(int uniqueId);
+    MenuActionItem withUniqueId(int uniqueId);
 
     @Nonnull
     @Override
     @CheckReturnValue
-    OverflowMenuActionItem withDisabled(boolean disabled);
+    MenuActionItem withDisabled(boolean disabled);
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuActionItem withStyle(@Nonnull Style style);
+    MenuActionItem withStyle(@Nonnull Style style);
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuActionItem withLabel(@Nonnull String label);
+    MenuActionItem withLabel(@Nonnull String label);
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuActionItem withUrl(@Nullable String url);
+    MenuActionItem withUrl(@Nullable String url);
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuActionItem withEmoji(@Nullable Emoji emoji);
+    MenuActionItem withEmoji(@Nullable Emoji emoji);
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuActionItem withDescription(@Nullable String description);
+    MenuActionItem withDescription(@Nullable String description);
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuActionItem asDefault(@Nonnull String customId);
+    MenuActionItem asDefault(@Nonnull String customId);
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuActionItem asDanger(@Nonnull String customId);
+    MenuActionItem asDanger(@Nonnull String customId);
 
     @Nonnull
     @CheckReturnValue
-    OverflowMenuActionItem asLink(@Nonnull String url);
+    MenuActionItem asLink(@Nonnull String url);
 
     @Nonnull
     Style getStyle();

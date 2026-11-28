@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.components.overflowmenu;
 
 import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.menu.MenuActionItem;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -24,7 +25,7 @@ import javax.annotation.Nonnull;
 /**
  * Represents a component that can be added to an {@link OverflowMenuGroup}, this includes:
  * <ul>
- *     <li>{@link OverflowMenuActionItem}</li>
+ *     <li>{@link MenuActionItem}</li>
  * </ul>
  */
 public interface OverflowMenuGroupChildComponent extends Component {
