@@ -51,12 +51,23 @@ public interface MenuActionItem extends ActionComponent, OverflowMenuGroupChildC
     @CheckReturnValue
     static MenuActionItem of(
             @Nonnull Style style,
-            @Nullable String customId,
+            @Nonnull String customIdOrUrl,
             @Nonnull String label,
             @Nullable Emoji emoji,
-            @Nullable String description,
-            @Nullable String url) {
-        return MenuActionItemImpl.validated(style, customId, label, emoji, description, url);
+            @Nullable String description) {
+        switch (style) {
+            case UNKNOWN:
+                throw new IllegalArgumentException("Style cannot be UNKNOWN!");
+            case LINK:
+                return ofLink(customIdOrUrl, label, emoji, description);
+            case DEFAULT:
+                return ofDefault(customIdOrUrl, label, emoji, description);
+            case DANGER:
+                return ofDanger(customIdOrUrl, label, emoji, description);
+        }
+
+        // Unreachable, error-prone will fail compilation if a new style is added
+        throw new IllegalArgumentException("Unhandled style: " + style);
     }
 
     @Nonnull
