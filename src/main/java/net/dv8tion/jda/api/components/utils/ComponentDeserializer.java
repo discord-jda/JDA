@@ -45,6 +45,8 @@ import net.dv8tion.jda.internal.components.label.LabelImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemFileUpload;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemImpl;
+import net.dv8tion.jda.internal.components.menu.MenuActionItemImpl;
+import net.dv8tion.jda.internal.components.overflowmenu.OverflowMenuImpl;
 import net.dv8tion.jda.internal.components.radiogroup.RadioGroupImpl;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.internal.components.selections.EntitySelectMenuImpl;
@@ -300,6 +302,10 @@ public class ComponentDeserializer {
                 return new CheckboxGroupImpl(data);
             case CHECKBOX:
                 return new CheckboxImpl(data);
+            case OVERFLOW_MENU:
+                return new OverflowMenuImpl(this, data);
+            case OVERFLOW_MENU_ITEM:
+                return new MenuActionItemImpl(data);
             default:
                 return new UnknownComponentImpl(data);
         }

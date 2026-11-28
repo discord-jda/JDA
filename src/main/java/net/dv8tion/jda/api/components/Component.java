@@ -134,6 +134,8 @@ public interface Component {
         RADIO_GROUP(21, false, true),
         CHECKBOX_GROUP(22, false, true),
         CHECKBOX(23, false, true),
+        OVERFLOW_MENU(25, true, false),
+        OVERFLOW_MENU_ITEM(26, true, false),
         ;
 
         private final int key;

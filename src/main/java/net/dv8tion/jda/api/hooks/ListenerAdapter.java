@@ -178,6 +178,8 @@ public abstract class ListenerAdapter implements EventListener {
 
     public void onEntitySelectInteraction(@Nonnull EntitySelectInteractionEvent event) {}
 
+    public void onMenuActionItemInteraction(@Nonnull MenuActionItemInteractionEvent event) {}
+
     // User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
 

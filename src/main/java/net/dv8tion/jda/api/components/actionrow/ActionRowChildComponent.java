@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.components.actionrow;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 
@@ -29,6 +30,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link Button}</li>
  *     <li>{@link StringSelectMenu}</li>
  *     <li>{@link EntitySelectMenu}</li>
+ *     <li>{@link OverflowMenu}</li>
  * </ul>
  */
 public interface ActionRowChildComponent extends Component {

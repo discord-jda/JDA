@@ -19,6 +19,8 @@ package net.dv8tion.jda.test.components;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenuGroup;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import org.junit.jupiter.api.Test;
@@ -55,7 +57,8 @@ public class ComponentIteratorTests {
                         FILE_UPLOAD,
                         RADIO_GROUP,
                         CHECKBOX_GROUP,
-                        CHECKBOX -> {}
+                        CHECKBOX,
+                        OVERFLOW_MENU_ITEM -> {}
                 case ACTION_ROW -> {
                     ActionRow row = mock(ActionRow.class);
                     ComponentIterator.createStream(Collections.singleton(row)).toList();
@@ -73,6 +76,14 @@ public class ComponentIteratorTests {
                     ComponentIterator.createStream(Collections.singleton(container))
                             .toList();
                     verify(container, times(1)).getComponents();
+                }
+                case OVERFLOW_MENU -> {
+                    var group = mock(OverflowMenuGroup.class);
+                    var overflowMenu = spy(OverflowMenu.of(group));
+                    ComponentIterator.createStream(Collections.singleton(overflowMenu))
+                            .toList();
+                    verify(overflowMenu, times(1)).getGroups();
+                    verify(group, times(1)).getComponents();
                 }
                 default ->
                     fail(

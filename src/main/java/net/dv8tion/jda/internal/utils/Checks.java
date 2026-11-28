@@ -83,6 +83,11 @@ public class Checks {
         }
     }
 
+    @FormatMethod
+    public static void checkMaxSize(Collection<?> collection, @PrintFormat @FormatString String message, int max) {
+        check(collection.size() <= max, message, max);
+    }
+
     @Contract("null, _ -> fail")
     public static void notNull(Object argument, String name) {
         if (argument == null) {
@@ -162,6 +167,7 @@ public class Checks {
         argument.forEach(it -> noWhitespace(it, name));
     }
 
+    @Contract("null, _, _, _ -> fail")
     public static void inRange(String input, int min, int max, String name) {
         notNull(input, name);
         int length = Helpers.codePointLength(input);
@@ -174,6 +180,7 @@ public class Checks {
                 input);
     }
 
+    @Contract("null, _, _ -> fail")
     public static void notLonger(String input, int length, String name) {
         notNull(input, name);
         check(
@@ -184,6 +191,7 @@ public class Checks {
                 input);
     }
 
+    @Contract("null, _, _ -> fail")
     public static void matches(String input, Pattern pattern, String name) {
         notNull(input, name);
         check(
@@ -194,6 +202,7 @@ public class Checks {
                 input);
     }
 
+    @Contract("null, _ -> fail")
     public static void isLowercase(String input, String name) {
         notNull(input, name);
         check(input.toLowerCase(Locale.ROOT).equals(input), "%s must be lowercase only! Provided: \"%s\"", name, input);
@@ -223,6 +232,7 @@ public class Checks {
         }
     }
 
+    @Contract("null, _, _, _ -> fail")
     public static void notLonger(Duration duration, Duration maxDuration, TimeUnit resolutionUnit, String name) {
         notNull(duration, name);
         check(

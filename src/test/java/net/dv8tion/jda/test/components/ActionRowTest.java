@@ -20,19 +20,22 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.menu.MenuActionItem;
+import net.dv8tion.jda.api.components.overflowmenu.OverflowMenu;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
 import net.dv8tion.jda.test.ChecksHelper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static net.dv8tion.jda.api.components.replacer.ComponentReplacer.byUniqueId;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.*;
 
 public class ActionRowTest extends AbstractSnapshotTest {
 
@@ -42,6 +45,8 @@ public class ActionRowTest extends AbstractSnapshotTest {
             (ActionRowChildComponentUnion) EntitySelectMenu.create("id", EntitySelectMenu.SelectTarget.ROLE)
                     .setUniqueId(2)
                     .build();
+    private static final ActionRowChildComponentUnion EXAMPLE_OVERFLOW_MENU = (ActionRowChildComponentUnion)
+            OverflowMenu.ofSingleGroup(MenuActionItem.ofDefault("id", "label")).withUniqueId(3);
 
     @Test
     void testGetMaxAllowedIsUpdated() {
@@ -61,11 +66,48 @@ public class ActionRowTest extends AbstractSnapshotTest {
                 .checksNotEmpty();
     }
 
-    @Test
-    void testCombiningDifferentElementsThrows() {
-        List<ActionRowChildComponentUnion> list = Arrays.asList(EXAMPLE_BUTTON, EXAMPLE_MENU);
+    @EnumSource
+    @ParameterizedTest
+    void testCombiningElementsCompatibility(Component.Type type) {
+        switch (type) {
+            case UNKNOWN,
+                    ACTION_ROW,
+                    TEXT_INPUT,
+                    SECTION,
+                    TEXT_DISPLAY,
+                    THUMBNAIL,
+                    MEDIA_GALLERY,
+                    FILE_DISPLAY,
+                    SEPARATOR,
+                    CONTAINER,
+                    LABEL,
+                    FILE_UPLOAD,
+                    RADIO_GROUP,
+                    CHECKBOX_GROUP,
+                    CHECKBOX,
+                    OVERFLOW_MENU_ITEM -> {}
+            case BUTTON -> {
+                assertThatIllegalArgumentException().isThrownBy(() -> ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_MENU));
+                assertThatNoException().isThrownBy(() -> ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_BUTTON));
+                assertThatNoException().isThrownBy(() -> ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_OVERFLOW_MENU));
+            }
 
-        assertThatIllegalArgumentException().isThrownBy(() -> ActionRow.of(list));
+            case STRING_SELECT, USER_SELECT, ROLE_SELECT, MENTIONABLE_SELECT, CHANNEL_SELECT -> {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> ActionRow.of(EXAMPLE_MENU, EXAMPLE_BUTTON))
+                        // Make sure the throwing check isn't the one checking max count
+                        // The component types are in a set, order could change
+                        .withMessageMatching(
+                                "Action rows cannot contain other component types when \\w+ is present! Complete row: \\[\\w+, \\w+]");
+                assertThatNoException().isThrownBy(() -> ActionRow.of(EXAMPLE_MENU));
+            }
+            case OVERFLOW_MENU -> {
+                assertThatIllegalArgumentException()
+                        .isThrownBy(() -> ActionRow.of(EXAMPLE_OVERFLOW_MENU, EXAMPLE_MENU));
+                assertThatNoException().isThrownBy(() -> ActionRow.of(EXAMPLE_OVERFLOW_MENU, EXAMPLE_OVERFLOW_MENU));
+                assertThatNoException().isThrownBy(() -> ActionRow.of(EXAMPLE_OVERFLOW_MENU, EXAMPLE_BUTTON));
+            }
+        }
     }
 
     @Test
@@ -84,6 +126,26 @@ public class ActionRowTest extends AbstractSnapshotTest {
         assertThat(rowsOfFiveButtons)
                 .isEqualTo(Collections.singletonList(
                         ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON)));
+
+        List<ActionRow> rowsOfOneButtonOneSelectMenuOneButton =
+                ActionRow.partitionOf(EXAMPLE_BUTTON, EXAMPLE_MENU, EXAMPLE_BUTTON);
+        assertThat(rowsOfOneButtonOneSelectMenuOneButton)
+                .isEqualTo(List.of(
+                        ActionRow.of(EXAMPLE_BUTTON), ActionRow.of(EXAMPLE_MENU), ActionRow.of(EXAMPLE_BUTTON)));
+
+        List<ActionRow> rowsOfFourButtonsOneOverflowMenuOneButton = ActionRow.partitionOf(
+                EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_OVERFLOW_MENU, EXAMPLE_BUTTON);
+        assertThat(rowsOfFourButtonsOneOverflowMenuOneButton)
+                .isEqualTo(List.of(
+                        ActionRow.of(
+                                EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_OVERFLOW_MENU),
+                        ActionRow.of(EXAMPLE_BUTTON)));
+
+        List<ActionRow> rowsOfFourButtonsOneOverflowMenu = ActionRow.partitionOf(
+                EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_OVERFLOW_MENU);
+        assertThat(rowsOfFourButtonsOneOverflowMenu)
+                .isEqualTo(List.of(ActionRow.of(
+                        EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_OVERFLOW_MENU)));
     }
 
     @Test
