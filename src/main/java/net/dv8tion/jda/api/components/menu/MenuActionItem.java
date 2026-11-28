@@ -87,14 +87,14 @@ public interface MenuActionItem extends ActionComponent, OverflowMenuGroupChildC
 
     @Nonnull
     @CheckReturnValue
-    static MenuActionItem ofLink(@Nonnull String label, @Nonnull String url) {
-        return ofLink(label, url, null, null);
+    static MenuActionItem ofLink(@Nonnull String url, @Nonnull String label) {
+        return ofLink(url, label, null, null);
     }
 
     @Nonnull
     @CheckReturnValue
     static MenuActionItem ofLink(
-            @Nonnull String label, @Nonnull String url, @Nullable Emoji emoji, @Nullable String description) {
+            @Nonnull String url, @Nonnull String label, @Nullable Emoji emoji, @Nullable String description) {
         return MenuActionItemImpl.validated(Style.LINK, null, label, emoji, description, url);
     }
 
