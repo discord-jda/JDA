@@ -63,6 +63,7 @@ public interface OverflowMenuGroup {
     static OverflowMenuGroup of(
             @Nullable String label, @Nonnull Collection<? extends OverflowMenuGroupChildComponent> components) {
         if (label != null) {
+            Checks.notBlank(label, "Label");
             Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         }
         Checks.notEmpty(components, "Components");

@@ -55,7 +55,7 @@ public class OverflowMenuGroupImpl implements OverflowMenuGroup, SerializableDat
     @Override
     public OverflowMenuGroup withLabel(@Nullable String label) {
         if (label != null) {
-            Checks.notEmpty(label, "Label");
+            Checks.notBlank(label, "Label");
             Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         }
         return new OverflowMenuGroupImpl(label, components);

@@ -30,7 +30,7 @@ public interface MenuActionItem extends ActionComponent, OverflowMenuGroupChildC
     /**
      * The maximum length an item ID can be.
      */
-    int ID_MAX_LENGTH = 100;
+    int CUSTOM_ID_MAX_LENGTH = 100;
 
     /**
      * The maximum length an item label can be.

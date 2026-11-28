@@ -82,7 +82,7 @@ public class MenuActionItemImpl extends AbstractComponentImpl
                 throw new IllegalArgumentException("Cannot create a MenuActionItem of UNKNOWN style");
             case DEFAULT:
             case DANGER:
-                Checks.notLonger(customId, ID_MAX_LENGTH, "Custom ID");
+                Checks.notLonger(customId, CUSTOM_ID_MAX_LENGTH, "Custom ID");
                 Checks.check(
                         url == null,
                         "Cannot set an URL on a %s-styled MenuActionItem",
@@ -137,7 +137,7 @@ public class MenuActionItemImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public MenuActionItem withLabel(@Nonnull String label) {
-        Checks.notEmpty(label, "Label");
+        Checks.notBlank(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
@@ -145,7 +145,7 @@ public class MenuActionItemImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public MenuActionItem withUrl(@Nullable String url) {
-        Checks.notEmpty(url, "URL");
+        Checks.notBlank(url, "URL");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
         return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
     }
@@ -160,7 +160,7 @@ public class MenuActionItemImpl extends AbstractComponentImpl
     @Override
     public MenuActionItem withDescription(@Nullable String description) {
         if (description != null) {
-            Checks.notEmpty(description, "Description");
+            Checks.notBlank(description, "Description");
             Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
         }
         return new MenuActionItemImpl(uniqueId, style, customId, label, emoji, description, url, disabled);
@@ -169,23 +169,23 @@ public class MenuActionItemImpl extends AbstractComponentImpl
     @Nonnull
     @Override
     public MenuActionItem asDefault(@Nonnull String customId) {
-        Checks.notEmpty(customId, "Custom ID");
-        Checks.notLonger(customId, ID_MAX_LENGTH, "Custom ID");
+        Checks.notBlank(customId, "Custom ID");
+        Checks.notLonger(customId, CUSTOM_ID_MAX_LENGTH, "Custom ID");
         return new MenuActionItemImpl(uniqueId, Style.DEFAULT, customId, label, emoji, description, null, disabled);
     }
 
     @Nonnull
     @Override
     public MenuActionItem asDanger(@Nonnull String customId) {
-        Checks.notEmpty(customId, "Custom ID");
-        Checks.notLonger(customId, ID_MAX_LENGTH, "Custom ID");
+        Checks.notBlank(customId, "Custom ID");
+        Checks.notLonger(customId, CUSTOM_ID_MAX_LENGTH, "Custom ID");
         return new MenuActionItemImpl(uniqueId, Style.DANGER, customId, label, emoji, description, null, disabled);
     }
 
     @Nonnull
     @Override
     public MenuActionItem asLink(@Nonnull String url) {
-        Checks.notEmpty(url, "URL");
+        Checks.notBlank(url, "URL");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
         return new MenuActionItemImpl(uniqueId, style, null, label, emoji, description, url, disabled);
     }
